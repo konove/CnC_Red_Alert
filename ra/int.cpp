@@ -18,25 +18,24 @@
 
 /* $Header: /CounterStrike/INT.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : INT.CPP                                                      *
+ *                    File Name : INT.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 04/26/96                                                     *
+ *                   Start Date : 04/26/96 *
  *                                                                                             *
- *                  Last Update : April 26, 1996 [JLB]                                         *
+ *                  Last Update : April 26, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-
-#include	"mp.h"
+#include "mp.h"
 #include "int.h"
-
-

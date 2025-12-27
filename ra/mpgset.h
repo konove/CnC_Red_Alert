@@ -25,27 +25,25 @@
 #include "mci.h"
 #include "rawfile.h"
 
-class MPGSettings
-	{
-	public:
-		MPGSettings(const char* deviceName);
-		MPGSettings(FileClass& file);
-		virtual ~MPGSettings(void);
+class MPGSettings {
+ public:
+  MPGSettings(const char* deviceName);
+  MPGSettings(FileClass& file);
+  virtual ~MPGSettings(void);
 
-		void SetDeviceName(const char* device);
-		const char* GetDeviceName(void) const
-			{return mDeviceName;}
-		bool Save(FileClass& file);
-		void Dialog(void);
+  void SetDeviceName(const char* device);
+  const char* GetDeviceName(void) const { return mDeviceName; }
+  bool Save(FileClass& file);
+  void Dialog(void);
 
-		char* mDeviceName;
+  char* mDeviceName;
 
-		#ifdef MCIMPEG
-		MCI mMCI;
-		unsigned int mCount;
-		MCIDevice* mMCIDevices;
-		#endif
-	};
+#ifdef MCIMPEG
+  MCI mMCI;
+  unsigned int mCount;
+  MCIDevice* mMCIDevices;
+#endif
+};
 
-#endif // DVD
-#endif // _MPGSETTINGS_H_
+#endif  // DVD
+#endif  // _MPGSETTINGS_H_

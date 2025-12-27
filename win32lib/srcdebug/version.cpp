@@ -35,11 +35,8 @@
 
 #include "wwstd.h"
 
-
-
-PRIVATE char *version = "Westwood Studios - 32 Bit Library Version "
-	__DATE__
-	"\r\n";
+PRIVATE char *version =
+    "Westwood Studios - 32 Bit Library Version " __DATE__ "\r\n";
 
 /***************************************************************************
  * VERSION -- Returns with current library version text.                   *
@@ -56,7 +53,4 @@ PRIVATE char *version = "Westwood Studios - 32 Bit Library Version "
  * HISTORY:                                                                *
  *   07/26/1991 JLB : Created.                                             *
  *=========================================================================*/
-char * __cdecl Version(void)
-{
-	return(version);
-}
+char *__cdecl Version(void) { return (version); }

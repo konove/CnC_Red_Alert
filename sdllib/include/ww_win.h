@@ -40,14 +40,14 @@
 union SDL_Event;
 
 /*=========================================================================*/
-/* The following prototypes are for the file: WINDOWS.CPP						*/
+/* The following prototypes are for the file: WINDOWS.CPP
+ */
 /*=========================================================================*/
 int Change_Window(int windnum);
 
-
 void SDL_Create_Main_Window(const char *title, int width, int height);
 void SDL_Event_Loop();
-void SDL_Event_Handler(SDL_Event *event); // implemented in app
+void SDL_Event_Handler(SDL_Event *event);  // implemented in app
 void SDL_Send_Quit();
 void Video_End_Frame();
 
@@ -56,15 +56,15 @@ void Video_End_Frame();
 **	defines when accessing the WindowList.
 */
 typedef enum {
-	WINDOWX,			// X byte position of left edge.
-	WINDOWY,			// Y pixel position of top edge.
-	WINDOWWIDTH,	// Width in bytes of the window.
-	WINDOWHEIGHT,	// Height in pixels of the window.
-	WINDOWFCOL,		// Default foreground color.
-	WINDOWBCOL,		// Default background color.
-	WINDOWCURSORX,	// Current cursor X position (in rows).
-	WINDOWCURSORY,	// Current cursor Y position (in lines).
-	WINDOWPADDING=0x1000
+  WINDOWX,        // X byte position of left edge.
+  WINDOWY,        // Y pixel position of top edge.
+  WINDOWWIDTH,    // Width in bytes of the window.
+  WINDOWHEIGHT,   // Height in pixels of the window.
+  WINDOWFCOL,     // Default foreground color.
+  WINDOWBCOL,     // Default background color.
+  WINDOWCURSORX,  // Current cursor X position (in rows).
+  WINDOWCURSORY,  // Current cursor Y position (in lines).
+  WINDOWPADDING = 0x1000
 } WindowIndexType;
 
 extern int WindowList[][8];
@@ -86,5 +86,4 @@ extern char *TXT_MoreText;
 
 extern void (*Window_More_Ptr)(char const *, int, int, int);
 
-#endif //WINDOWS_H
-
+#endif  // WINDOWS_H

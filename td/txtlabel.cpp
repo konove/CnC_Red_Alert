@@ -16,83 +16,76 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\txtlabel.cpv   1.9   16 Oct 1995 16:49:44   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\txtlabel.cpv   1.9   16 Oct 1995 16:49:44
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TXTLABEL.H                                                   *
+ *                    File Name : TXTLABEL.H *
  *                                                                                             *
- *                   Programmer : Bill Randolph                                                *
+ *                   Programmer : Bill Randolph *
  *                                                                                             *
- *                   Start Date : 02/06/95                                                     *
+ *                   Start Date : 02/06/95 *
  *                                                                                             *
- *                  Last Update : February 6, 1995 [BR]                                        *
+ *                  Last Update : February 6, 1995 [BR] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include "function.h"
 
-
 /***********************************************************************************************
- * TextLabelClass -- Constructor                                                               *
+ * TextLabelClass -- Constructor *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      txt         pointer to text buffer to print from                                       *
- *      x            x-coord for text printing                                                 *
- *      y            y-coord for text printing                                                 *
- *      color         color to print in                                                        *
- *      style         style to print (determines the meaning of x & y)                         *
+ * INPUT: * txt         pointer to text buffer to print from * x x-coord for
+ *text printing                                                 * y y-coord for
+ *text printing                                                 * color color to
+ *print in                                                        * style style
+ *to print (determines the meaning of x & y)                         *
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      none.                                                                                  *
+ * OUTPUT: * none. *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   03/24/1995 BRR : Created.                                                                 *
+ * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 TextLabelClass::TextLabelClass(char *txt, int x, int y, int color,
- TextPrintType style) : GadgetClass(x,y,1,1,0,0)
-{
-	Text = txt;
-	Color = color;
-	Style = style;
-	UserData = 0;
-	PixWidth = -1;
-	Segments = 0;
+                               TextPrintType style)
+    : GadgetClass(x, y, 1, 1, 0, 0) {
+  Text = txt;
+  Color = color;
+  Style = style;
+  UserData = 0;
+  PixWidth = -1;
+  Segments = 0;
 }
 
-
 /***********************************************************************************************
- * Draw_Me -- Graphical update routine                                                         *
+ * Draw_Me -- Graphical update routine *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      forced      true = draw regardless of the current redraw flag state                    *
+ * INPUT: * forced      true = draw regardless of the current redraw flag state
+ **
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      true = gadget was redrawn, false = wasn't                                              *
+ * OUTPUT: * true = gadget was redrawn, false = wasn't *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   03/24/1995 BRR : Created.                                                                 *
+ * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int TextLabelClass::Draw_Me(int forced)
-{
-	if (GadgetClass::Draw_Me(forced)) {
-		if (PixWidth == -1) {
-			Fancy_Text_Print("%s", X, Y, Color, TBLACK, Style, Text);
-		} else {
-			Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
-		}
-		return(true);
-	}
-	return(false);
+int TextLabelClass::Draw_Me(int forced) {
+  if (GadgetClass::Draw_Me(forced)) {
+    if (PixWidth == -1) {
+      Fancy_Text_Print("%s", X, Y, Color, TBLACK, Style, Text);
+    } else {
+      Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
+    }
+    return (true);
+  }
+  return (false);
 }

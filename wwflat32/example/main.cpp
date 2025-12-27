@@ -24,7 +24,7 @@
  *                                                                         *
  *                    File Name : LIBTEST.CPP                              *
  *                                                                         *
- *                   Programmer : Jeff Wilson                            	*
+ *                   Programmer : Jeff Wilson *
  *                                                                         *
  *                   Start Date : April 27, 1994                           *
  *                                                                         *
@@ -36,16 +36,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "function.h"
 
-
 /***************************************************************************
  * Main_Program -- user-defined main routine, called from startup.c        *
  *                                                                         *
  * INPUT:                                                                  *
- *		WORD argc																				*
- *		UBYTE *argv[]																			*
+ *		WORD argc
+ ** UBYTE *argv[]
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		Returns: TRUE																			*
+ *		Returns: TRUE
+ **
  *                                                                         *
  * WARNINGS:                                                               *
  *                                                                         *
@@ -53,10 +54,7 @@
  *   05/03/1994 BR : Created.                                              *
  *=========================================================================*/
 #pragma argsused
-WORD Main_Program(WORD argc, BYTE *argv[])
-{	  			     
-	return (TRUE);			  
-}
+WORD Main_Program(WORD argc, BYTE *argv[]) { return (TRUE); }
 
-
-//////////////////////////////////// End of File /////////////////////////////////////
+//////////////////////////////////// End of File
+////////////////////////////////////////

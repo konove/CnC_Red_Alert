@@ -18,19 +18,20 @@
 
 /* $Header: /CounterStrike/DESCDLG.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : DESCDLG.H                                                    *
+ *                    File Name : DESCDLG.H *
  *                                                                                             *
- *                   Programmer : Maria del Mar McCready Legg											  *
- *											 Joe L. Bostic                                                *
+ *                   Programmer : Maria del Mar McCready Legg
+ ** Joe L. Bostic                                                *
  *                                                                                             *
- *                   Start Date : Jan 26, 1995                                                 *
+ *                   Start Date : Jan 26, 1995 *
  *                                                                                             *
- *                  Last Update : Jan 26, 1995   [MML]                                         *
+ *                  Last Update : Jan 26, 1995   [MML] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*/
 
@@ -39,31 +40,27 @@
 
 #include "gadget.h"
 
-class DescriptionClass 
-{
-	private:
+class DescriptionClass {
+ private:
+  enum DescriptionClassEnum {
+    OPTION_WIDTH = 216,   // Width of dialog box.
+    OPTION_HEIGHT = 122,  // Height of dialog box.
+    OPTION_X = (((320 - OPTION_WIDTH) / 2) & ~7),
+    OPTION_Y = ((200 - OPTION_HEIGHT) / 2),
+    TEXT_X = OPTION_X + 32,  // Title's x pos
+    TEXT_Y = OPTION_Y + 32,  // Add 11 for each following line
+    BUTTON_OPTIONS = 1,      // Button number for "Ok"
+    BUTTON_CANCEL,
+    BUTTON_EDIT,
+    BUTTON_X = OPTION_X + 63,   // Options button x pos
+    BUTTON_Y = OPTION_Y + 102,  // Options button y pos
+    EDIT_Y = OPTION_Y + 50,
+    EDIT_W = 180  // 204,
+  };
 
-		enum DescriptionClassEnum {
-			OPTION_WIDTH=216,							// Width of dialog box.
-			OPTION_HEIGHT=122,						// Height of dialog box.
-			OPTION_X=(((320 - OPTION_WIDTH) / 2) & ~7),
-			OPTION_Y=((200 - OPTION_HEIGHT) / 2),
-			TEXT_X=OPTION_X+32,			 			// Title's x pos
-			TEXT_Y=OPTION_Y+32,  					// Add 11 for each following line
-			BUTTON_OPTIONS=1,							// Button number for "Ok"
-			BUTTON_CANCEL,							
-			BUTTON_EDIT,
-			BUTTON_X=OPTION_X+63,	 				// Options button x pos
-			BUTTON_Y=OPTION_Y+102, 					// Options button y pos
-			EDIT_Y  =OPTION_Y+50, 					
-			EDIT_W  =180   //204,
-		};
-
-	public:
-		DescriptionClass(void) {};
-		void Process(char *string);
+ public:
+  DescriptionClass(void){};
+  void Process(char *string);
 };
 
 #endif
-
-

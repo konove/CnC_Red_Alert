@@ -40,116 +40,106 @@
 #include <stdint.h>
 
 /*=========================================================================*/
-/* The following prototypes are for the file: TIMERA.ASM							*/
+/* The following prototypes are for the file: TIMERA.ASM
+ */
 /*=========================================================================*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////// Externs /////////////////////////////////////////////
-extern bool 		TimerSystemOn;
-
+//////////////////////////////////////// Externs
+////////////////////////////////////////////////
+extern bool TimerSystemOn;
 
 /*=========================================================================*/
 typedef enum BaseTimerEnum {
-	BT_SYSTEM,			// System timer (60 / second).
-	BT_USER				// User controllable timer (? / second).
+  BT_SYSTEM,  // System timer (60 / second).
+  BT_USER     // User controllable timer (? / second).
 } BaseTimerEnum;
 
 class TimerClass {
- 	public:
-		// Constructor.  Timers set before low level init has been done will not
-		// be able to be 'Started' or 'on' until timer system is in place.
-		TimerClass(BaseTimerEnum timer=BT_SYSTEM, bool start=false);
+ public:
+  // Constructor.  Timers set before low level init has been done will not
+  // be able to be 'Started' or 'on' until timer system is in place.
+  TimerClass(BaseTimerEnum timer = BT_SYSTEM, bool start = false);
 
-		// No destructor.
-		~TimerClass(void){}
+  // No destructor.
+  ~TimerClass(void) {}
 
-		//
-		long Set(long value, bool start=true);	// Set initial timer value.
-		long Stop(void);				// Pause timer.
-		long Start(void);				// Resume timer.
-		long Reset(bool start=true);	// Reset timer to zero.
-		long Time(void);				// Fetch current timer value.
+  //
+  long Set(long value, bool start = true);  // Set initial timer value.
+  long Stop(void);                          // Pause timer.
+  long Start(void);                         // Resume timer.
+  long Reset(bool start = true);            // Reset timer to zero.
+  long Time(void);                          // Fetch current timer value.
 
-	protected:
-		long Started;					// Time last started (0 == not paused).
-		long Accumulated;				//	Total accumulated ticks.
+ protected:
+  long Started;      // Time last started (0 == not paused).
+  long Accumulated;  //	Total accumulated ticks.
 
-	private:
-		BaseTimerEnum	TickType;
-		long Get_Ticks (void);
+ private:
+  BaseTimerEnum TickType;
+  long Get_Ticks(void);
 };
 
-
-inline long TimerClass::Reset(bool start)
-{
-	return(Set(0, start));
-}
-
+inline long TimerClass::Reset(bool start) { return (Set(0, start)); }
 
 class CountDownTimerClass : private TimerClass {
-	public:
-		// Constructor.  Timers set before low level init has been done will not
-		// be able to be 'Started' or 'on' until timer system is in place.
-		CountDownTimerClass(BaseTimerEnum timer, long set, bool on=false);
-		CountDownTimerClass(BaseTimerEnum timer=BT_SYSTEM, bool on=false);
+ public:
+  // Constructor.  Timers set before low level init has been done will not
+  // be able to be 'Started' or 'on' until timer system is in place.
+  CountDownTimerClass(BaseTimerEnum timer, long set, bool on = false);
+  CountDownTimerClass(BaseTimerEnum timer = BT_SYSTEM, bool on = false);
 
-		// No destructor.
-		~CountDownTimerClass(void){}
+  // No destructor.
+  ~CountDownTimerClass(void) {}
 
-		// Public functions
-		long Set(long set, bool start=true);	// Set count down value.
-		long Reset(bool start=true);	// Reset timer to zero.
-		long Stop(void);			// Pause timer.
-		long Start(void);			// Resume timer.
-		long Time(void);			// Fetch current count down value.
+  // Public functions
+  long Set(long set, bool start = true);  // Set count down value.
+  long Reset(bool start = true);          // Reset timer to zero.
+  long Stop(void);                        // Pause timer.
+  long Start(void);                       // Resume timer.
+  long Time(void);                        // Fetch current count down value.
 
-	protected:
-		long DelayTime;			// Ticks remaining before countdown timer expires.
+ protected:
+  long DelayTime;  // Ticks remaining before countdown timer expires.
 };
 
-inline long CountDownTimerClass::Stop(void)
-{
-	TimerClass::Stop();
-	return(Time());
+inline long CountDownTimerClass::Stop(void) {
+  TimerClass::Stop();
+  return (Time());
 }
 
-inline long CountDownTimerClass::Start(void)
-{
-	TimerClass::Start();
-	return(Time());
+inline long CountDownTimerClass::Start(void) {
+  TimerClass::Start();
+  return (Time());
 }
 
-inline long CountDownTimerClass::Reset(bool start)
-{
-	return (TimerClass::Reset(start));
+inline long CountDownTimerClass::Reset(bool start) {
+  return (TimerClass::Reset(start));
 }
 class WinTimerClass {
+ public:
+  WinTimerClass(unsigned freq = 60, bool partial = false);
+  ~WinTimerClass();
 
-	public:
-		WinTimerClass ( unsigned freq=60 , bool partial=false );
-		~WinTimerClass();
+  void Update_Tick_Count(void);
+  unsigned Get_System_Tick_Count(void);
+  unsigned Get_User_Tick_Count(void);
 
-		void 		Update_Tick_Count ( void );
-		unsigned	Get_System_Tick_Count ( void );
-		unsigned	Get_User_Tick_Count ( void );
-
-	private:
-		unsigned		TimerHandle;	//Handle for windows timer event
-		unsigned		SysTicks;		//Tick count of timer.
-		unsigned		UserTicks;		//Tick count of timer.
+ private:
+  unsigned TimerHandle;  // Handle for windows timer event
+  unsigned SysTicks;     // Tick count of timer.
+  unsigned UserTicks;    // Tick count of timer.
 };
-
 
 uint32_t Get_Time_Ms();
 
-extern	WinTimerClass	*WindowsTimer;
+extern WinTimerClass *WindowsTimer;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////// externs  //////////////////////////////////////////
+//////////////////////////////////////// externs
+/////////////////////////////////////////////
 #ifdef TD
-extern TimerClass					TickCount;
+extern TimerClass TickCount;
 #endif
 
-
-#endif // TIMER_H
-
+#endif  // TIMER_H

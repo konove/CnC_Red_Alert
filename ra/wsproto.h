@@ -17,33 +17,35 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                     $Archive:: /Sun/WSProto.h                                              $*
+ *                     $Archive:: /Sun/WSProto.h $*
  *                                                                                             *
- *                      $Author:: Joe_b                                                       $*
+ *                      $Author:: Joe_b $*
  *                                                                                             *
- *                     $Modtime:: 8/12/97 5:42p                                               $*
+ *                     $Modtime:: 8/12/97 5:42p $*
  *                                                                                             *
- *                    $Revision:: 4                                                          $*
+ *                    $Revision:: 4 $*
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef WSPROTO_H
 #define WSPROTO_H
 
-#include	"_wsproto.h"
+#include "_wsproto.h"
 
 #ifdef _WIN32
 /*
 ** Include standard Winsock 1.0 header file.
 */
-#include	<winsock.h>
+#include <winsock.h>
 #else
 typedef int SOCKET;
 typedef void *HANDLE;
@@ -57,151 +59,137 @@ typedef void *HANDLE;
 /*
 ** Misc defines
 */
-#define WINSOCK_MINOR_VER		1			// Version of Winsock
-#define WINSOCK_MAJOR_VER		1        // 	that we require
+#define WINSOCK_MINOR_VER 1  // Version of Winsock
+#define WINSOCK_MAJOR_VER 1  // 	that we require
 
-//#define WS_RECEIVE_BUFFER_LEN	32768		// Length of our temporary receive buffer. Needs to be more that the max packet size which is about 550 bytes.
-//#define SOCKET_BUFFER_SIZE		32768		// Length of winsocks internal buffer.
-#define WS_RECEIVE_BUFFER_LEN	1024		// Length of our temporary receive buffer.
-#define SOCKET_BUFFER_SIZE		1024*128	// Length of winsocks internal buffer.
+// #define WS_RECEIVE_BUFFER_LEN	32768		// Length of our
+// temporary receive buffer. Needs to be more that the max packet size which is
+// about 550 bytes. #define SOCKET_BUFFER_SIZE		32768		//
+// Length of winsocks internal buffer.
+#define WS_RECEIVE_BUFFER_LEN 1024  // Length of our temporary receive buffer.
+#define SOCKET_BUFFER_SIZE 1024 * 128  // Length of winsocks internal buffer.
 
-#define PLANET_WESTWOOD_HANDLE_MAX 20	// Max length of a WChat handle
+#define PLANET_WESTWOOD_HANDLE_MAX 20  // Max length of a WChat handle
 
 /*
 ** Define events for Winsock callbacks
 */
-#define WM_IPXASYNCEVENT		(WM_USER + 115)	// IPX socket Async event
-#define WM_UDPASYNCEVENT		(WM_USER + 116)	// UDP socket Async event
-
+#define WM_IPXASYNCEVENT (WM_USER + 115)  // IPX socket Async event
+#define WM_UDPASYNCEVENT (WM_USER + 116)  // UDP socket Async event
 
 /*
 ** Enum to identify the protocols supported by the Winsock interface.
 */
 typedef enum tProtocolEnum {
-	PROTOCOL_NONE,
-	PROTOCOL_IPX,
-	PROTOCOL_UDP
+  PROTOCOL_NONE,
+  PROTOCOL_IPX,
+  PROTOCOL_UDP
 } ProtocolEnum;
-
-
 
 /*
 **
-** Class to interface with Winsock. This interface only supports connectionless packet protocols
-** like UDP & IPX. Connection orientated or streaming protocols like TCP are not supported by this
+** Class to interface with Winsock. This interface only supports connectionless
+*packet protocols
+** like UDP & IPX. Connection orientated or streaming protocols like TCP are not
+*supported by this
 ** class.
 **
 */
 class WinsockInterfaceClass {
+ public:
+  WinsockInterfaceClass(void);
+  virtual ~WinsockInterfaceClass(void);
 
-	public:
+  bool Init(void);
+  void Close(void);
 
-		WinsockInterfaceClass(void);
-		virtual ~WinsockInterfaceClass(void);
+  virtual void Close_Socket(void);
+  virtual int Read(void *buffer, int &buffer_len, void *address,
+                   int &address_len);
+  virtual void WriteTo(void *buffer, int buffer_len, void *address);
+  virtual void Broadcast(void *buffer, int buffer_len);
+  virtual void Discard_In_Buffers(void);
+  virtual void Discard_Out_Buffers(void);
+  virtual bool Start_Listening(void);
+  virtual void Stop_Listening(void);
+  virtual void Clear_Socket_Error(SOCKET socket);
+  virtual bool Set_Socket_Options(void);
+  virtual void Set_Broadcast_Address(void *) {};
 
-		bool Init(void);
-		void Close(void);
+  virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_NONE); };
 
+  virtual int Protocol_Event_Message(void) { return (0); };
 
-		virtual void Close_Socket(void);
-		virtual int  Read(void *buffer, int &buffer_len, void *address, int &address_len);
-		virtual void WriteTo (void *buffer, int buffer_len, void *address);
-		virtual void Broadcast (void *buffer, int buffer_len);
-		virtual void Discard_In_Buffers (void);
-		virtual void Discard_Out_Buffers (void);
-		virtual bool Start_Listening (void);
-		virtual void Stop_Listening (void);
-		virtual void Clear_Socket_Error(SOCKET socket);
-		virtual bool Set_Socket_Options ( void );
-		virtual void Set_Broadcast_Address ( void * ) {};
-
-		virtual ProtocolEnum Get_Protocol (void) {
-			return (PROTOCOL_NONE);
-		};
-
-		virtual int Protocol_Event_Message (void) {
-			return (0);
-		};
-
-		virtual bool Open_Socket ( SOCKET ) {
-			return (false);
-		};
+  virtual bool Open_Socket(SOCKET) { return (false); };
 
 #ifdef PORTABLE
-		virtual void Event_Handler(int, SocketEvent) {
-		}
+  virtual void Event_Handler(int, SocketEvent) {}
 #else
-	 	virtual long Message_Handler(HWND, UINT, UINT, LONG) {
-			return (1);
-		}
+  virtual long Message_Handler(HWND, UINT, UINT, LONG) { return (1); }
 #endif
 
-		typedef enum ConnectStatusEnum {
-			CONNECTED_OK = 0,
-			NOT_CONNECTING,
-			CONNECTING,
-			UNABLE_TO_CONNECT_TO_SERVER,
-			CONTACTING_SERVER,
-			SERVER_ADDRESS_LOOKUP_FAILED,
-			RESOLVING_HOST_ADDRESS,
-			UNABLE_TO_ACCEPT_CLIENT,
-			UNABLE_TO_CONNECT,
-			CONNECTION_LOST
-		} ConnectStatusEnum;
+  typedef enum ConnectStatusEnum {
+    CONNECTED_OK = 0,
+    NOT_CONNECTING,
+    CONNECTING,
+    UNABLE_TO_CONNECT_TO_SERVER,
+    CONTACTING_SERVER,
+    SERVER_ADDRESS_LOOKUP_FAILED,
+    RESOLVING_HOST_ADDRESS,
+    UNABLE_TO_ACCEPT_CLIENT,
+    UNABLE_TO_CONNECT,
+    CONNECTION_LOST
+  } ConnectStatusEnum;
 
-		inline ConnectStatusEnum Get_Connection_Status(void) {return (ConnectStatus);}
+  inline ConnectStatusEnum Get_Connection_Status(void) {
+    return (ConnectStatus);
+  }
 
-	protected:
-		int Get_Last_Error();
+ protected:
+  int Get_Last_Error();
 
-		/*
-		** This struct contains the information needed for each incoming and outgoing packet.
-		** It acts as a temporary control for these packets.
-		*/
-		typedef struct tWinsockBufferType {
-			unsigned char		Address [64];	// Address. IN_ADDR, IPXAddressClass etc.
-			int					BufferLen;		// Length of data in buffer
-			bool					IsBroadcast;	// Flag to broadcast this packet
-			unsigned char		Buffer[1024];	// Buffer to store packet in.
-		} WinsockBufferType;
+  /*
+  ** This struct contains the information needed for each incoming and outgoing
+  *packet.
+  ** It acts as a temporary control for these packets.
+  */
+  typedef struct tWinsockBufferType {
+    unsigned char Address[64];   // Address. IN_ADDR, IPXAddressClass etc.
+    int BufferLen;               // Length of data in buffer
+    bool IsBroadcast;            // Flag to broadcast this packet
+    unsigned char Buffer[1024];  // Buffer to store packet in.
+  } WinsockBufferType;
 
-		/*
-		** Array of buffers to temporarily store incoming and outgoing packets.
-		*/
-		DynamicVectorClass <WinsockBufferType *> InBuffers;
-		DynamicVectorClass <WinsockBufferType *> OutBuffers;
+  /*
+  ** Array of buffers to temporarily store incoming and outgoing packets.
+  */
+  DynamicVectorClass<WinsockBufferType *> InBuffers;
+  DynamicVectorClass<WinsockBufferType *> OutBuffers;
 
+  /*
+  ** Is Winsock present and initialised?
+  */
+  bool WinsockInitialised;
 
-		/*
-		** Is Winsock present and initialised?
-		*/
-		bool 					WinsockInitialised;
+  /*
+  ** Socket that communications will take place over.
+  */
+  SOCKET Socket;
 
-		/*
-		** Socket that communications will take place over.
-		*/
-		SOCKET				Socket;
+  /*
+  ** Async object required for callbacks to our message handler.
+  */
+  HANDLE ASync;
 
-		/*
-		** Async object required for callbacks to our message handler.
-		*/
-		HANDLE				ASync;
+  /*
+  ** Temporary receive buffer to use when querying Winsock for incoming packets.
+  */
+  unsigned char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN];
 
-		/*
-		** Temporary receive buffer to use when querying Winsock for incoming packets.
-		*/
-		unsigned char		ReceiveBuffer[WS_RECEIVE_BUFFER_LEN];
-
-		/*
-		** Current connection status.
-		*/
-		ConnectStatusEnum	ConnectStatus;
+  /*
+  ** Current connection status.
+  */
+  ConnectStatusEnum ConnectStatus;
 };
 
-
-
-
-
-
-
-#endif	//WSPROTO_H
+#endif  // WSPROTO_H

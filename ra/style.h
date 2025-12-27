@@ -23,9 +23,9 @@ In addition to the standard Westwood programmer's style guide, the following
 guidelines apply.
 
 > Use every feature the compiler has that will help catch bugs and encourage
-solid portable coding practices. i.e., turn on all warnings and treat all warnings
-as errors. Use helper programs such as Lint, BoundsChecker, or CodeGuard whenever
-possible.
+solid portable coding practices. i.e., turn on all warnings and treat all
+warnings as errors. Use helper programs such as Lint, BoundsChecker, or
+CodeGuard whenever possible.
 
 > Keep related items together. Examples: Declare variables right before they are
 used. Keep functions that work on the same subsystem, within the same module.
@@ -44,41 +44,44 @@ exist solely to return a similar boolean query should begin with "Is_".
 as "bool" rather than as "int" and assign it "true" or "false" rather than "1"
 or "0".
 
-> Choose function and variable names that are precise, descriptive, and concise (in that
-order).
+> Choose function and variable names that are precise, descriptive, and concise
+(in that order).
 
-> Hide data where possible: Examples: If a global is only used in one module, make
-it static to that module. If a helper function is only used in one module, make it
-static as well. Hide class members in the private section if they aren't needed
-public. Most variables aren't needed as public.
+> Hide data where possible: Examples: If a global is only used in one module,
+make it static to that module. If a helper function is only used in one module,
+make it static as well. Hide class members in the private section if they aren't
+needed public. Most variables aren't needed as public.
 
-> Keep function bodies short. It is often times, more easy to understand and maintain
-if a very long function is broken up into helper functions with descriptive names.
-A clue if a function is too long is if you can page down 5 times and still be somewhere
-in the middle of the function. If you can page down 10 times and still be in the
-function, you've got a serious function size problem.
+> Keep function bodies short. It is often times, more easy to understand and
+maintain if a very long function is broken up into helper functions with
+descriptive names. A clue if a function is too long is if you can page down 5
+times and still be somewhere in the middle of the function. If you can page down
+10 times and still be in the function, you've got a serious function size
+problem.
 
 > Compare pointers to NULL and integer types to zero (NULL) instead of using the
 "if (x)" or "if (!x)" format. This short format should only be used for boolean
-values and expressions. It is just as efficient and it makes it more clear to the
-reader that the variable is a pointer and not a simple boolean value.
+values and expressions. It is just as efficient and it makes it more clear to
+the reader that the variable is a pointer and not a simple boolean value.
 
-> Use "const" when declaring any member functions that do not modify data. Corollary --
-make sure any function that appears like it will not modify data will, in fact, NOT
-modify any data. Example; A function called Is_Able_To_Move() shouldn't modify the
-object nor should it actually cause something to start moving! The use of "const" is a
-variation on style guide rule #1 (use the compiler to help ensure proper code).
+> Use "const" when declaring any member functions that do not modify data.
+Corollary -- make sure any function that appears like it will not modify data
+will, in fact, NOT modify any data. Example; A function called Is_Able_To_Move()
+shouldn't modify the object nor should it actually cause something to start
+moving! The use of "const" is a variation on style guide rule #1 (use the
+compiler to help ensure proper code).
 
 > Shun using assembly language except in extreme cases. Such would be if a
 function can only be performed by using assembly (requires special opcodes), or
-if performance would be PROVEABLY dramatically improved. Don't code in assembly for
-performance reasons if there isn't benchmarking code in place to analyze the results.
-As a corollary, design a better algorithm as the first recourse.
+if performance would be PROVEABLY dramatically improved. Don't code in assembly
+for performance reasons if there isn't benchmarking code in place to analyze the
+results. As a corollary, design a better algorithm as the first recourse.
 
 > Keep class interfaces small and simple.
 
-> Organize algorithms to use as few special case "if" statements as possible. Data
-tables or data files are preferred. This follows the generally good guideline of offloading
-as much processing as possible to compile-time rather than run-time.
+> Organize algorithms to use as few special case "if" statements as possible.
+Data tables or data files are preferred. This follows the generally good
+guideline of offloading as much processing as possible to compile-time rather
+than run-time.
 
 */

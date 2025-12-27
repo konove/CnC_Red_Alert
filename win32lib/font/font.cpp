@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-						/***************************************************************************
+/***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
  *                                                                         *
@@ -30,8 +30,8 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *   Char_Pixel_Width -- Return pixel width of a character.						*
- *   String_Pixel_Width -- Return pixel width of a string of characters.   *
+ *   Char_Pixel_Width -- Return pixel width of a character.
+ ** String_Pixel_Width -- Return pixel width of a string of characters.   *
  *   Get_Next_Text_Print_XY -- Calculates X and Y given ret value from Text_P*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -44,13 +44,15 @@
 #include <string.h>
 #include <wwstd.h>
 
-
 /***************************************************************************
- * CHAR_PIXEL_WIDTH -- Return pixel width of a character.						*
+ * CHAR_PIXEL_WIDTH -- Return pixel width of a character.
+ **
  *                                                                         *
- *    Retreives the pixel width of a character from the font width block.	*
+ *    Retreives the pixel width of a character from the font width block.
+ **
  *                                                                         *
- * INPUT:      Character.																	*
+ * INPUT:      Character.
+ **
  *                                                                         *
  * OUTPUT:     Pixel width of a string of characters.                      *
  *                                                                         *
@@ -60,21 +62,21 @@
  *   01/31/1992 DRD : Created.                                             *
  *   06/30/1994 SKB : Converted to 32 bit library.                         *
  *=========================================================================*/
-int __cdecl Char_Pixel_Width(char chr)
-{
-	int	width;
+int __cdecl Char_Pixel_Width(char chr) {
+  int width;
 
-	width = (unsigned char)*(FontWidthBlockPtr + (unsigned char)chr) + FontXSpacing;
+  width =
+      (unsigned char)*(FontWidthBlockPtr + (unsigned char)chr) + FontXSpacing;
 
-	return(width);
+  return (width);
 }
-
 
 /***************************************************************************
  * STRING_PIXEL_WIDTH -- Return pixel width of a string of characters.     *
  *                                                                         *
  *    Calculates the pixel width of a string of characters.  This uses     *
- *		the font width block for the widths.											*
+ *		the font width block for the widths.
+ **
  *                                                                         *
  * INPUT:      Pointer to string of characters.                            *
  *                                                                         *
@@ -87,37 +89,34 @@ int __cdecl Char_Pixel_Width(char chr)
  *   01/31/1992 DRD : Use Char_Pixel_Width.                                *
  *   06/30/1994 SKB : Converted to 32 bit library.                         *
  *=========================================================================*/
-unsigned int __cdecl String_Pixel_Width(char const *string)
-{
-	WORD	width;				// Working accumulator of string width.
-	WORD	largest = 0;		// Largest recorded width of the string.
+unsigned int __cdecl String_Pixel_Width(char const *string) {
+  WORD width;        // Working accumulator of string width.
+  WORD largest = 0;  // Largest recorded width of the string.
 
-	if (!string) return(0);
+  if (!string) return (0);
 
-	width = 0;
-	while (*string) {
-		if (*string == '\r') {
-			string++;
-			largest = MAX(largest, width);
-			width = 0;
-		} else {
-			width += Char_Pixel_Width(*string++);	// add each char's width
-		}
-	}
-	largest = MAX(largest, width);
-	return(largest);
+  width = 0;
+  while (*string) {
+    if (*string == '\r') {
+      string++;
+      largest = MAX(largest, width);
+      width = 0;
+    } else {
+      width += Char_Pixel_Width(*string++);  // add each char's width
+    }
+  }
+  largest = MAX(largest, width);
+  return (largest);
 }
-
-
 
 /***************************************************************************
  * GET_NEXT_TEXT_PRINT_XY -- Calculates X and Y given ret value from Text_P*
  *                                                                         *
  *                                                                         *
  * INPUT:   VVPC& vp - viewport that was printed to.                       *
- *          unsigned long offset - offset that Text_Print returned.                *
- *          INT *x - x return value.                                       *
- *          INT *y - y return value.                                       *
+ *          unsigned long offset - offset that Text_Print returned. * INT *x - x
+ *return value.                                       * INT *y - y return value.
+ **
  *                                                                         *
  * OUTPUT:  x and y are set.                                               *
  *                                                                         *
@@ -126,16 +125,16 @@ unsigned int __cdecl String_Pixel_Width(char const *string)
  * HISTORY:                                                                *
  *   07/20/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID __cdecl Get_Next_Text_Print_XY(GraphicViewPortClass& gp, unsigned long offset, INT *x, INT *y)
-{
-	INT	buffwidth;
+VOID __cdecl Get_Next_Text_Print_XY(GraphicViewPortClass &gp,
+                                    unsigned long offset, INT *x, INT *y) {
+  INT buffwidth;
 
-	if (offset) {
-		buffwidth = gp.Get_Width() + gp.Get_XAdd();
-		offset -= gp.Get_Offset();
-		*x = offset % buffwidth;
-		*y = offset / buffwidth;
-	} else {
-		*x = *y = 0;
-	}
+  if (offset) {
+    buffwidth = gp.Get_Width() + gp.Get_XAdd();
+    offset -= gp.Get_Offset();
+    *x = offset % buffwidth;
+    *y = offset / buffwidth;
+  } else {
+    *x = *y = 0;
+  }
 }

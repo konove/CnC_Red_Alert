@@ -16,38 +16,36 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 /*************************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S                  **
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S **
  *************************************************************************************
  *                                                                                   *
- *                 Project Name : Command & Conquer - Red Alert                      *
+ *                 Project Name : Command & Conquer - Red Alert *
  *                                                                                   *
- *                    File Name : FAKESOCK.H                                         *
+ *                    File Name : FAKESOCK.H *
  *                                                                                   *
- *                   Programmer : Steve Tall                                         *
+ *                   Programmer : Steve Tall *
  *                                                                                   *
- *                   Start Date : August 6th, 1996                                   *
+ *                   Start Date : August 6th, 1996 *
  *                                                                                   *
- *                  Last Update : August 6th, 1996 [ST]                              *
- *                                                                                   *
- *-----------------------------------------------------------------------------------*
- * Overview:                                                                         *
- *                                                                                   *
- *  Stub replacement for the Winsock interface in DOS                                *
+ *                  Last Update : August 6th, 1996 [ST] *
  *                                                                                   *
  *-----------------------------------------------------------------------------------*
- * Functions:                                                             	 			*
+ * Overview: *
+ *                                                                                   *
+ *  Stub replacement for the Winsock interface in DOS *
+ *                                                                                   *
+ *-----------------------------------------------------------------------------------*
+ * Functions: *
  *                                                                         				*
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - */
 #ifndef WIN32
 
 class TcpipManagerClass {
-
-	public:
-		inline BOOL Get_Connected(void) {return (FALSE);}
-
+ public:
+  inline BOOL Get_Connected(void) { return (FALSE); }
 };
 
-extern TcpipManagerClass	Winsock;
+extern TcpipManagerClass Winsock;
 #endif

@@ -28,14 +28,13 @@
  *
  */
 
-
 /* DIB constants */
-#define PALVERSION   0x300
+#define PALVERSION 0x300
 
 /* DIB macros */
-#define IS_WIN30_DIB(lpbi)  ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
-#define RECTWIDTH(lpRect)     ((lpRect)->right - (lpRect)->left)
-#define RECTHEIGHT(lpRect)    ((lpRect)->bottom - (lpRect)->top)
+#define IS_WIN30_DIB(lpbi) ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
+#define RECTWIDTH(lpRect) ((lpRect)->right - (lpRect)->left)
+#define RECTHEIGHT(lpRect) ((lpRect)->bottom - (lpRect)->top)
 
 /* function prototypes */
-HANDLE          AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap);
+HANDLE AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap);

@@ -19,24 +19,24 @@
 #ifndef VQMTEXT_H
 #define VQMTEXT_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     text.h
-*
-* DESCRIPTION
-*     Text printing definitions. (32-Bit protected mode)
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     March 13, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     text.h
+ *
+ * DESCRIPTION
+ *     Text printing definitions. (32-Bit protected mode)
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     March 13, 1995
+ *
+ ****************************************************************************/
 
 /* Prototypes */
 
@@ -53,4 +53,3 @@ void __cdecl Set_Font_Palette_Range(void *palette, long start, long end);
 #endif
 
 #endif /* VQMTEXT_H */
-

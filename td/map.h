@@ -16,141 +16,142 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\map.h_v   2.19   16 Oct 1995 16:46:12   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\map.h_v   2.19   16 Oct 1995 16:46:12
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : MAP.H                                                        *
+ *                    File Name : MAP.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 29, 1994                                               *
+ *                   Start Date : April 29, 1994 *
  *                                                                                             *
- *                  Last Update : April 29, 1994   [JLB]                                       *
+ *                  Last Update : April 29, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef MAP_H
 #define MAP_H
 
-#include	"gscreen.h"
+#include "gscreen.h"
 
-#define	BIGMAP	0
+#define BIGMAP 0
 
+class MapClass : public GScreenClass {
+ public:
+  MapClass(void){};
+  MapClass(NoInitClass const &x) : GScreenClass(x){};
 
-class MapClass: public GScreenClass
-{
-	public:
-		MapClass(void) {};
-		MapClass(NoInitClass const & x) : GScreenClass(x) {};
+  /*
+  ** Initialization
+  */
+  virtual void One_Time(void);     // Theater-specific inits
+  virtual void Init_Clear(void);   // Clears all to known state
+  virtual void Alloc_Cells(void);  // Allocates buffers
+  virtual void Free_Cells(void);   // Frees buffers
+  virtual void Init_Cells(void);   // Frees buffers
 
-		/*
-		** Initialization
-		*/
-		virtual void One_Time(void);						// Theater-specific inits
-		virtual void Init_Clear(void);						// Clears all to known state
-		virtual void Alloc_Cells(void);						// Allocates buffers
-		virtual void Free_Cells(void);							// Frees buffers
-		virtual void Init_Cells(void);							// Frees buffers
+  /*--------------------------------------------------------
+  ** Main functions that deal with groupings of cells within the map or deals
+  *with the cell
+  ** as it relates to the map - not what the cell contains.
+  */
+  ObjectClass *Close_Object(COORDINATE coord) const;
+  virtual void Detach(ObjectClass *) {};
+  int Cell_Region(CELL cell);
+  int Cell_Threat(CELL cell, HousesType house);
+  int Cell_Distance(CELL cell1, CELL cell2);
+  bool In_Radar(CELL cell) const;
+  void Sight_From(CELL cell, int sightrange, bool incremental = false);
+  void Place_Down(CELL cell, ObjectClass *object);
+  void Pick_Up(CELL cell, ObjectClass *object);
+  void Overlap_Down(CELL cell, ObjectClass *object);
+  void Overlap_Up(CELL cell, ObjectClass *object);
+  bool Read_Binary(char const *root, unsigned long *crc);
+  bool Write_Binary(char const *root);
+  bool Place_Random_Crate(void);
 
-		/*--------------------------------------------------------
-		** Main functions that deal with groupings of cells within the map or deals with the cell
-		** as it relates to the map - not what the cell contains.
-		*/
-		ObjectClass *  Close_Object(COORDINATE coord) const;
-		virtual void Detach(ObjectClass * ) {};
-		int  Cell_Region(CELL cell);
-		int  Cell_Threat(CELL cell, HousesType house);
-		int  Cell_Distance(CELL cell1, CELL cell2);
-		bool  In_Radar(CELL cell) const;
-		void  Sight_From(CELL cell, int sightrange, bool incremental=false);
-		void  Place_Down(CELL cell, ObjectClass * object);
-		void  Pick_Up(CELL cell, ObjectClass * object);
-		void  Overlap_Down(CELL cell, ObjectClass * object);
-		void  Overlap_Up(CELL cell, ObjectClass * object);
-		bool  Read_Binary(char const *root, unsigned long *crc);
-		bool  Write_Binary(char const *root);
-		bool  Place_Random_Crate(void);
+  long Overpass(void);
 
-		long  Overpass(void);
+  virtual void Logic(void);
+  virtual void Set_Map_Dimensions(int x, int y, int w, int h);
 
-		virtual void Logic(void);
-		virtual void Set_Map_Dimensions(int x, int y, int w, int h);
+  /*
+  **	File I/O.
+  */
+  virtual void Code_Pointers(void);
+  virtual void Decode_Pointers(void);
 
-		/*
-		**	File I/O.
-		*/
-		virtual void Code_Pointers(void);
-		virtual void Decode_Pointers(void);
+  /*
+  ** Debug routine
+  */
+  int Validate(void);
 
-		/*
-		** Debug routine
-		*/
-		int Validate(void);
+  /*
+  **	This is the dimensions and position of the sub section of the global
+  *map. *	It is this region that appears on the radar map and constrains
+  *normal *	movement.
+  */
+  int MapCellX;
+  int MapCellY;
+  int MapCellWidth;
+  int MapCellHeight;
 
-		/*
-		**	This is the dimensions and position of the sub section of the global map.
-		**	It is this region that appears on the radar map and constrains normal
-		**	movement.
-		*/
-		int MapCellX;
-		int MapCellY;
-		int MapCellWidth;
-		int MapCellHeight;
+  /*
+  **	This is the total value of all harvestable Tiberium on the map.
+  */
+  long TotalValue;
 
-		/*
-		**	This is the total value of all harvestable Tiberium on the map.
-		*/
-		long TotalValue;
+ protected:
+  /*
+  **	These are the size dimensions of the underlying array of cell objects.
+  **	This is the dimensions of the "map" that the tactical view is
+  **	restricted to.
+  */
+  int XSize;
+  int YSize;
+  int Size;
 
-	protected:
+  static int const RadiusCount[11];
+  static int const RadiusOffset[];
 
-		/*
-		**	These are the size dimensions of the underlying array of cell objects.
-		**	This is the dimensions of the "map" that the tactical view is
-		**	restricted to.
-		*/
-		int	XSize;
-		int	YSize;
-		int	Size;
+ private:
+  friend class CellClass;
 
-		static int const RadiusCount[11];
-		static int const RadiusOffset[];
+  /*
+  **	Tiberium growth potiential cells are recorded here.
+  */
+  CELL TiberiumGrowth[50];
+  int TiberiumGrowthCount;
 
-	private:
-		friend class CellClass;
+  /*
+  **	List of cells that are full enough strength that they could spread
+  **	Tiberium to adjacent cells.
+  */
+  CELL TiberiumSpread[50];
+  int TiberiumSpreadCount;
 
-		/*
-		**	Tiberium growth potiential cells are recorded here.
-		*/
-		CELL TiberiumGrowth[50];
-		int TiberiumGrowthCount;
+  /*
+  **	This is the current cell number in the incremental map scan process.
+  */
+  CELL TiberiumScan;
 
-		/*
-		**	List of cells that are full enough strength that they could spread
-		**	Tiberium to adjacent cells.
-		*/
-		CELL TiberiumSpread[50];
-		int TiberiumSpreadCount;
+  /*
+  **	If the Tiberium map scan is processing forward, then this flag
+  **	will be true. It alternates between forward and backward scanning
+  **	in order to avoid the "Tiberium Creep".
+  */
+  unsigned IsForwardScan : 1;
 
-		/*
-		**	This is the current cell number in the incremental map scan process.
-		*/
-		CELL TiberiumScan;
-
-		/*
-		**	If the Tiberium map scan is processing forward, then this flag
-		**	will be true. It alternates between forward and backward scanning
-		**	in order to avoid the "Tiberium Creep".
-		*/
-		unsigned IsForwardScan:1;
-
-		enum MapEnum {SCAN_AMOUNT=MAP_CELL_TOTAL};
+  enum MapEnum { SCAN_AMOUNT = MAP_CELL_TOTAL };
 };
 
 #endif

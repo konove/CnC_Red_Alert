@@ -18,54 +18,53 @@
 
 /* $Header: /CounterStrike/SAVEDLG.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : SAVEDLG.H                                                    *
+ *                    File Name : SAVEDLG.H *
  *                                                                                             *
- *                   Programmer : Maria del Mar McCready Legg, Joe L. Bostic                   *
+ *                   Programmer : Maria del Mar McCready Legg, Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : Jan 8, 1995                                                  * 
+ *                   Start Date : Jan 8, 1995 *
  *                                                                                             *
- *                  Last Update : Jan 18, 1995   [MML]                                         *
+ *                  Last Update : Jan 18, 1995   [MML] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef SAVEDLG_H
 #define SAVEDLG_H
 
 #include "gadget.h"
 
-class SaveOptionsClass 
-{
-	private:
+class SaveOptionsClass {
+ private:
+  enum SaveOptionsClassEnums {
+    BUTTON_CANCEL = 200,
+    BUTTON_SAVE,
+    OPTION_WIDTH = 216,
+    OPTION_HEIGHT = 122,
+    OPTION_X = ((320 - OPTION_WIDTH) / 2) & ~7,
+    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
+    NUMBER_OF_BUTTONS = 2,
+    CAPTION_Y_POS = 5,
+    BORDER1_LEN = 49,
+    BUTTON_CANCEL_X = 90,
+    BUTTON_CANCEL_Y = 103,
+    LISTBOX_X = 40,
+    LISTBOX_Y = 24,
+    LISTBOX_W = 136,
+    LISTBOX_H = 72
+  };
 
-		enum SaveOptionsClassEnums {
-			BUTTON_CANCEL=200,
-			BUTTON_SAVE,
-			OPTION_WIDTH=216,
-			OPTION_HEIGHT=122,
-			OPTION_X=((320 - OPTION_WIDTH) / 2) & ~7,
-			OPTION_Y=(200 - OPTION_HEIGHT) / 2,
-			NUMBER_OF_BUTTONS=2,
-			CAPTION_Y_POS=5,
-			BORDER1_LEN=49,
-			BUTTON_CANCEL_X=90,
-			BUTTON_CANCEL_Y=103,
-			LISTBOX_X=40,
-			LISTBOX_Y=24,
-			LISTBOX_W=136,
-			LISTBOX_H=72
-		};
-
-	public:
-		SaveOptionsClass (void) { };
-		void Process (void);
+ public:
+  SaveOptionsClass(void){};
+  void Process(void);
 };
-
 
 #endif

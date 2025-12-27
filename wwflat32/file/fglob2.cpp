@@ -38,4 +38,4 @@
 #include "_file.h"
 
 /* Global varaiables */
-WORD Hard_Error_Occured=0;
+WORD Hard_Error_Occured = 0;

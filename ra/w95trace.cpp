@@ -16,7 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 /*
     Implementation of Win95 tracing facility to mimic that of NT
 */
@@ -27,9 +26,7 @@
 #include <process.h>
 #include "w95trace.h"
 
-
-void OutputDebugStringW95( LPCTSTR /*lpOutputString*/, ...)
-{
+void OutputDebugStringW95(LPCTSTR /*lpOutputString*/, ...) {
 #if 0
 
     HANDLE heventDBWIN;  /* DBWIN32 synchronization object */

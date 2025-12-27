@@ -43,9 +43,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-
-
-
 /***************************************************************************
  * EXIT -- Exit routine with message.                                      *
  *                                                                         *
@@ -60,32 +57,24 @@
  * HISTORY:                                                                *
  *   08/03/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID cdecl Exit(INT errorval, const BYTE *message, ...)
-{
-	va_list		argptr;
-	BYTE		errstring[256];
+VOID cdecl Exit(INT errorval, const BYTE *message, ...) {
+  va_list argptr;
+  BYTE errstring[256];
 
-	Prog_End();
+  Prog_End();
 
-	if (message && *message) {
-		va_start (argptr, message);
-		vsprintf ((char *)errstring, (const char *)message, argptr);
-		va_end (argptr);
-		printf(errstring);
-	}
+  if (message && *message) {
+    va_start(argptr, message);
+    vsprintf((char *)errstring, (const char *)message, argptr);
+    va_end(argptr);
+    printf(errstring);
+  }
 
-	::exit(errorval);
-
+  ::exit(errorval);
 }
 
-void randomize	( void ) 
-{
-  srand ( time ( NULL ) ) ;
-}
+void randomize(void) { srand(time(NULL)); }
 
-#if(0)
-ULONG	random ( ULONG mod ) 
-{
-  return rand () * mod / RAND_MAX ;
-}
+#if (0)
+ULONG random(ULONG mod) { return rand() * mod / RAND_MAX; }
 #endif

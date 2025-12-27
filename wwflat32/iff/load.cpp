@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: g:/library/wwlib32/file/rcs/load.cpp 1.4 1994/04/22 12:42:21 scott_bowen Exp $ */
+/* $Header: g:/library/wwlib32/file/rcs/load.cpp 1.4 1994/04/22 12:42:21
+ * scott_bowen Exp $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
@@ -46,24 +47,19 @@
 #include <dos.h>
 #include <wwmem.h>
 
-
-
-#if(LZW_SUPPORTED)
+#if (LZW_SUPPORTED)
 
 /* These are our local pointer and size variables for the LZW table.  They
    are set through the Set_Uncomp_Buffer routine. */
 
-PRIVATE int  LZW_Table      = 0;			/* No current paragraph */
-PRIVATE unsigned int LZW_Table_Size = 0;			/* No current size */
+PRIVATE int LZW_Table = 0;               /* No current paragraph */
+PRIVATE unsigned int LZW_Table_Size = 0; /* No current size */
 
 #endif
-
 
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
-
-
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -86,16 +82,14 @@ PRIVATE unsigned int LZW_Table_Size = 0;			/* No current size */
  * HISTORY:                                                                *
  *   06/24/1991 JLB : Created.                                             *
  *=========================================================================*/
-unsigned long cdecl Load_Data(char const *name, VOID *ptr, unsigned long size)
-{
-	int fd;
+unsigned long cdecl Load_Data(char const *name, VOID *ptr, unsigned long size) {
+  int fd;
 
-	fd = Open_File(name, READ);
-	size = Read_File(fd, ptr, size);
-	Close_File(fd);
-	return(size);
+  fd = Open_File(name, READ);
+  size = Read_File(fd, ptr, size);
+  Close_File(fd);
+  return (size);
 }
-
 
 /***************************************************************************
  * WRITE_DATA -- Writes a block of data as a file to disk.                 *
@@ -116,14 +110,14 @@ unsigned long cdecl Load_Data(char const *name, VOID *ptr, unsigned long size)
  * HISTORY:                                                                *
  *   07/05/1992 JLB : Created.                                             *
  *=========================================================================*/
-unsigned long cdecl Write_Data(char const *name, VOID *ptr, unsigned long size)
-{
-	int fd;
+unsigned long cdecl Write_Data(char const *name, VOID *ptr,
+                               unsigned long size) {
+  int fd;
 
-	fd = Open_File(name, WRITE);
-	size = Write_File(fd, ptr, size);
-	Close_File(fd);
-	return(size);
+  fd = Open_File(name, WRITE);
+  size = Write_File(fd, ptr, size);
+  Close_File(fd);
+  return (size);
 }
 
 #ifdef NEVER
@@ -148,33 +142,32 @@ unsigned long cdecl Write_Data(char const *name, VOID *ptr, unsigned long size)
  * HISTORY:                                                                *
  *   05/28/1992 JLB : Created.                                             *
  *=========================================================================*/
-VOID * cdecl Load_Alloc_Data(char const *name, MemoryFlagType flags)
-{
-	int	fd;		// Working file handle.
-	unsigned long	size;		// Size of the file to load.
-	VOID	*buffer;	// Buffer to hold the file.
+VOID *cdecl Load_Alloc_Data(char const *name, MemoryFlagType flags) {
+  int fd;              // Working file handle.
+  unsigned long size;  // Size of the file to load.
+  VOID *buffer;        // Buffer to hold the file.
 
-	fd = Open_File(name, READ);
-	size = File_Size(fd);
-	buffer = Alloc(size, flags);
-	if (buffer) {
-		Read_File(fd, buffer, size);
-	}
-	Close_File(fd);
-	return(buffer);
+  fd = Open_File(name, READ);
+  size = File_Size(fd);
+  buffer = Alloc(size, flags);
+  if (buffer) {
+    Read_File(fd, buffer, size);
+  }
+  Close_File(fd);
+  return (buffer);
 }
 #endif
-
 
 /***************************************************************************
  * LOAD_UNCOMPRESS -- Load and uncompress the given file.                  *
  *                                                                         *
- * INPUT:      BYTE *					- file name to uncompress 					*
- *					GraphicBufferClass&	- to load the source data into			*
- *					GraphicBufferClass&	- for the picture								*
- *             VOID *					- ptr for header uncompressed data     *
+ * INPUT:      BYTE *					- file name to
+ *uncompress 					* GraphicBufferClass&	- to
+ *load the source data into			* GraphicBufferClass&	- for
+ *the picture								* VOID *
+ *- ptr for header uncompressed data     *
  *                                                                         *
- * OUTPUT:     unsigned long size of uncompressed data                             *
+ * OUTPUT:     unsigned long size of uncompressed data *
  *                                                                         *
  * WARNINGS:   none                                                        *
  *                                                                         *
@@ -182,66 +175,75 @@ VOID * cdecl Load_Alloc_Data(char const *name, MemoryFlagType flags)
  *   05/28/1991  CY : Created.                                             *
  *   06/26/1991 JLB : Handles load & uncompress to same buffer.            *
  *=========================================================================*/
-unsigned long cdecl Load_Uncompress(char const *file, BufferClass& uncomp_buff, BufferClass& dest_buff, VOID *reserved_data)
-{
-	int	fd;				// Source file handle.
-	unsigned int	isize;			// Size of the file.
-	unsigned int	skipsize;		// Size of the skip data bytes.
-	VOID	*uncomp_ptr;	//	Source buffer pointer.
-	char	*newuncomp_ptr;	// Adjusted source pointer.
+unsigned long cdecl Load_Uncompress(char const *file, BufferClass &uncomp_buff,
+                                    BufferClass &dest_buff,
+                                    VOID *reserved_data) {
+  int fd;                 // Source file handle.
+  unsigned int isize;     // Size of the file.
+  unsigned int skipsize;  // Size of the skip data bytes.
+  VOID *uncomp_ptr;       //	Source buffer pointer.
+  char *newuncomp_ptr;    // Adjusted source pointer.
 
+  uncomp_ptr = uncomp_buff.Get_Buffer();  // get a pointer to buffer
 
-	uncomp_ptr = uncomp_buff.Get_Buffer();		// get a pointer to buffer
+  /*======================================================================*/
+  /* Read the file into the uncompression buffer.
+   */
+  /*======================================================================*/
 
-	/*======================================================================*/
-	/* Read the file into the uncompression buffer.									*/
-	/*======================================================================*/
+  fd = Open_File(file, READ);         // Open up the file to read from
+  Read_File(fd, (char *)&isize, 2L);  // Read the file size
+  Read_File(fd, uncomp_ptr, 8L);      // Read the header bytes in.
+  isize -= 8;                         // Remaining data in file.
 
-	fd = Open_File(file, READ);					// Open up the file to read from
-	Read_File(fd, (char *) &isize,	2L);		// Read the file size
-	Read_File(fd, uncomp_ptr, 			8L);		// Read the header bytes in.
-	isize -= 8; 										// Remaining data in file.
+  /*======================================================================*/
+  /* Check for and read in the skip data block.
+   */
+  /*======================================================================*/
 
-	/*======================================================================*/
-	/* Check for and read in the skip data block.									*/
-	/*======================================================================*/
+  skipsize = *(((int *)uncomp_ptr) + 3);
 
-	skipsize = *(((int*)uncomp_ptr) + 3);
+  if (reserved_data && skipsize) {
+    Read_File(fd, reserved_data, (unsigned long)skipsize);
+  } else {
+    Seek_File(fd, skipsize, SEEK_CUR);
+  }
 
-	if (reserved_data && skipsize) {
-		Read_File(fd, reserved_data, (unsigned long) skipsize);
-	} else {
-		Seek_File(fd, skipsize, SEEK_CUR);
-	}
+  *(((int *)uncomp_ptr + 3)) = 0;  // K/O any skip value.
+  isize -= skipsize;
 
-	*( ((int*)uncomp_ptr+3) )	 = 0;				// K/O any skip value.
-	isize 							-= skipsize;
+  /*======================================================================*/
+  /*	If the source and dest buffer are the same, we adjust the pointer so */
+  /* that the compressed data is loaded into the end of the buffer.  In
+   */
+  /* this way the uncompress code can write to the same buffer.
+   */
+  /*======================================================================*/
+  newuncomp_ptr = (char *)Add_Long_To_Pointer(
+      uncomp_buff.Get_Buffer(), uncomp_buff.Get_Size() - (isize + 8L));
 
-	/*======================================================================*/
-	/*	If the source and dest buffer are the same, we adjust the pointer so */
-	/* that the compressed data is loaded into the end of the buffer.  In 	*/
-	/* this way the uncompress code can write to the same buffer.				*/
-	/*======================================================================*/
-	newuncomp_ptr = (char *)Add_Long_To_Pointer(uncomp_buff.Get_Buffer(), uncomp_buff.Get_Size() - (isize+8L));
+  /*======================================================================*/
+  /*	Duplicate the header bytes.
+   */
+  /*======================================================================*/
+  Mem_Copy(uncomp_ptr, newuncomp_ptr, 8);
 
-	/*======================================================================*/
-	/*	Duplicate the header bytes.														*/
-	/*======================================================================*/
-	Mem_Copy(uncomp_ptr,newuncomp_ptr,8);
+  /*======================================================================*/
+  /*	Read in the main compressed part of the file.
+   */
+  /*======================================================================*/
+  Read_File(fd, newuncomp_ptr + 8, (unsigned long)isize);
+  Close_File(fd);
 
-	/*======================================================================*/
-	/*	Read in the main compressed part of the file.								*/
-	/*======================================================================*/
-	Read_File(fd, newuncomp_ptr + 8, (unsigned long)isize);
-	Close_File(fd);
-
-	/*======================================================================*/
-	/* Uncompress the file into the destination buffer (which may very well	*/
-	/*		be the source buffer).															*/
-	/*======================================================================*/
-	return(Uncompress_Data(newuncomp_ptr, dest_buff.Get_Buffer()));
+  /*======================================================================*/
+  /* Uncompress the file into the destination buffer (which may very well
+   */
+  /*		be the source buffer).
+   */
+  /*======================================================================*/
+  return (Uncompress_Data(newuncomp_ptr, dest_buff.Get_Buffer()));
 }
-#if(0)
+#if (0)
 /***************************************************************************
  * LOAD_UNCOMPRESS -- Load and uncompress the given file.                  *
  *                                                                         *
@@ -249,7 +251,7 @@ unsigned long cdecl Load_Uncompress(char const *file, BufferClass& uncomp_buff, 
  *             the source data into, BuffType dest_buff for the picture,   *
  *             VOID *reserved_data pointer for header uncompressed data    *
  *                                                                         *
- * OUTPUT:     unsigned long size of uncompressed data                             *
+ * OUTPUT:     unsigned long size of uncompressed data *
  *                                                                         *
  * WARNINGS:   none                                                        *
  *                                                                         *
@@ -257,74 +259,74 @@ unsigned long cdecl Load_Uncompress(char const *file, BufferClass& uncomp_buff, 
  *   05/28/1991  CY : Created.                                             *
  *   06/26/1991 JLB : Handles load & uncompress to same buffer.            *
  *=========================================================================*/
-unsigned long cdecl Load_Uncompress(char const *file, BuffType uncomp_buff, BuffType dest_buff, VOID *reserved_data)
-{
-	int	fd;				// Source file handle.
-	unsigned int	isize;			// Size of the file.
-	unsigned int	skipsize;		// Size of the skip data bytes.
-	VOID	*uncomp_ptr;	//	Source buffer pointer.
-	char	*newuncomp_ptr;	// Adjusted source pointer.
+unsigned long cdecl Load_Uncompress(char const *file, BuffType uncomp_buff,
+                                    BuffType dest_buff, VOID *reserved_data) {
+  int fd;                 // Source file handle.
+  unsigned int isize;     // Size of the file.
+  unsigned int skipsize;  // Size of the skip data bytes.
+  VOID *uncomp_ptr;       //	Source buffer pointer.
+  char *newuncomp_ptr;    // Adjusted source pointer.
 
+  uncomp_ptr = Get_Buff(uncomp_buff); /* Get pointer to uncomp buffer */
 
-	uncomp_ptr = Get_Buff(uncomp_buff);		/* Get pointer to uncomp buffer */
+  /* Read the file into the uncomp_buff */
 
-	/* Read the file into the uncomp_buff */
+  fd = Open_File(file, READ);
+  Read_File(fd, (char *)&isize, 2L); /* Read the file size 		*/
+#if (AMIGA)
+  isize = Reverse_WORD(isize);
+#endif
 
-	fd = Open_File(file, READ);
-	Read_File(fd, (char *) &isize, 2L);				/* Read the file size 		*/
-	#if(AMIGA)
-		isize = Reverse_WORD(isize);
-	#endif
+  Read_File(fd, uncomp_ptr, 8L);  // Read the header bytes in.
+  isize -= 8;                     // Remaining data in file.
 
-	Read_File(fd, uncomp_ptr, 8L);		// Read the header bytes in.
-	isize -= 8; 								// Remaining data in file.
+  /*
+  **	Check for and read in the skip data block.
+  */
 
-	/*
-	**	Check for and read in the skip data block.
-	*/
+  skipsize = *(((int *)uncomp_ptr) + 3);
+#if (AMIGA)
+  skipsize = Reverse_WORD(skipsize);
+#endif
 
-	skipsize = *(((int*)uncomp_ptr) + 3);
-	#if(AMIGA)
-		skipsize = Reverse_WORD(skipsize);
-	#endif
+  if (reserved_data && skipsize) {
+    Read_File(fd, reserved_data, (unsigned long)skipsize);
+  } else {
+    Seek_File(fd, skipsize, SEEK_CUR);
+  }
+  *(((int *)uncomp_ptr + 3)) = 0;  // K/O any skip value.
+  isize -= skipsize;
 
-	if (reserved_data && skipsize) {
-		Read_File(fd, reserved_data, (unsigned long) skipsize);
-	} else {
-		Seek_File(fd, skipsize, SEEK_CUR);
-	}
-	*( ((int*)uncomp_ptr+3) ) = 0;		// K/O any skip value.
-	isize -= skipsize;
+/*
+**	If the source and dest buffer are the same, we
+**	adjust the pointer so that the compressed data is
+**	loaded into the end of the buffer.  In this way the
+**	uncompress code can write to the same buffer.
+*/
+#if (IBM)
+  newuncomp_ptr = (char *)Add_Long_To_Pointer(
+      Get_Buff(uncomp_buff), PageArraySize[uncomp_buff] - (isize + 8L));
+  // newuncomp_ptr = (char*)MK_FP(PageArray[uncomp_buff],0);
+  // newuncomp_ptr += (unsigned int)(PageArraySize[uncomp_buff] - (isize+8));
+  // newuncomp_ptr = Normalize_Pointer(newuncomp_ptr);
+  // newuncomp_ptr = MK_FP(FP_SEG(newuncomp_ptr),0);
+#else
+  newuncomp_ptr = Get_Buff(uncomp_buff);
+  newuncomp_ptr += PageArraySize[uncomp_buff] - ((isize + 10) & 0xFFFE);
+#endif
 
-	/*
-	**	If the source and dest buffer are the same, we
-	**	adjust the pointer so that the compressed data is
-	**	loaded into the end of the buffer.  In this way the
-	**	uncompress code can write to the same buffer.
-	*/
-	#if(IBM)
-		newuncomp_ptr = (char *)Add_Long_To_Pointer(Get_Buff(uncomp_buff), PageArraySize[uncomp_buff] - (isize+8L));
-		//newuncomp_ptr = (char*)MK_FP(PageArray[uncomp_buff],0);
-		//newuncomp_ptr += (unsigned int)(PageArraySize[uncomp_buff] - (isize+8));
-		//newuncomp_ptr = Normalize_Pointer(newuncomp_ptr);
-		//newuncomp_ptr = MK_FP(FP_SEG(newuncomp_ptr),0);
-	#else
-		newuncomp_ptr = Get_Buff(uncomp_buff);
-		newuncomp_ptr += PageArraySize[uncomp_buff] - ((isize+10) & 0xFFFE);
-	#endif
+  /*
+  **	Duplicate the header bytes.
+  */
+  Mem_Copy(uncomp_ptr, newuncomp_ptr, 8);
 
-	/*
-	**	Duplicate the header bytes.
-	*/
-	Mem_Copy(uncomp_ptr,newuncomp_ptr,8);
+  /*
+  **	Read in the main compressed part of the file.
+  */
+  Read_File(fd, newuncomp_ptr + 8, (unsigned long)isize);
+  Close_File(fd);
 
-	/*
-	**	Read in the main compressed part of the file.
-	*/
-	Read_File(fd, newuncomp_ptr + 8, (unsigned long)isize);
-	Close_File(fd);
-
-	return(Uncompress_Data(newuncomp_ptr, Get_Buff(dest_buff)));
+  return (Uncompress_Data(newuncomp_ptr, Get_Buff(dest_buff)));
 }
 
 #endif
@@ -347,98 +349,90 @@ unsigned long cdecl Load_Uncompress(char const *file, BuffType uncomp_buff, Buff
  * HISTORY:                                                                *
  *   09/17/1993 JLB : Created.                                             *
  *=========================================================================*/
-unsigned long cdecl Uncompress_Data(VOID const *src, VOID *dst)
-{
-	unsigned int					skip;			// Number of leading data to skip.
-	CompressionType	method;		// Compression method used.
-	unsigned long					uncomp_size=NULL;
-#if(LZW_SUPPORTED)
-	VOID					*table_buffer;
+unsigned long cdecl Uncompress_Data(VOID const *src, VOID *dst) {
+  unsigned int skip;       // Number of leading data to skip.
+  CompressionType method;  // Compression method used.
+  unsigned long uncomp_size = NULL;
+#if (LZW_SUPPORTED)
+  VOID *table_buffer;
 #endif
 
-	if (!src || !dst) return(NULL);
+  if (!src || !dst) return (NULL);
 
-	/*
-	**	Interpret the data block header structure to determine
-	**	compression method, size, and skip data amount.
-	*/
-	uncomp_size = ((CompHeaderType*)src)->Size;
-	#if(AMIGA)
-		uncomp_size = Reverse_LONG(uncomp_size);
-	#endif
-	skip = ((CompHeaderType*)src)->Skip;
-	#if(AMIGA)
-		skip = Reverse_WORD(skip);
-	#endif
-	method = (CompressionType) ((CompHeaderType*)src)->Method;
-	src = Add_Long_To_Pointer((VOID *)src, (long)sizeof(CompHeaderType) + (long)skip);
+  /*
+  **	Interpret the data block header structure to determine
+  **	compression method, size, and skip data amount.
+  */
+  uncomp_size = ((CompHeaderType *)src)->Size;
+#if (AMIGA)
+  uncomp_size = Reverse_LONG(uncomp_size);
+#endif
+  skip = ((CompHeaderType *)src)->Skip;
+#if (AMIGA)
+  skip = Reverse_WORD(skip);
+#endif
+  method = (CompressionType)((CompHeaderType *)src)->Method;
+  src = Add_Long_To_Pointer((VOID *)src,
+                            (long)sizeof(CompHeaderType) + (long)skip);
 
-	switch (method) {
+  switch (method) {
+    default:
+    case NOCOMPRESS:
+      Mem_Copy((VOID *)src, dst, uncomp_size);
+      break;
 
-		default:
-		case NOCOMPRESS:
-			Mem_Copy((VOID *) src, dst, uncomp_size);
-			break;
-
-		case HORIZONTAL:
+    case HORIZONTAL:
 #if LIB_EXTERNS_RESOLVED
-			RLE_Uncompress((VOID *) src, dst, uncomp_size);
+      RLE_Uncompress((VOID *)src, dst, uncomp_size);
 #endif
-			break;
+      break;
 
-		case LCW:
-			LCW_Uncompress((VOID *) src, (VOID *) dst, (unsigned long) uncomp_size);
-			break;
+    case LCW:
+      LCW_Uncompress((VOID *)src, (VOID *)dst, (unsigned long)uncomp_size);
+      break;
 
-#if(LZW_SUPPORTED)
-		case LZW12:
-			/* If the current buffer isn't big enough, try to
-				allocate one that is */
+#if (LZW_SUPPORTED)
+    case LZW12:
+      /* If the current buffer isn't big enough, try to
+              allocate one that is */
 
-			if (LZW_Table_Size < LZW12BUFFERSIZE) {
-				table_buffer = Alloc((long) LZW12BUFFERSIZE, MEM_PARA);
-				LZW12_Uncompress(FP_SEG(src), FP_SEG(dst),
-						            FP_SEG(table_buffer));
-				Free(table_buffer);
-			}
-			else {
-				LZW12_Uncompress(FP_SEG(src), FP_SEG(dst), LZW_Table);
-			}
-			break;
+      if (LZW_Table_Size < LZW12BUFFERSIZE) {
+        table_buffer = Alloc((long)LZW12BUFFERSIZE, MEM_PARA);
+        LZW12_Uncompress(FP_SEG(src), FP_SEG(dst), FP_SEG(table_buffer));
+        Free(table_buffer);
+      } else {
+        LZW12_Uncompress(FP_SEG(src), FP_SEG(dst), LZW_Table);
+      }
+      break;
 
-		case LZW14:
-			/* If the current buffer isn't big enough, try to
-				allocate one that is */
+    case LZW14:
+      /* If the current buffer isn't big enough, try to
+              allocate one that is */
 
-			if (LZW_Table_Size < LZW14BUFFERSIZE) {
-				table_buffer = Alloc((long) LZW14BUFFERSIZE, MEM_PARA);
-				LZW14_Uncompress(FP_SEG(src), FP_SEG(dst),
-						            FP_SEG(table_buffer));
-				Free(table_buffer);
-			}
-			else {
-				LZW14_Uncompress(FP_SEG(src), FP_SEG(dst), LZW_Table);
-			}
-			break;
+      if (LZW_Table_Size < LZW14BUFFERSIZE) {
+        table_buffer = Alloc((long)LZW14BUFFERSIZE, MEM_PARA);
+        LZW14_Uncompress(FP_SEG(src), FP_SEG(dst), FP_SEG(table_buffer));
+        Free(table_buffer);
+      } else {
+        LZW14_Uncompress(FP_SEG(src), FP_SEG(dst), LZW_Table);
+      }
+      break;
 #endif
-	}
+  }
 
-	return(uncomp_size);
-}                  
+  return (uncomp_size);
+}
 
-
-#if(LZW_SUPPORTED)
+#if (LZW_SUPPORTED)
 /* ARGSUSED */
 #pragma argsused
-VOID cdecl Set_Uncomp_Buffer(int buffer_segment, unsigned int size_of_buffer)
-{
-
-	if ((LZW_Table = buffer_segment) == NULL) {
-		/* ERROR HERE */
-	}
-	if ((LZW_Table_Size = size_of_buffer) == 0U) {
-		/* ERROR HERE */
-	}
+VOID cdecl Set_Uncomp_Buffer(int buffer_segment, unsigned int size_of_buffer) {
+  if ((LZW_Table = buffer_segment) == NULL) {
+    /* ERROR HERE */
+  }
+  if ((LZW_Table_Size = size_of_buffer) == 0U) {
+    /* ERROR HERE */
+  }
 }
 #endif
 

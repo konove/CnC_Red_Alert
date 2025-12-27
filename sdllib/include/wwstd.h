@@ -35,18 +35,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #ifndef WWSTD_H
-#define	WWSTD_H
+#define WWSTD_H
 
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /*
 **	Common constants used in normal code.
 */
-#define WW_ERROR		-1
+#define WW_ERROR -1
 
-#define PRIVATE		static
+#define PRIVATE static
 
 #define TRUE true
 #define FALSE false
@@ -55,88 +54,85 @@
 #ifdef ABS
 #undef ABS
 #endif
-template<class T> T ABS(T a)
-{
-	return (a < 0) ? -a : a;
+template <class T>
+T ABS(T a) {
+  return (a < 0) ? -a : a;
 }
 
 // Returns the minimum of the two numbers.
 #ifdef MIN
 #undef MIN
 #endif
-template<class T> T MIN(T a, T b)
-{
-	return (b < a) ? b : a;
+template <class T>
+T MIN(T a, T b) {
+  return (b < a) ? b : a;
 };
-inline int MIN(int a, int b) {return MIN<int>(a, b);}
+inline int MIN(int a, int b) { return MIN<int>(a, b); }
 
 // Returns the maximum of the two numbers.
 #ifdef MAX
 #undef MAX
 #endif
-template<class T> T MAX(T a, T b)
-{
-	return (b > a) ? b : a;
+template <class T>
+T MAX(T a, T b) {
+  return (b > a) ? b : a;
 };
-inline int MAX(int a, int b) {return MAX<int>(a, b);}
-
-
+inline int MAX(int a, int b) { return MAX<int>(a, b); }
 
 // Inline Routines
-//════════════════
+// ════════════════
 //
 // These Template functions are generally used
 // by classes when they havce over loaded > and <.
 //
 #ifdef __cplusplus
-template<class T> T Min(T a, T b)
-{
-	return (a<b ? a : b);
+template <class T>
+T Min(T a, T b) {
+  return (a < b ? a : b);
 }
 
-template<class T> inline  T Max(T a, T b)
-{
-	return (a>b ? a : b);
+template <class T>
+inline T Max(T a, T b) {
+  return (a > b ? a : b);
 }
 
-template<class T> T Abs(T a)
-{
-	return ((a<0) ? -(a) : a);
+template <class T>
+T Abs(T a) {
+  return ((a < 0) ? -(a) : a);
 }
 
 #endif
 
 typedef enum {
-	TBLACK,
-	PURPLE,
-	CYAN,
-	GREEN,
-	LTGREEN,
-	YELLOW,
-	PINK,
-	BROWN,
-	RED,
-	LTCYAN,
-	LTBLUE,
-	BLUE,
-	BLACK,
-	GREY,
-	LTGREY,
-	WHITE,
-	COLOR_PADDING=0x1000
+  TBLACK,
+  PURPLE,
+  CYAN,
+  GREEN,
+  LTGREEN,
+  YELLOW,
+  PINK,
+  BROWN,
+  RED,
+  LTCYAN,
+  LTBLUE,
+  BLUE,
+  BLACK,
+  GREY,
+  LTGREY,
+  WHITE,
+  COLOR_PADDING = 0x1000
 } ColorType;
-
 
 // for TD
 #ifdef TD
 // Returns the low word of a long
-#define	LOW_WORD(a)		((unsigned short)((int32_t)(a) & 0x0000FFFFL))
+#define LOW_WORD(a) ((unsigned short)((int32_t)(a) & 0x0000FFFFL))
 
 // Returns the high word of a long
-#define	HIGH_WORD(a)	((uint32_t)(a) >> 16)
+#define HIGH_WORD(a) ((uint32_t)(a) >> 16)
 
 // Merges to shorts to become a long
-#define	MAKE_LONG(a,b) (((int32_t)(a) << 16) | (int32_t)((b)&0x0000FFFFL))
+#define MAKE_LONG(a, b) (((int32_t)(a) << 16) | (int32_t)((b) & 0x0000FFFFL))
 #endif
 
 #endif

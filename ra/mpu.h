@@ -18,52 +18,50 @@
 
 /* $Header: /CounterStrike/MPU.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : MPU.H                                                        *
+ *                    File Name : MPU.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/15/96                                                     *
+ *                   Start Date : 07/15/96 *
  *                                                                                             *
- *                  Last Update : July 17, 1996 [JLB]                                          *
+ *                  Last Update : July 17, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   Get_CPU_Clock -- Fetches the current CPU clock time.                                      *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * Get_CPU_Clock -- Fetches the current CPU clock time. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef MPU_H
 #define MPU_H
 
-
 /***********************************************************************************************
- * Get_CPU_Clock -- Fetches the current CPU clock time.                                        *
+ * Get_CPU_Clock -- Fetches the current CPU clock time. *
  *                                                                                             *
- *    This routine will return the internal Pentium clock accumulator. This accumulator is     *
- *    incremented every clock tick. Since this clock value can get very very large, the value  *
- *    returned is in 64 bits. The low half is returned directly, the high half is stored in    *
- *    location specified.                                                                      *
+ *    This routine will return the internal Pentium clock accumulator. This
+ *accumulator is     * incremented every clock tick. Since this clock value can
+ *get very very large, the value  * returned is in 64 bits. The low half is
+ *returned directly, the high half is stored in    * location specified. *
  *                                                                                             *
- * INPUT:   high  -- Reference to the high value of the 64 bit clock number.                   *
+ * INPUT:   high  -- Reference to the high value of the 64 bit clock number. *
  *                                                                                             *
- * OUTPUT:  Returns with the low half of the CPU clock value.                                  *
+ * OUTPUT:  Returns with the low half of the CPU clock value. *
  *                                                                                             *
- * WARNINGS:   This instruction is only available on Pentium or later processors.              *
+ * WARNINGS:   This instruction is only available on Pentium or later
+ *processors.              *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/17/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned long Get_CPU_Clock(unsigned long & high);
+unsigned long Get_CPU_Clock(unsigned long& high);
 #ifndef __BORLANDC__
-#pragma aux Get_CPU_Clock parm [esi] \
-	modify [edx] \
-	value [eax] = \
-	"db 0fh,031h" \
-	"mov [esi],edx"
+#pragma aux Get_CPU_Clock parm[esi] modify[edx] value[eax] =            \
+                                                          "db 0fh,031h" \
+                                                          "mov [esi],edx"
 #endif
 
 #endif

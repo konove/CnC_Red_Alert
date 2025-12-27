@@ -48,6 +48,4 @@
 #include "timer.h"
 #include "wsa.h"
 
-#endif // WWLIB32_H
-
-
+#endif  // WWLIB32_H

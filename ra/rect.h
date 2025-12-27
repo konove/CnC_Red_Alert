@@ -18,47 +18,46 @@
 
 /* $Header: /CounterStrike/RECT.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : RECT.H                                                       *
+ *                    File Name : RECT.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/21/96                                                     *
+ *                   Start Date : 07/21/96 *
  *                                                                                             *
- *                  Last Update : July 21, 1996 [JLB]                                          *
+ *                  Last Update : July 21, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef RECT_H
 #define RECT_H
 
-#include	<stddef.h>
+#include <stddef.h>
 
-class Rect
-{
-	public:
-		Rect(int x=0, int y=0, int w=0, int h=0);
+class Rect {
+ public:
+  Rect(int x = 0, int y = 0, int w = 0, int h = 0);
 
-		Rect const Intersect(Rect const & rectangle, int * x=NULL, int * y=NULL) const;
-		friend Rect const Union(Rect const & rect1, Rect const & rect2);
+  Rect const Intersect(Rect const& rectangle, int* x = NULL,
+                       int* y = NULL) const;
+  friend Rect const Union(Rect const& rect1, Rect const& rect2);
 
-		bool Is_Valid(void) const;
-		int Size(void) const {return(Width*Height);}
+  bool Is_Valid(void) const;
+  int Size(void) const { return (Width * Height); }
 
-//	private:
-		int X;
-		int Y;
-		int Width;
-		int Height;
+  //	private:
+  int X;
+  int Y;
+  int Width;
+  int Height;
 };
 
-
 #endif
-

@@ -37,14 +37,13 @@
 #include "wwlib32.h"
 #include "defines.h"
 #include "structs.h"
-#include	"externs.h"
-
+#include "externs.h"
 
 /*=========================================================================*/
-/* The following prototypes are for the file: MAIN.CPP							*/
+/* The following prototypes are for the file: MAIN.CPP
+ */
 /*=========================================================================*/
 
 extern WORD Main_Program(WORD argc, BYTE *argv[]);
-
 
 /*=========================================================================*/

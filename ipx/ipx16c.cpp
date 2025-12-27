@@ -16,47 +16,20 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-
 #include <windows.h>
 
-extern "C"{
-	extern BOOL FAR __pascal ASM_IPX_Initialise(void);
-	extern BOOL FAR __pascal ASM_IPX_Uninitialise(void);
+extern "C" {
+extern BOOL FAR __pascal ASM_IPX_Initialise(void);
+extern BOOL FAR __pascal ASM_IPX_Uninitialise(void);
 }
 
-
-extern "C"{
-	BOOL FAR __pascal _export IPX_Initialise(int);
-	void FAR __pascal _export IPX_Uninitialise(void);
+extern "C" {
+BOOL FAR __pascal _export IPX_Initialise(int);
+void FAR __pascal _export IPX_Uninitialise(void);
 }
 
+int CALLBACK LibMain(HANDLE, WORD, WORD, LPSTR) { return (1); }
 
+BOOL FAR __pascal _export IPX_Initialise(int) { return (ASM_IPX_Initialise()); }
 
-int CALLBACK LibMain (HANDLE, WORD, WORD, LPSTR)
-{
-	return (1);
-}
-
-
-
-BOOL FAR __pascal _export IPX_Initialise(int)
-{
-
-	return (ASM_IPX_Initialise());
-
-}
-
-
-
-void FAR __pascal _export IPX_Uninitialise(void)
-{
-
-	ASM_IPX_Uninitialise();
-
-}
-
-
-
-
+void FAR __pascal _export IPX_Uninitialise(void) { ASM_IPX_Uninitialise(); }

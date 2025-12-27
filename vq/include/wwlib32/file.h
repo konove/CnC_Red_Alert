@@ -22,13 +22,14 @@
  *                                                                         *
  *                 Project Name : Library - Filio header stuff.            *
  *                                                                         *
- *                    File Name : FILE.H                                 	*
+ *                    File Name : FILE.H *
  *                                                                         *
  *                   Programmer : Scott K. Bowen                           *
  *                                                                         *
  *                   Start Date : September 13, 1993                       *
  *                                                                         *
- *                  Last Update : April 11, 1994									*
+ *                  Last Update : April 11, 1994
+ **
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
@@ -43,43 +44,43 @@
 #endif
 
 /*=========================================================================*/
-/* File IO system defines and enumerations											*/
+/* File IO system defines and enumerations
+ */
 /*=========================================================================*/
 
-#define	XMAXPATH	80
+#define XMAXPATH 80
 
 /*
 **	These are the Open_File, Read_File, and Seek_File constants.
 */
-#define READ						1	// Read access.
-#define WRITE						2	// Write access.
+#define READ 1   // Read access.
+#define WRITE 2  // Write access.
 #ifndef SEEK_SET
-#define SEEK_SET					0	// Seek from start of file.
-#define SEEK_CUR					1	// Seek relative from current location.
-#define SEEK_END					2	// Seek from end of file.
+#define SEEK_SET 0  // Seek from start of file.
+#define SEEK_CUR 1  // Seek relative from current location.
+#define SEEK_END 2  // Seek from end of file.
 #endif
 
-
 typedef enum {
-	FILEB_PROCESSED=8,// Was the packed file header of this file processed?
-	FILEB_PRELOAD,		// Scan for and make file resident at WWDOS_Init time?
-	FILEB_RESIDENT,	// Make resident at Open_File time?
-	FILEB_FLUSH,		// Un-resident at Close_File time?
-	FILEB_PACKED,		// Is this file packed?
-	FILEB_KEEP,			// Don't ever flush this resident file?
-	FILEB_PRIORITY,	// Flush this file last?
+  FILEB_PROCESSED = 8,  // Was the packed file header of this file processed?
+  FILEB_PRELOAD,        // Scan for and make file resident at WWDOS_Init time?
+  FILEB_RESIDENT,       // Make resident at Open_File time?
+  FILEB_FLUSH,          // Un-resident at Close_File time?
+  FILEB_PACKED,         // Is this file packed?
+  FILEB_KEEP,           // Don't ever flush this resident file?
+  FILEB_PRIORITY,       // Flush this file last?
 
-	FILEB_LAST
+  FILEB_LAST
 } FileFlags_Type;
 
-#define	FILEF_NONE			0
-#define	FILEF_PROCESSED	(1<<FILEB_PROCESSED)
-#define	FILEF_PRELOAD		(1<<FILEB_PRELOAD)
-#define	FILEF_RESIDENT		(1<<FILEB_RESIDENT)
-#define	FILEF_FLUSH			(1<<FILEB_FLUSH)
-#define	FILEF_PACKED		(1<<FILEB_PACKED)
-#define	FILEF_KEEP			(1<<FILEB_KEEP)
-#define	FILEF_PRIORITY		(1<<FILEB_PRIORITY)
+#define FILEF_NONE 0
+#define FILEF_PROCESSED (1 << FILEB_PROCESSED)
+#define FILEF_PRELOAD (1 << FILEB_PRELOAD)
+#define FILEF_RESIDENT (1 << FILEB_RESIDENT)
+#define FILEF_FLUSH (1 << FILEB_FLUSH)
+#define FILEF_PACKED (1 << FILEB_PACKED)
+#define FILEF_KEEP (1 << FILEB_KEEP)
+#define FILEF_PRIORITY (1 << FILEB_PRIORITY)
 
 /*
 ** These errors are returned by WWDOS_Init().  All errors encountered are
@@ -87,68 +88,69 @@ typedef enum {
 ** errors are fatal, such as the cache errors.
 */
 typedef enum {
-	FI_SUCCESS						= 0x00,
-	FI_CACHE_TOO_BIG				= 0x01,
-	FI_CACHE_ALREADY_INIT		= 0x02,
-	FI_FILEDATA_FILE_NOT_FOUND	= 0x04,
-	FI_FILEDATA_TOO_BIG			= 0x08,
- 	FI_SEARCH_PATH_NOT_FOUND	= 0x10,
- 	FI_STARTUP_PATH_NOT_FOUND	= 0x20,
-	FI_NO_CACHE_FOR_PRELOAD		= 0x40,
-	FI_FILETABLE_NOT_INIT		= 0x80,
+  FI_SUCCESS = 0x00,
+  FI_CACHE_TOO_BIG = 0x01,
+  FI_CACHE_ALREADY_INIT = 0x02,
+  FI_FILEDATA_FILE_NOT_FOUND = 0x04,
+  FI_FILEDATA_TOO_BIG = 0x08,
+  FI_SEARCH_PATH_NOT_FOUND = 0x10,
+  FI_STARTUP_PATH_NOT_FOUND = 0x20,
+  FI_NO_CACHE_FOR_PRELOAD = 0x40,
+  FI_FILETABLE_NOT_INIT = 0x80,
 } FileInitErrorType;
-
 
 /*
 **	These are the errors that are detected by the File I/O system and
 **	passed to the io error routine.
 */
-//lint -strong(AJX,FileErrorType)
+// lint -strong(AJX,FileErrorType)
 typedef enum {
-	CANT_CREATE_FILE,
-	BAD_OPEN_MODE,
-	COULD_NOT_OPEN,
-	TOO_MANY_FILES,
-	CLOSING_NON_HANDLE,
-	READING_NON_HANDLE,
-	WRITING_NON_HANDLE,
-	SEEKING_NON_HANDLE,
-	SEEKING_BAD_OFFSET,
-	WRITING_RESIDENT,
-	UNKNOWN_INDEX,
-	DID_NOT_CLOSE,
-	FATAL_ERROR,
-	FILE_NOT_LISTED,
-	FILE_LENGTH_MISMATCH,
-	INTERNAL_ERROR,
-	MAKE_RESIDENT_ZERO_SIZE,
-	RESIDENT_SORT_FAILURE,
+  CANT_CREATE_FILE,
+  BAD_OPEN_MODE,
+  COULD_NOT_OPEN,
+  TOO_MANY_FILES,
+  CLOSING_NON_HANDLE,
+  READING_NON_HANDLE,
+  WRITING_NON_HANDLE,
+  SEEKING_NON_HANDLE,
+  SEEKING_BAD_OFFSET,
+  WRITING_RESIDENT,
+  UNKNOWN_INDEX,
+  DID_NOT_CLOSE,
+  FATAL_ERROR,
+  FILE_NOT_LISTED,
+  FILE_LENGTH_MISMATCH,
+  INTERNAL_ERROR,
+  MAKE_RESIDENT_ZERO_SIZE,
+  RESIDENT_SORT_FAILURE,
 
-	NUMBER_OF_ERRORS				/* MAKE SURE THIS IS THE LAST ENTRY */
+  NUMBER_OF_ERRORS /* MAKE SURE THIS IS THE LAST ENTRY */
 } FileErrorType;
 
 // This is here tempararaly until library is put together.
-//extern WORD cdecl (*cdecl IO_Error)(FileErrorType error, BYTE const *filename);
+// extern WORD cdecl (*cdecl IO_Error)(FileErrorType error, BYTE const
+// *filename);
 extern short (*Open_Error)(FileErrorType, BYTE const *);
 
 /*=========================================================================*/
-/* File IO system structures																*/
+/* File IO system structures
+ */
 /*=========================================================================*/
 
-//lint -strong(AJX,FileDataType)
+// lint -strong(AJX,FileDataType)
 typedef struct {
-	char	*Name;		// File name (include sub-directory but not volume).
-	long	Size;			// File size (0=indeterminate).
-	void	*Ptr;			// Resident file pointer.
-	long	Start;		// Starting offset in DOS handle file.
-	unsigned char	Disk;			// Disk number location.
-	unsigned char	OpenCount;	// Count of open locks on resident file.
-	unsigned short	Flag;			// File control flags.
+  char *Name;               // File name (include sub-directory but not volume).
+  long Size;                // File size (0=indeterminate).
+  void *Ptr;                // Resident file pointer.
+  long Start;               // Starting offset in DOS handle file.
+  unsigned char Disk;       // Disk number location.
+  unsigned char OpenCount;  // Count of open locks on resident file.
+  unsigned short Flag;      // File control flags.
 } FileDataType;
 
-
 /*=========================================================================*/
-/* FIle IO system globals.																	*/
+/* FIle IO system globals.
+ */
 /*=========================================================================*/
 
 // These are cpp errors in funtions declarations	JULIO JEREZ
@@ -166,18 +168,18 @@ extern char DataPath[XMAXPATH + 1];
 extern char StartPath[XMAXPATH + 1];
 extern BOOL UseCD;
 
-
-
 /*=========================================================================*/
-/* The following prototypes are for the file: FILEINIT.CPP						*/
+/* The following prototypes are for the file: FILEINIT.CPP
+ */
 /*=========================================================================*/
 
 void cdecl WWDOS_Shutdown(void);
-FileInitErrorType cdecl WWDOS_Init(unsigned long cachesize, char *filedata, char *cdpath);
-
+FileInitErrorType cdecl WWDOS_Init(unsigned long cachesize, char *filedata,
+                                   char *cdpath);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: FILE.CPP							*/
+/* The following prototypes are for the file: FILE.CPP
+ */
 /*=========================================================================*/
 
 short cdecl Open_File(char const *file_name, short mode);
@@ -188,11 +190,11 @@ unsigned long cdecl Seek_File(short handle, LONG offset, short starting);
 short cdecl File_Exists(char const *file_name);
 unsigned long cdecl File_Size(short handle);
 BOOL cdecl Is_Handle_Valid(short handle, FileErrorType error, char const *name);
-short cdecl Open_File_With_Recovery( char const *file_name, unsigned short mode );
-
+short cdecl Open_File_With_Recovery(char const *file_name, unsigned short mode);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: FILECACH.CPP						*/
+/* The following prototypes are for the file: FILECACH.CPP
+ */
 /*=========================================================================*/
 
 void Unfragment_File_Cache(void);
@@ -200,18 +202,18 @@ BOOL cdecl Make_File_Resident(char const *filename);
 short cdecl Flush_Unused_File_Cache(short flush_keeps);
 BOOL cdecl Free_Resident_File(char const *file);
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: FILECHNG.CPP						*/
+/* The following prototypes are for the file: FILECHNG.CPP
+ */
 /*=========================================================================*/
 
 short cdecl Create_File(char const *file_name);
 short cdecl Delete_File(char const *file_name);
 BOOL cdecl Change_File_Size(short handle, unsigned long new_size);
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: FILEINFO.CPP						*/
+/* The following prototypes are for the file: FILEINFO.CPP
+ */
 /*=========================================================================*/
 
 short cdecl Get_DOS_Handle(short fh);
@@ -222,18 +224,17 @@ short cdecl Clear_File_Flags(char const *filename, short flags);
 short cdecl Get_File_Flags(char const *filename);
 BOOL cdecl Multi_Drive_Search(BOOL on);
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: FINDFILE.CPP						*/
+/* The following prototypes are for the file: FINDFILE.CPP
+ */
 /*=========================================================================*/
 
 short cdecl Find_File(char const *file_name);
 short cdecl Find_File_Index(char const *filename);
 
-
-
 /*=========================================================================*/
-/* The following prototypes are for the file: FFIRST.ASM							*/
+/* The following prototypes are for the file: FFIRST.ASM
+ */
 /*=========================================================================*/
 
 #include <dos.h>
@@ -242,15 +243,13 @@ short cdecl Find_File_Index(char const *filename);
 extern "C" {
 #endif
 
-extern short Find_First(unsigned char *fname, unsigned short mode, struct find_t *ffblk);
+extern short Find_First(unsigned char *fname, unsigned short mode,
+                        struct find_t *ffblk);
 extern short Find_Next(struct find_t *ffblk);
 
 #ifdef __cplusplus
 }
 #endif
 
-
-
-
-#endif // FILE_H
+#endif  // FILE_H
 

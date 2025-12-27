@@ -38,67 +38,73 @@
 #include "wwstd.h"
 
 /*=========================================================================*/
-/* AUD file header type																		*/
+/* AUD file header type
+ */
 /*=========================================================================*/
-#define	AUD_FLAG_STEREO	1
-#define	AUD_FLAG_16BIT		2
+#define AUD_FLAG_STEREO 1
+#define AUD_FLAG_16BIT 2
 
 // PWG 3-14-95: This structure used to have bit fields defined for Stereo
 //   and Bits.  These were removed because watcom packs them into a 32 bit
 //   flag entry even though they could have fit in a 8 bit entry.
 #pragma pack(push, 1)
 typedef struct {
-	uint16_t Rate;				// Playback rate (hertz).
-	int32_t	 Size;				// Size of data (bytes).
-	int32_t	 UncompSize;		// Size of data (bytes).
-	uint8_t  Flags;				// Holds flags for info
-								//  1: Is the sample stereo?
-								//  2: Is the sample 16 bits?
-	uint8_t  Compression;		// What kind of compression for this sample?
+  uint16_t Rate;        // Playback rate (hertz).
+  int32_t Size;         // Size of data (bytes).
+  int32_t UncompSize;   // Size of data (bytes).
+  uint8_t Flags;        // Holds flags for info
+                        //  1: Is the sample stereo?
+                        //  2: Is the sample 16 bits?
+  uint8_t Compression;  // What kind of compression for this sample?
 } AUDHeaderType;
 #pragma pack(pop)
 
-
 /*=========================================================================*/
-/*	There can be a different sound driver for sound effects, digitized		*/
-/*	samples, and musical scores.  Each one must be of these specified			*/
-/*	types.																						*/
+/*	There can be a different sound driver for sound effects, digitized
+ */
+/*	samples, and musical scores.  Each one must be of these specified
+ */
+/*	types.
+ */
 /*=========================================================================*/
 typedef enum {
-	SAMPLE_NONE,		// No digitized sounds will be played.
-	SAMPLE_SDL,
-	SAMPLE_TEMP=0x1000,
-	SAMPLE_LAST
+  SAMPLE_NONE,  // No digitized sounds will be played.
+  SAMPLE_SDL,
+  SAMPLE_TEMP = 0x1000,
+  SAMPLE_LAST
 } Sample_Type;
 
 typedef enum {
-	SFX_NONE,			// No sound effects will be played.
-	SFX_SDL,
-	SFX_TEMP=0x1000,
-	SFX_LAST
+  SFX_NONE,  // No sound effects will be played.
+  SFX_SDL,
+  SFX_TEMP = 0x1000,
+  SFX_LAST
 } SFX_Type;
 
-
-
 /*=========================================================================*/
-/* The following prototypes are for the file: SOUNDIO.CPP						*/
+/* The following prototypes are for the file: SOUNDIO.CPP
+ */
 /*=========================================================================*/
-int File_Stream_Sample_Vol(char const *filename, int volume, bool real_time_start = false);
+int File_Stream_Sample_Vol(char const *filename, int volume,
+                           bool real_time_start = false);
 void Sound_Callback(void);
-bool Audio_Init( void * window , int bits_per_sample, bool stereo , int rate , int reverse_channels);
+bool Audio_Init(void *window, int bits_per_sample, bool stereo, int rate,
+                int reverse_channels);
 void Sound_End(void);
 void Stop_Sample(int handle);
 bool Sample_Status(int handle);
-bool Is_Sample_Playing(void const * sample);
-void Stop_Sample_Playing(void const * sample);
-int Play_Sample(void const *sample, int priority=0xFF, int volume=0xFF, signed short panloc = 0x0);
-int Play_Sample_Handle(void const *sample, int priority, int volume, signed short panloc, int id);
+bool Is_Sample_Playing(void const *sample);
+void Stop_Sample_Playing(void const *sample);
+int Play_Sample(void const *sample, int priority = 0xFF, int volume = 0xFF,
+                signed short panloc = 0x0);
+int Play_Sample_Handle(void const *sample, int priority, int volume,
+                       signed short panloc, int id);
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
 int Get_Free_Sample_Handle(int priority);
 int Get_Digi_Handle(void);
-bool Start_Primary_Sound_Buffer (bool forced);
-void Stop_Primary_Sound_Buffer (void);
+bool Start_Primary_Sound_Buffer(bool forced);
+void Stop_Primary_Sound_Buffer(void);
 
 #ifdef TD
 void *Load_Sample(char const *filename);
@@ -108,7 +114,9 @@ void Free_Sample(void const *sample);
 typedef void (*AudioCallback)(uint8_t *stream, int len);
 uint32_t Get_Audio_Device();
 void *Get_Audio_Spec();
-AudioCallback *Get_Audio_Callback_Ptr(); // returns a ptr to a function ptr as we're passing this the wrong way around
+AudioCallback *
+Get_Audio_Callback_Ptr();  // returns a ptr to a function ptr as we're passing
+                           // this the wrong way around
 
 extern SFX_Type SoundType;
 extern Sample_Type SampleType;

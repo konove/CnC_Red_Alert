@@ -19,24 +19,24 @@
 #ifndef VQMPORTIO_H
 #define VQMPORTIO_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     Portio.h (32-Bit protected mode)
-*
-* DESCRIPTION
-*     Hardware port I/O
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     Febuary 3, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     Portio.h (32-Bit protected mode)
+ *
+ * DESCRIPTION
+ *     Hardware port I/O
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     Febuary 3, 1995
+ *
+ ****************************************************************************/
 
 #ifdef __BORLANDC__
 
@@ -54,4 +54,3 @@ void __cdecl outp(unsigned short portid, short value);
 #endif /* __BORLANDC__ */
 
 #endif /* VQMPORTIO_H */
-

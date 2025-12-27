@@ -17,29 +17,30 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                     $Archive:: /Sun/_WSProto.h                                             $*
+ *                     $Archive:: /Sun/_WSProto.h $*
  *                                                                                             *
- *                      $Author:: Joe_b                                                       $*
+ *                      $Author:: Joe_b $*
  *                                                                                             *
- *                     $Modtime:: 8/06/97 12:39p                                              $*
+ *                     $Modtime:: 8/06/97 12:39p $*
  *                                                                                             *
- *                    $Revision:: 3                                                           $*
+ *                    $Revision:: 3 $*
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef _WSPROTO_H
 #define _WSPROTO_H
 
-
 class WinsockInterfaceClass;
-extern WinsockInterfaceClass *PacketTransport;			//The object for interfacing with Winsock
+extern WinsockInterfaceClass
+    *PacketTransport;  // The object for interfacing with Winsock
 
-#endif	//_WSPROTO_H
+#endif  //_WSPROTO_H

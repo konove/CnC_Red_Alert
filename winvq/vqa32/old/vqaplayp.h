@@ -19,28 +19,28 @@
 #ifndef VQAPLAYP_H
 #define VQAPLAYP_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* PROJECT
-*     VQA player library. (32-Bit protected mode)
-*
-* FILE
-*     vqaplayp.h
-*
-* DESCRIPTION
-*     VQAPlay private library definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*     Bill Randolph
-*
-* DATE
-*     August 21, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * PROJECT
+ *     VQA player library. (32-Bit protected mode)
+ *
+ * FILE
+ *     vqaplayp.h
+ *
+ * DESCRIPTION
+ *     VQAPlay private library definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *     Bill Randolph
+ *
+ * DATE
+ *     August 21, 1995
+ *
+ ****************************************************************************/
 
 #include <vqm32\video.h>
 #include <vqm32\soscomp.h>
@@ -49,7 +49,7 @@
 #include "vqaplay.h"
 #include "caption.h"
 
-#if(VQAAUDIO_ON)
+#if (VQAAUDIO_ON)
 #include "sos.h"
 #endif
 
@@ -59,25 +59,24 @@
 
 /* Internal library version. */
 #define VQA_VERSION "2.42"
-#define VQA_DATE    __DATE__" "__TIME__
+#define VQA_DATE __DATE__ " "__TIME__
 
-#define VQA_IDSTRING "VQA32 "VQA_VERSION" ("VQA_DATE")"
+#define VQA_IDSTRING "VQA32 " VQA_VERSION " (" VQA_DATE ")"
 #define VQA_REQUIRES "VQM32 2.12 or better."
 
 /* Block dimensions macro and identifiers. */
-#define BLOCK_DIM(a,b) (((a&0xFF)<<8)|(b&0xFF))
-#define BLOCK_2X2 BLOCK_DIM(2,2)
-#define BLOCK_2X3 BLOCK_DIM(2,3)
-#define BLOCK_4X2 BLOCK_DIM(4,2)
-#define BLOCK_4X4 BLOCK_DIM(4,4)
+#define BLOCK_DIM(a, b) (((a & 0xFF) << 8) | (b & 0xFF))
+#define BLOCK_2X2 BLOCK_DIM(2, 2)
+#define BLOCK_2X3 BLOCK_DIM(2, 3)
+#define BLOCK_4X2 BLOCK_DIM(4, 2)
+#define BLOCK_4X4 BLOCK_DIM(4, 4)
 
 /* Memory limits */
-#define	VQA_MAX_CBBUFS    10 /* Maximum number of codebook buffers */
-#define	VQA_MAX_FRAMEBUFS 30 /* Maximum number of frame buffers */
+#define VQA_MAX_CBBUFS 10    /* Maximum number of codebook buffers */
+#define VQA_MAX_FRAMEBUFS 30 /* Maximum number of frame buffers */
 
 /* Special Constants */
-#define	VQA_MASK_POINTER 0x8000 /* Pointer value to use for masking. */
-
+#define VQA_MASK_POINTER 0x8000 /* Pointer value to use for masking. */
 
 /*---------------------------------------------------------------------------
  * STRUCTURES AND RELATED DEFINITIONS
@@ -89,10 +88,9 @@
  * size - Size of chunk.
  */
 typedef struct _ChunkHeader {
-	unsigned long id;
-	unsigned long size;
+  unsigned long id;
+  unsigned long size;
 } ChunkHeader;
-
 
 /* ZAPHeader: ZAP audio compression header. NOTE: If the uncompressed size
  *            and the compressed size are equal then the audio frame is RAW
@@ -102,10 +100,9 @@ typedef struct _ChunkHeader {
  * CompSize   - Compressed size in bytes.
  */
 typedef struct _ZAPHeader {
-	unsigned short UnCompSize;
-	unsigned short CompSize;
+  unsigned short UnCompSize;
+  unsigned short CompSize;
 } ZAPHeader;
-
 
 /* VQACBNode: A circular list of codebook buffers, used by the load task.
  *            If the data is compressed, it is loaded into the end of the
@@ -122,18 +119,17 @@ typedef struct _ZAPHeader {
  * CBOffset - Offset into the buffer of the compressed data.
  */
 typedef struct _VQACBNode {
-	unsigned char     *Buffer;
-	struct _VQACBNode *Next;
-	unsigned long     Flags;
-	unsigned long     CBOffset;
+  unsigned char *Buffer;
+  struct _VQACBNode *Next;
+  unsigned long Flags;
+  unsigned long CBOffset;
 } VQACBNode;
 
 /* VQACBNode flags */
-#define	VQACBB_DOWNLOADED 0 /* Download codebook to VRAM (XMODE VRAM) */
-#define VQACBB_CBCOMP     1 /* Codebook is compressed */
-#define	VQACBF_DOWNLOADED (1<<VQACBB_DOWNLOADED)
-#define	VQACBF_CBCOMP     (1<<VQACBB_CBCOMP)
-
+#define VQACBB_DOWNLOADED 0 /* Download codebook to VRAM (XMODE VRAM) */
+#define VQACBB_CBCOMP 1     /* Codebook is compressed */
+#define VQACBF_DOWNLOADED (1 << VQACBB_DOWNLOADED)
+#define VQACBF_CBCOMP (1 << VQACBB_CBCOMP)
 
 /* VQAFrameNode: A circular list of frame buffers, filled in by the load
  *               task. If the data is compressed, it is loaded into the end
@@ -153,29 +149,28 @@ typedef struct _VQACBNode {
  * PaletteSize - Size of the palette for this frame (in bytes).
  */
 typedef struct _VQAFrameNode {
-	unsigned char        *Pointers;
-	VQACBNode            *Codebook;
-	unsigned char        *Palette;
-	struct _VQAFrameNode *Next;
-	unsigned long        Flags; 
-	long                 FrameNum;
-	long                 PtrOffset;
-	long                 PalOffset;
-	long                 PaletteSize;
+  unsigned char *Pointers;
+  VQACBNode *Codebook;
+  unsigned char *Palette;
+  struct _VQAFrameNode *Next;
+  unsigned long Flags;
+  long FrameNum;
+  long PtrOffset;
+  long PalOffset;
+  long PaletteSize;
 } VQAFrameNode;
 
 /* FrameNode flags */
-#define	VQAFRMB_LOADED  0 /* Frame loaded */
-#define	VQAFRMB_KEY     1 /* Key Frame (must be drawn) */
-#define	VQAFRMB_PALETTE 2 /* Palette needs set */
+#define VQAFRMB_LOADED 0  /* Frame loaded */
+#define VQAFRMB_KEY 1     /* Key Frame (must be drawn) */
+#define VQAFRMB_PALETTE 2 /* Palette needs set */
 #define VQAFRMB_PALCOMP 3 /* Palette is compressed */
 #define VQAFRMB_PTRCOMP 4 /* Vector pointer data is compressed */
-#define	VQAFRMF_LOADED  (1<<VQAFRMB_LOADED)
-#define	VQAFRMF_KEY     (1<<VQAFRMB_KEY)
-#define	VQAFRMF_PALETTE (1<<VQAFRMB_PALETTE)
-#define	VQAFRMF_PALCOMP (1<<VQAFRMB_PALCOMP)
-#define	VQAFRMF_PTRCOMP (1<<VQAFRMB_PTRCOMP)
-
+#define VQAFRMF_LOADED (1 << VQAFRMB_LOADED)
+#define VQAFRMF_KEY (1 << VQAFRMB_KEY)
+#define VQAFRMF_PALETTE (1 << VQAFRMB_PALETTE)
+#define VQAFRMF_PALCOMP (1 << VQAFRMB_PALCOMP)
+#define VQAFRMF_PTRCOMP (1 << VQAFRMB_PTRCOMP)
 
 /* VQALoader: Data needed exclusively by the Loader.
  *            (Make sure this structure's size is always DWORD aligned.)
@@ -195,21 +190,20 @@ typedef struct _VQAFrameNode {
  * CurChunkHdr   - Chunk header of the chunk currently being processed.
  */
 typedef struct _VQALoader {
-	VQACBNode    *CurCB;
-	VQACBNode    *FullCB;
-	VQAFrameNode *CurFrame;
-	long         NumPartialCB;
-	long         PartialCBSize;
-	long         CurFrameNum;
-	long         LastCBFrame;
-	long         LastFrameNum;
-	long         WaitsOnDrawer;
-	long         WaitsOnAudio;
-	long         FrameSize;
-	long         MaxFrameSize;
-	ChunkHeader  CurChunkHdr;
+  VQACBNode *CurCB;
+  VQACBNode *FullCB;
+  VQAFrameNode *CurFrame;
+  long NumPartialCB;
+  long PartialCBSize;
+  long CurFrameNum;
+  long LastCBFrame;
+  long LastFrameNum;
+  long WaitsOnDrawer;
+  long WaitsOnAudio;
+  long FrameSize;
+  long MaxFrameSize;
+  ChunkHeader CurChunkHdr;
 } VQALoader;
-
 
 /* VQADrawer: Data needed exclusively by the Drawer.
  *            (Make sure this structure's size is always DWORD aligned.)
@@ -240,36 +234,35 @@ typedef struct _VQALoader {
  * WaitsOnLoader  - Number of wait states Drawer hits waiting on the Loader.
  */
 typedef struct _VQADrawer {
-	VQAFrameNode  *CurFrame;
-	unsigned long Flags;
-	DisplayInfo   *Display;
-	unsigned char *ImageBuf;
-	long          ImageWidth;
-	long          ImageHeight;
-	long          X1,Y1,X2,Y2;
-	long          ScreenOffset;
-	long          CurPalSize;
-	unsigned char Palette_24[768];
-	unsigned char Palette_15[512];
-	long          BlocksPerRow;
-	long          NumRows;
-	long          NumBlocks;
-	long          MaskStart;
-	long          MaskWidth;
-	long          MaskHeight;
-	long          LastTime;
-	long          LastFrame;
-	long          LastFrameNum;
-	long          DesiredFrame;
-	long          NumSkipped;
-	long          WaitsOnFlipper;
-	long          WaitsOnLoader;
+  VQAFrameNode *CurFrame;
+  unsigned long Flags;
+  DisplayInfo *Display;
+  unsigned char *ImageBuf;
+  long ImageWidth;
+  long ImageHeight;
+  long X1, Y1, X2, Y2;
+  long ScreenOffset;
+  long CurPalSize;
+  unsigned char Palette_24[768];
+  unsigned char Palette_15[512];
+  long BlocksPerRow;
+  long NumRows;
+  long NumBlocks;
+  long MaskStart;
+  long MaskWidth;
+  long MaskHeight;
+  long LastTime;
+  long LastFrame;
+  long LastFrameNum;
+  long DesiredFrame;
+  long NumSkipped;
+  long WaitsOnFlipper;
+  long WaitsOnLoader;
 } VQADrawer;
 
 /* Drawer flags */
-#define	VQADRWB_SETPAL 0  /* Set palette */
-#define	VQADRWF_SETPAL (1<<VQADRWB_SETPAL)
-
+#define VQADRWB_SETPAL 0 /* Set palette */
+#define VQADRWF_SETPAL (1 << VQADRWB_SETPAL)
 
 /* VQAFlipper: Data needed exclusively by the page-flipper.
  *             (Make sure this structure's size is always DWORD aligned.)
@@ -279,12 +272,11 @@ typedef struct _VQADrawer {
  * pad          - DWORD alignment padding.
  */
 typedef struct _VQAFlipper {
-	VQAFrameNode *CurFrame;
-	long         LastFrameNum;
+  VQAFrameNode *CurFrame;
+  long LastFrameNum;
 } VQAFlipper;
 
-
-#if(VQAAUDIO_ON)
+#if (VQAAUDIO_ON)
 
 #ifdef __WATCOMC__
 #pragma pack(4);
@@ -323,59 +315,58 @@ typedef struct _VQAFlipper {
  * sSOSInitDriver - HMI driver initialization structure.
  */
 typedef struct _VQAAudio {
-	unsigned char      *Buffer;
-	unsigned long      AudBufPos;
-	short              *IsLoaded;
-	unsigned long      NumAudBlocks;
-	unsigned long      CurBlock;
-	unsigned long      NextBlock;
-	unsigned char      *TempBuf;
-	unsigned long      TempBufLen;
-	unsigned long      TempBufSize;
-	unsigned long      Flags;
-	unsigned long      PlayPosition;
-	unsigned long      SamplesPlayed;
-	unsigned long      NumSkipped;
-	unsigned short     SampleRate;
-	unsigned char      Channels;
-	unsigned char      BitsPerSample;
-	unsigned long      BytesPerSec;
-	WORD               DigiHandle;
-	WORD               SampleHandle;
-	WORD               DigiTimer;
-	_SOS_START_SAMPLE  sSOSSampleData;
-	_SOS_COMPRESS_INFO ADPCM_Info;
-	_SOS_CAPABILITIES  DigiCaps;
-	_SOS_HARDWARE      DigiHardware;
-	_SOS_INIT_DRIVER   sSOSInitDriver;
+  unsigned char *Buffer;
+  unsigned long AudBufPos;
+  short *IsLoaded;
+  unsigned long NumAudBlocks;
+  unsigned long CurBlock;
+  unsigned long NextBlock;
+  unsigned char *TempBuf;
+  unsigned long TempBufLen;
+  unsigned long TempBufSize;
+  unsigned long Flags;
+  unsigned long PlayPosition;
+  unsigned long SamplesPlayed;
+  unsigned long NumSkipped;
+  unsigned short SampleRate;
+  unsigned char Channels;
+  unsigned char BitsPerSample;
+  unsigned long BytesPerSec;
+  WORD DigiHandle;
+  WORD SampleHandle;
+  WORD DigiTimer;
+  _SOS_START_SAMPLE sSOSSampleData;
+  _SOS_COMPRESS_INFO ADPCM_Info;
+  _SOS_CAPABILITIES DigiCaps;
+  _SOS_HARDWARE DigiHardware;
+  _SOS_INIT_DRIVER sSOSInitDriver;
 } VQAAudio;
 
 /* Audio flags. */
-#define VQAAUDB_DIGIINIT  0  /* HMI digital driver initialized (2 bits) */
+#define VQAAUDB_DIGIINIT 0   /* HMI digital driver initialized (2 bits) */
 #define VQAAUDB_TIMERINIT 2  /* HMI timer system initialized (2 bits) */
-#define VQAAUDB_HMITIMER  4  /* HMI timer callback initialized (2 bits) */
+#define VQAAUDB_HMITIMER 4   /* HMI timer callback initialized (2 bits) */
 #define VQAAUDB_ISPLAYING 6  /* Audio playing flag. */
 #define VQAAUDB_MEMLOCKED 30 /* Audio memory page locked. */
 #define VQAAUDB_MODLOCKED 31 /* Audio module page locked. */
 
-#define VQAAUDF_DIGIINIT  (3<<VQAAUDB_DIGIINIT)
-#define VQAAUDF_TIMERINIT (3<<VQAAUDB_TIMERINIT)
-#define VQAAUDF_HMITIMER  (3<<VQAAUDB_HMITIMER)
-#define VQAAUDF_ISPLAYING (1<<VQAAUDB_ISPLAYING)
-#define VQAAUDF_MEMLOCKED (1<<VQAAUDB_MEMLOCKED)
-#define VQAAUDF_MODLOCKED (1<<VQAAUDB_MODLOCKED)
+#define VQAAUDF_DIGIINIT (3 << VQAAUDB_DIGIINIT)
+#define VQAAUDF_TIMERINIT (3 << VQAAUDB_TIMERINIT)
+#define VQAAUDF_HMITIMER (3 << VQAAUDB_HMITIMER)
+#define VQAAUDF_ISPLAYING (1 << VQAAUDB_ISPLAYING)
+#define VQAAUDF_MEMLOCKED (1 << VQAAUDB_MEMLOCKED)
+#define VQAAUDF_MODLOCKED (1 << VQAAUDB_MODLOCKED)
 
 /* HMI device initialization conditions. (DIGIINIT, TIMERINIT, HMITIMER) */
-#define HMI_UNINIT  0  /* Unitialize state. */
-#define HMI_VQAINIT 1  /* VQA initialized */
-#define HMI_APPINIT 2  /* Application initialized */
+#define HMI_UNINIT 0  /* Unitialize state. */
+#define HMI_VQAINIT 1 /* VQA initialized */
+#define HMI_APPINIT 2 /* Application initialized */
 
 #ifdef __WATCOMC__
 #pragma pack(1);
 #endif
 
 #endif /* VQAAUDIO_ON */
-
 
 /* VQAData: This stucture contains all the data used for playing a VQA.
  *
@@ -401,58 +392,57 @@ typedef struct _VQAAudio {
  * MemUsed      - Number of bytes allocated by VQA_AllocBuffers
  */
 typedef struct _VQAData {
-	long (*Draw_Frame)(VQAHandle *vqa);
-	long (*Page_Flip)(VQAHandle *vqa);
+  long (*Draw_Frame)(VQAHandle *vqa);
+  long (*Page_Flip)(VQAHandle *vqa);
 
-	#ifndef PHARLAP_TNT
-	void cdecl (*UnVQ)(unsigned char *codebook, unsigned char *pointers,
-			unsigned char *buffer, unsigned long blocksperrow,
-			unsigned long numrows, unsigned long bufwidth);
-	#else
-	void cdecl (*UnVQ)(unsigned char *codebook, unsigned char *pointers,
-			FARPTR buffer, unsigned long blocksperrow, unsigned long numrows,
-			unsigned long bufwidth);
-	#endif
+#ifndef PHARLAP_TNT
+  void cdecl (*UnVQ)(unsigned char *codebook, unsigned char *pointers,
+                     unsigned char *buffer, unsigned long blocksperrow,
+                     unsigned long numrows, unsigned long bufwidth);
+#else
+  void cdecl (*UnVQ)(unsigned char *codebook, unsigned char *pointers,
+                     FARPTR buffer, unsigned long blocksperrow,
+                     unsigned long numrows, unsigned long bufwidth);
+#endif
 
-	VQAFrameNode  *FrameData;
-	VQACBNode     *CBData;
+  VQAFrameNode *FrameData;
+  VQACBNode *CBData;
 
-	#if(VQAAUDIO_ON)
-	VQAAudio      Audio;
-	#endif
+#if (VQAAUDIO_ON)
+  VQAAudio Audio;
+#endif
 
-	VQALoader     Loader;
-	VQADrawer     Drawer;
-	VQAFlipper    Flipper;
-	unsigned long Flags;
-	long          *Foff;
-	long          VBIBit;
-	long          Max_CB_Size;
-	long          Max_Pal_Size;
-	long          Max_Ptr_Size;
-	long          LoadedFrames;
-	long          DrawnFrames;
-	long          StartTime;
-	long          EndTime;
-	long          MemUsed;
+  VQALoader Loader;
+  VQADrawer Drawer;
+  VQAFlipper Flipper;
+  unsigned long Flags;
+  long *Foff;
+  long VBIBit;
+  long Max_CB_Size;
+  long Max_Pal_Size;
+  long Max_Ptr_Size;
+  long LoadedFrames;
+  long DrawnFrames;
+  long StartTime;
+  long EndTime;
+  long MemUsed;
 } VQAData;
 
 /* VQAData flags */
 #define VQADATB_UPDATE 0 /* Update the display. */
 #define VQADATB_DSLEEP 1 /* Drawer sleep state. */
 #define VQADATB_LSLEEP 2 /* Loader sleep state. */
-#define VQADATB_DDONE  3 /* Drawer done flag. (0 = done) */
-#define VQADATB_LDONE  4 /* Loader done flag. (0 = done) */
+#define VQADATB_DDONE 3  /* Drawer done flag. (0 = done) */
+#define VQADATB_LDONE 4  /* Loader done flag. (0 = done) */
 #define VQADATB_PRIMED 5 /* Buffers are primed. */
 #define VQADATB_PAUSED 6 /* The player is paused. */
-#define VQADATF_UPDATE (1<<VQADATB_UPDATE)
-#define VQADATF_DSLEEP (1<<VQADATB_DSLEEP)
-#define VQADATF_LSLEEP (1<<VQADATB_LSLEEP)
-#define VQADATF_DDONE  (1<<VQADATB_DDONE)
-#define VQADATF_LDONE  (1<<VQADATB_LDONE)
-#define VQADATF_PRIMED (1<<VQADATB_PRIMED)
-#define VQADATF_PAUSED (1<<VQADATB_PAUSED)
-
+#define VQADATF_UPDATE (1 << VQADATB_UPDATE)
+#define VQADATF_DSLEEP (1 << VQADATB_DSLEEP)
+#define VQADATF_LSLEEP (1 << VQADATB_LSLEEP)
+#define VQADATF_DDONE (1 << VQADATB_DDONE)
+#define VQADATF_LDONE (1 << VQADATB_LDONE)
+#define VQADATF_PRIMED (1 << VQADATB_PRIMED)
+#define VQADATF_PAUSED (1 << VQADATB_PAUSED)
 
 /* VQAHandleP: Private VQA file handle. Must be obtained by calling
  *             VQA_Alloc() and freed through VQA_Free(). This is the only
@@ -466,16 +456,14 @@ typedef struct _VQAData {
  * vocfh     - Override audiotrack file handle.
  */
 typedef struct _VQAHandleP {
-	unsigned long VQAio;
-	long          (*IOHandler)(VQAHandle *vqa, long action, void *buffer,
-	                          long nbytes);
-	VQAData       *VQABuf;
-	VQAConfig     Config;
-	VQAHeader     Header;
-	long          vocfh;
-	CaptionInfo   *Caption;
+  unsigned long VQAio;
+  long (*IOHandler)(VQAHandle *vqa, long action, void *buffer, long nbytes);
+  VQAData *VQABuf;
+  VQAConfig Config;
+  VQAHeader Header;
+  long vocfh;
+  CaptionInfo *Caption;
 } VQAHandleP;
-
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
@@ -494,7 +482,7 @@ unsigned long VQA_GetTime(VQAHandleP *vqap);
 long VQA_TimerMethod(void);
 
 /* Audio system. */
-#if(VQAAUDIO_ON)
+#if (VQAAUDIO_ON)
 long VQA_OpenAudio(VQAHandleP *vqap);
 void VQA_CloseAudio(VQAHandleP *vqap);
 long VQA_StartAudio(VQAHandleP *vqap);
@@ -507,4 +495,3 @@ void VQA_InitMono(VQAHandleP *vqap);
 void VQA_UpdateMono(VQAHandleP *vqap);
 
 #endif /* VQAPLAYP_H */
-

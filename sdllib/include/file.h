@@ -22,13 +22,14 @@
  *                                                                         *
  *                 Project Name : Library - Filio header stuff.            *
  *                                                                         *
- *                    File Name : FILE.H                                 	*
+ *                    File Name : FILE.H *
  *                                                                         *
  *                   Programmer : Scott K. Bowen                           *
  *                                                                         *
  *                   Start Date : September 13, 1993                       *
  *                                                                         *
- *                  Last Update : April 11, 1994									*
+ *                  Last Update : April 11, 1994
+ **
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
@@ -41,24 +42,24 @@
 #include <time.h>
 
 /*=========================================================================*/
-/* File IO system defines and enumerations											*/
+/* File IO system defines and enumerations
+ */
 /*=========================================================================*/
 
 /*
 **	These are the Open_File, Read_File, and Seek_File constants.
 */
 #ifndef READ
-#define READ						1	// Read access.
+#define READ 1  // Read access.
 #endif
 #ifndef WRITE
-#define WRITE						2	// Write access.
+#define WRITE 2  // Write access.
 #endif
 #ifndef SEEK_SET
-#define SEEK_SET					0	// Seek from start of file.
-#define SEEK_CUR					1	// Seek relative from current location.
-#define SEEK_END					2	// Seek from end of file.
+#define SEEK_SET 0  // Seek from start of file.
+#define SEEK_CUR 1  // Seek relative from current location.
+#define SEEK_END 2  // Seek from end of file.
 #endif
-
 
 // These are actually implemented in the game, but used by audio and WSA
 int Open_File(char const *file_name, int mode);
@@ -73,8 +74,10 @@ int Find_File(char const *file_name);
 void *IO_Open_File(const char *filename, int mode);
 void IO_Close_File(void *handle);
 
-bool IO_Read_File(void *handle, void *buffer, size_t count, size_t &actual_read);
-bool IO_Write_File(void *handle, const void *buffer, size_t count, size_t &actual_written);
+bool IO_Read_File(void *handle, void *buffer, size_t count,
+                  size_t &actual_read);
+bool IO_Write_File(void *handle, const void *buffer, size_t count,
+                   size_t &actual_written);
 
 size_t IO_Seek_File(void *handle, size_t offset, int origin);
 size_t IO_Get_File_Size(void *handle);
@@ -82,14 +85,13 @@ size_t IO_Get_File_Size(void *handle);
 bool IO_Delete_File(const char *filename);
 
 // file searching
-struct FindFileState
-{
-    const char *name;
-    time_t mod_time;
+struct FindFileState {
+  const char *name;
+  time_t mod_time;
 
-    // internal state
-    void *data;
-    int off;
+  // internal state
+  void *data;
+  int off;
 };
 
 bool Find_First_File(const char *path_glob, FindFileState &state);

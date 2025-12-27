@@ -20,27 +20,33 @@
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : Dynamic Data Encapsulation					*
+ *                 Project Name : Dynamic Data Encapsulation
+ **
  *                                                                         *
- *                    File Name : DDE.H												*
+ *                    File Name : DDE.H
+ **
  *                                                                         *
- *                   Programmer : Steve Wetherill									*
+ *                   Programmer : Steve Wetherill
+ **
  *                                                                         *
- *                   Start Date : June 1, 1996		                        *
+ *                   Start Date : June 1, 1996 *
  *                                                                         *
- *                  Last Update : June 8, 1996   [SW]                 		*
+ *                  Last Update : June 8, 1996   [SW] *
  *                                                                         *
  *-------------------------------------------------------------------------*
  *                                                                         *
- * This is the DDE (Instance_Class) which provides a simple CLIENT/SERVER	*
- * DDE model for data transactions between Windows applications.				*
- * This is a fairly naieve implementation allowing only one client/server	*
- * per Instance_Class object. 															*
+ * This is the DDE (Instance_Class) which provides a simple CLIENT/SERVER
+ ** DDE model for data transactions between Windows applications.
+ ** This is a fairly naieve implementation allowing only one client/server
+ ** per Instance_Class object.
+ **
  *																									*
- * Typical uses for this class are:														*
+ * Typical uses for this class are:
+ **
  *																									*
- * i. Robust verification of whether an application is running					*
- * ii. Data transfer between applications												*
+ * i. Robust verification of whether an application is running
+ ** ii. Data transfer between applications
+ **
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -48,128 +54,124 @@
 ***************************** Class defines *****************************
 */
 
-#ifndef 	__DDE_H
-#define	__DDE_H
+#ifndef __DDE_H
+#define __DDE_H
 
-#define	DDE_ADVISE_CONNECT		-1		// advisory "client has connected"
-#define	DDE_ADVISE_DISCONNECT	-2		// advisory "client has disconnected"
+#define DDE_ADVISE_CONNECT -1     // advisory "client has connected"
+#define DDE_ADVISE_DISCONNECT -2  // advisory "client has disconnected"
 
 /*
 ***************************** Class Declaration *****************************
 */
 
-class	Instance_Class {
+class Instance_Class {
+  /*
+  ---------------------------- Public Interface ----------------------------
+  */
+ public:
+  /*.....................................................................
+  Constructor:
+  - takes null terminated ASCII strings names for client and server
+  .....................................................................*/
 
-	/*
-	---------------------------- Public Interface ----------------------------
-	*/
-	public:
+  Instance_Class(  // constructor
+      LPSTR,       // null terminated local sever name string
+      LPSTR        // null terminated remote server name string
+  );
 
-		/*.....................................................................
-		Constructor:
-		- takes null terminated ASCII strings names for client and server
-		.....................................................................*/
+  /*.....................................................................
+  Destructor:
+  .....................................................................*/
+  ~Instance_Class(void);  // the destructor
 
-		Instance_Class(		// constructor
-			LPSTR,				// null terminated local sever name string
-			LPSTR					// null terminated remote server name string
-			);
+  /*.....................................................................
+  Send data routine:
+  - sends an unsolicited packet of data to the remote server
+  .....................................................................*/
+  BOOL Poke_Server(LPBYTE, DWORD);
 
-		/*.....................................................................
-		Destructor:
-		.....................................................................*/
-		~Instance_Class(void);	// the destructor
+  /*.....................................................................
+  Send data routine:
+  - sets up DNS for the server and registers a user callback to handle
+    incoming data
+  .....................................................................*/
+  BOOL Register_Server(BOOL CALLBACK (*)(LPBYTE, long));
 
-		/*.....................................................................
-		Send data routine:
-		- sends an unsolicited packet of data to the remote server
-		.....................................................................*/
-		BOOL	Poke_Server( LPBYTE, DWORD);
+  /*.....................................................................
+  Does a trial connect to the remote server.
+  - used to determine whether server is alive or not (and thus running)
+  .....................................................................*/
+  BOOL Test_Server_Running(HSZ);
 
-		/*.....................................................................
-		Send data routine:
-		- sets up DNS for the server and registers a user callback to handle
-		  incoming data
-		.....................................................................*/
-		BOOL	Register_Server( BOOL CALLBACK (*)(LPBYTE, long));
+  /*.....................................................................
+  Enables user callback (disabled by default)
+  .....................................................................*/
+  BOOL Enable_Callback(BOOL);  // enable or disable callback
 
-		/*.....................................................................
-		Does a trial connect to the remote server.
-		- used to determine whether server is alive or not (and thus running)
-		.....................................................................*/
-		BOOL	Test_Server_Running( HSZ );
+  /*.....................................................................
+  Open a connection for sending data to remote server
+  .....................................................................*/
+  BOOL Open_Poke_Connection(HSZ);
 
-		/*.....................................................................
-		Enables user callback (disabled by default)
-		.....................................................................*/
-		BOOL	Enable_Callback( BOOL );		// enable or disable callback
+  /*.....................................................................
+  Close connection with remote server
+  .....................................................................*/
+  BOOL Close_Poke_Connection(void);
 
-		/*.....................................................................
-		Open a connection for sending data to remote server
-		.....................................................................*/
-		BOOL	Open_Poke_Connection( HSZ );
+  //
+  // static members
+  //
 
-		/*.....................................................................
-		Close connection with remote server
-		.....................................................................*/
-		BOOL	Close_Poke_Connection( void );
+  /*.....................................................................
+  User callback - called upon receipt of incoming data (static member!)
+  .....................................................................*/
+  static BOOL CALLBACK (*callback)(
 
-		//
-		// static members
-		//
+      LPBYTE pointer,  // pointer to received data
+      long length      // if >0 length of received data
+                       // if <0
+                       //	-1 == client connect detected
+                       // -2 == client disconnect detected
+  );
 
-		/*.....................................................................
-		User callback - called upon receipt of incoming data (static member!)
-		.....................................................................*/
-		static BOOL CALLBACK	(*callback) (
+  /*.....................................................................
+  DDE callback, called when DDEML has an event for us
+  .....................................................................*/
+  static HDDEDATA CALLBACK dde_callback(
 
-			LPBYTE pointer,		// pointer to received data
-			long length				// if >0 length of received data
-										// if <0
-										//	-1 == client connect detected
-										// -2 == client disconnect detected
-			);
+      UINT uType,      // transaction type
+      UINT uFmt,       // clipboard data format
+      HCONV hconv,     // handle of the conversation
+      HSZ hsz1,        // handle of a string
+      HSZ hsz2,        // handle of a string
+      HDDEDATA hdata,  // handle of a global memory object
+      DWORD dwData1,   // transaction-specific data
+      DWORD dwData2    // transaction-specific data
+  );
+  HANDLE instance;  // this application's instance
+  HWND hwnd;        // valid window handle
 
-		/*.....................................................................
-		DDE callback, called when DDEML has an event for us
-		.....................................................................*/
-		static HDDEDATA CALLBACK dde_callback(
+  /*.....................................................................
+  member variables
+  .....................................................................*/
 
-			UINT  uType,		// transaction type
-			UINT  uFmt,			// clipboard data format
-			HCONV  hconv,		// handle of the conversation
-			HSZ  hsz1,			// handle of a string
-			HSZ  hsz2,			// handle of a string
-			HDDEDATA  hdata,	// handle of a global memory object
-			DWORD  dwData1,	// transaction-specific data
-			DWORD  dwData2 	// transaction-specific data
-			);
-		HANDLE	instance;	// this application's instance
-		HWND		hwnd;			// valid window handle
+  static DWORD id_inst;        // instance identifier set by DdeInitialize
+  static BOOL process_pokes;   // controls response to pokes
+  static char ascii_name[32];  // name of server
 
-		/*.....................................................................
-		member variables
-		.....................................................................*/
+  //
+  // non-static member variables
+  //
 
-		static DWORD id_inst;			// instance identifier set by DdeInitialize
-		static BOOL	process_pokes;		// controls response to pokes
-		static char ascii_name[32];	// name of server
+  HSZ remote_name;   // string handle for remote server name
+  HSZ local_name;    // string handle for local server name
+  HSZ system_topic;  // string handle for the "system" topic
+  HSZ poke_topic;    // string handle for poking data to server topic
+  HSZ poke_item;     // string handle for poking data to server item
 
-		//
-		// non-static member variables
-		//
-
-		HSZ remote_name; 		// string handle for remote server name
-		HSZ local_name; 		// string handle for local server name
-		HSZ system_topic;		// string handle for the "system" topic
-		HSZ poke_topic;		// string handle for poking data to server topic
-		HSZ poke_item;			// string handle for poking data to server item
-
-		HCONV conv_handle;   // conversation handle
-		BOOL	dde_error;		// error flag
-
+  HCONV conv_handle;  // conversation handle
+  BOOL dde_error;     // error flag
 };
 
 #endif
-
 

@@ -16,651 +16,620 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\factory.cpv   2.18   16 Oct 1995 16:51:26   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\factory.cpv   2.18   16 Oct 1995 16:51:26
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : FACTORY.CPP                                                  *
+ *                    File Name : FACTORY.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 12/26/94                                                     *
+ *                   Start Date : 12/26/94 *
  *                                                                                             *
- *                  Last Update : May 22, 1995 [JLB]                                           *
+ *                  Last Update : May 22, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   FactoryClass::AI -- Process factory production logic.                                     *
- *   FactoryClass::Abandon -- Abandons current construction with money refunded.               *
- *   FactoryClass::Completed -- Clears factory object after a completed production process.    *
- *   FactoryClass::Completion -- Fetchs the completion step for this factory.                  *
- *   FactoryClass::Cost_Per_Tick -- Breaks entire production cost into managable chunks.       *
- *   FactoryClass::FactoryClass -- Default constructor for factory objects.                    *
- *   FactoryClass::Get_Object -- Fetches pointer to object being constructed.                  *
- *   FactoryClass::Get_Special_Item -- gets factorys spc prod item                             *
- *   FactoryClass::Has_Changed -- Checks to see if a production step has occurred?             *
- *   FactoryClass::Has_Completed -- Checks to see if object has completed production.          *
- *   FactoryClass::Set -- Assigns a factory to produce an object.                              *
- *   FactoryClass::Set -- Fills a factory with an already completed object.                    *
- *   FactoryClass::Set -- Force factory to "produce" special object.                           *
- *   FactoryClass::Start -- Resumes production after suspension or creation.                   *
- *   FactoryClass::Suspend -- Temporarily stop production.                                     *
- *   FactoryClass::operator delete -- Returns a factory to the free factory pool.              *
- *   FactoryClass::operator new -- Allocates a factory object from the free factory pool.      *
- *   FactoryClass::~FactoryClass -- Default destructor for factory objects.                    *
- *   FactoryClass::Validate -- validates factory pointer													  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * FactoryClass::AI -- Process factory production logic. *
+ *   FactoryClass::Abandon -- Abandons current construction with money refunded.
+ ** FactoryClass::Completed -- Clears factory object after a completed
+ *production process.    * FactoryClass::Completion -- Fetchs the completion
+ *step for this factory.                  * FactoryClass::Cost_Per_Tick --
+ *Breaks entire production cost into managable chunks.       *
+ *   FactoryClass::FactoryClass -- Default constructor for factory objects. *
+ *   FactoryClass::Get_Object -- Fetches pointer to object being constructed. *
+ *   FactoryClass::Get_Special_Item -- gets factorys spc prod item *
+ *   FactoryClass::Has_Changed -- Checks to see if a production step has
+ *occurred?             * FactoryClass::Has_Completed -- Checks to see if object
+ *has completed production.          * FactoryClass::Set -- Assigns a factory to
+ *produce an object.                              * FactoryClass::Set -- Fills a
+ *factory with an already completed object.                    *
+ *   FactoryClass::Set -- Force factory to "produce" special object. *
+ *   FactoryClass::Start -- Resumes production after suspension or creation. *
+ *   FactoryClass::Suspend -- Temporarily stop production. *
+ *   FactoryClass::operator delete -- Returns a factory to the free factory
+ *pool.              * FactoryClass::operator new -- Allocates a factory object
+ *from the free factory pool.      * FactoryClass::~FactoryClass -- Default
+ *destructor for factory objects.                    * FactoryClass::Validate --
+ *validates factory pointer
+ **
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-#include	"function.h"
-
+#include "function.h"
 
 /***********************************************************************************************
- * FactoryClass::Validate -- validates factory pointer													  *
+ * FactoryClass::Validate -- validates factory pointer
+ **
  *                                                                                             *
- * INPUT:                                                                                      *
- *		none.																												  *
+ * INPUT: * none.
+ **
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *		1 = ok, 0 = error																								  *
+ * OUTPUT: * 1 = ok, 0 = error
+ **
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *		none.																												  *
+ * WARNINGS: * none.
+ **
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   08/09/1995 BRR : Created.                                                                 *
+ * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int FactoryClass::Validate(void) const
-{
-	int num;
+int FactoryClass::Validate(void) const {
+  int num;
 
-	num = Factories.ID(this);
-	if (num < 0 || num >= FACTORY_MAX) {
-		Validate_Error("FACTORY");
-		return (0);
-	}
-	else
-		return (1);
+  num = Factories.ID(this);
+  if (num < 0 || num >= FACTORY_MAX) {
+    Validate_Error("FACTORY");
+    return (0);
+  } else
+    return (1);
 }
 #else
-#define	Validate()
+#define Validate()
 #endif
 
-
 /***********************************************************************************************
- * FactoryClass::FactoryClass -- Default constructor for factory objects.                      *
+ * FactoryClass::FactoryClass -- Default constructor for factory objects. *
  *                                                                                             *
- *    This brings the factory into a null state. It is called when a factory object is         *
- *    created.                                                                                 *
+ *    This brings the factory into a null state. It is called when a factory
+ *object is         * created. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass(void)
-{
-	IsSuspended = false;
-	IsDifferent = false;
-	Balance		= 0;
-	SpecialItem = SPC_NONE;
-	Object 		= NULL;
-	House			= NULL;
-	Set_Rate(0);
-	Set_Stage(0);
+FactoryClass::FactoryClass(void) {
+  IsSuspended = false;
+  IsDifferent = false;
+  Balance = 0;
+  SpecialItem = SPC_NONE;
+  Object = NULL;
+  House = NULL;
+  Set_Rate(0);
+  Set_Stage(0);
 }
 
-
 /***********************************************************************************************
- * FactoryClass::~FactoryClass -- Default destructor for factory objects.                      *
+ * FactoryClass::~FactoryClass -- Default destructor for factory objects. *
  *                                                                                             *
- *    This cleans up a factory object in preparation for deletion. If there is currently       *
- *    an object in production, it is abandoned and money is refunded.                          *
+ *    This cleans up a factory object in preparation for deletion. If there is
+ *currently       * an object in production, it is abandoned and money is
+ *refunded.                          *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::~FactoryClass(void)
-{
-	if (GameActive) {
-		Abandon();
-	}
+FactoryClass::~FactoryClass(void) {
+  if (GameActive) {
+    Abandon();
+  }
 }
 
+/***********************************************************************************************
+ * FactoryClass::Init -- Clears all units for scenario preparation. *
+ *                                                                                             *
+ *    This routine will zero out the factory list and objects. This routine is
+ *typically       * used in preparation for a new scenario load. All factorys
+ *are guaranteed to be eliminated* by this routine. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/15/1994 JLB : Created. *
+ *=============================================================================================*/
+void FactoryClass::Init(void) { Factories.Free_All(); }
 
 /***********************************************************************************************
- * FactoryClass::Init -- Clears all units for scenario preparation.                            *
+ * FactoryClass::operator new -- Allocates a factory object from the free
+ *factory pool.        *
  *                                                                                             *
- *    This routine will zero out the factory list and objects. This routine is typically       *
- *    used in preparation for a new scenario load. All factorys are guaranteed to be eliminated*
- *    by this routine.                                                                         *
+ *    This routine allocates a factory from the free factory pool. If there is
+ *no more room    * to allocate a factory, then NULL is returned. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  Returns with pointer to the newly allocated factory object. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   08/15/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Init(void)
-{
-	Factories.Free_All();
+void *FactoryClass::operator new(size_t) throw() {
+  void *ptr = Factories.Allocate();
+  if (ptr) {
+    ((FactoryClass *)ptr)->IsActive = true;
+  }
+  return (ptr);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::operator new -- Allocates a factory object from the free factory pool.        *
+ * FactoryClass::operator delete -- Returns a factory to the free factory pool.
+ **
  *                                                                                             *
- *    This routine allocates a factory from the free factory pool. If there is no more room    *
- *    to allocate a factory, then NULL is returned.                                            *
+ *    This returns the factory object back to the factory allocation pool. The
+ *factory is then * available to be allocated. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   ptr   -- Pointer to the factory object to delete. *
  *                                                                                             *
- * OUTPUT:  Returns with pointer to the newly allocated factory object.                        *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void * FactoryClass::operator new(size_t) throw()
-{
-	void * ptr = Factories.Allocate();
-	if (ptr) {
-		((FactoryClass *)ptr)->IsActive = true;
-	}
-	return(ptr);
+void FactoryClass::operator delete(void *ptr) {
+  if (ptr) {
+    ((FactoryClass *)ptr)->IsActive = false;
+  }
+  Factories.Free((FactoryClass *)ptr);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::operator delete -- Returns a factory to the free factory pool.                *
+ * FactoryClass::AI -- Process factory production logic. *
  *                                                                                             *
- *    This returns the factory object back to the factory allocation pool. The factory is then *
- *    available to be allocated.                                                               *
+ *    This routine should be called once per game tick. It handles the
+ *production process.     * As production proceeds, money is deducted from the
+ *owner object's house. When production * completes, the factory stop
+ *processing. A call to Abandon, Delete, or Completed is       * required after
+ *that point.                                                               *
  *                                                                                             *
- * INPUT:   ptr   -- Pointer to the factory object to delete.                                  *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. * 01/04/1995 JLB : Uses exact
+ *installment payment method.                                   *
  *=============================================================================================*/
-void FactoryClass::operator delete(void *ptr)
-{
-	if (ptr) {
-		((FactoryClass *)ptr)->IsActive = false;
-	}
-	Factories.Free((FactoryClass *)ptr);
-}
+void FactoryClass::AI(void) {
+  Validate();
+  if (!IsSuspended && (Object != NULL || SpecialItem)) {
+    int stages = 1;
 
+    /*
+    **	Determine the acceleration factor for factory production.
+    **	This applies only to human players. The computer builds
+    **	units on a building by building basis -- quantity of building
+    **	factory types doesn't affect individual factories.
+    */
+    if (Object && House->IsHuman) {
+      switch (Object->What_Am_I()) {
+        case RTTI_AIRCRAFT:
+          stages = House->AircraftFactories;
+          break;
+
+        case RTTI_INFANTRY:
+          stages = House->InfantryFactories;
+          break;
+
+        case RTTI_UNIT:
+          stages = House->UnitFactories;
+          break;
+
+        case RTTI_BUILDING:
+          stages = House->BuildingFactories;
+          break;
+      }
+      stages = MAX(stages, 1);
+    }
+
+    for (int index = 0; index < stages; index++) {
+      if (!Has_Completed() && Graphic_Logic()) {
+        IsDifferent = true;
+
+        int cost = Cost_Per_Tick();
+
+        cost = MIN(cost, Balance);
+
+        /*
+        **	Enough time has expired so that another production step can
+        *occur. *	If there is insufficient funds, then go back one
+        *production step and *	continue the countdown. The idea being that by
+        *the time the next *	production step occurs, there may be sufficient
+        *funds available.
+        */
+        if (cost > House->Available_Money()) {
+          Set_Stage(Fetch_Stage() - 1);
+        } else {
+          House->Spend_Money(cost);
+          Balance -= cost;
+        }
+        if (Debug_Instant_Build) {
+          Set_Stage(STEP_COUNT);
+        }
+        /*
+        **	If the production has completed, then suspend further
+        *production.
+        */
+        if (Fetch_Stage() == STEP_COUNT) {
+          IsSuspended = true;
+          Set_Rate(0);
+          House->Spend_Money(Balance);
+          Balance = 0;
+        }
+      }
+    }
+  }
+}
 
 /***********************************************************************************************
- * FactoryClass::AI -- Process factory production logic.                                       *
+ * FactoryClass::Has_Changed -- Checks to see if a production step has occurred?
+ **
  *                                                                                             *
- *    This routine should be called once per game tick. It handles the production process.     *
- *    As production proceeds, money is deducted from the owner object's house. When production *
- *    completes, the factory stop processing. A call to Abandon, Delete, or Completed is       *
- *    required after that point.                                                               *
+ *    Use this routine to determine if production has advanced at least one
+ *step. By using     * this function, intelligent rendering may be performed. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  bool; Has the production process advanced one step since the last
+ *time this        * function was called? *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   This function clears the changed status flag as a side effect. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
- *   01/04/1995 JLB : Uses exact installment payment method.                                   *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::AI(void)
-{
-	Validate();
-	if (!IsSuspended && (Object != NULL || SpecialItem)) {
-		int stages = 1;
-
-		/*
-		**	Determine the acceleration factor for factory production.
-		**	This applies only to human players. The computer builds
-		**	units on a building by building basis -- quantity of building
-		**	factory types doesn't affect individual factories.
-		*/
-		if (Object && House->IsHuman) {
-			switch (Object->What_Am_I()) {
-				case RTTI_AIRCRAFT:
-					stages = House->AircraftFactories;
-					break;
-
-				case RTTI_INFANTRY:
-					stages = House->InfantryFactories;
-					break;
-
-				case RTTI_UNIT:
-					stages = House->UnitFactories;
-					break;
-
-				case RTTI_BUILDING:
-					stages = House->BuildingFactories;
-					break;
-			}
-			stages = MAX(stages, 1);
-		}
-
-
-		for (int index = 0; index < stages; index++) {
-			if (!Has_Completed() && Graphic_Logic()) {
-				IsDifferent = true;
-
-				int cost = Cost_Per_Tick();
-
-				cost = MIN(cost, Balance);
-
-				/*
-				**	Enough time has expired so that another production step can occur.
-				**	If there is insufficient funds, then go back one production step and
-				**	continue the countdown. The idea being that by the time the next
-				**	production step occurs, there may be sufficient funds available.
-				*/
-				if (cost > House->Available_Money()) {
-					Set_Stage(Fetch_Stage()-1);
-				} else {
-					House->Spend_Money(cost);
-					Balance -= cost;
-				}
-				if ( Debug_Instant_Build ) {
-					Set_Stage(STEP_COUNT);
-				}
-				/*
-				**	If the production has completed, then suspend further production.
-				*/
-				if (Fetch_Stage() == STEP_COUNT) {
-					IsSuspended = true;
-					Set_Rate(0);
-					House->Spend_Money(Balance);
-					Balance = 0;
-				}
-			}
-		}
-	}
+bool FactoryClass::Has_Changed(void) {
+  Validate();
+  bool changed = IsDifferent;
+  IsDifferent = false;
+  return (changed);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Has_Changed -- Checks to see if a production step has occurred?               *
+ * FactoryClass::Set -- Assigns a factory to produce an object. *
  *                                                                                             *
- *    Use this routine to determine if production has advanced at least one step. By using     *
- *    this function, intelligent rendering may be performed.                                   *
+ *    This routine initializes a factory to produce the object specified. The
+ *desired object   * type is created and placed in suspended animation (limbo)
+ *until such time as production  * completes. Production is not actually started
+ *by this routine. An explicit call to       * Start() is required to begin
+ *production.                                                 *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   object   -- Reference to the object type class that is to be
+ *produced.             *
  *                                                                                             *
- * OUTPUT:  bool; Has the production process advanced one step since the last time this        *
- *                function was called?                                                         *
+ *          house    -- Reference to the owner of the object to be produced. *
  *                                                                                             *
- * WARNINGS:   This function clears the changed status flag as a side effect.                  *
+ * OUTPUT:  bool; Was production successfully prepared for this factory object.
+ *Failure means  * that the object could not be created. This is catastrophic
+ *and in such       * cases, the factory object should be deleted. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * WARNINGS:   Be sure to examine the return value from this function. Failure
+ *to initialize   * the factory means that the factory is useless and should be
+ *deleted.            *
+ *                                                                                             *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Has_Changed(void)
-{
-	Validate();
-	bool changed = IsDifferent;
-	IsDifferent = false;
-	return(changed);
-}
+bool FactoryClass::Set(TechnoTypeClass const &object, HouseClass &house) {
+  Validate();
+  /*
+  **	If there is any production currently in progress, abandon it.
+  */
+  Abandon();
 
+  /*
+  **	Set up the factory for the new production process.
+  */
+  IsDifferent = true;
+  IsSuspended = true;
+  Set_Rate(0);
+  Set_Stage(0);
+
+  /*
+  **	Create an object of the type requested.
+  */
+  Object = (TechnoClass *)object.Create_One_Of(&house);
+
+  if (Object) {
+    House = Object->House;
+    Balance = object.Cost_Of();
+    Object->PurchasePrice = Balance;
+  }
+
+  /*
+  **	If all was set up successfully, then return true.
+  */
+  return (Object != NULL);
+}
 
 /***********************************************************************************************
- * FactoryClass::Set -- Assigns a factory to produce an object.                                *
+ * FactoryClass::Set -- Force factory to "produce" special object. *
  *                                                                                             *
- *    This routine initializes a factory to produce the object specified. The desired object   *
- *    type is created and placed in suspended animation (limbo) until such time as production  *
- *    completes. Production is not actually started by this routine. An explicit call to       *
- *    Start() is required to begin production.                                                 *
+ *    Use this routine to force the factory into special production mode. Such
+ *production is   * used for the ion cannon and other timed special weapon
+ *events.                           *
  *                                                                                             *
- * INPUT:   object   -- Reference to the object type class that is to be produced.             *
+ * INPUT:   type     -- The special weapon type to begin "production" of. *
  *                                                                                             *
- *          house    -- Reference to the owner of the object to be produced.                   *
+ *          house    -- The owner of this production object. *
  *                                                                                             *
- * OUTPUT:  bool; Was production successfully prepared for this factory object. Failure means  *
- *                that the object could not be created. This is catastrophic and in such       *
- *                cases, the factory object should be deleted.                                 *
+ * OUTPUT:  Was the assignment successful? *
  *                                                                                             *
- * WARNINGS:   Be sure to examine the return value from this function. Failure to initialize   *
- *             the factory means that the factory is useless and should be deleted.            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(TechnoTypeClass const & object, HouseClass & house)
-{
-	Validate();
-	/*
-	**	If there is any production currently in progress, abandon it.
-	*/
-	Abandon();
+bool FactoryClass::Set(int const &type, HouseClass &house) {
+  Validate();
+  /*
+  **	If there is any production currently in progress, abandon it.
+  */
+  Abandon();
 
-	/*
-	**	Set up the factory for the new production process.
-	*/
-	IsDifferent = true;
-	IsSuspended = true;
-	Set_Rate(0);
-	Set_Stage(0);
+  /*
+  **	Set up the factory for the new production process.
+  */
+  IsDifferent = true;
+  IsSuspended = true;
+  Set_Rate(0);
+  Set_Stage(0);
 
-	/*
-	**	Create an object of the type requested.
-	*/
-	Object = (TechnoClass *)object.Create_One_Of(&house);
+  /*
+  **	Create an object of the type requested.
+  */
+  SpecialItem = type;
+  House = &house;
+  Balance = 0;
 
-	if (Object) {
-		House  = Object->House;
-		Balance = object.Cost_Of();
-		Object->PurchasePrice = Balance;
-	}
-
-	/*
-	**	If all was set up successfully, then return true.
-	*/
-	return(Object != NULL);
+  /*
+  **	If all was set up successfully, then return true.
+  */
+  return (SpecialItem != SPC_NONE);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Set -- Force factory to "produce" special object.                             *
+ * FactoryClass::Set -- Fills a factory with an already completed object. *
  *                                                                                             *
- *    Use this routine to force the factory into special production mode. Such production is   *
- *    used for the ion cannon and other timed special weapon events.                           *
+ *    This routine is called when a produced object is in placement mode but
+ *then placement    * is suspended. The object must then return to the factory
+ *as if it were newly completed   * and awaiting removal. *
  *                                                                                             *
- * INPUT:   type     -- The special weapon type to begin "production" of.                      *
+ * INPUT:   object   -- The object to return to the factory. *
  *                                                                                             *
- *          house    -- The owner of this production object.                                   *
+ * OUTPUT:  none *
  *                                                                                             *
- * OUTPUT:  Was the assignment successful?                                                     *
+ * WARNINGS:   This will abandon any current object being produced at the
+ *factory in order     * to set the new object into it. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/22/1995 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(int const & type, HouseClass & house)
-{
-	Validate();
-	/*
-	**	If there is any production currently in progress, abandon it.
-	*/
-	Abandon();
-
-	/*
-	**	Set up the factory for the new production process.
-	*/
-	IsDifferent = true;
-	IsSuspended = true;
-	Set_Rate(0);
-	Set_Stage(0);
-
-	/*
-	**	Create an object of the type requested.
-	*/
-	SpecialItem = type;
-	House = &house;
-	Balance = 0;
-
-	/*
-	**	If all was set up successfully, then return true.
-	*/
-	return(SpecialItem != SPC_NONE);
+void FactoryClass::Set(TechnoClass &object) {
+  Validate();
+  Abandon();
+  Object = &object;
+  House = Object->House;
+  Balance = 0;
+  Set_Rate(0);
+  Set_Stage(STEP_COUNT);
+  IsDifferent = true;
+  IsSuspended = true;
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Set -- Fills a factory with an already completed object.                      *
+ * FactoryClass::Suspend -- Temporarily stop production. *
  *                                                                                             *
- *    This routine is called when a produced object is in placement mode but then placement    *
- *    is suspended. The object must then return to the factory as if it were newly completed   *
- *    and awaiting removal.                                                                    *
+ *    This routine will suspend production until a subsiquent call to Start() or
+ *Abandon().    * Typical use of this function is when the player puts
+ *production on hold or when there    * is insufficient funds. *
  *                                                                                             *
- * INPUT:   object   -- The object to return to the factory.                                   *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  bool; Was production actually stopped? A false return value
+ *indicates that the     * factory was empty or production was already stopped
+ *(or never started).      *
  *                                                                                             *
- * WARNINGS:   This will abandon any current object being produced at the factory in order     *
- *             to set the new object into it.                                                  *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Set(TechnoClass & object)
-{
-	Validate();
-	Abandon();
-	Object = &object;
-	House  = Object->House;
-	Balance = 0;
-	Set_Rate(0);
-	Set_Stage(STEP_COUNT);
-	IsDifferent = true;
-	IsSuspended = true;
+bool FactoryClass::Suspend(void) {
+  Validate();
+  if (!IsSuspended) {
+    IsSuspended = true;
+    Set_Rate(0);
+    return (true);
+  }
+  return (false);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Suspend -- Temporarily stop production.                                       *
+ * FactoryClass::Start -- Resumes production after suspension or creation. *
  *                                                                                             *
- *    This routine will suspend production until a subsiquent call to Start() or Abandon().    *
- *    Typical use of this function is when the player puts production on hold or when there    *
- *    is insufficient funds.                                                                   *
+ *    This function will start the production process. It works for newly
+ *created factory      * objects, as well as if production had been suspended
+ *previously.                         *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  bool; Was production actually stopped? A false return value indicates that the     *
- *                factory was empty or production was already stopped (or never started).      *
+ * OUTPUT:  bool; Was production started? A false return value means that the
+ *factory is       * empty or there is unsufficient credits to begin production.
+ **
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Suspend(void)
-{
-	Validate();
-	if (!IsSuspended) {
-		IsSuspended = true;
-		Set_Rate(0);
-		return(true);
-	}
-	return(false);
-}
+bool FactoryClass::Start(void) {
+  Validate();
+  if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
+    if (House->Available_Money() >= Cost_Per_Tick()) {
+      int time;
 
+      if (Object) {
+        time = Object->Class_Of().Time_To_Build(House->Class->House);
+      } else {
+        time = TICKS_PER_MINUTE * 5;
+      }
+
+      int frac = House->Power_Fraction();
+      frac = Bound(frac, 0x0010, 0x0100);
+      int rate = (time * 256) / frac;
+
+      rate /= STEP_COUNT;
+      rate = Bound(rate, 1, 255);
+
+      Set_Rate(rate);
+      IsSuspended = false;
+      return (true);
+    }
+  }
+  return (false);
+}
 
 /***********************************************************************************************
- * FactoryClass::Start -- Resumes production after suspension or creation.                     *
+ * FactoryClass::Abandon -- Abandons current construction with money refunded. *
  *                                                                                             *
- *    This function will start the production process. It works for newly created factory      *
- *    objects, as well as if production had been suspended previously.                         *
+ *    This routine is used when construction is to be abandoned and current
+ *money spend is     * to be refunded. This function effectively clears out this
+ *factory of all record of the   * producing object so that it may either be
+ *deleted or started anew with the Set()         * function. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  bool; Was production started? A false return value means that the factory is       *
- *                empty or there is unsufficient credits to begin production.                  *
+ * OUTPUT:  bool; Was an object actually abandoned? A false return value
+ *indicates that the    * factory was not producing any object. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Start(void)
-{
-	Validate();
-	if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
-		if (House->Available_Money() >= Cost_Per_Tick()) {
-			int time;
+bool FactoryClass::Abandon(void) {
+  Validate();
+  if (Object) {
+    if (Object) {
+      /*
+      **	Refund all money expended so far, back to the owner of the
+      *object under construction.
+      */
+      House->Refund_Money(Object->Class_Of().Cost_Of() - Balance);
+      Balance = 0;
 
-			if (Object) {
-				time = Object->Class_Of().Time_To_Build(House->Class->House);
-			} else {
-				time = TICKS_PER_MINUTE * 5;
-			}
+      /*
+      **	Delete the object under construction.
+      */
+      ScenarioInit++;
+      delete Object;
+      Object = NULL;
+      ScenarioInit--;
+    }
+    if (SpecialItem) {
+      SpecialItem = SPC_NONE;
+    }
 
-			int frac = House->Power_Fraction();
-			frac = Bound(frac, 0x0010, 0x0100);
-			int rate = (time*256) / frac;
+    /*
+    **	Set the factory back to the idle and empty state.
+    */
+    Set_Rate(0);
+    Set_Stage(0);
+    IsSuspended = true;
+    IsDifferent = true;
 
-			rate /= STEP_COUNT;
-			rate = Bound(rate, 1, 255);
-
-			Set_Rate(rate);
-			IsSuspended = false;
-			return(true);
-		}
-	}
-	return(false);
+    return (true);
+  }
+  return (false);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Abandon -- Abandons current construction with money refunded.                 *
+ * FactoryClass::Completion -- Fetchs the completion step for this factory. *
  *                                                                                             *
- *    This routine is used when construction is to be abandoned and current money spend is     *
- *    to be refunded. This function effectively clears out this factory of all record of the   *
- *    producing object so that it may either be deleted or started anew with the Set()         *
- *    function.                                                                                *
+ *    Use this routine to determine what animation (or completion step) the
+ *factory is         * currently on. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  bool; Was an object actually abandoned? A false return value indicates that the    *
- *                factory was not producing any object.                                        *
+ * OUTPUT:  Returns a completion step number beteen 0 (uncompleted), to
+ *STEP_COUNT (completed) *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Abandon(void)
-{
-	Validate();
-	if (Object) {
-
-		if (Object) {
-			/*
-			**	Refund all money expended so far, back to the owner of the object under construction.
-			*/
-			House->Refund_Money(Object->Class_Of().Cost_Of() - Balance);
-			Balance = 0;
-
-			/*
-			**	Delete the object under construction.
-			*/
-			ScenarioInit++;
-			delete Object;
-			Object = NULL;
-			ScenarioInit--;
-		}
-		if (SpecialItem) {
-			SpecialItem = SPC_NONE;
-		}
-
-		/*
-		**	Set the factory back to the idle and empty state.
-		*/
-		Set_Rate(0);
-		Set_Stage(0);
-		IsSuspended = true;
-		IsDifferent = true;
-
-		return(true);
-	}
-	return(false);
+int FactoryClass::Completion(void) {
+  Validate();
+  return (Fetch_Stage());
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Completion -- Fetchs the completion step for this factory.                    *
+ * FactoryClass::Has_Completed -- Checks to see if object has completed
+ *production.            *
  *                                                                                             *
- *    Use this routine to determine what animation (or completion step) the factory is         *
- *    currently on.                                                                            *
+ *    Use this routine to examine the factory object in order to determine if
+ *the associated   * object has completed production and is awaiting placement.
+ **
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns a completion step number beteen 0 (uncompleted), to STEP_COUNT (completed) *
+ * OUTPUT:  bool; Is the associated object to the factory completed and ready
+ *for placement?   *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-int FactoryClass::Completion(void)
-{
-	Validate();
-	return(Fetch_Stage());
+bool FactoryClass::Has_Completed(void) {
+  Validate();
+  if (Object && Fetch_Stage() == STEP_COUNT) {
+    return (true);
+  }
+  if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
+    return (true);
+  }
+  return (false);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Has_Completed -- Checks to see if object has completed production.            *
+ * FactoryClass::Get_Object -- Fetches pointer to object being constructed. *
  *                                                                                             *
- *    Use this routine to examine the factory object in order to determine if the associated   *
- *    object has completed production and is awaiting placement.                               *
+ *    This routine gets the pointer to the currently constructing object. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  bool; Is the associated object to the factory completed and ready for placement?   *
+ * OUTPUT:  Returns with a pointer to the object undergoing construction. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Has_Completed(void)
-{
-	Validate();
-	if (Object && Fetch_Stage() == STEP_COUNT) {
-		return(true);
-	}
-	if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
-		return(true);
-	}
-	return(false);
+TechnoClass *FactoryClass::Get_Object(void) const {
+  Validate();
+  return (Object);
 }
-
-
-/***********************************************************************************************
- * FactoryClass::Get_Object -- Fetches pointer to object being constructed.                    *
- *                                                                                             *
- *    This routine gets the pointer to the currently constructing object.                      *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the object undergoing construction.                      *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-TechnoClass * FactoryClass::Get_Object(void) const
-{
-	Validate();
-	return(Object);
-}
-
 
 /***************************************************************************
  * FactoryClass::Get_Special_Item -- gets factorys spc prod item           *
@@ -672,79 +641,75 @@ TechnoClass * FactoryClass::Get_Object(void) const
  * HISTORY:                                                                *
  *   05/05/1995 PWG : Created.                                             *
  *=========================================================================*/
-int FactoryClass::Get_Special_Item(void) const
-{
-	Validate();
-	return(SpecialItem);
+int FactoryClass::Get_Special_Item(void) const {
+  Validate();
+  return (SpecialItem);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Cost_Per_Tick -- Breaks entire production cost into managable chunks.         *
+ * FactoryClass::Cost_Per_Tick -- Breaks entire production cost into managable
+ *chunks.         *
  *                                                                                             *
- *    Use this routine to determine the cost per game "tick" to produce the object.            *
+ *    Use this routine to determine the cost per game "tick" to produce the
+ *object.            *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns the number of credits necessary to advance production one game tick.       *
+ * OUTPUT:  Returns the number of credits necessary to advance production one
+ *game tick.       *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-int FactoryClass::Cost_Per_Tick(void)
-{
-	Validate();
-	if (Object) {
-		int steps = STEP_COUNT - Fetch_Stage();
-		if (steps) {
-			return(Balance / steps);
-		}
-		return(Balance);
-	}
-	return(0);
+int FactoryClass::Cost_Per_Tick(void) {
+  Validate();
+  if (Object) {
+    int steps = STEP_COUNT - Fetch_Stage();
+    if (steps) {
+      return (Balance / steps);
+    }
+    return (Balance);
+  }
+  return (0);
 }
-
 
 /***********************************************************************************************
- * FactoryClass::Completed -- Clears factory object after a completed production process.      *
+ * FactoryClass::Completed -- Clears factory object after a completed production
+ *process.      *
  *                                                                                             *
- *    This routine is called after production completes, and the object produced has been      *
- *    placed into the game. It resets the factory for deletion or starting of new production.  *
+ *    This routine is called after production completes, and the object produced
+ *has been      * placed into the game. It resets the factory for deletion or
+ *starting of new production.  *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  bool; Did any resetting occur? Failure is the result of the factory not having     *
- *                any completed object. An immediate second call to this routine will also     *
- *                yield false.                                                                 *
+ * OUTPUT:  bool; Did any resetting occur? Failure is the result of the factory
+ *not having     * any completed object. An immediate second call to this
+ *routine will also     * yield false. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/26/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Completed(void)
-{
-	Validate();
-	if (Object && Fetch_Stage() == STEP_COUNT) {
-		Object = NULL;
-		IsSuspended = true;
-		IsDifferent = true;
-		Set_Stage(0);
-		Set_Rate(0);
-		return(true);
-	}
+bool FactoryClass::Completed(void) {
+  Validate();
+  if (Object && Fetch_Stage() == STEP_COUNT) {
+    Object = NULL;
+    IsSuspended = true;
+    IsDifferent = true;
+    Set_Stage(0);
+    Set_Rate(0);
+    return (true);
+  }
 
-	if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
-		SpecialItem = SPC_NONE;
-		IsSuspended = true;
-		IsDifferent = true;
-		Set_Stage(0);
-		Set_Rate(0);
-		return(true);
-	}
-	return(false);
+  if (SpecialItem && Fetch_Stage() == STEP_COUNT) {
+    SpecialItem = SPC_NONE;
+    IsSuspended = true;
+    IsDifferent = true;
+    Set_Stage(0);
+    Set_Rate(0);
+    return (true);
+  }
+  return (false);
 }
-
-

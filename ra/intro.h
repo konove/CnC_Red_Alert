@@ -18,22 +18,24 @@
 
 /* $Header: /CounterStrike/INTRO.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : INTRO.H                                                      *
+ *                    File Name : INTRO.H *
  *                                                                                             *
- *                   Programmer : Barry W. Green                                               *
+ *                   Programmer : Barry W. Green *
  *                                                                                             *
- *                   Start Date : May 8, 1995                                                  *
+ *                   Start Date : May 8, 1995 *
  *                                                                                             *
- *                  Last Update : May 8, 1995  [BWG]                                           *
+ *                  Last Update : May 8, 1995  [BWG] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef INTRO_H
 #define INTRO_H

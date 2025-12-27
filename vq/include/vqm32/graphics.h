@@ -19,24 +19,24 @@
 #ifndef VQMGRAPHICS_H
 #define VQMGRAPHICS_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     graphics.h
-*
-* DESCRIPTION
-*     Graphic rendering and manipulation definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     April 27, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     graphics.h
+ *
+ * DESCRIPTION
+ *     Graphic rendering and manipulation definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     April 27, 1995
+ *
+ ****************************************************************************/
 
 /* Prototypes */
 
@@ -52,4 +52,3 @@ void cdecl Fill_Rect(long x1, long y1, long x2, long y2, long color);
 #endif
 
 #endif /* VQMGRAPHICS_H */
-

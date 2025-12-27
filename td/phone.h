@@ -16,19 +16,20 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\phone.h_v   1.9   16 Oct 1995 16:47:58   JOE_BOSTIC  $ */
-/*************************************************************************** 
- *                                                                         * 
- *                 Project Name : Command & Conquer                        * 
- *                                                                         * 
- *                    File Name : PHONE.H                                  * 
- *                                                                         * 
- *                   Programmer : Bill R. Randolph                         * 
- *                                                                         * 
- *                   Start Date : 04/28/95                                 * 
- *                                                                         * 
- *                  Last Update : April 28, 1995 [BRR]                     * 
- *                                                                         * 
+/* $Header:   F:\projects\c&c\vcs\code\phone.h_v   1.9   16 Oct 1995 16:47:58
+ * JOE_BOSTIC  $ */
+/***************************************************************************
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : PHONE.H                                  *
+ *                                                                         *
+ *                   Programmer : Bill R. Randolph                         *
+ *                                                                         *
+ *                   Start Date : 04/28/95                                 *
+ *                                                                         *
+ *                  Last Update : April 28, 1995 [BRR]                     *
+ *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #ifndef PHONE_H
@@ -37,33 +38,35 @@
 /*
 ***************************** Class Declaration *****************************
 */
-class PhoneEntryClass
-{
-	public:
-		enum PhoneEntryEnum {
-			PHONE_MAX_NAME = 21,
-			PHONE_MAX_NUM = 21
-		};
+class PhoneEntryClass {
+ public:
+  enum PhoneEntryEnum { PHONE_MAX_NAME = 21, PHONE_MAX_NUM = 21 };
 
-		PhoneEntryClass(void) {};
-		~PhoneEntryClass() {};
+  PhoneEntryClass(void){};
+  ~PhoneEntryClass(){};
 
-		bool operator == (PhoneEntryClass &obj) 
-			{ return (memcmp (Name,obj.Name,strlen(Name))==0);}
-		bool operator != (PhoneEntryClass &obj)
-			{ return (memcmp (Name,obj.Name,strlen(Name))!=0);}
-		bool operator > (PhoneEntryClass &obj)
-			{ return (memcmp(Name, obj.Name, strlen(Name)) > 0);}
-		bool operator < (PhoneEntryClass &obj)
-			{ return (memcmp(Name, obj.Name, strlen(Name)) < 0);}
-		bool operator >= (PhoneEntryClass &obj)
-			{ return (memcmp(Name, obj.Name, strlen(Name)) >= 0);}
-		bool operator <= (PhoneEntryClass &obj)
-			{ return (memcmp(Name, obj.Name, strlen(Name)) <= 0);}
+  bool operator==(PhoneEntryClass &obj) {
+    return (memcmp(Name, obj.Name, strlen(Name)) == 0);
+  }
+  bool operator!=(PhoneEntryClass &obj) {
+    return (memcmp(Name, obj.Name, strlen(Name)) != 0);
+  }
+  bool operator>(PhoneEntryClass &obj) {
+    return (memcmp(Name, obj.Name, strlen(Name)) > 0);
+  }
+  bool operator<(PhoneEntryClass &obj) {
+    return (memcmp(Name, obj.Name, strlen(Name)) < 0);
+  }
+  bool operator>=(PhoneEntryClass &obj) {
+    return (memcmp(Name, obj.Name, strlen(Name)) >= 0);
+  }
+  bool operator<=(PhoneEntryClass &obj) {
+    return (memcmp(Name, obj.Name, strlen(Name)) <= 0);
+  }
 
-		SerialSettingsType Settings;
-		char Name[ PHONE_MAX_NAME ];		// destination person's name
-		char Number[ PHONE_MAX_NUM ];		// phone #
+  SerialSettingsType Settings;
+  char Name[PHONE_MAX_NAME];   // destination person's name
+  char Number[PHONE_MAX_NUM];  // phone #
 };
 
 #endif

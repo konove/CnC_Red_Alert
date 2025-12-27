@@ -31,11 +31,13 @@
  *                  Last Update : April 27, 1994   [BR]                    *
  *                                                                         *
  *-------------------------------------------------------------------------*
- * Note: This module contains dependencies upon the file I/O system,			*
- * specifically Load_Data().																*
+ * Note: This module contains dependencies upon the file I/O system,
+ ** specifically Load_Data().
+ **
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *	  Load_Palette -- Loads a palette file into the given palette buffer.	*
+ *	  Load_Palette -- Loads a palette file into the given palette buffer.
+ **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /*
 ********************************* Includes **********************************
@@ -58,14 +60,15 @@
 */
 
 /***************************************************************************
- *	Load_Palette -- Loads a palette file into the given palette buffer.		*
+ *	Load_Palette -- Loads a palette file into the given palette buffer.
+ **
  *                                                                         *
- * INPUT:      																				*
- *		BYTE * file_name 			- name of the file to load.						*
- *		BYTE * palette_pointer	- pointer to palette buffer.	      			*
+ * INPUT:
+ ** BYTE * file_name 			- name of the file to load.
+ ** BYTE * palette_pointer	- pointer to palette buffer. *
  *																									*
- * OUTPUT:     																				*
- *		none                                                        			*
+ * OUTPUT:
+ ** none *
  *                                                                         *
  * WARNINGS:   	                                                         *
  *                                                                         *
@@ -73,13 +76,12 @@
  *   06/20/1991 BS : Created.                                              *
  *   04/27/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-void __cdecl Load_Palette(char *palette_file_name, void *palette_pointer)
-{
-	#if(IBM)
-		Load_Data(palette_file_name, palette_pointer, 768);
-	#else
-		Load_Data(palette_file_name, palette_pointer, (ULONG)(2<<BIT_PLANES));
-	#endif
+void __cdecl Load_Palette(char *palette_file_name, void *palette_pointer) {
+#if (IBM)
+  Load_Data(palette_file_name, palette_pointer, 768);
+#else
+  Load_Data(palette_file_name, palette_pointer, (ULONG)(2 << BIT_PLANES));
+#endif
 }
 
 /**************************** End of loadpal.cpp ***************************/

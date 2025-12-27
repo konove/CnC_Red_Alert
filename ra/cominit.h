@@ -24,11 +24,10 @@
 //  - See cominit.cpp for more info
 //
 
-class ComInit
-{
+class ComInit {
  public:
-         ComInit();
-        ~ComInit();
+  ComInit();
+  ~ComInit();
 };
 
 #endif

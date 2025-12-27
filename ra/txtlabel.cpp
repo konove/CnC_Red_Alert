@@ -18,84 +18,76 @@
 
 /* $Header: /CounterStrike/TXTLABEL.CPP 1     3/03/97 10:26a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TXTLABEL.H                                                   *
+ *                    File Name : TXTLABEL.H *
  *                                                                                             *
- *                   Programmer : Bill Randolph                                                *
+ *                   Programmer : Bill Randolph *
  *                                                                                             *
- *                   Start Date : 02/06/95                                                     *
+ *                   Start Date : 02/06/95 *
  *                                                                                             *
- *                  Last Update : February 6, 1995 [BR]                                        *
+ *                  Last Update : February 6, 1995 [BR] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   TextLableClass::Draw_Me -- Graphical update routine                                       *
- *   TextLableClass::TextLabelClass -- Constructor                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * TextLableClass::Draw_Me -- Graphical update routine *
+ *   TextLableClass::TextLabelClass -- Constructor *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include "function.h"
 
-
 /***********************************************************************************************
- * TextLableClass::TextLabelClass -- Constructor                                               *
+ * TextLableClass::TextLabelClass -- Constructor *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      txt         pointer to text buffer to print from                                       *
- *      x            x-coord for text printing                                                 *
- *      y            y-coord for text printing                                                 *
- *      color         color to print in                                                        *
- *      style         style to print (determines the meaning of x & y)                         *
+ * INPUT: * txt         pointer to text buffer to print from * x x-coord for
+ *text printing                                                 * y y-coord for
+ *text printing                                                 * color color to
+ *print in                                                        * style style
+ *to print (determines the meaning of x & y)                         *
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      none.                                                                                  *
+ * OUTPUT: * none. *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   03/24/1995 BRR : Created.                                                                 *
+ * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-TextLabelClass::TextLabelClass(char *txt, int x, int y, RemapControlType * color,
- TextPrintType style) : GadgetClass(x, y, 1, 1, 0, 0)
-{
-	Text = txt;
-	Color = color;
-	Style = style;
-	UserData1 = 0;
-	UserData2 = 0;
-	PixWidth = -1;
+TextLabelClass::TextLabelClass(char *txt, int x, int y, RemapControlType *color,
+                               TextPrintType style)
+    : GadgetClass(x, y, 1, 1, 0, 0) {
+  Text = txt;
+  Color = color;
+  Style = style;
+  UserData1 = 0;
+  UserData2 = 0;
+  PixWidth = -1;
 }
 
-
 /***********************************************************************************************
- * TextLableClass::Draw_Me -- Graphical update routine                                         *
+ * TextLableClass::Draw_Me -- Graphical update routine *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      forced      true = draw regardless of the current redraw flag state                    *
+ * INPUT: * forced      true = draw regardless of the current redraw flag state
+ **
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      true = gadget was redrawn, false = wasn't                                              *
+ * OUTPUT: * true = gadget was redrawn, false = wasn't *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   03/24/1995 BRR : Created.                                                                 *
+ * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int TextLabelClass::Draw_Me(int forced)
-{
-	if (GadgetClass::Draw_Me(forced)) {
-		if (PixWidth == -1) {
-			Simple_Text_Print(Text, X, Y, Color, TBLACK, Style);
-//			Fancy_Text_Print(Text, X, Y, Color, TBLACK, Style);
-		} else {
-			Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
-		}
-		return(true);
-	}
-	return(false);
+int TextLabelClass::Draw_Me(int forced) {
+  if (GadgetClass::Draw_Me(forced)) {
+    if (PixWidth == -1) {
+      Simple_Text_Print(Text, X, Y, Color, TBLACK, Style);
+      //			Fancy_Text_Print(Text, X, Y, Color, TBLACK,
+      //Style);
+    } else {
+      Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
+    }
+    return (true);
+  }
+  return (false);
 }

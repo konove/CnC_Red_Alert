@@ -34,7 +34,5 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
-
-extern char	NoTimer;
-extern char	NoKeyBoard;
+extern char NoTimer;
+extern char NoKeyBoard;

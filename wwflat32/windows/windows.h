@@ -38,15 +38,18 @@
 #define WINDOWS_H
 
 /*=========================================================================*/
-/* The following prototypes are for the file: WINHIDE.CPP						*/
+/* The following prototypes are for the file: WINHIDE.CPP
+ */
 /*=========================================================================*/
 void Window_Hide_Mouse(int window);
 void Window_Show_Mouse(void);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: WINDOWS.CPP						*/
+/* The following prototypes are for the file: WINDOWS.CPP
+ */
 /*=========================================================================*/
-void Standard_More_Prompt(char const *prompt, int space, int fcolor, int bcolor);
+void Standard_More_Prompt(char const *prompt, int space, int fcolor,
+                          int bcolor);
 void Set_More_Prompt(char const *prompt, int space, int fcolor, int bcolor);
 void Set_More_On(void);
 void Set_More_Off(void);
@@ -61,15 +64,15 @@ void Window_Print(char const string[], ...);
 **	defines when accessing the WindowList.
 */
 typedef enum {
-	WINDOWX,			// X byte position of left edge.
-	WINDOWY,			// Y pixel position of top edge.
-	WINDOWWIDTH,	// Width in bytes of the window.
-	WINDOWHEIGHT,	// Height in pixels of the window.
-	WINDOWFCOL,		// Default foreground color.
-	WINDOWBCOL,		// Default background color.
-	WINDOWCURSORX,	// Current cursor X position (in rows).
-	WINDOWCURSORY,	// Current cursor Y position (in lines).
-	WINDOWPADDING=0x1000
+  WINDOWX,        // X byte position of left edge.
+  WINDOWY,        // Y pixel position of top edge.
+  WINDOWWIDTH,    // Width in bytes of the window.
+  WINDOWHEIGHT,   // Height in pixels of the window.
+  WINDOWFCOL,     // Default foreground color.
+  WINDOWBCOL,     // Default background color.
+  WINDOWCURSORX,  // Current cursor X position (in rows).
+  WINDOWCURSORY,  // Current cursor Y position (in lines).
+  WINDOWPADDING = 0x1000
 } WindowIndexType;
 
 extern int WindowList[][8];
@@ -91,6 +94,5 @@ extern char *TXT_MoreText;
 
 extern void (*Window_More_Ptr)(char const *, int, int, int);
 
-#endif //WINDOWS_H
-
+#endif  // WINDOWS_H
 

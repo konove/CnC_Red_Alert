@@ -16,38 +16,30 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#define	MAX_ENTRIES 128
+#define MAX_ENTRIES 128
 
 class TextBlitClass {
+ public:
+  TextBlitClass(void);
+  ~TextBlitClass(void){};
 
-	public:
+  void Add(int x, int y, int dx, int dy, int w, int h);
+  void Clear(void);
+  void Update(void);
 
-		TextBlitClass(void);
-		~TextBlitClass(void){};
+ private:
+  typedef struct {
+    int SourceX;
+    int SourceY;
+    int DestX;
+    int DestY;
+    int Width;
+    int Height;
+  } BlitEntryType;
 
-		void Add (int x, int y, int dx, int dy, int w, int h);
-		void Clear (void);
-		void Update (void);
-
-
-	private:
-
-		typedef struct {
-			int	SourceX;
-			int	SourceY;
-			int	DestX;
-			int	DestY;
-			int	Width;
-			int	Height;
-		} BlitEntryType;
-
-		BlitEntryType 	BlitListo [MAX_ENTRIES];
-		int				Count;
-
+  BlitEntryType BlitListo[MAX_ENTRIES];
+  int Count;
 };
-
 
 extern GraphicBufferClass *TextPrintBuffer;
 extern TextBlitClass BlitList;
-

@@ -19,47 +19,43 @@
 #ifndef _MOVIE_H_
 #define _MOVIE_H_
 /****************************************************************************
-*
-* FILE
-*     Movie.h
-*
-* DESCRIPTION
-*     Movie playback using DirectShow Multimedia streaming and DirectDraw
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     May 27, 1998
-*
-****************************************************************************/
+ *
+ * FILE
+ *     Movie.h
+ *
+ * DESCRIPTION
+ *     Movie playback using DirectShow Multimedia streaming and DirectDraw
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     May 27, 1998
+ *
+ ****************************************************************************/
 
 #include <ddraw.h>
 
-class Movie
-	{
-	public:
-		Movie(IDirectDraw* dd);
-		~Movie();
+class Movie {
+ public:
+  Movie(IDirectDraw* dd);
+  ~Movie();
 
-		bool Open(const char* name);
-		bool Play(IDirectDrawSurface* surface);
-		bool Update(void);
-		void Close(void);
+  bool Open(const char* name);
+  bool Play(IDirectDrawSurface* surface);
+  bool Update(void);
+  void Close(void);
 
-		bool IsPlaying(void) const
-			{return mPlaying;}
+  bool IsPlaying(void) const { return mPlaying; }
 
-		DWORD GetWidth(void) const
-			{return mWidth;}
+  DWORD GetWidth(void) const { return mWidth; }
 
-		DWORD GetHeight(void) const
-			{return mHeight;}
+  DWORD GetHeight(void) const { return mHeight; }
 
-	protected:
-		DWORD mWidth;
-		DWORD mHeight;
-		bool mPlaying;
-	};
+ protected:
+  DWORD mWidth;
+  DWORD mHeight;
+  bool mPlaying;
+};
 
-#endif // _MOVIE_H_
+#endif  // _MOVIE_H_

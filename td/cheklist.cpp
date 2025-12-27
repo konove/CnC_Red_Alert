@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\cheklist.cpv   2.18   16 Oct 1995 16:48:36   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\cheklist.cpv   2.18   16 Oct 1995
+ * 16:48:36   JOE_BOSTIC  $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -41,7 +42,6 @@
 
 #include "function.h"
 
-
 /***************************************************************************
  * CheckListClass::CheckListClass -- constructor                           *
  *                                                                         *
@@ -64,13 +64,12 @@
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-CheckListClass::CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-	void const * up, void const * down) :
-	ListClass (id, x, y, w, h, flags, up, down)
-{
-	IsReadOnly = false;
+CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
+                               TextPrintType flags, void const *up,
+                               void const *down)
+    : ListClass(id, x, y, w, h, flags, up, down) {
+  IsReadOnly = false;
 }
-
 
 /***************************************************************************
  * CheckListClass::Check_Item -- [un]checks an items                       *
@@ -88,13 +87,11 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h, TextPrintType
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-void CheckListClass::Check_Item(int index, int checked)
-{
-	if (List[index]) {
-		((char &)List[index][0]) = checked ? CHECK_CHAR : UNCHECK_CHAR;
-	}
+void CheckListClass::Check_Item(int index, int checked) {
+  if (List[index]) {
+    ((char &)List[index][0]) = checked ? CHECK_CHAR : UNCHECK_CHAR;
+  }
 }
-
 
 /***************************************************************************
  * CheckListClass::Is_Checked -- returns checked state of an item          *
@@ -111,14 +108,12 @@ void CheckListClass::Check_Item(int index, int checked)
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Is_Checked(int index) const
-{
-	if (List[index]) {
-		return(List[index][0] == CHECK_CHAR);
-	}
-	return(false);
+int CheckListClass::Is_Checked(int index) const {
+  if (List[index]) {
+    return (List[index][0] == CHECK_CHAR);
+  }
+  return (false);
 }
-
 
 /***************************************************************************
  * CheckListClass::Action -- action function for this class                *
@@ -136,33 +131,32 @@ int CheckListClass::Is_Checked(int index) const
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Action(unsigned flags, KeyNumType &key)
-{
-	int rc;
+int CheckListClass::Action(unsigned flags, KeyNumType &key) {
+  int rc;
 
-	/*
-	** If this is a read-only list, it's a display-only device
-	*/
-	if (IsReadOnly) {
-		return(false);
-	}
+  /*
+  ** If this is a read-only list, it's a display-only device
+  */
+  if (IsReadOnly) {
+    return (false);
+  }
 
-	/*
-	**	Invoke parents Action first, so it can set the SelectedIndex if needed.
-	*/
-	rc =  ListClass::Action(flags, key);
+  /*
+  **	Invoke parents Action first, so it can set the SelectedIndex if needed.
+  */
+  rc = ListClass::Action(flags, key);
 
-	/*
-	**	Now, if this event was a left-press, toggle the checked state of the
-	**	current item.
-	*/
-	if (flags & LEFTPRESS) {
-		if (Is_Checked(SelectedIndex)) {
-			Check_Item(SelectedIndex,0);
-		} else {
-			Check_Item(SelectedIndex,1);
-		}
-	}
+  /*
+  **	Now, if this event was a left-press, toggle the checked state of the
+  **	current item.
+  */
+  if (flags & LEFTPRESS) {
+    if (Is_Checked(SelectedIndex)) {
+      Check_Item(SelectedIndex, 0);
+    } else {
+      Check_Item(SelectedIndex, 1);
+    }
+  }
 
-	return(rc);
+  return (rc);
 }

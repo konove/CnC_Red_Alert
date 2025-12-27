@@ -18,39 +18,38 @@
 
 /* $Header: /CounterStrike/CHECKBOX.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CHECKBOX.H                                                   *
+ *                    File Name : CHECKBOX.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 05/26/95                                                     *
+ *                   Start Date : 05/26/95 *
  *                                                                                             *
- *                  Last Update : May 26, 1995 [JLB]                                           *
+ *                  Last Update : May 26, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CHECKBOX_H
 #define CHECKBOX_H
 
-#include	"toggle.h"
+#include "toggle.h"
 
-class CheckBoxClass : public ToggleClass
-{
-	public:
-		CheckBoxClass(unsigned id, int x, int y) :
-			ToggleClass(id, x, y, 7, 7)
-		{};
+class CheckBoxClass : public ToggleClass {
+ public:
+  CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7){};
 
-		virtual int Draw_Me(int forced=false);
-		virtual int Action(unsigned flags, KeyNumType & key);
+  virtual int Draw_Me(int forced = false);
+  virtual int Action(unsigned flags, KeyNumType& key);
 
-	protected:
+ protected:
 };
 
 #endif

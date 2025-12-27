@@ -20,7 +20,8 @@
  **     C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S       **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : Library startup routine.						*
+ *                 Project Name : Library startup routine.
+ **
  *                                                                         *
  *                    File Name : STARTUP.CPP                              *
  *                                                                         *
@@ -40,9 +41,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define	GRAPHICS		TRUE
+#define GRAPHICS TRUE
 void *ShapeBuffer = NULL;
-
 
 /***************************************************************************
  * MAIN -- Programs main entry point.                                      *
@@ -59,94 +59,100 @@ void *ShapeBuffer = NULL;
  *   08/01/1994 SKB : Created.                                             *
  *=========================================================================*/
 #pragma argsused
-WORD main(WORD argc, BYTE *argv[])
-{
-	void *fontptr;
+WORD main(WORD argc, BYTE *argv[]) {
+  void *fontptr;
 
-	/*======================================================================*/
-	/* Install page fault handle in case of fatal crash.						   */
-	/*======================================================================*/
-	  Install_Page_Fault_Handle ();
+  /*======================================================================*/
+  /* Install page fault handle in case of fatal crash.
+   */
+  /*======================================================================*/
+  Install_Page_Fault_Handle();
 
-	/*======================================================================*/
-	/* Setup the monochrome monitor for testing.										*/
-	/*======================================================================*/
+  /*======================================================================*/
+  /* Setup the monochrome monitor for testing.
+   */
+  /*======================================================================*/
 
-	MonoEnabled = (Find_Argv("-MONO") ? TRUE : FALSE);
-	Mono_Clear_Screen();
+  MonoEnabled = (Find_Argv("-MONO") ? TRUE : FALSE);
+  Mono_Clear_Screen();
 
-	/*======================================================================*/
-	/* Initialize the file data table.													*/
-	/*======================================================================*/
-	WWDOS_Init(200, NULL, NULL);
+  /*======================================================================*/
+  /* Initialize the file data table.
+   */
+  /*======================================================================*/
+  WWDOS_Init(200, NULL, NULL);
 
-	/*======================================================================*/
-	/* Initialize the system font.														*/
-	/*======================================================================*/
+  /*======================================================================*/
+  /* Initialize the system font.
+   */
+  /*======================================================================*/
 #if GRAPHICS
-	fontptr = Load_Font("STD6P.FNT");
-	if (!fontptr)  {
-		printf("Unable to load font.");
-		exit(1);
-	}
-	Set_Font(fontptr);
+  fontptr = Load_Font("STD6P.FNT");
+  if (!fontptr) {
+    printf("Unable to load font.");
+    exit(1);
+  }
+  Set_Font(fontptr);
 #endif
 
-	/*======================================================================*/
-	/* Setup the timer system.																*/
-	/*======================================================================*/
-	if (Find_Argv("-NOTIME"))  {
-		NoTimer = TRUE;
-	} else {
-		Init_Timer_System(USER_TIMER_FREQ);
-		NoTimer = FALSE;
-	}
+  /*======================================================================*/
+  /* Setup the timer system.
+   */
+  /*======================================================================*/
+  if (Find_Argv("-NOTIME")) {
+    NoTimer = TRUE;
+  } else {
+    Init_Timer_System(USER_TIMER_FREQ);
+    NoTimer = FALSE;
+  }
 
-	/*======================================================================*/
-	/* Get the initial graphic mode.														*/
-	/*======================================================================*/
+  /*======================================================================*/
+  /* Get the initial graphic mode.
+   */
+  /*======================================================================*/
 #if GRAPHICS
-	 if ( Set_Video_Mode(MCGA_MODE) == FALSE ) 
-	 {
-		printf("Unable to Set Graphic Mode\n");
-		exit ( 0 ) ;
-	 }
+  if (Set_Video_Mode(MCGA_MODE) == FALSE) {
+    printf("Unable to Set Graphic Mode\n");
+    exit(0);
+  }
 #endif
 
+  /*======================================================================*/
+  /* Now we get a keyboard handler.
+   */
+  /*======================================================================*/
+  if (Find_Argv("-NOKEY")) {
+    NoKeyBoard = TRUE;
+  } else {
+    NoKeyBoard = FALSE;
+    Install_Keyboard_Interrupt(Get_RM_Keyboard_Address(),
+                               Get_RM_Keyboard_Size());
 
-	/*======================================================================*/
-	/* Now we get a keyboard handler.													*/
-	/*======================================================================*/
-	if (Find_Argv("-NOKEY")) {
-		NoKeyBoard = TRUE;
-	} else {
-		NoKeyBoard = FALSE;
-		Install_Keyboard_Interrupt(	Get_RM_Keyboard_Address(),	Get_RM_Keyboard_Size());
+    ShapeBuffer = Alloc(5000, MEM_NORMAL);
+    Set_Shape_Buffer(ShapeBuffer, 5000);
+    Install_Mouse(20, 20, 320, 200);
+  }
 
-		ShapeBuffer = Alloc(5000, MEM_NORMAL);
-		Set_Shape_Buffer(ShapeBuffer, 5000);
-		Install_Mouse(20, 20, 320, 200);
-	}
+  /*======================================================================*/
+  /* Give the game some variance.
+   */
+  /*======================================================================*/
+  randomize();
 
-	/*======================================================================*/
-	/* Give the game some variance.														*/
-	/*======================================================================*/
-	randomize();
+  /*======================================================================*/
+  /* Call the user main program.
+   */
+  /*======================================================================*/
+  Main_Program(argc, argv);
 
-	/*======================================================================*/
-	/* Call the user main program.														*/
-	/*======================================================================*/
-	Main_Program(argc, argv);
+  /*======================================================================*/
+  /* Exit gracefully.
+   */
+  /*======================================================================*/
+  Prog_End();
 
-	/*======================================================================*/
-	/* Exit gracefully.																		*/
-	/*======================================================================*/
-	Prog_End();
-
-	return(0);
+  return (0);
 }
-
-
 
 /***************************************************************************
  * PROG_END -- Called to shutdown Westood's library.                       *
@@ -161,34 +167,36 @@ WORD main(WORD argc, BYTE *argv[])
  * HISTORY:                                                                *
  *   08/01/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID Prog_End(VOID)
-{
-	
-	/*======================================================================*/
-	/* Get rid of the keyboard handler.													*/
-	/*======================================================================*/
-	if (!NoKeyBoard) {
-		Remove_Mouse();
-		Free(ShapeBuffer);
-		Remove_Keyboard_Interrupt();
-	}
+VOID Prog_End(VOID) {
+  /*======================================================================*/
+  /* Get rid of the keyboard handler.
+   */
+  /*======================================================================*/
+  if (!NoKeyBoard) {
+    Remove_Mouse();
+    Free(ShapeBuffer);
+    Remove_Keyboard_Interrupt();
+  }
 
-	/*======================================================================*/
-	/* Get rid of the timer system.														*/
-	/*======================================================================*/
-	if (!NoTimer)  {
-		Remove_Timer_System();
-	}
+  /*======================================================================*/
+  /* Get rid of the timer system.
+   */
+  /*======================================================================*/
+  if (!NoTimer) {
+    Remove_Timer_System();
+  }
 
-	/*======================================================================*/
-	/* Restore the Video mode.																*/
-	/*======================================================================*/
+  /*======================================================================*/
+  /* Restore the Video mode.
+   */
+  /*======================================================================*/
 #if GRAPHICS
-	Set_Video_Mode(RESET_MODE);
+  Set_Video_Mode(RESET_MODE);
 #endif
 
-	/*======================================================================*/
-	/* Close down the file system.														*/
-	/*======================================================================*/
-	WWDOS_Shutdown();
+  /*======================================================================*/
+  /* Close down the file system.
+   */
+  /*======================================================================*/
+  WWDOS_Shutdown();
 }

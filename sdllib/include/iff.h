@@ -38,13 +38,13 @@
 #define IFF_H
 
 #include "gbuffer.h"
-#include "memflag.h" // this is needed for random other files to compile
+#include "memflag.h"  // this is needed for random other files to compile
 
 typedef enum {
-	BM_AMIGA,	// Bit plane format (8K per bitplane).
-	BM_MCGA,		// Byte per pixel format (64K).
+  BM_AMIGA,  // Bit plane format (8K per bitplane).
+  BM_MCGA,   // Byte per pixel format (64K).
 
-	BM_DEFAULT=BM_MCGA	// Default picture format.
+  BM_DEFAULT = BM_MCGA  // Default picture format.
 } PicturePlaneType;
 
 /*
@@ -53,11 +53,11 @@ typedef enum {
 **	LZW method may not be supported.
 */
 typedef enum {
-	NOCOMPRESS,		// No compression (raw data).
-	LZW12,			// LZW 12 bit codes.
-	LZW14,			// LZW 14 bit codes.
-	HORIZONTAL,		// Run length encoding (RLE).
-	LCW				// Westwood proprietary compression.
+  NOCOMPRESS,  // No compression (raw data).
+  LZW12,       // LZW 12 bit codes.
+  LZW14,       // LZW 14 bit codes.
+  HORIZONTAL,  // Run length encoding (RLE).
+  LCW          // Westwood proprietary compression.
 } CompressionType;
 
 /*
@@ -68,16 +68,14 @@ typedef enum {
 
 #pragma pack(push, 1)
 typedef struct {
-	char	Method;		// Compression method (CompressionType).
-	char	pad;			// Reserved pad byte (always 0).
-	uint32_t Size;			// Size of the uncompressed data.
-	short	Skip;			// Number of bytes to skip before data.
+  char Method;    // Compression method (CompressionType).
+  char pad;       // Reserved pad byte (always 0).
+  uint32_t Size;  // Size of the uncompressed data.
+  short Skip;     // Number of bytes to skip before data.
 } CompHeaderType;
 #pragma pack(pop)
 
-
 unsigned long Uncompress_Data(void const *src, void *dst);
-
 
 /*========================= Assembly Functions ============================*/
 
@@ -85,13 +83,12 @@ unsigned long Uncompress_Data(void const *src, void *dst);
 extern "C" {
 #endif
 
-extern unsigned long LCW_Uncompress(void *source, void *dest, unsigned long length);
+extern unsigned long LCW_Uncompress(void *source, void *dest,
+                                    unsigned long length);
 
 #ifdef __cplusplus
 }
 #endif
 /*=========================================================================*/
 
-
-
-#endif //IFF_H
+#endif  // IFF_H

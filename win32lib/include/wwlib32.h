@@ -61,8 +61,4 @@
 #include <wsa.h>
 #include <profile.h>
 
-
-
-#endif // WWLIB32_H
-
-
+#endif  // WWLIB32_H

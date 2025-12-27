@@ -41,7 +41,7 @@
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-void Debug_Printf( char *format_string, ... );
-void Debug_Mono_Message( char *message );
+void Debug_Printf(char *format_string, ...);
+void Debug_Mono_Message(char *message);
 
 #endif

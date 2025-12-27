@@ -18,78 +18,78 @@
 
 /* $Header: /CounterStrike/BFIOFILE.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Westwood Library                                             *
+ *                 Project Name : Westwood Library *
  *                                                                                             *
- *                    File Name : BFIOFILE.H                                                   *
+ *                    File Name : BFIOFILE.H *
  *                                                                                             *
- *                   Programmer : David R. Dettmer                                             *
+ *                   Programmer : David R. Dettmer *
  *                                                                                             *
- *                   Start Date : November 10, 1995                                            *
+ *                   Start Date : November 10, 1995 *
  *                                                                                             *
- *                  Last Update : November 10, 1995  [DRD]                                     *
+ *                  Last Update : November 10, 1995  [DRD] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef BFIOFILE_H
 #define BFIOFILE_H
 
-#include	"rawfile.h"
+#include "rawfile.h"
 
 /*
-**	This derivation of the raw file class handles buffering the input/output in order to
-**	achieve greater speed. The buffering is not active by default. It must be activated
-**	by setting the appropriate buffer through the Cache() function.
+**	This derivation of the raw file class handles buffering the input/output
+*in order to *	achieve greater speed. The buffering is not active by default.
+*It must be activated *	by setting the appropriate buffer through the Cache()
+*function.
 */
-class BufferIOFileClass : public RawFileClass
-{
-	public:
+class BufferIOFileClass : public RawFileClass {
+ public:
+  BufferIOFileClass(char const *filename);
+  BufferIOFileClass(void);
+  virtual ~BufferIOFileClass(void);
 
-		BufferIOFileClass(char const *filename);
-		BufferIOFileClass(void);
-		virtual ~BufferIOFileClass(void);
+  bool Cache(long size = 0, void *ptr = NULL);
+  void Free(void);
+  bool Commit(void);
+  virtual char const *Set_Name(char const *filename);
+  virtual int Is_Available(int forced = false);
+  virtual int Is_Open(void) const;
+  virtual int Open(char const *filename, int rights = READ);
+  virtual int Open(int rights = READ);
+  virtual long Read(void *buffer, long size);
+  virtual long Seek(long pos, int dir = SEEK_CUR);
+  virtual long Size(void);
+  virtual long Write(void const *buffer, long size);
+  virtual void Close(void);
 
-		bool Cache( long size=0, void *ptr=NULL );
-		void Free( void );
-		bool Commit( void );
-		virtual char const * Set_Name(char const *filename);
-		virtual int Is_Available(int forced=false);
-		virtual int Is_Open(void) const;
-		virtual int Open(char const *filename, int rights=READ);
-		virtual int Open(int rights=READ);
-		virtual long Read(void *buffer, long size);
-		virtual long Seek(long pos, int dir=SEEK_CUR);
-		virtual long Size(void);
-		virtual long Write(void const *buffer, long size);
-		virtual void Close(void);
+  enum { MINIMUM_BUFFER_SIZE = 1024 };
 
-		enum {MINIMUM_BUFFER_SIZE=1024};
+ private:
+  unsigned IsAllocated : 1;
+  unsigned IsOpen : 1;
+  unsigned IsDiskOpen : 1;
+  unsigned IsCached : 1;
+  unsigned IsChanged : 1;
+  unsigned UseBuffer : 1;
 
-	private:
+  int BufferRights;
 
-		unsigned IsAllocated:1;
-		unsigned IsOpen:1;
-		unsigned IsDiskOpen:1;
-		unsigned IsCached:1;
-		unsigned IsChanged:1;
-		unsigned UseBuffer:1;
+  void *Buffer;
 
-		int BufferRights;
-
-		void *Buffer;
-
-		long BufferSize;
-		long BufferPos;
-		long BufferFilePos;
-		long BufferChangeBeg;
-		long BufferChangeEnd;
-		long FileSize;
-		long FilePos;
-		long TrueFileStart;
+  long BufferSize;
+  long BufferPos;
+  long BufferFilePos;
+  long BufferChangeBeg;
+  long BufferChangeEnd;
+  long FileSize;
+  long FilePos;
+  long TrueFileStart;
 };
 
 #endif

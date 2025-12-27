@@ -18,22 +18,24 @@
 
 /* $Header: /CounterStrike/FUSE.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : FUSE.H                                                       *
+ *                    File Name : FUSE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 24, 1994                                               *
+ *                   Start Date : April 24, 1994 *
  *                                                                                             *
- *                  Last Update : April 24, 1994   [JLB]                                       *
+ *                  Last Update : April 24, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef FUSE_H
 #define FUSE_H
@@ -44,49 +46,46 @@
 **	designated target reaches zero or when the timer expires.
 */
 class FuseClass {
-	public:
-		FuseClass(void);
-		FuseClass(NoInitClass const &) {};
-		~FuseClass(void) {};
+ public:
+  FuseClass(void);
+  FuseClass(NoInitClass const &){};
+  ~FuseClass(void){};
 
-		void Arm_Fuse(COORDINATE location, COORDINATE target, int time=0xFF, int arming=0);
-		bool Fuse_Checkup(COORDINATE newlocation);
-		void Fuse_Write(FileClass & file);
-		void Fuse_Read(FileClass & file);
-		COORDINATE Fuse_Target(void);
+  void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
+                int arming = 0);
+  bool Fuse_Checkup(COORDINATE newlocation);
+  void Fuse_Write(FileClass &file);
+  void Fuse_Read(FileClass &file);
+  COORDINATE Fuse_Target(void);
 
-		/*
-		**	Fuses can detonate if enough time has elapsed. This value counts
-		**	down. When it reaches zero, detonation occurs.
-		*/
-		unsigned char Timer;
+  /*
+  **	Fuses can detonate if enough time has elapsed. This value counts
+  **	down. When it reaches zero, detonation occurs.
+  */
+  unsigned char Timer;
 
-	private:
+ private:
+  /*
+  **	Some fuses need a certain amount of time before detonation can
+  **	occur. This counts down and when it reaches zero, normal fuse
+  **	detonation checking can occur.
+  */
+  unsigned char Arming;
 
-		/*
-		**	Some fuses need a certain amount of time before detonation can
-		**	occur. This counts down and when it reaches zero, normal fuse
-		**	detonation checking can occur.
-		*/
-		unsigned char Arming;
+  /*
+  **	This is the designated impact point of the projectile. The fuse
+  **	will trip when the closest point to this location has been reached.
+  */
+  COORDINATE HeadTo;
 
-		/*
-		**	This is the designated impact point of the projectile. The fuse
-		**	will trip when the closest point to this location has been reached.
-		*/
-		COORDINATE HeadTo;
-
-		/*
-		**	This is the running proximity value to the impact point. This value
-		**	will progressively get smaller. Detonation occurs when it reaches
-		**	zero or when it starts to grow larger.
-		*/
-		short Proximity;
+  /*
+  **	This is the running proximity value to the impact point. This value
+  **	will progressively get smaller. Detonation occurs when it reaches
+  **	zero or when it starts to grow larger.
+  */
+  short Proximity;
 };
 
-inline COORDINATE FuseClass::Fuse_Target(void)
-{
-	return(HeadTo);
-}
+inline COORDINATE FuseClass::Fuse_Target(void) { return (HeadTo); }
 
 #endif

@@ -16,57 +16,60 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\txtlabel.h_v   1.14   16 Oct 1995 16:46:08   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\txtlabel.h_v   1.14   16 Oct 1995
+ * 16:46:08   JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TXTLABEL.H                                                   *
+ *                    File Name : TXTLABEL.H *
  *                                                                                             *
- *                   Programmer : Bill Randolph																  *
+ *                   Programmer : Bill Randolph
+ **
  *                                                                                             *
- *                   Start Date : 02/06/95                                                     *
+ *                   Start Date : 02/06/95 *
  *                                                                                             *
- *                  Last Update : February 6, 1995 [BR]													  *
+ *                  Last Update : February 6, 1995 [BR]
+ **
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TXTLABEL_H
 #define TXTLABEL_H
 
-class TextLabelClass : public GadgetClass
-{
-	public:
-		/*
-		** Constructor/Destructor
-		*/
-		TextLabelClass(char *txt, int x, int y, int color, TextPrintType style);
+class TextLabelClass : public GadgetClass {
+ public:
+  /*
+  ** Constructor/Destructor
+  */
+  TextLabelClass(char *txt, int x, int y, int color, TextPrintType style);
 
-		/*
-		** Overloaded draw routine
-		*/
-		virtual int Draw_Me(int forced = false);
+  /*
+  ** Overloaded draw routine
+  */
+  virtual int Draw_Me(int forced = false);
 
-		/*
-		** Sets the displayed text of the label
-		*/
-		virtual void Set_Text(char *txt) {Text = txt;};
+  /*
+  ** Sets the displayed text of the label
+  */
+  virtual void Set_Text(char *txt) { Text = txt; };
 
-		/*
-		** General-purpose data field
-		*/
-		unsigned long 	UserData;
-		TextPrintType 	Style;
-		char 				*Text;
-		int 				Color;
-		int 				PixWidth;
-		char 				Segments;
-		unsigned short	CRC;
+  /*
+  ** General-purpose data field
+  */
+  unsigned long UserData;
+  TextPrintType Style;
+  char *Text;
+  int Color;
+  int PixWidth;
+  char Segments;
+  unsigned short CRC;
 };
 
 #endif
-

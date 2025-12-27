@@ -17,84 +17,75 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer 95                                         *
+ *                 Project Name : Command & Conquer 95 *
  *                                                                                             *
- *                    File Name : THIPX16C.CPP                                                 *
+ *                    File Name : THIPX16C.CPP *
  *                                                                                             *
- *                   Programmer : Steve Tall                                                   *
+ *                   Programmer : Steve Tall *
  *                                                                                             *
- *                   Start Date : 1/15/96                                                      *
+ *                   Start Date : 1/15/96 *
  *                                                                                             *
- *                  Last Update : January 29thth 1996 [ST]                                     *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Overview:                                                                                   *
- *                                                                                             *
- *   'C' code for the 16 bit IPX library. This library is 'thunked' down to from a 32bit       *
- *  .dll.                                                                                      *
+ *                  Last Update : January 29thth 1996 [ST] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
+ * Overview: *
  *                                                                                             *
- * Functions:                                                                                  *
- *  LibMain -- library entry point                                                             *
- *  DllEntryPoint -- called each time a new app requests use of the .dll                       *
+ *   'C' code for the 16 bit IPX library. This library is 'thunked' down to from
+ *a 32bit       * .dll. *
  *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ *---------------------------------------------------------------------------------------------*
+ *                                                                                             *
+ * Functions: * LibMain -- library entry point * DllEntryPoint -- called each
+ *time a new app requests use of the .dll                       *
+ *                                                                                             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include <windows.h>
 
-
 extern "C" {
-	BOOL FAR PASCAL Thipx_ThunkConnect16_(LPSTR pszDll16, LPSTR pszDll32, WORD  hInst, DWORD dwReason);
-	BOOL FAR PASCAL DllEntryPoint_ (DWORD dwReason, WORD hInst, WORD, WORD, DWORD, WORD);
+BOOL FAR PASCAL Thipx_ThunkConnect16_(LPSTR pszDll16, LPSTR pszDll32,
+                                      WORD hInst, DWORD dwReason);
+BOOL FAR PASCAL DllEntryPoint_(DWORD dwReason, WORD hInst, WORD, WORD, DWORD,
+                               WORD);
 }
-
 
 /***********************************************************************************************
- * LibMain -- library entry point                                                              *
+ * LibMain -- library entry point *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    the usual windows rubbish                                                         *
+ * INPUT:    the usual windows rubbish *
  *                                                                                             *
- * OUTPUT:   true                                                                              *
+ * OUTPUT:   true *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    1/29/96 10:45AM ST : Created                                                             *
+ * HISTORY: * 1/29/96 10:45AM ST : Created *
  *=============================================================================================*/
-int CALLBACK LibMain (HANDLE, WORD, WORD, LPSTR)
-{
-	return (1);
-}
-
-
+int CALLBACK LibMain(HANDLE, WORD, WORD, LPSTR) { return (1); }
 
 /***********************************************************************************************
- * DllEntryPoint -- called each time a new app requests use of the .dll                        *
+ * DllEntryPoint -- called each time a new app requests use of the .dll *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    windows junk                                                                      *
+ * INPUT:    windows junk *
  *                                                                                             *
- * OUTPUT:   true                                                                              *
+ * OUTPUT:   true *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    1/29/96 10:45AM ST : Created                                                             *
+ * HISTORY: * 1/29/96 10:45AM ST : Created *
  *=============================================================================================*/
-BOOL FAR PASCAL DllEntryPoint_ (DWORD dwReason, WORD hInst, WORD, WORD, DWORD, WORD)
-{
-	if (!Thipx_ThunkConnect16_("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)){
-        return FALSE;
-    }
-    return TRUE;
+BOOL FAR PASCAL DllEntryPoint_(DWORD dwReason, WORD hInst, WORD, WORD, DWORD,
+                               WORD) {
+  if (!Thipx_ThunkConnect16_("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)) {
+    return FALSE;
+  }
+  return TRUE;
 }
-
-

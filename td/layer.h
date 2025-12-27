@@ -16,24 +16,27 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\layer.h_v   2.19   16 Oct 1995 16:46:22   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\layer.h_v   2.19   16 Oct 1995 16:46:22
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : LAYER.H                                                      *
+ *                    File Name : LAYER.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : May 31, 1994                                                 *
+ *                   Start Date : May 31, 1994 *
  *                                                                                             *
- *                  Last Update : May 31, 1994   [JLB]                                         *
+ *                  Last Update : May 31, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef LAYER_H
 #define LAYER_H
@@ -42,26 +45,23 @@
 
 class ObjectClass;
 
-class LayerClass : public DynamicVectorClass<ObjectClass *>
-{
-	public:
+class LayerClass : public DynamicVectorClass<ObjectClass *> {
+ public:
+  //-----------------------------------------------------------------
+  void Sort(void);
+  bool Submit(ObjectClass const *object, bool sort = false);
+  int Sorted_Add(ObjectClass const *const object);
 
-		//-----------------------------------------------------------------
-		void Sort(void);
-		bool Submit(ObjectClass const * object, bool sort=false);
-		int Sorted_Add(ObjectClass const * const object);
+  virtual void Init(void) { Clear(); };
+  virtual void One_Time(void) {};
 
-
-		virtual void Init(void) {Clear();};
-		virtual void One_Time(void) {};
-
-		/*
-		**	File I/O.
-		*/
-		bool Load(FileClass & file);
-		bool Save(FileClass & file);
-		virtual void Code_Pointers(void);
-		virtual void Decode_Pointers(void);
+  /*
+  **	File I/O.
+  */
+  bool Load(FileClass &file);
+  bool Save(FileClass &file);
+  virtual void Code_Pointers(void);
+  virtual void Decode_Pointers(void);
 };
 
 #endif

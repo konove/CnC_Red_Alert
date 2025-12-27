@@ -36,7 +36,7 @@
 
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 #ifndef _FILE_H
 #include "_file.h"
@@ -46,27 +46,23 @@
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
+/*
+        structure for FileDataType is:
 
-/* 
-	structure for FileDataType is:
-
-	BYTE *filename:	initialize to actual file name on disk.
-	LONG size:			initialize to actual file size on disk.
-	BYTE *ptr:			initialize to a 0L below.
-	WORD disk:			which floppy disk number (1+) file resides on.
-	LONG pos:			initialize to a 0L below.				
-	UBYTE priority:	file priorities can be from 0 to 127. (127 = highest)
- 							if you want the file to be attempted to be made
-							resident at runtime, add 128 to the file priority
-							to set the high bit. even though the files
-							priority will appear to be 128 to 255, it will
-							still remain 0 to 127.
-*/	
+        BYTE *filename:	initialize to actual file name on disk.
+        LONG size:			initialize to actual file size on disk.
+        BYTE *ptr:			initialize to a 0L below.
+        WORD disk:			which floppy disk number (1+) file
+   resides on. LONG pos:			initialize to a 0L below. UBYTE
+   priority:	file priorities can be from 0 to 127. (127 = highest) if you
+   want the file to be attempted to be made resident at runtime, add 128 to the
+   file priority to set the high bit. even though the files priority will appear
+   to be 128 to 255, it will still remain 0 to 127.
+*/
 
 FileDataType FileData[] = {
-	{ 	"",               0L, 		0L, 	0, 0L,	0			}
-	/* Must have an empty entry!!! */
+    {"", 0L, 0L, 0, 0L, 0}
+    /* Must have an empty entry!!! */
 };

@@ -18,62 +18,61 @@
 
 /* $Header: /CounterStrike/PIPE.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : PIPE.H                                                       *
+ *                    File Name : PIPE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/29/96                                                     *
+ *                   Start Date : 06/29/96 *
  *                                                                                             *
- *                  Last Update : June 29, 1996 [JLB]                                          *
+ *                  Last Update : June 29, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef PIPE_H
 #define PIPE_H
 
-#include	<stddef.h>
-
+#include <stddef.h>
 
 /*
-**	A "push through" pipe interface abstract class used for such purposes as compression
-**	and translation of data. In STL terms, this is functionally similar to an output
-**	iterator but with a few enhancements. A pipe class object that is not derived into
-**	another useful class serves only as a pseudo null-pipe. It will accept data but
-**	just throw it away but pretend that it sent it somewhere.
+**	A "push through" pipe interface abstract class used for such purposes as
+*compression *	and translation of data. In STL terms, this is functionally
+*similar to an output *	iterator but with a few enhancements. A pipe class
+*object that is not derived into *	another useful class serves only as a
+*pseudo null-pipe. It will accept data but *	just throw it away but pretend
+*that it sent it somewhere.
 */
-class Pipe
-{
-	public:
-		Pipe(void) : ChainTo(0), ChainFrom(0) {}
-		virtual ~Pipe(void);
+class Pipe {
+ public:
+  Pipe(void) : ChainTo(0), ChainFrom(0) {}
+  virtual ~Pipe(void);
 
-		virtual int Flush(void);
-		virtual int End(void) {return(Flush());}
-		virtual void Put_To(Pipe * pipe);
-		void Put_To(Pipe & pipe) {Put_To(&pipe);}
-		virtual int Put(void const * source, int slen);
+  virtual int Flush(void);
+  virtual int End(void) { return (Flush()); }
+  virtual void Put_To(Pipe* pipe);
+  void Put_To(Pipe& pipe) { Put_To(&pipe); }
+  virtual int Put(void const* source, int slen);
 
-		/*
-		**	Pointer to the next pipe segment in the chain.
-		*/
-		Pipe * ChainTo;
-		Pipe * ChainFrom;
+  /*
+  **	Pointer to the next pipe segment in the chain.
+  */
+  Pipe* ChainTo;
+  Pipe* ChainFrom;
 
-	private:
-
-		/*
-		**	Disable the copy constructor and assignment operator.
-		*/
-		Pipe(Pipe & rvalue);
-		Pipe & operator = (Pipe const & pipe);
+ private:
+  /*
+  **	Disable the copy constructor and assignment operator.
+  */
+  Pipe(Pipe& rvalue);
+  Pipe& operator=(Pipe const& pipe);
 };
 
 #endif

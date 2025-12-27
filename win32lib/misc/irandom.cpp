@@ -36,11 +36,6 @@
 #include <time.h>
 #include "misc.h"
 
-
-
-
-
-
 /* IRANDOM ----------------------------------------------------------
 
    IRandom returns a random value between min and max inclusive.
@@ -50,20 +45,19 @@
    RETURNS:	int random number
 */
 
-int IRandom(int minval, int maxval)
-{
-	int num,mask;
+int IRandom(int minval, int maxval) {
+  int num, mask;
 
-	// Keep minval and maxval straight.
-	if (minval > maxval) {
-		minval ^= maxval;
-		maxval ^= minval;
-		minval ^= maxval;
-	}
+  // Keep minval and maxval straight.
+  if (minval > maxval) {
+    minval ^= maxval;
+    maxval ^= minval;
+    minval ^= maxval;
+  }
 
-	mask = Get_Random_Mask(maxval - minval);
+  mask = Get_Random_Mask(maxval - minval);
 
-	while( (num = (rand() & mask) + minval) > maxval ) ;
-	return(num);
+  while ((num = (rand() & mask) + minval) > maxval);
+  return (num);
 }
 

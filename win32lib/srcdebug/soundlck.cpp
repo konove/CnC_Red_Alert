@@ -34,9 +34,9 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef _WIN32 // Denzil 6/2/98 Watcom 11.0 complains without this check
+#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
-#endif // _WIN32
+#endif  // _WIN32
 #define WIN32
 #include <windows.h>
 #include <windowsx.h>
@@ -47,74 +47,68 @@
 #include "wwstd.h"
 #include "soundint.h"
 
-
-
 LockedDataType LockedData;
 
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 /***************************************************************************
  * INIT_LOCKED_DATA -- Initializes sound driver locked data                *
  *                                                                         *
- * INPUT:		none                                                          *
+ * INPUT:		none *
  *                                                                         *
  * OUTPUT:     none                                                        *
  *                                                                         *
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-void Init_Locked_Data(void)
-{
+void Init_Locked_Data(void) {
+  /*
+  ** Initialize all of the data elements that need to be locked.
+  */
+  LockedData.DigiHandle = -1;
+  LockedData.ServiceSomething = FALSE;
+  LockedData.MagicNumber = 0xDEAF;
+  LockedData.UncompBuffer = NULL;
+  //	LockedData.StreamBufferSize	= (2*SECONDARY_BUFFER_SIZE)+128;
+  LockedData.StreamBufferSize = (SECONDARY_BUFFER_SIZE / 4) + 128;
+  LockedData.StreamBufferCount = 16;
+  LockedData.SoundVolume = 255;
+  LockedData.ScoreVolume = 255;
+  LockedData._int = FALSE;
 
-	/*
-	** Initialize all of the data elements that need to be locked.
-	*/
-	LockedData.DigiHandle			= -1;
-	LockedData.ServiceSomething	= FALSE;
-	LockedData.MagicNumber			= 0xDEAF;
-	LockedData.UncompBuffer			= NULL;
-//	LockedData.StreamBufferSize	= (2*SECONDARY_BUFFER_SIZE)+128;
-	LockedData.StreamBufferSize	= (SECONDARY_BUFFER_SIZE/4)+128;
-	LockedData.StreamBufferCount	= 16;
-	LockedData.SoundVolume			= 255;
-	LockedData.ScoreVolume			= 255;
-	LockedData._int					= FALSE;
+#ifdef cuts
+  /*
+  ** Lock the sound specific c functions that will cause us problems if
+  ** they are swapped out during an interrupt.
+  */
+  DPMI_Lock(&LockedData, 4096L);
+  DPMI_Lock(Simple_Copy, 4096L);
+  DPMI_Lock(Sample_Copy, 4096L);
+  DPMI_Lock((void *)maintenance_callback, 4096L);
+  DPMI_Lock((void *)DigiCallback, 4096L);
+  DPMI_Lock((void *)HMI_TimerCallback, 4096L);
+  DPMI_Lock(Audio_Add_Long_To_Pointer, 4096L);
+  DPMI_Lock(DPMI_Unlock, 4096L);
 
-	#ifdef cuts
-	/*
-	** Lock the sound specific c functions that will cause us problems if
-	** they are swapped out during an interrupt.
-	*/
-	DPMI_Lock(&LockedData,							4096L);
-	DPMI_Lock(Simple_Copy, 							4096L);
-	DPMI_Lock(Sample_Copy, 							4096L);
-	DPMI_Lock((void *)maintenance_callback, 	4096L);
-	DPMI_Lock((void *)DigiCallback, 				4096L);
-	DPMI_Lock((void *)HMI_TimerCallback, 		4096L);
-	DPMI_Lock(Audio_Add_Long_To_Pointer,		4096L);
-	DPMI_Lock(DPMI_Unlock,							4096L);
+  /*
+  ** Lock the library functions that will cause us problems if they are
+  ** swapped out during an interrupt.
+  */
+  DPMI_Lock(Mem_Copy, 4096L);
+  DPMI_Lock(Audio_Mem_Set, 4096L);
+  DPMI_Lock(__GETDS, 4096L);
 
-	/*
-	** Lock the library functions that will cause us problems if they are
-	** swapped out during an interrupt.
-	*/
-	DPMI_Lock(Mem_Copy,								4096L);
-	DPMI_Lock(Audio_Mem_Set,						4096L);
-	DPMI_Lock(__GETDS,								4096L);
+  /*
+  ** Finally lock the two assembly modules that need locking.  This can
+  ** be handled by calling the lock function that is local to thier module
+  ** swapped out during an interrupt.
+  */
+  Decompress_Frame_Lock();
+  sosCODEC_Lock();
 
-	/*
-	** Finally lock the two assembly modules that need locking.  This can
-	** be handled by calling the lock function that is local to thier module
-	** swapped out during an interrupt.
-	*/
-	Decompress_Frame_Lock();
-	sosCODEC_Lock();
-
-	#endif	//cuts
+#endif  // cuts
 }
-

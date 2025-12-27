@@ -37,18 +37,18 @@
 #ifndef SOUND_H
 #define SOUND_H
 
-#define	HMI_DRIVER	TRUE
-#include	"sos.h"
-#include	"soscomp.h"
+#define HMI_DRIVER TRUE
+#include "sos.h"
+#include "soscomp.h"
 
 /*
 **	Maximum number of sound effects that may run at once.
 */
-#define	MAX_SFX		4
+#define MAX_SFX 4
 
 /*
 ** Size of temp HMI low memory staging buffer.
 */
-#define	SFX_MINI_STAGE_BUFFER_SIZE		(1024*4)
+#define SFX_MINI_STAGE_BUFFER_SIZE (1024 * 4)
 
 #endif

@@ -19,24 +19,24 @@
 #ifndef VQMCRC_H
 #define VQMCRC_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     CRC.h
-*
-* DESCRIPTION
-*     CRC calculation definitions.
-*
-* PROGRAMMER
-*     Joe L. Bostic
-*
-* DATE
-*     January 26, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     CRC.h
+ *
+ * DESCRIPTION
+ *     CRC calculation definitions.
+ *
+ * PROGRAMMER
+ *     Joe L. Bostic
+ *
+ * DATE
+ *     January 26, 1995
+ *
+ ****************************************************************************/
 
 #ifdef __cplusplus
 extern "C" {

@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\noseqcon.h_v   1.13   01 Mar 1996 17:32:42   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\noseqcon.h_v   1.13   01 Mar 1996
+ * 17:32:42   JOE_BOSTIC  $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -29,25 +30,28 @@
  *                                                                         *
  *                   Start Date : December 19, 1994                        *
  *                                                                         *
- *                  Last Update : April 9, 1995   [BR]                 		*
+ *                  Last Update : April 9, 1995   [BR] *
  *                                                                         *
  *-------------------------------------------------------------------------*
  *                                                                         *
- * This class provides a "Non-Sequenced" ACK/Retry approach to packet		*
- * transmission.  It sends out as many packets as are in the queue, whose	*
- * resend delta times have expired; and it ACK's any packets its received	*
- * who haven't been ACK'd yet.  Thus, order of delivery is NOT guaranteed;	*
- * however, the performance is better than the Sequenced approach.			*
+ * This class provides a "Non-Sequenced" ACK/Retry approach to packet *
+ * transmission.  It sends out as many packets as are in the queue, whose
+ ** resend delta times have expired; and it ACK's any packets its received
+ ** who haven't been ACK'd yet.  Thus, order of delivery is NOT guaranteed;
+ ** however, the performance is better than the Sequenced approach.
+ **
  *																									*
- *	A derived class must provide:															*
- * - Init: Initialization of any hardware-specific values.						*
- * - Send: a hardware-dependent send routine.										*
+ *	A derived class must provide:
+ **
+ * - Init: Initialization of any hardware-specific values.
+ **
+ * - Send: a hardware-dependent send routine.
+ **
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #ifndef NONSEQCONN_H
 #define NONSEQCONN_H
-
 
 /*
 ********************************* Includes **********************************
@@ -55,75 +59,71 @@
 #include "connect.h"
 #include "combuf.h"
 
-
 /*
 ***************************** Class Declaration *****************************
 */
-class NonSequencedConnClass : public ConnectionClass
-{
-	/*
-	---------------------------- Public Interface ----------------------------
-	*/
-	public:
-		/*.....................................................................
-		Constructor/destructor.
-		.....................................................................*/
-		NonSequencedConnClass (int numsend, int numrecieve, int maxlen, 
-			unsigned short magicnum, unsigned long retry_delta,
-			unsigned long max_retries, unsigned long timeout);
-		virtual ~NonSequencedConnClass ();
+class NonSequencedConnClass : public ConnectionClass {
+  /*
+  ---------------------------- Public Interface ----------------------------
+  */
+ public:
+  /*.....................................................................
+  Constructor/destructor.
+  .....................................................................*/
+  NonSequencedConnClass(int numsend, int numrecieve, int maxlen,
+                        unsigned short magicnum, unsigned long retry_delta,
+                        unsigned long max_retries, unsigned long timeout);
+  virtual ~NonSequencedConnClass();
 
-		/*.....................................................................
-		Initialization.
-		.....................................................................*/
-		virtual void Init (void);
+  /*.....................................................................
+  Initialization.
+  .....................................................................*/
+  virtual void Init(void);
 
-		/*.....................................................................
-		Send/Receive routines.
-		.....................................................................*/
-		virtual int Send_Packet (void * buf, int buflen, int ack_req);
-		virtual int Receive_Packet (void * buf, int buflen);
-		virtual int Get_Packet (void * buf, int *buflen);
+  /*.....................................................................
+  Send/Receive routines.
+  .....................................................................*/
+  virtual int Send_Packet(void *buf, int buflen, int ack_req);
+  virtual int Receive_Packet(void *buf, int buflen);
+  virtual int Get_Packet(void *buf, int *buflen);
 
-		/*.....................................................................
-		The packet "queue"; this non-sequenced version isn't really much of
-		a queue, but more of a repository.
-		.....................................................................*/
-		CommBufferClass *Queue;
+  /*.....................................................................
+  The packet "queue"; this non-sequenced version isn't really much of
+  a queue, but more of a repository.
+  .....................................................................*/
+  CommBufferClass *Queue;
 
-	/*
-	-------------------------- Protected Interface ---------------------------
-	*/
-	protected:
-		/*.....................................................................
-		Routines to service the Send & Receive queues.
-		.....................................................................*/
-		virtual int Service_Send_Queue (void);
-		virtual int Service_Receive_Queue (void);
+  /*
+  -------------------------- Protected Interface ---------------------------
+  */
+ protected:
+  /*.....................................................................
+  Routines to service the Send & Receive queues.
+  .....................................................................*/
+  virtual int Service_Send_Queue(void);
+  virtual int Service_Receive_Queue(void);
 
-		/*.....................................................................
-		Running totals of # of packets we send & receive which require an ACK, 
-		and those that don't.
-		.....................................................................*/
-		unsigned long NumRecNoAck;
-		unsigned long NumRecAck;
-		unsigned long NumSendNoAck;
-		unsigned long NumSendAck;
+  /*.....................................................................
+  Running totals of # of packets we send & receive which require an ACK,
+  and those that don't.
+  .....................................................................*/
+  unsigned long NumRecNoAck;
+  unsigned long NumRecAck;
+  unsigned long NumSendNoAck;
+  unsigned long NumSendAck;
 
-		/*.....................................................................
-		This is the ID of the last consecutively-received packet; anything older 
-		than this, we know is a resend.  Anything newer than this MUST be lying 
-		around in the Queue for us to detect it as a resend.
-		.....................................................................*/
-		unsigned long LastSeqID;
+  /*.....................................................................
+  This is the ID of the last consecutively-received packet; anything older
+  than this, we know is a resend.  Anything newer than this MUST be lying
+  around in the Queue for us to detect it as a resend.
+  .....................................................................*/
+  unsigned long LastSeqID;
 
-		/*.....................................................................
-		This is the ID of the PACKET_DATA_ACK packet we read last; it ensures
-		that the application reads that type of packet in order.
-		.....................................................................*/
-		unsigned long LastReadID;
+  /*.....................................................................
+  This is the ID of the PACKET_DATA_ACK packet we read last; it ensures
+  that the application reads that type of packet in order.
+  .....................................................................*/
+  unsigned long LastReadID;
 };
 
 #endif
-
-

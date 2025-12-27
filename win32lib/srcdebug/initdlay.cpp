@@ -36,7 +36,7 @@
 #include "wwstd.h"
 #include "timer.h"
 #include "video.h"
-		   	 
+
 BOOL VertBlank;
 
 /***************************************************************************
@@ -53,20 +53,19 @@ BOOL VertBlank;
  * HISTORY:                                                                *
  *   08/03/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID Init_Delay(VOID)
-{	  
-	WORD nz, nnz;
+VOID Init_Delay(VOID) {
+  WORD nz, nnz;
 
-	nz = nnz = 0;
+  nz = nnz = 0;
 
-	CountDown.Set(15, TRUE); // set to  1/4 second and start it
-	
-	do {
-		if (Get_Vert_Blank())
-			nnz++;
-		else
-			nz++;
-	} while (CountDown.Time());
+  CountDown.Set(15, TRUE);  // set to  1/4 second and start it
 
-	VertBlank = (nnz > nz);
+  do {
+    if (Get_Vert_Blank())
+      nnz++;
+    else
+      nz++;
+  } while (CountDown.Time());
+
+  VertBlank = (nnz > nz);
 }

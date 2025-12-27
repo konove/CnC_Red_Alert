@@ -37,50 +37,28 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
-
 /*
 ** UnitTracker Class
 */
 
-class	UnitTrackerClass {
+class UnitTrackerClass {
+ public:
+  UnitTrackerClass(int unit_count);
+  ~UnitTrackerClass(void);
 
-	public:
+  void Increment_Unit_Total(int unit_type);
+  void Decrement_Unit_Total(int unit_type);
+  void Clear_Unit_Total(void);
 
-		UnitTrackerClass(int unit_count);
-		~UnitTrackerClass(void);
+  int Get_Unit_Total(int unit_type);
+  long *Get_All_Totals(void);
+  int Get_Unit_Count(void) { return (UnitCount); };
 
-		void 	Increment_Unit_Total (int unit_type);
-		void 	Decrement_Unit_Total (int unit_type);
-		void	Clear_Unit_Total(void);
+  void To_Network_Format(void);
+  void To_PC_Format(void);
 
-		int 	Get_Unit_Total (int unit_type);
-		long *Get_All_Totals (void);
-		int	Get_Unit_Count (void){return (UnitCount);};
-
-		void	To_Network_Format(void);
-		void	To_PC_Format(void);
-
-	private:
-
-		long	*UnitTotals;
-		int	UnitCount;
-		int	InNetworkFormat;
-
+ private:
+  long *UnitTotals;
+  int UnitCount;
+  int InNetworkFormat;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

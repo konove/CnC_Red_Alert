@@ -18,43 +18,34 @@
 
 /* $Header: /CounterStrike/LZO.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : LZW.H                                                        *
+ *                    File Name : LZW.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 08/28/96                                                     *
+ *                   Start Date : 08/28/96 *
  *                                                                                             *
- *                  Last Update : August 28, 1996 [JLB]                                        *
+ *                  Last Update : August 28, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef _LZO_H
 #define _LZO_H
 
 #include "lzoconf.h"
 
-int lzo1x_1_compress ( 	const lzo_byte *in ,
-								lzo_uint  in_len,
-                         lzo_byte *out,
-								lzo_uint *out_len,
-                         lzo_voidp wrkmem );
+int lzo1x_1_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
+                     lzo_uint *out_len, lzo_voidp wrkmem);
 
-
-int lzo1x_decompress	(  const lzo_byte *in ,
-								lzo_uint  in_len,
-								lzo_byte *out,
-								lzo_uint *out_len,
-                         lzo_voidp );
-
-
-
-
+int lzo1x_decompress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
+                     lzo_uint *out_len, lzo_voidp);
 
 #endif

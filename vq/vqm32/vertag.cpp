@@ -17,28 +17,28 @@
 */
 
 /****************************************************************************
-*
-*       C O N F I D E N T I A L  --  W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* PROJECT
-*     VQMisc32 library.
-*
-* FILE
-*     vertag.c (32-Bit protected mode)
-*
-* DESCRIPTION
-*     Embedded version string. This string is prefixed with a tag ("$VER$")
-*     which can be search for to find this string.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*      
-* DATE
-*     Febuary 8, 1995
-*
-****************************************************************************/
+ *
+ *       C O N F I D E N T I A L  --  W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * PROJECT
+ *     VQMisc32 library.
+ *
+ * FILE
+ *     vertag.c (32-Bit protected mode)
+ *
+ * DESCRIPTION
+ *     Embedded version string. This string is prefixed with a tag ("$VER$")
+ *     which can be search for to find this string.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     Febuary 8, 1995
+ *
+ ****************************************************************************/
 
 #ifdef __WATCOMC__
 #define DEVNAME "Watcom/4GW"
@@ -46,4 +46,7 @@
 #define DEVNAME "Borland/TNT"
 #endif
 
-char VerTag[] = {"$VER$VQM32 2.12 "DEVNAME" ("__DATE__" "__TIME__")"};
+char VerTag[] = {"$VER$VQM32 2.12 " DEVNAME
+                 " ("__DATE__
+                 " "__TIME__
+                 ")"};

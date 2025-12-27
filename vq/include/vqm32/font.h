@@ -19,24 +19,24 @@
 #ifndef VQMFONT_H
 #define VQMFONT_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*---------------------------------------------------------------------------
-*
-* FILE
-*     font.h
-*
-* DESCRIPTION
-*     Font definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     March 9, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *---------------------------------------------------------------------------
+ *
+ * FILE
+ *     font.h
+ *
+ * DESCRIPTION
+ *     Font definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     March 9, 1995
+ *
+ ****************************************************************************/
 
 /* Font: A Westwood style font.
  *
@@ -50,20 +50,20 @@
  * HeightBlk  - Offset to character height block.
  */
 typedef struct _Font {
-	unsigned short Size;
-	unsigned char  CompMethod;
-	unsigned char  NumBlks;
-	unsigned short InfoBlk;
-	unsigned short OffsetBlk;
-	unsigned short WidthBlk;
-	unsigned short DataBlk;
-	unsigned short HeightBlk;
+  unsigned short Size;
+  unsigned char CompMethod;
+  unsigned char NumBlks;
+  unsigned short InfoBlk;
+  unsigned short OffsetBlk;
+  unsigned short WidthBlk;
+  unsigned short DataBlk;
+  unsigned short HeightBlk;
 } Font;
 
 typedef struct _FontInfo {
-	long huh;
-	unsigned char MaxHeight;
-	unsigned char MaxWidth;
+  long huh;
+  unsigned char MaxHeight;
+  unsigned char MaxWidth;
 } FontInfo;
 
 #ifdef __cplusplus
@@ -102,4 +102,3 @@ long cdecl Char_Pixel_Width(char chr);
 #endif
 
 #endif /* VQMFONT_H */
-

@@ -27,17 +27,16 @@
 
 #include "Function.h"
 
-class WOLEditClass : public EditClass
-{
-public:
-	WOLEditClass(int id, char * text, int max_len, TextPrintType flags, int x, int y, int w, int h, EditStyle style) :
-		EditClass( id, text, max_len, flags, x, y, w, h, style )	{}
-		
-	virtual int Action (unsigned flags, KeyNumType &key);		//	Override of base
+class WOLEditClass : public EditClass {
+ public:
+  WOLEditClass(int id, char *text, int max_len, TextPrintType flags, int x,
+               int y, int w, int h, EditStyle style)
+      : EditClass(id, text, max_len, flags, x, y, w, h, style) {}
 
-protected:
-	virtual void Draw_Text( char const * text );				//	Override of base
+  virtual int Action(unsigned flags, KeyNumType &key);  //	Override of base
 
+ protected:
+  virtual void Draw_Text(char const *text);  //	Override of base
 };
 
 #endif

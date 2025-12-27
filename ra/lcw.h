@@ -18,32 +18,32 @@
 
 /* $Header: /CounterStrike/LCW.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : LCW.H                                                        *
+ *                    File Name : LCW.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/30/96                                                     *
+ *                   Start Date : 06/30/96 *
  *                                                                                             *
- *                  Last Update : June 30, 1996 [JLB]                                          *
+ *                  Last Update : June 30, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef LCW_H
 #define LCW_H
 
-
-int LCW_Uncomp(void const * source, void * dest, unsigned long length=0);
+int LCW_Uncomp(void const* source, void* dest, unsigned long length = 0);
 
 extern "C" {
-int __cdecl LCW_Comp(void const * source, void * dest, int length);
+int __cdecl LCW_Comp(void const* source, void* dest, int length);
 }
 
 #endif

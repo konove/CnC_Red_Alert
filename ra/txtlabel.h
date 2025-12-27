@@ -18,55 +18,57 @@
 
 /* $Header: /CounterStrike/TXTLABEL.H 1     3/03/97 10:26a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TXTLABEL.H                                                   *
+ *                    File Name : TXTLABEL.H *
  *                                                                                             *
- *                   Programmer : Bill Randolph																  *
+ *                   Programmer : Bill Randolph
+ **
  *                                                                                             *
- *                   Start Date : 02/06/95                                                     *
+ *                   Start Date : 02/06/95 *
  *                                                                                             *
- *                  Last Update : February 6, 1995 [BR]													  *
+ *                  Last Update : February 6, 1995 [BR]
+ **
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TXTLABEL_H
 #define TXTLABEL_H
 
-class TextLabelClass : public GadgetClass
-{
-	public:
-		/*
-		** Constructor/Destructor
-		*/
-		TextLabelClass(char *txt, int x, int y, RemapControlType * color,
-			TextPrintType style);
+class TextLabelClass : public GadgetClass {
+ public:
+  /*
+  ** Constructor/Destructor
+  */
+  TextLabelClass(char *txt, int x, int y, RemapControlType *color,
+                 TextPrintType style);
 
-		/*
-		** Overloaded draw routine
-		*/
-		virtual int Draw_Me(int forced = false);
+  /*
+  ** Overloaded draw routine
+  */
+  virtual int Draw_Me(int forced = false);
 
-		/*
-		** Sets the displayed text of the label
-		*/
-		virtual void Set_Text(char *txt) {Text = txt;};
+  /*
+  ** Sets the displayed text of the label
+  */
+  virtual void Set_Text(char *txt) { Text = txt; };
 
-		/*
-		** General-purpose data fields
-		*/
-		unsigned long UserData1;
-		unsigned long UserData2;
-		TextPrintType Style;
-		char *Text;
-		RemapControlType * Color;
-		int PixWidth;
+  /*
+  ** General-purpose data fields
+  */
+  unsigned long UserData1;
+  unsigned long UserData2;
+  TextPrintType Style;
+  char *Text;
+  RemapControlType *Color;
+  int PixWidth;
 };
 
 #endif
-

@@ -18,73 +18,68 @@
 
 /* $Header: /CounterStrike/CRCPIPE.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CRCPIPE.CPP                                                  *
+ *                    File Name : CRCPIPE.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/30/96                                                     *
+ *                   Start Date : 06/30/96 *
  *                                                                                             *
- *                  Last Update : July 3, 1996 [JLB]                                           *
+ *                  Last Update : July 3, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   CRCPipe::Result -- Fetches the current CRC of the data.                                   *
- *   CRCPipe::Put -- Retrieves the data bytes specified and calculates CRC on it.              *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: * CRCPipe::Result -- Fetches the current CRC of the data. *
+ *   CRCPipe::Put -- Retrieves the data bytes specified and calculates CRC on
+ *it.              *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include "crcpipe.h"
 
-
 /***********************************************************************************************
- * CRCPipe::Put -- Retrieves the data bytes specified and calculates CRC on it.                *
+ * CRCPipe::Put -- Retrieves the data bytes specified and calculates CRC on it.
+ **
  *                                                                                             *
- *    This routine will fetch the number of bytes requested from the straw. The data is        *
- *    not modified by this straw segment, but it is examined by the CRC engine in order to     *
- *    keep an accurate CRC of the data that passes through this routine.                       *
+ *    This routine will fetch the number of bytes requested from the straw. The
+ *data is        * not modified by this straw segment, but it is examined by the
+ *CRC engine in order to     * keep an accurate CRC of the data that passes
+ *through this routine.                       *
  *                                                                                             *
- * INPUT:   source   -- Pointer to the buffer that will hold the data requested.               *
+ * INPUT:   source   -- Pointer to the buffer that will hold the data requested.
+ **
  *                                                                                             *
- *          length   -- The number of bytes requested.                                         *
+ *          length   -- The number of bytes requested. *
  *                                                                                             *
- * OUTPUT:  Returns with the actual number of bytes stored into the buffer. If this number is  *
- *          less than the number requested, then this indicates that the data stream has been  *
- *          exhausted.                                                                         *
+ * OUTPUT:  Returns with the actual number of bytes stored into the buffer. If
+ *this number is  * less than the number requested, then this indicates that the
+ *data stream has been  * exhausted. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/03/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int CRCPipe::Put(void const * source, int slen)
-{
-	CRC(source, slen);
-	return(Pipe::Put(source, slen));
+int CRCPipe::Put(void const* source, int slen) {
+  CRC(source, slen);
+  return (Pipe::Put(source, slen));
 }
 
-
 /***********************************************************************************************
- * CRCPipe::Result -- Fetches the current CRC of the data.                                     *
+ * CRCPipe::Result -- Fetches the current CRC of the data. *
  *                                                                                             *
- *    This routine will return the CRC of the data that has passed through the pipe up to      *
- *    this time.                                                                               *
+ *    This routine will return the CRC of the data that has passed through the
+ *pipe up to      * this time. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with the CRC value.                                                        *
+ * OUTPUT:  Returns with the CRC value. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/03/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CRCPipe::Result(void) const
-{
-	return(CRC());
-}
-
+long CRCPipe::Result(void) const { return (CRC()); }

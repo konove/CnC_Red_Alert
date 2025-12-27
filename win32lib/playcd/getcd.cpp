@@ -20,22 +20,25 @@
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : WWLIB												*
+ *                 Project Name : WWLIB
+ **
  *                                                                         *
- *                    File Name : GETCD.CPP											*
+ *                    File Name : GETCD.CPP
+ **
  *                                                                         *
  *                   Programmer : STEVE WETHERILL BASED ON JOE BOSTIC CODE *
  *                                                                         *
- *                   Start Date : 5/13/94												*
+ *                   Start Date : 5/13/94
+ **
  *                                                                         *
  *                  Last Update : June 4, 1994   [SW]                      *
  *                                                                         *
  *-------------------------------------------------------------------------*
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *		GetCDClass::GetCDClass	--	default constructor                       *
- *		GetCDClass::~GetCDClass	--	destructor                                *
- *		GetCDClass::GetCDDrive	--	returns the logical CD drive              *
+ *		GetCDClass::GetCDClass	--	default constructor *
+ *		GetCDClass::~GetCDClass	--	destructor *
+ *		GetCDClass::GetCDDrive	--	returns the logical CD drive *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <stddef.h>
@@ -48,54 +51,52 @@
 #include "playcd.h"
 #include "wwmem.h"
 
-
 /***************************************************************************
- * GetCDClass -- default constructor													*
+ * GetCDClass -- default constructor
+ **
  *                                                                         *
  *                                                                         *
  *                                                                         *
  * INPUT:                                                                  *
- *       none 																					*
- * OUTPUT:                                                                 *
- *			none                          												*
- * WARNINGS:                                                               *
+ *       none
+ ** OUTPUT:                                                                 *
+ *			none
+ ** WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/26/1994 SW   : Created.                                            *
  *   12/4/95    ST   : fixed for Win95                                     *
  *=========================================================================*/
 
-GetCDClass::GetCDClass(VOID)
-{
-	char	path[]={"a:\\"};
+GetCDClass::GetCDClass(VOID) {
+  char path[] = {"a:\\"};
 
-	CDCount = 0;
-	CDIndex = 0;
+  CDCount = 0;
+  CDIndex = 0;
 
-	/*
-	** Set all CD drive placeholders to empty
-	*/
-	memset (CDDrives, NO_CD_DRIVE, MAX_CD_DRIVES);
+  /*
+  ** Set all CD drive placeholders to empty
+  */
+  memset(CDDrives, NO_CD_DRIVE, MAX_CD_DRIVES);
 
+  for (char i = 'c'; i <= 'z'; i++) {
+    path[0] = i;
+    if (GetDriveType(path) == DRIVE_CDROM) {
+      CDDrives[CDCount++] = (int)(i - 'a');
+    }
+  }
 
-	for (char i='c' ; i<='z' ; i++){
-		path[0]=i;
-		if (GetDriveType (path) == DRIVE_CDROM){
-			CDDrives[CDCount++] = (int) (i-'a');
-		}
-	}
-
-	/*
-	**	Catch the case when there are NO CD-ROM drives available
-	*/
-	if (CDCount == 0) {
-		for (char i='a' ; i<='b' ; i++){
-			path[0]=i;
-			if (GetDriveType (path) == DRIVE_CDROM){
-				CDDrives[CDCount++] = (int) (i-'a');
-			}
-		}
-	}
+  /*
+  **	Catch the case when there are NO CD-ROM drives available
+  */
+  if (CDCount == 0) {
+    for (char i = 'a'; i <= 'b'; i++) {
+      path[0] = i;
+      if (GetDriveType(path) == DRIVE_CDROM) {
+        CDDrives[CDCount++] = (int)(i - 'a');
+      }
+    }
+  }
 }
 
 /***************************************************************************
@@ -104,21 +105,20 @@ GetCDClass::GetCDClass(VOID)
  *                                                                         *
  *                                                                         *
  * INPUT:                                                                  *
- *    	none																					*
- * OUTPUT:                                                                 *
- *			none																					*
- * WARNINGS:                                                               *
+ *    	none
+ ** OUTPUT:                                                                 *
+ *			none
+ ** WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/26/1994 SW: Created.                                               *
  *   12/4/95    ST: fixed for Win95                                        *
  *=========================================================================*/
 
-GetCDClass::~GetCDClass(VOID)
-{
-//	if(cdDrive_addrp.seg)
-//		DPMI_real_free(cdDrive_addrp);		// free up those conventional buffers
+GetCDClass::~GetCDClass(VOID) {
+  //	if(cdDrive_addrp.seg)
+  //		DPMI_real_free(cdDrive_addrp);		// free up those
+  //conventional buffers
 }
 
 /* ==================================================================== */
-

@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/sdllib/include",
+        "${workspaceFolder}/port",
+        "${workspaceFolder}/ra",
+        "${workspaceFolder}/vq/include",
+        "${workspaceFolder}/winvq"
+      ],
+      "defines": [
+        "WIN32",
+        "ENGLISH=1",
+        "PORTABLE=1",
+        "WINSOCK_IPX=1",
+        "__cdecl=",
+        "__far=",
+        "__stdcall=",
+        "cdecl=",
+        "far="
+      ],
+      "compilerPath": "/usr/bin/g++",
+      "cStandard": "c11",
+      "cppStandard": "c++11",
+      "intelliSenseMode": "linux-gcc-x64",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+      "configurationProvider": "ms-vscode.cmake-tools"
+    }
+  ],
+  "version": 4
+}

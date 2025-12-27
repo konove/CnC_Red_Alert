@@ -17,33 +17,36 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                     $Archive:: /Sun/WSPIPX.h                                               $*
+ *                     $Archive:: /Sun/WSPIPX.h $*
  *                                                                                             *
- *                      $Author:: Joe_b                                                       $*
+ *                      $Author:: Joe_b $*
  *                                                                                             *
- *                     $Modtime:: 8/12/97 5:42p                                               $*
+ *                     $Modtime:: 8/12/97 5:42p $*
  *                                                                                             *
- *                    $Revision:: 3                                                           $*
+ *                    $Revision:: 3 $*
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef WSPIPX_H
 #define WSPIPX_H
 
-#include	"wsproto.h"
+#include "wsproto.h"
 
 #ifdef _WIN32
 /*
-** Include Windows specific extensions for Winsock that allow IPX over winsock 1.1
+** Include Windows specific extensions for Winsock that allow IPX over
+*winsock 1.1
 */
-#include	<wsipx.h>
+#include <wsipx.h>
 #else
 #include <sys/socket.h>
 typedef sockaddr_storage SOCKADDR_IPX;
@@ -55,53 +58,48 @@ typedef sockaddr_storage SOCKADDR_IPX;
 **
 */
 class IPXInterfaceClass : public WinsockInterfaceClass {
-
-	public:
-
-		IPXInterfaceClass (void);
-		//virtual ~IPXInterfaceClass(void){Close();};
-		bool Get_Network_Card_Address (int card_number, SOCKADDR_IPX *addr);
+ public:
+  IPXInterfaceClass(void);
+  // virtual ~IPXInterfaceClass(void){Close();};
+  bool Get_Network_Card_Address(int card_number, SOCKADDR_IPX *addr);
 #ifndef PORTABLE
-	 	virtual long Message_Handler(HWND window, UINT message, UINT wParam, LONG lParam);
+  virtual long Message_Handler(HWND window, UINT message, UINT wParam,
+                               LONG lParam);
 #endif
-		virtual bool Open_Socket ( SOCKET socketnum );
+  virtual bool Open_Socket(SOCKET socketnum);
 
-		virtual ProtocolEnum Get_Protocol (void) {
-			return (PROTOCOL_IPX);
-		};
+  virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_IPX); };
 
-		virtual int Protocol_Event_Message (void) {
-			return (WM_IPXASYNCEVENT);
-		};
+  virtual int Protocol_Event_Message(void) { return (WM_IPXASYNCEVENT); };
 
+ private:
+  /*
+  ** The address of the network we will send broadcasts to. Normally you would
+  *expect
+  ** this to be ff,ff,ff,ff but this fails under NT 4.0. Instead, we can use the
+  *network
+  ** number of the net that this PC is attached to. This limits broadcasts to
+  *the current
+  ** network.
+  */
+  unsigned char BroadcastNet[4];
 
-	private:
-		/*
-		** The address of the network we will send broadcasts to. Normally you would expect
-		** this to be ff,ff,ff,ff but this fails under NT 4.0. Instead, we can use the network
-		** number of the net that this PC is attached to. This limits broadcasts to the current
-		** network.
-		*/
-		unsigned char	BroadcastNet[4];
+  /*
+  ** The node to use as a broadcast address. Normally ff,ff,ff,ff,ff,ff.
+  */
+  unsigned char BroadcastNode[6];
 
-		/*
-		** The node to use as a broadcast address. Normally ff,ff,ff,ff,ff,ff.
-		*/
-		unsigned char	BroadcastNode[6];
+  /*
+  ** The id of the network cars in this machine.
+  */
+  unsigned char MyNode[6];
 
-		/*
-		** The id of the network cars in this machine.
-		*/
-		unsigned char	MyNode[6];
-
-		/*
-		** The socket number to connect with. Normally this will be virgins reserved socket
-		** number - VIRGIN_SOCKET (0x8813).
-		*/
-		SOCKET			IPXSocketNumber;
-
+  /*
+  ** The socket number to connect with. Normally this will be virgins reserved
+  *socket
+  ** number - VIRGIN_SOCKET (0x8813).
+  */
+  SOCKET IPXSocketNumber;
 };
-
-
 
 #endif

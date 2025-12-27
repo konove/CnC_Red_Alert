@@ -1,0 +1,24 @@
+{
+  // Format files on save
+  "editor.formatOnSave": true,
+  // Use clang-format for C/C++ files
+  "C_Cpp.formatting": "clangFormat",
+  "C_Cpp.clang_format_style": "file",
+  // Additional formatting settings
+  "editor.formatOnPaste": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  // Language-specific settings
+  "[cpp]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "[c]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  "[h]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  }
+}

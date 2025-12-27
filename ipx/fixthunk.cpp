@@ -16,7 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <windows.h>
 #include <sys\types.h>
 #include <sys\stat.h>
@@ -24,122 +23,104 @@
 #include <io.h>
 #include <stdio.h>
 
-
 unsigned char thunk_file[1000000];
 unsigned char thunk_file_out[100050];
 
-
 /***********************************************************************************************
- * Search_For_String -- search for a string of chars within a buffer                           *
+ * Search_For_String -- search for a string of chars within a buffer *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    string                                                                            *
- *           ptr to buffer to search in                                                        *
- *           length of buffer                                                                  *
+ * INPUT:    string * ptr to buffer to search in * length of buffer *
  *                                                                                             *
- * OUTPUT:   ptr to string in buffer or NULL if not found                                      *
+ * OUTPUT:   ptr to string in buffer or NULL if not found *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    11/20/95 5:42PM ST : Created                                                             *
+ * HISTORY: * 11/20/95 5:42PM ST : Created *
  *=============================================================================================*/
 
-char *Search_For_String (char *string , char *buffer_ptr , int buffer_length)
-{
-	int	j;
-	int	string_length=strlen(string);
+char *Search_For_String(char *string, char *buffer_ptr, int buffer_length) {
+  int j;
+  int string_length = strlen(string);
 
-	for (int i=0 ; i<buffer_length-string_length ; i++){
+  for (int i = 0; i < buffer_length - string_length; i++) {
+    for (j = 0; j < string_length; j++) {
+      if (*(string + j) != *(buffer_ptr + i + j)) break;
+    }
+    if (j == string_length) return buffer_ptr + i;
+  }
 
-		for (j=0 ; j<string_length ; j++){
-			if ( *(string+j) != *(buffer_ptr+i+j)) break;
-		}
-		if (j==string_length) return buffer_ptr+i;
-	}
-
-	return (NULL);
-
+  return (NULL);
 }
 
+int main(int argc, char *argv[]) {
+  int handle;
+  char find_string[] = {
+      ";************************ START OF THUNK "
+      "BODIES************************"};
+  char find_other_string[] = {"public _IPX_Initialise@4"};
 
+  char insert_string1[] = {"\n\r;\n\r"};
+  char insert_string2[] = {
+      ";For some reason, inserting these lines makes it assemble "
+      "correctly\n\r"};
+  char insert_string3[] = {";\n\r"};
+  char insert_string4[] = {"Externdef   IPX_Initialise:near\n\r"};
+  char insert_string5[] = {"IPX_Initialise label near\n\r\n\r"};
 
+  unsigned char *pointer;
+  unsigned char *pointer2;
+  int copy_length;
+  int file_length;
 
-int main(int argc, char *argv[])
-{
-	int	handle;
-	char	find_string[]={";************************ START OF THUNK BODIES************************"};
-	char	find_other_string[]={"public _IPX_Initialise@4"};
+  handle = open("thipx.asm", O_RDONLY | O_BINARY);
 
-	char	insert_string1[]={"\n\r;\n\r"};
-	char	insert_string2[]={";For some reason, inserting these lines makes it assemble correctly\n\r"};
-	char	insert_string3[]={";\n\r"};
-	char	insert_string4[]={"Externdef   IPX_Initialise:near\n\r"};
-	char	insert_string5[]={"IPX_Initialise label near\n\r\n\r"};
+  if (handle == -1) return (1);
 
-	unsigned char *pointer;
-	unsigned char *pointer2;
-	int	copy_length;
-	int	file_length;
+  file_length = filelength(handle);
 
-	handle = open ("thipx.asm", O_RDONLY | O_BINARY);
+  if (read(handle, thunk_file, file_length) != file_length) {
+    close(handle);
+    return (1);
+  }
 
-	if (handle==-1)return (1);
+  close(handle);
 
-	file_length = filelength(handle);
+  pointer = (unsigned char *)Search_For_String(find_string, (char *)thunk_file,
+                                               file_length);
 
-	if (read (handle, thunk_file, file_length) != file_length){
-		close (handle);
-		return (1);
-	}
+  if (pointer) {
+    pointer += strlen(find_string);
 
-	close (handle);
+    copy_length = (int)((int)pointer - (int)&thunk_file[0]);
 
-	pointer = (unsigned char*)Search_For_String(find_string, (char*)thunk_file, file_length);
+    memcpy(thunk_file_out, thunk_file, copy_length);
 
-	if (pointer){
+    sprintf((char *)&thunk_file_out[copy_length], "%s%s%s%s%s", insert_string1,
+            insert_string2, insert_string3, insert_string4, insert_string5);
 
-		pointer += strlen(find_string);
+    pointer2 = (unsigned char *)Search_For_String(find_other_string,
+                                                  (char *)pointer, file_length);
+    if (!pointer2) return (1);
+    pointer2 += strlen(find_other_string);
 
-		copy_length = (int)( (int)pointer - (int)&thunk_file[0]);
+    memcpy(&thunk_file_out[copy_length + strlen(insert_string1) +
+                           strlen(insert_string2) + strlen(insert_string3) +
+                           strlen(insert_string4) + strlen(insert_string5)],
+           pointer2, file_length - ((int)pointer2 - (int)&thunk_file[0]));
 
-		memcpy (thunk_file_out, thunk_file, copy_length);
+    handle = open("thipx.asm", O_WRONLY | O_BINARY | O_TRUNC);
 
-		sprintf ((char*)&thunk_file_out[copy_length], "%s%s%s%s%s", 	insert_string1,
-																							insert_string2,
-																							insert_string3,
-																							insert_string4,
-																							insert_string5);
+    if (handle == -1) return (1);
 
+    write(handle, thunk_file_out,
+          file_length + strlen(insert_string1) + strlen(insert_string2) +
+              strlen(insert_string3) + strlen(insert_string4) +
+              strlen(insert_string5));
 
-		pointer2 = (unsigned char*)Search_For_String(find_other_string, (char*)pointer, file_length);
-		if (!pointer2) return (1);
-		pointer2 += strlen(find_other_string);
+    close(handle);
+  }
 
-		memcpy (&thunk_file_out [copy_length+ strlen(insert_string1)
-														+ strlen(insert_string2)
-														+ strlen(insert_string3)
-														+ strlen(insert_string4)
-														+ strlen(insert_string5)],
-					pointer2,
-					file_length-((int)pointer2-(int)&thunk_file[0]));
-
-
-		handle = open ("thipx.asm", O_WRONLY | O_BINARY | O_TRUNC);
-
-		if (handle == -1) return (1);
-
-		write (handle, thunk_file_out, file_length+ strlen(insert_string1)
-																+ strlen(insert_string2)
-																+ strlen(insert_string3)
-																+ strlen(insert_string4)
-																+ strlen(insert_string5));
-
-		close (handle);
-	}
-
-	return (0);
+  return (0);
 }
-
-

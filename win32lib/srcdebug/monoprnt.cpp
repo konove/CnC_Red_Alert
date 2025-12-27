@@ -35,9 +35,9 @@
  *   Mono_Printf -- Prints formated text to the monochrome screen.         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include	<stdarg.h>
-#include	<string.h>
-#include	<stdio.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
 #include "mono.h"
 
 /***************************************************************************
@@ -60,18 +60,17 @@
  * HISTORY:                                                                *
  *   11/02/1993 JLB : Created.                                             *
  *=========================================================================*/
-int Mono_Printf(char const *string, ...)
-{
-	va_list	va;
-	char		buffer[256];
+int Mono_Printf(char const *string, ...) {
+  va_list va;
+  char buffer[256];
 
-	if (!MonoEnabled) return(0);
-		
-	va_start(va, string);
+  if (!MonoEnabled) return (0);
 
-	vsprintf(buffer, string, va);
-	Mono_Print(buffer);
+  va_start(va, string);
 
-	va_end(va);
-	return(strlen(buffer));
+  vsprintf(buffer, string, va);
+  Mono_Print(buffer);
+
+  va_end(va);
+  return (strlen(buffer));
 }

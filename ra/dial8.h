@@ -18,59 +18,60 @@
 
 /* $Header: /CounterStrike/DIAL8.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : DIAL8.H                                                      *
+ *                    File Name : DIAL8.H *
  *                                                                                             *
- *                   Programmer : Bill Randolph																  *
+ *                   Programmer : Bill Randolph
+ **
  *                                                                                             *
- *                   Start Date : 02/06/95                                                     *
+ *                   Start Date : 02/06/95 *
  *                                                                                             *
- *                  Last Update : February 6, 1995 [BR]													  *
+ *                  Last Update : February 6, 1995 [BR]
+ **
  *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef DIAL8_H
 #define DIAL8_H
 
-class Dial8Class : public ControlClass
-{
-	public:
-		/*
-		** Constructor/Destructor
-		*/
-		Dial8Class(int id, int x, int y, int w, int h, DirType dir);
+class Dial8Class : public ControlClass {
+ public:
+  /*
+  ** Constructor/Destructor
+  */
+  Dial8Class(int id, int x, int y, int w, int h, DirType dir);
 
-		/*
-		** Get/Set the direction the dial is currently pointing
-		*/
-		DirType Get_Direction(void) const;
-		void Set_Direction(DirType dir);
+  /*
+  ** Get/Set the direction the dial is currently pointing
+  */
+  DirType Get_Direction(void) const;
+  void Set_Direction(DirType dir);
 
-		/*
-		** Overloaded draw routine
-		*/
-		virtual int Draw_Me(int forced = false);
+  /*
+  ** Overloaded draw routine
+  */
+  virtual int Draw_Me(int forced = false);
 
-	protected:
-		/*
-		** Overloaded event processing routine
-		*/
-		virtual int Action(unsigned flags, KeyNumType &key);
+ protected:
+  /*
+  ** Overloaded event processing routine
+  */
+  virtual int Action(unsigned flags, KeyNumType &key);
 
-	private:
-		int FaceX;						// x-coord of center of face
-		int FaceY;						// y-coord of center of face
-		int FacePoint[8][2];			// coords of the little dial decorations
-		int FaceLine[8][2];			// coords for drawing the dial hand
-		DirType Direction;			// 0-255 numerical direction of dial
-		FacingType Facing;			// numerical facing direction of dial (0 - 7)
-		FacingType OldFacing;		// previous Facing value
-
+ private:
+  int FaceX;             // x-coord of center of face
+  int FaceY;             // y-coord of center of face
+  int FacePoint[8][2];   // coords of the little dial decorations
+  int FaceLine[8][2];    // coords for drawing the dial hand
+  DirType Direction;     // 0-255 numerical direction of dial
+  FacingType Facing;     // numerical facing direction of dial (0 - 7)
+  FacingType OldFacing;  // previous Facing value
 };
 
 #endif
-

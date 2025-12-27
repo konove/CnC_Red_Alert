@@ -16,40 +16,40 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\checkbox.h_v   1.6   16 Oct 1995 16:46:00   JOE_BOSTIC  $ */
-/*********************************************************************************************** 
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
- *********************************************************************************************** 
- *                                                                                             * 
- *                 Project Name : Command & Conquer                                            * 
- *                                                                                             * 
- *                    File Name : CHECKBOX.H                                                   * 
- *                                                                                             * 
- *                   Programmer : Joe L. Bostic                                                * 
- *                                                                                             * 
- *                   Start Date : 05/26/95                                                     * 
- *                                                                                             * 
- *                  Last Update : May 26, 1995 [JLB]                                           * 
- *                                                                                             * 
- *---------------------------------------------------------------------------------------------* 
- * Functions:                                                                                  * 
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* $Header:   F:\projects\c&c\vcs\code\checkbox.h_v   1.6   16 Oct 1995 16:46:00
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : CHECKBOX.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 05/26/95 *
+ *                                                                                             *
+ *                  Last Update : May 26, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CHECKBOX_H
 #define CHECKBOX_H
 
-#include	"toggle.h"
+#include "toggle.h"
 
-class CheckBoxClass : public ToggleClass
-{
-	public:
-		CheckBoxClass(unsigned id, int x, int y) :
-			ToggleClass(id, x, y, 7, 7)
-		{};
+class CheckBoxClass : public ToggleClass {
+ public:
+  CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7){};
 
-		virtual int Draw_Me(int forced=false);
+  virtual int Draw_Me(int forced = false);
 
-	protected:
+ protected:
 };
 
 #endif

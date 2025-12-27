@@ -34,6 +34,4 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
-
-#define USER_TIMER_FREQ		60
+#define USER_TIMER_FREQ 60

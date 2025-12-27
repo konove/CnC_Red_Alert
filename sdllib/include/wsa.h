@@ -51,52 +51,54 @@
 #include "gbuffer.h"
 
 typedef enum {
-	WSA_NORMAL,								// Normal WSA animation
-	WSA_GHOST	 	= 0x1000,			// Or'd with the above flags to get ghosting
-	WSA_PRIORITY2 	= 0x2000,			// Copy using a priority (or in the priority)
-	WSA_TRANS    	= 0x4000,			// Copy frame, ignoring transparent colors
-	WSA_PRIORITY 	= 0x8000				// Copy using a priority (or in the priority)
+  WSA_NORMAL,              // Normal WSA animation
+  WSA_GHOST = 0x1000,      // Or'd with the above flags to get ghosting
+  WSA_PRIORITY2 = 0x2000,  // Copy using a priority (or in the priority)
+  WSA_TRANS = 0x4000,      // Copy frame, ignoring transparent colors
+  WSA_PRIORITY = 0x8000    // Copy using a priority (or in the priority)
 } WSAType;
 
-
 typedef enum {
-	WSA_OPEN_FROM_MEM		= 0x0000,	// Try to load entire anim into memory.
-	WSA_OPEN_INDIRECT		= 0x0000,	// First animate to internal buffer, then copy to page/viewport.
-	WSA_OPEN_FROM_DISK	= 0x0001,	// Force the animation to be disk based.
-	WSA_OPEN_DIRECT		= 0x0002,	// Animate directly to page or viewport.
+  WSA_OPEN_FROM_MEM = 0x0000,  // Try to load entire anim into memory.
+  WSA_OPEN_INDIRECT =
+      0x0000,  // First animate to internal buffer, then copy to page/viewport.
+  WSA_OPEN_FROM_DISK = 0x0001,  // Force the animation to be disk based.
+  WSA_OPEN_DIRECT = 0x0002,     // Animate directly to page or viewport.
 
-	// These next two have been added for the 32 bit library to give a better idea of what is
-	// happening.  You may want to animate directly to the destination or indirectly to the
-	// destination by using the animations buffer.  Indirecly is best if the dest is a seenpage
-	// and the animation is not linear or if the destination is modified between frames.
-	WSA_OPEN_TO_PAGE  = WSA_OPEN_DIRECT ,
-	WSA_OPEN_TO_BUFFER= WSA_OPEN_INDIRECT ,
+  // These next two have been added for the 32 bit library to give a better idea
+  // of what is happening.  You may want to animate directly to the destination
+  // or indirectly to the destination by using the animations buffer.  Indirecly
+  // is best if the dest is a seenpage and the animation is not linear or if the
+  // destination is modified between frames.
+  WSA_OPEN_TO_PAGE = WSA_OPEN_DIRECT,
+  WSA_OPEN_TO_BUFFER = WSA_OPEN_INDIRECT,
 
 } WSAOpenType;
 
 /*=========================================================================*/
-/* The following prototypes are for the file: WSA.CPP								*/
+/* The following prototypes are for the file: WSA.CPP
+ */
 /*=========================================================================*/
 
-void * Open_Animation(char const *file_name, char *user_buffer, long user_buffer_size, WSAOpenType user_flags, unsigned char *palette=NULL);
-void Close_Animation( void *handle );
-bool Animate_Frame(void *handle, GraphicViewPortClass& view,
-                         int frame_number, int x_pixel=0, int y_pixel=0,
-                         WSAType flags_and_prio = WSA_NORMAL, void *magic_cols=NULL, void *magic=NULL);
+void *Open_Animation(char const *file_name, char *user_buffer,
+                     long user_buffer_size, WSAOpenType user_flags,
+                     unsigned char *palette = NULL);
+void Close_Animation(void *handle);
+bool Animate_Frame(void *handle, GraphicViewPortClass &view, int frame_number,
+                   int x_pixel = 0, int y_pixel = 0,
+                   WSAType flags_and_prio = WSA_NORMAL, void *magic_cols = NULL,
+                   void *magic = NULL);
 int Get_Animation_Frame_Count(void *handle);
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: LP_ASM.ASM							*/
+/* The following prototypes are for the file: LP_ASM.ASM
+ */
 /*=========================================================================*/
-
 
 extern "C" {
 unsigned int Apply_XOR_Delta(char *source_ptr, char *delta_ptr);
-void  Apply_XOR_Delta_To_Page_Or_Viewport(void *target, void *delta, int width, int nextrow, int copy);
+void Apply_XOR_Delta_To_Page_Or_Viewport(void *target, void *delta, int width,
+                                         int nextrow, int copy);
 }
 
-
-
-#endif // WSA_H
-
+#endif  // WSA_H

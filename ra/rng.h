@@ -18,37 +18,37 @@
 
 /* $Header: /CounterStrike/RNG.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : RNG.H                                                        *
+ *                    File Name : RNG.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 04/26/96                                                     *
+ *                   Start Date : 04/26/96 *
  *                                                                                             *
- *                  Last Update : April 26, 1996 [JLB]                                         *
+ *                  Last Update : April 26, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef RNG_H
 #define RNG_H
 
 /*
-**	This is an abstract interface class for a random number generator. It serves only to
-**	provide random numbers.
+**	This is an abstract interface class for a random number generator. It
+*serves only to *	provide random numbers.
 */
 class RandomNumberGenerator {
-	public:
-		virtual ~RandomNumberGenerator() {}
+ public:
+  virtual ~RandomNumberGenerator() {}
 
-		virtual void Get_Block(void * output, unsigned int size) = 0;
+  virtual void Get_Block(void* output, unsigned int size) = 0;
 };
 
-
 #endif
-

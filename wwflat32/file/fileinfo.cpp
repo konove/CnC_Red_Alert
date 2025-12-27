@@ -22,7 +22,7 @@
  *                                                                         *
  *                 Project Name : Library - Fileio information functions.  *
  *                                                                         *
- *                    File Name : FILE.CPP                             		*
+ *                    File Name : FILE.CPP *
  *                                                                         *
  *                   Programmer : Scott K. Bowen                           *
  *                                                                         *
@@ -42,7 +42,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 #ifndef _FILE_H
 #include "_file.h"
@@ -52,9 +52,7 @@
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-
 
 /***************************************************************************
  * GET_DOS_HANDLE -- Fetches system specific DOS file handle.              *
@@ -76,22 +74,21 @@
  *   08/21/1991 JLB : Created.                                             *
  *   11/09/1991 JLB : Checks for illegal file handle passed in.            *
  *=========================================================================*/
-WORD cdecl Get_DOS_Handle(WORD fh)
-{
-	/*
-	**	If an illegal file handle is passed in then always abort.
-	*/
-	if (fh >= 0 && fh < TABLE_MAX) {
-		if (!FileHandleTable[fh].Empty || FileHandleTable[fh].Handle) {
-			return(FileHandleTable[fh].Handle);
-		}
+WORD cdecl Get_DOS_Handle(WORD fh) {
+  /*
+  **	If an illegal file handle is passed in then always abort.
+  */
+  if (fh >= 0 && fh < TABLE_MAX) {
+    if (!FileHandleTable[fh].Empty || FileHandleTable[fh].Handle) {
+      return (FileHandleTable[fh].Handle);
+    }
 
-		/*
-		**	If it falls through here, then the file must be resident.  It is
-		**	illegal to get a DOS handle to a resident file.
-		*/
-	}
-	return(FILEOPENERROR);
+    /*
+    **	If it falls through here, then the file must be resident.  It is
+    **	illegal to get a DOS handle to a resident file.
+    */
+  }
+  return (FILEOPENERROR);
 }
 
 /***************************************************************************
@@ -106,19 +103,16 @@ WORD cdecl Get_DOS_Handle(WORD fh)
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Free_Handles(VOID)
-{
-	WORD	count;		// Count of the number of free file handles.
-	WORD	index;		// Working file handle index var.
-	
-	count = 0;
-	for (index = 0; index < TABLE_MAX; index++) {
-		if (FileHandleTable[index].Empty) count++;
-	}
-	return(count);
+WORD cdecl Free_Handles(VOID) {
+  WORD count;  // Count of the number of free file handles.
+  WORD index;  // Working file handle index var.
+
+  count = 0;
+  for (index = 0; index < TABLE_MAX; index++) {
+    if (FileHandleTable[index].Empty) count++;
+  }
+  return (count);
 }
-
-
 
 /***************************************************************************
  * FIND_DISK_NUMBER -- Determine disk a file resides upon.                 *
@@ -139,28 +133,22 @@ WORD cdecl Free_Handles(VOID)
  * HISTORY:                                                                *
  *   11/22/1991 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Find_Disk_Number(BYTE const *file_name)
-{
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	WORD					index;	// FileTable index.
+WORD cdecl Find_Disk_Number(BYTE const *file_name) {
+  FileDataType *filedata;  // Pointer to the current FileData.
+  WORD index;              // FileTable index.
 
-	index = Find_File_Index(file_name);
+  index = Find_File_Index(file_name);
 
-	if (index != ERROR) {
-		
-		filedata = &FileDataPtr[index];
+  if (index != ERROR) {
+    filedata = &FileDataPtr[index];
 
-		if (filedata->Flag & FILEF_PACKED) {
-			return (Find_Disk_Number(FileDataPtr[filedata->Disk].Name));
-		}
-		return(filedata->Disk);
-	}
-	return (index);
+    if (filedata->Flag & FILEF_PACKED) {
+      return (Find_Disk_Number(FileDataPtr[filedata->Disk].Name));
+    }
+    return (filedata->Disk);
+  }
+  return (index);
 }
-
-
-
-
 
 /***************************************************************************
  * SET_FILE_FLAGS -- Sets flags for file if FileData table.                *
@@ -175,22 +163,20 @@ WORD cdecl Find_Disk_Number(BYTE const *file_name)
  * HISTORY:                                                                *
  *   10/04/1993 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Set_File_Flags(BYTE const *filename, WORD flags)
-{
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	WORD					index;	// FileTable index.
+WORD cdecl Set_File_Flags(BYTE const *filename, WORD flags) {
+  FileDataType *filedata;  // Pointer to the current FileData.
+  WORD index;              // FileTable index.
 
-	index = Find_File_Index(filename);
+  index = Find_File_Index(filename);
 
-	if (index != ERROR) {
-		filedata = &FileDataPtr[index];
-		filedata->Flag |= flags;
-		return (TRUE);
-	}
+  if (index != ERROR) {
+    filedata = &FileDataPtr[index];
+    filedata->Flag |= flags;
+    return (TRUE);
+  }
 
-	return (FALSE);
+  return (FALSE);
 }
-
 
 /***************************************************************************
  * CLEAR_FILE_FLAGS -- Clears flags specified for file.                    *
@@ -205,23 +191,20 @@ WORD cdecl Set_File_Flags(BYTE const *filename, WORD flags)
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Clear_File_Flags(BYTE const *filename, WORD flags)
-{
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	WORD					index;	// FileTable index.
+WORD cdecl Clear_File_Flags(BYTE const *filename, WORD flags) {
+  FileDataType *filedata;  // Pointer to the current FileData.
+  WORD index;              // FileTable index.
 
-	index = Find_File_Index(filename);
+  index = Find_File_Index(filename);
 
-	if (index != ERROR) {
-		filedata = &FileDataPtr[index];
-		filedata->Flag &= ~flags;
-		return (TRUE);
-	}
+  if (index != ERROR) {
+    filedata = &FileDataPtr[index];
+    filedata->Flag &= ~flags;
+    return (TRUE);
+  }
 
-	return (FALSE);
+  return (FALSE);
 }
-
-
 
 /***************************************************************************
  * GET_FILE_FLAGS -- Gets the flags on a file in the FileData table.       *
@@ -236,20 +219,18 @@ WORD cdecl Clear_File_Flags(BYTE const *filename, WORD flags)
  * HISTORY:                                                                *
  *   10/04/1993 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_File_Flags(BYTE const *filename)
-{
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	WORD					index;	// FileTable index.
+WORD cdecl Get_File_Flags(BYTE const *filename) {
+  FileDataType *filedata;  // Pointer to the current FileData.
+  WORD index;              // FileTable index.
 
-	index = Find_File_Index(filename);
+  index = Find_File_Index(filename);
 
-	if (index != ERROR) {
-		filedata = &FileDataPtr[index];
-		return (filedata->Flag);
-	}
-	return (FALSE);
+  if (index != ERROR) {
+    filedata = &FileDataPtr[index];
+    return (filedata->Flag);
+  }
+  return (FALSE);
 }
-
 
 /***************************************************************************
  * MULTI_DRIVE_SEARCH -- Turns Multi search drive on and off.              *
@@ -265,12 +246,11 @@ WORD cdecl Get_File_Flags(BYTE const *filename)
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-BOOL cdecl Multi_Drive_Search(BOOL on)
-{
-	BOOL	old;
+BOOL cdecl Multi_Drive_Search(BOOL on) {
+  BOOL old;
 
-	Hard_Error_Occured = 0;
-	old = MultiDriveSearch;
-	MultiDriveSearch = on;
-	return(old);
+  Hard_Error_Occured = 0;
+  old = MultiDriveSearch;
+  MultiDriveSearch = on;
+  return (old);
 }

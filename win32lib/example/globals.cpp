@@ -36,5 +36,5 @@
 
 #include "function.h"
 
-char	NoTimer;
-char	NoKeyBoard;
+char NoTimer;
+char NoKeyBoard;

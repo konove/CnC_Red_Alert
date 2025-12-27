@@ -38,7 +38,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 #ifndef _FILE_H
 #include "_file.h"
@@ -53,7 +53,6 @@
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
-
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -71,20 +70,18 @@
  * HISTORY:                                                                *
  *   05/24/1992 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Create_File(BYTE const *file_name)
-{
-	WORD fd;
+WORD cdecl Create_File(BYTE const *file_name) {
+  WORD fd;
 
-	if (!file_name) return(FALSE);
+  if (!file_name) return (FALSE);
 
-	fd = Open_File(file_name, WRITE);
-	if (fd != ERROR) {
-		Close_File(fd);
-		return(TRUE);
-	}
-	return(FALSE);
+  fd = Open_File(file_name, WRITE);
+  if (fd != ERROR) {
+    Close_File(fd);
+    return (TRUE);
+  }
+  return (FALSE);
 }
-
 
 /***************************************************************************
  * DELETE_FILE -- Deletes the file from the disk.                          *
@@ -100,32 +97,29 @@ WORD cdecl Create_File(BYTE const *file_name)
  * HISTORY:                                                                *
  *   05/24/1992 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Delete_File(BYTE const *file_name)
-{
-	WORD					index;
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	FileDataType		hold;				// Hold buffer for record (DO NOT ACCESS DIRECTLY)
+WORD cdecl Delete_File(BYTE const *file_name) {
+  WORD index;
+  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType hold;       // Hold buffer for record (DO NOT ACCESS DIRECTLY)
 
-	if (!file_name) return(FALSE);
+  if (!file_name) return (FALSE);
 
-	CallingDOSInt++;
+  CallingDOSInt++;
 
-	ibm_setdisk(*StartPath - 'A');
+  ibm_setdisk(*StartPath - 'A');
 
-	index = Find_File_Index(file_name);
-	filedata = &FileDataPtr[index];
+  index = Find_File_Index(file_name);
+  filedata = &FileDataPtr[index];
 
-	if (index != ERROR && filedata->Ptr) {
-		Mem_Free(FileCacheHeap, filedata->Ptr);
-		filedata->Ptr = NULL;
-	}
+  if (index != ERROR && filedata->Ptr) {
+    Mem_Free(FileCacheHeap, filedata->Ptr);
+    filedata->Ptr = NULL;
+  }
 
-	index = !FILEDELETE(file_name);
-	CallingDOSInt--;
-	return(index);
+  index = !FILEDELETE(file_name);
+  CallingDOSInt--;
+  return (index);
 }
-
-
 
 /***************************************************************************
  * CHANGE_FILE_SIZE -- Change the size of a writting file.                 *
@@ -140,15 +134,14 @@ WORD cdecl Delete_File(BYTE const *file_name)
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-BOOL cdecl Change_File_Size(WORD handle, ULONG new_size)
-{
-	WORD entry;
+BOOL cdecl Change_File_Size(WORD handle, ULONG new_size) {
+  WORD entry;
 
-	if (Is_Handle_Valid(handle, WRITING_NON_HANDLE, NULL)) {
-		entry = Get_DOS_Handle(handle);
-		if (entry != ERROR) {
-			return(chsize(entry, new_size) != ERROR);
-		}
-	}
-	return(FALSE);
+  if (Is_Handle_Valid(handle, WRITING_NON_HANDLE, NULL)) {
+    entry = Get_DOS_Handle(handle);
+    if (entry != ERROR) {
+      return (chsize(entry, new_size) != ERROR);
+    }
+  }
+  return (FALSE);
 }

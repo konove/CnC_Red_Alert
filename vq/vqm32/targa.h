@@ -19,24 +19,24 @@
 #ifndef VQMTARGA_H
 #define VQMTARGA_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     Targa.h (32-Bit protected mode)
-* 
-* DESCRIPTION
-*     Targa Image File definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     January 26, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     Targa.h (32-Bit protected mode)
+ *
+ * DESCRIPTION
+ *     Targa Image File definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     January 26, 1995
+ *
+ ****************************************************************************/
 
 /*---------------------------------------------------------------------------
  * Targa Header definitions
@@ -58,33 +58,33 @@
  * ImageDescriptor - Image descriptor byte.
  */
 typedef struct _TGAHeader {
-	char  IDLength;
-	char  ColorMapType;
-	char  ImageType;
-	short CMapStart;
-	short CMapLength;
-	char  CMapDepth;
-	short XOffset;
-	short YOffset;
-	short Width;
-	short Height;
-	char  PixelDepth;
-	char  ImageDescriptor;
+  char IDLength;
+  char ColorMapType;
+  char ImageType;
+  short CMapStart;
+  short CMapLength;
+  char CMapDepth;
+  short XOffset;
+  short YOffset;
+  short Width;
+  short Height;
+  char PixelDepth;
+  char ImageDescriptor;
 } TGAHeader;
 
 /* ImageType definiton */
-#define TGA_NOIMAGE           0  /* No image data included in file */
-#define TGA_CMAPPED           1  /* Color-mapped image data */
-#define TGA_TRUECOLOR         2  /* Truecolor image data */
-#define TGA_MONO              3  /* Monochrome image data */
-#define TGA_CMAPPED_ENCODED   9  /* Color-mapped image data (Encoded) */
+#define TGA_NOIMAGE 0            /* No image data included in file */
+#define TGA_CMAPPED 1            /* Color-mapped image data */
+#define TGA_TRUECOLOR 2          /* Truecolor image data */
+#define TGA_MONO 3               /* Monochrome image data */
+#define TGA_CMAPPED_ENCODED 9    /* Color-mapped image data (Encoded) */
 #define TGA_TRUECOLOR_ENCODED 10 /* Truecolor image data (Encoded) */
-#define TGA_MONO_ENCODED      11 /* Monochrome image data (Encoded) */
+#define TGA_MONO_ENCODED 11      /* Monochrome image data (Encoded) */
 
 /* ImageDescriptor definition */
-#define TGAF_ATTRIB_BITS (0x0F<<0) /* Number of attribute bits per pixel */
-#define TGAF_XORIGIN     (1<<4)
-#define TGAF_YORIGIN     (1<<5)
+#define TGAF_ATTRIB_BITS (0x0F << 0) /* Number of attribute bits per pixel */
+#define TGAF_XORIGIN (1 << 4)
+#define TGAF_YORIGIN (1 << 5)
 
 /*---------------------------------------------------------------------------
  * Targa Handle definitions
@@ -97,24 +97,24 @@ typedef struct _TGAHeader {
  * header - TGAHeader structure.
  */
 typedef struct _TGAHandle {
-	short          fh;
-	unsigned short mode;
-	TGAHeader      header;
+  short fh;
+  unsigned short mode;
+  TGAHeader header;
 } TGAHandle;
 
 /* Access modes. */
-#define TGA_READMODE  0
+#define TGA_READMODE 0
 #define TGA_WRITEMODE 1
-#define TGA_RDWRMODE  2
+#define TGA_RDWRMODE 2
 
 /* Error codes */
-#define TGAERR_OPEN         -1
-#define TGAERR_READ         -2
-#define TGAERR_WRITE        -3
-#define TGAERR_SYNTAX       -4
-#define TGAERR_NOMEM        -5
+#define TGAERR_OPEN -1
+#define TGAERR_READ -2
+#define TGAERR_WRITE -3
+#define TGAERR_SYNTAX -4
+#define TGAERR_NOMEM -5
 #define TGAERR_NOTSUPPORTED -6
- 
+
 /*---------------------------------------------------------------------------
  * Function prototypes
  *-------------------------------------------------------------------------*/
@@ -127,4 +127,3 @@ void XFlipTarga(TGAHeader *, char *);
 void YFlipTarga(TGAHeader *, char *);
 
 #endif /* VQMTARGA_H */
-

@@ -36,7 +36,7 @@
 
 #ifndef WWSTD_H
 #include <wwstd.h>
-#endif	   
+#endif
 
 #ifndef FILE_H
 #include "_file.h"
@@ -48,9 +48,7 @@
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-
 
 /* Global varaiables */
 BYTE ExecPath[XMAXPATH + 1];
@@ -59,16 +57,15 @@ BYTE StartPath[XMAXPATH + 1];
 BOOL UseCD;
 
 /* File System only Global varaiables */
-BYTE CallingDOSInt;									// Indicate we are performing a DOS function
-BYTE MaxDevice,DefaultDrive;						
-BYTE MultiDriveSearch = TRUE;						// Multiple drive search flag
+BYTE CallingDOSInt;  // Indicate we are performing a DOS function
+BYTE MaxDevice, DefaultDrive;
+BYTE MultiDriveSearch = TRUE;  // Multiple drive search flag
 FileDataType *FileDataPtr = NULL;
 FileHandleType FileHandleTable[TABLE_MAX];
-UWORD NumFiles;										// Number of files, except PAK, in file table.
-UWORD NumPAKFiles;									// Number of PAK files in filetable.
-VOID *FileCacheHeap = NULL;						// Pointer to the cache in memory.
-WORD DiskNumber;										// Where file was found (-1 == current directory).
+UWORD NumFiles;              // Number of files, except PAK, in file table.
+UWORD NumPAKFiles;           // Number of PAK files in filetable.
+VOID *FileCacheHeap = NULL;  // Pointer to the cache in memory.
+WORD DiskNumber;             // Where file was found (-1 == current directory).
 WORD MaxDirNum = 0;
-
 
 WORD (*Open_Error)(FileErrorType, BYTE const *) = NULL;

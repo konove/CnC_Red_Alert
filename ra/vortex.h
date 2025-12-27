@@ -17,256 +17,256 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer - Red Alert                                *
+ *                 Project Name : Command & Conquer - Red Alert *
  *                                                                                             *
- *                    File Name : VORTEX.H                                                     *
+ *                    File Name : VORTEX.H *
  *                                                                                             *
- *                   Programmer : Steve Tall                                                   *
+ *                   Programmer : Steve Tall *
  *                                                                                             *
- *                   Start Date : 8/12/96                                                      *
+ *                   Start Date : 8/12/96 *
  *                                                                                             *
- *                  Last Update : August 29th, 1996 [ST]                                       *
+ *                  Last Update : August 29th, 1996 [ST] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- *  Overview:                                                                                  *
- *    Definition of ChronalVortexClass. The Chronal vortex sometimes appears when the          *
- *  chronosphere is used.                                                                      *
+ *  Overview: * Definition of ChronalVortexClass. The Chronal vortex sometimes
+ *appears when the          * chronosphere is used. *
  *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef VORTEX_H
 #define VORTEX_H
 
-
-#define MAX_REMAP_SHADES 16		//Number of lookup tables required for vortex shading.
-#define VORTEX_FRAMES		16		//Number of frames in one complete rotation of the vortex.
-
-
+#define MAX_REMAP_SHADES \
+  16  // Number of lookup tables required for vortex shading.
+#define VORTEX_FRAMES \
+  16  // Number of frames in one complete rotation of the vortex.
 
 class ChronalVortexClass {
+ public:
+  /*
+  ** Constructor and destructor.
+  */
+  ChronalVortexClass(void);
+  ~ChronalVortexClass(void);
 
-	public:
+  void Detach(TARGET target);
 
-		/*
-		** Constructor and destructor.
-		*/
-		ChronalVortexClass(void);
-		~ChronalVortexClass(void);
+  /*
+  ** Makes the vortex appear at the specified coordinate.
+  */
+  void Appear(COORDINATE coordinate);
 
-		void Detach(TARGET target);
+  /*
+  ** Makes the vortex go away.
+  */
+  void Disappear(void);
 
-		/*
-		** Makes the vortex appear at the specified coordinate.
-		*/
-		void Appear (COORDINATE coordinate);
+  /*
+  ** Call this every frame.
+  */
+  void AI(void);
 
-		/*
-		** Makes the vortex go away.
-		*/
-		void Disappear (void);
+  /*
+  ** Render the vortex
+  */
+  void Render(void);
 
-		/*
-		** Call this every frame.
-		*/
-		void AI (void);
+  /*
+  ** Flags cells under the vortex to be redrawn
+  */
+  void Set_Redraw(void);
 
-		/*
-		** Render the vortex
-		*/
-		void Render (void);
+  /*
+  ** Call whenever the theater changes to recalculate the shading lookup tables
+  */
+  void Setup_Remap_Tables(TheaterType theater);
 
-		/*
-		** Flags cells under the vortex to be redrawn
-		*/
-		void Set_Redraw (void);
+  /*
+  ** Functions to load and save the vortex.
+  */
+  void Load(Straw &file);
+  void Save(Pipe &file);
 
-		/*
-		** Call whenever the theater changes to recalculate the shading lookup tables
-		*/
-		void Setup_Remap_Tables (TheaterType theater);
+  /*
+  ** Returns true of vortex is currently active.
+  */
+  bool Is_Active(void) { return (Active); };
 
-		/*
-		** Functions to load and save the vortex.
-		*/
-		void Load(Straw &file);
-		void Save(Pipe  &file);
+  /*
+  ** Makes the vortex attack the specified target. Target must be in range of
+  *the vortex.
+  */
+  void Set_Target(ObjectClass *target);
 
-		/*
-		** Returns true of vortex is currently active.
-		*/
-		bool Is_Active(void) {return (Active);};
+  /*
+  ** Disables the vortex.
+  */
+  void Stop(void);
 
-		/*
-		** Makes the vortex attack the specified target. Target must be in range of the vortex.
-		*/
-		void Set_Target (ObjectClass *target);
+  /*
+  ** Members to allow read access to private data
+  */
+  int Get_Range(void) { return (Range); };
+  int Get_Speed(void) { return (Speed); };
+  int Get_Damage(void) { return (Damage); };
 
-		/*
-		** Disables the vortex.
-		*/
-		void Stop(void);
+  /*
+  ** Members to allow write access to private data.
+  */
+  void Set_Range(int range) { Range = range; };
+  void Set_Speed(int speed) { Speed = speed; };
+  void Set_Damage(int damage) { Damage = damage; };
 
-		/*
-		** Members to allow read access to private data
-		*/
-		int Get_Range  (void) {return (Range);};
-		int Get_Speed  (void) {return (Speed);};
-		int Get_Damage (void) {return (Damage);};
+  /*
+  ** Possible states the vortex can be in.
+  */
+  typedef enum AnimStateType {
+    STATE_GROW,    // Vortex has just appeared and is growing larger
+    STATE_ROTATE,  // Vortex is rotating
+    STATE_SHRINK   // Vortex is shrinking and about to disappear
+  } AnimStateType;
 
-		/*
-		** Members to allow write access to private data.
-		*/
-		void Set_Range  (int range) {Range = range;};
-		void Set_Speed  (int speed) {Speed = speed;};
-		void Set_Damage (int damage) {Damage = damage;};
+ private:
+  /*
+  ** Members for setting up the lookup tables.
+  */
+  void Build_Fading_Table(PaletteClass const &palette, void *dest, int color,
+                          int frac);
+  void Coordinate_Remap(GraphicViewPortClass *inbuffer, int x, int y, int width,
+                        int height, unsigned char *remap_table);
 
-		/*
-		** Possible states the vortex can be in.
-		*/
-		typedef enum AnimStateType{
-			STATE_GROW,			//Vortex has just appeared and is growing larger
-			STATE_ROTATE,		//Vortex is rotating
-			STATE_SHRINK		//Vortex is shrinking and about to disappear
-		}AnimStateType;
+  /*
+  ** Misc internal functions
+  */
+  void Attack(void);
+  void Zap_Target(void);
+  void Movement(void);
+  void Hide(void);
+  void Show(void);
 
-	private:
+  /*
+  ** Position of the top left of the vortex
+  */
+  COORDINATE Position;
 
-		/*
-		** Members for setting up the lookup tables.
-		*/
-		void Build_Fading_Table (PaletteClass const & palette, void * dest, int color, int frac);
-		void Coordinate_Remap ( GraphicViewPortClass *inbuffer, int x, int y, int width, int height, unsigned char *remap_table);
+  /*
+  ** Direction of rotation
+  */
+  int AnimateDir;
 
-		/*
-		** Misc internal functions
-		*/
-		void Attack(void);
-		void Zap_Target(void);
-		void Movement(void);
-		void Hide(void);
-		void Show(void);
+  /*
+  ** Current frame of animation
+  */
+  int AnimateFrame;
 
-		/*
-		** Position of the top left of the vortex
-		*/
-		COORDINATE		Position;
+  /*
+  ** Animation flag. When 0 vortex will animate 1 frame.
+  */
+  int Animate;
 
-		/*
-		** Direction of rotation
-		*/
-		int         	AnimateDir;
+  /*
+  ** State of vortex. See ENUM for info.
+  */
+  AnimStateType State;
 
-		/*
-		** Current frame of animation
-		*/
-		int				AnimateFrame;
+  /*
+  ** Color lookup tables for shading on vortex.
+  */
+  unsigned char VortexRemapTables[MAX_REMAP_SHADES][256];
 
-		/*
-		** Animation flag. When 0 vortex will animate 1 frame.
-		*/
-		int				Animate;
+  /*
+  ** Color lookup table to make the blue lightning orange.
+  */
+  unsigned char LightningRemap[256];
 
-		/*
-		** State of vortex. See ENUM for info.
-		*/
-		AnimStateType	State;
+  /*
+  ** Is vortex currently active?
+  */
+  int Active : 1;
 
-		/*
-		** Color lookup tables for shading on vortex.
-		*/
-		unsigned char 	VortexRemapTables [MAX_REMAP_SHADES][256];
+  /*
+  ** Is the vortex winding down?
+  */
+  int StartShutdown : 1;
 
-		/*
-		** Color lookup table to make the blue lightning orange.
-		*/
-		unsigned char	LightningRemap[256];
+  /*
+  ** Is the vortex about to hide from view?
+  */
+  int StartHiding : 1;
 
-		/*
-		** Is vortex currently active?
-		*/
-		int				Active 			: 1;
+  /*
+  ** Is the vortex active but hidden?
+  */
+  int Hidden : 1;
 
-		/*
-		** Is the vortex winding down?
-		*/
-		int				StartShutdown 	: 1;
+  /*
+  ** Theater that lookup table is good for.
+  */
+  TheaterType Theater;
 
-		/*
-		** Is the vortex about to hide from view?
-		*/
-		int				StartHiding		: 1;
+  /*
+  ** Last frame that vortex attacked on
+  */
+  int LastAttackFrame;
 
-		/*
-		** Is the vortex active but hidden?
-		*/
-		int				Hidden			: 1;
+  /*
+  ** How many times lightning has zapped on this attack
+  */
+  int ZapFrame;
 
-		/*
-		** Theater that lookup table is good for.
-		*/
-		TheaterType		Theater;
+  /*
+  ** Ptr to object that the vortex is zapping
+  */
+  TARGET TargetObject;
+  //		ObjectClass		*TargetObject;
 
-		/*
-		** Last frame that vortex attacked on
-		*/
-		int				LastAttackFrame;
+  /*
+  ** Distance to the target object
+  */
+  int TargetDistance;
 
-		/*
-		** How many times lightning has zapped on this attack
-		*/
-		int				ZapFrame;
+  /*
+  ** Game frame that vortex hid on.
+  */
+  int HiddenFrame;
 
-		/*
-		** Ptr to object that the vortex is zapping
-		*/
-		TARGET	TargetObject;
-//		ObjectClass		*TargetObject;
+  /*
+  ** Direction vortex is going in.
+  */
+  int XDir;
+  int YDir;
 
-		/*
-		** Distance to the target object
-		*/
-		int				TargetDistance;
+  /*
+  ** Direction vortex should be going in
+  */
+  int DesiredXDir;
+  int DesiredYDir;
 
-		/*
-		** Game frame that vortex hid on.
-		*/
-		int				HiddenFrame;
+  /*
+  ** Range in cells of the vortex lightning
+  */
+  int Range;
 
-		/*
-		** Direction vortex is going in.
-		*/
-		int				XDir;
-		int				YDir;
+  /*
+  ** Max speed in leptons per frame of the vortex.
+  */
+  int Speed;
 
-		/*
-		** Direction vortex should be going in
-		*/
-		int				DesiredXDir;
-		int				DesiredYDir;
+  /*
+  ** Damge of vortex lightning zap.
+  */
+  int Damage;
 
-		/*
-		** Range in cells of the vortex lightning
-		*/
-		int				Range;
-
-		/*
-		** Max speed in leptons per frame of the vortex.
-		*/
-		int				Speed;
-
-		/*
-		** Damge of vortex lightning zap.
-		*/
-		int				Damage;
-
-		/*
-		** Offscreen buffer to render vortex into. This is needed so we can handle clipping.
-		*/
-		GraphicBufferClass *RenderBuffer;
+  /*
+  ** Offscreen buffer to render vortex into. This is needed so we can handle
+  *clipping.
+  */
+  GraphicBufferClass *RenderBuffer;
 };
-
 
 #endif

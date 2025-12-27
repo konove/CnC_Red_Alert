@@ -41,12 +41,14 @@
 #include "timer.H"
 
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Defines /////////////////////////////////////
+/////////////////////////////////// Defines
+////////////////////////////////////////
 
-#define COPY_FROM_MEM	TRUE
+#define COPY_FROM_MEM TRUE
 
 /////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// timera.asm functions//////////////////////////////
+////////////////////////////// timera.asm
+///functions//////////////////////////////
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,7 +56,8 @@ extern "C" {
 
 extern VOID *Get_RM_Timer_Address(VOID);
 extern ULONG Get_RM_Timer_Size(VOID);
-extern BOOL Install_Timer_Interrupt(VOID *bin_ptr, UINT rm_size, UINT freq, BOOL partial);
+extern BOOL Install_Timer_Interrupt(VOID *bin_ptr, UINT rm_size, UINT freq,
+                                    BOOL partial);
 extern BOOL Remove_Timer_Interrupt(VOID);
 
 #ifdef __cplusplus
@@ -62,22 +65,25 @@ extern BOOL Remove_Timer_Interrupt(VOID);
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////// Global Data /////////////////////////////////////
+/////////////////////////////// Global Data
+////////////////////////////////////////
 
-BOOL	TimerSystemOn	= FALSE;
+BOOL TimerSystemOn = FALSE;
 
 // Global timers that the library or user can count on existing.
-TimerClass					TickCount(BT_SYSTEM);
-CountDownTimerClass		CountDown(BT_SYSTEM, 0);
+TimerClass TickCount(BT_SYSTEM);
+CountDownTimerClass CountDown(BT_SYSTEM, 0);
 
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Code ////////////////////////////////////////
+/////////////////////////////////// Code
+///////////////////////////////////////////
 
 /***************************************************************************
  * INIT_TIMER_SYSTEM -- Initialize the WW timer system.                    *
  *                                                                         *
  *                                                                         *
- * INPUT: UINT : user timer frequency.													*
+ * INPUT: UINT : user timer frequency.
+ **
  *                                                                         *
  * OUTPUT:   BOOL success?                                                 *
  *                                                                         *
@@ -86,59 +92,56 @@ CountDownTimerClass		CountDown(BT_SYSTEM, 0);
  * HISTORY:                                                                *
  *   07/06/1994 SKB : Created.                                             *
  *=========================================================================*/
-BOOL Init_Timer_System(UINT freq, BOOL partial)
-{
-	VOID		*binary;
-	UINT		binsize;
-	BOOL		success;
+BOOL Init_Timer_System(UINT freq, BOOL partial) {
+  VOID *binary;
+  UINT binsize;
+  BOOL success;
 
 #if COPY_FROM_MEM
 
-	// The binary is stuffed in an ASM module.
-	// Get it's address and size.
-	binary = Get_RM_Timer_Address();
-	binsize = Get_RM_Timer_Size();
-	
+  // The binary is stuffed in an ASM module.
+  // Get it's address and size.
+  binary = Get_RM_Timer_Address();
+  binsize = Get_RM_Timer_Size();
+
 #else
-	WORD fd;
-	VOID *mem;
+  WORD fd;
+  VOID *mem;
 
-	// 
-	// Open binary image of real mode timer code.
-	// get its size and allocate a temp block for it.
-	// Copy the file into the block and close the file
-	//
-	fd = Open("timer.ibn", READ);
-	binsize = File_Size(fd);
-	binary = Alloc(binsize, MEM_NORMAL);
-	Read_File(fd, binary, binsize);
-	Close_File(fd);
+  //
+  // Open binary image of real mode timer code.
+  // get its size and allocate a temp block for it.
+  // Copy the file into the block and close the file
+  //
+  fd = Open("timer.ibn", READ);
+  binsize = File_Size(fd);
+  binary = Alloc(binsize, MEM_NORMAL);
+  Read_File(fd, binary, binsize);
+  Close_File(fd);
 
-#endif // COPY_FROM_MEM
+#endif  // COPY_FROM_MEM
 
-	// If no size, size too big or no address, then it's a bug.
-	if (!binsize || (binsize > 0xFFFFL) || !binary) {
-		return (FALSE);
-	}
+  // If no size, size too big or no address, then it's a bug.
+  if (!binsize || (binsize > 0xFFFFL) || !binary) {
+    return (FALSE);
+  }
 
-	TimerSystemOn = success = Install_Timer_Interrupt(binary, binsize, freq, partial);
+  TimerSystemOn = success =
+      Install_Timer_Interrupt(binary, binsize, freq, partial);
 
 #if !COPY_FROM_MEM
-	// Free up the temp pointer.
-	Free(mem);
-#endif // !COPY_FROM_MEM
+  // Free up the temp pointer.
+  Free(mem);
+#endif  // !COPY_FROM_MEM
 
-	if (success)  {
-		if (!partial)
-			TickCount.Start();
-		return (TRUE);
-	} else {
-		Remove_Timer_Interrupt();
-		return (FALSE);
-	}
+  if (success) {
+    if (!partial) TickCount.Start();
+    return (TRUE);
+  } else {
+    Remove_Timer_Interrupt();
+    return (FALSE);
+  }
 }
-
-
 
 /***************************************************************************
  * REMOVE_TIMER_SYSTEM -- Removes the timer system.                        *
@@ -153,9 +156,7 @@ BOOL Init_Timer_System(UINT freq, BOOL partial)
  * HISTORY:                                                                *
  *   07/06/1994 SKB : Created.                                             *
  *=========================================================================*/
-BOOL Remove_Timer_System(VOID)
-{
-	TimerSystemOn = FALSE;
-	return(Remove_Timer_Interrupt());
+BOOL Remove_Timer_System(VOID) {
+  TimerSystemOn = FALSE;
+  return (Remove_Timer_Interrupt());
 }
-

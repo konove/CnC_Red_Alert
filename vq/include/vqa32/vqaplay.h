@@ -19,102 +19,100 @@
 #ifndef VQAPLAY_H
 #define VQAPLAY_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* PROJECT
-*     VQA player library. (32-Bit protected mode)
-*
-* FILE
-*     vqaplay.h
-*
-* DESCRIPTION
-*      VQAPlay library definitions.
-*
-* PROGRAMMER
-*     Bill Randolph
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     April 10, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * PROJECT
+ *     VQA player library. (32-Bit protected mode)
+ *
+ * FILE
+ *     vqaplay.h
+ *
+ * DESCRIPTION
+ *      VQAPlay library definitions.
+ *
+ * PROGRAMMER
+ *     Bill Randolph
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     April 10, 1995
+ *
+ ****************************************************************************/
 
 /*---------------------------------------------------------------------------
  * CONDITIONAL COMPILATION FLAGS
  *-------------------------------------------------------------------------*/
 
 #ifdef __WATCOMC__
-#define VQASTANDALONE 0  /* Stand alone player */
-#define VQAVOC_ON     0  /* Enable VOC file override */
-#define	VQAMONO_ON    0  /* Mono display output enable/disable */
-#define VQAAUDIO_ON   1  /* Audio playback enable/disable */
-#define VQAVIDEO_ON   0  /* Video manager enable/disable */
-#define VQAMCGA_ON    1  /* MCGA enable/disable */
-#define VQAXMODE_ON   0  /* Xmode enable/disable */
-#define VQAVESA_ON    0  /* VESA enable/disable */
-#define	VQABLOCK_2X2  0  /* 2x2 block decode enable/disable */
-#define	VQABLOCK_2X3  0  /* 2x2 block decode enable/disable */
-#define	VQABLOCK_4X2  1  /* 4x2 block decode enable/disable */
-#define	VQABLOCK_4X4  0  /* 4x4 block decode enable/disable */
-#define VQAWOOFER_ON  0
+#define VQASTANDALONE 0 /* Stand alone player */
+#define VQAVOC_ON 0     /* Enable VOC file override */
+#define VQAMONO_ON 0    /* Mono display output enable/disable */
+#define VQAAUDIO_ON 1   /* Audio playback enable/disable */
+#define VQAVIDEO_ON 0   /* Video manager enable/disable */
+#define VQAMCGA_ON 1    /* MCGA enable/disable */
+#define VQAXMODE_ON 0   /* Xmode enable/disable */
+#define VQAVESA_ON 0    /* VESA enable/disable */
+#define VQABLOCK_2X2 0  /* 2x2 block decode enable/disable */
+#define VQABLOCK_2X3 0  /* 2x2 block decode enable/disable */
+#define VQABLOCK_4X2 1  /* 4x2 block decode enable/disable */
+#define VQABLOCK_4X4 0  /* 4x4 block decode enable/disable */
+#define VQAWOOFER_ON 0
 #else
-#define VQASTANDALONE 0  /* Stand alone player */
-#define VQAVOC_ON     0  /* Enable VOC file override */
-#define	VQAMONO_ON    1  /* Mono display output enable/disable */
-#define VQAAUDIO_ON   0  /* Audio playback enable/disable */
-#define VQAVIDEO_ON   0  /* Video manager enable/disable */
-#define VQAMCGA_ON    1  /* MCGA enable/disable */
-#define VQAXMODE_ON   0  /* Xmode enable/disable */
-#define VQAVESA_ON    0  /* VESA enable/disable */
-#define	VQABLOCK_2X2  0  /* 2x2 block decode enable/disable */
-#define	VQABLOCK_2X3  0  /* 2x2 block decode enable/disable */
-#define	VQABLOCK_4X2  1  /* 4x2 block decode enable/disable */
-#define	VQABLOCK_4X4  0  /* 4x4 block decode enable/disable */
-#define VQAWOOFER_ON  0
+#define VQASTANDALONE 0 /* Stand alone player */
+#define VQAVOC_ON 0     /* Enable VOC file override */
+#define VQAMONO_ON 1    /* Mono display output enable/disable */
+#define VQAAUDIO_ON 0   /* Audio playback enable/disable */
+#define VQAVIDEO_ON 0   /* Video manager enable/disable */
+#define VQAMCGA_ON 1    /* MCGA enable/disable */
+#define VQAXMODE_ON 0   /* Xmode enable/disable */
+#define VQAVESA_ON 0    /* VESA enable/disable */
+#define VQABLOCK_2X2 0  /* 2x2 block decode enable/disable */
+#define VQABLOCK_2X3 0  /* 2x2 block decode enable/disable */
+#define VQABLOCK_4X2 1  /* 4x2 block decode enable/disable */
+#define VQABLOCK_4X4 0  /* 4x4 block decode enable/disable */
+#define VQAWOOFER_ON 0
 #endif
-
 
 /*---------------------------------------------------------------------------
  * GENERAL CONSTANT DEFINITIONS
  *-------------------------------------------------------------------------*/
 
 /* Playback modes. */
-#define VQAMODE_RUN   0  /* Run the movie through the end. */
-#define VQAMODE_WALK  1  /* Draw the next frame then return. */
-#define VQAMODE_PAUSE 2  /* Suspend movie playback. */
-#define VQAMODE_STOP  3  /* Stop the movie. */
+#define VQAMODE_RUN 0   /* Run the movie through the end. */
+#define VQAMODE_WALK 1  /* Draw the next frame then return. */
+#define VQAMODE_PAUSE 2 /* Suspend movie playback. */
+#define VQAMODE_STOP 3  /* Stop the movie. */
 
 /* Playback timer methods */
 #define VQA_TMETHOD_DEFAULT -1 /* Use default timer method. */
-#define	VQA_TMETHOD_DOS      1 /* DOS timer method */
-#define	VQA_TMETHOD_INT      2 /* Interrupt timer method */
-#define	VQA_TMETHOD_AUDIO    3 /* Audio timer method */
+#define VQA_TMETHOD_DOS 1      /* DOS timer method */
+#define VQA_TMETHOD_INT 2      /* Interrupt timer method */
+#define VQA_TMETHOD_AUDIO 3    /* Audio timer method */
 
-#define	VQA_TIMETICKS 60 /* Clock ticks per second */
+#define VQA_TIMETICKS 60 /* Clock ticks per second */
 
 /* Error/Status conditions */
-#define VQAERR_NONE      0  /* No error */
-#define	VQAERR_EOF      -1  /* Valid end of file */
-#define VQAERR_OPEN     -2  /* Unable to open */
-#define	VQAERR_READ     -3  /* Read error */
-#define VQAERR_WRITE    -4  /* Write error */
-#define VQAERR_SEEK     -5  /* Seek error */
-#define VQAERR_NOTVQA   -6  /* Not a valid VQA file. */
-#define VQAERR_NOMEM    -7  /* Unable to allocate memory */
-#define	VQAERR_NOBUFFER -8  /* No buffer avail for load/draw */
-#define	VQAERR_NOT_TIME -9  /* Not time for frame yet */
-#define	VQAERR_SLEEPING -10 /* Function is in a sleep state */
-#define VQAERR_VIDEO    -11 /* Video related error. */
-#define VQAERR_AUDIO    -12 /* Audio related error. */
-#define VQAERR_PAUSED   -13 /* In paused state. */
+#define VQAERR_NONE 0       /* No error */
+#define VQAERR_EOF -1       /* Valid end of file */
+#define VQAERR_OPEN -2      /* Unable to open */
+#define VQAERR_READ -3      /* Read error */
+#define VQAERR_WRITE -4     /* Write error */
+#define VQAERR_SEEK -5      /* Seek error */
+#define VQAERR_NOTVQA -6    /* Not a valid VQA file. */
+#define VQAERR_NOMEM -7     /* Unable to allocate memory */
+#define VQAERR_NOBUFFER -8  /* No buffer avail for load/draw */
+#define VQAERR_NOT_TIME -9  /* Not time for frame yet */
+#define VQAERR_SLEEPING -10 /* Function is in a sleep state */
+#define VQAERR_VIDEO -11    /* Video related error. */
+#define VQAERR_AUDIO -12    /* Audio related error. */
+#define VQAERR_PAUSED -13   /* In paused state. */
 
 /* Event flags. */
-#define VQAEVENT_PALETTE (1<<0)
-#define VQAEVENT_SYNC    (1<<1)
-
+#define VQAEVENT_PALETTE (1 << 0)
+#define VQAEVENT_SYNC (1 << 1)
 
 /*---------------------------------------------------------------------------
  * STRUCTURES AND RELATED DEFINITIONS
@@ -159,78 +157,77 @@
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
 typedef struct _VQAConfig {
-	long          (*DrawerCallback)(unsigned char *screen, long framenum);
-	long          (*EventHandler)(unsigned long event,void *buffer,long nbytes);
-	unsigned long NotifyFlags;
-	long          Vmode;
-	long          VBIBit;
-	unsigned char *ImageBuf;
-	long          ImageWidth;
-	long          ImageHeight;
-	long          X1,Y1;
-	long          FrameRate;
-	long          DrawRate;
-	long          TimerMethod;
-	long          DrawFlags;
-	long          OptionFlags;
-	long          NumFrameBufs;
-	long          NumCBBufs;
-	char          *VocFile;
-	unsigned char *AudioBuf;
-	long          AudioBufSize;
-	long          AudioRate;
-	long          Volume;
-	long          HMIBufSize;
-	long          DigiHandle;
-	long          DigiCard;
-	long          DigiPort;
-	long          DigiIRQ;
-	long          DigiDMA;
-	long          Language;
-	char          *CapFont;
-	char          *EVAFont; /* For C&C Only */
+  long (*DrawerCallback)(unsigned char *screen, long framenum);
+  long (*EventHandler)(unsigned long event, void *buffer, long nbytes);
+  unsigned long NotifyFlags;
+  long Vmode;
+  long VBIBit;
+  unsigned char *ImageBuf;
+  long ImageWidth;
+  long ImageHeight;
+  long X1, Y1;
+  long FrameRate;
+  long DrawRate;
+  long TimerMethod;
+  long DrawFlags;
+  long OptionFlags;
+  long NumFrameBufs;
+  long NumCBBufs;
+  char *VocFile;
+  unsigned char *AudioBuf;
+  long AudioBufSize;
+  long AudioRate;
+  long Volume;
+  long HMIBufSize;
+  long DigiHandle;
+  long DigiCard;
+  long DigiPort;
+  long DigiIRQ;
+  long DigiDMA;
+  long Language;
+  char *CapFont;
+  char *EVAFont; /* For C&C Only */
 } VQAConfig;
 
 /* Drawer Configuration flags (DrawFlags) */
-#define	VQACFGB_BUFFER   0 /* Buffer UnVQ enable */
-#define	VQACFGB_NODRAW   1 /* Drawing disable */
-#define VQACFGB_NOSKIP   2 /* Disable frame skipping. */
-#define	VQACFGB_VRAMCB   3 /* XMode VRAM copy enable */
-#define VQACFGB_ORIGIN   4 /* 0,0 origin position */
-#define	VQACFGB_SCALEX2  6 /* Scale X2 enable (VESA 320x200 to 640x400) */
-#define VQACFGB_WOOFER   7
-#define	VQACFGF_BUFFER   (1<<VQACFGB_BUFFER)
-#define	VQACFGF_NODRAW   (1<<VQACFGB_NODRAW)
-#define	VQACFGF_NOSKIP   (1<<VQACFGB_NOSKIP)
-#define	VQACFGF_VRAMCB   (1<<VQACFGB_VRAMCB)
-#define	VQACFGF_ORIGIN   (3<<VQACFGB_ORIGIN)
-#define	VQACFGF_TOPLEFT  (0<<VQACFGB_ORIGIN)
-#define	VQACFGF_TOPRIGHT (1<<VQACFGB_ORIGIN)
-#define	VQACFGF_BOTRIGHT (2<<VQACFGB_ORIGIN)
-#define	VQACFGF_BOTLEFT  (3<<VQACFGB_ORIGIN)
-#define	VQACFGF_SCALEX2  (1<<VQACFGB_SCALEX2)
-#define VQACFGF_WOOFER   (1<<VQACFGB_WOOFER)
+#define VQACFGB_BUFFER 0  /* Buffer UnVQ enable */
+#define VQACFGB_NODRAW 1  /* Drawing disable */
+#define VQACFGB_NOSKIP 2  /* Disable frame skipping. */
+#define VQACFGB_VRAMCB 3  /* XMode VRAM copy enable */
+#define VQACFGB_ORIGIN 4  /* 0,0 origin position */
+#define VQACFGB_SCALEX2 6 /* Scale X2 enable (VESA 320x200 to 640x400) */
+#define VQACFGB_WOOFER 7
+#define VQACFGF_BUFFER (1 << VQACFGB_BUFFER)
+#define VQACFGF_NODRAW (1 << VQACFGB_NODRAW)
+#define VQACFGF_NOSKIP (1 << VQACFGB_NOSKIP)
+#define VQACFGF_VRAMCB (1 << VQACFGB_VRAMCB)
+#define VQACFGF_ORIGIN (3 << VQACFGB_ORIGIN)
+#define VQACFGF_TOPLEFT (0 << VQACFGB_ORIGIN)
+#define VQACFGF_TOPRIGHT (1 << VQACFGB_ORIGIN)
+#define VQACFGF_BOTRIGHT (2 << VQACFGB_ORIGIN)
+#define VQACFGF_BOTLEFT (3 << VQACFGB_ORIGIN)
+#define VQACFGF_SCALEX2 (1 << VQACFGB_SCALEX2)
+#define VQACFGF_WOOFER (1 << VQACFGB_WOOFER)
 
 /* Options Configuration (OptionFlags) */
-#define	VQAOPTB_AUDIO    0 /* Audio enable. */
-#define	VQAOPTB_STEP     1 /* Single step enable. */
-#define	VQAOPTB_MONO     2 /* Mono output enable. */
-#define VQAOPTB_PALOFF   3 /* Palette set disable. */
-#define	VQAOPTB_SLOWPAL  4 /* Slow palette enable. */
-#define VQAOPTB_HMIINIT  5 /* HMI already initialized by client. */
+#define VQAOPTB_AUDIO 0    /* Audio enable. */
+#define VQAOPTB_STEP 1     /* Single step enable. */
+#define VQAOPTB_MONO 2     /* Mono output enable. */
+#define VQAOPTB_PALOFF 3   /* Palette set disable. */
+#define VQAOPTB_SLOWPAL 4  /* Slow palette enable. */
+#define VQAOPTB_HMIINIT 5  /* HMI already initialized by client. */
 #define VQAOPTB_ALTAUDIO 6 /* Use alternate audio track. */
 #define VQAOPTB_CAPTIONS 7 /* Show captions. */
-#define VQAOPTB_EVA      8 /* Show EVA text (For C&C only) */
-#define	VQAOPTF_AUDIO    (1<<VQAOPTB_AUDIO)
-#define	VQAOPTF_STEP     (1<<VQAOPTB_STEP)
-#define	VQAOPTF_MONO     (1<<VQAOPTB_MONO)
-#define VQAOPTF_PALOFF   (1<<VQAOPTB_PALOFF)
-#define	VQAOPTF_SLOWPAL  (1<<VQAOPTB_SLOWPAL)
-#define VQAOPTF_HMIINIT  (1<<VQAOPTB_HMIINIT)
-#define	VQAOPTF_ALTAUDIO (1<<VQAOPTB_ALTAUDIO)
-#define VQAOPTF_CAPTIONS (1<<VQAOPTB_CAPTIONS)
-#define VQAOPTF_EVA      (1<<VQAOPTB_EVA) /* For C&C only */
-
+#define VQAOPTB_EVA 8      /* Show EVA text (For C&C only) */
+#define VQAOPTF_AUDIO (1 << VQAOPTB_AUDIO)
+#define VQAOPTF_STEP (1 << VQAOPTB_STEP)
+#define VQAOPTF_MONO (1 << VQAOPTB_MONO)
+#define VQAOPTF_PALOFF (1 << VQAOPTB_PALOFF)
+#define VQAOPTF_SLOWPAL (1 << VQAOPTB_SLOWPAL)
+#define VQAOPTF_HMIINIT (1 << VQAOPTB_HMIINIT)
+#define VQAOPTF_ALTAUDIO (1 << VQAOPTB_ALTAUDIO)
+#define VQAOPTF_CAPTIONS (1 << VQAOPTB_CAPTIONS)
+#define VQAOPTF_EVA (1 << VQAOPTB_EVA) /* For C&C only */
 
 /* VQAInfo: Information about the VQA movie.
  *
@@ -240,12 +237,11 @@ typedef struct _VQAConfig {
  * ImageBuf    - Pointer to the image buffer VQA draw into.
  */
 typedef struct _VQAInfo {
-	long NumFrames;
-	long ImageWidth;
-	long ImageHeight;
-	unsigned char *ImageBuf;
+  long NumFrames;
+  long ImageWidth;
+  long ImageHeight;
+  unsigned char *ImageBuf;
 } VQAInfo;
-
 
 /* VQAStatistics: Statistics about the VQA movie played.
  *
@@ -259,16 +255,15 @@ typedef struct _VQAInfo {
  * MemUsed       - Total bytes used. (Low memory)
  */
 typedef struct _VQAStatistics {
-	long          StartTime;
-	long          EndTime;
-	long          FramesLoaded;
-	long          FramesDrawn;
-	long          FramesSkipped;
-	long          MaxFrameSize;
-	unsigned long SamplesPlayed;
-	unsigned long MemUsed;
+  long StartTime;
+  long EndTime;
+  long FramesLoaded;
+  long FramesDrawn;
+  long FramesSkipped;
+  long MaxFrameSize;
+  unsigned long SamplesPlayed;
+  unsigned long MemUsed;
 } VQAStatistics;
-
 
 /* VQAHandle: VQA file handle. (Must be obtained by calling VQA_Alloc()
  *            and freed through VQA_Free(). This is the only legal way
@@ -277,18 +272,17 @@ typedef struct _VQAStatistics {
  * VQAio - Something meaningful to the IO manager. (See DOCS)
  */
 typedef struct _VQAHandle {
-	unsigned long VQAio;
+  unsigned long VQAio;
 } VQAHandle;
 
 /* Possible IO command values */
-#define VQACMD_INIT    1 /* Prepare the IO for a session */
+#define VQACMD_INIT 1    /* Prepare the IO for a session */
 #define VQACMD_CLEANUP 2 /* Terminate IO session */
-#define VQACMD_OPEN    3 /* Open file */
-#define VQACMD_CLOSE   4 /* Close file */
-#define VQACMD_READ    5 /* Read bytes */
-#define VQACMD_WRITE   6 /* Write bytes */
-#define VQACMD_SEEK    7 /* Seek */
-
+#define VQACMD_OPEN 3    /* Open file */
+#define VQACMD_CLOSE 4   /* Close file */
+#define VQACMD_READ 5    /* Read bytes */
+#define VQACMD_WRITE 6   /* Write bytes */
+#define VQACMD_SEEK 7    /* Seek */
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
@@ -302,8 +296,8 @@ void VQA_DefaultConfig(VQAConfig *config);
 VQAHandle *VQA_Alloc(void);
 void VQA_Free(VQAHandle *vqa);
 void VQA_InitAsDOS(VQAHandle *vqa);
-void VQA_Init(VQAHandle *vqa, long(*iohandler)(VQAHandle *vqa, long action,
-		void *buffer, long nbytes));
+void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
+                                                void *buffer, long nbytes));
 
 /* File routines. */
 long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config);
@@ -318,4 +312,3 @@ char *VQA_Version(void);
 char *VQA_IDString(void);
 
 #endif /* VQAPLAY_H */
-

@@ -19,25 +19,25 @@
 #ifndef VQ_H
 #define VQ_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L ---  W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* NAME
-*     vq.h
-*
-* DESCRIPTION
-*     Vq file definition
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L ---  W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * NAME
+ *     vq.h
+ *
+ * DESCRIPTION
+ *     Vq file definition
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ ****************************************************************************/
 
 /* VQHeader - VQ header structure.
  *
- * ImageSize       - Compressed image size 
+ * ImageSize       - Compressed image size
  * ImageWidth      - Image x-dimension
  * ImageHeight     - Image y-dimension
  * BlockWidth      - Block x-dimension
@@ -54,21 +54,21 @@
  * pad[5]          - Pad out to 40 bytes total
  */
 typedef struct _VQHeader {
-	unsigned long  ImageSize;
-	unsigned short ImageWidth;
-	unsigned short ImageHeight;
-	unsigned short BlockWidth;
-	unsigned short BlockHeight;
-	unsigned short BlockType;
-	unsigned short PaletteRange;
-	unsigned short Num1Color;
-	unsigned short CodebookSize;
-	unsigned short CodingFlag;
-	unsigned short FrameDiffMethod;
-	unsigned short ForcedPalette;
-	unsigned short F555Palette;
-	unsigned short VQVersion;
-	unsigned short pad[5];
+  unsigned long ImageSize;
+  unsigned short ImageWidth;
+  unsigned short ImageHeight;
+  unsigned short BlockWidth;
+  unsigned short BlockHeight;
+  unsigned short BlockType;
+  unsigned short PaletteRange;
+  unsigned short Num1Color;
+  unsigned short CodebookSize;
+  unsigned short CodingFlag;
+  unsigned short FrameDiffMethod;
+  unsigned short ForcedPalette;
+  unsigned short F555Palette;
+  unsigned short VQVersion;
+  unsigned short pad[5];
 } VQHeader;
 
 #endif /* VQ_H */

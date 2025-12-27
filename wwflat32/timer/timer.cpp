@@ -46,9 +46,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Code ////////////////////////////////////////
+/////////////////////////////////// Code
+///////////////////////////////////////////
 
 /***************************************************************************
  * TC::TIMERCLASS -- Construct a timer class object.                       *
@@ -63,25 +63,22 @@
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-TimerClass::TimerClass(BaseTimerEnum timer, BOOL on)
-{
-	Accumulated = 0;
-	Started = 0;
+TimerClass::TimerClass(BaseTimerEnum timer, BOOL on) {
+  Accumulated = 0;
+  Started = 0;
 
-	switch (timer) {
-		case BT_USER:
-			Get_Ticks = Get_User_Tick_Count;
-			break;
+  switch (timer) {
+    case BT_USER:
+      Get_Ticks = Get_User_Tick_Count;
+      break;
 
-		default:
-		case BT_SYSTEM:
-			Get_Ticks = Get_System_Tick_Count;
-			break;
-	}
-	if (on && TimerSystemOn) Start();
+    default:
+    case BT_SYSTEM:
+      Get_Ticks = Get_System_Tick_Count;
+      break;
+  }
+  if (on && TimerSystemOn) Start();
 }
-
-
 
 /***************************************************************************
  * TIMERCLASS::TIME -- Get the current time of timer.                      *
@@ -97,16 +94,14 @@ TimerClass::TimerClass(BaseTimerEnum timer, BOOL on)
  * HISTORY:                                                                *
  *   05/03/1995 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Time(void)
-{
-	if (Started) {
-		long ticks = Get_Ticks();
-		Accumulated += ticks - (Started-1);
-		Started = ticks+1;
-	}
-	return(Accumulated);
+long TimerClass::Time(void) {
+  if (Started) {
+    long ticks = Get_Ticks();
+    Accumulated += ticks - (Started - 1);
+    Started = ticks + 1;
+  }
+  return (Accumulated);
 }
-
 
 /***************************************************************************
  * TC::STOP -- Stop the timer.                                             *
@@ -122,13 +117,11 @@ long TimerClass::Time(void)
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Stop(void)
-{
-	long time = Time();
-	Started = 0;
-	return(time);
+long TimerClass::Stop(void) {
+  long time = Time();
+  Started = 0;
+  return (time);
 }
-
 
 /***************************************************************************
  * TC::START -- Start a timer.                                             *
@@ -143,14 +136,12 @@ long TimerClass::Stop(void)
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Start(void)
-{
-	if (!Started) {
-		Started = Get_Ticks()+1;
-	}
-	return(Time());
+long TimerClass::Start(void) {
+  if (!Started) {
+    Started = Get_Ticks() + 1;
+  }
+  return (Time());
 }
-
 
 /***************************************************************************
  * TC::SET -- Set the time of a timer.                                     *
@@ -167,12 +158,9 @@ long TimerClass::Start(void)
  *   07/12/1994 SKB : Created.                                             *
  *   05/03/1995 SKB : If start return Start since it returns Time          *
  *=========================================================================*/
-long TimerClass::Set(long value, BOOL start)
-{
-	Started = 0;
-	Accumulated = value;
-	if (start) return (Start());
-	return(Time());
+long TimerClass::Set(long value, BOOL start) {
+  Started = 0;
+  Accumulated = value;
+  if (start) return (Start());
+  return (Time());
 }
-
-

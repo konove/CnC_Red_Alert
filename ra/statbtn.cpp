@@ -18,254 +18,252 @@
 
 /* $Header: /CounterStrike/STATBTN.CPP 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TEXTBTN.CPP                                                  *
+ *                    File Name : TEXTBTN.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 01/15/95                                                     *
+ *                   Start Date : 01/15/95 *
  *                                                                                             *
- *                  Last Update : January 19, 1995 [JLB]                                       *
+ *                  Last Update : January 19, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   StaticButtonClass::Draw_Background -- Draws the background to the text button.            *
- *   StaticButtonClass::Draw_Me -- Draws the text buttons as indicated.                        *
- *   StaticButtonClass::Draw_Text -- This draws the text for the text button.                  *
- *   StaticButtonClass::Set_Text -- Assigns a new text string to this button.                  *
- *   StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * StaticButtonClass::Draw_Background -- Draws the background to
+ *the text button.            * StaticButtonClass::Draw_Me -- Draws the text
+ *buttons as indicated.                        * StaticButtonClass::Draw_Text --
+ *This draws the text for the text button.                  *
+ *   StaticButtonClass::Set_Text -- Assigns a new text string to this button. *
+ *   StaticButtonClass::StaticButtonClass -- Normal constructor for a text
+ *button.             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-
-#include	"function.h"
+#include "function.h"
 #include "statbtn.h"
 
-
 /***********************************************************************************************
- * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.               *
+ * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.
+ **
  *                                                                                             *
- *    This is the constructor for text buttons if the text is provided as a string pointer.    *
+ *    This is the constructor for text buttons if the text is provided as a
+ *string pointer.    *
  *                                                                                             *
- * INPUT:   id    -- The ID number to assign to this button.                                   *
+ * INPUT:   id    -- The ID number to assign to this button. *
  *                                                                                             *
- *          text  -- Pointer to the text string to display on top of the button.               *
+ *          text  -- Pointer to the text string to display on top of the button.
+ **
  *                                                                                             *
- *          x,y   -- Pixel coordinate of button's upper left corner.                           *
+ *          x,y   -- Pixel coordinate of button's upper left corner. *
  *                                                                                             *
- *          w,h   -- Dimensions of the button. If these are not filled in (or with -1), then   *
- *                   the dimensions are adapted to fit the text assigned to the button.        *
+ *          w,h   -- Dimensions of the button. If these are not filled in (or
+ *with -1), then   * the dimensions are adapted to fit the text assigned to the
+ *button.        *
  *                                                                                             *
- *          style -- The print style for the text in the button. These are the TPF_ flags      *
- *                   used by Fancy_Text_Print().                                               *
+ *          style -- The print style for the text in the button. These are the
+ *TPF_ flags      * used by Fancy_Text_Print(). *
  *                                                                                             *
- * OUTPUT:   none                                                                              *
+ * OUTPUT:   none *
  *                                                                                             *
- * WARNINGS: Call Set_Text & Set_Style, & init X,Y,Width,Height,ID before using this button.	  *
+ * WARNINGS: Call Set_Text & Set_Style, & init X,Y,Width,Height,ID before using
+ *this button.	  *
  *                                                                                             *
- * HISTORY:  01/15/1995 JLB : Created.                                                         *
+ * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-StaticButtonClass::StaticButtonClass(unsigned , char const * text, TextPrintType style, int x, int y, int w, int h) :
-	GadgetClass(x, y, w, h, FlagEnum(0)),
-	String(NULL),
-	PrintFlags(style)
-{
-	/*
-	**	Make a duplicate of the string to display.
-	*/
-	Set_Text(text, false);
+StaticButtonClass::StaticButtonClass(unsigned, char const* text,
+                                     TextPrintType style, int x, int y, int w,
+                                     int h)
+    : GadgetClass(x, y, w, h, FlagEnum(0)), String(NULL), PrintFlags(style) {
+  /*
+  **	Make a duplicate of the string to display.
+  */
+  Set_Text(text, false);
 
-	if (w == -1 || h == -1) {
-		Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
-		if (w == -1) {
-			Width = String_Pixel_Width(String);
-		}
-		if (h == -1) {
-			Height = FontHeight;
-		}
-	}
+  if (w == -1 || h == -1) {
+    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    if (w == -1) {
+      Width = String_Pixel_Width(String);
+    }
+    if (h == -1) {
+      Height = FontHeight;
+    }
+  }
 }
 
+/***********************************************************************************************
+ * StaticButtonClass::StaticButtonClass -- Default constructor for a text
+ *button.              *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:   none *
+ *                                                                                             *
+ * WARNINGS: none *
+ *                                                                                             *
+ * HISTORY:  01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+StaticButtonClass::StaticButtonClass(void)
+    : GadgetClass(0, 0, 0, 0, FlagEnum(0)),
+      String(NULL),
+      PrintFlags(TPF_8POINT) {}
 
 /***********************************************************************************************
- * StaticButtonClass::StaticButtonClass -- Default constructor for a text button.              *
+ * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ *    This routine will draw the text button. *
  *                                                                                             *
- * OUTPUT:   none                                                                              *
+ * INPUT:   forced   -- If the button is to be redrawn regardless of the state
+ *of the redraw   * flag, then this parameter will be true. *
  *                                                                                             *
- * WARNINGS: none                                                                              *
+ * OUTPUT:  bool; Was the button redrawn? *
  *                                                                                             *
- * HISTORY:  01/15/1995 JLB : Created.                                                         *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-StaticButtonClass::StaticButtonClass(void) :
-	GadgetClass(0, 0, 0, 0, FlagEnum(0)),
-	String(NULL),
-	PrintFlags(TPF_8POINT)
-{
+int StaticButtonClass::Draw_Me(int forced) {
+  if (GadgetClass::Draw_Me(forced)) {
+    /*
+    **	Hide the mouse.
+    */
+    if (LogicPage == &SeenBuff) {
+      Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
+    }
+
+    /*
+    **	Draw the background and overlaying text. These are virtual function
+    **	calls so that they may be overridden.
+    */
+    Draw_Background();
+    Draw_Text(String);
+
+    /*
+    **	Display the mouse.
+    */
+    if (LogicPage == &SeenBuff) {
+      Conditional_Show_Mouse();
+    }
+    return (true);
+  }
+  return (false);
 }
 
-
 /***********************************************************************************************
- * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated.                          *
+ * StaticButtonClass::Set_Text -- Assigns a new text string to this button. *
  *                                                                                             *
- *    This routine will draw the text button.                                                  *
+ *    Use this routine to assign a new text string to this button. By using this
+ *function it   * is possible to dynamically change the button's text. An
+ *example of this would be an      * on/off button that every time it is
+ *clicked, the text toggles between "on" and "off".    *
  *                                                                                             *
- * INPUT:   forced   -- If the button is to be redrawn regardless of the state of the redraw   *
- *                      flag, then this parameter will be true.                                *
+ * INPUT:   text  -- Pointer to the text string to assign to this button. *
  *                                                                                             *
- * OUTPUT:  bool; Was the button redrawn?                                                      *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   The text is NOT copied to this button. You must make sure that
+ *the text         * remains valid throughout the lifetime of this text button.
+ **
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/03/1995 MML : Created.                                                                 *
- *   01/16/1995 JLB : Modified                                                                 *
+ * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int StaticButtonClass::Draw_Me(int forced)
-{
-	if (GadgetClass::Draw_Me(forced)) {
-		/*
-		**	Hide the mouse.
-		*/
-		if (LogicPage == &SeenBuff) {
-			Conditional_Hide_Mouse(X, Y, X+Width-1, Y+Height-1);
-		}
+void StaticButtonClass::Set_Text(char const* text, bool resize) {
+  if (String != NULL) {
+    delete[] String;
+    String = NULL;
+  }
 
-		/*
-		**	Draw the background and overlaying text. These are virtual function
-		**	calls so that they may be overridden.
-		*/
-		Draw_Background();
-		Draw_Text(String);
+  if (text != NULL) {
+    String = new char[strlen(text) + 1];
+    if (String != NULL) {
+      strcpy(String, text);
+    }
+  }
 
-		/*
-		**	Display the mouse.
-		*/
-		if (LogicPage == &SeenBuff) {
-			Conditional_Show_Mouse();
-		}
-		return(true);
-	}
-	return(false);
+  Flag_To_Redraw();
+  if (resize && String != NULL) {
+    Draw_Background();
+    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    Width = String_Pixel_Width(String);
+    Height = FontHeight + FontYSpacing;
+    Background = Buffer();
+  }
 }
 
-
 /***********************************************************************************************
- * StaticButtonClass::Set_Text -- Assigns a new text string to this button.                    *
+ * StaticButtonClass::Draw_Background -- Draws the background to the text
+ *button.              *
  *                                                                                             *
- *    Use this routine to assign a new text string to this button. By using this function it   *
- *    is possible to dynamically change the button's text. An example of this would be an      *
- *    on/off button that every time it is clicked, the text toggles between "on" and "off".    *
+ *    This localizes the drawing of the background for the text button. By
+ *overriding this     * function you can give a different background to the
+ *button. The text is drawn using      * a different routine. The mouse is
+ *hidden, if necessary, before this routine is called.   *
  *                                                                                             *
- * INPUT:   text  -- Pointer to the text string to assign to this button.                      *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   The text is NOT copied to this button. You must make sure that the text         *
- *             remains valid throughout the lifetime of this text button.                      *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/16/1995 JLB : Created.                                                                 *
+ * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Set_Text(char const * text, bool resize)
-{
-	if (String != NULL) {
-		delete [] String;
-		String = NULL;
-	}
+void StaticButtonClass::Draw_Background(void) {
+  /*
+  **	If the background hasn't been recorded from the buffer, then
+  **	allocate and record the background image now.
+  */
+  if (Background.Get_Buffer() == NULL && Width > 0 && Height > 0) {
+    new (&Background) Buffer(Width * Height);
+    if (Background.Get_Buffer() != NULL) {
+      LogicPage->To_Buffer(X, Y, Width, Height, Background,
+                           Background.Get_Size());
+    }
+  }
 
-	if (text != NULL) {
-		String = new char[strlen(text)+1];
-		if (String != NULL) {
-			strcpy(String, text);
-		}
-	}
-
-	Flag_To_Redraw();
-	if (resize && String != NULL) {
-		Draw_Background();
-		Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
-		Width = String_Pixel_Width(String);
-		Height = FontHeight + FontYSpacing;
-		Background = Buffer();
-	}
+  /*
+  **	If there is a background image present, then restore it to the buffer
+  *now.
+  */
+  if (Background.Get_Buffer() != NULL && LogicPage->Lock()) {
+    Buffer_To_Page(X, Y, Width, Height, Background, *LogicPage);
+    LogicPage->Unlock();
+  }
 }
 
-
 /***********************************************************************************************
- * StaticButtonClass::Draw_Background -- Draws the background to the text button.              *
+ * StaticButtonClass::Draw_Text -- This draws the text for the text button. *
  *                                                                                             *
- *    This localizes the drawing of the background for the text button. By overriding this     *
- *    function you can give a different background to the button. The text is drawn using      *
- *    a different routine. The mouse is hidden, if necessary, before this routine is called.   *
+ *    This routine draws the text for the text button. You can override this
+ *routine if you    * wish different text rendering styles or colors. The
+ *background has already been drawn    * by the time this function is called.
+ *The mouse is hidden, if necessary, as well.         *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   text  -- Pointer to the text string to print over the button. *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/19/1995 JLB : Created.                                                                 *
+ * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Draw_Background(void)
-{
-	/*
-	**	If the background hasn't been recorded from the buffer, then
-	**	allocate and record the background image now.
-	*/
-	if (Background.Get_Buffer() == NULL && Width > 0 && Height > 0) {
-		new(&Background) Buffer(Width*Height);
-		if (Background.Get_Buffer() != NULL) {
-			LogicPage->To_Buffer(X, Y, Width, Height, Background, Background.Get_Size());
-		}
-	}
+void StaticButtonClass::Draw_Text(char const* text) {
+  /*
+  **	Display the text.
+  */
+  if (String != NULL) {
+    int x = X;
 
-	/*
-	**	If there is a background image present, then restore it to the buffer now.
-	*/
-	if (Background.Get_Buffer() != NULL && LogicPage->Lock()) {
-		Buffer_To_Page(X, Y, Width, Height, Background, *LogicPage);
-		LogicPage->Unlock();
-	}
-}
+    if (PrintFlags & TPF_CENTER) {
+      x += Width / 2;
+    }
+    if (PrintFlags & TPF_RIGHT) {
+      x += Width - 1;
+    }
 
-
-/***********************************************************************************************
- * StaticButtonClass::Draw_Text -- This draws the text for the text button.                    *
- *                                                                                             *
- *    This routine draws the text for the text button. You can override this routine if you    *
- *    wish different text rendering styles or colors. The background has already been drawn    *
- *    by the time this function is called. The mouse is hidden, if necessary, as well.         *
- *                                                                                             *
- * INPUT:   text  -- Pointer to the text string to print over the button.                      *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/19/1995 JLB : Created.                                                                 *
- *=============================================================================================*/
-void StaticButtonClass::Draw_Text(char const * text)
-{
-	/*
-	**	Display the text.
-	*/
-	if (String != NULL) {
-		int x = X;
-
-		if (PrintFlags & TPF_CENTER) {
-			x += Width/2;
-		}
-		if (PrintFlags & TPF_RIGHT) {
-			x += Width-1;
-		}
-
-		Fancy_Text_Print(text, x, Y, GadgetClass::Get_Color_Scheme(), TBLACK, PrintFlags);
-	}
+    Fancy_Text_Print(text, x, Y, GadgetClass::Get_Color_Scheme(), TBLACK,
+                     PrintFlags);
+  }
 }

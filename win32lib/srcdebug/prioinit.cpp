@@ -33,11 +33,11 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  *   INIT_PRIORITY_SYSTEM -- 	Sets the buffer addresses for the priority   *
- *   									system.													*
+ *   									system.
+ **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "shape.h"
-
 
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
@@ -45,28 +45,28 @@
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
-
 /***************************************************************************
- * Init_Priority_System -- set the buffer addresses for the priority		   *
- *   								system.                       						*
+ * Init_Priority_System -- set the buffer addresses for the priority * system.
+ **
  *                                                                         *
- * INPUT:																						*
- *		mask - pointer	to priority buffer class										*
- *		back - pointer to background buffer class										*
+ * INPUT:
+ ** mask - pointer	to priority buffer class
+ ** back - pointer to background buffer class
+ **
  *                                                                         *
- * OUTPUT:																						*
- *		none																						*
+ * OUTPUT:
+ ** none
+ **
  *                                                                         *
  * HISTORY:                                                                *
- *   08/09/1994 IML : Created.															*															
+ *   08/09/1994 IML : Created.
+ **
  *=========================================================================*/
 
-VOID cdecl Init_Priority_System (GraphicBufferClass *mask,
-											GraphicBufferClass *back)
-{
- MaskPage = mask->Get_Buffer();
- BackGroundPage = back->Get_Buffer();
+VOID cdecl Init_Priority_System(GraphicBufferClass *mask,
+                                GraphicBufferClass *back) {
+  MaskPage = mask->Get_Buffer();
+  BackGroundPage = back->Get_Buffer();
 }
-
 
 /************************** end of prioinit.cpp ****************************/

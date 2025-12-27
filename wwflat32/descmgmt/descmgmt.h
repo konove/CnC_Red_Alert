@@ -37,10 +37,9 @@
 #ifndef DESCMGMT_H
 #define DESCMGMT_H
 
-
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 //=====================================================================
 // C type include files
@@ -57,7 +56,6 @@ extern "C" {
 
 // ====================================================================
 
-
 // types
 // These where taken from dos.h
 //==========================================
@@ -67,27 +65,25 @@ extern "C" {
 extern ULONG Map_Segment_To_Address(ULONG address, ULONG length);
 
 extern "C" {
-	// Assemble functions
-	extern UWORD FixSelector(UWORD sel);
-	extern UWORD GetDs(void);
-	extern UWORD GetCs(void);
-	extern VOID  GetDefaultSelectors(VOID);
-	extern UWORD Get_Standard_Selector(void);
+// Assemble functions
+extern UWORD FixSelector(UWORD sel);
+extern UWORD GetDs(void);
+extern UWORD GetCs(void);
+extern VOID GetDefaultSelectors(VOID);
+extern UWORD Get_Standard_Selector(void);
 
-	
-	// Assembly data variables
-	extern UWORD CodeSelector;
-	extern UWORD DataSelector;
-	extern UWORD ScreenSelector;
-	extern UWORD GraphicsSelector;
-	extern UWORD PspSelector;
-	extern UWORD EnvSelector;
-	extern UWORD DosMemSelector;
-	extern UWORD Fp1167Selector;
-	extern UWORD FpWeitekSelector;
-	extern UWORD FpCyrixSelector;
+// Assembly data variables
+extern UWORD CodeSelector;
+extern UWORD DataSelector;
+extern UWORD ScreenSelector;
+extern UWORD GraphicsSelector;
+extern UWORD PspSelector;
+extern UWORD EnvSelector;
+extern UWORD DosMemSelector;
+extern UWORD Fp1167Selector;
+extern UWORD FpWeitekSelector;
+extern UWORD FpCyrixSelector;
 }
 
 #endif  // DESCMGMT_H
-
 

@@ -16,45 +16,45 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c0\vcs\code\turret.h_v   3.1   13 Mar 1996 09:43:14   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c0\vcs\code\turret.h_v   3.1   13 Mar 1996 09:43:14
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TURRET.H                                                     *
+ *                    File Name : TURRET.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 25, 1994                                               *
+ *                   Start Date : April 25, 1994 *
  *                                                                                             *
- *                  Last Update : April 25, 1994   [JLB]                                       *
+ *                  Last Update : April 25, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TURRET_H
 #define TURRET_H
 
 #include "drive.h"
 
-class TurretClass : public DriveClass
-{
-	public:
+class TurretClass : public DriveClass {
+ public:
+  /*
+  **	File I/O.
+  */
+  virtual void Code_Pointers(void);
+  virtual void Decode_Pointers(void);
 
-		/*
-		**	File I/O.
-		*/
-		virtual void Code_Pointers(void);
-		virtual void Decode_Pointers(void);
-
-	protected:
-		TurretClass(UnitType classid, HousesType house);
-		TurretClass(void);
-		virtual ~TurretClass(void);
+ protected:
+  TurretClass(UnitType classid, HousesType house);
+  TurretClass(void);
+  virtual ~TurretClass(void);
 };
-
 
 #endif

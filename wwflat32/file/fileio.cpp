@@ -36,7 +36,7 @@
 
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 #ifndef _FILE_H
 #include "_file.h"
@@ -52,100 +52,87 @@
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
+WORD ibm_getdisk(VOID) {
+  unsigned disk;
 
-WORD ibm_getdisk(VOID)
-{
-	unsigned disk;
-
-	CallingDOSInt++;
+  CallingDOSInt++;
   //	disk = getdisk();
-	_dos_getdrive ( & disk ) ;
-	CallingDOSInt--;
-	return(disk-1);
+  _dos_getdrive(&disk);
+  CallingDOSInt--;
+  return (disk - 1);
 }
 
-WORD ibm_setdisk(WORD drive)
-{
-//	WORD disk;
-	unsigned disk ;
+WORD ibm_setdisk(WORD drive) {
+  //	WORD disk;
+  unsigned disk;
 
-	CallingDOSInt++;
-//	disk = setdisk(drive);
-	_dos_setdrive ( drive+1 , & disk ) ;
-	CallingDOSInt--;
-	return(disk);
+  CallingDOSInt++;
+  //	disk = setdisk(drive);
+  _dos_setdrive(drive + 1, &disk);
+  CallingDOSInt--;
+  return (disk);
 }
 
-WORD ibm_close(WORD handle)
-{
-	WORD success;
+WORD ibm_close(WORD handle) {
+  WORD success;
 
-	CallingDOSInt++;
-	success = close(handle);
-	CallingDOSInt--;
-	return(success);
+  CallingDOSInt++;
+  success = close(handle);
+  CallingDOSInt--;
+  return (success);
 }
 
-WORD ibm_unlink(BYTE const *name)
-{
-	WORD success;
+WORD ibm_unlink(BYTE const *name) {
+  WORD success;
 
-	CallingDOSInt++;
-	success = unlink(name);
-	CallingDOSInt--;
-	return(success);
+  CallingDOSInt++;
+  success = unlink(name);
+  CallingDOSInt--;
+  return (success);
 }
 
-LONG ibm_lseek(WORD handle, LONG offset, WORD where)
-{
-	LONG new_offset;
+LONG ibm_lseek(WORD handle, LONG offset, WORD where) {
+  LONG new_offset;
 
-	CallingDOSInt++;
-	new_offset = lseek(handle, offset, where);
-	CallingDOSInt--;
-	return(new_offset);
+  CallingDOSInt++;
+  new_offset = lseek(handle, offset, where);
+  CallingDOSInt--;
+  return (new_offset);
 }
 
-UWORD ibm_read(WORD handle, VOID *ptr, UWORD bytes)
-{
-	UWORD bytes_read;
+UWORD ibm_read(WORD handle, VOID *ptr, UWORD bytes) {
+  UWORD bytes_read;
 
-	CallingDOSInt++;
-	bytes_read = read(handle, ptr, bytes);
-	CallingDOSInt--;
-	return(bytes_read);
+  CallingDOSInt++;
+  bytes_read = read(handle, ptr, bytes);
+  CallingDOSInt--;
+  return (bytes_read);
 }
 
-UWORD ibm_write(WORD handle, VOID *ptr, UWORD bytes)
-{
-	UWORD bytes_written;
+UWORD ibm_write(WORD handle, VOID *ptr, UWORD bytes) {
+  UWORD bytes_written;
 
-	CallingDOSInt++;
-	bytes_written = write(handle, ptr, bytes);
-	CallingDOSInt--;
-	return(bytes_written);
+  CallingDOSInt++;
+  bytes_written = write(handle, ptr, bytes);
+  CallingDOSInt--;
+  return (bytes_written);
 }
 
-WORD ibm_open(BYTE const *name, UWORD mode, WORD attrib)
-{
-	WORD handle;
+WORD ibm_open(BYTE const *name, UWORD mode, WORD attrib) {
+  WORD handle;
 
-	CallingDOSInt++;
-	handle = open(name, mode, attrib);
-	CallingDOSInt--;
-	return(handle);
+  CallingDOSInt++;
+  handle = open(name, mode, attrib);
+  CallingDOSInt--;
+  return (handle);
 }
 
-WORD ibm_chdir(BYTE const *path)
-{
-	WORD retval;
+WORD ibm_chdir(BYTE const *path) {
+  WORD retval;
 
-	CallingDOSInt++;
-	retval = chdir(path);
-	CallingDOSInt--;
-	return(retval);
+  CallingDOSInt++;
+  retval = chdir(path);
+  CallingDOSInt--;
+  return (retval);
 }
-
-
-
 

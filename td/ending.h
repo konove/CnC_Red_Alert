@@ -17,22 +17,24 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : ENDING.H                                                     *
+ *                    File Name : ENDING.H *
  *                                                                                             *
- *                   Programmer : Barry W. Green                                               *
+ *                   Programmer : Barry W. Green *
  *                                                                                             *
- *                   Start Date : July 10, 1995                                                *
+ *                   Start Date : July 10, 1995 *
  *                                                                                             *
- *                  Last Update : July 10, 1995 [BWG]                                          *
+ *                  Last Update : July 10, 1995 [BWG] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef ENDING_H
 #define ENDING_H

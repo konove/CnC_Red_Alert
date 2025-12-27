@@ -37,4 +37,3 @@
 extern DirectDrawObjectPtr DirectDrawObject;
 extern DirectDrawPalettePtr PalettePtr;
 extern WindowHandle MainWindow;
-

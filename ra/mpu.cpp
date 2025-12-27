@@ -18,31 +18,29 @@
 
 /* $Header: /CounterStrike/MPU.CPP 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : MPU.CPP                                                      *
+ *                    File Name : MPU.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/17/96                                                     *
+ *                   Start Date : 07/17/96 *
  *                                                                                             *
- *                  Last Update : July 17, 1996 [JLB]                                          *
+ *                  Last Update : July 17, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-#include	"mpu.h"
-
+#include "mpu.h"
 
 #ifdef __BORLANDC__
-unsigned long __cdecl Get_CPU_Clock(unsigned long & high)
-{
-	__asm db 0fh,031h
-	__asm mov [high],edx
-	return(_EAX);
+unsigned long __cdecl Get_CPU_Clock(unsigned long& high) {
+  __asm db 0fh, 031h __asm mov[high], edx return (_EAX);
 }
 #endif

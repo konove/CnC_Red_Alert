@@ -35,11 +35,8 @@
  *   Set_Font -- Changes the default text printing font.                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
 #include "font.h"
 #include <wwstd.h>
-
-
 
 /***************************************************************************
  * SET_FONT -- Changes the default text printing font.                     *
@@ -59,32 +56,33 @@
  *   01/31/1992 DRD : Modified to use new font format.                     *
  *   06/29/1994 SKB : modified for 32 bit library                          *
  *=========================================================================*/
-void * __cdecl Set_Font(void const *fontptr)
-{
-	void *oldfont;
-	char	const *blockptr;
+void *__cdecl Set_Font(void const *fontptr) {
+  void *oldfont;
+  char const *blockptr;
 
-	oldfont = (void *) FontPtr;
+  oldfont = (void *)FontPtr;
 
-	if (fontptr) {
-		FontPtr    = (void *) fontptr;
+  if (fontptr) {
+    FontPtr = (void *)fontptr;
 
-		/*
-		**	Inform the system about the new font.
-		*/
+    /*
+    **	Inform the system about the new font.
+    */
 
-		FontWidthBlockPtr = (char*)fontptr + *(unsigned short *)((char*)fontptr + FONTWIDTHBLOCK);
-		blockptr  = (char*)fontptr + *(unsigned short *)((char*)fontptr + FONTINFOBLOCK);
-		FontHeight = *(blockptr + FONTINFOMAXHEIGHT);
-		FontWidth  = *(blockptr + FONTINFOMAXWIDTH);
-		//Draw_Char_Setup();
+    FontWidthBlockPtr =
+        (char *)fontptr + *(unsigned short *)((char *)fontptr + FONTWIDTHBLOCK);
+    blockptr =
+        (char *)fontptr + *(unsigned short *)((char *)fontptr + FONTINFOBLOCK);
+    FontHeight = *(blockptr + FONTINFOMAXHEIGHT);
+    FontWidth = *(blockptr + FONTINFOMAXWIDTH);
+    // Draw_Char_Setup();
 
 #if FALSE
-		WindowLines = WinH / FontHeight;
-		WindowWidth = WinW << 3;
-		WindowColumns = WindowWidth / FontWidth;
+    WindowLines = WinH / FontHeight;
+    WindowWidth = WinW << 3;
+    WindowColumns = WindowWidth / FontWidth;
 #endif
-	}
+  }
 
-	return(oldfont);
+  return (oldfont);
 }

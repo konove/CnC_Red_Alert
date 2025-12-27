@@ -44,26 +44,25 @@
 #include <monochrm.h>
 #include <westwood.h>
 
-typedef struct
-{
-	 char ch;
-	 char attr;
+typedef struct {
+  char ch;
+  char attr;
 } CA;
 
-#define CCOLMAX         80
-#define CROWMAX       	25
+#define CCOLMAX 80
+#define CROWMAX 25
 
-#define ESC             27
-#define BELL            7
-#define DEFATTR       	0x07
-#define CA_SPACE        ((DEFATTR << 8) | ' ')
+#define ESC 27
+#define BELL 7
+#define DEFATTR 0x07
+#define CA_SPACE ((DEFATTR << 8) | ' ')
 
 // row+1 = DBWIN
-#define PCA(row, col)   (0xB0000 + ( (((row+0)*CCOLMAX)+col) * sizeof(CA)))
+#define PCA(row, col) (0xB0000 + ((((row + 0) * CCOLMAX) + col) * sizeof(CA)))
 
-static void Monochrome_Output( char *string );
-static void CACopy( CA *pcaDst, CA *pcaSrc, int cca );
-static void CAFill( CA *pcaDst, int cca, int ca );
+static void Monochrome_Output(char *string);
+static void CACopy(CA *pcaDst, CA *pcaSrc, int cca);
+static void CAFill(CA *pcaDst, int cca, int ca);
 
 int rowCur = 0;
 int colCur = 0;
@@ -79,39 +78,28 @@ int colCur = 0;
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-void Debug_Printf( char *format_string, ... )
-{
-	va_list ap;
-	int arg[ 10 ];
-	char output_string[ 255 ];
+void Debug_Printf(char *format_string, ...) {
+  va_list ap;
+  int arg[10];
+  char output_string[255];
 
-	va_start( ap, format_string );
-	arg[ 0 ] = va_arg( ap, int );
-	arg[ 1 ] = va_arg( ap, int );
-	arg[ 2 ] = va_arg( ap, int );
-	arg[ 3 ] = va_arg( ap, int );
-	arg[ 4 ] = va_arg( ap, int );
-	arg[ 5 ] = va_arg( ap, int );
-	arg[ 6 ] = va_arg( ap, int );
-	arg[ 7 ] = va_arg( ap, int );
-	arg[ 8 ] = va_arg( ap, int );
-	arg[ 9 ] = va_arg( ap, int );
-	va_end( ap );
+  va_start(ap, format_string);
+  arg[0] = va_arg(ap, int);
+  arg[1] = va_arg(ap, int);
+  arg[2] = va_arg(ap, int);
+  arg[3] = va_arg(ap, int);
+  arg[4] = va_arg(ap, int);
+  arg[5] = va_arg(ap, int);
+  arg[6] = va_arg(ap, int);
+  arg[7] = va_arg(ap, int);
+  arg[8] = va_arg(ap, int);
+  arg[9] = va_arg(ap, int);
+  va_end(ap);
 
-	sprintf( (char *) output_string,
-				(char *) format_string,
-				arg[ 0 ],
-				arg[ 1 ],
-				arg[ 2 ],
-				arg[ 3 ],
-				arg[ 4 ],
-				arg[ 5 ],
-				arg[ 6 ],
-				arg[ 7 ],
-				arg[ 8 ],
-				arg[ 9 ] );
+  sprintf((char *)output_string, (char *)format_string, arg[0], arg[1], arg[2],
+          arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9]);
 
-	Debug_Mono_Message( (char *) output_string );
+  Debug_Mono_Message((char *)output_string);
 }
 
 /***************************************************************************
@@ -125,137 +113,125 @@ void Debug_Printf( char *format_string, ... )
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-void Debug_Mono_Message( char *message )
-{
-	char *temp_string;
-	char *temp_null_position;
-	char temp_char;
-	int length_left;
+void Debug_Mono_Message(char *message) {
+  char *temp_string;
+  char *temp_null_position;
+  char temp_char;
+  int length_left;
 
-	length_left = strlen( message );
-	temp_null_position = message;
-	while ( length_left > CCOLMAX ) {
-		temp_string = temp_null_position;
-		temp_null_position += CCOLMAX;
-		temp_char = *temp_null_position;
-		temp_null_position[ 0 ] = '\0';
+  length_left = strlen(message);
+  temp_null_position = message;
+  while (length_left > CCOLMAX) {
+    temp_string = temp_null_position;
+    temp_null_position += CCOLMAX;
+    temp_char = *temp_null_position;
+    temp_null_position[0] = '\0';
 
-		Monochrome_Output( temp_string );
+    Monochrome_Output(temp_string);
 
-		*temp_null_position = temp_char;
-		length_left -= CCOLMAX;
-	}
-	temp_string = temp_null_position;
+    *temp_null_position = temp_char;
+    length_left -= CCOLMAX;
+  }
+  temp_string = temp_null_position;
 
-	Monochrome_Output( temp_string );
+  Monochrome_Output(temp_string);
 }
 
-static void Monochrome_Output( char *string )
-{
-	 CA *pca;
-	 char ch;
-	 static int _initialized = FALSE;
+static void Monochrome_Output(char *string) {
+  CA *pca;
+  char ch;
+  static int _initialized = FALSE;
 
-	 pca = (CA *) PCA(rowCur, colCur);
+  pca = (CA *)PCA(rowCur, colCur);
 
-	 if ( ! _initialized ) {
-		  CAFill( (CA *) PCA(0, 0),
-					 (CCOLMAX * CROWMAX),
-					 CA_SPACE );
-		  colCur = 0;
-		  rowCur = 0;
-		  _initialized = TRUE;
-	 }
+  if (!_initialized) {
+    CAFill((CA *)PCA(0, 0), (CCOLMAX * CROWMAX), CA_SPACE);
+    colCur = 0;
+    rowCur = 0;
+    _initialized = TRUE;
+  }
 
-	 while ( TRUE ) {
+  while (TRUE) {
+    ch = *string++;
+    if (!ch) {
+      break;
+    }
 
-		ch = *string++;
-		if ( ! ch ) {
-			break;
-		}
+    switch (ch) {
+      case '\b':
+        if (colCur > 0) {
+          colCur--;
+          pca--;
+          pca->ch = ' ';
+          pca->attr = DEFATTR;
+        }
+        break;
 
-		switch (ch) {
+      case BELL:
+        //				MessageBeep(0);
+        break;
 
-		  case '\b':
-				if (colCur > 0)
-				{
-					 colCur--;
-					 pca--;
-					 pca->ch = ' ';
-					 pca->attr = DEFATTR;
-				}
-				break;
+      case '\t':
+        pca += 8 - colCur % 8;
+        colCur += 8 - colCur % 8;
+        break;
 
-		  case BELL:
-//				MessageBeep(0);
-				break;
+      case '\r':
+        colCur = 0;
+        pca = (CA *)PCA(rowCur, colCur);
+        break;
 
-		  case '\t':
-				pca    += 8 - colCur % 8;
-				colCur += 8 - colCur % 8;
-				break;
+      default:
+        pca->ch = ch;
+        pca->attr = DEFATTR;
+        pca++;
+        colCur++;
 
-		  case '\r':
-				colCur = 0;
-				pca = (CA *) PCA(rowCur, colCur);
-				break;
+        if (colCur < CCOLMAX) break;
 
-		  default:
-				pca->ch = ch;
-				pca->attr = DEFATTR;
-				pca++;
-				colCur++;
+        // fall through to handle LF
 
-				if (colCur < CCOLMAX)
-					 break;
+      case '\n':
+        colCur = 0;
+        rowCur++;
 
-				// fall through to handle LF
+        if (rowCur >= CROWMAX) {
+          CACopy((CA *)PCA(0, 0), (CA *)PCA(1, 0), CCOLMAX * (CROWMAX - 1));
+          CAFill((CA *)PCA(CROWMAX - 1, 0), CCOLMAX, CA_SPACE);
+          rowCur = CROWMAX - 1;
+        }
 
-		  case '\n':
-				colCur = 0;
-				rowCur++;
+        pca = (CA *)PCA(rowCur, colCur);
+        break;
 
-				if (rowCur >= CROWMAX)
-				{
-					 CACopy( (CA *) PCA(0, 0), (CA *) PCA(1, 0), CCOLMAX * (CROWMAX - 1));
-					 CAFill( (CA *) PCA(CROWMAX - 1, 0), CCOLMAX, CA_SPACE);
-					 rowCur = CROWMAX - 1;
-				}
-
-				pca = (CA *) PCA(rowCur, colCur);
-				break;
-
-		  case ESC:
-				//
-				// ANSI clear screen escape
-				//
-				if (string[1] == '[' && string[2] == '2' && string[3] == 'J')
-				{
-					 CAFill( (CA *)PCA(0,0), CCOLMAX * CROWMAX, CA_SPACE);
-					 rowCur = colCur = 0;
-					 string += 3;
-				}
-		  }
-	 }
+      case ESC:
+        //
+        // ANSI clear screen escape
+        //
+        if (string[1] == '[' && string[2] == '2' && string[3] == 'J') {
+          CAFill((CA *)PCA(0, 0), CCOLMAX * CROWMAX, CA_SPACE);
+          rowCur = colCur = 0;
+          string += 3;
+        }
+    }
+  }
 }
 
-static void CACopy( CA *pcaDst, CA *pcaSrc, int cca )
-{
-	int i;
+static void CACopy(CA *pcaDst, CA *pcaSrc, int cca) {
+  int i;
 
-	for ( i = 0; i < cca; i ++ ) {
-		*pcaDst = *pcaSrc;
-		pcaDst ++;
-		pcaSrc ++;
-	}
+  for (i = 0; i < cca; i++) {
+    *pcaDst = *pcaSrc;
+    pcaDst++;
+    pcaSrc++;
+  }
 }
 
-static void CAFill( CA *pcaDst, int cca, int ca )
-{
-	int i;
+static void CAFill(CA *pcaDst, int cca, int ca) {
+  int i;
 
-	for ( i = 0; i < cca; i ++ ) {
-		memcpy( pcaDst, &ca, sizeof( int ) );
-		pcaDst ++;
-	}
+  for (i = 0; i < cca; i++) {
+    memcpy(pcaDst, &ca, sizeof(int));
+    pcaDst++;
+  }
 }

@@ -18,49 +18,49 @@
 
 /* $Header: /CounterStrike/CRCPIPE.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CRCPIPE.H                                                    *
+ *                    File Name : CRCPIPE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/30/96                                                     *
+ *                   Start Date : 06/30/96 *
  *                                                                                             *
- *                  Last Update : June 30, 1996 [JLB]                                          *
+ *                  Last Update : June 30, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CRCPIPE_H
 #define CRCPIPE_H
 
-#include	"pipe.h"
-#include	"crc.h"
+#include "pipe.h"
+#include "crc.h"
 
 /*
-**	This class doesn't modify the data being piped through, but it does examine it and build
-**	a CRC value from the data.
+**	This class doesn't modify the data being piped through, but it does
+*examine it and build *	a CRC value from the data.
 */
-class CRCPipe : public Pipe
-{
-	public:
-		CRCPipe(void) {}
-		virtual int Put(void const * source, int slen);
+class CRCPipe : public Pipe {
+ public:
+  CRCPipe(void) {}
+  virtual int Put(void const* source, int slen);
 
-		// Fetch the CRC value.
-		long Result(void) const;
+  // Fetch the CRC value.
+  long Result(void) const;
 
-	protected:
-		CRCEngine CRC;
+ protected:
+  CRCEngine CRC;
 
-	private:
-		CRCPipe(CRCPipe & rvalue);
-		CRCPipe & operator = (CRCPipe const & pipe);
+ private:
+  CRCPipe(CRCPipe& rvalue);
+  CRCPipe& operator=(CRCPipe const& pipe);
 };
 
 #endif

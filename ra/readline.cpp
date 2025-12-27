@@ -16,76 +16,67 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ctype.h>
+#include <string.h>
+#include "wwfile.h"
+#include "xstraw.h"
+#include "readline.h"
 
-#include	<ctype.h>
-#include	<string.h>
-#include	"wwfile.h"
-#include	"xstraw.h"
-#include	"readline.h"
-
-
-// Disable the "temporary object used to initialize a non-constant reference" warning.
+// Disable the "temporary object used to initialize a non-constant reference"
+// warning.
 #pragma warning 665 9
 
+void strtrim(char* buffer) {
+  if (buffer) {
+    /*
+    **	Strip leading white space from the string.
+    */
+    char* source = buffer;
+    while (isspace(*source)) {
+      source++;
+    }
+    if (source != buffer) {
+      int len = strlen(source);
+      memmove(buffer, source, len + 1);
+    }
 
-void strtrim(char * buffer)
-{
-	if (buffer) {
-
-		/*
-		**	Strip leading white space from the string.
-		*/
-		char * source = buffer;
-		while (isspace(*source)) {
-			source++;
-		}
-		if (source != buffer) {
-			int len = strlen(source);
-			memmove(buffer, source, len + 1);
-		}
-
-		/*
-		**	Clip trailing white space from the string.
-		*/
-		for (int index = strlen(buffer)-1; index >= 0; index--) {
-			if (isspace(buffer[index])) {
-				buffer[index] = '\0';
-			} else {
-				break;
-			}
-		}
-	}
+    /*
+    **	Clip trailing white space from the string.
+    */
+    for (int index = strlen(buffer) - 1; index >= 0; index--) {
+      if (isspace(buffer[index])) {
+        buffer[index] = '\0';
+      } else {
+        break;
+      }
+    }
+  }
 }
 
-
-
-int Read_Line(FileClass & file, char * buffer, int len, bool & eof)
-{
-	FileStraw fs(file);
-	return(Read_Line(fs, buffer, len, eof));
+int Read_Line(FileClass& file, char* buffer, int len, bool& eof) {
+  FileStraw fs(file);
+  return (Read_Line(fs, buffer, len, eof));
 }
 
+int Read_Line(Straw& file, char* buffer, int len, bool& eof) {
+  if (len == 0 || buffer == NULL) return (0);
 
-int Read_Line(Straw & file, char * buffer, int len, bool & eof)
-{
-	if (len == 0 || buffer == NULL) return(0);
+  int count = 0;
+  for (;;) {
+    char c;
+    if (file.Get(&c, sizeof(c)) != sizeof(c)) {
+      eof = true;
+      buffer[0] = '\0';
+      break;
+    }
 
-	int count = 0;
-	for (;;) {
-		char c;
-		if (file.Get(&c, sizeof(c)) != sizeof(c)) {
-			eof = true;
-			buffer[0] = '\0';
-			break;
-		}
+    if (c == '\x0A') break;
+    if (c != '\x0D' && count + 1 < len) {
+      buffer[count++] = c;
+    }
+  }
+  buffer[count] = '\0';
 
-		if (c == '\x0A') break;
-		if (c != '\x0D' && count+1 < len) {
-			buffer[count++] = c;
-		}
-	}
-	buffer[count] = '\0';
-
-	strtrim(buffer);
-	return(strlen(buffer));
+  strtrim(buffer);
+  return (strlen(buffer));
 }

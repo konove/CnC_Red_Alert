@@ -24,49 +24,40 @@
 #ifndef BIGCHECKBOX_H
 #define BIGCHECKBOX_H
 
-#include	"toggle.h"
+#include "toggle.h"
 
-#define BIGCHECK_OFFSETX	20
-#define BIGCHECK_OFFSETY	0
+#define BIGCHECK_OFFSETX 20
+#define BIGCHECK_OFFSETY 0
 
 //***********************************************************************************************
-class BigCheckBoxClass : public ToggleClass
-{
-public:
-	BigCheckBoxClass( unsigned id, int x, int y, int w, int h, const char* szCaptionIn, TextPrintType TextFlags, 
-							bool bInitiallyChecked = false ) :
-		ToggleClass( id, x, y, w, h ),
-		TextFlags( TextFlags )
-	{
-		szCaption = new char[ strlen( szCaptionIn ) + 1 ];
-		strcpy( szCaption, szCaptionIn );
-		if( bInitiallyChecked )
-			Turn_On();
-		IsToggleType = 1;
-	}
-	virtual ~BigCheckBoxClass()
-	{
-		delete [] szCaption;
-	}
+class BigCheckBoxClass : public ToggleClass {
+ public:
+  BigCheckBoxClass(unsigned id, int x, int y, int w, int h,
+                   const char* szCaptionIn, TextPrintType TextFlags,
+                   bool bInitiallyChecked = false)
+      : ToggleClass(id, x, y, w, h), TextFlags(TextFlags) {
+    szCaption = new char[strlen(szCaptionIn) + 1];
+    strcpy(szCaption, szCaptionIn);
+    if (bInitiallyChecked) Turn_On();
+    IsToggleType = 1;
+  }
+  virtual ~BigCheckBoxClass() { delete[] szCaption; }
 
-	virtual int Draw_Me(int forced=false);
-	virtual int Action(unsigned flags, KeyNumType & key);
+  virtual int Draw_Me(int forced = false);
+  virtual int Action(unsigned flags, KeyNumType& key);
 
-	bool	Toggle()
-	{
-		if( IsOn )
-		{
-			Turn_Off();
-			return false;
-		}
-		Turn_On();
-		return true;
-	}
+  bool Toggle() {
+    if (IsOn) {
+      Turn_Off();
+      return false;
+    }
+    Turn_On();
+    return true;
+  }
 
-protected:
-	TextPrintType	TextFlags;
-	char*			szCaption;
-
+ protected:
+  TextPrintType TextFlags;
+  char* szCaption;
 };
 
 #endif

@@ -46,9 +46,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Code ////////////////////////////////////////
+/////////////////////////////////// Code
+///////////////////////////////////////////
 
 /***************************************************************************
  * TC::TIMERCLASS -- Construct a timer class object.                       *
@@ -63,52 +63,43 @@
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-TimerClass::TimerClass(BaseTimerEnum timer, BOOL on)
-{
-	Accumulated = 0;
-	Started = 0;
+TimerClass::TimerClass(BaseTimerEnum timer, BOOL on) {
+  Accumulated = 0;
+  Started = 0;
 
-	TickType=timer;
+  TickType = timer;
 
-	if (on && TimerSystemOn) Start();
+  if (on && TimerSystemOn) Start();
 }
-
-
-
 
 /***********************************************************************************************
- * TC:Get_Ticks -- return the number of ticks on the system or user timers                     *
+ * TC:Get_Ticks -- return the number of ticks on the system or user timers *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   tick count                                                                        *
+ * OUTPUT:   tick count *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *              10/5/95 4:17PM ST : Created                                                    *
+ * HISTORY: * 10/5/95 4:17PM ST : Created *
  *=============================================================================================*/
 
-long TimerClass::Get_Ticks ( void )
+long TimerClass::Get_Ticks(void)
 
 {
-	if ( WindowsTimer ){
-		switch ( TickType ){
+  if (WindowsTimer) {
+    switch (TickType) {
+      case BT_SYSTEM:
+        return (WindowsTimer->Get_System_Tick_Count());
 
-		 	case BT_SYSTEM :
-				return ( WindowsTimer->Get_System_Tick_Count() );
-
-		 	case BT_USER :
-				return ( WindowsTimer->Get_User_Tick_Count() );
-
-		}
-	}
-	return 0;
+      case BT_USER:
+        return (WindowsTimer->Get_User_Tick_Count());
+    }
+  }
+  return 0;
 }
-
-
 
 /***************************************************************************
  * TIMERCLASS::TIME -- Get the current time of timer.                      *
@@ -124,16 +115,14 @@ long TimerClass::Get_Ticks ( void )
  * HISTORY:                                                                *
  *   05/03/1995 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Time(void)
-{
-	if (Started) {
-		long ticks = Get_Ticks();
-		Accumulated += ticks - (Started-1);
-		Started = ticks+1;
-	}
-	return(Accumulated);
+long TimerClass::Time(void) {
+  if (Started) {
+    long ticks = Get_Ticks();
+    Accumulated += ticks - (Started - 1);
+    Started = ticks + 1;
+  }
+  return (Accumulated);
 }
-
 
 /***************************************************************************
  * TC::STOP -- Stop the timer.                                             *
@@ -149,13 +138,11 @@ long TimerClass::Time(void)
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Stop(void)
-{
-	long time = Time();
-	Started = 0;
-	return(time);
+long TimerClass::Stop(void) {
+  long time = Time();
+  Started = 0;
+  return (time);
 }
-
 
 /***************************************************************************
  * TC::START -- Start a timer.                                             *
@@ -170,14 +157,12 @@ long TimerClass::Stop(void)
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Start(void)
-{
-	if (!Started) {
-		Started = Get_Ticks()+1;
-	}
-	return(Time());
+long TimerClass::Start(void) {
+  if (!Started) {
+    Started = Get_Ticks() + 1;
+  }
+  return (Time());
 }
-
 
 /***************************************************************************
  * TC::SET -- Set the time of a timer.                                     *
@@ -194,10 +179,9 @@ long TimerClass::Start(void)
  *   07/12/1994 SKB : Created.                                             *
  *   05/03/1995 SKB : If start return Start since it returns Time          *
  *=========================================================================*/
-long TimerClass::Set(long value, BOOL start)
-{
-	Started = 0;
-	Accumulated = value;
-	if (start) return (Start());
-	return(Time());
+long TimerClass::Set(long value, BOOL start) {
+  Started = 0;
+  Accumulated = value;
+  if (start) return (Start());
+  return (Time());
 }

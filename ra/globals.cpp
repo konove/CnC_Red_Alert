@@ -18,28 +18,30 @@
 
 /* $Header: /counterstrike/GLOBALS.CPP 2     3/10/97 6:22p Steve_tall $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : GLOBALS.CPP                                                  *
+ *                    File Name : GLOBALS.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : September 10, 1993                                           *
+ *                   Start Date : September 10, 1993 *
  *                                                                                             *
- *                  Last Update : September 10, 1993   [JLB]                                   *
+ *                  Last Update : September 10, 1993   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include "function.h"
 
 bool IsVQ640 = false;
 unsigned long GameVersion = 0;
 bool Debug_MotionCapture = false;
-bool Debug_Rotate = false;				// Rotation algorithm control.
+bool Debug_Rotate = false;  // Rotation algorithm control.
 bool Debug_Quiet = false;
 bool Debug_Cheat = false;
 bool Debug_Remap = false;
@@ -47,88 +49,114 @@ bool Debug_Icon = false;
 bool Debug_Flag = false;
 bool Debug_Lose = false;
 bool Debug_Win = false;
-bool Debug_Map = false;					// true = map editor mode
-bool Debug_Passable = false;			// true = show passable/impassable terrain
-bool Debug_Unshroud = false;			// true = hide the shroud
+bool Debug_Map = false;       // true = map editor mode
+bool Debug_Passable = false;  // true = show passable/impassable terrain
+bool Debug_Unshroud = false;  // true = hide the shroud
 bool Debug_Threat = false;
 bool Debug_Find_Path = false;
-bool Debug_Check_Map = false;			// true = validate the map each frame
+bool Debug_Check_Map = false;  // true = validate the map each frame
 bool Debug_Playtest = false;
 
-bool Debug_Heap_Dump = false;			// true = print the Heap Dump
-bool Debug_Smart_Print = false;		// true = print everything that calls Smart_Printf
-bool Debug_Trap_Check_Heap = false;	// true = check the Heap
-bool Debug_Modem_Dump = false;		// true = print the Modem Stuff
-bool Debug_Print_Events = false;		// true = print event & packet processing
+bool Debug_Heap_Dump = false;  // true = print the Heap Dump
+bool Debug_Smart_Print =
+    false;  // true = print everything that calls Smart_Printf
+bool Debug_Trap_Check_Heap = false;  // true = check the Heap
+bool Debug_Modem_Dump = false;       // true = print the Modem Stuff
+bool Debug_Print_Events = false;     // true = print event & packet processing
 
-TFixedIHeapClass<AircraftClass>		Aircraft;
-TFixedIHeapClass<AnimClass>			Anims;
-TFixedIHeapClass<BuildingClass>		Buildings;
-TFixedIHeapClass<BulletClass>			Bullets;
-TFixedIHeapClass<FactoryClass>		Factories;
-TFixedIHeapClass<HouseClass>			Houses;
-TFixedIHeapClass<InfantryClass>		Infantry;
-TFixedIHeapClass<OverlayClass>		Overlays;
-TFixedIHeapClass<SmudgeClass>			Smudges;
-TFixedIHeapClass<TeamClass>			Teams;
-TFixedIHeapClass<TeamTypeClass>		TeamTypes;
-TFixedIHeapClass<TemplateClass>		Templates;
-TFixedIHeapClass<TerrainClass>		Terrains;
-TFixedIHeapClass<TriggerClass>		Triggers;
-TFixedIHeapClass<UnitClass>			Units;
-TFixedIHeapClass<VesselClass>			Vessels;
-TFixedIHeapClass<TriggerTypeClass>	TriggerTypes;
+TFixedIHeapClass<AircraftClass> Aircraft;
+TFixedIHeapClass<AnimClass> Anims;
+TFixedIHeapClass<BuildingClass> Buildings;
+TFixedIHeapClass<BulletClass> Bullets;
+TFixedIHeapClass<FactoryClass> Factories;
+TFixedIHeapClass<HouseClass> Houses;
+TFixedIHeapClass<InfantryClass> Infantry;
+TFixedIHeapClass<OverlayClass> Overlays;
+TFixedIHeapClass<SmudgeClass> Smudges;
+TFixedIHeapClass<TeamClass> Teams;
+TFixedIHeapClass<TeamTypeClass> TeamTypes;
+TFixedIHeapClass<TemplateClass> Templates;
+TFixedIHeapClass<TerrainClass> Terrains;
+TFixedIHeapClass<TriggerClass> Triggers;
+TFixedIHeapClass<UnitClass> Units;
+TFixedIHeapClass<VesselClass> Vessels;
+TFixedIHeapClass<TriggerTypeClass> TriggerTypes;
 
-TFixedIHeapClass<HouseTypeClass>		HouseTypes;
-TFixedIHeapClass<BuildingTypeClass>	BuildingTypes;
-TFixedIHeapClass<AircraftTypeClass>	AircraftTypes;
-TFixedIHeapClass<InfantryTypeClass>	InfantryTypes;
-TFixedIHeapClass<BulletTypeClass>	BulletTypes;
-TFixedIHeapClass<AnimTypeClass>		AnimTypes;
-TFixedIHeapClass<UnitTypeClass>		UnitTypes;
-TFixedIHeapClass<VesselTypeClass>	VesselTypes;
-TFixedIHeapClass<TemplateTypeClass>	TemplateTypes;
-TFixedIHeapClass<TerrainTypeClass>	TerrainTypes;
-TFixedIHeapClass<OverlayTypeClass>	OverlayTypes;
-TFixedIHeapClass<SmudgeTypeClass>	SmudgeTypes;
-
+TFixedIHeapClass<HouseTypeClass> HouseTypes;
+TFixedIHeapClass<BuildingTypeClass> BuildingTypes;
+TFixedIHeapClass<AircraftTypeClass> AircraftTypes;
+TFixedIHeapClass<InfantryTypeClass> InfantryTypes;
+TFixedIHeapClass<BulletTypeClass> BulletTypes;
+TFixedIHeapClass<AnimTypeClass> AnimTypes;
+TFixedIHeapClass<UnitTypeClass> UnitTypes;
+TFixedIHeapClass<VesselTypeClass> VesselTypes;
+TFixedIHeapClass<TemplateTypeClass> TemplateTypes;
+TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
+TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
+TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 
 /*
 **	These are the instantiate static heap pointers for the various
 **	CCPtr class objects that are allowed to exist. If the linker generates
-**	an error about a missing heap pointer, then this indicates that CCPtr objects
-**	for that type are not allowed. For every case of a TFixedIHeap manager of
-**	game objects, then a CCPtr can be instantiated for it.
+**	an error about a missing heap pointer, then this indicates that CCPtr
+*objects *	for that type are not allowed. For every case of a TFixedIHeap
+*manager of *	game objects, then a CCPtr can be instantiated for it.
 */
-template<> FixedIHeapClass * CCPtr<AircraftClass>::Heap = &Aircraft;
-template<> FixedIHeapClass * CCPtr<AnimClass>::Heap = &Anims;
-template<> FixedIHeapClass * CCPtr<BuildingClass>::Heap = &Buildings;
-template<> FixedIHeapClass * CCPtr<BulletClass>::Heap = &Bullets;
-template<> FixedIHeapClass * CCPtr<FactoryClass>::Heap = &Factories;
-template<> FixedIHeapClass * CCPtr<HouseClass>::Heap = &Houses;
-template<> FixedIHeapClass * CCPtr<InfantryClass>::Heap = &Infantry;
-template<> FixedIHeapClass * CCPtr<OverlayClass>::Heap = &Overlays;
-template<> FixedIHeapClass * CCPtr<SmudgeClass>::Heap = &Smudges;
-template<> FixedIHeapClass * CCPtr<TeamClass>::Heap = &Teams;
-template<> FixedIHeapClass * CCPtr<TeamTypeClass>::Heap = &TeamTypes;
-template<> FixedIHeapClass * CCPtr<TemplateClass>::Heap = &Templates;
-template<> FixedIHeapClass * CCPtr<TerrainClass>::Heap = &Terrains;
-template<> FixedIHeapClass * CCPtr<TriggerClass>::Heap = &Triggers;
-template<> FixedIHeapClass * CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
+template <>
+FixedIHeapClass *CCPtr<AircraftClass>::Heap = &Aircraft;
+template <>
+FixedIHeapClass *CCPtr<AnimClass>::Heap = &Anims;
+template <>
+FixedIHeapClass *CCPtr<BuildingClass>::Heap = &Buildings;
+template <>
+FixedIHeapClass *CCPtr<BulletClass>::Heap = &Bullets;
+template <>
+FixedIHeapClass *CCPtr<FactoryClass>::Heap = &Factories;
+template <>
+FixedIHeapClass *CCPtr<HouseClass>::Heap = &Houses;
+template <>
+FixedIHeapClass *CCPtr<InfantryClass>::Heap = &Infantry;
+template <>
+FixedIHeapClass *CCPtr<OverlayClass>::Heap = &Overlays;
+template <>
+FixedIHeapClass *CCPtr<SmudgeClass>::Heap = &Smudges;
+template <>
+FixedIHeapClass *CCPtr<TeamClass>::Heap = &Teams;
+template <>
+FixedIHeapClass *CCPtr<TeamTypeClass>::Heap = &TeamTypes;
+template <>
+FixedIHeapClass *CCPtr<TemplateClass>::Heap = &Templates;
+template <>
+FixedIHeapClass *CCPtr<TerrainClass>::Heap = &Terrains;
+template <>
+FixedIHeapClass *CCPtr<TriggerClass>::Heap = &Triggers;
+template <>
+FixedIHeapClass *CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
 
-template<> FixedIHeapClass * CCPtr<HouseTypeClass>::Heap = &HouseTypes;
-template<> FixedIHeapClass * CCPtr<BuildingTypeClass>::Heap = &BuildingTypes;
-template<> FixedIHeapClass * CCPtr<AircraftTypeClass>::Heap = &AircraftTypes;
-template<> FixedIHeapClass * CCPtr<InfantryTypeClass>::Heap = &InfantryTypes;
-template<> FixedIHeapClass * CCPtr<BulletTypeClass>::Heap = &BulletTypes;
-template<> FixedIHeapClass * CCPtr<AnimTypeClass>::Heap = &AnimTypes;
-template<> FixedIHeapClass * CCPtr<UnitTypeClass>::Heap = &UnitTypes;
-template<> FixedIHeapClass * CCPtr<VesselTypeClass>::Heap = &VesselTypes;
-template<> FixedIHeapClass * CCPtr<TemplateTypeClass>::Heap = &TemplateTypes;
-template<> FixedIHeapClass * CCPtr<TerrainTypeClass>::Heap = &TerrainTypes;
-template<> FixedIHeapClass * CCPtr<OverlayTypeClass>::Heap = &OverlayTypes;
-template<> FixedIHeapClass * CCPtr<SmudgeTypeClass>::Heap = &SmudgeTypes;
-
+template <>
+FixedIHeapClass *CCPtr<HouseTypeClass>::Heap = &HouseTypes;
+template <>
+FixedIHeapClass *CCPtr<BuildingTypeClass>::Heap = &BuildingTypes;
+template <>
+FixedIHeapClass *CCPtr<AircraftTypeClass>::Heap = &AircraftTypes;
+template <>
+FixedIHeapClass *CCPtr<InfantryTypeClass>::Heap = &InfantryTypes;
+template <>
+FixedIHeapClass *CCPtr<BulletTypeClass>::Heap = &BulletTypes;
+template <>
+FixedIHeapClass *CCPtr<AnimTypeClass>::Heap = &AnimTypes;
+template <>
+FixedIHeapClass *CCPtr<UnitTypeClass>::Heap = &UnitTypes;
+template <>
+FixedIHeapClass *CCPtr<VesselTypeClass>::Heap = &VesselTypes;
+template <>
+FixedIHeapClass *CCPtr<TemplateTypeClass>::Heap = &TemplateTypes;
+template <>
+FixedIHeapClass *CCPtr<TerrainTypeClass>::Heap = &TerrainTypes;
+template <>
+FixedIHeapClass *CCPtr<OverlayTypeClass>::Heap = &OverlayTypes;
+template <>
+FixedIHeapClass *CCPtr<SmudgeTypeClass>::Heap = &SmudgeTypes;
 
 /* These variables are used to keep track of the slowest speed of a team */
 MPHType TeamMaxSpeed[10];
@@ -136,7 +164,6 @@ SpeedType TeamSpeed[10];
 bool FormMove;
 SpeedType FormSpeed;
 MPHType FormMaxSpeed;
-
 
 char _staging_buffer[32000];
 
@@ -151,11 +178,11 @@ bool SaveTanya;
 bool AntsEnabled = false;
 #endif
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
+#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 bool NewUnitsEnabled = false;
 bool SecretUnitsEnabled = false;
 int MTankDistance = 15;
-#ifdef FIXIT_CARRIER	//	checked - ajw 9/28/98
+#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
 int CarrierLaunchDelay = 60;
 #endif
 #endif
@@ -164,41 +191,41 @@ int NewINIFormat = 0;
 
 bool TimeQuake;
 
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
+#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 bool PendingTimeQuake;
 TARGET TimeQuakeCenter;
-fixed QuakeUnitDamage=0x300;
-fixed QuakeBuildingDamage=0x300;
-int QuakeInfantryDamage=25;
+fixed QuakeUnitDamage = 0x300;
+fixed QuakeBuildingDamage = 0x300;
+int QuakeInfantryDamage = 25;
 int QuakeDelay;
-fixed ChronoTankDuration=0x300;	// chrono override for chrono tanks
-#ifdef FIXIT_ENGINEER	//	checked - ajw 9/28/98
-fixed EngineerDamage=0x55;			// Amount of damage an engineer does
-fixed EngineerCaptureLevel=0x40;	// Building damage level before engineer can capture
+fixed ChronoTankDuration = 0x300;  // chrono override for chrono tanks
+#ifdef FIXIT_ENGINEER              //	checked - ajw 9/28/98
+fixed EngineerDamage = 0x55;       // Amount of damage an engineer does
+fixed EngineerCaptureLevel =
+    0x40;  // Building damage level before engineer can capture
 #endif
 #endif
 
 #ifdef WIN32
-unsigned short			Hard_Error_Occured = 0;
-WWMouseClass *			WWMouse = NULL;
+unsigned short Hard_Error_Occured = 0;
+WWMouseClass *WWMouse = NULL;
 #ifndef LORES
-GraphicBufferClass	SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void*)NULL);
+GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)NULL);
 #endif
-WinTimerClass *		WindowsTimer=NULL;
+WinTimerClass *WindowsTimer = NULL;
 #ifdef LORES
-int						ScreenWidth=320;
-int						ScreenHeight=200;
+int ScreenWidth = 320;
+int ScreenHeight = 200;
 #else
-int						ScreenWidth=640;
-int						ScreenHeight=400;
+int ScreenWidth = 640;
+int ScreenHeight = 400;
 #endif
-GraphicBufferClass	ModeXBuff;
-bool						InMovie = FALSE;	//Are we currently playing a VQ movie?
+GraphicBufferClass ModeXBuff;
+bool InMovie = FALSE;  // Are we currently playing a VQ movie?
 #ifndef PORTABLE
-HANDLE					hInstance;
+HANDLE hInstance;
 #endif
-int						AllDone;
-
+int AllDone;
 
 /***************************************************************************
 **	This is true if the game is the currently in focus windows app
@@ -207,7 +234,6 @@ int						AllDone;
 bool GameInFocus = false;
 
 #endif
-
 
 /***************************************************************************
 **	Encryption keys.
@@ -221,31 +247,29 @@ PKey SlowKey;
 /***************************************************************************
 **	This is where the name overrides for the units will reside.
 */
-char const * NameOverride[25];
+char const *NameOverride[25];
 int NameIDOverride[25];
 #endif
 
 /***************************************************************************
-**	These are the mission control structures. They hold the information about
-**	how the missions should behave in the system.
+**	These are the mission control structures. They hold the information
+*about *	how the missions should behave in the system.
 */
 MissionControlClass MissionControl[MISSION_COUNT];
-
 
 /***************************************************************************
 **	There are various tutorial messages that can appear in the game. These
 **	are called upon by number and pointed to by this array.
 */
-char const * TutorialTextData;
+char const *TutorialTextData;
 uint16_t TutorialTextOffsets[225];
 
-
 /***************************************************************************
-**	This holds the rules database. The rules database won't change during the
-**	program's run, but may need to be referenced intermitently.
+**	This holds the rules database. The rules database won't change during
+*the *	program's run, but may need to be referenced intermitently.
 */
 CCINIClass RuleINI;
-#ifdef FIXIT_CSII	//	checked - ajw 9/28/98
+#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 CCINIClass AftermathINI;
 #endif
 
@@ -253,21 +277,18 @@ CCINIClass AftermathINI;
 **	This points to the benchmark objects that are allocated only if the
 **	machine is running on a Pentium and this is a debug version.
 */
-Benchmark * Benches;
-
+Benchmark *Benches;
 
 /***************************************************************************
 **	General rules that control the game.
 */
 RulesClass Rule;
 
-
 /***************************************************************************
 ** All keyboard input is routed through the object pointed to by this
 **	keyboard class pointer.
 */
-KeyboardClass * Keyboard;
-
+KeyboardClass *Keyboard;
 
 /***************************************************************************
 **	Remap control array. This is used to hold the remap
@@ -287,7 +308,6 @@ RemapControlType MetalScheme;
 */
 RemapControlType GreyScheme;
 
-
 /***************************************************************************
 **	This is the source of the random numbers used in the game. This controls
 **	the game logic and thus must be in sync with any networked machines.
@@ -295,38 +315,34 @@ RemapControlType GreyScheme;
 RandomClass NonCriticalRandomNumber;
 RandomStraw CryptRandom;
 
-
 /***************************************************************************
-**	This is a list of all selected objects (for this map). The support functions
-**	are used to control access to this list. Do not modify it directly.
+**	This is a list of all selected objects (for this map). The support
+*functions *	are used to control access to this list. Do not modify it
+*directly.
 */
 DynamicVectorClass<ObjectClass *> CurrentObject;
-
 
 /***************************************************************************
 **	This is the game version.
 */
 VersionClass VerNum;
 
-
 /***************************************************************************
-**	This is the VQ animation controller structure. It is filled in by reading
-**	the PLAYER.INI and overridden through program control.
+**	This is the VQ animation controller structure. It is filled in by
+*reading *	the PLAYER.INI and overridden through program control.
 */
 VQAConfig AnimControl;
 
-int PreserveVQAScreen;			// Used for screen mode transition control.
-bool BreakoutAllowed = true;	// "true" if aborting of movies is allowed.
-bool Brokeout;						// Was the movie broken out of?
-bool SlowPalette = false;		// Slow palette flag set?
-
+int PreserveVQAScreen;        // Used for screen mode transition control.
+bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
+bool Brokeout;                // Was the movie broken out of?
+bool SlowPalette = false;     // Slow palette flag set?
 
 /***************************************************************************
-**	These are the movie names to use for mission briefing, winning, and losing
-**	sequences. They are read from the INI file.
+**	These are the movie names to use for mission briefing, winning, and
+*losing *	sequences. They are read from the INI file.
 */
 ScenarioClass Scen;
-
 
 /***************************************************************************
 **	This is the pending speech sample to play. This sample will be played
@@ -334,13 +350,11 @@ ScenarioClass Scen;
 */
 VoxType SpeakQueue = VOX_NONE;
 
-
 /***************************************************************************
 **	This records if the score (music) file is present. If not, then much of
 **	the streaming score system can be disabled.
 */
 bool ScoresPresent;
-
 
 /***************************************************************************
 **	This flag will control whether there is a response from game units.
@@ -349,14 +363,12 @@ bool ScoresPresent;
 */
 bool AllowVoice = true;
 
-
 /***************************************************************************
 **	This is the current frame number. This number is guaranteed to count
 **	upward at the rate of one per game logic process. The target rate is 15
 **	per second. This value is saved and restored with the saved game.
 */
 long Frame = 0;
-
 
 /***************************************************************************
 **	These globals are constantly monitored to determine if the player
@@ -373,23 +385,20 @@ bool PlayerRestarts;
 */
 bool PlayerAborts;
 
-
 /***************************************************************************
 **	This is the pointer for the speech staging buffer. This buffer is used
 **	to hold the currently speaking voice data. Since only one speech sample
 **	is played at a time, this buffer is only as big as the largest speech
 **	sample that can be played.
 */
-void * SpeechBuffer[2];
+void *SpeechBuffer[2];
 VoxType SpeechRecord[2];
-
 
 /***************************************************************************
 **	The theater specific mixfiles are cached into the buffer pointed to by
 **	this global.
 */
-Buffer * TheaterBuffer;
-
+Buffer *TheaterBuffer;
 
 /***************************************************************************
 **	This is a running accumulation of the number of ticks that were unused.
@@ -397,30 +406,27 @@ Buffer * TheaterBuffer;
 **	histogram of game performance.
 */
 long SpareTicks;
-long PathCount;			// Number of findpaths called.
-long CellCount;			// Number of cells redrawn.
-long TargetScan;			// Number of target scans.
-long SidebarRedraws;		// Number of sidebar redraws.
-
+long PathCount;       // Number of findpaths called.
+long CellCount;       // Number of cells redrawn.
+long TargetScan;      // Number of target scans.
+long SidebarRedraws;  // Number of sidebar redraws.
 
 /***************************************************************************
 **	This is the monochrome debug page array. The various monochrome data
 **	screens are located here.
 */
 MonoClass MonoArray[DMONO_COUNT];
-DMonoType MonoPage = DMONO_STRESS;	// The current page.
-
+DMonoType MonoPage = DMONO_STRESS;  // The current page.
 
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MFCD * TheaterData = 0;
-MFCD * MoviesMix = 0;
-MFCD * GeneralMix = 0;
-MFCD * ScoreMix = 0;
-MFCD * MainMix = 0;
-MFCD * ConquerMix = 0;
-
+MFCD *TheaterData = 0;
+MFCD *MoviesMix = 0;
+MFCD *GeneralMix = 0;
+MFCD *ScoreMix = 0;
+MFCD *MainMix = 0;
+MFCD *ConquerMix = 0;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
@@ -428,19 +434,16 @@ MFCD * ConquerMix = 0;
 */
 GameOptionsClass Options;
 
-
 /***************************************************************************
 **	Logic processing is controlled by this element. It handles both graphic
 **	and AI logic.
 */
 LogicClass Logic;
 
-
 /***************************************************************************
 **	This handles the background music.
 */
 ThemeClass Theme;
-
 
 /***************************************************************************
 **	This is the main control class for the map.
@@ -451,12 +454,10 @@ MapEditClass Map;
 MouseClass Map;
 #endif
 
-
 /**************************************************************************
 **	The running game score is handled by this class (and member functions).
 */
 ScoreClass Score;
-
 
 /***************************************************************************
 **	The running credit display is controlled by this class (and member
@@ -464,25 +465,21 @@ ScoreClass Score;
 */
 CreditClass CreditDisplay;
 
-
 /**************************************************************************
 ** This class records the special command override options that C&C
 **	supports.
 */
 SpecialClass Special;
 
-
-bool PassedProximity;	// used in display.cpp
-
+bool PassedProximity;  // used in display.cpp
 
 /***************************************************************************
 **	This is the scenario data for the currently loaded scenario.
 ** These variables should all be set together.
 */
-HousesType Whom;							// Initial command line house choice.
+HousesType Whom;  // Initial command line house choice.
 int ScenarioInit;
 bool SpecialFlag = false;
-
 
 /***************************************************************************
 ** This value tells the sidebar what items it's allowed to add.  The
@@ -490,22 +487,19 @@ bool SpecialFlag = false;
 **	displayed value for tech level in the multiplay dialogs. It remaps to
 **	the in-game rules.ini tech levels.
 */
-int BuildLevel = 10;				// Buildable level (1 = simplest)
-
+int BuildLevel = 10;  // Buildable level (1 = simplest)
 
 /***************************************************************************
 **	The various tutor and dialog messages are located in the data block
 **	referenced by this pointer.
 */
-char const * SystemStrings;
-char const * DebugStrings;
-
+char const *SystemStrings;
+char const *DebugStrings;
 
 /***************************************************************************
 **	The game plays as long as this var is true.
 */
 bool GameActive;
-
 
 /***************************************************************************
 **	This is a scratch variable that is used to when a reference is needed to
@@ -514,7 +508,6 @@ bool GameActive;
 */
 long LParam;
 
-
 #ifdef SCENARIO_EDITOR
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor
@@ -522,30 +515,27 @@ long LParam;
 CELL CurrentCell = 0;
 #endif
 
-
 /***************************************************************************
 **	Most of the text in the game will use the six point font. These are the
 **	pointers to the fonts. If it is NULL, then the font hasn't been loaded
 **	yet.
 */
-void const * Metal12FontPtr;	//Font for use on in-game tabs in hires
-void const * MapFontPtr;		// Standard very small font.
-void const * TypeFontPtr;		// Teletype font for mission briefings.
-void const * Font3Ptr;			// Standard very small font.
-void const * Font6Ptr;			// Standard small font.
-void const * EditorFont;		// Font used for scenario editor.
-void const * Font8Ptr;			// 8 point proportional.
-void const * FontLEDPtr;		// LED fixed point font.
-void const * VCRFontPtr;		// VCR font pointer.
-void const * ScoreFontPtr;		// font for score & map selection screens
-void const * GradFont6Ptr;		// gradient 6 point font pointer.
-
+void const *Metal12FontPtr;  // Font for use on in-game tabs in hires
+void const *MapFontPtr;      // Standard very small font.
+void const *TypeFontPtr;     // Teletype font for mission briefings.
+void const *Font3Ptr;        // Standard very small font.
+void const *Font6Ptr;        // Standard small font.
+void const *EditorFont;      // Font used for scenario editor.
+void const *Font8Ptr;        // 8 point proportional.
+void const *FontLEDPtr;      // LED fixed point font.
+void const *VCRFontPtr;      // VCR font pointer.
+void const *ScoreFontPtr;    // font for score & map selection screens
+void const *GradFont6Ptr;    // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.
 */
-HouseClass * PlayerPtr;
-
+HouseClass *PlayerPtr;
 
 /***************************************************************************
 **	Special palettes for MCGA mode goes here. These palette buffers are used
@@ -554,17 +544,18 @@ HouseClass * PlayerPtr;
 */
 PaletteClass CCPalette;
 PaletteClass GamePalette;
-//PaletteClass InGamePalette;
+// PaletteClass InGamePalette;
 PaletteClass BlackPalette(RGBClass(0, 0, 0));
-PaletteClass WhitePalette(RGBClass(RGBClass::MAX_VALUE, RGBClass::MAX_VALUE, RGBClass::MAX_VALUE));
+PaletteClass WhitePalette(RGBClass(RGBClass::MAX_VALUE, RGBClass::MAX_VALUE,
+                                   RGBClass::MAX_VALUE));
 PaletteClass OriginalPalette;
 PaletteClass ScorePalette;
 
-
 /***************************************************************************
-**	These are the event queues. One is for holding events until they are ready to be
-**	sent to the remote computer for processing. The other list is for incoming events
-**	that need to be executed when the correct frame has been reached.
+**	These are the event queues. One is for holding events until they are
+*ready to be *	sent to the remote computer for processing. The other list is
+*for incoming events *	that need to be executed when the correct frame has been
+*reached.
 */
 QueueClass<EventClass, MAX_EVENTS> OutList;
 QueueClass<EventClass, (MAX_EVENTS * 64)> DoList;
@@ -572,7 +563,6 @@ QueueClass<EventClass, (MAX_EVENTS * 64)> DoList;
 #ifdef MIRROR_QUEUE
 QueueClass<EventClass, (MAX_EVENTS * 64)> MirrorList;
 #endif
-
 
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
@@ -583,20 +573,17 @@ int MapTriggerID;
 DynamicVectorClass<TriggerClass *> LogicTriggers;
 int LogicTriggerID;
 
-
 /***************************************************************************
 **	This is the list of BuildingTypes that define the AI's base.
 */
 BaseClass Base;
-
 
 /***************************************************************************
 **	This is the list of carry over objects. These objects are part of the
 **	pseudo saved game that might be carried along with the current saved
 **	game.
 */
-CarryoverClass * Carryover;
-
+CarryoverClass *Carryover;
 
 /***************************************************************************
 ** This value is computed every time a new scenario is loaded; it's a
@@ -604,12 +591,11 @@ CarryoverClass * Carryover;
 */
 unsigned long ScenarioCRC;
 
-
 /***************************************************************************
 ** This class manages data specific to multiplayer games.
 */
 SessionClass Session;
-#if(TIMING_FIX)
+#if (TIMING_FIX)
 //
 // These values store the min & max frame #'s for when MaxAhead >>increases<<.
 // If MaxAhead increases, and the other systems free-run to the new MaxAhead
@@ -626,48 +612,49 @@ int NewMaxAheadFrame2;
 #endif
 
 #ifdef FIXIT_VERSION_3
-bool	bAftermathMultiplayer;		//	Is multiplayer game being played with Aftermath rules?
+bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
+                             //rules?
 #else
-unsigned long 	PlayingAgainstVersion;		// Negotiated version number
-bool				Version107InMix;				// Is there a v1.07 in the game
+unsigned long PlayingAgainstVersion;  // Negotiated version number
+bool Version107InMix;                 // Is there a v1.07 in the game
 #endif
 
 /***************************************************************************
 **	This is the null modem manager class.  Declaring this class doesn't
 ** perform any allocations;
 */
-NullModemClass NullModem (
-   16,											// number of send entries
-	16,											// number of receive entries
-	(MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) ) * sizeof(EventClass) + sizeof( CommHeaderType ),
-	0x1234);										// Magic number must have each digit unique
-													// and different from the queue magic number
-
-
+NullModemClass NullModem(16,  // number of send entries
+                         16,  // number of receive entries
+                         (MAX_SERIAL_PACKET_SIZE / sizeof(EventClass)) *
+                                 sizeof(EventClass) +
+                             sizeof(CommHeaderType),
+                         0x1234);  // Magic number must have each digit unique
+                                   // and different from the queue magic number
 
 /***************************************************************************
 **	This is the network IPX manager class.  It handles multiple remote
 ** connections.  Declaring this class doesn't perform any allocations;
 ** the class itself is 140 bytes.
 */
-//IPXManagerClass Ipx (
-//	MAX (sizeof (GlobalPacketType), sizeof(RemoteFileTransferType)),		// size of Global Channel packets
-//	((546 - sizeof(CommHeaderType)) / sizeof(EventClass) ) * sizeof(EventClass),
-//	10, 													// # entries in Global Queue
-//	8, 													// # entries in Private Queues
-//	VIRGIN_SOCKET, 									// Socket ID #
-//	IPXGlobalConnClass::COMMAND_AND_CONQUER0);// Product ID #
+// IPXManagerClass Ipx (
+//	MAX (sizeof (GlobalPacketType), sizeof(RemoteFileTransferType)),
+//// size of Global Channel packets
+//	((546 - sizeof(CommHeaderType)) / sizeof(EventClass) ) *
+//sizeof(EventClass), 	10,
+//// # entries in Global Queue 	8,
+//// # entries in Private Queues 	VIRGIN_SOCKET,
+//// Socket ID # 	IPXGlobalConnClass::COMMAND_AND_CONQUER0);// Product ID #
 
-IPXManagerClass Ipx (
-	MAX (sizeof (GlobalPacketType), sizeof(RemoteFileTransferType)),		// size of Global Channel packets
-	((546 - sizeof(CommHeaderType)) / sizeof(EventClass) ) * sizeof(EventClass),
-	160, 													// # entries in Global Queue
-	32, 													// # entries in Private Queues
-	VIRGIN_SOCKET, 									// Socket ID #
-	IPXGlobalConnClass::COMMAND_AND_CONQUER0);// Product ID #
+IPXManagerClass Ipx(
+    MAX(sizeof(GlobalPacketType),
+        sizeof(RemoteFileTransferType)),  // size of Global Channel packets
+    ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass),
+    160,                                        // # entries in Global Queue
+    32,                                         // # entries in Private Queues
+    VIRGIN_SOCKET,                              // Socket ID #
+    IPXGlobalConnClass::COMMAND_AND_CONQUER0);  // Product ID #
 
-
-#if(TEN)
+#if (TEN)
 /***************************************************************************
 ** This is the connection manager for Ten.  Special Ten notes:
 ** - TEN connection ID's are equal to the HousesType for that player.
@@ -678,8 +665,7 @@ TenConnManClass *Ten = NULL;
 
 #endif
 
-
-#if(MPATH)
+#if (MPATH)
 /***************************************************************************
 ** This is the connection manager for Ten.  Special Ten notes:
 ** - MPATH connection ID's are equal to the HousesType for that player.
@@ -690,13 +676,11 @@ MPlayerManClass *MPath = NULL;
 
 #endif
 
-
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for
 ** multiplayer games.
 */
 int Seed = 0;
-
 
 /***************************************************************************
 ** If this value is non-zero, use it as the random # seed instead; this should
@@ -705,66 +689,63 @@ int Seed = 0;
 int CustomSeed = 0;
 
 int WindowList[][8] = {
-/* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor x, cursor y */
+    /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor
+       x, cursor y */
 
-	/* do not change the first 2 entries!! they are necc. to the system */
+    /* do not change the first 2 entries!! they are necc. to the system */
 
-	{0,0,40*8*RESFACTOR,200*RESFACTOR,WHITE,BLACK,0,0},	/* screen window */
-	{1*8,75,38*8,100,WHITE,BLACK,0,0},	/* DOS Error window */
+    {0, 0, 40 * 8 * RESFACTOR, 200 * RESFACTOR, WHITE, BLACK, 0,
+     0},                                          /* screen window */
+    {1 * 8, 75, 38 * 8, 100, WHITE, BLACK, 0, 0}, /* DOS Error window */
 
-	// Tactical map.
-	{0, 0, 40*8*RESFACTOR, 200*RESFACTOR, WHITE,LTGREY,0,0},
+    // Tactical map.
+    {0, 0, 40 * 8 * RESFACTOR, 200 * RESFACTOR, WHITE, LTGREY, 0, 0},
 
-	// Initial menu window.
-	{12*8, 199-42, 16*8, 42, LTGREY, DKGREY, 0, 0},
+    // Initial menu window.
+    {12 * 8, 199 - 42, 16 * 8, 42, LTGREY, DKGREY, 0, 0},
 
-	// Sidebar clipping window.
-	{0,0,0,0,0,0,0,0},
+    // Sidebar clipping window.
+    {0, 0, 0, 0, 0, 0, 0, 0},
 
-	// Scenario editor window.
-	{5*8, 30, 30*8, 140, 0, 0, 0, 0},
+    // Scenario editor window.
+    {5 * 8, 30, 30 * 8, 140, 0, 0, 0, 0},
 
-	// Partial object draw sub-window.
-	{0,0,0,0,WHITE,BLACK,0,0}
-};
-
+    // Partial object draw sub-window.
+    {0, 0, 0, 0, WHITE, BLACK, 0, 0}};
 
 /* X,Y,Item Width,Items High,Selected,Norm Color,Sel Color,zero 	*/
-int MenuList[][8]={
-		{1, 3, 12, 3, 0, WHITE, PINK, 0},
+int MenuList[][8] = {
+    {1, 3, 12, 3, 0, WHITE, PINK, 0},
 };
 
-
 #ifdef WIN32
-GraphicBufferClass	VisiblePage;
-GraphicBufferClass	HiddenPage;
-GraphicViewPortClass	SeenBuff(&VisiblePage, 0, 0, 640, 480);
-GraphicViewPortClass	HidPage(&HiddenPage, 0, 0, 640, 480);
+GraphicBufferClass VisiblePage;
+GraphicBufferClass HiddenPage;
+GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
+GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 #else
-GraphicBufferClass	HidPage(DEFAULT_SCREEN_WIDTH, 201, (void*)NULL);
-GraphicBufferClass	SeenBuff(320, 200, (void *)0xA0000L);
-VideoBufferClass		SeenPage;
-GraphicBufferClass & VisiblePage = SeenBuff;
+GraphicBufferClass HidPage(DEFAULT_SCREEN_WIDTH, 201, (void *)NULL);
+GraphicBufferClass SeenBuff(320, 200, (void *)0xA0000L);
+VideoBufferClass SeenPage;
+GraphicBufferClass &VisiblePage = SeenBuff;
 #endif
-
 
 #ifdef WIN32
 #else
 #endif
 
-int 						SoundOn;
+int SoundOn;
 CDTimerClass<SystemTimerClass> FrameTimer;
 CDTimerClass<SystemTimerClass> CountDownTimer;
 
 NewConfigType NewConfig;
-TheaterType LastTheater = THEATER_NONE;	//Lets us know when theater type changes.
-
+TheaterType LastTheater =
+    THEATER_NONE;  // Lets us know when theater type changes.
 
 /***************************************************************************
 **	This flag is for popping up dialogs that call the main loop.
 */
 SpecialDialogType SpecialDialog = SDLG_NONE;
-
 
 int RequiredCD = -1;
 int CurrentCD = -1;
@@ -774,16 +755,14 @@ int MouseInstalled;
 // Variables for helping track how much time goes bye in routines
 //
 int LogLevel = 0;
-unsigned long LogLevelTime[ MAX_LOG_LEVEL ] = { 0 };
+unsigned long LogLevelTime[MAX_LOG_LEVEL] = {0};
 unsigned long LogLastTime = 0;
-bool LogDump_Print = false;		// true = print the Log time Stuff
-
+bool LogDump_Print = false;  // true = print the Log time Stuff
 
 /***************************************************************************
 ** Tick Count global timer object.
 */
 TTimerClass<SystemTimerClass> TickCount = 0;
-
 
 /***************************************************************************
 **  Win32 specific globals
@@ -794,22 +773,22 @@ bool InDebugger = false;
 bool ReadyToQuit = false;
 
 #else
-bool IsTheaterShape = false;	// must be defined only if not Win32
-#endif	//WIN32
+bool IsTheaterShape = false;  // must be defined only if not Win32
+#endif  // WIN32
 
-GetCDClass		CDList;
+GetCDClass CDList;
 int UnitBuildPenalty = 100;
 
-#ifdef MPEGMOVIE // Denzil 6/15/98
+#ifdef MPEGMOVIE  // Denzil 6/15/98
 #ifdef MCIMPEG
 #include "mcimovie.h"
-MCIMovie* MciMovie = NULL;
+MCIMovie *MciMovie = NULL;
 #endif
 
 #include "mpgset.h"
-MPGSettings* MpgSettings = NULL;
+MPGSettings *MpgSettings = NULL;
 #endif
 
-#ifdef FIXIT_VERSION_3			//	For endgame auto-sonar pulse.
+#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
 bool bAutoSonarPulse = false;
 #endif

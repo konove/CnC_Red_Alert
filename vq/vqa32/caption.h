@@ -19,28 +19,27 @@
 #ifndef VQACAPTION_H
 #define VQACAPTION_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* PROJECT
-*     VQA player library (32 bit protected mode)
-*
-* FILE
-*     caption.h
-*
-* DESCRIPTION
-*     Text caption definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     July 26, 1995
-*
-****************************************************************************/
-
+ *
+ *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * PROJECT
+ *     VQA player library (32 bit protected mode)
+ *
+ * FILE
+ *     caption.h
+ *
+ * DESCRIPTION
+ *     Text caption definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     July 26, 1995
+ *
+ ****************************************************************************/
 
 /*---------------------------------------------------------------------------
  * STRUCTURES AND RELATED DEFINITIONS
@@ -59,21 +58,20 @@
  * BoundH  - Bounding height of text.
  */
 typedef struct _CaptionNode {
-	struct _CaptionNode *Succ;
-	struct _CaptionNode *Pred;
-	unsigned short      Flags;
-	CaptionText         *Captext;
-	char                *Char;
-	unsigned short      CurX;
-	unsigned short      CurY;
-	unsigned short      BoundW;
-	unsigned short      BoundH;
+  struct _CaptionNode *Succ;
+  struct _CaptionNode *Pred;
+  unsigned short Flags;
+  CaptionText *Captext;
+  char *Char;
+  unsigned short CurX;
+  unsigned short CurY;
+  unsigned short BoundW;
+  unsigned short BoundH;
 } CaptionNode;
 
 /* CaptionNode flag definitions. */
-#define CNB_USED 0  /* This node is being used. */
-#define CNF_USED (1<<CNB_USED)
-
+#define CNB_USED 0 /* This node is being used. */
+#define CNF_USED (1 << CNB_USED)
 
 /* CaptionList: Double linked list of outstanding captions to process.
  *
@@ -82,11 +80,10 @@ typedef struct _CaptionNode {
  * TailPred - Pointer to the last node in the list.
  */
 typedef struct _CaptionList {
-	CaptionNode *Head;
-	CaptionNode *Tail;
-	CaptionNode *TailPred;
+  CaptionNode *Head;
+  CaptionNode *Tail;
+  CaptionNode *TailPred;
 } CaptionList;
-
 
 /* CaptionInfo:
  *
@@ -100,14 +97,13 @@ typedef struct _CaptionList {
  * Buffer - Caption chunk buffer.
  */
 typedef struct _CaptionInfo {
-	CaptionText    *Next;
-	CaptionList    List;
-	void           *Font;
-	char           FontHeight;
-	char           FontWidth;
-	void           *Buffer;
+  CaptionText *Next;
+  CaptionList List;
+  void *Font;
+  char FontHeight;
+  char FontWidth;
+  void *Buffer;
 } CaptionInfo;
-
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
@@ -118,4 +114,3 @@ void CloseCaptions(CaptionInfo *cap);
 void DoCaptions(CaptionInfo *cap, unsigned long frame);
 
 #endif /* VQACAPTION_H */
-

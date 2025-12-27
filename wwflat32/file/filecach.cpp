@@ -39,7 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #ifndef WWSTD_H
 #include <wwstd.h>
-#endif	   
+#endif
 
 #ifndef _FILE_H
 #include "_file.h"
@@ -55,10 +55,7 @@
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-
-
 
 /***************************************************************************
  * UNFRAGMENT_FILE_CACHE -- Does a garbage collection on the file heap.    *
@@ -72,53 +69,45 @@
  * HISTORY:                                                                *
  *   04/18/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID Unfragment_File_Cache(VOID)
-{
-	FileDataType	*filedata;
-	FileDataType	*parent;
-	UWORD				idx;
+VOID Unfragment_File_Cache(VOID) {
+  FileDataType *filedata;
+  FileDataType *parent;
+  UWORD idx;
 
+  // Let the memory system clean up the file heap.
+  Mem_Cleanup(FileCacheHeap);
 
-	// Let the memory system clean up the file heap.
-	Mem_Cleanup(FileCacheHeap);
+  // Now get our pointers back.
+  // Start after the parent PAK files since we will need to check our pointers
+  // with them.
+  filedata = &FileDataPtr[NumPAKFiles];
+  for (idx = NumPAKFiles; idx < NumPAKFiles; idx++, filedata++) {
+    while (filedata->Name) {
+      // Only process files that are in the file cache.
+      if (filedata->Ptr) {
+        // Is a inner PAK file?
+        if (filedata->Flag & FILEF_PACKED) {
+          parent = &FileDataPtr[filedata->Disk];
 
-	// Now get our pointers back.
-	// Start after the parent PAK files since we will need to check our pointers
-	// with them.
-	filedata = &FileDataPtr[NumPAKFiles];
-	for (idx = NumPAKFiles; idx < NumPAKFiles; idx++, filedata++) {
-	while (filedata->Name) {
+          // Is it just a copied pointer of the parent?
+          if (parent->Ptr == filedata->Ptr) {
+            filedata->Ptr = Mem_Find(FileCacheHeap, filedata->Disk);
+          } else
+            filedata->Ptr = Mem_Find(FileCacheHeap, idx);
+        }
+      } else {
+        filedata->Ptr = Mem_Find(FileCacheHeap, idx);
+      }
+    }
+  }
 
-		// Only process files that are in the file cache.
-		if (filedata->Ptr) {
-
-			// Is a inner PAK file?
-			if (filedata->Flag & FILEF_PACKED) {
-
-				parent = &FileDataPtr[filedata->Disk];
-
-				// Is it just a copied pointer of the parent?
-				if (parent->Ptr == filedata->Ptr) {	
-					filedata->Ptr = Mem_Find(FileCacheHeap, filedata->Disk);
-				}
-				else 
-					filedata->Ptr = Mem_Find(FileCacheHeap, idx);
-				}
-			}
-			else {
-			 	filedata->Ptr = Mem_Find(FileCacheHeap, idx);
-			}
-		}
-	}
-
-	// Now that the children have been taken care of, let us do the parents.
-	for (filedata = FileDataPtr, idx = 0; idx < NumPAKFiles; idx++, filedata++) {
-
-		// Only process files that are in the file cache.
-		if (filedata->Ptr) {
-		 	filedata->Ptr = Mem_Find(FileCacheHeap, idx);
-		}
-	}
+  // Now that the children have been taken care of, let us do the parents.
+  for (filedata = FileDataPtr, idx = 0; idx < NumPAKFiles; idx++, filedata++) {
+    // Only process files that are in the file cache.
+    if (filedata->Ptr) {
+      filedata->Ptr = Mem_Find(FileCacheHeap, idx);
+    }
+  }
 }
 
 /***************************************************************************
@@ -133,39 +122,38 @@ VOID Unfragment_File_Cache(VOID)
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-BOOL Make_File_Resident(BYTE const *filename)
-{
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	FileDataType		hold;				// Hold buffer for record (DO NOT ACCESS DIRECTLY)
-	WORD					fileindex;
-	WORD					oldflag;
-	WORD					handle;
+BOOL Make_File_Resident(BYTE const *filename) {
+  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType hold;       // Hold buffer for record (DO NOT ACCESS DIRECTLY)
+  WORD fileindex;
+  WORD oldflag;
+  WORD handle;
 
-	fileindex = Find_File_Index(filename);
+  fileindex = Find_File_Index(filename);
 
-	//	if the file is not in the table, we can't make it resident
-	if (fileindex == ERROR) return(FALSE);
+  //	if the file is not in the table, we can't make it resident
+  if (fileindex == ERROR) return (FALSE);
 
-	// Get a pointer for quicker pointer action.
-	filedata = &FileDataPtr[fileindex];
+  // Get a pointer for quicker pointer action.
+  filedata = &FileDataPtr[fileindex];
 
-	// Change the flags for a moment.
-	oldflag = filedata->Flag;
-	filedata->Flag |= FILEF_RESIDENT;
-	filedata->Flag &= ~FILEF_FLUSH;
+  // Change the flags for a moment.
+  oldflag = filedata->Flag;
+  filedata->Flag |= FILEF_RESIDENT;
+  filedata->Flag &= ~FILEF_FLUSH;
 
-	// Make the file resident.
-	handle = Open_File(filename, READ);
-	Close_File(handle);
+  // Make the file resident.
+  handle = Open_File(filename, READ);
+  Close_File(handle);
 
-	// Set flags back to normal.
-	filedata->Flag = oldflag;
+  // Set flags back to normal.
+  filedata->Flag = oldflag;
 
-	return(TRUE);
+  return (TRUE);
 }
 
 /***************************************************************************
- * Flush_Unused_File_Cache -- Flushes the file cache of any non opened files.     *
+ * Flush_Unused_File_Cache -- Flushes the file cache of any non opened files. *
  *                                                                         *
  * INPUT:     WORD flush_keep - TRUE to flush even files marked FILEF_KEEP.*
  *                                                                         *
@@ -176,29 +164,28 @@ BOOL Make_File_Resident(BYTE const *filename)
  * HISTORY:                                                                *
  *   02/23/1993  SB : Created.                                             *
  *=========================================================================*/
-WORD Flush_Unused_File_Cache(WORD flush_keeps) 
-{
-	WORD				index;
-	WORD				freed = 0;
-	FileDataType	*filedata = NULL;
-	FileDataType	hold;				// Hold buffer for record (DO NOT ACCESS DIRECTLY)
+WORD Flush_Unused_File_Cache(WORD flush_keeps) {
+  WORD index;
+  WORD freed = 0;
+  FileDataType *filedata = NULL;
+  FileDataType hold;  // Hold buffer for record (DO NOT ACCESS DIRECTLY)
 
-	// Loop throuph the file table looking for files that could be freed.
-	index = 0;
-	filedata = &FileDataPtr[index];;
-	while (filedata->Name && strlen(filedata->Name)) {
-
-		if (filedata->Ptr && !filedata->OpenCount && 
-		    (flush_keeps || !(filedata->Flag & FILEF_KEEP)) ) {
-
-			Mem_Free(FileCacheHeap, filedata->Ptr);
-			filedata->Ptr = NULL;
-			freed++;
-		}
-		index++;
-		filedata = &FileDataPtr[index];;
-	}
-	return (freed);
+  // Loop throuph the file table looking for files that could be freed.
+  index = 0;
+  filedata = &FileDataPtr[index];
+  ;
+  while (filedata->Name && strlen(filedata->Name)) {
+    if (filedata->Ptr && !filedata->OpenCount &&
+        (flush_keeps || !(filedata->Flag & FILEF_KEEP))) {
+      Mem_Free(FileCacheHeap, filedata->Ptr);
+      filedata->Ptr = NULL;
+      freed++;
+    }
+    index++;
+    filedata = &FileDataPtr[index];
+    ;
+  }
+  return (freed);
 }
 
 /***************************************************************************
@@ -213,38 +200,35 @@ WORD Flush_Unused_File_Cache(WORD flush_keeps)
  * HISTORY:                                                                *
  *   07/22/1992  CY : Created.                                             *
  *=========================================================================*/
-BOOL cdecl Free_Resident_File(BYTE const *file)
-{
-	WORD					fileindex;
-	BOOL					oldflag;			// Previous file flag.
-	FileDataType	  	*filedata;		// Pointer to the current FileData.
-	FileDataType		hold;				// Hold buffer for record (DO NOT ACCESS DIRECTLY)
+BOOL cdecl Free_Resident_File(BYTE const *file) {
+  WORD fileindex;
+  BOOL oldflag;            // Previous file flag.
+  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType hold;       // Hold buffer for record (DO NOT ACCESS DIRECTLY)
 
+  //	if the file is not in the table, we can't free it
+  if ((fileindex = Find_File_Index(file)) == ERROR) {
+    return (FALSE);
+  }
 
-	//	if the file is not in the table, we can't free it
-	if ((fileindex = Find_File_Index(file)) == ERROR) {
-		return(FALSE);
-	}
+  // get a pointer for quicker calculations.
+  filedata = &FileDataPtr[fileindex];
 
-	// get a pointer for quicker calculations.
-	filedata = &FileDataPtr[fileindex];
+  // If it isn't resident, don't try to Free it
+  if (filedata->Ptr == NULL) {
+    return (TRUE);
+  }
 
-	// If it isn't resident, don't try to Free it
-	if (filedata->Ptr == NULL) {
-		return(TRUE);
-	}
+  // Change the flags for a moment.
+  oldflag = filedata->Flag;
+  filedata->Flag &= ~(FILEF_RESIDENT | FILEF_KEEP);
+  filedata->Flag |= FILEF_FLUSH;
 
-	// Change the flags for a moment.
-	oldflag = filedata->Flag;
-	filedata->Flag &= ~(FILEF_RESIDENT|FILEF_KEEP);
-	filedata->Flag |= FILEF_FLUSH;
+  // Get the file out of Memory if it was there.
+  Close_File(Open_File(file, READ));
 
-	// Get the file out of Memory if it was there.
-	Close_File(Open_File(file, READ));
+  // Set flags back to original.
+  filedata->Flag = oldflag;
 
-	// Set flags back to original.
-	filedata->Flag = oldflag;
-
-	return(TRUE);
+  return (TRUE);
 }
-

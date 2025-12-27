@@ -18,77 +18,72 @@
 
 /* $Header: /CounterStrike/CRCSTRAW.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CRCSTRAW.CPP                                                 *
+ *                    File Name : CRCSTRAW.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/02/96                                                     *
+ *                   Start Date : 07/02/96 *
  *                                                                                             *
- *                  Last Update : July 3, 1996 [JLB]                                           *
+ *                  Last Update : July 3, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   CRCStraw::Get -- Fetch the data requested and calculate CRC on it.                        *
- *   CRCStraw::Result -- Returns with the CRC of all data passed through the straw.            *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: * CRCStraw::Get -- Fetch the data requested and calculate CRC on
+ *it.                        * CRCStraw::Result -- Returns with the CRC of all
+ *data passed through the straw.            *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include "crcstraw.h"
 
-
 /***********************************************************************************************
- * CRCStraw::Get -- Fetch the data requested and calculate CRC on it.                          *
+ * CRCStraw::Get -- Fetch the data requested and calculate CRC on it. *
  *                                                                                             *
- *    This routine will fetch the number of bytes requested. The data will not be modified     *
- *    by this straw segment, but the CRC engine will examine the data so as to keep an         *
- *    accurate CRC value.                                                                      *
+ *    This routine will fetch the number of bytes requested. The data will not
+ *be modified     * by this straw segment, but the CRC engine will examine the
+ *data so as to keep an         * accurate CRC value. *
  *                                                                                             *
- * INPUT:   source   -- Pointer to the buffer to hold the data requested.                      *
+ * INPUT:   source   -- Pointer to the buffer to hold the data requested. *
  *                                                                                             *
- *          length   -- The number of bytes requested.                                         *
+ *          length   -- The number of bytes requested. *
  *                                                                                             *
- * OUTPUT:  Returns with the actual number of bytes stored in the buffer. If this number is    *
- *          less than that requested, then this indicates that the data stream has been        *
- *          exhausted.                                                                         *
+ * OUTPUT:  Returns with the actual number of bytes stored in the buffer. If
+ *this number is    * less than that requested, then this indicates that the
+ *data stream has been        * exhausted. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/03/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int CRCStraw::Get(void * source, int slen)
-{
-	if (source == NULL || slen < 1) {
-		return(0);
-	}
+int CRCStraw::Get(void* source, int slen) {
+  if (source == NULL || slen < 1) {
+    return (0);
+  }
 
-	int counter = Straw::Get(source, slen);
-	CRC(source, counter);
-	return(counter);
+  int counter = Straw::Get(source, slen);
+  CRC(source, counter);
+  return (counter);
 }
 
-
 /***********************************************************************************************
- * CRCStraw::Result -- Returns with the CRC of all data passed through the straw.              *
+ * CRCStraw::Result -- Returns with the CRC of all data passed through the
+ *straw.              *
  *                                                                                             *
- *    This routine will return the CRC value of the data that has passed through this straw    *
- *    segment.                                                                                 *
+ *    This routine will return the CRC value of the data that has passed through
+ *this straw    * segment. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with the CRC value of the data this straw segment has seen.                *
+ * OUTPUT:  Returns with the CRC value of the data this straw segment has seen.
+ **
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/03/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CRCStraw::Result(void) const
-{
-	return(CRC());
-}
+long CRCStraw::Result(void) const { return (CRC()); }

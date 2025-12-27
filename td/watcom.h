@@ -16,24 +16,27 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\watcom.h_v   2.13   16 Oct 1995 16:45:58   JOE_BOSTIC  $ */
-/*********************************************************************************************** 
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
- *********************************************************************************************** 
- *                                                                                             * 
- *                 Project Name : Command & Conquer                                            * 
- *                                                                                             * 
- *                    File Name : WATCOM.H                                                     * 
- *                                                                                             * 
- *                   Programmer : Joe L. Bostic                                                * 
- *                                                                                             * 
- *                   Start Date : 03/12/95                                                     * 
- *                                                                                             * 
- *                  Last Update : March 12, 1995 [JLB]                                         * 
- *                                                                                             * 
- *---------------------------------------------------------------------------------------------* 
- * Functions:                                                                                  * 
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* $Header:   F:\projects\c&c\vcs\code\watcom.h_v   2.13   16 Oct 1995 16:45:58
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : WATCOM.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 03/12/95 *
+ *                                                                                             *
+ *                  Last Update : March 12, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef WATCOM_H
 #define WATCOM_H
@@ -44,7 +47,8 @@
 // Disables warning when "sizeof" is used on an object with virtual functions.
 #pragma warning 549 9
 
-// Disable the "Integral value may be truncated during assignment or initialization".
+// Disable the "Integral value may be truncated during assignment or
+// initialization".
 #pragma warning 389 9
 
 // Allow constructing a temporary to be used as a parameter.
@@ -59,19 +63,23 @@
 // Disable the "pre-compiled header file cannot be used" warning.
 #pragma warning 698 9
 
-// Disable the "temporary object used to initialize a non-constant reference" warning.
+// Disable the "temporary object used to initialize a non-constant reference"
+// warning.
 #pragma warning 665 9
 
-// Disable the "pointer or reference truncated by cast. Cast is supposed to REMOVE warnings, not create them.
+// Disable the "pointer or reference truncated by cast. Cast is supposed to
+// REMOVE warnings, not create them.
 #pragma warning 579 9
 
-// Disable the warning about moving empty constructors/destructors to the class declaration.
+// Disable the warning about moving empty constructors/destructors to the class
+// declaration.
 #pragma warning 657 9
 
 // Turns off unreferenced function parameter warning.
-//#pragma off(unreferenced)
+// #pragma off(unreferenced)
 
-// Turns off "expression with side effect in sizeof()". This is needed if memchecker is used.
+// Turns off "expression with side effect in sizeof()". This is needed if
+// memchecker is used.
 #pragma warning 472 9
 
 #endif

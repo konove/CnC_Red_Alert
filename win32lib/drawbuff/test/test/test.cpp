@@ -19,16 +19,12 @@
 #include "stdio.h"
 
 extern "C" {
-	void func_1(void);
+void func_1(void);
 }
 
-void func_2(void)
-{
-	printf("There\r");
-}
+void func_2(void) { printf("There\r"); }
 
-void main(void)
-{
-	func_1();
-	func_2();
+void main(void) {
+  func_1();
+  func_2();
 }

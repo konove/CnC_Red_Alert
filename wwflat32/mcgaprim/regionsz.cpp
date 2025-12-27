@@ -39,22 +39,18 @@
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-
 
 /***************************************************************************
  * SIZE_OF_REGION -- Calculates the size of a given region                 *
  *                                                                         *
  * INPUT:	int width  - the width of the region                           *
- *				int height - the height of the region									*
+ *				int height - the height of the region
+ **
  *                                                                         *
  * OUTPUT:  long - the size of the region                                  *
  *                                                                         *
  * HISTORY:                                                                *
  *   11/03/1994 PWG : Created.                                             *
  *=========================================================================*/
-long Size_Of_Region(int width, int height)                                 
-{
-	return(width * height);
-}
+long Size_Of_Region(int width, int height) { return (width * height); }

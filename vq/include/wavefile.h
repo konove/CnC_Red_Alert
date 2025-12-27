@@ -19,24 +19,24 @@
 #ifndef WAVEFILE_H
 #define WAVEFILE_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     wavefile.c
-*
-* DESCRIPTION
-*     WAVE file format definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*      
-* DATE
-*     February 21, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     wavefile.c
+ *
+ * DESCRIPTION
+ *     WAVE file format definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     February 21, 1995
+ *
+ ****************************************************************************/
 
 /* WAVHeader: WAVE file header.
  *
@@ -45,15 +45,15 @@
  * WAVE - 4 byte identifier (always "WAVE").
  */
 typedef struct _WAVHeader {
-	long RIFF;
-	long Size;
-	long WAVE;
+  long RIFF;
+  long Size;
+  long WAVE;
 } WAVHeader;
 
 /* WAVFormat: This structure describes the format of the audio data contained
  *            in the WAV file.
  *
- * FormatTag      - 
+ * FormatTag      -
  * Channels       - Number of channels (1 = mono, 2 = stereo).
  * SamplesPerSec  - Sampling rate.
  * AvgBytesPerSec - Bytes in 1 second of audio (Rate * SampleSize * Channels)
@@ -61,13 +61,12 @@ typedef struct _WAVHeader {
  * BitsPerSample  - Number of bits per sample (8, 16).
  */
 typedef struct _WAVFormat {
-	short FormatTag;
-	short Channels;
-	long  SamplesPerSec;
- 	long  AvgBytesPerSec;
-	short BlockAlign;
-	short BitsPerSample;
+  short FormatTag;
+  short Channels;
+  long SamplesPerSec;
+  long AvgBytesPerSec;
+  short BlockAlign;
+  short BitsPerSample;
 } WAVFormat;
 
 #endif /* WAVEFILE_H */
-

@@ -28,7 +28,8 @@
 ;*                                                                         *
 ;*                   Start Date : April 25, 1994                           *
 ;*                                                                         *
-;*                  Last Update : April 27, 1994 [BRR]							*
+;*                  Last Update : April 27, 1994 [BRR]
+*
 ;*                                                                         *
 ;* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -38,9 +39,9 @@
 /*
 ********************************* Constants *********************************
 */
-#define RGB_BYTES			3
-#define PALETTE_SIZE		256
-#define PALETTE_BYTES	768
+#define RGB_BYTES 3
+#define PALETTE_SIZE 256
+#define PALETTE_BYTES 768
 
 /*
 ******************************** Prototypes *********************************
@@ -50,7 +51,7 @@
 */
 VOID cdecl Set_Palette(VOID *palette);
 VOID cdecl Set_Palette_Color(VOID *palette, WORD color, VOID *data);
-VOID Fade_Palette_To(VOID *palette1, UWORD delay, VOID (*callback)() );
+VOID Fade_Palette_To(VOID *palette1, UWORD delay, VOID (*callback)());
 
 /*
 -------------------------------- loadpal.cpp --------------------------------
@@ -60,8 +61,8 @@ VOID cdecl Load_Palette(BYTE *palette_file_name, VOID *palette_pointer);
 /*
 ------------------------------- morphpal.cpp --------------------------------
 */
-VOID cdecl Morph_Palette (VOID *src_palette, VOID *dst_palette, UWORD delay,
-	VOID *callback);
+VOID cdecl Morph_Palette(VOID *src_palette, VOID *dst_palette, UWORD delay,
+                         VOID *callback);
 
 /*
 ---------------------------------- pal.asm ----------------------------------
@@ -72,14 +73,12 @@ extern "C" {
 
 extern VOID Set_Palette_Range(VOID *palette);
 extern BOOL Bump_Color(VOID *palette, WORD changable, WORD target);
-extern UBYTE  CurrentPalette[];		/* in pal.asm */
+extern UBYTE CurrentPalette[]; /* in pal.asm */
 
 #ifdef __cplusplus
 }
 #endif
 
-
-#endif // PALETTE_H
+#endif  // PALETTE_H
 
 /***************************** End of palette.h ****************************/
-

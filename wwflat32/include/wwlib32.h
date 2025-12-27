@@ -41,7 +41,7 @@
 #include <audio.h>
 #include <buffer.h>
 #include <descmgmt.h>
-#include	<dipthong.h>
+#include <dipthong.h>
 #include <file.h>
 #include <font.h>
 #include <gbuffer.h>
@@ -61,8 +61,4 @@
 #include <wsa.h>
 #include <wwmem.h>
 
-
-
-
-#endif // WWLIB32_H
-
+#endif  // WWLIB32_H

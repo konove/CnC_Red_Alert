@@ -16,10 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-extern "C"{
-	BOOL FAR __cdecl IPX_Initialise(int);
+extern "C" {
+BOOL FAR __cdecl IPX_Initialise(int);
 }
-
-

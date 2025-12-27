@@ -18,69 +18,68 @@
 
 /* $Header: /CounterStrike/BUFF.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : BUFF.H                                                       *
+ *                    File Name : BUFF.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/29/96                                                     *
+ *                   Start Date : 07/29/96 *
  *                                                                                             *
- *                  Last Update : July 29, 1996 [JLB]                                          *
+ *                  Last Update : July 29, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CCBUFF_H
 #define CCBUFF_H
 
-
 /*
-**	A general purpose buffer pointer handler object. It holds not only the pointer to the
-**	buffer, but its size as well. By using this class instead of separate pointer and size
-**	values, function interfaces and algorithms become simpler to manage and understand.
+**	A general purpose buffer pointer handler object. It holds not only the
+*pointer to the *	buffer, but its size as well. By using this class
+*instead of separate pointer and size *	values, function interfaces and
+*algorithms become simpler to manage and understand.
 */
 class Buffer {
-	public:
-		Buffer(char * ptr, long size=0);
-		Buffer(void * ptr=0, long size=0);
-		Buffer(void const * ptr, long size=0);
-		Buffer(long size);
-		Buffer(Buffer const & buffer);
-		~Buffer(void);
+ public:
+  Buffer(char *ptr, long size = 0);
+  Buffer(void *ptr = 0, long size = 0);
+  Buffer(void const *ptr, long size = 0);
+  Buffer(long size);
+  Buffer(Buffer const &buffer);
+  ~Buffer(void);
 
-		Buffer & operator = (Buffer const & buffer);
-		operator void * (void) const {return(BufferPtr);}
-		operator char * (void) const {return((char *)BufferPtr);}
+  Buffer &operator=(Buffer const &buffer);
+  operator void *(void) const { return (BufferPtr); }
+  operator char *(void) const { return ((char *)BufferPtr); }
 
-		void Reset(void);
-		void * Get_Buffer(void) const {return(BufferPtr);}
-		long Get_Size(void) const {return(Size);}
-		bool Is_Valid(void) const {return(BufferPtr != 0);}
+  void Reset(void);
+  void *Get_Buffer(void) const { return (BufferPtr); }
+  long Get_Size(void) const { return (Size); }
+  bool Is_Valid(void) const { return (BufferPtr != 0); }
 
-	protected:
+ protected:
+  /*
+  **	Pointer to the buffer memory.
+  */
+  void *BufferPtr;
 
-		/*
-		**	Pointer to the buffer memory.
-		*/
-		void * BufferPtr;
+  /*
+  **	The size of the buffer memory.
+  */
+  long Size;
 
-		/*
-		**	The size of the buffer memory.
-		*/
-		long Size;
-
-		/*
-		**	Was the buffer allocated by this class? If so, then this class
-		**	will be responsible for freeing the buffer.
-		*/
-		bool IsAllocated;
+  /*
+  **	Was the buffer allocated by this class? If so, then this class
+  **	will be responsible for freeing the buffer.
+  */
+  bool IsAllocated;
 };
-
 
 #endif

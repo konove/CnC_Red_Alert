@@ -17,118 +17,114 @@
 */
 
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*---------------------------------------------------------------------------
-*
-* FILE
-*     mem.c
-*
-* DESCRIPTION
-*     Memory management.
-*
-* PROGRAMMER
-*     Phil Gorrow
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     July 5, 1995
-*
-*---------------------------------------------------------------------------
-*
-* PUBLIC
-*     DPMI_Lock   - Lock a memory page.
-*     DPMI_Unlock - Unlock a locked memory page.
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *---------------------------------------------------------------------------
+ *
+ * FILE
+ *     mem.c
+ *
+ * DESCRIPTION
+ *     Memory management.
+ *
+ * PROGRAMMER
+ *     Phil Gorrow
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     July 5, 1995
+ *
+ *---------------------------------------------------------------------------
+ *
+ * PUBLIC
+ *     DPMI_Lock   - Lock a memory page.
+ *     DPMI_Unlock - Unlock a locked memory page.
+ *
+ ****************************************************************************/
 
 #ifdef __WATCOMC__
 #include <dos.h>
 #include <mem.h>
 #include <vqm32\mem.h>
 
-
 /****************************************************************************
-*
-* NAME
-*     DPMI_Lock - Lock a memory page.
-*
-* SYNOPSIS
-*     DPMI_Lock(Address, Size)
-*
-*     void DPMI_Lock(void *, long);
-*
-* FUNCTION
-*
-* INPUTS
-*     Address - Starting linear address of memory to lock.
-*     Size    - Size of region to lock in bytes.
-*
-* RESULT
-*     NONE
-*
-****************************************************************************/
+ *
+ * NAME
+ *     DPMI_Lock - Lock a memory page.
+ *
+ * SYNOPSIS
+ *     DPMI_Lock(Address, Size)
+ *
+ *     void DPMI_Lock(void *, long);
+ *
+ * FUNCTION
+ *
+ * INPUTS
+ *     Address - Starting linear address of memory to lock.
+ *     Size    - Size of region to lock in bytes.
+ *
+ * RESULT
+ *     NONE
+ *
+ ****************************************************************************/
 
-void DPMI_Lock(void const *ptr, long const size)
-{
-	union REGS   regs;
-	struct SREGS sregs;
+void DPMI_Lock(void const *ptr, long const size) {
+  union REGS regs;
+  struct SREGS sregs;
 
-	memset(&regs, 0, sizeof(REGS));
-	segread(&sregs);
+  memset(&regs, 0, sizeof(REGS));
+  segread(&sregs);
 
-	/* Lock the memory page.
-	 *
-	 * AX    = 0x600
-	 * BX:CX = Starting linear address of memory to lock.
-	 * SI:DI = Size of region to lock in bytes.
-	 */
-	regs.x.eax = DPMI_LOCK;
-	regs.x.ebx = ((long)ptr & 0xFFFF0000) >> 16;
-	regs.x.ecx = ((long)ptr & 0x0000FFFF);
-	regs.x.esi = ((long)size & 0xFFFF0000) >> 16;
-	regs.x.edi = ((long)size & 0x0000FFFF);
-	int386x(DPMI_INT, &regs, &regs, &sregs);
+  /* Lock the memory page.
+   *
+   * AX    = 0x600
+   * BX:CX = Starting linear address of memory to lock.
+   * SI:DI = Size of region to lock in bytes.
+   */
+  regs.x.eax = DPMI_LOCK;
+  regs.x.ebx = ((long)ptr & 0xFFFF0000) >> 16;
+  regs.x.ecx = ((long)ptr & 0x0000FFFF);
+  regs.x.esi = ((long)size & 0xFFFF0000) >> 16;
+  regs.x.edi = ((long)size & 0x0000FFFF);
+  int386x(DPMI_INT, &regs, &regs, &sregs);
 }
 
-
 /****************************************************************************
-*
-* NAME
-*     DPMI_Unlock - Unlock a locked memory page.
-*
-* SYNOPSIS
-*     DPMI_Unlock(Address, Size)
-*
-*     void DPMI_Unlock(void *, long);
-*
-* FUNCTION
-*
-* INPUTS
-*     Address - Starting linear address of memory to unlock.
-*     Size    - Size of region to unlock in bytes.
-*
-* RESULT
-*     NONE
-*
-****************************************************************************/
+ *
+ * NAME
+ *     DPMI_Unlock - Unlock a locked memory page.
+ *
+ * SYNOPSIS
+ *     DPMI_Unlock(Address, Size)
+ *
+ *     void DPMI_Unlock(void *, long);
+ *
+ * FUNCTION
+ *
+ * INPUTS
+ *     Address - Starting linear address of memory to unlock.
+ *     Size    - Size of region to unlock in bytes.
+ *
+ * RESULT
+ *     NONE
+ *
+ ****************************************************************************/
 
-void DPMI_Unlock(void const *ptr, long const size)
-{
-	union REGS   regs;
-	struct SREGS sregs;
+void DPMI_Unlock(void const *ptr, long const size) {
+  union REGS regs;
+  struct SREGS sregs;
 
-	/* Unlock memory page. */
-	memset(&regs, 0 ,sizeof(REGS));
-	segread(&sregs);
+  /* Unlock memory page. */
+  memset(&regs, 0, sizeof(REGS));
+  segread(&sregs);
 
-	regs.x.eax = DPMI_UNLOCK;
-	regs.x.ebx = ((long)ptr & 0xFFFF0000) >> 16;
-	regs.x.ecx = ((long)ptr & 0x0000FFFF);
-	regs.x.esi = ((long)size & 0xFFFF0000) >> 16;
-	regs.x.edi = ((long)size & 0x0000FFFF);
-	int386x(DPMI_INT, &regs, &regs, &sregs);
+  regs.x.eax = DPMI_UNLOCK;
+  regs.x.ebx = ((long)ptr & 0xFFFF0000) >> 16;
+  regs.x.ecx = ((long)ptr & 0x0000FFFF);
+  regs.x.esi = ((long)size & 0xFFFF0000) >> 16;
+  regs.x.edi = ((long)size & 0x0000FFFF);
+  int386x(DPMI_INT, &regs, &regs, &sregs);
 }
 
 #endif /* __WATCOMC__ */

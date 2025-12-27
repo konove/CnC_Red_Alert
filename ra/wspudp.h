@@ -17,71 +17,62 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                     $Archive:: /Sun/WSPUDP.h                                               $*
+ *                     $Archive:: /Sun/WSPUDP.h $*
  *                                                                                             *
- *                      $Author:: Joe_b                                                       $*
+ *                      $Author:: Joe_b $*
  *                                                                                             *
- *                     $Modtime:: 8/05/97 6:45p                                               $*
+ *                     $Modtime:: 8/05/97 6:45p $*
  *                                                                                             *
- *                    $Revision:: 3                                                           $*
+ *                    $Revision:: 3 $*
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef WSPUDP_H
 #define WSPUDP_H
 
-#include	"wsproto.h"
-
-
+#include "wsproto.h"
 
 /*
 ** Class to allow access to UDP specific portions of the Winsock interface.
 **
 */
 class UDPInterfaceClass : public WinsockInterfaceClass {
-
-	public:
-
-		UDPInterfaceClass (void);
-		virtual ~UDPInterfaceClass(void);
+ public:
+  UDPInterfaceClass(void);
+  virtual ~UDPInterfaceClass(void);
 #ifdef PORTABLE
-		virtual void Event_Handler(int, SocketEvent);
+  virtual void Event_Handler(int, SocketEvent);
 #else
-	 	virtual long Message_Handler(HWND window, UINT message, UINT wParam, LONG lParam);
+  virtual long Message_Handler(HWND window, UINT message, UINT wParam,
+                               LONG lParam);
 #endif
-		virtual bool Open_Socket ( SOCKET socketnum );
-		virtual void Set_Broadcast_Address ( void *address );
-		virtual void Broadcast (void *buffer, int buffer_len);
+  virtual bool Open_Socket(SOCKET socketnum);
+  virtual void Set_Broadcast_Address(void *address);
+  virtual void Broadcast(void *buffer, int buffer_len);
 
-		virtual ProtocolEnum Get_Protocol (void) {
-			return (PROTOCOL_UDP);
-		};
+  virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_UDP); };
 
-		virtual int Protocol_Event_Message (void) {
-			return (WM_UDPASYNCEVENT);
-		};
+  virtual int Protocol_Event_Message(void) { return (WM_UDPASYNCEVENT); };
 
+ private:
+  /*
+  ** Address to use when broadcasting a packet.
+  */
+  DynamicVectorClass<unsigned char *> BroadcastAddresses;
 
-	private:
-
-		/*
-		** Address to use when broadcasting a packet.
-		*/
-		DynamicVectorClass <unsigned char *> BroadcastAddresses;
-
-		/*
-		** List of local addresses.
-		*/
-		DynamicVectorClass <unsigned char *> LocalAddresses;
+  /*
+  ** List of local addresses.
+  */
+  DynamicVectorClass<unsigned char *> LocalAddresses;
 };
-
-
 
 #endif

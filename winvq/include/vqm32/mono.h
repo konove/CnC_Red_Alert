@@ -19,24 +19,24 @@
 #ifndef VQMMONO_H
 #define VQMMONO_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     mono.h
-*
-* DESCRIPTION
-*     Mono screen definitions. (32-Bit protected mode)
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     Feburary 8, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     mono.h
+ *
+ * DESCRIPTION
+ *     Mono screen definitions. (32-Bit protected mode)
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     Feburary 8, 1995
+ *
+ ****************************************************************************/
 
 /* Prototypes */
 
@@ -51,7 +51,7 @@ void __cdecl Mono_Clear_Screen(void);
 void __cdecl Mono_Scroll(long lines);
 void __cdecl Mono_Put_Char(long character, long attrib);
 void __cdecl Mono_Draw_Rect(long x, long y, long w, long h, long attrib,
-		long thick);
+                            long thick);
 
 void __cdecl Mono_Text_Print(void const *text, long x, long y, long attrib);
 void __cdecl Mono_Print(void const *text);

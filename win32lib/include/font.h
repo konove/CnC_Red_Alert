@@ -42,55 +42,60 @@
 #include <gbuffer.h>
 #endif
 
-
-//////////////////////////////////////// Defines //////////////////////////////////////////
+//////////////////////////////////////// Defines
+/////////////////////////////////////////////
 
 // defines for font header, offsets to block offsets
 
-#define FONTINFOBLOCK			4
-#define FONTOFFSETBLOCK			6
-#define FONTWIDTHBLOCK			8
-#define FONTDATABLOCK			10
-#define FONTHEIGHTBLOCK			12
+#define FONTINFOBLOCK 4
+#define FONTOFFSETBLOCK 6
+#define FONTWIDTHBLOCK 8
+#define FONTDATABLOCK 10
+#define FONTHEIGHTBLOCK 12
 
 // defines for font info block
 
-#define FONTINFOMAXHEIGHT		4
-#define FONTINFOMAXWIDTH		5
+#define FONTINFOMAXHEIGHT 4
+#define FONTINFOMAXWIDTH 5
 
-//////////////////////////////////////// Prototypes //////////////////////////////////////////
-
-/*=========================================================================*/
-/* The following prototypes are for the file: SET_FONT.CPP						*/
-/*=========================================================================*/
-
-void  * __cdecl Set_Font(void const *fontptr);
+//////////////////////////////////////// Prototypes
+/////////////////////////////////////////////
 
 /*=========================================================================*/
-/* The following prototypes are for the file: FONT.CPP							*/
+/* The following prototypes are for the file: SET_FONT.CPP
+ */
+/*=========================================================================*/
+
+void *__cdecl Set_Font(void const *fontptr);
+
+/*=========================================================================*/
+/* The following prototypes are for the file: FONT.CPP
+ */
 /*=========================================================================*/
 
 int __cdecl Char_Pixel_Width(char chr);
 unsigned int __cdecl String_Pixel_Width(char const *string);
-void __cdecl Get_Next_Text_Print_XY(GraphicViewPortClass& vp, unsigned long offset, INT *x, INT *y);
+void __cdecl Get_Next_Text_Print_XY(GraphicViewPortClass &vp,
+                                    unsigned long offset, INT *x, INT *y);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: LOADFONT.CPP	  					*/
+/* The following prototypes are for the file: LOADFONT.CPP
+ */
 /*=========================================================================*/
 
-void * __cdecl Load_Font(char  const *name);
+void *__cdecl Load_Font(char const *name);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: TEXTPRNT.ASM	  					*/
+/* The following prototypes are for the file: TEXTPRNT.ASM
+ */
 /*=========================================================================*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-void __cdecl Set_Font_Palette_Range(void const *palette, INT start_idx, INT end_idx);
-
+void __cdecl Set_Font_Palette_Range(void const *palette, INT start_idx,
+                                    INT end_idx);
 
 #ifdef __cplusplus
 }
@@ -98,21 +103,14 @@ void __cdecl Set_Font_Palette_Range(void const *palette, INT start_idx, INT end_
 
 /*=========================================================================*/
 
-
-
-
-
-//////////////////////////////////////// External varables ///////////////////////////////////////
+//////////////////////////////////////// External varables
+//////////////////////////////////////////
 extern "C" int FontXSpacing;
 extern "C" int FontYSpacing;
-extern char FontWidth ;
+extern char FontWidth;
 extern char FontHeight;
 extern char *FontWidthBlockPtr;
 
-
 extern "C" void const *FontPtr;
 
-
-
-
-#endif // FONT_H
+#endif  // FONT_H

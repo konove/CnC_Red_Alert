@@ -17,37 +17,38 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                     $Archive:: /Sun/Internet.h                                             $*
+ *                     $Archive:: /Sun/Internet.h $*
  *                                                                                             *
- *                      $Author:: Joe_b                                                       $*
+ *                      $Author:: Joe_b $*
  *                                                                                             *
- *                     $Modtime:: 8/05/97 6:45p                                               $*
+ *                     $Modtime:: 8/05/97 6:45p $*
  *                                                                                             *
- *                    $Revision:: 7                                                           $*
+ *                    $Revision:: 7 $*
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef INTERNET_H
 #define INTERNET_H
 
 #define IP_ADDRESS_MAX 40
 
-
-void	Register_Game_Start_Time(void);
-void	Register_Game_End_Time(void);
-void	Send_Statistics_Packet(void);
-void 	Check_From_WChat(char *wchat_name);
-bool 	Do_The_Internet_Menu_Thang (void);
-bool 	Server_Remote_Connect(void);
-bool 	Client_Remote_Connect(void);
-int 	Read_Game_Options(char *name);
+void Register_Game_Start_Time(void);
+void Register_Game_End_Time(void);
+void Send_Statistics_Packet(void);
+void Check_From_WChat(char *wchat_name);
+bool Do_The_Internet_Menu_Thang(void);
+bool Server_Remote_Connect(void);
+bool Client_Remote_Connect(void);
+int Read_Game_Options(char *name);
 
 extern char PlanetWestwoodIPAddress[IP_ADDRESS_MAX];
 extern long PlanetWestwoodPortNumber;

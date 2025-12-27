@@ -16,74 +16,78 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\mixfile.h_v   2.18   16 Oct 1995 16:47:22   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\mixfile.h_v   2.18   16 Oct 1995 16:47:22
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : MIXFILE.H                                                    *
+ *                    File Name : MIXFILE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : October 18, 1994                                             *
+ *                   Start Date : October 18, 1994 *
  *                                                                                             *
- *                  Last Update : October 18, 1994   [JLB]                                     *
+ *                  Last Update : October 18, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef MIXFILE_H
 #define MIXFILE_H
 
-#include	<wwlib32.h>
-#include	"link.h"
+#include <wwlib32.h>
+#include "link.h"
 
-class MixFileClass : public LinkClass 
-{
-	public:
-		char const *Filename;			// Filename of mixfile.
+class MixFileClass : public LinkClass {
+ public:
+  char const *Filename;  // Filename of mixfile.
 
-		MixFileClass(char const *filename);
-		~MixFileClass(void);
+  MixFileClass(char const *filename);
+  ~MixFileClass(void);
 
-		static bool Free(char const *filename);
-		static void Free_All(void);
-		void Free(void);
-		bool Cache(void);
-		static bool Cache(char const *filename);
-		static bool Offset(char const *filename, void ** realptr = 0, MixFileClass ** mixfile = 0, long * offset = 0, long * size = 0);
-		static void const * Retrieve(char const *filename);
+  static bool Free(char const *filename);
+  static void Free_All(void);
+  void Free(void);
+  bool Cache(void);
+  static bool Cache(char const *filename);
+  static bool Offset(char const *filename, void **realptr = 0,
+                     MixFileClass **mixfile = 0, long *offset = 0,
+                     long *size = 0);
+  static void const *Retrieve(char const *filename);
 
-		struct SubBlock {
-			int32_t CRC;				// CRC code for embedded file.
-			int32_t Offset;			// Offset from start of data section.
-			int32_t Size;				// Size of data subfile.
+  struct SubBlock {
+    int32_t CRC;     // CRC code for embedded file.
+    int32_t Offset;  // Offset from start of data section.
+    int32_t Size;    // Size of data subfile.
 
-			int operator < (SubBlock & two) const {return (CRC < two.CRC);};
-			int operator > (SubBlock & two) const {return (CRC > two.CRC);};
-			int operator == (SubBlock & two) const {return (CRC == two.CRC);};
-		};
+    int operator<(SubBlock &two) const { return (CRC < two.CRC); };
+    int operator>(SubBlock &two) const { return (CRC > two.CRC); };
+    int operator==(SubBlock &two) const { return (CRC == two.CRC); };
+  };
 
-	private:
-		static MixFileClass * Finder(char const *filename);
-		long Offset(long crc, long *size = 0);
+ private:
+  static MixFileClass *Finder(char const *filename);
+  long Offset(long crc, long *size = 0);
 
 #pragma pack(push, 1)
-		typedef struct {
-			int16_t	count;
-			int32_t	size;
-		} FileHeader;
+  typedef struct {
+    int16_t count;
+    int32_t size;
+  } FileHeader;
 #pragma pack(pop)
 
-		int Count;							// Number of sub-blocks.
-		long DataSize;						// Size of raw data.
-		SubBlock * Buffer;				// Array of sub blocks (could be in EMS).
-		void *Data;							// Pointer to raw data.
+  int Count;         // Number of sub-blocks.
+  long DataSize;     // Size of raw data.
+  SubBlock *Buffer;  // Array of sub blocks (could be in EMS).
+  void *Data;        // Pointer to raw data.
 
-		static MixFileClass * First;
+  static MixFileClass *First;
 };
 
 #endif

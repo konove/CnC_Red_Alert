@@ -17,43 +17,57 @@
 */
 
 /* $Header: /CounterStrike/REGION.H 1     3/03/97 10:25a Joe_bostic $ */
-/*********************************************************************************************** 
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
- *********************************************************************************************** 
- *                                                                                             * 
- *                 Project Name : Command & Conquer                                            * 
- *                                                                                             * 
- *                    File Name : REGION.H                                                     * 
- *                                                                                             * 
- *                   Programmer : Joe L. Bostic                                                * 
- *                                                                                             * 
- *                   Start Date : 03/09/95                                                     * 
- *                                                                                             * 
- *                  Last Update : March 9, 1995 [JLB]                                          * 
- *                                                                                             * 
- *---------------------------------------------------------------------------------------------* 
- * Functions:                                                                                  * 
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : REGION.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 03/09/95 *
+ *                                                                                             *
+ *                  Last Update : March 9, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef REGION_H
 #define REGION_H
 
-
 class RegionClass {
-	public:
-		RegionClass(void) {Threat = 0;};
-		~RegionClass(void) {};
-		int operator != (RegionClass const & region) {return memcmp(this, &region, sizeof(RegionClass));};
-		int operator == (RegionClass const & region) {return !memcmp(this, &region, sizeof(RegionClass));};
-		int operator > (RegionClass const & region) {return memcmp(this, &region, sizeof(RegionClass)) > 0;};
-		int operator < (RegionClass const & region) {return memcmp(this, &region, sizeof(RegionClass)) < 0;};
+ public:
+  RegionClass(void) { Threat = 0; };
+  ~RegionClass(void){};
+  int operator!=(RegionClass const& region) {
+    return memcmp(this, &region, sizeof(RegionClass));
+  };
+  int operator==(RegionClass const& region) {
+    return !memcmp(this, &region, sizeof(RegionClass));
+  };
+  int operator>(RegionClass const& region) {
+    return memcmp(this, &region, sizeof(RegionClass)) > 0;
+  };
+  int operator<(RegionClass const& region) {
+    return memcmp(this, &region, sizeof(RegionClass)) < 0;
+  };
 
-		void Reset_Threat(void) {Threat = 0;};
-		void Adjust_Threat(int threat, int neg) {if (neg) Threat -= threat; else Threat+= threat;};
-		int Threat_Value(void) const {return Threat;};
+  void Reset_Threat(void) { Threat = 0; };
+  void Adjust_Threat(int threat, int neg) {
+    if (neg)
+      Threat -= threat;
+    else
+      Threat += threat;
+  };
+  int Threat_Value(void) const { return Threat; };
 
-	protected:
-		long  Threat;
+ protected:
+  long Threat;
 };
 
 #endif

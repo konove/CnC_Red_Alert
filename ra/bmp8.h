@@ -19,25 +19,23 @@
 #ifndef BMP8_H
 #define BMP8_H
 
-//#include<stdlib.h>
-//#include<stdio.h>
-//#include "wstypes.h"
-//#include "winblows.h"
+// #include<stdlib.h>
+// #include<stdio.h>
+// #include "wstypes.h"
+// #include "winblows.h"
 
-class BMP8
-{
-public:
-	BMP8() : hBMP( NULL ), hPal( NULL ), hWnd( NULL )	{}
-	~BMP8();
+class BMP8 {
+ public:
+  BMP8() : hBMP(NULL), hPal(NULL), hWnd(NULL) {}
+  ~BMP8();
 
-	bool	Init( const char* szFile, HWND hWnd );
-	bool	Draw(void);  // call this from your WM_PAINT message
+  bool Init(const char* szFile, HWND hWnd);
+  bool Draw(void);  // call this from your WM_PAINT message
 
-private:
-	HBITMAP		hBMP;
-	HPALETTE	hPal;
-	HWND		hWnd;
+ private:
+  HBITMAP hBMP;
+  HPALETTE hPal;
+  HWND hWnd;
 };
-
 
 #endif

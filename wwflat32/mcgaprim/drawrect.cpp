@@ -20,7 +20,8 @@
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : Westwood 32 Bit Library						*
+ *                 Project Name : Westwood 32 Bit Library
+ **
  *                                                                         *
  *                    File Name : DRAWRECT.C                               *
  *                                                                         *
@@ -57,10 +58,10 @@
  * HISTORY:                                                                *
  *   08/20/1993 JLB : Created.                                             *
  *=========================================================================*/
-VOID GraphicViewPortClass::Draw_Rect(int x1_pixel, int y1_pixel, int x2_pixel, int y2_pixel, unsigned char color)
-{
-	Draw_Line(x1_pixel, y1_pixel, x2_pixel, y1_pixel, color);
-	Draw_Line(x1_pixel, y2_pixel, x2_pixel, y2_pixel, color);
-	Draw_Line(x1_pixel, y1_pixel, x1_pixel, y2_pixel, color);
-	Draw_Line(x2_pixel, y1_pixel, x2_pixel, y2_pixel, color);
+VOID GraphicViewPortClass::Draw_Rect(int x1_pixel, int y1_pixel, int x2_pixel,
+                                     int y2_pixel, unsigned char color) {
+  Draw_Line(x1_pixel, y1_pixel, x2_pixel, y1_pixel, color);
+  Draw_Line(x1_pixel, y2_pixel, x2_pixel, y2_pixel, color);
+  Draw_Line(x1_pixel, y1_pixel, x1_pixel, y2_pixel, color);
+  Draw_Line(x2_pixel, y1_pixel, x2_pixel, y2_pixel, color);
 }

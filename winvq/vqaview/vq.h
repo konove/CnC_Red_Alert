@@ -49,7 +49,7 @@
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-void Set_Movie_Frame_Rate( void );
+void Set_Movie_Frame_Rate(void);
 
 //==========================================================================
 // PRIVATE DEFINES
@@ -59,103 +59,99 @@ void Set_Movie_Frame_Rate( void );
 // GENERAL DEFINES
 //--------------------------------------------------------------------------
 
-#define VQ_BLOCK_WIDTH		4
-#define VQ_BLOCK_HEIGHT		4
-#define VQ_COLUMNS			( VQ_MOVIE_WIDTH / VQ_BLOCK_WIDTH )
-#define VQ_ROWS				( VQ_MOVIE_HEIGHT / VQ_BLOCK_HEIGHT )
+#define VQ_BLOCK_WIDTH 4
+#define VQ_BLOCK_HEIGHT 4
+#define VQ_COLUMNS (VQ_MOVIE_WIDTH / VQ_BLOCK_WIDTH)
+#define VQ_ROWS (VQ_MOVIE_HEIGHT / VQ_BLOCK_HEIGHT)
 
 // Codes for media_src parameter of VQAClass constructor:
-#define FROM_DISK				0
-#define FROM_MEMORY			1
+#define FROM_DISK 0
+#define FROM_MEMORY 1
 
 // CODES for Play_VQA:
-#define PLAY_ALL_FRAMES		 	-1
-#define PLAY_TO_END_OF_MOVIE	-2
+#define PLAY_ALL_FRAMES -1
+#define PLAY_TO_END_OF_MOVIE -2
 
 // CODES for Play_VQA_Frame:
-#define PLAY_LAST_FRAME			-1
+#define PLAY_LAST_FRAME -1
 
 // Error codes returned by VQA_INIT:
-#define VQA_INIT_NO_ERROR					-1
-#define VQA_INIT_FAILED_MEM_POOL_ALLOC	-2
-#define VQA_INIT_FAILED_SCRATCH_ALLOC	-3
+#define VQA_INIT_NO_ERROR -1
+#define VQA_INIT_FAILED_MEM_POOL_ALLOC -2
+#define VQA_INIT_FAILED_SCRATCH_ALLOC -3
 
 // Codes for Cache_VQA:
-#define CACHE_REST_OF_FILE		0
+#define CACHE_REST_OF_FILE 0
 
 // Error codes returned by CACHE_VQA
-#define CACHE_NO_ERROR			-1
-#define CACHE_EOF					-2
-#define CACHE_FAILED_MEM_ALLOC	-3
-#define CACHE_OPEN_FILE_ERROR	-4
-#define CACHE_READ_ERROR			-5
+#define CACHE_NO_ERROR -1
+#define CACHE_EOF -2
+#define CACHE_FAILED_MEM_ALLOC -3
+#define CACHE_OPEN_FILE_ERROR -4
+#define CACHE_READ_ERROR -5
 
 // Error codes returned by Play_VQA:
-#define VQA_PLAY_NO_ERROR		0
-#define VQA_PLAY_USER_BREAK		1
+#define VQA_PLAY_NO_ERROR 0
+#define VQA_PLAY_USER_BREAK 1
 
-#define VECTOR_FORMAT_OFFSETS	1
-#define VECTOR_FORMAT_INDEXES	2
-#define MAX_CODEBOOK_OFFSET		32766
+#define VECTOR_FORMAT_OFFSETS 1
+#define VECTOR_FORMAT_INDEXES 2
+#define MAX_CODEBOOK_OFFSET 32766
 
 //==========================================================================
 // PUBLIC DATA
 //==========================================================================
 
-extern unsigned char 		*Movie_Scratch_Buffer;
+extern unsigned char *Movie_Scratch_Buffer;
 
 //==========================================================================
 // CLASSES
 //==========================================================================
 
 class VQAClass {
-	private:
-		char 				base_filename[ _MAX_PATH ];
-		char 				vqa_filename[ _MAX_PATH ];
-		char				PaletteFilename [_MAX_PATH];
-		VQAConfig		vqa_config;
-		VQAHandle		*vqa_handle;
-		short				media_source;
-		int				file_handle;
-		unsigned char	palette[ SIZE_OF_PALETTE * 3 ];
-		int				current_frame;
-		int				total_frames;
-		BOOL				vqa_is_open;
-		unsigned char	*InterpolatedPalettes[50];		//Max 50 palette changes in a vq
-		BOOL				PalettesRead;
-		RawFileClass	*PaletteFile;
-		unsigned			NumPalettes;
+ private:
+  char base_filename[_MAX_PATH];
+  char vqa_filename[_MAX_PATH];
+  char PaletteFilename[_MAX_PATH];
+  VQAConfig vqa_config;
+  VQAHandle *vqa_handle;
+  short media_source;
+  int file_handle;
+  unsigned char palette[SIZE_OF_PALETTE * 3];
+  int current_frame;
+  int total_frames;
+  BOOL vqa_is_open;
+  unsigned char *InterpolatedPalettes[50];  // Max 50 palette changes in a vq
+  BOOL PalettesRead;
+  RawFileClass *PaletteFile;
+  unsigned NumPalettes;
 
+  /*=========================================================================*/
+  /* Private functions.
+   */
+  /*=========================================================================*/
+  int VQAClass::Play_Generic_VQA(int last_frame_to_play);
 
-
-		/*=========================================================================*/
-		/* Private functions.																		*/
-		/*=========================================================================*/
-		int VQAClass::Play_Generic_VQA( int last_frame_to_play );
-
-	public:
-		VQAClass( char *filename, char *buffer, short media_src, long (*callback) (unsigned char *, long) );
-		~VQAClass (void);
-		BOOL VQAClass::Update_Palette( unsigned char *newpalette );
-		BOOL Open_And_Load_Buffers( void );
-		void Seek_To_Frame( unsigned long frame );
-		int Play_VQA( int last_frame_to_play );
-		void Play_VQA_Frame( int frame_number );
-		void Pause_VQA( void );
-		void Close_And_Free_VQA( void );
-		void VQAClass::Read_Palettes(void);
-		void VQAClass::Write_Palettes(void);
+ public:
+  VQAClass(char *filename, char *buffer, short media_src,
+           long (*callback)(unsigned char *, long));
+  ~VQAClass(void);
+  BOOL VQAClass::Update_Palette(unsigned char *newpalette);
+  BOOL Open_And_Load_Buffers(void);
+  void Seek_To_Frame(unsigned long frame);
+  int Play_VQA(int last_frame_to_play);
+  void Play_VQA_Frame(int frame_number);
+  void Pause_VQA(void);
+  void Close_And_Free_VQA(void);
+  void VQAClass::Read_Palettes(void);
+  void VQAClass::Write_Palettes(void);
 }; /* VQAClass */
-
 
 //==========================================================================
 // TYPES
 //==========================================================================
 
 typedef struct {
-	unsigned long	file_offset;
-	unsigned long	file_size;
+  unsigned long file_offset;
+  unsigned long file_size;
 } VQACacheHeader;
-
-
-

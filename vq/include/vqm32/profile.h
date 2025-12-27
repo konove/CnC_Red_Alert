@@ -19,34 +19,32 @@
 #ifndef VQMPROFILE_H
 #define VQMPROFILE_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     Profile.h (32-Bit protected mode)
-*
-* DESCRIPTION
-*     INI file profiling definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     January 26, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     Profile.h (32-Bit protected mode)
+ *
+ * DESCRIPTION
+ *     INI file profiling definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     January 26, 1995
+ *
+ ****************************************************************************/
 
 /* Prototypes */
-long GetINIInt(char const *section, char const *entry,
-		long deflt, char *fname);
+long GetINIInt(char const *section, char const *entry, long deflt, char *fname);
 
-long GetINIString(char const *section, char const *entry, 
-		char const *def, char *retbuffer, long retlen, char *fname);
+long GetINIString(char const *section, char const *entry, char const *def,
+                  char *retbuffer, long retlen, char *fname);
 
-long Get_Frame_Pathname(char *inifile,long anim_frame,char *ext,
-		char *outbuf);
+long Get_Frame_Pathname(char *inifile, long anim_frame, char *ext,
+                        char *outbuf);
 
 #endif /* VQMPROFILE_H */
-

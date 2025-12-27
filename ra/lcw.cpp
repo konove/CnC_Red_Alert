@@ -70,94 +70,86 @@
  * HISTORY:                                                                *
  *    03/20/1995 IML : Created.                                            *
  *=========================================================================*/
-int LCW_Uncomp(void const * source, void * dest, unsigned long )
-{
-	unsigned char * source_ptr, * dest_ptr, * copy_ptr, op_code, data;
-	unsigned	  count, * word_dest_ptr, word_data;
+int LCW_Uncomp(void const* source, void* dest, unsigned long) {
+  unsigned char *source_ptr, *dest_ptr, *copy_ptr, op_code, data;
+  unsigned count, *word_dest_ptr, word_data;
 
-	/* Copy the source and destination ptrs. */
-	source_ptr = (unsigned char*) source;
-	dest_ptr   = (unsigned char*) dest;
+  /* Copy the source and destination ptrs. */
+  source_ptr = (unsigned char*)source;
+  dest_ptr = (unsigned char*)dest;
 
-	while (1 /*TRUE*/) {
+  while (1 /*TRUE*/) {
+    /* Read in the operation code. */
+    op_code = *source_ptr++;
 
-		/* Read in the operation code. */
-		op_code = *source_ptr++;
+    if (!(op_code & 0x80)) {
+      /* Do a short copy from destination. */
+      count = (op_code >> 4) + 3;
+      copy_ptr = dest_ptr -
+                 ((unsigned)*source_ptr++ + (((unsigned)op_code & 0x0f) << 8));
 
-		if (!(op_code & 0x80)) {
+      while (count--) *dest_ptr++ = *copy_ptr++;
 
-			/* Do a short copy from destination. */
-			count	 = (op_code >> 4) + 3;
-			copy_ptr = dest_ptr - ((unsigned) *source_ptr++ + (((unsigned) op_code & 0x0f) << 8));
+    } else {
+      if (!(op_code & 0x40)) {
+        if (op_code == 0x80) {
+          /* Return # of destination bytes written. */
+          return ((unsigned long)(dest_ptr - (unsigned char*)dest));
 
-			while (count--) *dest_ptr++ = *copy_ptr++;
+        } else {
+          /* Do a medium copy from source. */
+          count = op_code & 0x3f;
 
-		} else {
+          while (count--) *dest_ptr++ = *source_ptr++;
+        }
 
-			if (!(op_code & 0x40)) {
+      } else {
+        if (op_code == 0xfe) {
+          /* Do a long run. */
+          count = *source_ptr + ((unsigned)*(source_ptr + 1) << 8);
+          word_data = data = *(source_ptr + 2);
+          word_data = (word_data << 24) + (word_data << 16) + (word_data << 8) +
+                      word_data;
+          source_ptr += 3;
 
-				if (op_code == 0x80) {
+          copy_ptr = dest_ptr + 4 - ((uintptr_t)dest_ptr & 0x3);
+          count -= (copy_ptr - dest_ptr);
+          while (dest_ptr < copy_ptr) *dest_ptr++ = data;
 
-					/* Return # of destination bytes written. */
-					return ((unsigned long) (dest_ptr - (unsigned char*) dest));
+          word_dest_ptr = (unsigned*)dest_ptr;
 
-				} else {
+          dest_ptr += (count & 0xfffffffc);
 
-					/* Do a medium copy from source. */
-					count = op_code & 0x3f;
+          while (word_dest_ptr < (unsigned*)dest_ptr) {
+            *word_dest_ptr = word_data;
+            *(word_dest_ptr + 1) = word_data;
+            word_dest_ptr += 2;
+          }
 
-					while (count--) *dest_ptr++ = *source_ptr++;
-				}
+          copy_ptr = dest_ptr + (count & 0x3);
+          while (dest_ptr < copy_ptr) *dest_ptr++ = data;
 
-			} else {
+        } else {
+          if (op_code == 0xff) {
+            /* Do a long copy from destination. */
+            count = *source_ptr + ((unsigned)*(source_ptr + 1) << 8);
+            copy_ptr = (unsigned char*)dest + *(source_ptr + 2) +
+                       ((unsigned)*(source_ptr + 3) << 8);
+            source_ptr += 4;
 
-				if (op_code == 0xfe) {
+            while (count--) *dest_ptr++ = *copy_ptr++;
 
-					/* Do a long run. */
-					count = *source_ptr + ((unsigned) *(source_ptr + 1) << 8);
-					word_data = data = *(source_ptr + 2);
-					word_data  = (word_data << 24) + (word_data << 16) + (word_data << 8) + word_data;
-					source_ptr += 3;
+          } else {
+            /* Do a medium copy from destination. */
+            count = (op_code & 0x3f) + 3;
+            copy_ptr = (unsigned char*)dest + *source_ptr +
+                       ((unsigned)*(source_ptr + 1) << 8);
+            source_ptr += 2;
 
-					copy_ptr = dest_ptr + 4 - ((uintptr_t) dest_ptr & 0x3);
-					count -= (copy_ptr - dest_ptr);
-					while (dest_ptr < copy_ptr) *dest_ptr++ = data;
-
-					word_dest_ptr = (unsigned*) dest_ptr;
-
-					dest_ptr += (count & 0xfffffffc);
-
-					while (word_dest_ptr < (unsigned*) dest_ptr) {
-						*word_dest_ptr		= word_data;
-						*(word_dest_ptr + 1) = word_data;
-						word_dest_ptr += 2;
-					}
-
-					copy_ptr = dest_ptr + (count & 0x3);
-					while (dest_ptr < copy_ptr) *dest_ptr++ = data;
-
-				} else {
-
-					if (op_code == 0xff) {
-
-						/* Do a long copy from destination. */
-						count	 = *source_ptr + ((unsigned) *(source_ptr + 1) << 8);
-						copy_ptr = (unsigned char*) dest + *(source_ptr + 2) + ((unsigned) *(source_ptr + 3) << 8);
-						source_ptr += 4;
-
-						while (count--) *dest_ptr++ = *copy_ptr++;
-
-					} else {
-
-						/* Do a medium copy from destination. */
-						count = (op_code & 0x3f) + 3;
-						copy_ptr = (unsigned char*) dest + *source_ptr + ((unsigned) *(source_ptr + 1) << 8);
-						source_ptr += 2;
-
-						while (count--) *dest_ptr++ = *copy_ptr++;
-					}
-				}
-			}
-		}
-	}
+            while (count--) *dest_ptr++ = *copy_ptr++;
+          }
+        }
+      }
+    }
+  }
 }

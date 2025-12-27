@@ -16,116 +16,117 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\mouse.h_v   2.16   16 Oct 1995 16:45:06   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\mouse.h_v   2.16   16 Oct 1995 16:45:06
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : MOUSE.H                                                      *
+ *                    File Name : MOUSE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 12/15/94                                                     *
+ *                   Start Date : 12/15/94 *
  *                                                                                             *
- *                  Last Update : December 15, 1994 [JLB]                                      *
+ *                  Last Update : December 15, 1994 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef MOUSE_H
 #define MOUSE_H
 
-#include	"stage.h"
-#include	"scroll.h"
+#include "stage.h"
+#include "scroll.h"
 
-class MouseClass: public ScrollClass
-{
-	public:
-		MouseClass(void);
-		MouseClass(NoInitClass const & x) : ScrollClass(x) {};
+class MouseClass : public ScrollClass {
+ public:
+  MouseClass(void);
+  MouseClass(NoInitClass const &x) : ScrollClass(x){};
 
-		/*
-		** Initialization
-		*/
-		virtual void One_Time(void);							// One-time inits
-		virtual void Init_Clear(void);						// Clears all to known state
+  /*
+  ** Initialization
+  */
+  virtual void One_Time(void);    // One-time inits
+  virtual void Init_Clear(void);  // Clears all to known state
 
-		virtual void AI(KeyNumType &input, int x, int y);
-		virtual bool Override_Mouse_Shape(MouseType mouse, bool wwsmall=false);
-		virtual void Revert_Mouse_Shape(void);
-		virtual MouseType Get_Mouse_Shape(void) const {return NormalMouseShape;};
-		virtual void Mouse_Small(bool wwsmall);
+  virtual void AI(KeyNumType &input, int x, int y);
+  virtual bool Override_Mouse_Shape(MouseType mouse, bool wwsmall = false);
+  virtual void Revert_Mouse_Shape(void);
+  virtual MouseType Get_Mouse_Shape(void) const { return NormalMouseShape; };
+  virtual void Mouse_Small(bool wwsmall);
 
-		/*
-		**	File I/O.
-		*/
-		virtual bool Load(FileClass & file);
-		virtual bool Save(FileClass & file);
-		virtual void Code_Pointers(void);
-		virtual void Decode_Pointers(void);
+  /*
+  **	File I/O.
+  */
+  virtual bool Load(FileClass &file);
+  virtual bool Save(FileClass &file);
+  virtual void Code_Pointers(void);
+  virtual void Decode_Pointers(void);
 
-		virtual void Set_Default_Mouse(MouseType mouse, bool wwsmall = false);
+  virtual void Set_Default_Mouse(MouseType mouse, bool wwsmall = false);
 
-		/*
-		**	This allows the tactical map input gadget access to change the
-		**	mouse shapes.
-		*/
-		friend class TacticalClass;
+  /*
+  **	This allows the tactical map input gadget access to change the
+  **	mouse shapes.
+  */
+  friend class TacticalClass;
 
-	private:
+ private:
+  /*
+  **	This type is used to control the frames and rates of the mouse
+  **	pointer. Some mouse pointers are actually looping animations.
+  */
+  typedef struct MouseStruct {
+    int StartFrame;  // Starting frame number.
+    int FrameCount;  // Number of animation frames.
+    int FrameRate;   // Frame delay between changing frames.
+    int SmallFrame;  // Start frame number for small version (if any).
+    int X, Y;        // Hotspot X and Y offset.
+  } MouseStruct;
 
-		/*
-		**	This type is used to control the frames and rates of the mouse
-		**	pointer. Some mouse pointers are actually looping animations.
-		*/
-		typedef struct MouseStruct
-		{
-			int StartFrame;			// Starting frame number.
-			int FrameCount;			// Number of animation frames.
-			int FrameRate;				// Frame delay between changing frames.
-			int SmallFrame;			// Start frame number for small version (if any).
-			int X,Y;						// Hotspot X and Y offset.
-		} MouseStruct;
+  /*
+  **	The control frames and rates for the various mouse pointers are stored
+  **	in this static array.
+  */
+  static MouseStruct MouseControl[MOUSE_COUNT];
 
-		/*
-		**	The control frames and rates for the various mouse pointers are stored
-		**	in this static array.
-		*/
-		static MouseStruct MouseControl[MOUSE_COUNT];
+  /*
+  **	If the small representation of the mouse is active, then this flag is
+  *true.
+  */
+  unsigned IsSmall : 1;
 
-		/*
-		**	If the small representation of the mouse is active, then this flag is true.
-		*/
-		unsigned IsSmall:1;
+  /*
+  **	This points to the loaded mouse shapes.
+  */
+  static void const *MouseShapes;
 
-		/*
-		**	This points to the loaded mouse shapes.
-		*/
-		static void const * MouseShapes;
+  /*
+  **	The mouse shape is controlled by these variables. These
+  **	hold the current mouse shape (so resetting won't be needlessly
+  *performed) and *	the normal default mouse shape (when arrow shapes are
+  *needed).
+  */
+  MouseType CurrentMouseShape;
+  MouseType NormalMouseShape;
 
-		/*
-		**	The mouse shape is controlled by these variables. These
-		**	hold the current mouse shape (so resetting won't be needlessly performed) and
-		**	the normal default mouse shape (when arrow shapes are needed).
-		*/
-		MouseType CurrentMouseShape;
-		MouseType NormalMouseShape;
+  /*
+  **	For animating mouse shapes, this controls the frame and animation rate.
+  */
+  static CountDownTimerClass Timer;
+  int Frame;
+  //		StageClass Control;
 
-		/*
-		**	For animating mouse shapes, this controls the frame and animation rate.
-		*/
-		static CountDownTimerClass Timer;
-		int Frame;
-//		StageClass Control;
-
-		/*
-		** This contains the value of the Virtual Function Table Pointer
-		*/
-		static void * VTable;
+  /*
+  ** This contains the value of the Virtual Function Table Pointer
+  */
+  static void *VTable;
 };
-
 
 #endif

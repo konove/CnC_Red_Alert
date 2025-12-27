@@ -16,63 +16,64 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\tarcom.h_v   2.17   01 Mar 1996 17:27:24   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\tarcom.h_v   2.17   01 Mar 1996 17:27:24
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TARCOM.H                                                     *
+ *                    File Name : TARCOM.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 23, 1994                                               *
+ *                   Start Date : April 23, 1994 *
  *                                                                                             *
- *                  Last Update : April 23, 1994   [JLB]                                       *
+ *                  Last Update : April 23, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TARCOM_H
 #define TARCOM_H
 
-#include	"turret.h"
-#include	"bullet.h"
+#include "turret.h"
+#include "bullet.h"
 
 /****************************************************************************
 **	Units that can perform combat are handled by this class. It performs
-**	such operations as determining threat value down to actually launching the
-**	projectile.
+**	such operations as determining threat value down to actually launching
+*the *	projectile.
 */
-class TarComClass : public TurretClass
-{
-	public:
-		/*---------------------------------------------------------------------
-		**	Constructors, Destructors, and overloaded operators.
-		*/
-		TarComClass(void) {};
-		TarComClass(UnitType classid, HousesType house) : TurretClass(classid, house) {};
-		virtual ~TarComClass(void);
+class TarComClass : public TurretClass {
+ public:
+  /*---------------------------------------------------------------------
+  **	Constructors, Destructors, and overloaded operators.
+  */
+  TarComClass(void){};
+  TarComClass(UnitType classid, HousesType house)
+      : TurretClass(classid, house){};
+  virtual ~TarComClass(void);
 
-		/*---------------------------------------------------------------------
-		**	Member function prototypes.
-		*/
-		#ifdef CHEAT_KEYS
-		virtual void Debug_Dump(MonoClass *mono) const;
-		#endif
-		virtual void AI(void);
-//		virtual bool Target_Something_Nearby(ThreatType rangmatters=THREAT_NORMAL);
+/*---------------------------------------------------------------------
+**	Member function prototypes.
+*/
+#ifdef CHEAT_KEYS
+  virtual void Debug_Dump(MonoClass *mono) const;
+#endif
+  virtual void AI(void);
+  //		virtual bool Target_Something_Nearby(ThreatType
+  //rangmatters=THREAT_NORMAL);
 
-		/*
-		**	File I/O.
-		*/
-		virtual void Code_Pointers(void);
-		virtual void Decode_Pointers(void);
-
+  /*
+  **	File I/O.
+  */
+  virtual void Code_Pointers(void);
+  virtual void Decode_Pointers(void);
 };
 
 #endif
-
-

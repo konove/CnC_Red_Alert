@@ -22,13 +22,14 @@
 ;*                                                                         *
 ;*                 Project Name : Library - Filio header stuff.            *
 ;*                                                                         *
-;*                    File Name : FILE.H                                 	*
+;*                    File Name : FILE.H *
 ;*                                                                         *
 ;*                   Programmer : Scott K. Bowen                           *
 ;*                                                                         *
 ;*                   Start Date : September 13, 1993                       *
 ;*                                                                         *
-;*                  Last Update : April 11, 1994									*
+;*                  Last Update : April 11, 1994
+*
 ;*                                                                         *
 ;*-------------------------------------------------------------------------*
 ;* Functions:                                                              *
@@ -41,52 +42,52 @@
 #ifndef _FILE_H
 #define _FILE_H
 
-
 /*=========================================================================*/
-/* Fileio defines																				*/
+/* Fileio defines
+ */
 /*=========================================================================*/
 
-#define	LIB_CDROM TRUE
+#define LIB_CDROM TRUE
 
-#define MODE_OLDFILE				(O_RDONLY | O_BINARY)
-#define MODE_NEWFILE				(O_WRONLY | O_BINARY | O_CREAT | O_TRUNC)
-#define MODE_READWRITE			(O_RDWR   | O_BINARY)
+#define MODE_OLDFILE (O_RDONLY | O_BINARY)
+#define MODE_NEWFILE (O_WRONLY | O_BINARY | O_CREAT | O_TRUNC)
+#define MODE_READWRITE (O_RDWR | O_BINARY)
 
-#define FILEOPENERROR			-1
-#define FILEOPEN(f,m)			ibm_open(f, m, (((UWORD) m) == MODE_OLDFILE) ? S_IREAD : (S_IREAD | S_IWRITE))
+#define FILEOPENERROR -1
+#define FILEOPEN(f, m) \
+  ibm_open(f, m, (((UWORD)m) == MODE_OLDFILE) ? S_IREAD : (S_IREAD | S_IWRITE))
 
-#define FILECLOSE(fd)			ibm_close(fd)
-#define FILEREAD(f,b,n)			ibm_read(f,b,(WORD)(n))
-#define FILEWRITE(f,b,n)		ibm_write(f,b,(WORD)(n))
-#define FILESEEK(f,b,n)			ibm_lseek(f, b, n)
-#define FILEDELETE(f)			ibm_unlink(f)
-#define CHANGEDIR(p)				ibm_chdir(p)
+#define FILECLOSE(fd) ibm_close(fd)
+#define FILEREAD(f, b, n) ibm_read(f, b, (WORD)(n))
+#define FILEWRITE(f, b, n) ibm_write(f, b, (WORD)(n))
+#define FILESEEK(f, b, n) ibm_lseek(f, b, n)
+#define FILEDELETE(f) ibm_unlink(f)
+#define CHANGEDIR(p) ibm_chdir(p)
 
-#define FILENAMESIZE				13
-#define IO_CHUNK_SIZE			0xfff0UL
+#define FILENAMESIZE 13
+#define IO_CHUNK_SIZE 0xfff0UL
 
-/* 
-**	Maximum number of file handles 
+/*
+**	Maximum number of file handles
 */
-#define TABLE_MAX			20
+#define TABLE_MAX 20
 
- 
 /*=========================================================================*/
 /* The file handle table */
 /*=========================================================================*/
 typedef struct {
-	BOOL						Empty;		// Is this handle empty?
-	WORD						Handle;		// DOS file handle (0 = resident).
-	LONG						Pos;			// Current file position.
-	LONG						Start;		// Offset of file from pointer.
-	WORD						Index;		// FileData[] index.
-	WORD						Mode;			// Access mode (WW).
-	BYTE						*Name;		// File name pointer.
+  BOOL Empty;   // Is this handle empty?
+  WORD Handle;  // DOS file handle (0 = resident).
+  LONG Pos;     // Current file position.
+  LONG Start;   // Offset of file from pointer.
+  WORD Index;   // FileData[] index.
+  WORD Mode;    // Access mode (WW).
+  BYTE *Name;   // File name pointer.
 } FileHandleType;
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: FILEIO.CPP							*/
+/* The following prototypes are for the file: FILEIO.CPP
+ */
 /*=========================================================================*/
 
 WORD ibm_getdisk(VOID);
@@ -100,18 +101,19 @@ WORD ibm_open(BYTE const *name, UWORD mode, WORD attrib);
 WORD ibm_chdir(BYTE const *path);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: FILELIB.CPP						*/
+/* The following prototypes are for the file: FILELIB.CPP
+ */
 /*=========================================================================*/
 
 WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const *file_name);
 VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const *filename);
-LONG cdecl Read_File_With_Recovery( WORD handle, VOID *buf, UWORD bytes );
-WORD cdecl Open_File_With_Recovery( BYTE const *file_name, UWORD mode );
+LONG cdecl Read_File_With_Recovery(WORD handle, VOID *buf, UWORD bytes);
+WORD cdecl Open_File_With_Recovery(BYTE const *file_name, UWORD mode);
 BOOL cdecl Cache_File(WORD index, WORD file_handle);
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: DEVICES.ASM						*/
+/* The following prototypes are for the file: DEVICES.ASM
+ */
 /*=========================================================================*/
 
 #ifdef __cplusplus
@@ -126,7 +128,8 @@ extern WORD Is_Device_Real(WORD device);
 #endif
 
 /*=========================================================================*/
-/* The following prototypes are for the file: DEVTABLE.ASM						*/
+/* The following prototypes are for the file: DEVTABLE.ASM
+ */
 /*=========================================================================*/
 
 #ifdef __cplusplus
@@ -136,14 +139,13 @@ extern "C" {
 extern VOID Init_Device_Table(BYTE *table);
 extern WORD Max_Device(VOID);
 
-
 #ifdef __cplusplus
 }
 #endif
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: HARDERR.ASM						*/
+/* The following prototypes are for the file: HARDERR.ASM
+ */
 /*=========================================================================*/
 
 #ifdef __cplusplus
@@ -157,27 +159,22 @@ extern VOID Remove_Hard_Error_Handler(VOID);
 }
 #endif
 
-
 /*=========================================================================*/
-/* Globale variables in the fileio system.						               */
+/* Globale variables in the fileio system.
+ */
 /*=========================================================================*/
 
-extern BYTE CallingDOSInt;					 
-extern "C" extern BYTE MaxDevice,DefaultDrive;
-extern BYTE MultiDriveSearch;	
+extern BYTE CallingDOSInt;
+extern "C" extern BYTE MaxDevice, DefaultDrive;
+extern BYTE MultiDriveSearch;
 extern FileDataType *FileDataPtr;
 extern FileHandleType FileHandleTable[TABLE_MAX];
-extern UWORD NumFiles;							 	// Number of files, except PAK, in file table.
-extern UWORD NumPAKFiles;							// Number of PAK files in filetable.
-extern VOID *FileCacheHeap;						// Pointer to the cache in memory.
-extern WORD DiskNumber;						 
+extern UWORD NumFiles;       // Number of files, except PAK, in file table.
+extern UWORD NumPAKFiles;    // Number of PAK files in filetable.
+extern VOID *FileCacheHeap;  // Pointer to the cache in memory.
+extern WORD DiskNumber;
 extern WORD MaxDirNum;
 
-
 /*=========================================================================*/
-	 
 
-
-#endif // _FILE_H
-
-
+#endif  // _FILE_H

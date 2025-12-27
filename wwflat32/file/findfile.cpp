@@ -42,13 +42,11 @@
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-
-
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 #ifndef _FILE_H
 #include "_file.h"
@@ -63,8 +61,6 @@
 #include <string.h>
 #include <search.h>
 #include <sys\stat.h>
-
-
 
 /***************************************************************************
  * FIND_FILE -- Checks if a file is immediatly available.                  *
@@ -87,160 +83,150 @@
  *   03/14/1992 JLB : Modified for Amiga compatability.                    *
  *   01/11/1993 SKB : Modified for CD-ROM searches.                        *
  *=========================================================================*/
-int cdecl Find_File(char const *file_name)
-{
-	FileDataType	*filedata = NULL;
-	WORD				index;					// File index (if any).
-	WORD				disk;						// Disk number of file (if in filetable).
-	
-	/*
-	**	If the filename is invalid then it errors out as if the file wasn't
-	**	found (naturally).
-	*/
-	if (!file_name) return(FALSE);
+int cdecl Find_File(char const *file_name) {
+  FileDataType *filedata = NULL;
+  WORD index;  // File index (if any).
+  WORD disk;   // Disk number of file (if in filetable).
 
-	/*
-	**	Determine if the file has a file table entry.  If it does, then
-	**	special checks and processing must occur.
-	** Also, if it is in memory, return with it.
-	*/
-	index = Find_File_Index(file_name);
-	filedata = &FileDataPtr[index];
+  /*
+  **	If the filename is invalid then it errors out as if the file wasn't
+  **	found (naturally).
+  */
+  if (!file_name) return (FALSE);
 
-	if (index != ERROR) {
+  /*
+  **	Determine if the file has a file table entry.  If it does, then
+  **	special checks and processing must occur.
+  ** Also, if it is in memory, return with it.
+  */
+  index = Find_File_Index(file_name);
+  filedata = &FileDataPtr[index];
 
-		// If the file is currently cached, return TRUE that it was found.
-		if (filedata->Ptr) {
-			return (TRUE);
-		}
-	}
+  if (index != ERROR) {
+    // If the file is currently cached, return TRUE that it was found.
+    if (filedata->Ptr) {
+      return (TRUE);
+    }
+  }
 
-
-	/*
-	**	Always check the current directory for the file.  Only if it can't
-	**	be found are furthur measures required.
-	*/
-	DiskNumber = ERROR;		// This indicates file exists in current directory.
-
-		
- 	#if (LIB_CDROM)
-		ibm_setdisk(*StartPath - 'A');
- 	#endif
-
-	/*
-	**	Check the current directory by attempting to open with READ access.
-	*/
-	{
-		WORD	handle;
-		
-		CallingDOSInt++;
-		handle = open(file_name, O_RDONLY | O_BINARY, S_IREAD);
-		CallingDOSInt--;
-		if (handle != ERROR) 
-		{
-		   //	WORD	d;
-			unsigned d ;
-
-			CallingDOSInt++;
-			close(handle);
-			// d = getdisk();
-			_dos_getdrive ( & d) ;
-			CallingDOSInt--;
-			return(d);
-		}
-	}
-	
-		
-	if (index != ERROR) {
-
-		disk = filedata->Disk;
-		/*
-		**	If the file is in a packed file, then search for the packed file
-		**	instead of the specified one.
-		*/
-		if (index != ERROR && (filedata->Flag & FILEF_PACKED)) {
-			filedata = &FileDataPtr[disk];
-			return (Find_File(filedata->Name));
-		}
-
-	}
-
-	/*
-	**	It could not be found on the current drive, so search the other
-	**	drives if allowed to do so.
-	*/
-	if (!MultiDriveSearch) {
-		return(FALSE);
-	}
+  /*
+  **	Always check the current directory for the file.  Only if it can't
+  **	be found are furthur measures required.
+  */
+  DiskNumber = ERROR;  // This indicates file exists in current directory.
 
 #if (LIB_CDROM)
-	// If we were unable to find the file on the hard drive, change
-	// drives to the CD rom drive and see if it is there.
-	ibm_setdisk(*DataPath - 'A');
- 
-	{
-		WORD	handle;
-		
-		Hard_Error_Occured = 0;
-
-	  	handle = Open_File_With_Recovery( file_name, MODE_OLDFILE );
-
-		if (handle != FILEOPENERROR) {
-			FILECLOSE(handle);
-			return(ibm_getdisk() + 1);
-		}
-	}
-
-	ibm_setdisk(*StartPath - 'A');
-	return (FALSE);
-#else
-
-	{
-		WORD	start_drive;	// Original current drive number.
-
-		/*
-		**	Record the current drive for restoring later in case of failure.
-		*/
-		CallingDOSInt++;
-		start_drive = getdisk();
-		CallingDOSInt--;
-
-		/*
-		**	Sweep backward from the last real drive to the first, looking for the
-		**	file on each in turn.
-		*/
-		for (index = MaxDevice; index != -1; index--) {
-			if (Is_Device_Real(index)) {
-				CallingDOSInt++;
-			 	setdisk(index);
-				CallingDOSInt--;
-
-				{
-					WORD	handle;
-
-					CallingDOSInt++;
-					handle = open(file_name, O_RDONLY | O_BINARY, S_IREAD);
-					CallingDOSInt--;
-					if (handle != ERROR) {
-						CallingDOSInt++;
-						close(handle);
-						CallingDOSInt--;
-						DiskNumber = index+1;
-						return (DiskNumber);
-					}
-				}
-			}
-		}
-		CallingDOSInt++;
-		setdisk(start_drive);
-		CallingDOSInt--;
-	}
-	
-	return(FALSE);
+  ibm_setdisk(*StartPath - 'A');
 #endif
 
-}
+  /*
+  **	Check the current directory by attempting to open with READ access.
+  */
+  {
+    WORD handle;
 
+    CallingDOSInt++;
+    handle = open(file_name, O_RDONLY | O_BINARY, S_IREAD);
+    CallingDOSInt--;
+    if (handle != ERROR) {
+      //	WORD	d;
+      unsigned d;
+
+      CallingDOSInt++;
+      close(handle);
+      // d = getdisk();
+      _dos_getdrive(&d);
+      CallingDOSInt--;
+      return (d);
+    }
+  }
+
+  if (index != ERROR) {
+    disk = filedata->Disk;
+    /*
+    **	If the file is in a packed file, then search for the packed file
+    **	instead of the specified one.
+    */
+    if (index != ERROR && (filedata->Flag & FILEF_PACKED)) {
+      filedata = &FileDataPtr[disk];
+      return (Find_File(filedata->Name));
+    }
+  }
+
+  /*
+  **	It could not be found on the current drive, so search the other
+  **	drives if allowed to do so.
+  */
+  if (!MultiDriveSearch) {
+    return (FALSE);
+  }
+
+#if (LIB_CDROM)
+  // If we were unable to find the file on the hard drive, change
+  // drives to the CD rom drive and see if it is there.
+  ibm_setdisk(*DataPath - 'A');
+
+  {
+    WORD handle;
+
+    Hard_Error_Occured = 0;
+
+    handle = Open_File_With_Recovery(file_name, MODE_OLDFILE);
+
+    if (handle != FILEOPENERROR) {
+      FILECLOSE(handle);
+      return (ibm_getdisk() + 1);
+    }
+  }
+
+  ibm_setdisk(*StartPath - 'A');
+  return (FALSE);
+#else
+
+  {
+    WORD start_drive;  // Original current drive number.
+
+    /*
+    **	Record the current drive for restoring later in case of failure.
+    */
+    CallingDOSInt++;
+    start_drive = getdisk();
+    CallingDOSInt--;
+
+    /*
+    **	Sweep backward from the last real drive to the first, looking for the
+    **	file on each in turn.
+    */
+    for (index = MaxDevice; index != -1; index--) {
+      if (Is_Device_Real(index)) {
+        CallingDOSInt++;
+        setdisk(index);
+        CallingDOSInt--;
+
+        {
+          WORD handle;
+
+          CallingDOSInt++;
+          handle = open(file_name, O_RDONLY | O_BINARY, S_IREAD);
+          CallingDOSInt--;
+          if (handle != ERROR) {
+            CallingDOSInt++;
+            close(handle);
+            CallingDOSInt--;
+            DiskNumber = index + 1;
+            return (DiskNumber);
+          }
+        }
+      }
+    }
+    CallingDOSInt++;
+    setdisk(start_drive);
+    CallingDOSInt--;
+  }
+
+  return (FALSE);
+#endif
+}
 
 /***************************************************************************
  * FIND_FILE_INDEX -- Finds the FileTable index number for a given file.   *
@@ -260,53 +246,52 @@ int cdecl Find_File(char const *file_name)
  *   11/09/1991 JLB : Created.                                             *
  *   06/11/1993 JLB : Sorts and binary searches the file table.            *
  *=========================================================================*/
-PRIVATE int Comp_Func(const void *p1, const void *p2)
-{
-	return(strcmp((char *) ((FileDataType*)p1)->Name, (char *) ((FileDataType*)p2)->Name));
+PRIVATE int Comp_Func(const void *p1, const void *p2) {
+  return (strcmp((char *)((FileDataType *)p1)->Name,
+                 (char *)((FileDataType *)p2)->Name));
 }
-int cdecl Find_File_Index(char const *filename)
-{
-	FileDataType	*filedata;			// File entry pointer.
-	FileDataType	key;					// Working file data type var.
+int cdecl Find_File_Index(char const *filename) {
+  FileDataType *filedata;  // File entry pointer.
+  FileDataType key;        // Working file data type var.
 
-	/*
-	**	Perform a binary search on the presorted filetable.
-	*/
-	if (filename) {
+  /*
+  **	Perform a binary search on the presorted filetable.
+  */
+  if (filename) {
+    filedata = NULL;
+    key.Name = (BYTE *)strupr((char *)filename);
+    if (strstr((char *)key.Name, (char *)".PAK")) {
+      /*
+      ** If the FileData table was not loaded from the disk then the PAK files
+      *are
+      ** not sorted so Perform a linear search for the pak files.
+      ** Otherwise the files are sorted so speed things up by doing a bsearch.
+      */
+      if (FileData == FileDataPtr) {
+        filedata =
+            (FileDataType *)lfind(&key, FileDataPtr, (size_t *)&NumPAKFiles,
+                                  sizeof(FileDataType), Comp_Func);
+      } else {
+        filedata = (FileDataType *)bsearch(&key, FileDataPtr, NumPAKFiles,
+                                           sizeof(FileDataType), Comp_Func);
+      }
 
-		filedata = NULL;
-		key.Name = (BYTE *) strupr((char *)filename);
-		if (strstr((char *)key.Name, (char *)".PAK")) {
-			
-			/*
-			** If the FileData table was not loaded from the disk then the PAK files are
-			** not sorted so Perform a linear search for the pak files.
-			** Otherwise the files are sorted so speed things up by doing a bsearch.
-			*/
-			if (FileData == FileDataPtr) {
-				filedata = (FileDataType *) lfind(&key, FileDataPtr, (size_t *) &NumPAKFiles, sizeof(FileDataType), Comp_Func);
-			}
-			else {
-				filedata = (FileDataType *)bsearch(&key, FileDataPtr, NumPAKFiles, sizeof(FileDataType), Comp_Func);
-			}
+    } else {
+      /*
+      **	Perform a binary search for the regular files.
+      */
+      filedata =
+          (FileDataType *)bsearch(&key, &FileDataPtr[NumPAKFiles], NumFiles,
+                                  sizeof(FileDataType), Comp_Func);
+    }
 
-		} else {
-				
-			/*
-			**	Perform a binary search for the regular files.
-			*/
-			filedata = (FileDataType *)bsearch(&key, &FileDataPtr[NumPAKFiles], NumFiles, sizeof(FileDataType), Comp_Func);
-		}
-
-		// Return the element in the array if file was found in table.
-		if (filedata) {
-			return (filedata - FileDataPtr);
-			//return ((WORD)((((LONG)filedata) - ((LONG)FileDataPtr)) / sizeof(FileDataType)));
-		}
-	}
-	return(ERROR);
+    // Return the element in the array if file was found in table.
+    if (filedata) {
+      return (filedata - FileDataPtr);
+      // return ((WORD)((((LONG)filedata) - ((LONG)FileDataPtr)) /
+      // sizeof(FileDataType)));
+    }
+  }
+  return (ERROR);
 }
-
-
-
 

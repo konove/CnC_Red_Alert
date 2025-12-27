@@ -33,7 +33,8 @@
  * converted to a linear packet in a COMMS API compatible format.          *
  *																									*
  * Packets can be created empty and then have fields added to them or can  *
- * be created from an existing linear packet.  										*
+ * be created from an existing linear packet.
+ **
  *																									*
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
@@ -41,61 +42,75 @@
 #ifndef __PACKET_H
 #define __PACKET_H
 
-
 #include "field.h"
 
 class PacketClass {
-	public:
-		PacketClass(short id = 0)
-		{
-			Size 			= 0;
-			ID				= id;
-			Head			= 0;
-		}
-		PacketClass(char *cur_buf);
-		~PacketClass(void);
+ public:
+  PacketClass(short id = 0) {
+    Size = 0;
+    ID = id;
+    Head = 0;
+  }
+  PacketClass(char *cur_buf);
+  ~PacketClass(void);
 
-		//
-		// This function allows us to add a field to the start of the list.  As the field is just
-		//   a big linked list it makes no difference which end we add a member to.
-		//
-		void Add_Field(FieldClass *field);
+  //
+  // This function allows us to add a field to the start of the list.  As the
+  // field is just
+  //   a big linked list it makes no difference which end we add a member to.
+  //
+  void Add_Field(FieldClass *field);
 
-		//
-		// These conveniance functions allow us to add a field directly to the list without
-		// having to worry about newing one first.
-		//
-		void Add_Field(char const *field, char data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, unsigned char data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, short data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, unsigned short data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, long data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, unsigned long data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, const char *data) {Add_Field(new FieldClass(field, data));};
-		void Add_Field(char const *field, void *data, int length) {Add_Field(new FieldClass(field, data, length));};
+  //
+  // These conveniance functions allow us to add a field directly to the list
+  // without having to worry about newing one first.
+  //
+  void Add_Field(char const *field, char data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, unsigned char data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, short data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, unsigned short data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, long data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, unsigned long data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, const char *data) {
+    Add_Field(new FieldClass(field, data));
+  };
+  void Add_Field(char const *field, void *data, int length) {
+    Add_Field(new FieldClass(field, data, length));
+  };
 
-		//
-		// These functions search for a field of a given name in the list and
-		// return the data via a reference value.
-		//
-		FieldClass *Find_Field(char const *id);
-		bool Get_Field(char const *id, char &data);
-		bool Get_Field(char const *id, unsigned char &data);
-		bool Get_Field(char const *id, short &data);
-		bool Get_Field(char const *id, unsigned short &data);
-		bool Get_Field(char const *id, long &data);
-		bool Get_Field(char const *id, unsigned long &data);
-		bool Get_Field(char const *id, char *data);
-		bool Get_Field(char const *id, void *data, int &length);
+  //
+  // These functions search for a field of a given name in the list and
+  // return the data via a reference value.
+  //
+  FieldClass *Find_Field(char const *id);
+  bool Get_Field(char const *id, char &data);
+  bool Get_Field(char const *id, unsigned char &data);
+  bool Get_Field(char const *id, short &data);
+  bool Get_Field(char const *id, unsigned short &data);
+  bool Get_Field(char const *id, long &data);
+  bool Get_Field(char const *id, unsigned long &data);
+  bool Get_Field(char const *id, char *data);
+  bool Get_Field(char const *id, void *data, int &length);
 
-		char *Create_Comms_Packet(int &size);
+  char *Create_Comms_Packet(int &size);
 
-	private:
-		unsigned short 	Size;
-		short 				ID;
-		FieldClass			*Head;
-		FieldClass			*Current;
+ private:
+  unsigned short Size;
+  short ID;
+  FieldClass *Head;
+  FieldClass *Current;
 };
-
 
 #endif

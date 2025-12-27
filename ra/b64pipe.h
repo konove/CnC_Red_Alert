@@ -18,75 +18,74 @@
 
 /* $Header: /CounterStrike/B64PIPE.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : B64PIPE.H                                                    *
+ *                    File Name : B64PIPE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/30/96                                                     *
+ *                   Start Date : 06/30/96 *
  *                                                                                             *
- *                  Last Update : June 30, 1996 [JLB]                                          *
+ *                  Last Update : June 30, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef B64PIPE_H
 #define B64PIPE_H
 
-#include	"pipe.h"
+#include "pipe.h"
 
 /*
-**	This class performs Base64 encoding/decoding to the data that is piped through. Note that
-**	encoded data will grow in size by about 30%. The reverse occurs when decoding.
+**	This class performs Base64 encoding/decoding to the data that is piped
+*through. Note that *	encoded data will grow in size by about 30%. The reverse
+*occurs when decoding.
 */
-class Base64Pipe : public Pipe
-{
-	public:
-		typedef enum CodeControl {
-			ENCODE,
-			DECODE
-		} CodeControl;
+class Base64Pipe : public Pipe {
+ public:
+  typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-		Base64Pipe(CodeControl control) : Control(control), Counter(0) {}
+  Base64Pipe(CodeControl control) : Control(control), Counter(0) {}
 
-		virtual int Flush(void);
-		virtual int Put(void const * source, int slen);
+  virtual int Flush(void);
+  virtual int Put(void const* source, int slen);
 
-	private:
+ private:
+  /*
+  **	Indicates if this is for encoding or decoding of Base64 data.
+  */
+  CodeControl Control;
 
-		/*
-		**	Indicates if this is for encoding or decoding of Base64 data.
-		*/
-		CodeControl Control;
+  /*
+  **	The counter of the number of accumulated bytes pending for processing.
+  */
+  int Counter;
 
-		/*
-		**	The counter of the number of accumulated bytes pending for processing.
-		*/
-		int Counter;
+  /*
+  **	Buffer that holds the Base64 coded bytes. This will be the staging
+  *buffer if *	this is for a decoding process. Otherwise, it will be used as a
+  *scratch buffer.
+  */
+  char CBuffer[4];
 
-		/*
-		**	Buffer that holds the Base64 coded bytes. This will be the staging buffer if
-		**	this is for a decoding process. Otherwise, it will be used as a scratch buffer.
-		*/
-		char CBuffer[4];
+  /*
+  **	Buffer that holds the plain bytes. This will be the staging buffer if
+  *this *	is for an encoding process. Otherwise, it will be used as a
+  *scratch buffer.
+  */
+  char PBuffer[3];
 
-		/*
-		**	Buffer that holds the plain bytes. This will be the staging buffer if this
-		**	is for an encoding process. Otherwise, it will be used as a scratch buffer.
-		*/
-		char PBuffer[3];
-
-		/*
-		**	Explicitly disable the copy constructor and the assignment operator.
-		*/
-		Base64Pipe(Base64Pipe & rvalue);
-		Base64Pipe & operator = (Base64Pipe const & pipe);
+  /*
+  **	Explicitly disable the copy constructor and the assignment operator.
+  */
+  Base64Pipe(Base64Pipe& rvalue);
+  Base64Pipe& operator=(Base64Pipe const& pipe);
 };
 
 #endif

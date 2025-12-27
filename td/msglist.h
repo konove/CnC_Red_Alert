@@ -28,23 +28,29 @@
  *                                                                         *
  *                  Last Update : May 22, 1995 [BRR]                       *
  *                                                                         *
- * How the messages work:																	*
- * - MPlayerMessageList is a gadget list of all current messages				*
- * - MPlayerMessageX & Y are the upper left corner of the 1st message		*
- * - MPlayerMaxMessages is the max # of messages allowed, including			*
- *   the editable message; 0 = no limit.												*
- * - EditLabel points to the textmessage gadget for the current editable	*
- *   field.  EditBuf points to the char buffer being edited.  EditInitPos	*
- *   & EditCurPos define buffer index positions.									*
- * - EditSendAddress is the IPX Address to send the message to when RETURN	*
- *   is pressed.																				*
+ * How the messages work:
+ **
+ * - MPlayerMessageList is a gadget list of all current messages
+ **
+ * - MPlayerMessageX & Y are the upper left corner of the 1st message *
+ * - MPlayerMaxMessages is the max # of messages allowed, including
+ ** the editable message; 0 = no limit.
+ **
+ * - EditLabel points to the textmessage gadget for the current editable
+ ** field.  EditBuf points to the char buffer being edited.  EditInitPos
+ ** & EditCurPos define buffer index positions.
+ **
+ * - EditSendAddress is the IPX Address to send the message to when RETURN
+ ** is pressed.
+ **
  *																									*
- * The UserData field in the TextLabelClass tells what the timeout for		*
- * each message is (0 = none).															*
- * When a message's timeout expires, it's deleted.  When a new message		*
- * is added, the top message is deleted if MPlayerMaxMessages is exceeded.	*
+ * The UserData field in the TextLabelClass tells what the timeout for * each
+ *message is (0 = none).
+ ** When a message's timeout expires, it's deleted.  When a new message * is
+ *added, the top message is deleted if MPlayerMaxMessages is exceeded.	*
  *                                                                         *
- * The Edit-able message is never deleted until ESC or RETURN is pressed.	*
+ * The Edit-able message is never deleted until ESC or RETURN is pressed.
+ **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -55,55 +61,56 @@
 **	Class declaration
 */
 class MessageListClass {
-	public:
-		/*
-		**	Constructor/Destructor
-		*/
-		MessageListClass (void);
-		~MessageListClass ();
+ public:
+  /*
+  **	Constructor/Destructor
+  */
+  MessageListClass(void);
+  ~MessageListClass();
 
-		/*
-		**	Initialization
-		*/
-		void Init (int x, int y, int max_msg, int maxchars, int height);
-		TextLabelClass * Add_Message (char *txt, int color, TextPrintType style, int timeout,
-												unsigned short magic_number, unsigned short crc);
+  /*
+  **	Initialization
+  */
+  void Init(int x, int y, int max_msg, int maxchars, int height);
+  TextLabelClass *Add_Message(char *txt, int color, TextPrintType style,
+                              int timeout, unsigned short magic_number,
+                              unsigned short crc);
 
-		/*
-		**	Message-editing routines
-		*/
-		TextLabelClass * Add_Edit (int color, TextPrintType style, char *to, int width);
-		char * Get_Edit_Buf (void);
+  /*
+  **	Message-editing routines
+  */
+  TextLabelClass *Add_Edit(int color, TextPrintType style, char *to, int width);
+  char *Get_Edit_Buf(void);
 
-		/*
-		**	Maintenance routines
-		*/
-		int Manage (void);
-		int Input (KeyNumType &input);
-		void Draw(void);
-		int Num_Messages(void);
-		void Set_Width(int width);
+  /*
+  **	Maintenance routines
+  */
+  int Manage(void);
+  int Input(KeyNumType &input);
+  void Draw(void);
+  int Num_Messages(void);
+  void Set_Width(int width);
 
-	private:
-		TextLabelClass * MessageList;				// list of messages
-		int MessageX;									// x-coord of upper-left
-		int MessageY;									// y-coord of upper-left
-		int MaxMessages;								// max messages allowed
-		int MaxChars;									// max allowed chars per message
-		int Height;										// height in pixels
-		TextLabelClass *EditLabel;					// ptr to current edit label
-		char *EditBuf;									// ptr to current edit buffer
-		int EditCurPos;								// current edit position
-		int EditInitPos;								// initial edit position
-		int Width;										// Maximum width in pixels of editable string
+ private:
+  TextLabelClass *MessageList;  // list of messages
+  int MessageX;                 // x-coord of upper-left
+  int MessageY;                 // y-coord of upper-left
+  int MaxMessages;              // max messages allowed
+  int MaxChars;                 // max allowed chars per message
+  int Height;                   // height in pixels
+  TextLabelClass *EditLabel;    // ptr to current edit label
+  char *EditBuf;                // ptr to current edit buffer
+  int EditCurPos;               // current edit position
+  int EditInitPos;              // initial edit position
+  int Width;                    // Maximum width in pixels of editable string
 
-		/*
-		** Static buffers provided for messages.  They must be long enough for
-		** both the message, and for the "To" prefix on edited messages, or
-		** the "From:" prefix on received messages.
-		*/
-		static char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30];
-		static char BufferAvail[MAX_NUM_MESSAGES];
+  /*
+  ** Static buffers provided for messages.  They must be long enough for
+  ** both the message, and for the "To" prefix on edited messages, or
+  ** the "From:" prefix on received messages.
+  */
+  static char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30];
+  static char BufferAvail[MAX_NUM_MESSAGES];
 };
 
 #endif

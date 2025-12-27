@@ -18,49 +18,52 @@
 
 /* $Header: /CounterStrike/CRATE.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CRATE.H                                                      *
+ *                    File Name : CRATE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 08/26/96                                                     *
+ *                   Start Date : 08/26/96 *
  *                                                                                             *
- *                  Last Update : August 26, 1996 [JLB]                                        *
+ *                  Last Update : August 26, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CRATE_H
 #define CRATE_H
 
-#include	"ftimer.h"
-#include	"jshell.h"
-
+#include "ftimer.h"
+#include "jshell.h"
 
 class CrateClass {
-	public:
-		CrateClass(void) : Timer(NoInitClass()), Cell(-1) {}
-		void Init(void) {Make_Invalid();}
-		bool Create_Crate(CELL cell);
-		bool Is_Here(CELL cell) const {return(Is_Valid() && cell == Cell);}
-		bool Remove_It(void);
-		bool Is_Expired(void) const {return(Is_Valid() && Timer == 0);}
-		bool Is_Valid(void) const {return(Cell != -1);}
+ public:
+  CrateClass(void) : Timer(NoInitClass()), Cell(-1) {}
+  void Init(void) { Make_Invalid(); }
+  bool Create_Crate(CELL cell);
+  bool Is_Here(CELL cell) const { return (Is_Valid() && cell == Cell); }
+  bool Remove_It(void);
+  bool Is_Expired(void) const { return (Is_Valid() && Timer == 0); }
+  bool Is_Valid(void) const { return (Cell != -1); }
 
-	private:
-		static bool Put_Crate(CELL & cell);
-		static bool Get_Crate(CELL cell);
+ private:
+  static bool Put_Crate(CELL& cell);
+  static bool Get_Crate(CELL cell);
 
-		void Make_Invalid(void) {Cell = -1;Timer.Stop();}
+  void Make_Invalid(void) {
+    Cell = -1;
+    Timer.Stop();
+  }
 
-		CDTimerClass<FrameTimerClass> Timer;
-		CELL Cell;
+  CDTimerClass<FrameTimerClass> Timer;
+  CELL Cell;
 };
-
 
 #endif

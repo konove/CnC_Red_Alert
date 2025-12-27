@@ -17,24 +17,25 @@
 */
 
 /**********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S              ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  **********************************************************************************************
  *                                                                                            *
- *                 Project Name : VQAVIEW																		*
+ *                 Project Name : VQAVIEW
+ **
  *                                                                                            *
- *                    File Name : MAIN.CPP                                                	   *
+ *                    File Name : MAIN.CPP *
  *                                                                                            *
- *                   Programmer : Mike Grayford                                               *
+ *                   Programmer : Mike Grayford *
  *                                                                                            *
- *                   Start Date : November 14, 1995                                          	*
+ *                   Start Date : November 14, 1995 *
  *                                                                                            *
- *                  Last Update : November 20, 1995 [MG]                                     	*
+ *                  Last Update : November 20, 1995 [MG] *
  *                                                                                            *
  *--------------------------------------------------------------------------------------------*
- * Functions:                                                                                 *
- *  WinMain 		-- Program entry point                                                      	*
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-
+ * Functions: * WinMain 		-- Program entry point *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - -*/
 
 //---------------------------------------------------------------------------------------------
 //	INCLUDES
@@ -54,89 +55,81 @@
 #include <monochrm.h>
 #include <movies.h>
 
-
-extern void VQA_Test( char *filename );
+extern void VQA_Test(char *filename);
 
 //==========================================================================
 // Public data
 //==========================================================================
 
 GraphicBufferClass *Screen_Buffer = NULL;
-int						ScreenWidth = VIDEO_MODE_WIDTH;
+int ScreenWidth = VIDEO_MODE_WIDTH;
 
-BOOL	GameInFocus = TRUE;
-void Block_Mouse(GraphicBufferClass*){}
-void Unblock_Mouse(GraphicBufferClass*){}
-
+BOOL GameInFocus = TRUE;
+void Block_Mouse(GraphicBufferClass *) {}
+void Unblock_Mouse(GraphicBufferClass *) {}
 
 /***********************************************************************************************
- * WinMain -- Program entry point                                                              *
+ * WinMain -- Program entry point *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Standard Windows startup parameters                                               *
+ * INPUT:    Standard Windows startup parameters *
  *                                                                                             *
- * OUTPUT:   wParam of the message queue                                                       *
+ * OUTPUT:   wParam of the message queue *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    11/15/95 1:28PM ST : Created                                                             *
+ * HISTORY: * 11/15/95 1:28PM ST : Created *
  *=============================================================================================*/
 
-int WINAPI WinMain (
-	Handle instance_handle,
-	Handle prev_instance_handle,
-	String command_line_string,
-	int show_window_command )
-{
-	if (!prev_instance_handle){
-		//
-		// If the program is already running, bail.
-		//
-		if ( prev_instance_handle ) {
-			return( 0 );
-		}
+int WINAPI WinMain(Handle instance_handle, Handle prev_instance_handle,
+                   String command_line_string, int show_window_command) {
+  if (!prev_instance_handle) {
+    //
+    // If the program is already running, bail.
+    //
+    if (prev_instance_handle) {
+      return (0);
+    }
 
-		//
-		// Create the main window.
-		//
-		Main_Window.Create_Main_Window( instance_handle );
+    //
+    // Create the main window.
+    //
+    Main_Window.Create_Main_Window(instance_handle);
 
-		//
-		// Show the window.
-		//
-		Main_Window.Display_Window();
+    //
+    // Show the window.
+    //
+    Main_Window.Display_Window();
 
-		//
-		// Create the GraphicBufferClass that will be the screen buffer
-		//
-		Screen_Buffer = new GraphicBufferClass ( VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT, (GBC_Enum)(GBC_VIDEOMEM | GBC_VISIBLE) );
+    //
+    // Create the GraphicBufferClass that will be the screen buffer
+    //
+    Screen_Buffer =
+        new GraphicBufferClass(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
+                               (GBC_Enum)(GBC_VIDEOMEM | GBC_VISIBLE));
 
-		//
-		// Initialize Movie system.
-		//
-		Initialize_Movie_System();
+    //
+    // Initialize Movie system.
+    //
+    Initialize_Movie_System();
 
-		if (*command_line_string){
-			VQA_Test(command_line_string);
-		}else{
-			//
-			// Windows message loop
-			//
-			while ( Main_Window.Update_Windows_Messages() ) ;
-		}
+    if (*command_line_string) {
+      VQA_Test(command_line_string);
+    } else {
+      //
+      // Windows message loop
+      //
+      while (Main_Window.Update_Windows_Messages());
+    }
 
-		//
-		// Free the Movie system.
-		//
-		Free_Movie_System();
+    //
+    // Free the Movie system.
+    //
+    Free_Movie_System();
 
-		return( Main_Window.Get_Message_Queue_wParam() );
-	}else{
-		return (-1);
-	}
-
+    return (Main_Window.Get_Message_Queue_wParam());
+  } else {
+    return (-1);
+  }
 }
-
-

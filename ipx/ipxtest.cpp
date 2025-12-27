@@ -17,21 +17,10 @@
 */
 
 #define WIN32
-#ifndef _WIN32 // Denzil 6/2/98 Watcom 11.0 complains without this check
+#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
-#endif // _WIN32
+#endif  // _WIN32
 
 #include <windows.h>
 
-
-
-int PASCAL WinMain ( HINSTANCE instance , HINSTANCE , char *, int)
-{
-
-
-
-
-}
-
-
-
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *, int) {}

@@ -20,7 +20,7 @@
  **     C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S       **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : VQAVIEW				                       *
+ *                 Project Name : VQAVIEW *
  *                                                                         *
  *                    File Name : MAINWIND.H                               *
  *                                                                         *
@@ -34,47 +34,41 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
 //==========================================================================
 // Public classes
 //==========================================================================
 
 class MainWindowClass {
-	public:
+ public:
+  //==========================================================================
+  // Public functions
+  //==========================================================================
 
-		//==========================================================================
-		// Public functions
-		//==========================================================================
+  MainWindowClass(void);
+  void Create_Main_Window(InstanceHandle instance_handle);
+  WindowHandle Get_Window_Handle(void);
+  void Display_Window(void);
+  BOOL Update_Windows_Messages(void);
+  int Get_Message_Queue_wParam(void);
+  InstanceHandle Get_Instance_Handle(void);
 
-		MainWindowClass( void );
-		void Create_Main_Window( InstanceHandle instance_handle );
-		WindowHandle Get_Window_Handle( void );
-		void Display_Window( void );
-		BOOL Update_Windows_Messages( void );
-		int Get_Message_Queue_wParam( void );
-		InstanceHandle Get_Instance_Handle( void );
+ private:
+  //==========================================================================
+  // Private data
+  //==========================================================================
 
-	private:
+  WindowHandle main_window_handle;
+  InstanceHandle global_instance_handle;
+  MessageQueue message_queue;
 
-		//==========================================================================
-		// Private data
-		//==========================================================================
-
-		WindowHandle	main_window_handle;
-		InstanceHandle	global_instance_handle;
-		MessageQueue	message_queue;
-
-		//==========================================================================
-		// Private functions
-		//==========================================================================
+  //==========================================================================
+  // Private functions
+  //==========================================================================
 
 }; /* VQAClass */
-
 
 //==========================================================================
 // Public data
 //==========================================================================
 
 extern MainWindowClass Main_Window;
-
-

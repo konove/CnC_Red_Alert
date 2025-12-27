@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: g:/library/source/rcs/./dipthong.c 1.15 1994/05/20 15:35:17 joe_bostic Exp $ */
+/* $Header: g:/library/source/rcs/./dipthong.c 1.15 1994/05/20 15:35:17
+ * joe_bostic Exp $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
@@ -42,8 +43,8 @@
  *   Fixup_Text -- Converts dipthonged foreign text into normal text.      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-//#include	"function.h"
-//#include	"ems.h"
+// #include	"function.h"
+// #include	"ems.h"
 #include <keyboard.h>
 #include "dipthong.h"
 
@@ -72,25 +73,22 @@
  *   08/13/1993 JLB : Created.                                             *
  *   10/06/1994 JLB : Handles source string in EMS.                        *
  *=========================================================================*/
-void Fixup_Text(char const *source, char *dest)
-{
-	if (source && dest) {
-		char const *src;
+void Fixup_Text(char const *source, char *dest) {
+  if (source && dest) {
+    char const *src;
 
-		src = source;
-		while (*src) {
-			if (*src == KA_EXTEND) {
-				src++;
-				*dest++ = (*src++) + 127;
-			} else {
-				*dest++ = *src++;
-			}
-		}
-		*dest = '\0';
-
-	}
+    src = source;
+    while (*src) {
+      if (*src == KA_EXTEND) {
+        src++;
+        *dest++ = (*src++) + 127;
+      } else {
+        *dest++ = *src++;
+      }
+    }
+    *dest = '\0';
+  }
 }
-
 
 /***************************************************************************
  * Dip_Text -- Compresses text by using dipthonging.                       *
@@ -111,68 +109,63 @@ void Fixup_Text(char const *source, char *dest)
  * HISTORY:                                                                *
  *   08/13/1993 JLB : Created.                                             *
  *=========================================================================*/
-int Dip_Text(char const *source, char *dest)
-{
-	unsigned char	first,		// First character in pair.
-						next;			// Second character in pair.
-	int	len;			// Length of output string.
-	int	common,		// Common character index.
-			dipthong;	// Dipthong character index.
+int Dip_Text(char const *source, char *dest) {
+  unsigned char first,  // First character in pair.
+      next;             // Second character in pair.
+  int len;              // Length of output string.
+  int common,           // Common character index.
+      dipthong;         // Dipthong character index.
 
-	len = 0;					// No output characters YET.
+  len = 0;  // No output characters YET.
 
-	first = *source++;
-	next = *source;
-	while (first) {
+  first = *source++;
+  next = *source;
+  while (first) {
+    if (first > 127) {
+      /*
+      **	Characters greater than 127 cannot be dipthonged.  They must
+      **	be preceeded with an extended character code.
+      */
+      *dest++ = KA_EXTEND;
+      len++;
+      first -= 127;
 
-		if (first > 127) {
+    } else {
+      /*
+      **	Normal characters can be dipthonged.  First see if there is a
+      **	match in the Common table.
+      */
+      for (common = 0; common < 16; common++) {
+        if (Common[common] == first) {
+          /*
+          **	Common character found.  See if there is a matching
+          **	Dipthong character.
+          */
+          for (dipthong = 0; dipthong < 8; dipthong++) {
+            if (Dipthong[common][dipthong] == next) {
+              first =
+                  (unsigned char)(common << 3) | (unsigned char)dipthong | 0x80;
+              source++;
+            }
+          }
+        }
+      }
+    }
 
-			/*
-			**	Characters greater than 127 cannot be dipthonged.  They must
-			**	be preceeded with an extended character code.
-			*/
-			*dest++ = KA_EXTEND;
-			len++;
-			first -= 127;
+    /*
+    **	Output the translated character to the destination buffer.
+    */
+    *dest++ = first;
+    len++;
 
-		} else {
+    first = *source++;
+    next = *source;
+  }
 
-			/*
-			**	Normal characters can be dipthonged.  First see if there is a
-			**	match in the Common table.
-			*/
-			for (common = 0; common < 16; common++) {
-				if (Common[common] == first) {
+  *dest = '\0';
 
-					/*
-					**	Common character found.  See if there is a matching
-					**	Dipthong character.
-					*/
-					for (dipthong = 0; dipthong < 8; dipthong++) {
-						if (Dipthong[common][dipthong] == next) {
-							first = (unsigned char)(common << 3) | (unsigned char)dipthong | 0x80;
-							source++;
-						}
-					}
-				}
-			}
-		}
-
-		/*
-		**	Output the translated character to the destination buffer.
-		*/
-		*dest++ = first;
-		len++;
-
-		first = *source++;
-		next = *source;
-	}
-
-	*dest = '\0';
-	
-	return(len);
+  return (len);
 }
-
 
 /***************************************************************************
  * UnDip_Text -- Undipthongs a text string into specified buffer.          *
@@ -196,51 +189,48 @@ int Dip_Text(char const *source, char *dest)
  *   08/13/1993 JLB : Created.                                             *
  *   10/06/1994 JLB : Handles source string in EMS.                        *
  *=========================================================================*/
-int UnDip_Text(char const *source, char *dest)
-{
-	int	c;			// Source input character.
-	int	common;	// Common character index.
-	int	len;		// Length of output string.
-	char const *src;
+int UnDip_Text(char const *source, char *dest) {
+  int c;       // Source input character.
+  int common;  // Common character index.
+  int len;     // Length of output string.
+  char const *src;
 
-	len = 0;						// Presume no translation.
+  len = 0;  // Presume no translation.
 
-	/*
-	**	Sweep through the source text and dipthong it.
-	*/
-	src = source;
-	c = *src++;
-	while (c) {
-		
-		/*
-		**	Convert a dipthong character into it's component
-		**	ASCII characters.
-		*/
-		if (c & 0x80) {
-			c &= 0x7F;
+  /*
+  **	Sweep through the source text and dipthong it.
+  */
+  src = source;
+  c = *src++;
+  while (c) {
+    /*
+    **	Convert a dipthong character into it's component
+    **	ASCII characters.
+    */
+    if (c & 0x80) {
+      c &= 0x7F;
 
-			common = (c & 0x78) >> 3;
+      common = (c & 0x78) >> 3;
 
-			*dest++ = Common[common];
-			len++;
+      *dest++ = Common[common];
+      len++;
 
-			c = Dipthong[common][c & 0x07];
-		}
+      c = Dipthong[common][c & 0x07];
+    }
 
-		*dest++ = (unsigned char)c;
-		len++;
+    *dest++ = (unsigned char)c;
+    len++;
 
-		c = *src++;
-	}
+    c = *src++;
+  }
 
-	/*
-	**	End the output text with a '\0'.
-	*/
-	*dest++ = '\0';
+  /*
+  **	End the output text with a '\0'.
+  */
+  *dest++ = '\0';
 
-	return(len);
+  return (len);
 }
-
 
 /***************************************************************************
  * Extract_String -- Extracts a string pointer from a string data block.   *
@@ -265,13 +255,12 @@ int UnDip_Text(char const *source, char *dest)
  *   08/13/1993 JLB : Created.                                             *
  *   08/13/1993 JLB : Handles EMS or XMS data pointer.                     *
  *=========================================================================*/
-char *Extract_String(void const *data, int string)
-{
-	unsigned short int	const *ptr;
-	unsigned int	offset;
+char *Extract_String(void const *data, int string) {
+  unsigned short int const *ptr;
+  unsigned int offset;
 
-	if (!data || string < 0) return(NULL);
-		
-	ptr = (unsigned short int const *)data;
-	return (((char*)data) + ptr[string]);
+  if (!data || string < 0) return (NULL);
+
+  ptr = (unsigned short int const *)data;
+  return (((char *)data) + ptr[string]);
 }

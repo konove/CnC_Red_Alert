@@ -29,7 +29,8 @@
  *                  Last Update : April 22, 1996 [PWG]                     *
  *                                                                         *
  * This module takes care of maintaining the field list used to process    *
- * packets.																						*
+ * packets.
+ **
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
@@ -37,47 +38,45 @@
 #ifndef __FIELD_H
 #define __FIELD_H
 
+#define FIELD_HEADER_SIZE (sizeof(FieldClass) - (sizeof(void *) * 2))
 
-#define FIELD_HEADER_SIZE	(sizeof(FieldClass) - (sizeof(void *) * 2))
-
-#define TYPE_CHAR						1
-#define TYPE_UNSIGNED_CHAR			2
-#define TYPE_SHORT					3
-#define TYPE_UNSIGNED_SHORT		4
-#define TYPE_LONG						5
-#define TYPE_UNSIGNED_LONG			6
-#define TYPE_STRING					7
-#define TYPE_CHUNK					20
+#define TYPE_CHAR 1
+#define TYPE_UNSIGNED_CHAR 2
+#define TYPE_SHORT 3
+#define TYPE_UNSIGNED_SHORT 4
+#define TYPE_LONG 5
+#define TYPE_UNSIGNED_LONG 6
+#define TYPE_STRING 7
+#define TYPE_CHUNK 20
 
 class PacketClass;
 
 class FieldClass {
+ public:
+  friend class PacketClass;
+  //
+  // Define constructors to be able to create all the different kinds
+  // of fields.
+  //
+  FieldClass(void){};
+  FieldClass(char const *id, char data);
+  FieldClass(char const *id, unsigned char data);
+  FieldClass(char const *id, short data);
+  FieldClass(char const *id, unsigned short data);
+  FieldClass(char const *id, long data);
+  FieldClass(char const *id, unsigned long data);
+  FieldClass(char const *id, char const *data);
+  FieldClass(char const *id, void *data, int length);
 
-	public:
-		friend class PacketClass;
-		//
-		// Define constructors to be able to create all the different kinds
-		// of fields.
-		//
-		FieldClass(void) {};
-		FieldClass(char const *id, char data);
-		FieldClass(char const *id, unsigned char data);
-		FieldClass(char const *id, short data);
-		FieldClass(char const *id, unsigned short data);
-		FieldClass(char const *id, long data);
-		FieldClass(char const *id, unsigned long data);
-		FieldClass(char const *id, char const *data);
-		FieldClass(char const *id, void *data, int length);
+  void Host_To_Net(void);
+  void Net_To_Host(void);
 
-		void Host_To_Net(void);
-		void Net_To_Host(void);
-
-	private:
-		char				ID[4];				// id value of this field
-		unsigned short	DataType;			// id of the data type we are using
-		unsigned short Size;					// size of the data portion of this field
-		void  			*Data;				// pointer to the data portion of this field
-		FieldClass		*Next;				// pointer to the next field in the field list
+ private:
+  char ID[4];               // id value of this field
+  unsigned short DataType;  // id of the data type we are using
+  unsigned short Size;      // size of the data portion of this field
+  void *Data;               // pointer to the data portion of this field
+  FieldClass *Next;         // pointer to the next field in the field list
 };
 
 #endif

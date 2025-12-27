@@ -17,43 +17,46 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                     $Archive:: /Sun/WSPUDP.cpp                                             $*
+ *                     $Archive:: /Sun/WSPUDP.cpp $*
  *                                                                                             *
- *                      $Author:: Joe_b                                                       $*
+ *                      $Author:: Joe_b $*
  *                                                                                             *
- *                     $Modtime:: 8/05/97 6:45p                                               $*
+ *                     $Modtime:: 8/05/97 6:45p $*
  *                                                                                             *
- *                    $Revision:: 3                                                           $*
+ *                    $Revision:: 3 $*
  *                                                                                             *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- *                                                                                             *
- *  WSProto.CPP WinsockInterfaceClass to provide an interface to Winsock protocols             *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  *                                                                                             *
- * Functions:                                                                                  *
- * UDPInterfaceClass::UDPInterfaceClass -- Class constructor.                                  *
- * UDPInterfaceClass::Set_Broadcast_Address -- Sets the address to send broadcast packets to   *
- * UDPInterfaceClass::Open_Socket -- Opens a socket for communications via the UDP protocol    *
- * TMC::Message_Handler -- Message handler function for Winsock related messages               *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ *  WSProto.CPP WinsockInterfaceClass to provide an interface to Winsock
+ *protocols             *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ *                                                                                             *
+ * Functions: * UDPInterfaceClass::UDPInterfaceClass -- Class constructor. *
+ * UDPInterfaceClass::Set_Broadcast_Address -- Sets the address to send
+ *broadcast packets to   * UDPInterfaceClass::Open_Socket -- Opens a socket for
+ *communications via the UDP protocol    * TMC::Message_Handler -- Message
+ *handler function for Winsock related messages               *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-#include	"function.h"
-#include	"internet.h"
-#include	"wspudp.h"
+#include "function.h"
+#include "internet.h"
+#include "wspudp.h"
 
-#include	<assert.h>
-#include	<stdio.h>
+#include <assert.h>
+#include <stdio.h>
 
 #ifdef _WIN32
-#include	<svcguid.h>
-#include	<nspapi.h>
+#include <svcguid.h>
+#include <nspapi.h>
 
 typedef int socklen_t;
 #else
@@ -69,483 +72,475 @@ typedef int socklen_t;
 #endif
 
 /***********************************************************************************************
- * UDPInterfaceClass::UDPInterfaceClass -- Class constructor.                                  *
+ * UDPInterfaceClass::UDPInterfaceClass -- Class constructor. *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    8/5/97 12:11PM ST : Created                                                              *
+ * HISTORY: * 8/5/97 12:11PM ST : Created *
  *=============================================================================================*/
-UDPInterfaceClass::UDPInterfaceClass (void) : WinsockInterfaceClass()
-{}
-
-
+UDPInterfaceClass::UDPInterfaceClass(void) : WinsockInterfaceClass() {}
 
 /***********************************************************************************************
- * UDPIC::~UDPInterfaceClass -- UDPInterface class destructor                                  *
+ * UDPIC::~UDPInterfaceClass -- UDPInterface class destructor *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    10/9/97 12:17PM ST : Created                                                             *
+ * HISTORY: * 10/9/97 12:17PM ST : Created *
  *=============================================================================================*/
-UDPInterfaceClass::~UDPInterfaceClass (void)
-{
-	while ( BroadcastAddresses.Count() ) {
-		delete[] BroadcastAddresses[0];
-		BroadcastAddresses.Delete(0);
-	}
+UDPInterfaceClass::~UDPInterfaceClass(void) {
+  while (BroadcastAddresses.Count()) {
+    delete[] BroadcastAddresses[0];
+    BroadcastAddresses.Delete(0);
+  }
 
-	while ( LocalAddresses.Count() ) {
-		delete[] LocalAddresses[0];
-		LocalAddresses.Delete(0);
-	}
+  while (LocalAddresses.Count()) {
+    delete[] LocalAddresses[0];
+    LocalAddresses.Delete(0);
+  }
 
-	Close();
+  Close();
 }
 
-
 /***********************************************************************************************
- * UDPInterfaceClass::Set_Broadcast_Address -- Sets the address to send broadcast packets to   *
+ * UDPInterfaceClass::Set_Broadcast_Address -- Sets the address to send
+ *broadcast packets to   *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    ptr to address in decimal dot format. i.e. xxx.xxx.xxx.xxx                        *
+ * INPUT:    ptr to address in decimal dot format. i.e. xxx.xxx.xxx.xxx *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    8/5/97 12:12PM ST : Created                                                              *
+ * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Set_Broadcast_Address (void *address)
-{
-	char* ip_addr = (char*) address;
-	assert ( strlen (ip_addr) <= strlen ( "xxx.xxx.xxx.xxx" ) );
+void UDPInterfaceClass::Set_Broadcast_Address(void *address) {
+  char *ip_addr = (char *)address;
+  assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
 
-	unsigned char *baddr = new unsigned char[4];
+  unsigned char *baddr = new unsigned char[4];
 
-	uint32_t addr = inet_addr(ip_addr);
-	memcpy(baddr, &addr, 4);
-	BroadcastAddresses.Add (baddr);
+  uint32_t addr = inet_addr(ip_addr);
+  memcpy(baddr, &addr, 4);
+  BroadcastAddresses.Add(baddr);
 }
 
-
-
 /***********************************************************************************************
- * UDPInterfaceClass::Open_Socket -- Opens a socket for communications via the UDP protocol    *
+ * UDPInterfaceClass::Open_Socket -- Opens a socket for communications via the
+ *UDP protocol    *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Socket number to use. Not required for this protocol.                             *
+ * INPUT:    Socket number to use. Not required for this protocol. *
  *                                                                                             *
- * OUTPUT:   True if socket was opened OK                                                      *
+ * OUTPUT:   True if socket was opened OK *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    8/5/97 12:13PM ST : Created                                                              *
+ * HISTORY: * 8/5/97 12:13PM ST : Created *
  *=============================================================================================*/
-bool UDPInterfaceClass::Open_Socket ( SOCKET )
-{
-	linger ling;
-	struct 	sockaddr_in addr;
+bool UDPInterfaceClass::Open_Socket(SOCKET) {
+  linger ling;
+  struct sockaddr_in addr;
 
-	/*
-	** If Winsock is not initialised then do it now.
-	*/
-	if ( !WinsockInitialised ) {
-		if ( !Init()) return ( false );;
-	}
+  /*
+  ** If Winsock is not initialised then do it now.
+  */
+  if (!WinsockInitialised) {
+    if (!Init()) return (false);
+    ;
+  }
 
-	/*
-	** Create our UDP socket
-	*/
-	Socket = socket(AF_INET, SOCK_DGRAM, 0);
-	if (Socket == INVALID_SOCKET) {
-		return (false);
-	}
+  /*
+  ** Create our UDP socket
+  */
+  Socket = socket(AF_INET, SOCK_DGRAM, 0);
+  if (Socket == INVALID_SOCKET) {
+    return (false);
+  }
 
-	/*
-	** Bind our UDP socket to our UDP port number
-	*/
-	addr.sin_family = AF_INET;
-	addr.sin_port = (unsigned short) htons ( (unsigned short) PlanetWestwoodPortNumber);
-	addr.sin_addr.s_addr = htonl (INADDR_ANY);
+  /*
+  ** Bind our UDP socket to our UDP port number
+  */
+  addr.sin_family = AF_INET;
+  addr.sin_port =
+      (unsigned short)htons((unsigned short)PlanetWestwoodPortNumber);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	if ( bind (Socket, (sockaddr *)&addr, sizeof(addr) ) == SOCKET_ERROR) {
-		Close_Socket ();
-		return (false);
-	}
+  if (bind(Socket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+    Close_Socket();
+    return (false);
+  }
 
-	/*
-	** Use gethostbyname to find the name of the local host. We will need this to look up
-	** the local ip address.
-	*/
-	char hostname[128];
-	gethostname(hostname, 128);
-	WWDebugString (hostname);
-	struct hostent *host_info = gethostbyname ( hostname );
+  /*
+  ** Use gethostbyname to find the name of the local host. We will need this to
+  *look up
+  ** the local ip address.
+  */
+  char hostname[128];
+  gethostname(hostname, 128);
+  WWDebugString(hostname);
+  struct hostent *host_info = gethostbyname(hostname);
 
-	/*
-	** Clear out any old local addresses from the local address list.
-	*/
-	while ( LocalAddresses.Count() ) {
-		delete LocalAddresses[0];
-		LocalAddresses.Delete(0);
-	}
+  /*
+  ** Clear out any old local addresses from the local address list.
+  */
+  while (LocalAddresses.Count()) {
+    delete LocalAddresses[0];
+    LocalAddresses.Delete(0);
+  }
 
+  /*
+  ** Add all local IP addresses to the list. This list will be used to discard
+  *any packets that
+  ** we send to ourselves.
+  */
+  uint32_t **addresses = (uint32_t **)(host_info->h_addr_list);
 
-	/*
-	** Add all local IP addresses to the list. This list will be used to discard any packets that
-	** we send to ourselves.
-	*/
-	uint32_t **addresses = (uint32_t**) (host_info->h_addr_list);
+  for (;;) {
+    if (!*addresses) break;
 
-	for ( ;; ) {
-		if ( !*addresses ) break;
+    uint32_t address = **addresses++;
+    // address = ntohl (address);
 
-		uint32_t address = **addresses++;
-		//address = ntohl (address);
+    char temp[128];
+    sprintf(temp, "RA95: Found local address: %d.%d.%d.%d\n", address & 0xff,
+            (address & 0xff00) >> 8, (address & 0xff0000) >> 16,
+            (address & 0xff000000) >> 24);
+    OutputDebugString(temp);
 
-		char temp[128];
-		sprintf (temp, "RA95: Found local address: %d.%d.%d.%d\n", address & 0xff, (address & 0xff00) >> 8, (address & 0xff0000) >> 16, (address & 0xff000000) >> 24);
-		OutputDebugString (temp);
+    unsigned char *a = new unsigned char[4];
+    *((uint32_t *)a) = address;
+    LocalAddresses.Add(a);
+  }
 
-		unsigned char *a = new unsigned char [4];
-		* ((uint32_t*) a) = address;
-		LocalAddresses.Add (a);
-	}
+  /*
+  ** Set options for the UDP socket
+  */
+  ling.l_onoff = 0;   // linger off
+  ling.l_linger = 0;  // timeout in seconds (ie close now)
+  setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
 
-	/*
-	** Set options for the UDP socket
-	*/
-	ling.l_onoff = 0;		// linger off
-	ling.l_linger = 0;	// timeout in seconds (ie close now)
-	setsockopt (Socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
+  // enable broadcast
+  int yes = 1;
+  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, (char *)&yes, sizeof(int));
 
-	// enable broadcast
-	int yes = 1;
-	setsockopt (Socket, SOL_SOCKET, SO_BROADCAST, (char *)&yes, sizeof(int));
+  WinsockInterfaceClass::Set_Socket_Options();
 
-	WinsockInterfaceClass::Set_Socket_Options();
-
-	return (true);
-
-
+  return (true);
 }
 
-
-
-
 /***********************************************************************************************
- * UDPIC::Broadcast -- Send data via the Winsock socket                                        *
+ * UDPIC::Broadcast -- Send data via the Winsock socket *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    ptr to buffer containing data to send                                             *
- *           length of data to send                                                            *
+ * INPUT:    ptr to buffer containing data to send * length of data to send *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    3/20/96 3:00PM ST : Created                                                              *
+ * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Broadcast (void *buffer, int buffer_len)
-{
-	for ( int i=0 ; i<BroadcastAddresses.Count() ; i++ ) {
+void UDPInterfaceClass::Broadcast(void *buffer, int buffer_len) {
+  for (int i = 0; i < BroadcastAddresses.Count(); i++) {
+    /*
+    ** Create a temporary holding area for the packet.
+    */
+    WinsockBufferType *packet = new WinsockBufferType;
 
-		/*
-		** Create a temporary holding area for the packet.
-		*/
-		WinsockBufferType *packet = new WinsockBufferType;
+    /*
+    ** Copy the packet into the holding buffer.
+    */
+    memcpy(packet->Buffer, buffer, buffer_len);
+    packet->BufferLen = buffer_len;
 
-		/*
-		** Copy the packet into the holding buffer.
-		*/
-		memcpy ( packet->Buffer, buffer, buffer_len );
-		packet->BufferLen = buffer_len;
+    /*
+    ** Indicate that this packet should be broadcast.
+    */
+    packet->IsBroadcast = true;
 
-		/*
-		** Indicate that this packet should be broadcast.
-		*/
-		packet->IsBroadcast = true;
+    /*
+    ** Set up the send address for this packet.
+    */
+    memset(packet->Address, 0, sizeof(packet->Address));
+    memcpy(packet->Address + 4, BroadcastAddresses[i], 4);
 
-		/*
-		** Set up the send address for this packet.
-		*/
-		memset (packet->Address, 0, sizeof (packet->Address));
-		memcpy (packet->Address+4, BroadcastAddresses[i], 4);
-
-		/*
-		** Add it to our out list.
-		*/
-		OutBuffers.Add ( packet );
+    /*
+    ** Add it to our out list.
+    */
+    OutBuffers.Add(packet);
 
 #ifdef PORTABLE
-		// enable write events
-		Socket_Check_Write(Socket, true);
+    // enable write events
+    Socket_Check_Write(Socket, true);
 #else
-		/*
-		** Send a message to ourselves so that we can initiate a write if Winsock is idle.
-		*/
-		SendMessage ( MainWindow, Protocol_Event_Message(), 0, (LONG)FD_WRITE );
+    /*
+    ** Send a message to ourselves so that we can initiate a write if Winsock is
+    *idle.
+    */
+    SendMessage(MainWindow, Protocol_Event_Message(), 0, (LONG)FD_WRITE);
 #endif
 
-		/*
-		** Make sure the message loop gets called.
-		*/
-		Keyboard->Check();
-	}
+    /*
+    ** Make sure the message loop gets called.
+    */
+    Keyboard->Check();
+  }
 }
-
-
-
 
 #ifdef PORTABLE
 // like below, but less windows-y
-void UDPInterfaceClass::Event_Handler(int socket, SocketEvent event)
-{
-	struct sockaddr_in addr;
-	WinsockBufferType *packet;
+void UDPInterfaceClass::Event_Handler(int socket, SocketEvent event) {
+  struct sockaddr_in addr;
+  WinsockBufferType *packet;
 
-	switch(event)
-	{
-		case SOCKEV_READ:
-		{
-			/*
-			** Call the recvfrom function to get the outstanding packet.
-			*/
-			socklen_t addr_len = sizeof(addr);
-			int rc = recvfrom ( Socket, (char*)ReceiveBuffer, sizeof (ReceiveBuffer), 0, (sockaddr *)&addr, &addr_len);
-			if (rc == SOCKET_ERROR) {
-				Clear_Socket_Error (Socket);
-				return;
-			}
+  switch (event) {
+    case SOCKEV_READ: {
+      /*
+      ** Call the recvfrom function to get the outstanding packet.
+      */
+      socklen_t addr_len = sizeof(addr);
+      int rc = recvfrom(Socket, (char *)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
+                        (sockaddr *)&addr, &addr_len);
+      if (rc == SOCKET_ERROR) {
+        Clear_Socket_Error(Socket);
+        return;
+      }
 
-			/*
-			** rc is the number of bytes received
-			*/
-			if ( rc ) {
+      /*
+      ** rc is the number of bytes received
+      */
+      if (rc) {
+        /*
+        ** Make sure this packet didn't come from us. If it did then throw it
+        *away.
+        */
+        for (int i = 0; i < LocalAddresses.Count(); i++) {
+          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) return;
+        }
 
-				/*
-				** Make sure this packet didn't come from us. If it did then throw it away.
-				*/
-				for ( int i=0 ; i<LocalAddresses.Count() ; i++ ) {
-					if ( ! memcmp (LocalAddresses[i], &addr.sin_addr.s_addr, 4) ) return;
-				}
+        /*
+        ** Create a new buffer and store this packet in it.
+        */
+        packet = new WinsockBufferType;
+        packet->BufferLen = rc;
+        memcpy(packet->Buffer, ReceiveBuffer, rc);
+        memset(packet->Address, 0, sizeof(packet->Address));
+        memcpy(packet->Address + 4, &addr.sin_addr.s_addr, 4);
+        InBuffers.Add(packet);
+      }
+      break;
+    }
+    case SOCKEV_WRITE: {
+      /*
+      ** If there are no packets waiting to be sent then bail.
+      */
+      if (OutBuffers.Count() == 0) {
+        Socket_Check_Write(Socket,
+                           false);  // don't need to be notified any more
+        return;
+      }
+      int packetnum = 0;
 
-				/*
-				** Create a new buffer and store this packet in it.
-				*/
-				packet = new WinsockBufferType;
-				packet->BufferLen = rc;
-				memcpy ( packet->Buffer, ReceiveBuffer, rc );
-				memset ( packet->Address, 0, sizeof (packet->Address) );
-				memcpy ( packet->Address+4, &addr.sin_addr.s_addr, 4 );
-				InBuffers.Add (packet);
-			}
-			break;
-		}
-		case SOCKEV_WRITE:
-		{
-			/*
-			** If there are no packets waiting to be sent then bail.
-			*/
-			if ( OutBuffers.Count() == 0 ) {
-				Socket_Check_Write(Socket, false); // don't need to be notified any more
-				return;
-			}
-			int packetnum = 0;
+      /*
+      ** Get a pointer to the packet.
+      */
+      packet = OutBuffers[packetnum];
 
-			/*
-			** Get a pointer to the packet.
-			*/
-			packet = OutBuffers [ packetnum ];
+      /*
+      ** Set up the address structure of the outgoing packet
+      */
+      addr.sin_family = AF_INET;
+      addr.sin_port =
+          (unsigned short)htons((unsigned short)PlanetWestwoodPortNumber);
+      memcpy(&addr.sin_addr.s_addr, packet->Address + 4, 4);
 
-			/*
-			** Set up the address structure of the outgoing packet
-			*/
-			addr.sin_family = AF_INET;
-			addr.sin_port = (unsigned short) htons ((unsigned short)PlanetWestwoodPortNumber);
-			memcpy (&addr.sin_addr.s_addr, packet->Address+4, 4);
+      /*
+      ** Send it.
+      ** If we get a WSAWOULDBLOCK error it means that Winsock is unable to
+      *accept the packet
+      ** at this time. In this case, we clear the socket error and just exit.
+      *Winsock will
+      ** send us another WRITE message when it is ready to receive more data.
+      */
+      int rc = sendto(Socket, (const char *)packet->Buffer, packet->BufferLen,
+                      0, (sockaddr *)&addr, sizeof(addr));
 
-			/*
-			** Send it.
-			** If we get a WSAWOULDBLOCK error it means that Winsock is unable to accept the packet
-			** at this time. In this case, we clear the socket error and just exit. Winsock will
-			** send us another WRITE message when it is ready to receive more data.
-			*/
-			int rc = sendto ( Socket, (const char*) packet->Buffer, packet->BufferLen, 0, (sockaddr *)&addr, sizeof (addr) );
+      if (rc == -1) {
+        if (Get_Last_Error() == EWOULDBLOCK) {
+          Clear_Socket_Error(Socket);
+          return;
+        }
+      }
 
-			if (rc == -1){
-				if (Get_Last_Error() == EWOULDBLOCK) {
-					Clear_Socket_Error (Socket);
-					return;
-				}
-			}
+      /*
+      ** Delete the sent packet.
+      */
+      OutBuffers.Delete(packetnum);
+      delete packet;
 
-			/*
-			** Delete the sent packet.
-			*/
-			OutBuffers.Delete ( packetnum );
-			delete packet;
-
-			break;
-		}
-	}
+      break;
+    }
+  }
 }
 #else
 /***********************************************************************************************
- * TMC::Message_Handler -- Message handler function for Winsock related messages               *
+ * TMC::Message_Handler -- Message handler function for Winsock related messages
+ **
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Windows message handler stuff                                                     *
+ * INPUT:    Windows message handler stuff *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    3/20/96 3:05PM ST : Created                                                              *
+ * HISTORY: * 3/20/96 3:05PM ST : Created *
  *=============================================================================================*/
 
-long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam)
-{
-	struct 	sockaddr_in addr;
-	int	 	rc;
-	int		addr_len;
-	WinsockBufferType *packet;
+long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
+  struct sockaddr_in addr;
+  int rc;
+  int addr_len;
+  WinsockBufferType *packet;
 
-	/*
-	** We only handle UDP events.
-	*/
-	if ( message != WM_UDPASYNCEVENT ) return (1);
+  /*
+  ** We only handle UDP events.
+  */
+  if (message != WM_UDPASYNCEVENT) return (1);
 
-	/*
-	** Handle UDP packet events
-	*/
-	switch ( WSAGETSELECTEVENT(lParam) ) {
+  /*
+  ** Handle UDP packet events
+  */
+  switch (WSAGETSELECTEVENT(lParam)) {
+    /*
+    ** Read event. Winsock has data it would like to give us.
+    */
+    case FD_READ:
+      /*
+      ** Clear any outstanding errors on the socket.
+      */
+      rc = WSAGETSELECTERROR(lParam);
+      if (rc != 0) {
+        Clear_Socket_Error(Socket);
+        return (0);
+        ;
+      }
 
-		/*
-		** Read event. Winsock has data it would like to give us.
-		*/
-		case FD_READ:
-			/*
-			** Clear any outstanding errors on the socket.
-			*/
-			rc = WSAGETSELECTERROR(lParam);
-			if (rc != 0) {
-				Clear_Socket_Error (Socket);
-				return (0);;
-			}
+      /*
+      ** Call the Winsock recvfrom function to get the outstanding packet.
+      */
+      addr_len = sizeof(addr);
+      rc = recvfrom(Socket, (char *)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
+                    (LPSOCKADDR)&addr, &addr_len);
+      if (rc == SOCKET_ERROR) {
+        Clear_Socket_Error(Socket);
+        return (0);
+        ;
+      }
 
-			/*
-			** Call the Winsock recvfrom function to get the outstanding packet.
-			*/
-			addr_len = sizeof(addr);
-			rc = recvfrom ( Socket, (char*)ReceiveBuffer, sizeof (ReceiveBuffer), 0, (LPSOCKADDR)&addr, &addr_len);
-			if (rc == SOCKET_ERROR) {
-				Clear_Socket_Error (Socket);
-				return (0);;
-			}
+      /*
+      ** rc is the number of bytes received from Winsock
+      */
+      if (rc) {
+        /*
+        ** Make sure this packet didn't come from us. If it did then throw it
+        *away.
+        */
+        for (int i = 0; i < LocalAddresses.Count(); i++) {
+          if (!memcmp(LocalAddresses[i], &addr.sin_addr.s_addr, 4)) return (0);
+        }
 
-			/*
-			** rc is the number of bytes received from Winsock
-			*/
-			if ( rc ) {
+        /*
+        ** Create a new buffer and store this packet in it.
+        */
+        packet = new WinsockBufferType;
+        packet->BufferLen = rc;
+        memcpy(packet->Buffer, ReceiveBuffer, rc);
+        memset(packet->Address, 0, sizeof(packet->Address));
+        memcpy(packet->Address + 4, &addr.sin_addr.s_addr, 4);
+        InBuffers.Add(packet);
+      }
+      return (0);
 
-				/*
-				** Make sure this packet didn't come from us. If it did then throw it away.
-				*/
-				for ( int i=0 ; i<LocalAddresses.Count() ; i++ ) {
-					if ( ! memcmp (LocalAddresses[i], &addr.sin_addr.s_addr, 4) ) return (0);
-				}
+    /*
+    ** Write event. We send ourselves this event when we have more data to send.
+    *This
+    ** event will also occur automatically when a packet has finished being
+    *sent.
+    */
+    case FD_WRITE:
+      /*
+      ** Clear any outstanding erros on the socket.
+      */
+      rc = WSAGETSELECTERROR(lParam);
+      if (rc != 0) {
+        Clear_Socket_Error(Socket);
+        return (0);
+        ;
+      }
 
-				/*
-				** Create a new buffer and store this packet in it.
-				*/
-				packet = new WinsockBufferType;
-				packet->BufferLen = rc;
-				memcpy ( packet->Buffer, ReceiveBuffer, rc );
-				memset ( packet->Address, 0, sizeof (packet->Address) );
-				memcpy ( packet->Address+4, &addr.sin_addr.s_addr, 4 );
-				InBuffers.Add (packet);
-			}
-			return (0);
+      /*
+      ** If there are no packets waiting to be sent then bail.
+      */
+      if (OutBuffers.Count() == 0) return (0);
+      int packetnum = 0;
 
+      /*
+      ** Get a pointer to the packet.
+      */
+      packet = OutBuffers[packetnum];
 
-		/*
-		** Write event. We send ourselves this event when we have more data to send. This
-		** event will also occur automatically when a packet has finished being sent.
-		*/
-		case FD_WRITE:
-			/*
-			** Clear any outstanding erros on the socket.
-			*/
-			rc = WSAGETSELECTERROR(lParam);
-			if (rc != 0) {
-				Clear_Socket_Error (Socket);
-				return (0);;
-			}
+      /*
+      ** Set up the address structure of the outgoing packet
+      */
+      addr.sin_family = AF_INET;
+      addr.sin_port =
+          (unsigned short)htons((unsigned short)PlanetWestwoodPortNumber);
+      memcpy(&addr.sin_addr.s_addr, packet->Address + 4, 4);
 
-			/*
-			** If there are no packets waiting to be sent then bail.
-			*/
-			if ( OutBuffers.Count() == 0 ) return (0);
-			int packetnum = 0;
+      /*
+      ** Send it.
+      ** If we get a WSAWOULDBLOCK error it means that Winsock is unable to
+      *accept the packet
+      ** at this time. In this case, we clear the socket error and just exit.
+      *Winsock will
+      ** send us another WRITE message when it is ready to receive more data.
+      */
+      rc = sendto(Socket, (const char *)packet->Buffer, packet->BufferLen, 0,
+                  (LPSOCKADDR)&addr, sizeof(addr));
 
-			/*
-			** Get a pointer to the packet.
-			*/
-			packet = OutBuffers [ packetnum ];
+      if (rc == SOCKET_ERROR) {
+        if (WSAGetLastError() != WSAEWOULDBLOCK) {
+          Clear_Socket_Error(Socket);
+          return (0);
+        }
+      }
 
-			/*
-			** Set up the address structure of the outgoing packet
-			*/
-			addr.sin_family = AF_INET;
-			addr.sin_port = (unsigned short) htons ((unsigned short)PlanetWestwoodPortNumber);
-			memcpy (&addr.sin_addr.s_addr, packet->Address+4, 4);
+      /*
+      ** Delete the sent packet.
+      */
+      OutBuffers.Delete(packetnum);
+      delete packet;
+      return (0);
+  }
 
-			/*
-			** Send it.
-			** If we get a WSAWOULDBLOCK error it means that Winsock is unable to accept the packet
-			** at this time. In this case, we clear the socket error and just exit. Winsock will
-			** send us another WRITE message when it is ready to receive more data.
-			*/
-			rc = sendto ( Socket, (const char*) packet->Buffer, packet->BufferLen, 0, (LPSOCKADDR)&addr, sizeof (addr) );
-
-			if (rc == SOCKET_ERROR){
-				if (WSAGetLastError() != WSAEWOULDBLOCK) {
-					Clear_Socket_Error (Socket);
-					return (0);
-				}
-			}
-
-			/*
-			** Delete the sent packet.
-			*/
-			OutBuffers.Delete ( packetnum );
-			delete packet;
-			return(0);
-	}
-
-	return (0);
+  return (0);
 }
 #endif

@@ -18,476 +18,444 @@
 
 /* $Header: /CounterStrike/GSCREEN.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : GSCREEN.CPP                                                  *
+ *                    File Name : GSCREEN.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 12/15/94                                                     *
+ *                   Start Date : 12/15/94 *
  *                                                                                             *
- *                  Last Update : January 19, 1995 [JLB]                                       *
+ *                  Last Update : January 19, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   GScreenClass::Add_A_Button -- Add a gadget to the game input system.                      *
- *   GScreenClass::Blit_Display -- Redraw the display from the hidpage to the seenpage.        *
- *   GScreenClass::Flag_To_Redraw -- Flags the display to be redrawn.                          *
- *   GScreenClass::GScreenClass -- Default constructor for GScreenClass.                       *
- *   GScreenClass::Init -- Init's the entire display hierarchy by calling all Init routines.   *
- *   GScreenClass::Init_Clear -- Sets the map to a known state.                                *
- *   GScreenClass::Init_IO -- Initializes the Button list ('Buttons').                         *
- *   GScreenClass::Init_Theater -- Performs theater-specific initializations.                  *
- *   GScreenClass::Input -- Fetches input and processes gadgets.                               *
- *   GScreenClass::One_Time -- Handles one time class setups.                                  *
- *   GScreenClass::Remove_A_Button -- Removes a gadget from the game input system.             *
- *   GScreenClass::Render -- General drawing dispatcher an display update function.            *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * GScreenClass::Add_A_Button -- Add a gadget to the game input
+ *system.                      * GScreenClass::Blit_Display -- Redraw the
+ *display from the hidpage to the seenpage.        *
+ *   GScreenClass::Flag_To_Redraw -- Flags the display to be redrawn. *
+ *   GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
+ *   GScreenClass::Init -- Init's the entire display hierarchy by calling all
+ *Init routines.   * GScreenClass::Init_Clear -- Sets the map to a known state.
+ ** GScreenClass::Init_IO -- Initializes the Button list ('Buttons'). *
+ *   GScreenClass::Init_Theater -- Performs theater-specific initializations. *
+ *   GScreenClass::Input -- Fetches input and processes gadgets. *
+ *   GScreenClass::One_Time -- Handles one time class setups. *
+ *   GScreenClass::Remove_A_Button -- Removes a gadget from the game input
+ *system.             * GScreenClass::Render -- General drawing dispatcher an
+ *display update function.            *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #include "function.h"
 
+GadgetClass* GScreenClass::Buttons = 0;
 
-GadgetClass * GScreenClass::Buttons = 0;
-
-GraphicBufferClass * GScreenClass::ShadowPage = 0;
-
+GraphicBufferClass* GScreenClass::ShadowPage = 0;
 
 /***********************************************************************************************
- * GScreenClass::GScreenClass -- Default constructor for GScreenClass.                         *
+ * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
  *                                                                                             *
- *    This constructor merely sets the display system, so that it will redraw the first time   *
- *    the render function is called.                                                           *
+ *    This constructor merely sets the display system, so that it will redraw
+ *the first time   * the render function is called. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/15/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-GScreenClass::GScreenClass(void)
-{
-	IsToUpdate = true;
-	IsToRedraw = true;
+GScreenClass::GScreenClass(void) {
+  IsToUpdate = true;
+  IsToRedraw = true;
 }
 
-
 /***********************************************************************************************
- * GScreenClass::One_Time -- Handles one time class setups.                                    *
+ * GScreenClass::One_Time -- Handles one time class setups. *
  *                                                                                             *
- * This routine (and all those that overload it) must perform truly one-time initialization.   *
- * Such init's would normally be done in the constructor, but other aspects of the game may    *
- * not have been initialized at the time the constructors are called (such as the file system, *
- * the display, or other WWLIB subsystems), so many initializations should be deferred to the  *
- * One_Time init's.                                                                            *
+ * This routine (and all those that overload it) must perform truly one-time
+ *initialization.   * Such init's would normally be done in the constructor, but
+ *other aspects of the game may    * not have been initialized at the time the
+ *constructors are called (such as the file system, * the display, or other
+ *WWLIB subsystems), so many initializations should be deferred to the  *
+ * One_Time init's. *
  *                                                                                             *
- * Any variables set in this routine should be declared as static, so they won't be modified   *
- * by the load/save process.  Non-static variables will be over-written by a loaded game.      *
+ * Any variables set in this routine should be declared as static, so they won't
+ *be modified   * by the load/save process.  Non-static variables will be
+ *over-written by a loaded game.      *
  *                                                                                             *
- * This function allocates the shadow buffer that is used for quick screen updates. If         *
- * there were any data files to load, they would be loaded at this time as well.               *
+ * This function allocates the shadow buffer that is used for quick screen
+ *updates. If         * there were any data files to load, they would be loaded
+ *at this time as well.               *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   Call this routine only ONCE at the beginning of the game.                       *
+ * WARNINGS:   Call this routine only ONCE at the beginning of the game. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/15/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::One_Time(void)
-{
-	/*
-	**	Allocate the screen shadow page. This page is used to reduce access to the
-	**	actual screen memory. It contains a duplicate of what the SEENPAGE is.
-	*/
-	Buttons = 0;
+void GScreenClass::One_Time(void) {
+  /*
+  **	Allocate the screen shadow page. This page is used to reduce access to
+  *the *	actual screen memory. It contains a duplicate of what the
+  *SEENPAGE is.
+  */
+  Buttons = 0;
 #ifndef WIN32
-	ShadowPage = new GraphicBufferClass(320, 200);
-	if (ShadowPage) {
-		ShadowPage->Clear();
-		HidPage.Clear();
-	}
+  ShadowPage = new GraphicBufferClass(320, 200);
+  if (ShadowPage) {
+    ShadowPage->Clear();
+    HidPage.Clear();
+  }
 #endif
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Init -- Init's the entire display hierarchy by calling all Init routines.     *
+ * GScreenClass::Init -- Init's the entire display hierarchy by calling all Init
+ *routines.     *
  *                                                                                             *
- * This routine shouldn't be overloaded.  It's the main map initialization routine, and will   *
- * perform a complete map initialization, from mixfiles to clearing the buffers.  Calling this *
- * routine results in calling every initialization routine in the entire map hierarchy.        *
+ * This routine shouldn't be overloaded.  It's the main map initialization
+ *routine, and will   * perform a complete map initialization, from mixfiles to
+ *clearing the buffers.  Calling this * routine results in calling every
+ *initialization routine in the entire map hierarchy.        *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      theater      theater to initialize to                                                  *
+ * INPUT: * theater      theater to initialize to *
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      none.                                                                                  *
+ * OUTPUT: * none. *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/28/1994 BR : Created.                                                                  *
+ * HISTORY: * 12/28/1994 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Init(TheaterType theater)
-{
-	Init_Clear();
-	Init_IO();
-	Init_Theater(theater);
+void GScreenClass::Init(TheaterType theater) {
+  Init_Clear();
+  Init_IO();
+  Init_Theater(theater);
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Init_Clear -- Sets the map to a known state.                                  *
+ * GScreenClass::Init_Clear -- Sets the map to a known state. *
  *                                                                                             *
- * This routine (and those that overload it) clears any buffers and variables to a known       *
- * state.  It assumes that all buffers are allocated & valid.  The map should be displayable   *
- * after calling this function, and should draw basically an empty display.                    *
+ * This routine (and those that overload it) clears any buffers and variables to
+ *a known       * state.  It assumes that all buffers are allocated & valid. The
+ *map should be displayable   * after calling this function, and should draw
+ *basically an empty display.                    *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      none.                                                                                  *
+ * INPUT: * none. *
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      none.                                                                                  *
+ * OUTPUT: * none. *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/28/1994 BR : Created.                                                                  *
+ * HISTORY: * 12/28/1994 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Init_Clear(void)
-{
-	/*
-	** Clear the ShadowPage & HidPage to force a complete shadow blit.
-	*/
-	if (ShadowPage)
-		ShadowPage->Clear();
+void GScreenClass::Init_Clear(void) {
+  /*
+  ** Clear the ShadowPage & HidPage to force a complete shadow blit.
+  */
+  if (ShadowPage) ShadowPage->Clear();
 
-	HidPage.Clear();
+  HidPage.Clear();
 
-	IsToRedraw = true;
+  IsToRedraw = true;
 }
 
+/***********************************************************************************************
+ * GScreenClass::Init_Theater -- Performs theater-specific initializations. *
+ *                                                                                             *
+ * This routine (and those that overload it) performs any theater-specific
+ *initializations     * needed.  This will include setting the palette, setting
+ *up remap tables, etc.  This routine * only needs to be called when the theater
+ *has changed.                                       *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 12/28/1994 BR : Created. *
+ *=============================================================================================*/
+void GScreenClass::Init_Theater(TheaterType) {}
 
 /***********************************************************************************************
- * GScreenClass::Init_Theater -- Performs theater-specific initializations.                    *
+ * GScreenClass::Init_IO -- Initializes the Button list ('Buttons'). *
  *                                                                                             *
- * This routine (and those that overload it) performs any theater-specific initializations     *
- * needed.  This will include setting the palette, setting up remap tables, etc.  This routine *
- * only needs to be called when the theater has changed.                                       *
+ * INPUT: * none. *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      none.                                                                                  *
+ * OUTPUT: * none. *
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      none.                                                                                  *
+ * WARNINGS: * none. *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/28/1994 BR : Created.                                                                  *
+ * HISTORY: * 12/28/1994 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Init_Theater(TheaterType )
-{
+void GScreenClass::Init_IO(void) {
+  /*
+  ** Reset the button list.  This means that any other elements of the map that
+  *need
+  ** buttons must attach them after this routine is called!
+  */
+  Buttons = 0;
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Init_IO -- Initializes the Button list ('Buttons').                           *
+ * GScreenClass::Flag_To_Redraw -- Flags the display to be redrawn. *
  *                                                                                             *
- * INPUT:                                                                                      *
- *      none.                                                                                  *
+ *    This function is used to flag the display system whether any rendering is
+ *needed. The    * parameter tells the system either to redraw EVERYTHING, or
+ *just that something somewhere * has changed and the individual Draw_It
+ *functions must be called. When a sub system       * determines that it needs
+ *to render something local to itself, it would call this routine * with a false
+ *parameter. If the entire screen gets trashed or needs to be rebuilt, then   *
+ *    this routine will be called with a true parameter. *
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *      none.                                                                                  *
+ * INPUT:   complete -- bool; Should the ENTIRE screen be redrawn? *
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *      none.                                                                                  *
+ * OUTPUT:  none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/28/1994 BR : Created.                                                                  *
+ * WARNINGS:   This doesn't actually draw the screen, it merely sets flags so
+ *that when the    * Render() function is called, the appropriate drawing steps
+ *will be performed.   *
+ *                                                                                             *
+ * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Init_IO(void)
-{
-	/*
-	** Reset the button list.  This means that any other elements of the map that need
-	** buttons must attach them after this routine is called!
-	*/
-	Buttons = 0;
+void GScreenClass::Flag_To_Redraw(bool complete) {
+  IsToUpdate = true;
+  if (complete) {
+    IsToRedraw = true;
+  }
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Flag_To_Redraw -- Flags the display to be redrawn.                            *
+ * GScreenClass::Input -- Fetches input and processes gadgets. *
  *                                                                                             *
- *    This function is used to flag the display system whether any rendering is needed. The    *
- *    parameter tells the system either to redraw EVERYTHING, or just that something somewhere *
- *    has changed and the individual Draw_It functions must be called. When a sub system       *
- *    determines that it needs to render something local to itself, it would call this routine *
- *    with a false parameter. If the entire screen gets trashed or needs to be rebuilt, then   *
- *    this routine will be called with a true parameter.                                       *
+ *    This routine will fetch the keyboard/mouse input and dispatch this through
+ *the gadget    * system. *
  *                                                                                             *
- * INPUT:   complete -- bool; Should the ENTIRE screen be redrawn?                             *
+ * INPUT:   key      -- Reference to the key code (for future examination). *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ *          x,y      -- Reference to mouse coordinates (for future examination).
+ **
  *                                                                                             *
- * WARNINGS:   This doesn't actually draw the screen, it merely sets flags so that when the    *
- *             Render() function is called, the appropriate drawing steps will be performed.   *
+ * OUTPUT:  none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/15/1994 JLB : Created.                                                                 *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Flag_To_Redraw(bool complete)
-{
-	IsToUpdate = true;
-	if (complete) {
-		IsToRedraw = true;
-	}
-}
+void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
+  key = Keyboard->Check();
 
+  x = Keyboard->Mouse_X();
+  y = Keyboard->Mouse_Y();
 
-/***********************************************************************************************
- * GScreenClass::Input -- Fetches input and processes gadgets.                                 *
- *                                                                                             *
- *    This routine will fetch the keyboard/mouse input and dispatch this through the gadget    *
- *    system.                                                                                  *
- *                                                                                             *
- * INPUT:   key      -- Reference to the key code (for future examination).                    *
- *                                                                                             *
- *          x,y      -- Reference to mouse coordinates (for future examination).               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/19/1995 JLB : Created.                                                                 *
- *=============================================================================================*/
-void GScreenClass::Input(KeyNumType & key, int & x, int & y)
-{
-	key = Keyboard->Check();
-
-	x = Keyboard->Mouse_X();
-	y = Keyboard->Mouse_Y();
-
-	if (Buttons != NULL) {
-
-		/*
-		** If any buttons need redrawing, they will do so in the Input routine, and
-		** they should draw themselves to the HidPage.  So, flag ourselves for a Blit
-		** to show the newly drawn buttons.
-		*/
-		if (Buttons->Is_List_To_Redraw()) {
-			Flag_To_Redraw(false);
-		}
+  if (Buttons != NULL) {
+    /*
+    ** If any buttons need redrawing, they will do so in the Input routine, and
+    ** they should draw themselves to the HidPage.  So, flag ourselves for a
+    *Blit
+    ** to show the newly drawn buttons.
+    */
+    if (Buttons->Is_List_To_Redraw()) {
+      Flag_To_Redraw(false);
+    }
 
 #ifdef WIN32
-		GraphicViewPortClass * oldpage= Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 #else
-		GraphicBufferClass * oldpage= Set_Logic_Page(HidPage);
+    GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
 #endif
 
-		key = Buttons->Input();
+    key = Buttons->Input();
 
-		Set_Logic_Page(oldpage);
+    Set_Logic_Page(oldpage);
 
-	} else {
+  } else {
+    if (key != 0) {
+      key = Keyboard->Get();
+    }
+  }
 
-		if (key != 0) {
-			key = Keyboard->Get();
-		}
-	}
-
-	AI(key, x, y);
+  AI(key, x, y);
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Add_A_Button -- Add a gadget to the game input system.                        *
+ * GScreenClass::Add_A_Button -- Add a gadget to the game input system. *
  *                                                                                             *
- *    This will add a gadget to the game input system. The gadget will be processed in         *
- *    subsequent calls to the GScreenClass::Input() function.                                  *
+ *    This will add a gadget to the game input system. The gadget will be
+ *processed in         * subsequent calls to the GScreenClass::Input() function.
+ **
  *                                                                                             *
- * INPUT:   gadget   -- Reference to the gadget that will be added to the input system.        *
+ * INPUT:   gadget   -- Reference to the gadget that will be added to the input
+ *system.        *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/19/1995 JLB : Created.                                                                 *
+ * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Add_A_Button(GadgetClass & gadget)
-{
-	/*
-	**	If this gadget is already in the list, remove it before adding it in:
-	**	- If 1st gadget in list, use Remove_A_Button to remove it, to reset the
-	**	  value of 'Buttons' appropriately
-	**	- Otherwise, just call the Remove function for that gadget to remove it
-	**	  from any list it may be in
-	*/
-	if (Buttons == &gadget) {
-		Remove_A_Button(gadget);
-	} else {
-		gadget.Remove();
-	}
+void GScreenClass::Add_A_Button(GadgetClass& gadget) {
+  /*
+  **	If this gadget is already in the list, remove it before adding it in:
+  **	- If 1st gadget in list, use Remove_A_Button to remove it, to reset the
+  **	  value of 'Buttons' appropriately
+  **	- Otherwise, just call the Remove function for that gadget to remove it
+  **	  from any list it may be in
+  */
+  if (Buttons == &gadget) {
+    Remove_A_Button(gadget);
+  } else {
+    gadget.Remove();
+  }
 
-	/*
-	**	Now add the gadget to our list:
-	**	- If there are not buttons, start the list with this one
-	**	- Otherwise, add it to the tail of the existing list
-	*/
-	if (Buttons) {
-		gadget.Add_Tail(*Buttons);
-	} else {
-		Buttons = &gadget;
-	}
+  /*
+  **	Now add the gadget to our list:
+  **	- If there are not buttons, start the list with this one
+  **	- Otherwise, add it to the tail of the existing list
+  */
+  if (Buttons) {
+    gadget.Add_Tail(*Buttons);
+  } else {
+    Buttons = &gadget;
+  }
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Remove_A_Button -- Removes a gadget from the game input system.               *
+ * GScreenClass::Remove_A_Button -- Removes a gadget from the game input system.
+ **
  *                                                                                             *
- * INPUT:   gadget   -- Reference to the gadget that will be removed from the input system.    *
+ * INPUT:   gadget   -- Reference to the gadget that will be removed from the
+ *input system.    *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   'gadget' MUST be already a part of 'Buttons', or the new value of 'Buttons'     *
- *               will be invalid!                                                              *
+ * WARNINGS:   'gadget' MUST be already a part of 'Buttons', or the new value of
+ *'Buttons'     * will be invalid! *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/19/1995 JLB : Created.                                                                 *
+ * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Remove_A_Button(GadgetClass & gadget)
-{
-	Buttons = gadget.Remove();
+void GScreenClass::Remove_A_Button(GadgetClass& gadget) {
+  Buttons = gadget.Remove();
 }
 
-
 /***********************************************************************************************
- * GScreenClass::Render -- General drawing dispatcher an display update function.              *
+ * GScreenClass::Render -- General drawing dispatcher an display update
+ *function.              *
  *                                                                                             *
- *    This routine should be called in the main game loop (once every game frame). It will     *
- *    call the Draw_It() function if necessary. All rendering is performed to the LogicPage    *
- *    which is set to the HIDPAGE. After rendering has been performed, the HIDPAGE is          *
- *    copied to the visible page.                                                              *
+ *    This routine should be called in the main game loop (once every game
+ *frame). It will     * call the Draw_It() function if necessary. All rendering
+ *is performed to the LogicPage    * which is set to the HIDPAGE. After
+ *rendering has been performed, the HIDPAGE is          * copied to the visible
+ *page.                                                              *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   This actually updates the graphic display. As a result it can take quite a      *
- *             while to perform.                                                               *
+ * WARNINGS:   This actually updates the graphic display. As a result it can
+ *take quite a      * while to perform. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   12/15/1994 JLB : Created.                                                                 *
+ * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Render(void)
-{
-	//This is unnessasary surely?	ST - 10/16/96 2:30PM
-	//if (Buttons && Buttons->Is_List_To_Redraw()) {
-	//	IsToRedraw = true;
-	//}
+void GScreenClass::Render(void) {
+  // This is unnessasary surely?	ST - 10/16/96 2:30PM
+  // if (Buttons && Buttons->Is_List_To_Redraw()) {
+  //	IsToRedraw = true;
+  // }
 
-
-	if (IsToUpdate || IsToRedraw) {
-		BStart(BENCH_GSCREEN_RENDER);
+  if (IsToUpdate || IsToRedraw) {
+    BStart(BENCH_GSCREEN_RENDER);
 
 #ifdef WIN32
-		GraphicViewPortClass * oldpage= Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 #else
-		GraphicBufferClass * oldpage= Set_Logic_Page(HidPage);
+    GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
 
-		if (IsToRedraw) {
-			Hide_Mouse();
-			SeenPage.To_Buffer(0, 0, 320, 200, ShadowPage);
-			Show_Mouse();
-		}
+    if (IsToRedraw) {
+      Hide_Mouse();
+      SeenPage.To_Buffer(0, 0, 320, 200, ShadowPage);
+      Show_Mouse();
+    }
 #endif
 
-		Draw_It(IsToRedraw);
+    Draw_It(IsToRedraw);
 
-		if (Buttons) Buttons->Draw_All(false);
+    if (Buttons) Buttons->Draw_All(false);
 
 #ifdef SCENARIO_EDITOR
-		/*
-		** Draw the Editor's buttons
-		*/
-		if (Debug_Map) {
-			if (Buttons) {
-				Buttons->Draw_All();
-			}
-		}
+    /*
+    ** Draw the Editor's buttons
+    */
+    if (Debug_Map) {
+      if (Buttons) {
+        Buttons->Draw_All();
+      }
+    }
 #endif
-		/*
-		** Draw the multiplayer message system to the Hidpage at this point.
-		** This way, they'll Blit along with the rest of the map.
-		*/
-		if (Session.Messages.Num_Messages() > 0) {
-			Session.Messages.Set_Width(
-				Lepton_To_Cell(Map.TacLeptonWidth) * ICON_PIXEL_W);
-		}
-		Session.Messages.Draw();
+    /*
+    ** Draw the multiplayer message system to the Hidpage at this point.
+    ** This way, they'll Blit along with the rest of the map.
+    */
+    if (Session.Messages.Num_Messages() > 0) {
+      Session.Messages.Set_Width(Lepton_To_Cell(Map.TacLeptonWidth) *
+                                 ICON_PIXEL_W);
+    }
+    Session.Messages.Draw();
 
-		Blit_Display();
-		IsToUpdate = false;
-		IsToRedraw = false;
+    Blit_Display();
+    IsToUpdate = false;
+    IsToRedraw = false;
 
-		BEnd(BENCH_GSCREEN_RENDER);
-		Set_Logic_Page(oldpage);
-	}
+    BEnd(BENCH_GSCREEN_RENDER);
+    Set_Logic_Page(oldpage);
+  }
 }
-
 
 /***********************************************************************************************
- * GScreenClass::Blit_Display -- Redraw the display from the hidpage to the seenpage.          *
+ * GScreenClass::Blit_Display -- Redraw the display from the hidpage to the
+ *seenpage.          *
  *                                                                                             *
- *    This routine is used to copy the correct display from the HIDPAGE                        *
- *    to the SEENPAGE.                                                                         *
+ *    This routine is used to copy the correct display from the HIDPAGE * to the
+ *SEENPAGE. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   02/14/1994 JLB : Created.                                                                 *
- *   05/01/1994 JLB : Converted to member function.                                            *
+ * HISTORY: * 02/14/1994 JLB : Created. * 05/01/1994 JLB : Converted to member
+ *function.                                            *
  *=============================================================================================*/
 extern "C" {
-	void ModeX_Blit (GraphicBufferClass * source);
+void ModeX_Blit(GraphicBufferClass* source);
 }
 
-void GScreenClass::Blit_Display(void)
-{
-	BStart(BENCH_BLIT_DISPLAY);
-	#ifdef WIN32
-	#ifndef PORTABLE
-		if (SeenBuff.Get_Width()!=320){
-	#endif
-			WWMouse->Draw_Mouse(&HidPage);
-			HidPage.Blit(SeenBuff , 0 , 0 , 0 , 0 , HidPage.Get_Width() , HidPage.Get_Height() , false );
-			WWMouse->Erase_Mouse(&HidPage, false);
-	#ifndef PORTABLE
-		} else {
-			ModeX_Blit(&HiddenPage);
-		}
-	#endif
-	#else
-		Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage, ShadowPage->Get_Buffer());
-	#endif
-	BEnd(BENCH_BLIT_DISPLAY);
+void GScreenClass::Blit_Display(void) {
+  BStart(BENCH_BLIT_DISPLAY);
+#ifdef WIN32
+#ifndef PORTABLE
+  if (SeenBuff.Get_Width() != 320) {
+#endif
+    WWMouse->Draw_Mouse(&HidPage);
+    HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(),
+                 HidPage.Get_Height(), false);
+    WWMouse->Erase_Mouse(&HidPage, false);
+#ifndef PORTABLE
+  } else {
+    ModeX_Blit(&HiddenPage);
+  }
+#endif
+#else
+  Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage, ShadowPage->Get_Buffer());
+#endif
+  BEnd(BENCH_BLIT_DISPLAY);
 }
-
-

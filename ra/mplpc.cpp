@@ -26,102 +26,90 @@ extern "C" {
 };
 #include "mplib.h"
 
+#define IDLE_QUEUE 6
+#define REC_QUEUE 7
+#define SEND_QUEUE 8
 
-#define IDLE_QUEUE    6
-#define REC_QUEUE     7
-#define SEND_QUEUE    8
-
-void
-SetLPCData(LPCData *lpc)
-{
-   lpc->version = 1;
-   lpc->sizeOfArgs = 0;
-   lpc->service = LPC_NOSERVICE;
+void SetLPCData(LPCData *lpc) {
+  lpc->version = 1;
+  lpc->sizeOfArgs = 0;
+  lpc->service = LPC_NOSERVICE;
 }
 
-void
-GetGameDef(void *gameDef, int* len)
-{
-   RTQ_NODE  *n = MGenGetNode(IDLE_QUEUE);
-   LPCData   *p;
-   LPCReturn *r;
-   
-   if (!n) {
-      *len = 0;
-      return;    // can't get service!
-   }
+void GetGameDef(void *gameDef, int *len) {
+  RTQ_NODE *n = MGenGetNode(IDLE_QUEUE);
+  LPCData *p;
+  LPCReturn *r;
 
-   p = (LPCData *) n->rtqDatum;
-   SetLPCData(p);
-   p->service = LPC_GENGETGAMEDEF;
-   MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
+  if (!n) {
+    *len = 0;
+    return;  // can't get service!
+  }
 
-   // make call
-   PostWindowsMessage();
+  p = (LPCData *)n->rtqDatum;
+  SetLPCData(p);
+  p->service = LPC_GENGETGAMEDEF;
+  MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
 
-   // wait for return
-   while ((n = MGenGetNode(REC_QUEUE)) == 0)
-      Yield();
+  // make call
+  PostWindowsMessage();
 
-   r = (LPCReturn *) n->rtqDatum;
+  // wait for return
+  while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
 
-   if (r->sizeOfReturn > *len || r->error != LPC_NOERROR) {
-      *len = 0;
-      return;
-   }
+  r = (LPCReturn *)n->rtqDatum;
 
-   *len = r->sizeOfReturn;
-   memcpy(gameDef, r->Data, r->sizeOfReturn);
+  if (r->sizeOfReturn > *len || r->error != LPC_NOERROR) {
+    *len = 0;
+    return;
+  }
 
-   // get ready for next call
-   MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
+  *len = r->sizeOfReturn;
+  memcpy(gameDef, r->Data, r->sizeOfReturn);
+
+  // get ready for next call
+  MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
 }
 
-int
-LPCGetMPAddr(void)
-{
-   RTQ_NODE  *n = MGenGetNode(IDLE_QUEUE);
-   LPCData   *p;
-   LPCReturn *r;
-   int       retVal;
+int LPCGetMPAddr(void) {
+  RTQ_NODE *n = MGenGetNode(IDLE_QUEUE);
+  LPCData *p;
+  LPCReturn *r;
+  int retVal;
 
-   p = (LPCData *) n->rtqDatum;
-   SetLPCData(p);
-   p->service = LPC_GETMPADDR;
-   MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
+  p = (LPCData *)n->rtqDatum;
+  SetLPCData(p);
+  p->service = LPC_GETMPADDR;
+  MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
 
-   PostWindowsMessage();
+  PostWindowsMessage();
 
-   while ((n = MGenGetNode(REC_QUEUE)) == 0)
-      Yield();
+  while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
 
-   r = (LPCReturn *) n->rtqDatum;
+  r = (LPCReturn *)n->rtqDatum;
 
-   if (r->sizeOfReturn != sizeof(int) || r->error != LPC_NOERROR) {
-      return -1;
-   }
+  if (r->sizeOfReturn != sizeof(int) || r->error != LPC_NOERROR) {
+    return -1;
+  }
 
-   retVal = *((int *) r->Data);
-   MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
-   return retVal;
+  retVal = *((int *)r->Data);
+  MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
+  return retVal;
 }
 
-void
-NullLPC(void)
-{
-   RTQ_NODE  *n = MGenGetNode(IDLE_QUEUE);
-   LPCData   *p;
+void NullLPC(void) {
+  RTQ_NODE *n = MGenGetNode(IDLE_QUEUE);
+  LPCData *p;
 
-   p = (LPCData *) n->rtqDatum;
-   SetLPCData(p);
-   p->service = LPC_NULLSERVICE;
-   MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
+  p = (LPCData *)n->rtqDatum;
+  SetLPCData(p);
+  p->service = LPC_NULLSERVICE;
+  MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
 
-   PostWindowsMessage();
+  PostWindowsMessage();
 
-   while ((n = MGenGetNode(REC_QUEUE)) == 0)
-      Yield();
+  while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
 
-   MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
+  MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
 }
 

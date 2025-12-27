@@ -39,56 +39,59 @@
 
 /*========================= C++ Routines ==================================*/
 
-
 /*=========================================================================*/
-/* The following prototypes are for the file: DDRAW.CPP							*/
+/* The following prototypes are for the file: DDRAW.CPP
+ */
 /*=========================================================================*/
-bool 		Set_Video_Mode(void *hwnd, int w, int h, int bits_per_pixel);
-void 		Wait_Blit(void);
+bool Set_Video_Mode(void *hwnd, int w, int h, int bits_per_pixel);
+void Wait_Blit(void);
 
 /*
 ** Pointer to function to call if we detect a focus loss
 */
-extern	void (*Misc_Focus_Loss_Function)(void);
+extern void (*Misc_Focus_Loss_Function)(void);
 /*
 ** Pointer to function to call if we detect a surface restore
 */
-extern	void (*Misc_Focus_Restore_Function)(void);
+extern void (*Misc_Focus_Restore_Function)(void);
 
 class SurfaceMonitorClass {
-	public:
-		bool	SurfacesRestored;
+ public:
+  bool SurfacesRestored;
 };
 
-extern	SurfaceMonitorClass	AllSurfaces;				//List of all direct draw surfaces
+extern SurfaceMonitorClass AllSurfaces;  // List of all direct draw surfaces
 
-
-extern bool				OverlappedVideoBlits;	// Can video driver blit overlapped regions?
+extern bool OverlappedVideoBlits;  // Can video driver blit overlapped regions?
 
 /*=========================================================================*/
-/* The following prototypes are for the file: EXIT.CPP							*/
-/* Prog_End Must be supplied by the user program in startup.cpp				*/
+/* The following prototypes are for the file: EXIT.CPP
+ */
+/* Prog_End Must be supplied by the user program in startup.cpp
+ */
 /*=========================================================================*/
 void Prog_End(void);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: DELAY.CPP							*/
+/* The following prototypes are for the file: DELAY.CPP
+ */
 /*=========================================================================*/
 void Delay(int duration);
 
 // extras for TD
 #ifdef TD
-inline void randomize(){srand(time(NULL));}
+inline void randomize() { srand(time(NULL)); }
 int IRandom(int minval, int maxval);
 uint8_t Random();
 
 void Shake_Screen(int shakes);
-inline void Wait_Vert_Blank() {Video_End_Frame();}
+inline void Wait_Vert_Blank() { Video_End_Frame(); }
 
-void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b, unsigned int *h, unsigned int *s, unsigned int *v);
-void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v, unsigned int *r, unsigned int *g, unsigned int *b);
+void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
+                        unsigned int *h, unsigned int *s, unsigned int *v);
+void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
+                        unsigned int *r, unsigned int *g, unsigned int *b);
 #endif
-
 
 /*========================= Assembly Routines ==============================*/
 
@@ -96,22 +99,17 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v, unsigned
 extern "C" {
 #endif
 
-
-
-void * Build_Fading_Table(void const *palette, void *dest, long int color, long int frac);
+void *Build_Fading_Table(void const *palette, void *dest, long int color,
+                         long int frac);
 /*=========================================================================*/
-/* The following prototype is for the file: CRC.ASM							*/
+/* The following prototype is for the file: CRC.ASM
+ */
 /*=========================================================================*/
 
 long Calculate_CRC(void *buffer, long length);
 
-
-extern int Clip_Rect ( int * x , int * y , int * dw , int * dh ,
-	       	   			 int width , int height ) ;
-extern int Confine_Rect ( int * x , int * y , int dw , int dh ,
-	      	      			 int width , int height ) ;
-
-
+extern int Clip_Rect(int *x, int *y, int *dw, int *dh, int width, int height);
+extern int Confine_Rect(int *x, int *y, int dw, int dh, int width, int height);
 
 #ifdef __cplusplus
 }
@@ -119,5 +117,4 @@ extern int Confine_Rect ( int * x , int * y , int dw , int dh ,
 
 /*=========================================================================*/
 
-#endif // MISC_H
-
+#endif  // MISC_H

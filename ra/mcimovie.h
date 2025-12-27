@@ -28,42 +28,39 @@
 #include <digitalv.h>
 #include "watcom.h"
 
-class MCIMovie
-	{
-	public:
-		MCIMovie(HWND mainWindow);
-		~MCIMovie();
+class MCIMovie {
+ public:
+  MCIMovie(HWND mainWindow);
+  ~MCIMovie();
 
-		bool Open(const char* name, const char* device);
-		bool Play(HWND window);
-		bool Pause(void);
-		bool Close(void);
+  bool Open(const char* name, const char* device);
+  bool Play(HWND window);
+  bool Pause(void);
+  bool Close(void);
 
-		LONG GetWidth(void)
-			{return ((mDeviceID) ? mWidth : 0);}
+  LONG GetWidth(void) { return ((mDeviceID) ? mWidth : 0); }
 
-		LONG GetHeight(void)
-			{return ((mDeviceID) ? mHeight : 0);}
+  LONG GetHeight(void) { return ((mDeviceID) ? mHeight : 0); }
 
-	protected:
-		HWND mMainWindow; // Application window
-		HWND mMCIWindow; // Callback window
-		char *mName;
-		UINT mDeviceID;
-		MCI_OPEN_PARMS mOpenParm;
-		MCI_PLAY_PARMS mPlayParm;
+ protected:
+  HWND mMainWindow;  // Application window
+  HWND mMCIWindow;   // Callback window
+  char* mName;
+  UINT mDeviceID;
+  MCI_OPEN_PARMS mOpenParm;
+  MCI_PLAY_PARMS mPlayParm;
 
-		// Video stream dimension
-		LONG mWidth, mHeight;
+  // Video stream dimension
+  LONG mWidth, mHeight;
 
-	private:
-		bool SizeDestination(void);
-		bool AttachWindow(HWND window);
+ private:
+  bool SizeDestination(void);
+  bool AttachWindow(HWND window);
 
-		static int mRegistered;
-		static WNDCLASS mWndClass;
-		static HINSTANCE mInstance;
-	};
+  static int mRegistered;
+  static WNDCLASS mWndClass;
+  static HINSTANCE mInstance;
+};
 
-#endif // MCIMPEG
-#endif // _MCIMOVIE_H_
+#endif  // MCIMPEG
+#endif  // _MCIMOVIE_H_

@@ -17,35 +17,32 @@
 */
 
 //
-// If you link with this it will automatically call the COM initialization stuff 
+// If you link with this it will automatically call the COM initialization stuff
 //
 
 #include "cominit.h"
-//#include <stdlib.h>
-//#include <stdio.h>
-//#include <windows.h>
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <windows.h>
 #include <objbase.h>
-//#include "externs.h"
-//#include "text.rh"
+// #include "externs.h"
+// #include "text.rh"
 
-//#include "WolDebug.h"
+// #include "WolDebug.h"
 
-ComInit::ComInit()
-{
-  //HRESULT hRes = CoInitialize(NULL);
-//	if (SUCCEEDED(hRes)==FALSE)
-//		exit(0);
-	HRESULT hRes = OleInitialize(NULL);
+ComInit::ComInit() {
+  // HRESULT hRes = CoInitialize(NULL);
+  //	if (SUCCEEDED(hRes)==FALSE)
+  //		exit(0);
+  HRESULT hRes = OleInitialize(NULL);
 }
 
-ComInit::~ComInit()
-{
-//  CoUninitialize();
-//	debugprint( "pre OleUninitialize\n" );
-	OleUninitialize();
-//	debugprint( "post OleUninitialize\n" );
+ComInit::~ComInit() {
+  //  CoUninitialize();
+  //	debugprint( "pre OleUninitialize\n" );
+  OleUninitialize();
+  //	debugprint( "post OleUninitialize\n" );
 }
 
 // Creating this instance will setup all COM stuff & do cleanup on program exit
-ComInit  Global_COM_Initializer;
-
+ComInit Global_COM_Initializer;

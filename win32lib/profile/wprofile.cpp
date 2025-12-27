@@ -17,71 +17,76 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Library profiler                                             *
+ *                 Project Name : Library profiler *
  *                                                                                             *
- *                    File Name : WPROFILE.CPP                                                 *
+ *                    File Name : WPROFILE.CPP *
  *                                                                                             *
- *                   Programmer : Steve Tall                                                   *
+ *                   Programmer : Steve Tall *
  *                                                                                             *
- *                   Start Date : 11/17/95                                                     *
+ *                   Start Date : 11/17/95 *
  *                                                                                             *
- *                  Last Update : November 20th 1995 [ST]                                      *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Overview:                                                                                   *
- *                                                                                             *
- *  New System                                                                                 *
- * ~~~~~~~~~~~                                                                                 *
- *                                                                                             *
- *  The new profiler system creates a seperate thread and then starts a timer off there. The   *
- *  timer in the second thread uses GetThreadContext to sample the IP address of each user     *
- *  thread. This system has the advantage of being able to sample what is happening in all the *
- *  threads we own not just the main thread. Another advantage is that it doesnt require a     *
- *  major recompilation.                                                                       *
- *  The disadvantage is that we dont really know what is going on when the IP is outside the   *
- *  scope of our threads - We could be in direct draw, direct sound or even something like the *
- *  VMM and there is no way to tell.                                                           *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- *  Old System                                                                                 *
- * ~~~~~~~~~~~                                                                                 *
- *                                                                                             *
- *  The profiler works by using the function prologue and epilogue hooks available in Watcom   *
- *  to register the current functions address in a global variable and then sampling the       *
- *  contents of the variable using a windows timer which runs at up to 1000 samples per second.*
- *                                                                                             *
- *  Compile the code to be sampled with the -ep and -ee flags to enable the prologue (__PRO)   *
- *  and epilogue (__EPI) calls to be generated.                                                *
- *  At the beginning of the section to be profiled (just before main loop normally) call the   *
- *  Start_Profiler function to start sampling. At the end of the section, call Stop_Profiler   *
- *  which will stop the timer and write the profile data to disk in the PROFILE.BIN file.      *
- *                                                                                             *
- *  Use PROFILE.EXE to view the results of the session.                                        *
- *                                                                                             *
- *  The addition of prologue and epilogue code will slow down the product and the profiler     *
- *  allocates a huge buffer for data so it should not be linked in unless it is going to be    *
- *  used.                                                                                      *
- *                                                                                             *
- *  The advantage of the prologue/epilogue approach is that all samples represent valid        *
- *  addresses within our code so we get valid results we can use even when the IP is in system *
- *  code.                                                                                      *
+ *                  Last Update : November 20th 1995 [ST] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
+ * Overview: *
  *                                                                                             *
- * Functions:                                                                                  *
- *  Start_Profiler -- initialises the profiler data and starts gathering data                  *
- *  Stop_Profiler -- stops the timer and writes the profile data to disk                       *
+ *  New System *
+ * ~~~~~~~~~~~ *
  *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ *  The new profiler system creates a seperate thread and then starts a timer
+ *off there. The   * timer in the second thread uses GetThreadContext to sample
+ *the IP address of each user     * thread. This system has the advantage of
+ *being able to sample what is happening in all the * threads we own not just
+ *the main thread. Another advantage is that it doesnt require a     * major
+ *recompilation. * The disadvantage is that we dont really know what is going on
+ *when the IP is outside the   * scope of our threads - We could be in direct
+ *draw, direct sound or even something like the * VMM and there is no way to
+ *tell.                                                           *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ *  Old System *
+ * ~~~~~~~~~~~ *
+ *                                                                                             *
+ *  The profiler works by using the function prologue and epilogue hooks
+ *available in Watcom   * to register the current functions address in a global
+ *variable and then sampling the       * contents of the variable using a
+ *windows timer which runs at up to 1000 samples per second.*
+ *                                                                                             *
+ *  Compile the code to be sampled with the -ep and -ee flags to enable the
+ *prologue (__PRO)   * and epilogue (__EPI) calls to be generated. * At the
+ *beginning of the section to be profiled (just before main loop normally) call
+ *the   * Start_Profiler function to start sampling. At the end of the section,
+ *call Stop_Profiler   * which will stop the timer and write the profile data to
+ *disk in the PROFILE.BIN file.      *
+ *                                                                                             *
+ *  Use PROFILE.EXE to view the results of the session. *
+ *                                                                                             *
+ *  The addition of prologue and epilogue code will slow down the product and
+ *the profiler     * allocates a huge buffer for data so it should not be linked
+ *in unless it is going to be    * used. *
+ *                                                                                             *
+ *  The advantage of the prologue/epilogue approach is that all samples
+ *represent valid        * addresses within our code so we get valid results we
+ *can use even when the IP is in system * code. *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ *                                                                                             *
+ * Functions: * Start_Profiler -- initialises the profiler data and starts
+ *gathering data                  * Stop_Profiler -- stops the timer and writes
+ *the profile data to disk                       *
+ *                                                                                             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #define WIN32
-#ifndef _WIN32 // Denzil 6/2/98 Watcom 11.0 complains without this check
+#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
-#endif // _WIN32
+#endif  // _WIN32
 #include <windows.h>
 #include <windowsx.h>
 #include <wwstd.h>
@@ -93,180 +98,173 @@
 
 #define PROFILE
 
-extern "C"{
-#ifdef PROFILE
-unsigned	ProfileList	[PROFILE_RATE*MAX_PROFILE_TIME];
-#else
-unsigned	ProfileList	[2];
-#endif
-unsigned	ProfilePtr;
-}
-
-extern "C" void Old_Profiler_Callback ( UINT, UINT , DWORD, DWORD, DWORD );
-extern "C" void New_Profiler_Callback (void);
 extern "C" {
-	extern unsigned ProfileFunctionAddress;
+#ifdef PROFILE
+unsigned ProfileList[PROFILE_RATE * MAX_PROFILE_TIME];
+#else
+unsigned ProfileList[2];
+#endif
+unsigned ProfilePtr;
 }
 
-unsigned long	ProfilerEvent;		//Handle for profiler callback
-unsigned long	ProfilerThread;	//Handle for profiler thread
+extern "C" void Old_Profiler_Callback(UINT, UINT, DWORD, DWORD, DWORD);
+extern "C" void New_Profiler_Callback(void);
+extern "C" {
+extern unsigned ProfileFunctionAddress;
+}
 
+unsigned long ProfilerEvent;   // Handle for profiler callback
+unsigned long ProfilerThread;  // Handle for profiler thread
 
-HANDLE		CCThreadHandle;
-CONTEXT	ThreadContext;
-
+HANDLE CCThreadHandle;
+CONTEXT ThreadContext;
 
 #if (PROFILE_SYSTEM == NEW_PROFILE_SYSTEM)
 
 /***********************************************************************************************
- * Thread_Callback -- gets the IP address of our thread and registers it                       *
+ * Thread_Callback -- gets the IP address of our thread and registers it *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Windows timer callback parms - not used                                           *
+ * INPUT:    Windows timer callback parms - not used *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    1/2/96 6:37AM ST : Created                                                               *
+ * HISTORY: * 1/2/96 6:37AM ST : Created *
  *=============================================================================================*/
 
-void CALLBACK Thread_Callback (UINT,UINT,DWORD,DWORD,DWORD)
-{
-	ThreadContext.ContextFlags = VDMCONTEXT_CONTROL;
-	if (!InTimerCallback){
-		GetThreadContext ( CCThreadHandle , &ThreadContext );
-	}else{
-		GetThreadContext (TimerThreadHandle , &ThreadContext);
-	}
+void CALLBACK Thread_Callback(UINT, UINT, DWORD, DWORD, DWORD) {
+  ThreadContext.ContextFlags = VDMCONTEXT_CONTROL;
+  if (!InTimerCallback) {
+    GetThreadContext(CCThreadHandle, &ThreadContext);
+  } else {
+    GetThreadContext(TimerThreadHandle, &ThreadContext);
+  }
 
-	ProfileFunctionAddress = ThreadContext.Eip;
-	New_Profiler_Callback();
+  ProfileFunctionAddress = ThreadContext.Eip;
+  New_Profiler_Callback();
 }
 
-
 /***********************************************************************************************
- * Profile_Thread -- this is the thread our profiler runs in. It just starts off a timer and   *
- *                   then buggers off into an infinite message loop. We shouldnt get messages  *
- *                   here as this isnt our primary thread                                      *
+ * Profile_Thread -- this is the thread our profiler runs in. It just starts off
+ *a timer and   * then buggers off into an infinite message loop. We shouldnt
+ *get messages  * here as this isnt our primary thread *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    1/2/96 6:39AM ST : Created                                                               *
+ * HISTORY: * 1/2/96 6:39AM ST : Created *
  *=============================================================================================*/
-void Profile_Thread (void)
-{
-	MSG msg;
-	ProfilerEvent = timeSetEvent (1000/PROFILE_RATE , 1 , Thread_Callback , 0 , TIME_PERIODIC);
-	//ProfilerEvent = timeSetEvent (100 , 1 , Thread_Callback , 0 , TIME_ONESHOT);
-	do  {
-		GetMessage(&msg,NULL,0,0);
-	} while(1);
+void Profile_Thread(void) {
+  MSG msg;
+  ProfilerEvent =
+      timeSetEvent(1000 / PROFILE_RATE, 1, Thread_Callback, 0, TIME_PERIODIC);
+  // ProfilerEvent = timeSetEvent (100 , 1 , Thread_Callback , 0 ,
+  // TIME_ONESHOT);
+  do {
+    GetMessage(&msg, NULL, 0, 0);
+  } while (1);
 }
 
-#endif //(PROFILE_SYSTEM == OLD_PROFILE_SYSTEM)
-
+#endif  //(PROFILE_SYSTEM == OLD_PROFILE_SYSTEM)
 
 /***********************************************************************************************
- * Start_Profiler -- initialises the profiler system and starts sampling                       *
+ * Start_Profiler -- initialises the profiler system and starts sampling *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: There may be a pause when sampling starts as Win95 does some VMM stuff            *
+ * WARNINGS: There may be a pause when sampling starts as Win95 does some VMM
+ *stuff            *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    11/20/95 5:12PM ST : Created                                                             *
+ * HISTORY: * 11/20/95 5:12PM ST : Created *
  *=============================================================================================*/
 
-void __cdecl Start_Profiler (void)
-{
+void __cdecl Start_Profiler(void) {
 #ifdef PROFILE
-	if (!ProfilerEvent){
-		memset (&ProfileList[0],-1,PROFILE_RATE*MAX_PROFILE_TIME*4);
-	}
+  if (!ProfilerEvent) {
+    memset(&ProfileList[0], -1, PROFILE_RATE * MAX_PROFILE_TIME * 4);
+  }
 
-	Profile_Init();
+  Profile_Init();
 
-	if (!ProfilerEvent){
-
+  if (!ProfilerEvent) {
 #if (PROFILE_SYSTEM == OLD_PROFILE_SYSTEM)
-		/*
-		** Old profile system - just set up a timer to monitor the global variable based on
-		** the last place __PRO was called from
-		*/
-		ProfilerEvent = timeSetEvent (1000/PROFILE_RATE , 1 , (void CALLBACK (UINT,UINT,DWORD,DWORD,DWORD))Old_Profiler_Callback , 0 , TIME_PERIODIC);
+    /*
+    ** Old profile system - just set up a timer to monitor the global variable
+    *based on
+    ** the last place __PRO was called from
+    */
+    ProfilerEvent = timeSetEvent(
+        1000 / PROFILE_RATE, 1,
+        (void CALLBACK(UINT, UINT, DWORD, DWORD, DWORD))Old_Profiler_Callback,
+        0, TIME_PERIODIC);
 #else
-		/*
-		** New profile system - create a second thread that will do all the profiling
-		** using GetThreadContext
-		*/
-		if ( DuplicateHandle( GetCurrentProcess(), GetCurrentThread() , GetCurrentProcess() ,&CCThreadHandle , 0 , TRUE , DUPLICATE_SAME_ACCESS) ){
-			ProfilerEvent= (unsigned)CreateThread(NULL,2048,(LPTHREAD_START_ROUTINE)&Profile_Thread,NULL,0,&ProfilerThread);
-		}
+    /*
+    ** New profile system - create a second thread that will do all the
+    *profiling
+    ** using GetThreadContext
+    */
+    if (DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
+                        GetCurrentProcess(), &CCThreadHandle, 0, TRUE,
+                        DUPLICATE_SAME_ACCESS)) {
+      ProfilerEvent = (unsigned)CreateThread(
+          NULL, 2048, (LPTHREAD_START_ROUTINE)&Profile_Thread, NULL, 0,
+          &ProfilerThread);
+    }
 #endif
-
-	}
+  }
 
 #else
-	ProfilerEvent = 0;
+  ProfilerEvent = 0;
 #endif
-
 }
-
-
 
 /***********************************************************************************************
- * Stop_Profiler -- stops the sampling timer and writes the colledted data to disk             *
+ * Stop_Profiler -- stops the sampling timer and writes the colledted data to
+ *disk             *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: Writes to file PROFILE.BIN                                                        *
+ * WARNINGS: Writes to file PROFILE.BIN *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    11/20/95 5:13PM ST : Created                                                             *
+ * HISTORY: * 11/20/95 5:13PM ST : Created *
  *=============================================================================================*/
 
-void __cdecl Stop_Profiler (void)
-{
-	if (ProfilerEvent){
-
+void __cdecl Stop_Profiler(void) {
+  if (ProfilerEvent) {
 #if (PROFILE_SYSTEM == OLD_PROFILE_SYSTEM)
-		//
-		// Old system - just remove the timer event
-		//
-		timeKillEvent(ProfilerEvent);
+    //
+    // Old system - just remove the timer event
+    //
+    timeKillEvent(ProfilerEvent);
 #else
-		//
-		// New system - kill the profiling thread
-		//
-		TerminateThread((HANDLE)ProfilerThread,0);
+    //
+    // New system - kill the profiling thread
+    //
+    TerminateThread((HANDLE)ProfilerThread, 0);
 #endif
 
-		ProfilerEvent=NULL;
+    ProfilerEvent = NULL;
 
-		Profile_End();
+    Profile_End();
 
-		int handle = Open_File ( "profile.bin" , WRITE );
-		if (handle != WW_ERROR){
-			Write_File (handle , &ProfileList[0] , ProfilePtr*4);
-			Close_File (handle);
-		}
-	}
+    int handle = Open_File("profile.bin", WRITE);
+    if (handle != WW_ERROR) {
+      Write_File(handle, &ProfileList[0], ProfilePtr * 4);
+      Close_File(handle);
+    }
+  }
 }
-
-

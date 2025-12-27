@@ -18,51 +18,50 @@
 
 /* $Header: /CounterStrike/SCREEN.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : SCREEN.H                                                     *
+ *                    File Name : SCREEN.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : June 2, 1994                                                 *
+ *                   Start Date : June 2, 1994 *
  *                                                                                             *
- *                  Last Update : June 2, 1994   [JLB]                                         *
+ *                  Last Update : June 2, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef SCREEN_H
 #define SCREEN_H
 
+class ScreenClass {
+  /*
+  **	The mouse shape is controlled by these variables. These
+  **	hold the current mouse shape (so resetting won't be needlessly
+  *performed) and *	the normal default mouse shape (when arrow shapes are
+  *needed).
+  */
+  MouseShapeType CurrentMouseShape;
+  MouseShapeType NormalMouseShape;
 
-class ScreenClass
-{
-		/*
-		**	The mouse shape is controlled by these variables. These
-		**	hold the current mouse shape (so resetting won't be needlessly performed) and
-		**	the normal default mouse shape (when arrow shapes are needed).
-		*/
-		MouseShapeType CurrentMouseShape;
-		MouseShapeType NormalMouseShape;
+ public:
+  ScreenClass(void) {
+    CurrentMouseShape = SHP_NONE;
+    NormalMouseShape = SHP_MOUSE;
+  };
 
-	public:
+  Init(void);
+  Set_Default_Mouse(MouseShapeType mouse);
+  Force_Mouse_Shape(MouseShapeType mouse);
 
-		ScreenClass(void) {
-			CurrentMouseShape = SHP_NONE;
-			NormalMouseShape = SHP_MOUSE;
-		};
-		
-
-		Init(void);
-		Set_Default_Mouse(MouseShapeType mouse);
-		Force_Mouse_Shape(MouseShapeType mouse);
-
-		unsigned char *GamePalette;
-		unsigned char *BlackPalette;
+  unsigned char *GamePalette;
+  unsigned char *BlackPalette;
 };
 
 #endif

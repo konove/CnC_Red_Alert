@@ -16,142 +16,147 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\score.h_v   2.18   16 Oct 1995 16:46:18   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\score.h_v   2.18   16 Oct 1995 16:46:18
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : SCORE.H                                                      *
+ *                    File Name : SCORE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 19, 1994                                               *
+ *                   Start Date : April 19, 1994 *
  *                                                                                             *
- *                  Last Update : April 19, 1994   [JLB]                                       *
+ *                  Last Update : April 19, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef SCORE_H
 #define SCORE_H
 
-#include	"unit.h"
-#include	"building.h"
+#include "unit.h"
+#include "building.h"
 
 class ScoreClass {
-	public:
-		int Score;
-		int NKilled;
-		int GKilled;
-		int CKilled;
-		int NBKilled;
-		int GBKilled;
-		int CBKilled;
-		int NHarvested;
-		int GHarvested;
-		int CHarvested;
-		unsigned long ElapsedTime;
+ public:
+  int Score;
+  int NKilled;
+  int GKilled;
+  int CKilled;
+  int NBKilled;
+  int GBKilled;
+  int CBKilled;
+  int NHarvested;
+  int GHarvested;
+  int CHarvested;
+  unsigned long ElapsedTime;
 
-		void Init(void) {memset(this, 0, sizeof(ScoreClass));};
-		void Presentation(void);
+  void Init(void) { memset(this, 0, sizeof(ScoreClass)); };
+  void Presentation(void);
 
-		/*
-		**	File I/O.
-		*/
-		bool Load(FileClass & file);
-		bool Save(FileClass & file);
-		void Code_Pointers(void);
-		void Decode_Pointers(void);
+  /*
+  **	File I/O.
+  */
+  bool Load(FileClass &file);
+  bool Save(FileClass &file);
+  void Code_Pointers(void);
+  void Decode_Pointers(void);
 
-	protected:
+ protected:
+ private:
+  unsigned char *ChangingGun;
 
-	private:
-		unsigned char *ChangingGun;
-
-		void ScoreDelay(int ticks);
-		void Pulse_Bar_Graph(void);
-		void Print_Graph_Title(int,int);
-		void Print_Minutes(int minutes);
-		void Count_Up_Print(char *str, int percent, int max, int xpos, int ypos);
-		void Show_Credits(int house, unsigned char const pal[]);
-		void Do_GDI_Graph(void const * yellowptr, void const * redptr, int gdikilled, int nodkilled, int ypos);
-		void Do_Nod_Casualties_Graph(void);
-		void Do_Nod_Buildings_Graph(void);
-		void Input_Name(char str[], int xpos, int ypos, unsigned char const pal[]);
+  void ScoreDelay(int ticks);
+  void Pulse_Bar_Graph(void);
+  void Print_Graph_Title(int, int);
+  void Print_Minutes(int minutes);
+  void Count_Up_Print(char *str, int percent, int max, int xpos, int ypos);
+  void Show_Credits(int house, unsigned char const pal[]);
+  void Do_GDI_Graph(void const *yellowptr, void const *redptr, int gdikilled,
+                    int nodkilled, int ypos);
+  void Do_Nod_Casualties_Graph(void);
+  void Do_Nod_Buildings_Graph(void);
+  void Input_Name(char str[], int xpos, int ypos, unsigned char const pal[]);
 };
 
 class ScoreAnimClass {
-	public:
-		ScoreAnimClass(int x, int y, void const * data);
-		int XPos;
-		int YPos;
-		CountDownTimerClass Timer;
-		void const * DataPtr;
-		virtual void Update(void) {} ;
-		virtual ~ScoreAnimClass(void) {} ;
+ public:
+  ScoreAnimClass(int x, int y, void const *data);
+  int XPos;
+  int YPos;
+  CountDownTimerClass Timer;
+  void const *DataPtr;
+  virtual void Update(void) {};
+  virtual ~ScoreAnimClass(void){};
 };
 
 class ScoreCredsClass : public ScoreAnimClass {
-	public:
-		int Stage;
-		int MaxStage;
-		int TimerReset;
-		void const * CashTurn;
-		void const * Clock1;
+ public:
+  int Stage;
+  int MaxStage;
+  int TimerReset;
+  void const *CashTurn;
+  void const *Clock1;
 
-		virtual void Update(void);
-		ScoreCredsClass(int xpos, int ypos, void const * data, int max, int timer);
-		virtual ~ScoreCredsClass(void) {};
+  virtual void Update(void);
+  ScoreCredsClass(int xpos, int ypos, void const *data, int max, int timer);
+  virtual ~ScoreCredsClass(void){};
 };
 
 class ScoreTimeClass : public ScoreAnimClass {
-	public:
-		int Stage;
-		int MaxStage;
-		int TimerReset;
-		virtual void Update(void);
-		ScoreTimeClass(int xpos, int ypos, void const * data, int max, int timer);
-		virtual ~ScoreTimeClass(void) {};
+ public:
+  int Stage;
+  int MaxStage;
+  int TimerReset;
+  virtual void Update(void);
+  ScoreTimeClass(int xpos, int ypos, void const *data, int max, int timer);
+  virtual ~ScoreTimeClass(void){};
 };
 
 class ScorePrintClass : public ScoreAnimClass {
-	public:
-		int Background;
-		int Stage;
-		void const * PrimaryPalette;
-		virtual void Update(void);
-		ScorePrintClass(void const * string, int xpos, int ypos, void const * palette, int background=TBLACK);
-		ScorePrintClass( int  string, int xpos, int ypos, void const * palette, int background=TBLACK);
-		virtual ~ScorePrintClass(void) {};
+ public:
+  int Background;
+  int Stage;
+  void const *PrimaryPalette;
+  virtual void Update(void);
+  ScorePrintClass(void const *string, int xpos, int ypos, void const *palette,
+                  int background = TBLACK);
+  ScorePrintClass(int string, int xpos, int ypos, void const *palette,
+                  int background = TBLACK);
+  virtual ~ScorePrintClass(void){};
 };
-
 
 class MultiStagePrintClass : public ScoreAnimClass {
-	public:
-		int Background;
-		int Stage;
-		void const * PrimaryPalette;
-		virtual void Update(void);
-		MultiStagePrintClass(void const * string, int xpos, int ypos, void const * palette, int background=TBLACK);
-		MultiStagePrintClass( int  string, int xpos, int ypos, void const * palette, int background=TBLACK);
-		virtual ~MultiStagePrintClass(void) {};
+ public:
+  int Background;
+  int Stage;
+  void const *PrimaryPalette;
+  virtual void Update(void);
+  MultiStagePrintClass(void const *string, int xpos, int ypos,
+                       void const *palette, int background = TBLACK);
+  MultiStagePrintClass(int string, int xpos, int ypos, void const *palette,
+                       int background = TBLACK);
+  virtual ~MultiStagePrintClass(void){};
 };
-
 
 class ScoreScaleClass : public ScoreAnimClass {
-	public:
-		int Stage;
-		unsigned char const * Palette;
-		virtual void Update(void);
-		ScoreScaleClass(void const * data, int xpos, int ypos, unsigned char const pal[]);
-		virtual ~ScoreScaleClass(void) {};
-
+ public:
+  int Stage;
+  unsigned char const *Palette;
+  virtual void Update(void);
+  ScoreScaleClass(void const *data, int xpos, int ypos,
+                  unsigned char const pal[]);
+  virtual ~ScoreScaleClass(void){};
 };
 
-#define MAXSCOREOBJS		8
+#define MAXSCOREOBJS 8
 extern ScoreAnimClass *ScoreObjs[MAXSCOREOBJS];
 
 void Multi_Score_Presentation(void);

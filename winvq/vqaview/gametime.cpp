@@ -50,7 +50,7 @@ GameTimeClass Game_Time;
 /***************************************************************************
  * GameTimeClass - Constructor function for GameTimeClass                  *
  *                                                                         *
- * INPUT:	                                                                 *
+ * INPUT: *
  *                                                                         *
  * OUTPUT:	                                                              *
  *                                                                         *
@@ -59,57 +59,46 @@ GameTimeClass Game_Time;
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-GameTimeClass::GameTimeClass( void )
-{
-	game_start_time = timeGetTime();
-}
-
+GameTimeClass::GameTimeClass(void) { game_start_time = timeGetTime(); }
 
 /***************************************************************************
  * Get_Time - returns the time in ms elapsed since game was started        *
  *                                                                         *
- * INPUT:	                                                                 *
+ * INPUT: *
  *                                                                         *
  * OUTPUT:	                                                              *
- *		unsigned long - time in milliseconds since game was started         *
+ *		unsigned long - time in milliseconds since game was started *
  *                                                                         *
  * WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-unsigned long GameTimeClass::Get_Time( void )
-{
-	unsigned long curr_windows_time;
-	unsigned long game_time;
+unsigned long GameTimeClass::Get_Time(void) {
+  unsigned long curr_windows_time;
+  unsigned long game_time;
 
-	curr_windows_time = timeGetTime();
-	if ( curr_windows_time <= game_start_time ) {
-		// Handles the case if the windows time wraps while playing the game.
-		game_time = MAX_ULONG - game_start_time + curr_windows_time;
-	}
-	else {
-   		game_time = curr_windows_time - game_start_time;
-	}
-	return( game_time );
+  curr_windows_time = timeGetTime();
+  if (curr_windows_time <= game_start_time) {
+    // Handles the case if the windows time wraps while playing the game.
+    game_time = MAX_ULONG - game_start_time + curr_windows_time;
+  } else {
+    game_time = curr_windows_time - game_start_time;
+  }
+  return (game_time);
 }
-
 
 /***************************************************************************
  * Get_Game_Time - returns the time in ms elapsed since game was started   *
  *                                                                         *
- * INPUT:	                                                                 *
+ * INPUT: *
  *                                                                         *
  * OUTPUT:	                                                              *
- *		unsigned long - time in milliseconds since game was started         *
+ *		unsigned long - time in milliseconds since game was started *
  *                                                                         *
  * WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-unsigned long Get_Game_Time( void )
-{
-	return( Game_Time.Get_Time() );
-}
-
+unsigned long Get_Game_Time(void) { return (Game_Time.Get_Time()); }

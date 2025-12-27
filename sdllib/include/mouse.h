@@ -18,19 +18,20 @@
 
 /***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Westwood 32 Bit Library                                      *
+ *                 Project Name : Westwood 32 Bit Library *
  *                                                                                             *
- *                    File Name : MOUSE.H                                                      *
+ *                    File Name : MOUSE.H *
  *                                                                                             *
- *                   Programmer : Philip W. Gorrow                                             *
+ *                   Programmer : Philip W. Gorrow *
  *                                                                                             *
- *                   Start Date : 12/12/95                                                     *
+ *                   Start Date : 12/12/95 *
  *                                                                                             *
- *                  Last Update : December 12, 1995 [PWG]                                      *
+ *                  Last Update : December 12, 1995 [PWG] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef WW_MOUSE_H
 #define WW_MOUSE_H
@@ -38,63 +39,64 @@
 #include "gbuffer.h"
 
 class WWMouseClass {
-	public:
-		WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width, int mouse_max_height);
-		~WWMouseClass();
-		void *Set_Cursor(int xhotspot, int yhotspot, void *cursor);
-		void Process_Mouse(void);
-		void Hide_Mouse(void);
-		void Show_Mouse(void);
-		void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
-		void Conditional_Show_Mouse(void);
-		int Get_Mouse_State(void);
-		int Get_Mouse_X(void);
-		int Get_Mouse_Y(void);
-		void Get_Mouse_XY(int &x, int &y);
-		//
-		// The following two routines can be used to render the mouse onto a graphicbuffer
-		// other than the hidpage.
-		//
-		void Draw_Mouse(GraphicViewPortClass *scr);
-		void Erase_Mouse(GraphicViewPortClass *scr, bool forced = false);
+ public:
+  WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
+               int mouse_max_height);
+  ~WWMouseClass();
+  void *Set_Cursor(int xhotspot, int yhotspot, void *cursor);
+  void Process_Mouse(void);
+  void Hide_Mouse(void);
+  void Show_Mouse(void);
+  void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
+  void Conditional_Show_Mouse(void);
+  int Get_Mouse_State(void);
+  int Get_Mouse_X(void);
+  int Get_Mouse_Y(void);
+  void Get_Mouse_XY(int &x, int &y);
+  //
+  // The following two routines can be used to render the mouse onto a
+  // graphicbuffer other than the hidpage.
+  //
+  void Draw_Mouse(GraphicViewPortClass *scr);
+  void Erase_Mouse(GraphicViewPortClass *scr, bool forced = false);
 
-		void Block_Mouse(GraphicBufferClass *buffer);
-		void Unblock_Mouse(GraphicBufferClass *buffer);
-		void Set_Cursor_Clip(void);
-		void Clear_Cursor_Clip(void);
+  void Block_Mouse(GraphicBufferClass *buffer);
+  void Unblock_Mouse(GraphicBufferClass *buffer);
+  void Set_Cursor_Clip(void);
+  void Clear_Cursor_Clip(void);
 
-		void Update_Palette();
-		void Update_Pos(int x, int y);
+  void Update_Palette();
+  void Update_Pos(int x, int y);
 
-	private:
-		enum 	{
-			CONDHIDE		= 1,
-			CONDHIDDEN 	= 2,
-		};
+ private:
+  enum {
+    CONDHIDE = 1,
+    CONDHIDDEN = 2,
+  };
 
-		uint8_t	*				MouseCursor = NULL;	// pointer to the mouse cursor in memory
-		void *					SDLCursor = NULL;
-		void *					SDLSurface = NULL;
-		int						MouseXHot;		// X hot spot of the current mouse cursor
-		int						MouseYHot;		// Y hot spot of the current mouse cursor
+  uint8_t *MouseCursor = NULL;  // pointer to the mouse cursor in memory
+  void *SDLCursor = NULL;
+  void *SDLSurface = NULL;
+  int MouseXHot;  // X hot spot of the current mouse cursor
+  int MouseYHot;  // Y hot spot of the current mouse cursor
 
-		int						MaxWidth;		// maximum width of mouse background buffer
-		int						MaxHeight;		// maximum height of mouse background buffer
+  int MaxWidth;   // maximum width of mouse background buffer
+  int MaxHeight;  // maximum height of mouse background buffer
 
-		int						MouseCXLeft;	// left x pos if conditional hide mouse in effect
-		int						MouseCYUpper;	// upper y pos if conditional hide mouse in effect
-		int						MouseCXRight;	// right x pos if conditional hide mouse in effect
-		int						MouseCYLower;	// lower y pos if conditional hide mouse in effect
-		char						MCFlags;			// conditional hide mouse flags
-		char						MCCount;			// nesting count for conditional hide mouse
+  int MouseCXLeft;   // left x pos if conditional hide mouse in effect
+  int MouseCYUpper;  // upper y pos if conditional hide mouse in effect
+  int MouseCXRight;  // right x pos if conditional hide mouse in effect
+  int MouseCYLower;  // lower y pos if conditional hide mouse in effect
+  char MCFlags;      // conditional hide mouse flags
+  char MCCount;      // nesting count for conditional hide mouse
 
-		GraphicViewPortClass	*Screen;			// pointer to the surface mouse was init'd with
-		char *					PrevCursor;		// pointer to previous cursor shape
-		int						MouseUpdate;
-		int						State;
+  GraphicViewPortClass *Screen;  // pointer to the surface mouse was init'd with
+  char *PrevCursor;              // pointer to previous cursor shape
+  int MouseUpdate;
+  int State;
 
-		int LastX = 0, LastY = 0;
-		bool PaletteDirty = false;
+  int LastX = 0, LastY = 0;
+  bool PaletteDirty = false;
 };
 
 void Hide_Mouse(void);

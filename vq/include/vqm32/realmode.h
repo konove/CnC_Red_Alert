@@ -19,26 +19,26 @@
 #ifndef VQMREALMODE_H
 #define VQMREALMODE_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     realmode.h
-*
-* DESCRIPTION
-*     Real-mode interfacing definitions and equates. Many of the definitions
-*     and descriptions in this file were taken from other sources and
-*     compiled here for use in MISC32 library.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     Febuary 6, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     realmode.h
+ *
+ * DESCRIPTION
+ *     Real-mode interfacing definitions and equates. Many of the definitions
+ *     and descriptions in this file were taken from other sources and
+ *     compiled here for use in MISC32 library.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     Febuary 6, 1995
+ *
+ ****************************************************************************/
 
 /* REALPTR: Real-mode pointer (segment:offset16).
  *
@@ -55,7 +55,7 @@ typedef unsigned long REALPTR;
 #define RP_SET(rp, off, seg) (rp = ((unsigned long)(seg) << 16) + (off))
 #define RP_INCR(rp, incr) (rp += ((unsigned long)(incr)) & 0xFFFF)
 
-#define MK_PTR(off, seg) (void *)((((unsigned long)seg&0xFFFF)<<4)+off)
+#define MK_PTR(off, seg) (void *)((((unsigned long)seg & 0xFFFF) << 4) + off)
 
 /* RMInfo: Real-mode interrupt call structure.
  *
@@ -66,17 +66,16 @@ typedef unsigned long REALPTR;
  * to real-mode and then execute the interrupt in real-mode.
  */
 typedef struct _RMInfo {
-	long  edi;
-	long  esi;
-	long  ebp;
-	long  reservedbysystem;
-	long  ebx;
-	long  edx;
-	long  ecx;
-	long  eax;
-	short flags;
-	short es,ds,fs,gs,ip,cs,sp,ss;
+  long edi;
+  long esi;
+  long ebp;
+  long reservedbysystem;
+  long ebx;
+  long edx;
+  long ecx;
+  long eax;
+  short flags;
+  short es, ds, fs, gs, ip, cs, sp, ss;
 } RMInfo;
 
 #endif /* VQMREALMODE_H */
-

@@ -16,37 +16,29 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #define WIN32
-#ifndef _WIN32 // Denzil 6/2/98 Watcom 11.0 complains without this check
+#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
-#endif // _WIN32
+#endif  // _WIN32
 #include <windows.h>
 
-
-
 extern "C" {
-BOOL WINAPI Thipx_ThunkConnect32(LPSTR pszDll16, LPSTR pszDll32, DWORD hIinst, DWORD dwReason);
+BOOL WINAPI Thipx_ThunkConnect32(LPSTR pszDll16, LPSTR pszDll32, DWORD hIinst,
+                                 DWORD dwReason);
 };
-
-
-
 
 BOOL APIENTRY DllMain(DWORD hInst, DWORD dwReason, DWORD dwReserved)
 
 {
-	OutputDebugString("In THIPX32.DLL : DllMain\r\n");
-    if (! Thipx_ThunkConnect32("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)) {
-        OutputDebugString("ERROR! 32Bit ThunkConnect32 failed!\r\n");
-        return FALSE;
-    }
-	OutputDebugString("32Bit ThunkConnect32 succeeded.\r\n");
-	return (TRUE);
+  OutputDebugString("In THIPX32.DLL : DllMain\r\n");
+  if (!Thipx_ThunkConnect32("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)) {
+    OutputDebugString("ERROR! 32Bit ThunkConnect32 failed!\r\n");
+    return FALSE;
+  }
+  OutputDebugString("32Bit ThunkConnect32 succeeded.\r\n");
+  return (TRUE);
 }
 
-
-BOOL APIENTRY LibMain(DWORD hInst, DWORD dwReason, DWORD dwReserved)
-{
-	return (DllMain(hInst, dwReason, dwReserved));
+BOOL APIENTRY LibMain(DWORD hInst, DWORD dwReason, DWORD dwReserved) {
+  return (DllMain(hInst, dwReason, dwReserved));
 }

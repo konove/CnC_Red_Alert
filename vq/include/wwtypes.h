@@ -19,36 +19,35 @@
 #ifndef WWTYPES_H
 #define WWTYPES_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILENAME
-*     wwtypes.h
-*
-* DESCRIPTION
-*     Westwood standard types definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*      
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILENAME
+ *     wwtypes.h
+ *
+ * DESCRIPTION
+ *     Westwood standard types definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ ****************************************************************************/
 
-#define	TRUE  1
-#define	FALSE 0
+#define TRUE 1
+#define FALSE 0
 
-#define	VOID    void
-#define	PRIVATE static
-#define	PUBLIC
+#define VOID void
+#define PRIVATE static
+#define PUBLIC
 
-#define	BOOL  short
-#define	BYTE  char
-#define	UBYTE unsigned char
-#define	WORD  signed short
-#define	UWORD unsigned short
-#define	LONG  signed long
-#define	ULONG unsigned long
+#define BOOL short
+#define BYTE char
+#define UBYTE unsigned char
+#define WORD signed short
+#define UWORD unsigned short
+#define LONG signed long
+#define ULONG unsigned long
 
 #endif /* WWTYPES_H */
-

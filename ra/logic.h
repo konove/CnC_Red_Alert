@@ -18,39 +18,41 @@
 
 /* $Header: /CounterStrike/LOGIC.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : LOGIC.H                                                      *
+ *                    File Name : LOGIC.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : May 29, 1994                                                 *
+ *                   Start Date : May 29, 1994 *
  *                                                                                             *
- *                  Last Update : May 29, 1994   [JLB]                                         *
+ *                  Last Update : May 29, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef LOGIC_H
 #define LOGIC_H
 
-#include	"layer.h"
+#include "layer.h"
 
 /***********************************************************************************************
-**	Game logic processing is controlled by this class. The graphic and AI logic is handled
-**	separately so that on slower machines, the graphic display is least affected.
+**	Game logic processing is controlled by this class. The graphic and AI
+*logic is handled *	separately so that on slower machines, the graphic
+*display is least affected.
 */
-class LogicClass : public LayerClass
-{
-	public:
-		void AI(void);
-		void Detach(TARGET target, bool all=true);
-		#ifdef CHEAT_KEYS
-		void Debug_Dump(MonoClass *mono) const;
-		#endif
+class LogicClass : public LayerClass {
+ public:
+  void AI(void);
+  void Detach(TARGET target, bool all = true);
+#ifdef CHEAT_KEYS
+  void Debug_Dump(MonoClass *mono) const;
+#endif
 };
 #endif

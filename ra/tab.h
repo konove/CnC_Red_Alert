@@ -18,62 +18,65 @@
 
 /* $Header: /CounterStrike/TAB.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TAB.H                                                        *
+ *                    File Name : TAB.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 12/15/94                                                     *
+ *                   Start Date : 12/15/94 *
  *                                                                                             *
- *                  Last Update : December 15, 1994 [JLB]                                      *
+ *                  Last Update : December 15, 1994 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TAB_H
 #define TAB_H
 
-#include	"sidebar.h"
-#include	"credits.h"
+#include "sidebar.h"
+#include "credits.h"
 
-class TabClass: public SidebarClass
-{
-	public:
-		TabClass(void);
-		TabClass(NoInitClass const & x) : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {};
+class TabClass : public SidebarClass {
+ public:
+  TabClass(void);
+  TabClass(NoInitClass const &x)
+      : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x){};
 
-		virtual void AI(KeyNumType &input, int x, int y);
-		virtual void Draw_It(bool complete=false);
-		static void Draw_Credits_Tab(void);
-		static void Hilite_Tab(int tab);
-		void Flash_Money(void);
+  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void Draw_It(bool complete = false);
+  static void Draw_Credits_Tab(void);
+  static void Hilite_Tab(int tab);
+  void Flash_Money(void);
 
-		virtual void One_Time(void);							// One-time inits
-		void Redraw_Tab(void) {IsToRedraw = true;Flag_To_Redraw(false);};
+  virtual void One_Time(void);  // One-time inits
+  void Redraw_Tab(void) {
+    IsToRedraw = true;
+    Flag_To_Redraw(false);
+  };
 
-		CreditClass Credits;
+  CreditClass Credits;
 
-		CDTimerClass<FrameTimerClass> FlasherTimer;
+  CDTimerClass<FrameTimerClass> FlasherTimer;
 
-	protected:
+ protected:
+  /*
+  **	If the tab graphic is to be redrawn, then this flag is true.
+  */
+  unsigned IsToRedraw : 1;
 
-		/*
-		**	If the tab graphic is to be redrawn, then this flag is true.
-		*/
-		unsigned IsToRedraw:1;
+ private:
+  void Set_Active(int select);
 
-	private:
-		void Set_Active(int select);
+  CDTimerClass<FrameTimerClass> MoneyFlashTimer;
 
-		CDTimerClass<FrameTimerClass> MoneyFlashTimer;
-
-		static void const * TabShape;
+  static void const *TabShape;
 };
-
 
 #endif

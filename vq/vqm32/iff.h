@@ -19,25 +19,25 @@
 #ifndef VQMIFF_H
 #define VQMIFF_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     iff.h
-* 
-* DESCRIPTION
-*     IFF (Interchange File Format) manager definitions.
-*     (32-Bit protected mode)
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     January 26, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     iff.h
+ *
+ * DESCRIPTION
+ *     IFF (Interchange File Format) manager definitions.
+ *     (32-Bit protected mode)
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     January 26, 1995
+ *
+ ****************************************************************************/
 
 /* FormHeader - Structure associated with IFF forms.
  *
@@ -46,9 +46,9 @@
  * type - Form type (IE: "ILBM")
  */
 typedef struct _FormHeader {
-	long id;
-	long size;
-	long type;
+  long id;
+  long size;
+  long type;
 } FormHeader;
 
 /* Context - Structure associated with chunks.
@@ -58,9 +58,9 @@ typedef struct _FormHeader {
  * scan - Bytes read/written.
  */
 typedef struct _Context {
-	long id;
-	long size;
-	long scan;
+  long id;
+  long size;
+  long scan;
 } Context;
 
 /* IFFHandle - Structure associated with an active IFF read\write session.
@@ -72,18 +72,18 @@ typedef struct _Context {
  * cn    - Context of current chunk.
  */
 typedef struct _IFFHandle {
-	long       fh;
-	long       flags;
-	FormHeader form;
-	long       scan;
-	Context    cn;
+  long fh;
+  long flags;
+  FormHeader form;
+  long scan;
+  Context cn;
 } IFFHandle;
 
 /*	bit masks for "flags" field. */
-#define IFFB_READ  0
+#define IFFB_READ 0
 #define IFFB_WRITE 1
-#define IFFF_READ  (1<<IFFB_READ)
-#define IFFF_WRITE (1<<IFFB_WRITE)
+#define IFFF_READ (1 << IFFB_READ)
+#define IFFF_WRITE (1 << IFFB_WRITE)
 
 /* IFF return codes. Most functions return either zero for success or
  * one of these codes. The exceptions are the read/write functions which,
@@ -95,32 +95,34 @@ typedef struct _IFFHandle {
  * IFFERR_WRITE - Write error.
  * IFFERR_NOMEM - Unable to allocate memory.
  */
-#define IFFERR_EOF   -1
-#define IFFERR_READ  -2
+#define IFFERR_EOF -1
+#define IFFERR_READ -2
 #define IFFERR_WRITE -3
 #define IFFERR_NOMEM -4
 
 /* Macros to make things easier. */
-#define REVERSE_LONG(id) (unsigned long)((((unsigned long)(id)>>24) \
-		&0x000000FFL)|(((unsigned long)(id)>>8) \
-		&0x0000FF00L)|(((unsigned long)(id)<<8) \
-		&0x00FF0000L)|(((unsigned long)(id)<<24)&0xFF000000L))
+#define REVERSE_LONG(id)                                        \
+  (unsigned long)((((unsigned long)(id) >> 24) & 0x000000FFL) | \
+                  (((unsigned long)(id) >> 8) & 0x0000FF00L) |  \
+                  (((unsigned long)(id) << 8) & 0x00FF0000L) |  \
+                  (((unsigned long)(id) << 24) & 0xFF000000L))
 
-#define REVERSE_WORD(id) ((unsigned short)((((unsigned short)(id)<<8) \
-		&0x00FF00)|(((unsigned short)(id)>>8)&0x0FF)))
+#define REVERSE_WORD(id)                                       \
+  ((unsigned short)((((unsigned short)(id) << 8) & 0x00FF00) | \
+                    (((unsigned short)(id) >> 8) & 0x0FF)))
 
-#define PADSIZE(size) (((size)+1)&(~1))
+#define PADSIZE(size) (((size) + 1) & (~1))
 
 #ifndef MAKE_ID
-#define MAKE_ID(a,b,c,d) ((long)((long)(d)<<24)|((long)(c)<<16)| \
-		((long)(b)<<8)|(long)(a))
+#define MAKE_ID(a, b, c, d) \
+  ((long)((long)(d) << 24) | ((long)(c) << 16) | ((long)(b) << 8) | (long)(a))
 #endif
 
 /* Universal IFF identifiers */
-#define ID_FORM MAKE_ID('F','O','R','M')
-#define ID_LIST MAKE_ID('L','I','S','T')
-#define ID_PROP MAKE_ID('P','R','O','P')
-#define ID_NULL MAKE_ID(' ',' ',' ',' ')
+#define ID_FORM MAKE_ID('F', 'O', 'R', 'M')
+#define ID_LIST MAKE_ID('L', 'I', 'S', 'T')
+#define ID_PROP MAKE_ID('P', 'R', 'O', 'P')
+#define ID_NULL MAKE_ID(' ', ' ', ' ', ' ')
 
 /* Prototypes */
 IFFHandle *OpenIFF(char *, long);
@@ -138,4 +140,3 @@ char *IDtoStr(long, char *);
 long CurrentFilePos(IFFHandle *);
 
 #endif /* VQMIFF_H */
-

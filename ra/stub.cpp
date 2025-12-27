@@ -16,10 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include	<stdlib.h>
-#include	<stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-void main(void)
-{
-	printf("Run C&C.COM.\n");
-}
+void main(void) { printf("Run C&C.COM.\n"); }

@@ -16,112 +16,116 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\power.h_v   2.16   16 Oct 1995 16:48:06   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\power.h_v   2.16   16 Oct 1995 16:48:06
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : POWER.H                                                      *
+ *                    File Name : POWER.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 12/15/94                                                     *
+ *                   Start Date : 12/15/94 *
  *                                                                                             *
- *                  Last Update : December 15, 1994 [JLB]                                      *
+ *                  Last Update : December 15, 1994 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef POWER_H
 #define POWER_H
 
-#include	"radar.h"
+#include "radar.h"
 
-class PowerClass : public RadarClass
-{
-	public:
-		int PowX;
-		int PowY;
-		int PowWidth;
-		int PowHeight;
-		int PowLineSpace;
-		int PowLineWidth;
+class PowerClass : public RadarClass {
+ public:
+  int PowX;
+  int PowY;
+  int PowWidth;
+  int PowHeight;
+  int PowLineSpace;
+  int PowLineWidth;
 
+  PowerClass();
+  PowerClass(NoInitClass const &x) : RadarClass(x){};
 
-		PowerClass();
-		PowerClass(NoInitClass const & x) : RadarClass(x) {};
+  /*
+  ** Initialization
+  */
+  virtual void One_Time(void);  // One-time inits
 
-		/*
-		** Initialization
-		*/
-		virtual void One_Time(void);							// One-time inits
+  virtual void Init_Clear(void);  // Clears all to known state
+  virtual void Draw_It(bool complete = false);
+  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void Refresh_Cells(CELL cell, short const *list);
+  //		virtual void Must_Redraw_Sidebar(void);
 
-		virtual void Init_Clear(void);						// Clears all to known state
-		virtual void Draw_It(bool complete=false);
-		virtual void AI(KeyNumType &input, int x, int y);
-		virtual void Refresh_Cells(CELL cell, short const *list);
-//		virtual void Must_Redraw_Sidebar(void);
+  /*
+  **	File I/O.
+  */
+  virtual void Code_Pointers(void);
+  virtual void Decode_Pointers(void);
 
-		/*
-		**	File I/O.
-		*/
-		virtual void Code_Pointers(void);
-		virtual void Decode_Pointers(void);
+  unsigned IsToRedraw : 1;
 
-		unsigned IsToRedraw:1;
+ protected:
+  /*
+  **	This gadget is used to capture mouse input on the power bar.
+  */
+  class PowerButtonClass : public GadgetClass {
+   public:
+    PowerButtonClass(void)
+        : GadgetClass(0, 0, 0, 0,
+                      LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
+                      true){};
 
-	protected:
-		/*
-		**	This gadget is used to capture mouse input on the power bar.
-		*/
-		class PowerButtonClass : public GadgetClass {
-			public:
-				PowerButtonClass(void) : GadgetClass(0,0,0,0,LEFTPRESS|LEFTRELEASE|LEFTHELD|LEFTUP|RIGHTPRESS,true) {};
+   protected:
+    virtual int Action(unsigned flags, KeyNumType &key);
+    friend class PowerClass;
+  };
 
-			protected:
-				virtual int Action(unsigned flags, KeyNumType & key);
-			friend class PowerClass;
-		};
+  /*
+  **	This is the "button" that tracks all input to the tactical map.
+  ** It must be available to derived classes, for Save/Load purposes.
+  */
+  static PowerButtonClass PowerButton;
 
-		/*
-		**	This is the "button" that tracks all input to the tactical map.
-		** It must be available to derived classes, for Save/Load purposes.
-		*/
-		static PowerButtonClass PowerButton;
+  enum PowerEnums {
+    POWER_STEP_LEVEL = 100,
+    POWER_STEP_FACTOR = 6,
+  };
 
-		enum PowerEnums {
-			POWER_STEP_LEVEL=100,
-			POWER_STEP_FACTOR=6,
-		};
+ private:
+  int Power_Height(int value);
 
-	private:
-		int  Power_Height(int value);
+  unsigned IsActive : 1;
 
-		unsigned IsActive:1;
+  int RecordedDrain;
+  int RecordedPower;
+  int DesiredDrainHeight;
+  int DesiredPowerHeight;
+  int DrainHeight;
+  int PowerHeight;
+  int DrainBounce;
+  int PowerBounce;
+  short PowerDir;
+  short DrainDir;
 
-		int RecordedDrain;
-		int RecordedPower;
-		int DesiredDrainHeight;
-		int DesiredPowerHeight;
-		int DrainHeight;
-		int PowerHeight;
-		int DrainBounce;
-		int PowerBounce;
-		short PowerDir;
-		short DrainDir;
+  /*
+  **	Points to the shape to use for the "desired" power level indicator.
+  */
+  static void const *PowerShape;
 
-		/*
-		**	Points to the shape to use for the "desired" power level indicator.
-		*/
-		static void const * PowerShape;
-
-		/*
-		** Points to the shapes to be used for drawing the power bar
-		*/
-		static void const * PowerBarShape;
+  /*
+  ** Points to the shapes to be used for drawing the power bar
+  */
+  static void const *PowerBarShape;
 };
 
 #endif

@@ -18,74 +18,72 @@
 
 /* $Header: /CounterStrike/B64STRAW.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : B64STRAW.H                                                   *
+ *                    File Name : B64STRAW.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/02/96                                                     *
+ *                   Start Date : 07/02/96 *
  *                                                                                             *
- *                  Last Update : July 2, 1996 [JLB]                                           *
+ *                  Last Update : July 2, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef B64STRAW_H
 #define B64STRAW_H
 
-#include	"straw.h"
+#include "straw.h"
 
 /*
-**	Performs Base 64 encoding/decoding on the data that is drawn through the straw. Note that
-**	encoding increases the data size by about 30%. The reverse occurs when decoding.
+**	Performs Base 64 encoding/decoding on the data that is drawn through the
+*straw. Note that *	encoding increases the data size by about 30%. The
+*reverse occurs when decoding.
 */
-class Base64Straw : public Straw
-{
-	public:
-		typedef enum CodeControl {
-			ENCODE,
-			DECODE
-		} CodeControl;
+class Base64Straw : public Straw {
+ public:
+  typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-		Base64Straw(CodeControl control) : Control(control), Counter(0) {}
-		virtual int Get(void * source, int slen);
+  Base64Straw(CodeControl control) : Control(control), Counter(0) {}
+  virtual int Get(void* source, int slen);
 
-	private:
+ private:
+  /*
+  **	Indicates if this is for encoding or decoding of Base64 data.
+  */
+  CodeControl Control;
 
-		/*
-		**	Indicates if this is for encoding or decoding of Base64 data.
-		*/
-		CodeControl Control;
+  /*
+  **	The counter of the number of accumulated bytes pending for processing.
+  */
+  int Counter;
 
-		/*
-		**	The counter of the number of accumulated bytes pending for processing.
-		*/
-		int Counter;
+  /*
+  **	Buffer that holds the Base64 coded bytes. This will be the staging
+  *buffer if *	this is for a decoding process. Otherwise, it will be used as a
+  *scratch buffer.
+  */
+  char CBuffer[4];
 
-		/*
-		**	Buffer that holds the Base64 coded bytes. This will be the staging buffer if
-		**	this is for a decoding process. Otherwise, it will be used as a scratch buffer.
-		*/
-		char CBuffer[4];
+  /*
+  **	Buffer that holds the plain bytes. This will be the staging buffer if
+  *this *	is for an encoding process. Otherwise, it will be used as a
+  *scratch buffer.
+  */
+  char PBuffer[3];
 
-		/*
-		**	Buffer that holds the plain bytes. This will be the staging buffer if this
-		**	is for an encoding process. Otherwise, it will be used as a scratch buffer.
-		*/
-		char PBuffer[3];
-
-		/*
-		**	Explicitly disable the copy constructor and the assignment operator.
-		*/
-		Base64Straw(Base64Straw & rvalue);
-		Base64Straw & operator = (Base64Straw const & pipe);
+  /*
+  **	Explicitly disable the copy constructor and the assignment operator.
+  */
+  Base64Straw(Base64Straw& rvalue);
+  Base64Straw& operator=(Base64Straw const& pipe);
 };
-
 
 #endif

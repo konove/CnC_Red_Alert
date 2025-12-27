@@ -48,7 +48,6 @@
 #include <memflag.h>
 #include <vq.h>
 
-
 //---------------------------------------------------------------------------------------------
 //	PUBLIC DATA
 //---------------------------------------------------------------------------------------------
@@ -57,58 +56,48 @@
 //	PRIVATE GLOBALS
 //---------------------------------------------------------------------------------------------
 
-
 /***************************************************************************
  * Update_Full_Palette -- Modifies the Windows palette                     *
  *                                                                         *
- * INPUT: unsigned char *palette - pointer to the entire raw palette		  *
+ * INPUT: unsigned char *palette - pointer to the entire raw palette *
  *                                                                         *
- * OUTPUT: NONE																				  *
+ * OUTPUT: NONE
+ **
  *                                                                         *
- * WARNINGS: Watch out for falling bricks.											  *
+ * WARNINGS: Watch out for falling bricks.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   11/27/1995  MG : Created.                                             *
  *=========================================================================*/
-void Update_Full_Palette( unsigned char *palette )
-{
-	PALETTEENTRY	pe[ SIZE_OF_PALETTE ];
-	unsigned char	*pal_pos;
-	int				i;
+void Update_Full_Palette(unsigned char *palette) {
+  PALETTEENTRY pe[SIZE_OF_PALETTE];
+  unsigned char *pal_pos;
+  int i;
 
-	pal_pos = palette;
-	for ( i = 0; i < SIZE_OF_PALETTE; i ++ ) {
-		pe[ i ].peRed = *pal_pos;
-		pal_pos ++;
-		pe[ i ].peGreen = *pal_pos;
-		pal_pos ++;
-		pe[ i ].peBlue = *pal_pos;
-		pal_pos ++;
-	}
+  pal_pos = palette;
+  for (i = 0; i < SIZE_OF_PALETTE; i++) {
+    pe[i].peRed = *pal_pos;
+    pal_pos++;
+    pe[i].peGreen = *pal_pos;
+    pal_pos++;
+    pe[i].peBlue = *pal_pos;
+    pal_pos++;
+  }
 
-  	Mem_Copy( palette, CurrentPalette, SIZE_OF_PALETTE * 3 );
+  Mem_Copy(palette, CurrentPalette, SIZE_OF_PALETTE * 3);
 
-	DirectDrawObject->CreatePalette( DDPCAPS_8BIT, &pe[ 0 ], &PalettePtr, NULL );
-	Screen_Buffer->Get_Graphic_Buffer()->Get_DD_Surface()->SetPalette( PalettePtr );
-	PalettePtr->SetEntries( DDPSETPAL_VSYNC , 0 , SIZE_OF_PALETTE , &pe[ 0 ] );
+  DirectDrawObject->CreatePalette(DDPCAPS_8BIT, &pe[0], &PalettePtr, NULL);
+  Screen_Buffer->Get_Graphic_Buffer()->Get_DD_Surface()->SetPalette(PalettePtr);
+  PalettePtr->SetEntries(DDPSETPAL_VSYNC, 0, SIZE_OF_PALETTE, &pe[0]);
 }
 
+extern VQAClass *TestVqa;
 
-
-
-
-
-extern	VQAClass	*TestVqa;
-
-extern "C"{
-	void __cdecl SetPalette(unsigned char *palette,long ,unsigned long );
+extern "C" {
+void __cdecl SetPalette(unsigned char *palette, long, unsigned long);
 }
 
-void __cdecl SetPalette(unsigned char *palette,long ,unsigned long )
-{
-	TestVqa->Update_Palette(palette);
+void __cdecl SetPalette(unsigned char *palette, long, unsigned long) {
+  TestVqa->Update_Palette(palette);
 }
-
-
-
-

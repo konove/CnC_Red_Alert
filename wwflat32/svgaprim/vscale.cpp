@@ -31,42 +31,36 @@
  *                  Last Update : January 18, 1995   [PWG]                 *
  *                                                                         *
  *-------------------------------------------------------------------------*
-*/
+ */
 #include <mcgaprim.h>
 #include <gbuffer.h>
 #include <vbuffer.h>
 
-//VideoBufferClass		SeenPage(640,480);
-//GraphicBufferClass 	HidBuff;
-//GraphicBufferClass 	BackBuff;
+// VideoBufferClass		SeenPage(640,480);
+// GraphicBufferClass 	HidBuff;
+// GraphicBufferClass 	BackBuff;
 
-int Vesa_Scale_To_Vesa ( void * scr,  void * dst, 
-								 int src_x  , int src_y  , int dst_x , int dst_y , 
-								 int src_wd , int src_hg , int dst_wd, int dst_hg, 
-								 BOOL trans , char * remap )
-{
-  int	   area ;
-  int    width , height ;
-  char * temp ;
+int Vesa_Scale_To_Vesa(void* scr, void* dst, int src_x, int src_y, int dst_x,
+                       int dst_y, int src_wd, int src_hg, int dst_wd,
+                       int dst_hg, BOOL trans, char* remap) {
+  int area;
+  int width, height;
+  char* temp;
 
-  VideoViewPortClass * scr1 = ( VideoViewPortClass * ) scr ;
+  VideoViewPortClass* scr1 = (VideoViewPortClass*)scr;
 
-  width  = src_wd - src_x ;
-  height = src_hg - src_y ;
-  area = width * height ;
-  temp = ( char * ) malloc ( area ) ;
-  if ( ! temp ) return 0 ;
+  width = src_wd - src_x;
+  height = src_hg - src_y;
+  area = width * height;
+  temp = (char*)malloc(area);
+  if (!temp) return 0;
 
-  scr1 -> To_Buffer ( 0, 0, width , height , temp, area );
-  GraphicBufferClass tempbuffer ( area , width , height , temp ) ;
+  scr1->To_Buffer(0, 0, width, height, temp, area);
+  GraphicBufferClass tempbuffer(area, width, height, temp);
 
+  tempbuffer.Scale(*scr1, 0, 0, dst_x, dst_y, width, height, dst_wd, dst_hg,
+                   trans, remap);
 
-  tempbuffer . Scale ( * scr1 , 
-                       0, 0, dst_x, dst_y, 
-                       width, height , dst_wd, dst_hg , 
-							  trans , remap );
-
-
-  free ( temp ) ;
-  return 0 ;
+  free(temp);
+  return 0;
 }

@@ -20,7 +20,8 @@
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : Westwood 32 Bit Library						*
+ *                 Project Name : Westwood 32 Bit Library
+ **
  *                                                                         *
  *                    File Name : GBUFFER.H                                *
  *                                                                         *
@@ -33,7 +34,7 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  *   BC::Get_Size -- Returns the buffer size of the BufferClass instance   *
- *   BC::Get_Buffer -- Returns pointer to buffer inherent to BufferClass 	*
+ *   BC::Get_Buffer -- Returns pointer to buffer inherent to BufferClass *
  *   BC::BufferClass -- inline constructor for BufferClass with size only  *
  *   BC::To_Page -- Copys a buffer class to a page with definable x, y, w, h*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -41,10 +42,11 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-
 /*=========================================================================*/
-/* If we have not already loaded the standard library header, than we can	*/
-/*		load it.																					*/
+/* If we have not already loaded the standard library header, than we can
+ */
+/*		load it.
+ */
 /*=========================================================================*/
 #ifndef WWSTD_H
 #include "wwstd.h"
@@ -54,76 +56,75 @@ class GraphicViewPortClass;
 class VideoViewPortClass;
 
 /*=========================================================================*/
-/* BufferClass - A base class which holds buffer information including a	*/
-/*		pointer and the size of the buffer.												*/
+/* BufferClass - A base class which holds buffer information including a
+ */
+/*		pointer and the size of the buffer.
+ */
 /*=========================================================================*/
 class BufferClass {
-	public:
-		/*===================================================================*/
-		/* Define the base constructor and destructors for the class			*/
-		/*===================================================================*/
-		BufferClass(void *ptr, long size);
-		BufferClass(long size);
-		BufferClass();
-		~BufferClass();
-		/*===================================================================*/
-		/* Define functions which work with the buffer class.						*/
-		/*===================================================================*/
-		long To_Page(GraphicViewPortClass &view);
-		long To_Page(int w, int h, GraphicViewPortClass &view);
-		long To_Page(int x, int y, int w, int h, GraphicViewPortClass &view);
-		long To_Page(VideoViewPortClass &view);
-		long To_Page(int w, int h, VideoViewPortClass &view);
-		long To_Page(int x, int y, int w, int h, VideoViewPortClass &view);
+ public:
+  /*===================================================================*/
+  /* Define the base constructor and destructors for the class */
+  /*===================================================================*/
+  BufferClass(void *ptr, long size);
+  BufferClass(long size);
+  BufferClass();
+  ~BufferClass();
+  /*===================================================================*/
+  /* Define functions which work with the buffer class.
+   */
+  /*===================================================================*/
+  long To_Page(GraphicViewPortClass &view);
+  long To_Page(int w, int h, GraphicViewPortClass &view);
+  long To_Page(int x, int y, int w, int h, GraphicViewPortClass &view);
+  long To_Page(VideoViewPortClass &view);
+  long To_Page(int w, int h, VideoViewPortClass &view);
+  long To_Page(int x, int y, int w, int h, VideoViewPortClass &view);
 
-		/*===================================================================*/
-		/* define functions to get at the protected data members					*/
-		/*===================================================================*/
-		void	*Get_Buffer(void);
-		long	Get_Size(void);
+  /*===================================================================*/
+  /* define functions to get at the protected data members
+   */
+  /*===================================================================*/
+  void *Get_Buffer(void);
+  long Get_Size(void);
 
-	private:
-		/*===================================================================*/
-		/* Define the operators we do not want to happen which are the copy	*/
-		/* and equal constructors.  These are bad because the Allocated flag	*/
-		/*	could be copied and the associated buffer freed.  If this were to	*/
-		/*	gappen it could cause weird general protection fault.					*/
-		/*===================================================================*/
-		BufferClass(BufferClass const &);
-		BufferClass &operator=(BufferClass const &);
+ private:
+  /*===================================================================*/
+  /* Define the operators we do not want to happen which are the copy	*/
+  /* and equal constructors.  These are bad because the Allocated flag	*/
+  /*	could be copied and the associated buffer freed.  If this were to
+   */
+  /*	gappen it could cause weird general protection fault.
+   */
+  /*===================================================================*/
+  BufferClass(BufferClass const &);
+  BufferClass &operator=(BufferClass const &);
 
-	protected:
-		void	*Buffer;
-		long	Size;
-		BOOL	Allocated;
+ protected:
+  void *Buffer;
+  long Size;
+  BOOL Allocated;
 };
 /***************************************************************************
  * BC::GET_SIZE -- Returns the buffer size of the BufferClass instance     *
  *                                                                         *
- * INPUT:		none                                                        *
+ * INPUT:		none *
  *                                                                         *
  * OUTPUT:     long the size of the buffer                                 *
  *                                                                         *
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long BufferClass::Get_Size(void)
-{
-	return(Size);
-}
+inline long BufferClass::Get_Size(void) { return (Size); }
 /***************************************************************************
- * BC::GET_BUFFER -- Returns pointer to buffer inherent to BufferClass 		*
+ * BC::GET_BUFFER -- Returns pointer to buffer inherent to BufferClass *
  *                                                                         *
- * INPUT:			none                                                     *
+ * INPUT:			none *
  *                                                                         *
  * OUTPUT:        void * to the inherent buffer.                           *
  *                                                                         *
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline void *BufferClass::Get_Buffer(void)
-{
-	return(Buffer);
-}
+inline void *BufferClass::Get_Buffer(void) { return (Buffer); }
 #endif
-

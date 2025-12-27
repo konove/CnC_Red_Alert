@@ -19,27 +19,27 @@
 #ifndef VQMMIXFILE_H
 #define VQMMIXFILE_H
 /****************************************************************************
-*
-*         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     mixfile.h
-*
-* DESCRIPTION
-*     A mix file is basically a group of files concatinated together
-*     proceeded by a header describing where in the file each individual
-*     entry is located. These definitions are provided to simplify the access
-*     to these file entries.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     January 26, 1995
-*
-****************************************************************************/
+ *
+ *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     mixfile.h
+ *
+ * DESCRIPTION
+ *     A mix file is basically a group of files concatinated together
+ *     proceeded by a header describing where in the file each individual
+ *     entry is located. These definitions are provided to simplify the access
+ *     to these file entries.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     January 26, 1995
+ *
+ ****************************************************************************/
 
 /* Disable structure alignment.*/
 #ifdef __WATCOMC__
@@ -56,8 +56,8 @@
  * Size  - Size of Mix file.
  */
 typedef struct _MIXHeader {
-	short Count;
-	long  Size;
+  short Count;
+  long Size;
 } MIXHeader;
 
 /* MIXSubBlock: Mix file entry descriptor.
@@ -67,9 +67,9 @@ typedef struct _MIXHeader {
  * Size   - Size of entry.
  */
 typedef struct _MIXSubBlock {
-	long CRC;
-	long Offset;
-	long Size;
+  long CRC;
+  long Offset;
+  long Size;
 } MIXSubBlock;
 
 /* MIXHandle: Mix file handle.
@@ -81,11 +81,11 @@ typedef struct _MIXSubBlock {
  * Entries - Array of 'Count' MIXSubBlock structure entries.
  */
 typedef struct _MIXHandle {
-	char        *Name;
-	long        Size;
-	long        FH;
-	long        Count;
-	MIXSubBlock Entries[];
+  char *Name;
+  long Size;
+  long FH;
+  long Count;
+  MIXSubBlock Entries[];
 } MIXHandle;
 
 /*---------------------------------------------------------------------------
@@ -102,4 +102,3 @@ long OpenMixEntry(MIXHandle *mix, char *name);
 #endif
 
 #endif /* VQMMIXFILE_H */
-

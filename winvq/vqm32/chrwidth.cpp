@@ -17,53 +17,52 @@
 */
 
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*---------------------------------------------------------------------------
-*
-* FILE
-*     chrwidth.c
-*
-* DESCRIPTION
-*     Character pixel width.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     June 9, 1995
-*
-*---------------------------------------------------------------------------
-*
-* PUBLIC
-*     Char_Pixel_Width - Get the pixel width of a character.
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *---------------------------------------------------------------------------
+ *
+ * FILE
+ *     chrwidth.c
+ *
+ * DESCRIPTION
+ *     Character pixel width.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     June 9, 1995
+ *
+ *---------------------------------------------------------------------------
+ *
+ * PUBLIC
+ *     Char_Pixel_Width - Get the pixel width of a character.
+ *
+ ****************************************************************************/
 
 #include "font.h"
 
-
 /****************************************************************************
-*
-* NAME
-*     Char_Pixel_Width - Get the pixel width of a character.
-*
-* SYNOPSIS
-*     Width = Char_Pixel_Width(Character)
-*
-*     long Char_Pixel_Width(char);
-*
-* FUNCTION
-*     Gets the pixel width of the specified character.
-*
-* INPUTS
-*     Character - Character to get the width for.
-*
-* RESULT
-*     Width - Width in pixels.
-*
-****************************************************************************/
+ *
+ * NAME
+ *     Char_Pixel_Width - Get the pixel width of a character.
+ *
+ * SYNOPSIS
+ *     Width = Char_Pixel_Width(Character)
+ *
+ *     long Char_Pixel_Width(char);
+ *
+ * FUNCTION
+ *     Gets the pixel width of the specified character.
+ *
+ * INPUTS
+ *     Character - Character to get the width for.
+ *
+ * RESULT
+ *     Width - Width in pixels.
+ *
+ ****************************************************************************/
 
 #ifdef __WATCOMC__
 long __cdecl __saveregs Char_Pixel_Width(char chr)
@@ -72,5 +71,5 @@ long __cdecl __saveregs Char_Pixel_Width(char chr)
 long __cdecl Char_Pixel_Width(char chr)
 #endif
 {
-	return (*(FontWidthBlockPtr + chr) + FontXSpacing);
+  return (*(FontWidthBlockPtr + chr) + FontXSpacing);
 }

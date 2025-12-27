@@ -18,23 +18,24 @@
 
 /* $Header: /CounterStrike/BASE64.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : BASE64.H                                                     *
+ *                    File Name : BASE64.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/29/96                                                     *
+ *                   Start Date : 06/29/96 *
  *                                                                                             *
- *                  Last Update : June 29, 1996 [JLB]                                          *
+ *                  Last Update : June 29, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-
-int Base64_Encode(void const * source, int slen, void * dest, int dlen);
-int Base64_Decode(void const * source, int slen, void * dest, int dlen);
+int Base64_Encode(void const* source, int slen, void* dest, int dlen);
+int Base64_Decode(void const* source, int slen, void* dest, int dlen);

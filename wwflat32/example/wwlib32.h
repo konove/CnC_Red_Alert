@@ -58,6 +58,4 @@
 #include <wsa.h>
 #include <wwmem.h>
 
-
-
-#endif // WWLIB32_H
+#endif  // WWLIB32_H

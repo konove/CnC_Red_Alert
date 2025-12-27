@@ -18,75 +18,75 @@
 
 /* $Header: /CounterStrike/RNDSTRAW.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : RNDSTRAW.H                                                   *
+ *                    File Name : RNDSTRAW.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/04/96                                                     *
+ *                   Start Date : 07/04/96 *
  *                                                                                             *
- *                  Last Update : July 4, 1996 [JLB]                                           *
+ *                  Last Update : July 4, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef RNDSTRAW_H
 #define RNDSTRAW_H
 
-
-#include	"straw.h"
-#include	"random.h"
+#include "straw.h"
+#include "random.h"
 
 /*
-**	This is a straw terminator class. It will generate random numbers to fill the data request.
-**	Unlike regular straw terminators, this class will never run out of "data".
+**	This is a straw terminator class. It will generate random numbers to
+*fill the data request. *	Unlike regular straw terminators, this class
+*will never run out of "data".
 */
-class RandomStraw : public Straw
-{
-	public:
-		RandomStraw(void);
-		virtual ~RandomStraw(void);
+class RandomStraw : public Straw {
+ public:
+  RandomStraw(void);
+  virtual ~RandomStraw(void);
 
-		virtual int Get(void * source, int slen);
+  virtual int Get(void* source, int slen);
 
-		void Reset(void);
-		void Seed_Bit(int seed);
-		void Seed_Byte(char seed);
-		void Seed_Short(short seed);
-		void Seed_Long(long seed);
+  void Reset(void);
+  void Seed_Bit(int seed);
+  void Seed_Byte(char seed);
+  void Seed_Short(short seed);
+  void Seed_Long(long seed);
 
-		int Seed_Bits_Needed(void) const;
+  int Seed_Bits_Needed(void) const;
 
-	private:
-		/*
-		**	Counter of the number of seed bits stored to this random number
-		**	generator.
-		*/
-		int SeedBits;
+ private:
+  /*
+  **	Counter of the number of seed bits stored to this random number
+  **	generator.
+  */
+  int SeedBits;
 
-		/*
-		**	The current random generator to use when fetching the next random
-		**	byte of data.
-		*/
-		int Current;
+  /*
+  **	The current random generator to use when fetching the next random
+  **	byte of data.
+  */
+  int Current;
 
-		/*
-		**	Array of generators. There must be at least 448 bits of random number seed
-		**	in order to be reasonably secure, however, using 1024 bits would be best.
-		*/
-		RandomClass Random[32];
+  /*
+  **	Array of generators. There must be at least 448 bits of random number
+  *seed *	in order to be reasonably secure, however, using 1024 bits would
+  *be best.
+  */
+  RandomClass Random[32];
 
-		void Scramble_Seed(void);
+  void Scramble_Seed(void);
 
-		RandomStraw(RandomStraw & rvalue);
-		RandomStraw & operator = (RandomStraw const & pipe);
+  RandomStraw(RandomStraw& rvalue);
+  RandomStraw& operator=(RandomStraw const& pipe);
 };
-
 
 #endif

@@ -43,19 +43,16 @@
 // WILL NEED TO BE TAKEN OUT AND MODS MADE TO ANY FUNCTION USING BuffType.
 // SKB 4/20/94.
 
-
-
 /*=========================================================================*/
-/* Defines and such that must go into wwstd.h										*/
+/* Defines and such that must go into wwstd.h
+ */
 /*=========================================================================*/
 // Look at FileErrorType below for the IO_Error function.
-//extern WORD __cdecl ( __cdecl IO_Error)(FileErrorType error, BYTE const *filename);
+// extern WORD __cdecl ( __cdecl IO_Error)(FileErrorType error, BYTE const
+// *filename);
 VOID __cdecl Prog_End(VOID);
 extern WORD Hard_Error_Occured;
 
-
-
 //////////////////////// END OF DON'T BELONG //////////////////////////////////
 
-#endif //FILETEMP_H
-
+#endif  // FILETEMP_H

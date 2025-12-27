@@ -36,7 +36,7 @@
 
 #ifndef WWSTD_H
 #include "wwstd.h"
-#endif	   
+#endif
 
 #ifndef MONO_H
 #include "mono.h"
@@ -60,16 +60,14 @@
  * HISTORY:                                                                *
  *   01/21/1994  jaw: Created.                                             *
  *========================================================================*/
-				   
-int Initialize_Mono_Screen(void)
-{							 
-	// get a valid selector to mono screen.
-//	Map_Segment_To_Address(0x0b0000UL, 0x8000UL);
 
-	MonoScreen = 0xb0000	;
+int Initialize_Mono_Screen(void) {
+  // get a valid selector to mono screen.
+  //	Map_Segment_To_Address(0x0b0000UL, 0x8000UL);
 
-	return (int)0;
-}			
+  MonoScreen = 0xb0000;
 
+  return (int)0;
+}
 
 

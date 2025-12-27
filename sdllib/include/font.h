@@ -40,45 +40,48 @@
 
 #include "gbuffer.h"
 
-
-//////////////////////////////////////// Defines //////////////////////////////////////////
+//////////////////////////////////////// Defines
+/////////////////////////////////////////////
 
 // defines for font header, offsets to block offsets
 
-#define FONTINFOBLOCK			4
-#define FONTOFFSETBLOCK			6
-#define FONTWIDTHBLOCK			8
-#define FONTDATABLOCK			10
-#define FONTHEIGHTBLOCK			12
+#define FONTINFOBLOCK 4
+#define FONTOFFSETBLOCK 6
+#define FONTWIDTHBLOCK 8
+#define FONTDATABLOCK 10
+#define FONTHEIGHTBLOCK 12
 
 // defines for font info block
 
-#define FONTINFOMAXHEIGHT		4
-#define FONTINFOMAXWIDTH		5
+#define FONTINFOMAXHEIGHT 4
+#define FONTINFOMAXWIDTH 5
 
-//////////////////////////////////////// Prototypes //////////////////////////////////////////
-
-/*=========================================================================*/
-/* The following prototypes are for the file: SET_FONT.CPP						*/
-/*=========================================================================*/
-
-void  * Set_Font(void const *fontptr);
+//////////////////////////////////////// Prototypes
+/////////////////////////////////////////////
 
 /*=========================================================================*/
-/* The following prototypes are for the file: FONT.CPP							*/
+/* The following prototypes are for the file: SET_FONT.CPP
+ */
+/*=========================================================================*/
+
+void *Set_Font(void const *fontptr);
+
+/*=========================================================================*/
+/* The following prototypes are for the file: FONT.CPP
+ */
 /*=========================================================================*/
 
 int Char_Pixel_Width(char chr);
 unsigned int String_Pixel_Width(char const *string);
 
 /*=========================================================================*/
-/* The following prototypes are for the file: TEXTPRNT.ASM	  					*/
+/* The following prototypes are for the file: TEXTPRNT.ASM
+ */
 /*=========================================================================*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 void Set_Font_Palette_Range(void const *palette, int start_idx, int end_idx);
 
@@ -92,22 +95,15 @@ void *Get_Font_Palette_Ptr();
 
 /*=========================================================================*/
 
-
-
-
-
-//////////////////////////////////////// External varables ///////////////////////////////////////
+//////////////////////////////////////// External varables
+//////////////////////////////////////////
 extern "C" int FontXSpacing;
 extern "C" int FontYSpacing;
-extern char FontWidth ;
+extern char FontWidth;
 extern char FontHeight;
 extern char *FontWidthBlockPtr;
-
 
 extern "C" void const *FontPtr;
 extern uint8_t ColorXlat[];
 
-
-
-
-#endif // FONT_H
+#endif  // FONT_H

@@ -30,12 +30,13 @@
  *                                                                         *
  *                  Last Update : May 3, 1994   [BR]                       *
  *                                                                         *
- * This module is a temorary stub that contains IO_Error.						*
+ * This module is a temorary stub that contains IO_Error.
+ **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "wwstd.h"
 #include "file.h"
 
-WORD Text_IO_Error(FileErrorType, BYTE const *){return FALSE;}
-WORD (*IO_Error)(FileErrorType, BYTE const *)   = Text_IO_Error;
+WORD Text_IO_Error(FileErrorType, BYTE const *) { return FALSE; }
+WORD (*IO_Error)(FileErrorType, BYTE const *) = Text_IO_Error;
 
 /************************* End of filestub.cpp *****************************/

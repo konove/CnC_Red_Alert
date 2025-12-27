@@ -17,27 +17,27 @@
 */
 
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* PROJECT
-*     VQA player library. (32-Bit protected mode)
-*
-* FILE
-*     vertag.c
-*
-* DESCRIPTION
-*     Version Tag
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     February 23, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * PROJECT
+ *     VQA player library. (32-Bit protected mode)
+ *
+ * FILE
+ *     vertag.c
+ *
+ * DESCRIPTION
+ *     Version Tag
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     February 23, 1995
+ *
+ ****************************************************************************/
 
 #include "vqaplayp.h"
 
@@ -49,4 +49,3 @@
 
 char VerTag[] = {"$VER$" VQA_IDSTRING " " DEVNAME " (" VQA_DATE ")"};
 char ReqTag[] = {"$REQ$" VQA_REQUIRES};
-

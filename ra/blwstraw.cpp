@@ -18,144 +18,140 @@
 
 /* $Header: /CounterStrike/BLWSTRAW.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : BLWSTRAW.CPP                                                 *
+ *                    File Name : BLWSTRAW.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/02/96                                                     *
+ *                   Start Date : 07/02/96 *
  *                                                                                             *
- *                  Last Update : July 3, 1996 [JLB]                                           *
+ *                  Last Update : July 3, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   BlowStraw::Get -- Fetch a block of data from the straw.                                   *
- *   BlowStraw::Key -- Submit a key to the Blowfish straw.                                     *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * BlowStraw::Get -- Fetch a block of data from the straw. *
+ *   BlowStraw::Key -- Submit a key to the Blowfish straw. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-
-#include	"blwstraw.h"
-#include	<string.h>
-#include	<assert.h>
-
+#include "blwstraw.h"
+#include <string.h>
+#include <assert.h>
 
 /***********************************************************************************************
- * BlowStraw::Get -- Fetch a block of data from the straw.                                     *
+ * BlowStraw::Get -- Fetch a block of data from the straw. *
  *                                                                                             *
- *    This routine will take a block of data from the straw and process it according to the    *
- *    encrypt/decrypt flag and the key supplied. Prior to a key be supplied, the data passes   *
- *    through this straw unchanged.                                                            *
+ *    This routine will take a block of data from the straw and process it
+ *according to the    * encrypt/decrypt flag and the key supplied. Prior to a
+ *key be supplied, the data passes   * through this straw unchanged. *
  *                                                                                             *
- * INPUT:   source   -- Pointer to the buffer to hold the data being requested.                *
+ * INPUT:   source   -- Pointer to the buffer to hold the data being requested.
+ **
  *                                                                                             *
- *          length   -- The length of the data being requested.                                *
+ *          length   -- The length of the data being requested. *
  *                                                                                             *
- * OUTPUT:  Returns with the actual number of bytes stored into the buffer. If the number      *
- *          returned is less than the number requested, then this indicates that the data      *
- *          source has been exhausted.                                                         *
+ * OUTPUT:  Returns with the actual number of bytes stored into the buffer. If
+ *the number      * returned is less than the number requested, then this
+ *indicates that the data      * source has been exhausted. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/03/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowStraw::Get(void * source, int slen)
-{
-	/*
-	**	Verify the parameter for legality.
-	*/
-	if (source == NULL || slen <= 0) {
-		return(0);
-	}
+int BlowStraw::Get(void *source, int slen) {
+  /*
+  **	Verify the parameter for legality.
+  */
+  if (source == NULL || slen <= 0) {
+    return (0);
+  }
 
-	/*
-	**	If there is no blowfish engine present, then merely pass the data through
-	**	unchanged.
-	*/
-	if (BF == NULL) {
-		return(Straw::Get(source, slen));
-	}
+  /*
+  **	If there is no blowfish engine present, then merely pass the data
+  *through *	unchanged.
+  */
+  if (BF == NULL) {
+    return (Straw::Get(source, slen));
+  }
 
-	int total = 0;
+  int total = 0;
 
-	while (slen > 0) {
+  while (slen > 0) {
+    /*
+    **	If there are any left over bytes in the buffer, pass them
+    **	through first.
+    */
+    if (Counter > 0) {
+      int sublen = (slen < Counter) ? slen : Counter;
+      memmove(source, &Buffer[sizeof(Buffer) - Counter], sublen);
+      Counter -= sublen;
+      source = ((char *)source) + sublen;
+      slen -= sublen;
+      total += sublen;
+    }
+    if (slen == 0) break;
 
-		/*
-		**	If there are any left over bytes in the buffer, pass them
-		**	through first.
-		*/
-		if (Counter > 0) {
-			int sublen = (slen < Counter) ? slen : Counter;
-			memmove(source, &Buffer[sizeof(Buffer)-Counter], sublen);
-			Counter -= sublen;
-			source = ((char *)source) + sublen;
-			slen -= sublen;
-			total += sublen;
-		}
-		if (slen == 0) break;
+    /*
+    **	Fetch and encrypt/decrypt the next block.
+    */
+    int incount = Straw::Get(Buffer, sizeof(Buffer));
+    if (incount == 0) break;
 
-		/*
-		**	Fetch and encrypt/decrypt the next block.
-		*/
-		int incount = Straw::Get(Buffer, sizeof(Buffer));
-		if (incount == 0) break;
+    /*
+    **	Only full blocks are processed. Partial blocks are
+    **	merely passed through unchanged.
+    */
+    if (incount == sizeof(Buffer)) {
+      if (Control == DECRYPT) {
+        BF->Decrypt(Buffer, incount, Buffer);
+      } else {
+        BF->Encrypt(Buffer, incount, Buffer);
+      }
+    } else {
+      memmove(&Buffer[sizeof(Buffer) - incount], Buffer, incount);
+    }
+    Counter = incount;
+  }
 
-		/*
-		**	Only full blocks are processed. Partial blocks are
-		**	merely passed through unchanged.
-		*/
-		if (incount == sizeof(Buffer)) {
-			if (Control == DECRYPT) {
-				BF->Decrypt(Buffer, incount, Buffer);
-			} else {
-				BF->Encrypt(Buffer, incount, Buffer);
-			}
-		} else {
-			memmove(&Buffer[sizeof(Buffer)-incount], Buffer, incount);
-		}
-		Counter = incount;
-	}
-
-	/*
-	**	Return with the total number of bytes placed into the buffer.
-	*/
-	return(total);
+  /*
+  **	Return with the total number of bytes placed into the buffer.
+  */
+  return (total);
 }
 
-
 /***********************************************************************************************
- * BlowStraw::Key -- Submit a key to the Blowfish straw.                                       *
+ * BlowStraw::Key -- Submit a key to the Blowfish straw. *
  *                                                                                             *
- *    This will take the key specified and use it to process the data that flows through this  *
- *    straw segment. Prior to a key being submitted, the data will flow through unchanged.     *
+ *    This will take the key specified and use it to process the data that flows
+ *through this  * straw segment. Prior to a key being submitted, the data will
+ *flow through unchanged.     *
  *                                                                                             *
- * INPUT:   key   -- Pointer to the key to submit.                                             *
+ * INPUT:   key   -- Pointer to the key to submit. *
  *                                                                                             *
- *          length-- The length of the key. The length must not exceed 56 bytes.               *
+ *          length-- The length of the key. The length must not exceed 56 bytes.
+ **
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/03/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowStraw::Key(void const * key, int length)
-{
-	/*
-	**	Create the blowfish engine if one isn't already present.
-	*/
-	if (BF == NULL) {
-		BF = new BlowfishEngine;
-	}
+void BlowStraw::Key(void const *key, int length) {
+  /*
+  **	Create the blowfish engine if one isn't already present.
+  */
+  if (BF == NULL) {
+    BF = new BlowfishEngine;
+  }
 
-	assert(BF != NULL);
+  assert(BF != NULL);
 
-	if (BF != NULL) {
-		BF->Submit_Key(key, length);
-	}
+  if (BF != NULL) {
+    BF->Submit_Key(key, length);
+  }
 }

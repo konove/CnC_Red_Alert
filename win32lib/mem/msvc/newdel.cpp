@@ -40,13 +40,11 @@
 
 #include "wwmem.h"
 
-
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-
 
 /***************************************************************************
  * OPERATOR NEW -- Overides the global new function.                       *
@@ -60,11 +58,9 @@
  * HISTORY:                                                                *
  *   06/21/1994 SKB : Created.                                             *
  *=========================================================================*/
-void * operator new(size_t size) 
-{
-	return (Alloc((unsigned long) size, MEM_NEW));
+void *operator new(size_t size) {
+  return (Alloc((unsigned long)size, MEM_NEW));
 }
-
 
 /***************************************************************************
  * OPERATOR NEW[] -- Overides the array version of new.                    *
@@ -80,12 +76,10 @@ void * operator new(size_t size)
  * HISTORY:                                                                *
  *   06/21/1994 SKB : Created.                                             *
  *=========================================================================*/
-//void * operator new[](size_t size) 
+// void * operator new[](size_t size)
 //{
 //	return (Alloc((unsigned long) size, MEM_NEW));
-//}
-
- 
+// }
 
 /***************************************************************************
  * OPERATOR DELETE -- Overides the global delete function.                 *
@@ -101,13 +95,10 @@ void * operator new(size_t size)
  * HISTORY:                                                                *
  *   06/21/1994 SKB : Created.                                             *
  *=========================================================================*/
-void operator delete(void *ptr) 
-{
-	Free(ptr);
-}
+void operator delete(void *ptr) { Free(ptr); }
 
 /***************************************************************************
- * OPERATOR DELETE[] -- Overides the array version of delete[]           	*
+ * OPERATOR DELETE[] -- Overides the array version of delete[] *
  *                                                                         *
  *                                                                         *
  *                                                                         *
@@ -120,10 +111,7 @@ void operator delete(void *ptr)
  * HISTORY:                                                                *
  *   10/20/1994 SKB : Created.                                             *
  *=========================================================================*/
-//void operator delete[](void *ptr) 
+// void operator delete[](void *ptr)
 //{
 //	Free(ptr);
-//}
-
-
-
+// }

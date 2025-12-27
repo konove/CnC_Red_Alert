@@ -34,7 +34,6 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
 //==========================================================================
 // PUBLIC FUNCTIONS
 //==========================================================================
@@ -45,27 +44,24 @@ extern unsigned long Get_Game_Time();
 // PUBLIC DEFINES
 //==========================================================================
 
-#define MAX_ULONG				0xFFFFFFFF
+#define MAX_ULONG 0xFFFFFFFF
 
 //==========================================================================
 // CLASSES
 //==========================================================================
 
 class GameTimeClass {
-	private:
-		unsigned long game_start_time;
+ private:
+  unsigned long game_start_time;
 
-	public:
-		GameTimeClass( void );
-		unsigned long Get_Time( void );
+ public:
+  GameTimeClass(void);
+  unsigned long Get_Time(void);
 
 }; /* VQAClass */
-
 
 //==========================================================================
 // PUBLIC DATA
 //==========================================================================
 
 extern GameTimeClass Game_Time;
-
-

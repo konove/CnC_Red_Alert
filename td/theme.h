@@ -16,72 +16,72 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\theme.h_v   2.16   16 Oct 1995 16:45:48   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\theme.h_v   2.16   16 Oct 1995 16:45:48
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : THEME.H                                                      *
+ *                    File Name : THEME.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : August 14, 1994                                              *
+ *                   Start Date : August 14, 1994 *
  *                                                                                             *
- *                  Last Update : August 14, 1994   [JLB]                                      *
+ *                  Last Update : August 14, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef THEME_H
 #define THEME_H
 
-class ThemeClass
-{
-	private:
-		static char const *  Theme_File_Name(ThemeType theme);
+class ThemeClass {
+ private:
+  static char const* Theme_File_Name(ThemeType theme);
 
-		int Current;			// Handle to current score.
-		ThemeType Score;		// Score number currently being played.
-		ThemeType Pending;	// Score to play next.
+  int Current;        // Handle to current score.
+  ThemeType Score;    // Score number currently being played.
+  ThemeType Pending;  // Score to play next.
 
-		typedef struct {
-			char const * Name;	// Filename of score.
-			int Fullname;			// Text number for full score name.
-			int Scenario;			// Scenario when it first becomes available.
-			int Duration;			// Duration of theme in seconds.
-			bool Normal;			// Allowed in normal game play?
-			bool Variation;		// Is there a variation to the score?
-			bool Repeat;			// Always repeat this score?
-			bool Available;		// Is the score available?
-		} ThemeControl;
+  typedef struct {
+    char const* Name;  // Filename of score.
+    int Fullname;      // Text number for full score name.
+    int Scenario;      // Scenario when it first becomes available.
+    int Duration;      // Duration of theme in seconds.
+    bool Normal;       // Allowed in normal game play?
+    bool Variation;    // Is there a variation to the score?
+    bool Repeat;       // Always repeat this score?
+    bool Available;    // Is the score available?
+  } ThemeControl;
 
-		static ThemeControl _themes[THEME_COUNT];
+  static ThemeControl _themes[THEME_COUNT];
 
-		enum {
-			THEME_DELAY=TIMER_SECOND
-		};
+  enum { THEME_DELAY = TIMER_SECOND };
 
-	public:
-		ThemeClass(void);
+ public:
+  ThemeClass(void);
 
-		ThemeType  From_Name(char const * name);
-		int  Track_Length(ThemeType index);
-		int  Max_Themes(void) {return THEME_COUNT;};
-		char const *  Full_Name(ThemeType index) const;
-		char const *  Base_Name(ThemeType index) const;
-		void  AI(void);
-		void  Queue_Song(ThemeType index);
-		int  Play_Song(ThemeType index);
-		ThemeType  What_Is_Playing(void) {return Score;};
-		void  Stop(void);
-		void  Fade_Out(void) {Queue_Song(THEME_NONE);};
-		int  Still_Playing(void);
-		ThemeType  Next_Song(ThemeType index);
-		bool  Is_Allowed(ThemeType index) const;
-		static void Scan(void);
+  ThemeType From_Name(char const* name);
+  int Track_Length(ThemeType index);
+  int Max_Themes(void) { return THEME_COUNT; };
+  char const* Full_Name(ThemeType index) const;
+  char const* Base_Name(ThemeType index) const;
+  void AI(void);
+  void Queue_Song(ThemeType index);
+  int Play_Song(ThemeType index);
+  ThemeType What_Is_Playing(void) { return Score; };
+  void Stop(void);
+  void Fade_Out(void) { Queue_Song(THEME_NONE); };
+  int Still_Playing(void);
+  ThemeType Next_Song(ThemeType index);
+  bool Is_Allowed(ThemeType index) const;
+  static void Scan(void);
 };
 
 #endif

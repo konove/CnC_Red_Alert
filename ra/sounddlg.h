@@ -18,98 +18,99 @@
 
 /* $Header: /CounterStrike/SOUNDDLG.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : OPTIONS.H                                                    *
+ *                    File Name : OPTIONS.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : June 8, 1994                                                 *
+ *                   Start Date : June 8, 1994 *
  *                                                                                             *
- *                  Last Update : June 8, 1994   [JLB]                                         *
+ *                  Last Update : June 8, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef SOUNDDLG_H
 #define SOUNDDLG_H
 
 #include "gadget.h"
 
-class SoundControlsClass
-{
-	enum SoundControlsClassEnums {
+class SoundControlsClass {
+  enum SoundControlsClassEnums {
 #ifdef FRENCH
-		OPTION_WIDTH=308,
+    OPTION_WIDTH = 308,
 #else
-		OPTION_WIDTH=292,
+    OPTION_WIDTH = 292,
 #endif
-		OPTION_HEIGHT=146,
+    OPTION_HEIGHT = 146,
 
-		OPTION_X=((320 - OPTION_WIDTH) / 2),
-		OPTION_Y=(200 - OPTION_HEIGHT) / 2,
+    OPTION_X = ((320 - OPTION_WIDTH) / 2),
+    OPTION_Y = (200 - OPTION_HEIGHT) / 2,
 
-		LISTBOX_X=17,
-		LISTBOX_Y=54,
-		LISTBOX_W=OPTION_WIDTH-(LISTBOX_X*2),
-		LISTBOX_H=72,
+    LISTBOX_X = 17,
+    LISTBOX_Y = 54,
+    LISTBOX_W = OPTION_WIDTH - (LISTBOX_X * 2),
+    LISTBOX_H = 72,
 
-		BUTTON_WIDTH=70,
-		BUTTON_X=OPTION_WIDTH-(BUTTON_WIDTH+17),	 				// Options button x pos
-		BUTTON_Y=128, 					// Options button y pos
+    BUTTON_WIDTH = 70,
+    BUTTON_X = OPTION_WIDTH - (BUTTON_WIDTH + 17),  // Options button x pos
+    BUTTON_Y = 128,                                 // Options button y pos
 
-		STOP_X=17,						// Stop button X.
-		STOP_Y=128,						//	Stop button Y.
+    STOP_X = 17,   // Stop button X.
+    STOP_Y = 128,  //	Stop button Y.
 
-		PLAY_X=35,
-		PLAY_Y=128,
+    PLAY_X = 35,
+    PLAY_Y = 128,
 
-		ONOFF_WIDTH=25,
+    ONOFF_WIDTH = 25,
 #ifdef GERMAN
-		SHUFFLE_X=79,//BGA:91,
+    SHUFFLE_X = 79,  // BGA:91,
 #else
 #ifdef FRENCH
-		SHUFFLE_X=99,
+    SHUFFLE_X = 99,
 #else
-		SHUFFLE_X=97,
+    SHUFFLE_X = 97,
 #endif
 #endif
-		SHUFFLE_Y=128,
+    SHUFFLE_Y = 128,
 
 #ifdef FRENCH
-		REPEAT_X=169,
+    REPEAT_X = 169,
 #else
-		REPEAT_X=164,
+    REPEAT_X = 164,
 #endif
-		REPEAT_Y=128,
+    REPEAT_Y = 128,
 
-		MSLIDER_X=147,
-		MSLIDER_Y=28,
-		MSLIDER_W=108,
-		MSLIDER_HEIGHT=5,
+    MSLIDER_X = 147,
+    MSLIDER_Y = 28,
+    MSLIDER_W = 108,
+    MSLIDER_HEIGHT = 5,
 
-		FXSLIDER_X=147,
-		FXSLIDER_Y=40,
-		FXSLIDER_W=108,
-		FXSLIDER_HEIGHT=5,
+    FXSLIDER_X = 147,
+    FXSLIDER_Y = 40,
+    FXSLIDER_W = 108,
+    FXSLIDER_HEIGHT = 5,
 
-		BUTTON_STOP = 605,
-		BUTTON_PLAY,
-		BUTTON_SHUFFLE,
-		BUTTON_REPEAT,
-		BUTTON_OPTIONS,
-		SLIDER_MUSIC,
-		SLIDER_SOUND,
-		BUTTON_LISTBOX,
-	};
+    BUTTON_STOP = 605,
+    BUTTON_PLAY,
+    BUTTON_SHUFFLE,
+    BUTTON_REPEAT,
+    BUTTON_OPTIONS,
+    SLIDER_MUSIC,
+    SLIDER_SOUND,
+    BUTTON_LISTBOX,
+  };
 
-	public:
-		SoundControlsClass(void) {}
-		void Process(void);
+ public:
+  SoundControlsClass(void) {}
+  void Process(void);
 };
 
 #endif

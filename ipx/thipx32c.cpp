@@ -17,84 +17,80 @@
 */
 
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer 95                                         *
+ *                 Project Name : Command & Conquer 95 *
  *                                                                                             *
- *                    File Name : THIPX16C.CPP                                                 *
+ *                    File Name : THIPX16C.CPP *
  *                                                                                             *
- *                   Programmer : Steve Tall                                                   *
+ *                   Programmer : Steve Tall *
  *                                                                                             *
- *                   Start Date : 1/15/96                                                      *
+ *                   Start Date : 1/15/96 *
  *                                                                                             *
- *                  Last Update : January 29thth 1996 [ST]                                     *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Overview:                                                                                   *
- *                                                                                             *
- *   'C' code for the 32 bit IPX library. This library 'thunks' down to a 16bit .dll           *
+ *                  Last Update : January 29thth 1996 [ST] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
+ * Overview: *
  *                                                                                             *
- * Functions:                                                                                  *
- *  DllMain -- called each time a new app requests use of the .dll                             *
+ *   'C' code for the 32 bit IPX library. This library 'thunks' down to a 16bit
+ *.dll           *
  *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ *---------------------------------------------------------------------------------------------*
+ *                                                                                             *
+ * Functions: * DllMain -- called each time a new app requests use of the .dll *
+ *                                                                                             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #define WIN32
-#ifndef _WIN32 // Denzil 6/2/98 Watcom 11.0 complains without this check
+#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
-#endif // _WIN32
+#endif  // _WIN32
 #include <windows.h>
 
-
 extern "C" {
-	BOOL WINAPI Thipx_ThunkConnect32(LPSTR pszDll16, LPSTR pszDll32, DWORD hIinst, DWORD dwReason);
+BOOL WINAPI Thipx_ThunkConnect32(LPSTR pszDll16, LPSTR pszDll32, DWORD hIinst,
+                                 DWORD dwReason);
 };
 
-
-
 /***********************************************************************************************
- * DllMain -- called every time a new app requests use of the .dll                             *
+ * DllMain -- called every time a new app requests use of the .dll *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    usual windoze junk                                                                *
+ * INPUT:    usual windoze junk *
  *                                                                                             *
- * OUTPUT:   true                                                                              *
+ * OUTPUT:   true *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    1/29/96 10:55AM ST : Created                                                             *
+ * HISTORY: * 1/29/96 10:55AM ST : Created *
  *=============================================================================================*/
 BOOL APIENTRY DllMain(DWORD hInst, DWORD dwReason, DWORD dwReserved)
 
 {
-    if (! Thipx_ThunkConnect32("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)) {
-        return FALSE;
-    }
-	return (TRUE);
+  if (!Thipx_ThunkConnect32("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)) {
+    return FALSE;
+  }
+  return (TRUE);
 }
 
-
 /***********************************************************************************************
- * LibMain -- This just calls DllMain. Watcom erroneously links this in as the entry point!    *
+ * LibMain -- This just calls DllMain. Watcom erroneously links this in as the
+ *entry point!    *
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    Nothing                                                                           *
+ * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   Nothing                                                                           *
+ * OUTPUT:   Nothing *
  *                                                                                             *
- * WARNINGS: None                                                                              *
+ * WARNINGS: None *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *    1/29/96 10:56AM ST : Created                                                             *
+ * HISTORY: * 1/29/96 10:56AM ST : Created *
  *=============================================================================================*/
-BOOL APIENTRY LibMain(DWORD hInst, DWORD dwReason, DWORD dwReserved)
-{
-	return (DllMain(hInst, dwReason, dwReserved));
+BOOL APIENTRY LibMain(DWORD hInst, DWORD dwReason, DWORD dwReserved) {
+  return (DllMain(hInst, dwReason, dwReserved));
 }

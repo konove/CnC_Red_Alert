@@ -16,84 +16,83 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\audio.h_v   2.18   16 Oct 1995 16:45:34   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\audio.h_v   2.18   16 Oct 1995 16:45:34
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : AUDIO.H                                                      *
+ *                    File Name : AUDIO.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : June 21, 1994                                                *
+ *                   Start Date : June 21, 1994 *
  *                                                                                             *
- *                  Last Update : June 21, 1994   [JLB]                                        *
+ *                  Last Update : June 21, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include	"memory.h"
+#include "memory.h"
 
 class AudioClass {
-		char const * Name;	// Name of audio asset.
-		void const * Data;	// Loaded audio data.
-		int Handle;				// Handle of asset (as it is playing).
-		MemoryClass *Mem;		// Pointer to memory handler class.
-		unsigned IsMIDI:1;	// Is this a midi file?
+  char const *Name;     // Name of audio asset.
+  void const *Data;     // Loaded audio data.
+  int Handle;           // Handle of asset (as it is playing).
+  MemoryClass *Mem;     // Pointer to memory handler class.
+  unsigned IsMIDI : 1;  // Is this a midi file?
 
-	public:
-		AudioClass(void);
-		AudioClass(char const *name, MemoryClass &mem);
-		virtual ~AudioClass(void);
+ public:
+  AudioClass(void);
+  AudioClass(char const *name, MemoryClass &mem);
+  virtual ~AudioClass(void);
 
-		bool Load(char const *name = 0);
-		bool Free(void);
-		bool Play(int volume = 0xFF);
-		bool Stop(void);
-		bool Pause(void);
-		bool Resume(void);
-		bool Set_Name(char const *name);
-		bool Is_Playing(void) const;
-		bool Is_Loaded(void) const;
-		bool Is_MIDI(void) const;
+  bool Load(char const *name = 0);
+  bool Free(void);
+  bool Play(int volume = 0xFF);
+  bool Stop(void);
+  bool Pause(void);
+  bool Resume(void);
+  bool Set_Name(char const *name);
+  bool Is_Playing(void) const;
+  bool Is_Loaded(void) const;
+  bool Is_MIDI(void) const;
 };
 
-inline AudioClass::AudioClass(void)
-{
-	Name = 0; 
-	Data = 0; 
-	Mem = 0;
-	Handle = -1;
+inline AudioClass::AudioClass(void) {
+  Name = 0;
+  Data = 0;
+  Mem = 0;
+  Handle = -1;
 };
 
-inline AudioClass::AudioClass(char const *name, MemoryClass &mem) 
-{
-	if (mem) {
-		Mem = &mem;
-	} else {
-		Mem = &::Mem;		// Uses global default memory handler.
-	}
-	Name = strdup(name);
-	Data = 0;
-	Handle = -1;
+inline AudioClass::AudioClass(char const *name, MemoryClass &mem) {
+  if (mem) {
+    Mem = &mem;
+  } else {
+    Mem = &::Mem;  // Uses global default memory handler.
+  }
+  Name = strdup(name);
+  Data = 0;
+  Handle = -1;
 };
 
-inline AudioClass::~AudioClass(void)
-{
-	if (GameActive) {
-		if (Name) free(Name);
-		if (Data) Mem->Free(Data);
-		Name = 0;
-		Data = 0;
-		Handle = -1;
-	}
+inline AudioClass::~AudioClass(void) {
+  if (GameActive) {
+    if (Name) free(Name);
+    if (Data) Mem->Free(Data);
+    Name = 0;
+    Data = 0;
+    Handle = -1;
+  }
 };
-
 
 #endif

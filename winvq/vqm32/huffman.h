@@ -19,25 +19,24 @@
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     huffman.h
-*
-* DESCRIPTION
-*     Huffman order 0 compress/decompress definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     May 19, 1995
-*
-****************************************************************************/
-
+ *
+ *        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     huffman.h
+ *
+ * DESCRIPTION
+ *     Huffman order 0 compress/decompress definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     May 19, 1995
+ *
+ ****************************************************************************/
 
 /* TreeNode: Huffman decoding tree node.
  *
@@ -46,11 +45,10 @@
  * child1 - Child node 1
  */
 typedef struct _TreeNode {
- 	unsigned long  count;
-	unsigned short child0;
-	unsigned short child1;
+  unsigned long count;
+  unsigned short child0;
+  unsigned short child1;
 } TreeNode;
-
 
 /* HuffCode: This structure is used for storing the code for each symbol
  *            during encoding. A table of codes for each symbol is built
@@ -60,10 +58,9 @@ typedef struct _TreeNode {
  * bits - Length of code in bits.
  */
 typedef struct _HuffCode {
-	unsigned short code;
-	short          bits;
+  unsigned short code;
+  short bits;
 } HuffCode;
-
 
 #define HUFF_EOS 256 /* End of stream symbol */
 
@@ -73,27 +70,26 @@ extern "C" {
 #endif
 
 long __cdecl HuffCompress(unsigned char *data, unsigned char *buffer,
-		long length, char *work);
+                          long length, char *work);
 
 long __cdecl HuffDecompress(unsigned char *data, unsigned char *buffer,
-		long length, char *work);
+                            long length, char *work);
 
 void __cdecl HuffCount(unsigned char *data, TreeNode *nodes, long length,
-		long zero);
+                       long zero);
 
 void __cdecl HuffScaleCounts(TreeNode *nodes);
 long __cdecl RLEHuffCounts(TreeNode *nodes, unsigned char *buffer);
 long __cdecl BuildHuffTree(TreeNode *nodes);
 
 void __cdecl ConvertToCodes(TreeNode *nodes, HuffCode *codes,
-		unsigned short code, short bits, short node);
+                            unsigned short code, short bits, short node);
 
 long __cdecl HuffEncode(unsigned char *data, unsigned char *buffer,
-		HuffCode *codes, long length);
+                        HuffCode *codes, long length);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* HUFFMAN_H */
-

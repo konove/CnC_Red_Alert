@@ -21,64 +21,64 @@
 
 #ifdef WOLAPI_INTEGRATION
 
-#include	"function.h"
-#include	"bigcheck.h"
+#include "function.h"
+#include "bigcheck.h"
 
 //***********************************************************************************************
-int BigCheckBoxClass::Draw_Me( int forced )
-{
-	if (ToggleClass::Draw_Me(forced))
-	{
-		Hide_Mouse();
+int BigCheckBoxClass::Draw_Me(int forced) {
+  if (ToggleClass::Draw_Me(forced)) {
+    Hide_Mouse();
 
-		if( !IsOn )
-		{
-			if( !IsDisabled )
-				CC_Draw_Shape( MFCD::Retrieve( "bigcheck.shp" ), 0, X, Y, WINDOW_MAIN, SHAPE_NORMAL );
-			else
-				CC_Draw_Shape( MFCD::Retrieve( "bigcheck.shp" ), 2, X, Y, WINDOW_MAIN, SHAPE_NORMAL );
-		}
-		else
-		{
-			if( !IsDisabled )
-				CC_Draw_Shape( MFCD::Retrieve( "bigcheck.shp" ), 1, X, Y, WINDOW_MAIN, SHAPE_NORMAL );
-			else
-				CC_Draw_Shape( MFCD::Retrieve( "bigcheck.shp" ), 3, X, Y, WINDOW_MAIN, SHAPE_NORMAL );
-		}
+    if (!IsOn) {
+      if (!IsDisabled)
+        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 0, X, Y, WINDOW_MAIN,
+                      SHAPE_NORMAL);
+      else
+        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 2, X, Y, WINDOW_MAIN,
+                      SHAPE_NORMAL);
+    } else {
+      if (!IsDisabled)
+        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 1, X, Y, WINDOW_MAIN,
+                      SHAPE_NORMAL);
+      else
+        CC_Draw_Shape(MFCD::Retrieve("bigcheck.shp"), 3, X, Y, WINDOW_MAIN,
+                      SHAPE_NORMAL);
+    }
 
-		TextPrintType flags = TextFlags;
-		
-		RemapControlType* pScheme;
-		
-//		if( !IsDisabled )
-			pScheme = GadgetClass::Get_Color_Scheme();
-//		else
-//		{
-//			pScheme = &GreyScheme;
-//			flags = flags | TPF_MEDIUM_COLOR;
-//		}
+    TextPrintType flags = TextFlags;
 
-		Conquer_Clip_Text_Print( szCaption, X + BIGCHECK_OFFSETX, Y + BIGCHECK_OFFSETY, pScheme, TBLACK, flags, Width, 0 );
+    RemapControlType* pScheme;
 
-		Show_Mouse();
-		return true;
-	}
-	return false;
+    //		if( !IsDisabled )
+    pScheme = GadgetClass::Get_Color_Scheme();
+    //		else
+    //		{
+    //			pScheme = &GreyScheme;
+    //			flags = flags | TPF_MEDIUM_COLOR;
+    //		}
+
+    Conquer_Clip_Text_Print(szCaption, X + BIGCHECK_OFFSETX,
+                            Y + BIGCHECK_OFFSETY, pScheme, TBLACK, flags, Width,
+                            0);
+
+    Show_Mouse();
+    return true;
+  }
+  return false;
 }
 
 //***********************************************************************************************
-int BigCheckBoxClass::Action(unsigned flags, KeyNumType & key)
-{
-/*	if( flags & LEFTPRESS )
-	{
-		if (IsOn) {
-			Turn_Off();
-		} else {
-			Turn_On();
-		}
-	}
-*/
-	return(ToggleClass::Action(flags, key));
+int BigCheckBoxClass::Action(unsigned flags, KeyNumType& key) {
+  /*	if( flags & LEFTPRESS )
+          {
+                  if (IsOn) {
+                          Turn_Off();
+                  } else {
+                          Turn_On();
+                  }
+          }
+  */
+  return (ToggleClass::Action(flags, key));
 }
 
 #endif

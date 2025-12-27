@@ -18,78 +18,82 @@
 
 /* $Header: /CounterStrike/OVERLAY.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : OVERLAY.H                                                    *
+ *                    File Name : OVERLAY.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : May 17, 1994                                                 *
+ *                   Start Date : May 17, 1994 *
  *                                                                                             *
- *                  Last Update : May 17, 1994   [JLB]                                         *
+ *                  Last Update : May 17, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include	"object.h"
-#include	"type.h"
+#include "object.h"
+#include "type.h"
 
 /******************************************************************************
-**	This class controls the overlay object. Overlay objects function congruously
-**	to carpet on a floor. They have no depth, but merely control the icon to be rendered
-**	as the cell's bottom most layer.
+**	This class controls the overlay object. Overlay objects function
+*congruously *	to carpet on a floor. They have no depth, but merely control the
+*icon to be rendered *	as the cell's bottom most layer.
 */
-class OverlayClass : public ObjectClass
-{
-	public:
-		/*
-		**	This is a pointer to the overlay object's class.
-		*/
-		CCPtr<OverlayTypeClass> Class;
+class OverlayClass : public ObjectClass {
+ public:
+  /*
+  **	This is a pointer to the overlay object's class.
+  */
+  CCPtr<OverlayTypeClass> Class;
 
-		/*-------------------------------------------------------------------
-		**	Constructors and destructors.
-		*/
-		static void * operator new(size_t size)  throw();
-		static void * operator new(size_t , void * ptr) throw() {return(ptr);};
-		static void operator delete(void *ptr);
-		OverlayClass(OverlayType type, CELL pos=-1, HousesType = HOUSE_NONE);
-		OverlayClass(NoInitClass const & x) : ObjectClass(x), Class(x) {};
-		virtual ~OverlayClass(void) {if (GameActive) OverlayClass::Limbo();Class=0;};
-		operator OverlayType(void) const {return Class->Type;};
+  /*-------------------------------------------------------------------
+  **	Constructors and destructors.
+  */
+  static void *operator new(size_t size) throw();
+  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+  static void operator delete(void *ptr);
+  OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
+  OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(x){};
+  virtual ~OverlayClass(void) {
+    if (GameActive) OverlayClass::Limbo();
+    Class = 0;
+  };
+  operator OverlayType(void) const { return Class->Type; };
 
-		static void Init(void);
+  static void Init(void);
 
-		/*
-		**	File I/O.
-		*/
-		static void Read_INI(CCINIClass & ini);
-		static void Write_INI(CCINIClass & ini);
-		static char const *INI_Name(void) {return "OVERLAY";};
-		bool Load(Straw & file);
-		bool Save(Pipe & file) const;
+  /*
+  **	File I/O.
+  */
+  static void Read_INI(CCINIClass &ini);
+  static void Write_INI(CCINIClass &ini);
+  static char const *INI_Name(void) { return "OVERLAY"; };
+  bool Load(Straw &file);
+  bool Save(Pipe &file) const;
 
-		/*
-		**	Virtual support functionality.
-		*/
-		virtual bool Mark(MarkType);
-		virtual ObjectTypeClass const & Class_Of(void) const {return *Class;};
-		virtual void Draw_It(int , int , WindowNumberType ) const {};
+  /*
+  **	Virtual support functionality.
+  */
+  virtual bool Mark(MarkType);
+  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual void Draw_It(int, int, WindowNumberType) const {};
 
-	private:
-		/*
-		**	This is used to control the marking process of the overlay. If this is
-		**	set to a valid house number, then the cell that the overlay is marked down
-		**	upon will be flagged as being owned by the specified house.
-		*/
-		static HousesType ToOwn;
+ private:
+  /*
+  **	This is used to control the marking process of the overlay. If this is
+  **	set to a valid house number, then the cell that the overlay is marked
+  *down *	upon will be flagged as being owned by the specified house.
+  */
+  static HousesType ToOwn;
 };
 
 #endif

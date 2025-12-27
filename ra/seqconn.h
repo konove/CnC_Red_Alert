@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\seqconn.h_v   1.13   01 Mar 1996 17:45:24   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\seqconn.h_v   1.13   01 Mar 1996 17:45:24
+ * JOE_BOSTIC  $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -29,19 +30,23 @@
  *                                                                         *
  *                   Start Date : December 19, 1994                        *
  *                                                                         *
- *                  Last Update : April 9, 1995   [BR]                 		*
+ *                  Last Update : April 9, 1995   [BR] *
  *                                                                         *
  *-------------------------------------------------------------------------*
  *                                                                         *
- * This class provides a "Sequenced" ACK/Retry approach to packet				*
- * transmission.  It waits until the last packet has been ACK'd before		*
- * sending another packet.  Thus, it guarantees order of delivery of			*
- * packets, but its performance will be slower than the Non-Sequenced		*
- * approach.																					*
+ * This class provides a "Sequenced" ACK/Retry approach to packet
+ ** transmission.  It waits until the last packet has been ACK'd before *
+ * sending another packet.  Thus, it guarantees order of delivery of
+ ** packets, but its performance will be slower than the Non-Sequenced *
+ * approach.
+ **
  *																									*
- *	A derived class must provide:															*
- * - Init: Initialization of any hardware-specific values.						*
- * - Send: a hardware-dependent send routine.										*
+ *	A derived class must provide:
+ **
+ * - Init: Initialization of any hardware-specific values.
+ **
+ * - Send: a hardware-dependent send routine.
+ **
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -51,60 +56,57 @@
 #include "connect.h"
 #include "comqueue.h"
 
-
 /*
 ***************************** Class Declaration *****************************
 */
-class SequencedConnClass : public ConnectionClass
-{
-	/*
-	---------------------------- Public Interface ----------------------------
-	*/
-	public:
-		/*.....................................................................
-		Constructor/destructor.
-		.....................................................................*/
-		SequencedConnClass (int numsend, int numrecieve, int maxlen, 
-			unsigned short magicnum, unsigned long retry_delta,
-			unsigned long max_retries, unsigned long timeout);
-		virtual ~SequencedConnClass ();
+class SequencedConnClass : public ConnectionClass {
+  /*
+  ---------------------------- Public Interface ----------------------------
+  */
+ public:
+  /*.....................................................................
+  Constructor/destructor.
+  .....................................................................*/
+  SequencedConnClass(int numsend, int numrecieve, int maxlen,
+                     unsigned short magicnum, unsigned long retry_delta,
+                     unsigned long max_retries, unsigned long timeout);
+  virtual ~SequencedConnClass();
 
-		/*.....................................................................
-		Initialization.
-		.....................................................................*/
-		virtual void Init (void);
+  /*.....................................................................
+  Initialization.
+  .....................................................................*/
+  virtual void Init(void);
 
-		/*.....................................................................
-		Send/Receive routines.
-		.....................................................................*/
-		virtual int Send_Packet (void * buf, int buflen, int ack_req);
-		virtual int Receive_Packet (void * buf, int buflen);
-		virtual int Get_Packet (void * buf, int *buflen);
+  /*.....................................................................
+  Send/Receive routines.
+  .....................................................................*/
+  virtual int Send_Packet(void *buf, int buflen, int ack_req);
+  virtual int Receive_Packet(void *buf, int buflen);
+  virtual int Get_Packet(void *buf, int *buflen);
 
-		/*.....................................................................
-		The packet queue.
-		.....................................................................*/
-		CommQueueClass *Queue;
+  /*.....................................................................
+  The packet queue.
+  .....................................................................*/
+  CommQueueClass *Queue;
 
-	/*
-	-------------------------- Protected Interface ---------------------------
-	*/
-	protected:
-		/*.....................................................................
-		Routines to service the Send & Receive queues.
-		.....................................................................*/
-		virtual int Service_Send_Queue (void);
-		virtual int Service_Receive_Queue (void);
+  /*
+  -------------------------- Protected Interface ---------------------------
+  */
+ protected:
+  /*.....................................................................
+  Routines to service the Send & Receive queues.
+  .....................................................................*/
+  virtual int Service_Send_Queue(void);
+  virtual int Service_Receive_Queue(void);
 
-		/*.....................................................................
-		Running totals of # of packets we send & receive which require an ACK, 
-		and those that don't.
-		.....................................................................*/
-		unsigned long NumRecNoAck;
-		unsigned long NumRecAck;
-		unsigned long NumSendNoAck;
-		unsigned long NumSendAck;
-
+  /*.....................................................................
+  Running totals of # of packets we send & receive which require an ACK,
+  and those that don't.
+  .....................................................................*/
+  unsigned long NumRecNoAck;
+  unsigned long NumRecAck;
+  unsigned long NumSendNoAck;
+  unsigned long NumSendAck;
 };
 
 #endif

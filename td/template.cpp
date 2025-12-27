@@ -16,396 +16,375 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\template.cpv   2.18   16 Oct 1995 16:51:46   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\template.cpv   2.18   16 Oct 1995
+ * 16:51:46   JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TEMPLATE.CPP                                                 *
+ *                    File Name : TEMPLATE.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : May 17, 1994                                                 *
+ *                   Start Date : May 17, 1994 *
  *                                                                                             *
- *                  Last Update : January 23, 1995 [JLB]                                       *
+ *                  Last Update : January 23, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   TemplateClass::As_Target -- Converts a template object into a target number.              *
- *   TemplateClass::Init -- Resets the template object system.                                 *
- *   TemplateClass::Mark -- Lifts or drops a template object.                                  *
- *   TemplateClass::Read_INI -- Reads the scenario control INI file.                           *
- *   TemplateClass::Select -- Select the template object.                                      *
- *   TemplateClass::TemplateClass -- Default constructor for template class objects.           *
- *   TemplateClass::TemplateClass -- Template object constructor.                              *
- *   TemplateClass::Unlimbo -- Places a template object into the game/map system.              *
- *   TemplateClass::Write_INI -- Writes the template objects to the INI file.                  *
- *   TemplateClass::delete -- Returns a template object to the pool.                           *
- *   TemplateClass::new -- Allocates a template object from pool                               *
- *   TemplateClass::Validate -- validates template pointer												  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * TemplateClass::As_Target -- Converts a template object into a
+ *target number.              * TemplateClass::Init -- Resets the template
+ *object system.                                 * TemplateClass::Mark -- Lifts
+ *or drops a template object.                                  *
+ *   TemplateClass::Read_INI -- Reads the scenario control INI file. *
+ *   TemplateClass::Select -- Select the template object. *
+ *   TemplateClass::TemplateClass -- Default constructor for template class
+ *objects.           * TemplateClass::TemplateClass -- Template object
+ *constructor.                              * TemplateClass::Unlimbo -- Places a
+ *template object into the game/map system.              *
+ *   TemplateClass::Write_INI -- Writes the template objects to the INI file. *
+ *   TemplateClass::delete -- Returns a template object to the pool. *
+ *   TemplateClass::new -- Allocates a template object from pool *
+ *   TemplateClass::Validate -- validates template pointer
+ **
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-#include	"function.h"
-#include	"template.h"
-
+#include "function.h"
+#include "template.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void * TemplateClass::VTable;
-
+void *TemplateClass::VTable;
 
 /***********************************************************************************************
- * TemplateClass::Validate -- validates template pointer													  *
+ * TemplateClass::Validate -- validates template pointer
+ **
  *                                                                                             *
- * INPUT:                                                                                      *
- *		none.																												  *
+ * INPUT: * none.
+ **
  *                                                                                             *
- * OUTPUT:                                                                                     *
- *		1 = ok, 0 = error																								  *
+ * OUTPUT: * 1 = ok, 0 = error
+ **
  *                                                                                             *
- * WARNINGS:                                                                                   *
- *		none.																												  *
+ * WARNINGS: * none.
+ **
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   08/09/1995 BRR : Created.                                                                 *
+ * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int TemplateClass::Validate(void) const
-{
-	int num;
+int TemplateClass::Validate(void) const {
+  int num;
 
-	num = Templates.ID(this);
-	if (num < 0 || num >= TEMPLATE_MAX) {
-		Validate_Error("TEMPLATE");
-		return (0);
-	}
-	else
-		return (1);
+  num = Templates.ID(this);
+  if (num < 0 || num >= TEMPLATE_MAX) {
+    Validate_Error("TEMPLATE");
+    return (0);
+  } else
+    return (1);
 }
 #else
-#define	Validate()
+#define Validate()
 #endif
 
-
 /***********************************************************************************************
- * TemplateClass::Read_INI -- Reads the scenario control INI file.                             *
+ * TemplateClass::Read_INI -- Reads the scenario control INI file. *
  *                                                                                             *
- *    This routine reads the scenario control INI file and creates all                         *
- *    templates specified therein.                                                             *
+ *    This routine reads the scenario control INI file and creates all *
+ *    templates specified therein. *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the loaded scenario control INI file.                       *
+ * INPUT:   buffer   -- Pointer to the loaded scenario control INI file. *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/24/1994 JLB : Created.                                                                 *
+ * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Read_INI(char *buffer)
-{
-	char	*tbuffer;	// Accumulation buffer of unit IDs.
-	int	len;			// Size of data in buffer.
-	CELL	cell;			// Cell of building.
-	char	buf[128];	// Working string staging buffer.
+void TemplateClass::Read_INI(char *buffer) {
+  char *tbuffer;  // Accumulation buffer of unit IDs.
+  int len;        // Size of data in buffer.
+  CELL cell;      // Cell of building.
+  char buf[128];  // Working string staging buffer.
 
-	len = strlen(buffer) + 2;
-	tbuffer = buffer + len;
+  len = strlen(buffer) + 2;
+  tbuffer = buffer + len;
 
-	WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer, ShapeBufferSize-len, buffer);
-	while (*tbuffer != '\0') {
-		TemplateType	temp;		// Terrain type.
+  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+                            ShapeBufferSize - len, buffer);
+  while (*tbuffer != '\0') {
+    TemplateType temp;  // Terrain type.
 
-		cell = atoi(tbuffer);
-		WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf)-1, buffer);
-		temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));
-		if (temp != TEMPLATE_NONE) {
-			new TemplateClass(temp, cell);
-		}
-		tbuffer += strlen(tbuffer)+1;
-	}
+    cell = atoi(tbuffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+                              buffer);
+    temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));
+    if (temp != TEMPLATE_NONE) {
+      new TemplateClass(temp, cell);
+    }
+    tbuffer += strlen(tbuffer) + 1;
+  }
 }
 
-
 /***********************************************************************************************
- * TemplateClass::Write_INI -- Writes the template objects to the INI file.                    *
+ * TemplateClass::Write_INI -- Writes the template objects to the INI file. *
  *                                                                                             *
- *    This routine is used to write all the template objects out to the INI file specified.    *
- *    It is used by the scenario editor when saving the game.                                  *
+ *    This routine is used to write all the template objects out to the INI file
+ *specified.    * It is used by the scenario editor when saving the game. *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the INI file staging buffer.                                *
+ * INPUT:   buffer   -- Pointer to the INI file staging buffer. *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/28/1994 JLB : Created.                                                                 *
+ * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Write_INI(char *buffer)
-{
-	char	uname[10];
-	char	buf[127];
-	char	*tbuffer;		// Accumulation buffer of unit IDs.
+void TemplateClass::Write_INI(char *buffer) {
+  char uname[10];
+  char buf[127];
+  char *tbuffer;  // Accumulation buffer of unit IDs.
 
-	/*
-	**	First, clear out all existing template data from the ini file.
-	*/
-	tbuffer = buffer + strlen(buffer) + 2;
-	WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer, ShapeBufferSize-strlen(buffer), buffer);
-	while (*tbuffer != '\0') {
-		WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
-		tbuffer += strlen(tbuffer)+1;
-	}
+  /*
+  **	First, clear out all existing template data from the ini file.
+  */
+  tbuffer = buffer + strlen(buffer) + 2;
+  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+                            ShapeBufferSize - strlen(buffer), buffer);
+  while (*tbuffer != '\0') {
+    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    tbuffer += strlen(tbuffer) + 1;
+  }
 
-	/*
-	**	Find all templates and write them to the file.
-	*/
-	for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-		CellClass * ptr;
+  /*
+  **	Find all templates and write them to the file.
+  */
+  for (int index = 0; index < MAP_CELL_TOTAL; index++) {
+    CellClass *ptr;
 
-		ptr = &Map[index];
-		if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
-			sprintf(uname, "%03d", index);
-			sprintf(buf, "%s", TemplateTypeClass::As_Reference(ptr->TType).IniName);
-			WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
-		}
-	}
+    ptr = &Map[index];
+    if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
+      sprintf(uname, "%03d", index);
+      sprintf(buf, "%s", TemplateTypeClass::As_Reference(ptr->TType).IniName);
+      WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
+    }
+  }
 }
 
+/***********************************************************************************************
+ * TemplateClass::TemplateClass -- Default constructor for template class
+ *objects.             *
+ *                                                                                             *
+ *    This is the default constructor for a template class object. This
+ *construction method    * should NEVER be used by the game except as a
+ *consequence of declaring an array of        * uninitialized template objects.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+TemplateClass::TemplateClass(void) : Class(0) {}
 
 /***********************************************************************************************
- * TemplateClass::TemplateClass -- Default constructor for template class objects.             *
+ * TemplateClass::As_Target -- Converts a template object into a target number.
+ **
  *                                                                                             *
- *    This is the default constructor for a template class object. This construction method    *
- *    should NEVER be used by the game except as a consequence of declaring an array of        *
- *    uninitialized template objects.                                                          *
+ *    This routine will convert a template object into a target number. Because
+ *templates      * never exist as a template object in the game system, this
+ *routine will never be called.  *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT: *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT: *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS: *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/23/1995 JLB : Created.                                                                 *
+ * HISTORY: * 09/25/1994 JLB : Created. *
  *=============================================================================================*/
-TemplateClass::TemplateClass(void) :
-	Class(0)
-{
+TARGET TemplateClass::As_Target(void) const {
+  Validate();
+  return (Build_Target(KIND_TEMPLATE, Templates.ID(this)));
 }
 
-
 /***********************************************************************************************
- * TemplateClass::As_Target -- Converts a template object into a target number.                *
+ * TemplateClass::Init -- Resets the template object system. *
  *                                                                                             *
- *    This routine will convert a template object into a target number. Because templates      *
- *    never exist as a template object in the game system, this routine will never be called.  *
+ *    This routine resets the template object system. It is called * prior to
+ *loading a new scenario. *
  *                                                                                             *
- * INPUT:                                                                                      *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:                                                                                     *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:                                                                                   *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   09/25/1994 JLB : Created.                                                                 *
+ * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TemplateClass::As_Target(void) const
-{
-	Validate();
-	return(Build_Target(KIND_TEMPLATE, Templates.ID(this)));
+void TemplateClass::Init(void) {
+  TemplateClass *ptr;
+
+  Templates.Free_All();
+
+  ptr = new TemplateClass();
+  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  delete ptr;
 }
 
-
 /***********************************************************************************************
- * TemplateClass::Init -- Resets the template object system.                                   *
+ * TemplateClass::Mark -- Lifts or drops a template object. *
  *                                                                                             *
- *    This routine resets the template object system. It is called                             *
- *    prior to loading a new scenario.                                                         *
+ *    This routine handles placing or removing a template object. This * entails
+ *marking the map as appropriate and redisplaying affected * cells. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   mark  -- The marking operation to perform. *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  bool; Was the template successfully marked? *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/24/1994 JLB : Created.                                                                 *
+ * HISTORY: * 05/17/1994 JLB : Created. * 12/23/1994 JLB : Examines low level
+ *legality before processing.                           *
  *=============================================================================================*/
-void TemplateClass::Init(void)
-{
-	TemplateClass *ptr;
+bool TemplateClass::Mark(MarkType mark) {
+  Validate();
+  static bool noup = false;
+  void const *iset = Class->Get_Image_Data();
+  if (iset && ObjectClass::Mark(mark)) {
+    void *map = Get_Icon_Set_Map(iset);
 
-	Templates.Free_All();
+    for (int y = 0; y < Class->Height; y++) {
+      for (int x = 0; x < Class->Width; x++) {
+        CELL cell = Coord_Cell(Coord) + y * MAP_CELL_W + x;
+        if (Map.In_Radar(cell)) {
+          CellClass *cellptr = &Map[cell];
+          int number = y * Class->Width + x;
 
-	ptr = new TemplateClass();
-	VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
-	delete ptr;
+          /*
+          **	Determine if this logical icon actually maps to a real icon. If
+          *no real *	icon is associated with this logical position, then
+          *don't do any action *	since none is required.
+          */
+          char *mapptr = (char *)map;
+          bool real = (mapptr[number] != -1);
+
+          if (real) {
+            /*
+            **	Lift the terrain object from the map.
+            */
+            if (mark == MARK_UP && !noup) {
+              if (cellptr->TType == Class->Type && cellptr->TIcon == number) {
+                cellptr->TType = TEMPLATE_NONE;
+                cellptr->TIcon = 0;
+              }
+            }
+
+            /*
+            **	Place the terrain object down.
+            */
+            if (mark == MARK_DOWN) {
+              if (*this == TEMPLATE_CLEAR1) {
+                cellptr->TType = TEMPLATE_NONE;
+                cellptr->TIcon = 0;
+              } else {
+                cellptr->TType = Class->Type;
+                //							cellptr->TIcon
+                //= real;
+                cellptr->TIcon = number;
+              }
+            }
+
+            cellptr->Redraw_Objects();
+            cellptr->Recalc_Attributes();
+          }
+        }
+      }
+    }
+
+    /*
+    **	When marking this template down onto the map, the map template numbers
+    *are update *	but the template is removed from existence. Make sure
+    *that the deletion of the *	template object doesn't also lift the template
+    *numbers up from the map.
+    */
+    if (mark == MARK_DOWN) {
+      noup = true;
+      delete this;
+      noup = false;
+    }
+    return (true);
+  }
+  return (false);
 }
 
-
 /***********************************************************************************************
- * TemplateClass::Mark -- Lifts or drops a template object.                                    *
+ * TemplateClass::new -- Allocates a template object from pool *
  *                                                                                             *
- *    This routine handles placing or removing a template object. This                         *
- *    entails marking the map as appropriate and redisplaying affected                         *
- *    cells.                                                                                   *
+ *    This routine is used to allocate a template object from the * template
+ *object pool. *
  *                                                                                             *
- * INPUT:   mark  -- The marking operation to perform.                                         *
+ * INPUT:   size  -- The size of a template object (not used). *
  *                                                                                             *
- * OUTPUT:  bool; Was the template successfully marked?                                        *
+ * OUTPUT:  Returns with a pointer to an available template object. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/17/1994 JLB : Created.                                                                 *
- *   12/23/1994 JLB : Examines low level legality before processing.                           *
+ * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateClass::Mark(MarkType mark)
-{
-	Validate();
-	static bool noup = false;
-	void const * iset = Class->Get_Image_Data();
-	if (iset && ObjectClass::Mark(mark)) {
-
-		void * map = Get_Icon_Set_Map(iset);
-
-		for (int y = 0; y < Class->Height; y++) {
-			for (int x = 0; x < Class->Width; x++) {
-				CELL cell = Coord_Cell(Coord) + y*MAP_CELL_W + x;
-				if (Map.In_Radar(cell)) {
-					CellClass * cellptr = &Map[cell];
-					int number = y*Class->Width + x;
-
-					/*
-					**	Determine if this logical icon actually maps to a real icon. If no real
-					**	icon is associated with this logical position, then don't do any action
-					**	since none is required.
-					*/
-					char * mapptr = (char*)map;
-					bool real = (mapptr[number] != -1);
-
-					if (real) {
-						/*
-						**	Lift the terrain object from the map.
-						*/
-						if (mark == MARK_UP && !noup) {
-							if (cellptr->TType == Class->Type && cellptr->TIcon == number) {
-								cellptr->TType = TEMPLATE_NONE;
-								cellptr->TIcon = 0;
-							}
-						}
-
-						/*
-						**	Place the terrain object down.
-						*/
-						if (mark == MARK_DOWN) {
-							if (*this == TEMPLATE_CLEAR1) {
-								cellptr->TType = TEMPLATE_NONE;
-								cellptr->TIcon = 0;
-							} else {
-								cellptr->TType = Class->Type;
-	//							cellptr->TIcon = real;
-								cellptr->TIcon = number;
-							}
-						}
-
-						cellptr->Redraw_Objects();
-						cellptr->Recalc_Attributes();
-					}
-				}
-			}
-		}
-
-		/*
-		**	When marking this template down onto the map, the map template numbers are update
-		**	but the template is removed from existence. Make sure that the deletion of the
-		**	template object doesn't also lift the template numbers up from the map.
-		*/
-		if (mark == MARK_DOWN) {
-			noup = true;
-			delete this;
-			noup = false;
-		}
-		return(true);
-	}
-	return(false);
+void *TemplateClass::operator new(size_t) throw() {
+  void *ptr = Templates.Allocate();
+  if (ptr) {
+    ((TemplateClass *)ptr)->IsActive = true;
+  }
+  return (ptr);
 }
 
-
 /***********************************************************************************************
- * TemplateClass::new -- Allocates a template object from pool                                 *
+ * TemplateClass::delete -- Returns a template object to the pool. *
  *                                                                                             *
- *    This routine is used to allocate a template object from the                              *
- *    template object pool.                                                                    *
+ *    This routine will return a template object to the template object * pool.
+ *A template so returned is available for allocation again. *
  *                                                                                             *
- * INPUT:   size  -- The size of a template object (not used).                                 *
+ * INPUT:   ptr   -- Pointer to the object to be returned. *
  *                                                                                             *
- * OUTPUT:  Returns with a pointer to an available template object.                            *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/17/1994 JLB : Created.                                                                 *
+ * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void * TemplateClass::operator new(size_t ) throw()
-{
-	void * ptr = Templates.Allocate();
-	if (ptr) {
-		((TemplateClass *)ptr)->IsActive = true;
-	}
-	return(ptr);
+void TemplateClass::operator delete(void *ptr) {
+  if (ptr) {
+    ((TemplateClass *)ptr)->IsActive = false;
+  }
+  Templates.Free((TemplateClass *)ptr);
 }
 
-
 /***********************************************************************************************
- * TemplateClass::delete -- Returns a template object to the pool.                             *
+ * TemplateClass::TemplateClass -- Template object constructor. *
  *                                                                                             *
- *    This routine will return a template object to the template object                        *
- *    pool. A template so returned is available for allocation again.                          *
+ *    This is the constructor for a template object. *
  *                                                                                             *
- * INPUT:   ptr   -- Pointer to the object to be returned.                                     *
+ * INPUT:   type  -- The template object this is to become. *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ *          pos   -- The position on the map to place the object. *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * OUTPUT:  none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/17/1994 JLB : Created.                                                                 *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::operator delete(void *ptr)
-{
-	if (ptr) {
-		((TemplateClass *)ptr)->IsActive = false;
-	}
-	Templates.Free((TemplateClass *)ptr);
-}
-
-
-/***********************************************************************************************
- * TemplateClass::TemplateClass -- Template object constructor.                                *
- *                                                                                             *
- *    This is the constructor for a template object.                                           *
- *                                                                                             *
- * INPUT:   type  -- The template object this is to become.                                    *
- *                                                                                             *
- *          pos   -- The position on the map to place the object.                              *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   05/17/1994 JLB : Created.                                                                 *
- *=============================================================================================*/
-TemplateClass::TemplateClass(TemplateType type, CELL pos) :
-	Class(&TemplateTypeClass::As_Reference(type))
-{
-	if (pos != -1) {
-		Unlimbo(Cell_Coord(pos));
-	}
+TemplateClass::TemplateClass(TemplateType type, CELL pos)
+    : Class(&TemplateTypeClass::As_Reference(type)) {
+  if (pos != -1) {
+    Unlimbo(Cell_Coord(pos));
+  }
 }

@@ -17,20 +17,20 @@
 */
 
 /****************************************************************************
-*
-* FILE
-*     Movie.cpp
-*
-* DESCRIPTION
-*     Movie playback using DirectShow Multimedia streaming and DirectDraw
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     May 27, 1998
-*
-****************************************************************************/
+ *
+ * FILE
+ *     Movie.cpp
+ *
+ * DESCRIPTION
+ *     Movie playback using DirectShow Multimedia streaming and DirectDraw
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     May 27, 1998
+ *
+ ****************************************************************************/
 
 #include "movie.h"
 #include <mmstream.h>
@@ -48,282 +48,259 @@ IMediaStream* gVideoStream = NULL;
 IDirectDrawMediaStream* gDDStream = NULL;
 IDirectDrawStreamSample* gDDSample = NULL;
 
+/****************************************************************************
+ *
+ * NAME
+ *     Movie - Constructor
+ *
+ * DESCRIPTION
+ *
+ * INPUTS
+ *
+ * RESULT
+ *
+ ****************************************************************************/
+
+Movie::Movie(IDirectDraw* dd) {
+  mPlaying = false;
+
+  Close();
+
+  gDDraw = dd;
+
+  // Initialize COM library
+  CoInitialize(NULL);
+}
 
 /****************************************************************************
-*
-* NAME
-*     Movie - Constructor
-*
-* DESCRIPTION
-*
-* INPUTS
-*
-* RESULT
-*
-****************************************************************************/
+ *
+ * NAME
+ *     ~Movie - Destructor
+ *
+ * DESCRIPTION
+ *
+ * INPUTS
+ *
+ * RESULT
+ *
+ ****************************************************************************/
 
-Movie::Movie(IDirectDraw* dd)
-	{
-	mPlaying = false;
+Movie::~Movie() {
+  // Release all
+  Close();
 
-	Close();
-
-	gDDraw = dd;
-
-	// Initialize COM library
-	CoInitialize(NULL);
-	}
-
+  // Release COM library
+  CoUninitialize();
+}
 
 /****************************************************************************
-*
-* NAME
-*     ~Movie - Destructor
-*
-* DESCRIPTION
-*
-* INPUTS
-*
-* RESULT
-*
-****************************************************************************/
+ *
+ * NAME
+ *     Open
+ *
+ * DESCRIPTION
+ *
+ * INPUTS
+ *     Name - Name of movie
+ *
+ * RESULT
+ *
+ ****************************************************************************/
 
-Movie::~Movie()
-	{
-	// Release all
-	Close();
+bool Movie::Open(const char* name) {
+  WCHAR wFile[MAX_PATH];
+  IAMMultiMediaStream* amStream;
+  DDSURFACEDESC ddsd;
 
-	// Release COM library
-	CoUninitialize();
-	}
+  Close();
 
+  //-------------------------------------------------------------------------
+  // CREATE FILTER GRAPH FOR FILE TYPE
+  //-------------------------------------------------------------------------
+  if (FAILED(CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER,
+                              IID_IGraphBuilder, (void**)&gGB))) {
+    MessageBox(GetDesktopWindow(),
+               "Couldn't create a CLSID_FilterGraph object.\n", "DirectMedia",
+               MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-/****************************************************************************
-*
-* NAME
-*     Open
-*
-* DESCRIPTION
-*
-* INPUTS
-*     Name - Name of movie
-*
-* RESULT
-*
-****************************************************************************/
+  //-------------------------------------------------------------------------
+  // CREATE MULTIMEDIA STREAM
+  //-------------------------------------------------------------------------
+  if (FAILED(CoCreateInstance(CLSID_AMMultiMediaStream, NULL,
+                              CLSCTX_INPROC_SERVER, IID_IAMMultiMediaStream,
+                              (void**)&amStream))) {
+    Close();
+    MessageBox(GetDesktopWindow(),
+               "Couldn't create a CLSID_MultiMediaStream object.\n",
+               "DirectMedia", MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-bool Movie::Open(const char* name)
-	{
-	WCHAR wFile[MAX_PATH];
-	IAMMultiMediaStream* amStream;
-	DDSURFACEDESC ddsd;
-	
-	Close();
+  // Initialize stream for reading
+  if (FAILED(amStream->Initialize(STREAMTYPE_READ, 0, gGB))) {
+    amStream->Release();
+    Close();
+    MessageBox(GetDesktopWindow(),
+               "Couldn't initialize MultiMediaStream object.\n", "DirectMedia",
+               MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-	//-------------------------------------------------------------------------
-	// CREATE FILTER GRAPH FOR FILE TYPE
-	//-------------------------------------------------------------------------
-	if (FAILED(CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC_SERVER,
-			IID_IGraphBuilder, (void **)&gGB)))
-		{
-		MessageBox(GetDesktopWindow(), "Couldn't create a CLSID_FilterGraph object.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
+  // We want video
+  if (FAILED(amStream->AddMediaStream(gDDraw, &MSPID_PrimaryVideo, 0, NULL))) {
+    amStream->Release();
+    Close();
+    MessageBox(GetDesktopWindow(), "Couldn't add primary video stream.\n",
+               "DirectMedia", MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-	//-------------------------------------------------------------------------
-	// CREATE MULTIMEDIA STREAM
-	//-------------------------------------------------------------------------
-	if (FAILED(CoCreateInstance(CLSID_AMMultiMediaStream, NULL,
-			CLSCTX_INPROC_SERVER, IID_IAMMultiMediaStream, (void**)&amStream)))
-		{
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't create a CLSID_MultiMediaStream object.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
+  // We want audio
+  if (FAILED(amStream->AddMediaStream(NULL, &MSPID_PrimaryAudio,
+                                      AMMSF_ADDDEFAULTRENDERER, NULL))) {
+    amStream->Release();
+    Close();
+    MessageBox(GetDesktopWindow(), "Couldn't add primary audio stream.\n",
+               "DirectMedia", MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-	// Initialize stream for reading
-	if (FAILED(amStream->Initialize(STREAMTYPE_READ, 0, gGB)))
-		{
-		amStream->Release();
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't initialize MultiMediaStream object.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
+  gMMStream = amStream;
 
-	// We want video
-	if (FAILED(amStream->AddMediaStream(gDDraw, &MSPID_PrimaryVideo, 0, NULL)))
-		{
-		amStream->Release();
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't add primary video stream.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
+  // Convert the filename
+  MultiByteToWideChar(CP_ACP, 0, name, -1, wFile,
+                      sizeof(wFile) / sizeof(wFile[0]));
 
-	// We want audio
-	if (FAILED(amStream->AddMediaStream(NULL, &MSPID_PrimaryAudio,
-			AMMSF_ADDDEFAULTRENDERER, NULL)))
-		{
-		amStream->Release();
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't add primary audio stream.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
+  if (FAILED(gGB->RenderFile(wFile, NULL))) {
+    Close();
+    MessageBox(GetDesktopWindow(), "Couldn't build filter graph.\n",
+               "DirectMedia", MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-	gMMStream = amStream;
+  // Get video stream
+  if (FAILED(gMMStream->GetMediaStream(MSPID_PrimaryVideo, &gVideoStream))) {
+    Close();
+    MessageBox(GetDesktopWindow(), "Couldn't obtain video stream.\n",
+               "DirectMedia", MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-	// Convert the filename
-	MultiByteToWideChar(CP_ACP,0,name,-1,wFile,sizeof(wFile)/sizeof(wFile[0]));
+  if (FAILED(gVideoStream->QueryInterface(IID_IDirectDrawMediaStream,
+                                          (void**)&gDDStream))) {
+    Close();
+    MessageBox(GetDesktopWindow(), "Couldn't obtain video stream interface.\n",
+               "DirectMedia", MB_ICONSTOP | MB_OK);
+    return false;
+  }
 
-	if (FAILED(gGB->RenderFile(wFile, NULL)))
-		{
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't build filter graph.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
-
-	// Get video stream
- 	if (FAILED(gMMStream->GetMediaStream(MSPID_PrimaryVideo, &gVideoStream)))
-		{
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't obtain video stream.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
-
- 	if (FAILED(gVideoStream->QueryInterface(IID_IDirectDrawMediaStream,
-			(void **)&gDDStream)))
-		{
-		Close();
-		MessageBox(GetDesktopWindow(), "Couldn't obtain video stream interface.\n",
-				"DirectMedia", MB_ICONSTOP|MB_OK);
-		return false;
-		}
-
- 	ddsd.dwSize = sizeof(ddsd);
- 	gDDStream->GetFormat(&ddsd, NULL, NULL, NULL);
-	mHeight = ddsd.dwHeight;
-	mWidth = ddsd.dwWidth;
-	return true;
-	}
-
+  ddsd.dwSize = sizeof(ddsd);
+  gDDStream->GetFormat(&ddsd, NULL, NULL, NULL);
+  mHeight = ddsd.dwHeight;
+  mWidth = ddsd.dwWidth;
+  return true;
+}
 
 /****************************************************************************
-*
-* NAME
-*
-* DESCRIPTION
-*
-* INPUTS
-*
-* RESULT
-*
-****************************************************************************/
+ *
+ * NAME
+ *
+ * DESCRIPTION
+ *
+ * INPUTS
+ *
+ * RESULT
+ *
+ ****************************************************************************/
 
-void Movie::Close(void)
-	{
-	// Stop currently playing movie
-	if ((gMMStream != NULL) && (mPlaying == true))
-		{
-		gMMStream->SetState(STREAMSTATE_STOP);
-		mPlaying = false;
-		}
+void Movie::Close(void) {
+  // Stop currently playing movie
+  if ((gMMStream != NULL) && (mPlaying == true)) {
+    gMMStream->SetState(STREAMSTATE_STOP);
+    mPlaying = false;
+  }
 
-	// Release video sample
-	if (gDDSample)
-		{
-		gDDSample->Release();
-		gDDSample = NULL;
-		}
+  // Release video sample
+  if (gDDSample) {
+    gDDSample->Release();
+    gDDSample = NULL;
+  }
 
-	// Release DirectDrawMediaStream interface
-	if (gDDStream)
-		{
-		gDDStream->Release();
-		gDDStream = NULL;
-		}
+  // Release DirectDrawMediaStream interface
+  if (gDDStream) {
+    gDDStream->Release();
+    gDDStream = NULL;
+  }
 
-	// Release video stream
-	if (gVideoStream)
-		{
-		gVideoStream->Release();
-		gVideoStream = NULL;
-		}
+  // Release video stream
+  if (gVideoStream) {
+    gVideoStream->Release();
+    gVideoStream = NULL;
+  }
 
-	// Release multimedia stream
-	if (gMMStream)
-		{
-		gMMStream->Release();
-		gMMStream = NULL;
-		}
+  // Release multimedia stream
+  if (gMMStream) {
+    gMMStream->Release();
+    gMMStream = NULL;
+  }
 
-	// Release filter graph
-	if (gGB)
-		{
-		gGB->Release();
-		gGB = NULL;
-		}
-	}
-
+  // Release filter graph
+  if (gGB) {
+    gGB->Release();
+    gGB = NULL;
+  }
+}
 
 /****************************************************************************
-*
-* NAME
-*     Play
-*
-* DESCRIPTION
-*
-* INPUTS
-*
-* RESULT
-*
-****************************************************************************/
+ *
+ * NAME
+ *     Play
+ *
+ * DESCRIPTION
+ *
+ * INPUTS
+ *
+ * RESULT
+ *
+ ****************************************************************************/
 
-bool Movie::Play(IDirectDrawSurface* surface)
-	{
-	RECT rect;
+bool Movie::Play(IDirectDrawSurface* surface) {
+  RECT rect;
 
-	rect.top = rect.left = 0;
-	rect.bottom = mHeight;
-	rect.right = mWidth;
+  rect.top = rect.left = 0;
+  rect.bottom = mHeight;
+  rect.right = mWidth;
 
- 	if (FAILED(gDDStream->CreateSample(surface, &rect, 0, &gDDSample)))
-		{
-		return false;
-		}
+  if (FAILED(gDDStream->CreateSample(surface, &rect, 0, &gDDSample))) {
+    return false;
+  }
 
-	gMMStream->SetState(STREAMSTATE_RUN);
-	mPlaying = true;
-	return true;
-	}
-
+  gMMStream->SetState(STREAMSTATE_RUN);
+  mPlaying = true;
+  return true;
+}
 
 /****************************************************************************
-*
-* NAME
-*     Update
-*
-* DESCRIPTION
-*
-* INPUTS
-*
-* RESULT
-*
-****************************************************************************/
+ *
+ * NAME
+ *     Update
+ *
+ * DESCRIPTION
+ *
+ * INPUTS
+ *
+ * RESULT
+ *
+ ****************************************************************************/
 
-bool Movie::Update(void)
-	{
-	// Update each frame
-	if (gDDSample->Update(0, NULL, NULL, 0) != S_OK)
-		{
-		gMMStream->SetState(STREAMSTATE_STOP);		
-		return false;
-		}
+bool Movie::Update(void) {
+  // Update each frame
+  if (gDDSample->Update(0, NULL, NULL, 0) != S_OK) {
+    gMMStream->SetState(STREAMSTATE_STOP);
+    return false;
+  }
 
-	return true;
-	}
+  return true;
+}

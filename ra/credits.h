@@ -18,22 +18,24 @@
 
 /* $Header: /CounterStrike/CREDITS.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               *** 
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CREDIT.H                                                     *
+ *                    File Name : CREDIT.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 19, 1994                                               *
+ *                   Start Date : April 19, 1994 *
  *                                                                                             *
- *                  Last Update : April 19, 1994   [JLB]                                       *
+ *                  Last Update : April 19, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CREDITS_H
 #define CREDITS_H
@@ -42,32 +44,31 @@
 **	The animating credit counter display is controlled by this class.
 */
 class CreditClass {
-	public:
-		long Credits;		// Value of credits trying to update display to.
+ public:
+  long Credits;  // Value of credits trying to update display to.
 
-		/*---------------------------------------------------------------------
-		**	Constructors, Destructors, and overloaded operators.
-		*/
-		CreditClass(void);
-		CreditClass(NoInitClass const & ) {};
+  /*---------------------------------------------------------------------
+  **	Constructors, Destructors, and overloaded operators.
+  */
+  CreditClass(void);
+  CreditClass(NoInitClass const&){};
 
-		/*---------------------------------------------------------------------
-		**	Member function prototypes.
-		*/
-		void Update(bool forced=false, bool redraw=false);
+  /*---------------------------------------------------------------------
+  **	Member function prototypes.
+  */
+  void Update(bool forced = false, bool redraw = false);
 
-		void Graphic_Logic(bool forced=false);
-		void AI(bool forced=false);
+  void Graphic_Logic(bool forced = false);
+  void AI(bool forced = false);
 
-		long	Current;		// Credit value currently displayed.
+  long Current;  // Credit value currently displayed.
 
-		unsigned IsToRedraw:1;
-		unsigned IsUp:1;
-		unsigned IsAudible:1;
+  unsigned IsToRedraw : 1;
+  unsigned IsUp : 1;
+  unsigned IsAudible : 1;
 
-	private:
-		int	Countdown;	// Delay between ticks.
+ private:
+  int Countdown;  // Delay between ticks.
 };
 
 #endif
-

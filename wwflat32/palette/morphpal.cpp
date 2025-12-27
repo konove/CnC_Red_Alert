@@ -46,8 +46,7 @@
 /*
 ********************************* Constants *********************************
 */
-#define SCALE(a,b,c) (((((LONG)(a)<<8) / (LONG)(b) ) * (ULONG)(c)) >>8)
-
+#define SCALE(a, b, c) (((((LONG)(a) << 8) / (LONG)(b)) * (ULONG)(c)) >> 8)
 
 /*
 ********************************** Globals **********************************
@@ -57,118 +56,117 @@
 ******************************** Prototypes *********************************
 */
 
-PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette, ULONG current_time, ULONG delay);
-
+PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette,
+                                      ULONG current_time, ULONG delay);
 
 /***************************************************************************
  * Morph_Palette -- morphs a palette from source to destination            *
  *                                                                         *
  * INPUT:                                                                  *
- *		VOID *src_pal	- starting palette												*
- *		VOID *dst_pal	- ending palette													*
- *		UWORD delay	- time delay in 60ths of a second							*
- *		VOID *callback	- user-defined callback, NULL if none						*
+ *		VOID *src_pal	- starting palette
+ ** VOID *dst_pal	- ending palette
+ ** UWORD delay	- time delay in 60ths of a second
+ ** VOID *callback	- user-defined callback, NULL if none
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		none.																						*
+ *		none.
+ **
  *                                                                         *
  * WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/02/1994 BR : Created.                                              *
  *=========================================================================*/
-VOID cdecl Morph_Palette (VOID *src_pal, VOID *dst_pal, UWORD delay,
-	VOID (*callback) (VOID) )
-{
-	WORD	result;
-	ULONG	pal_start = TickCount.Time();
-	VOID   (*cb_ptr) ( VOID ) ;	// callback function pointer
+VOID cdecl Morph_Palette(VOID *src_pal, VOID *dst_pal, UWORD delay,
+                         VOID (*callback)(VOID)) {
+  WORD result;
+  ULONG pal_start = TickCount.Time();
+  VOID (*cb_ptr)(VOID);  // callback function pointer
 
-//	(VOID *)cb_ptr = callback;
-	cb_ptr = callback ;
+  //	(VOID *)cb_ptr = callback;
+  cb_ptr = callback;
 
-	/*===================================================================*/
-	/* Make sure that we don't go too fast but also make sure we keep		*/
-	/*		processing the morph palette if we have one.							*/
-	/*===================================================================*/
-	while (1) {
-		if (src_pal && dst_pal) {
-			result = Palette_To_Palette (src_pal, dst_pal, 
-				(TickCount.Time() - pal_start), (ULONG)delay);
-			if (!result)
-				break;
+  /*===================================================================*/
+  /* Make sure that we don't go too fast but also make sure we keep
+   */
+  /*		processing the morph palette if we have one.
+   */
+  /*===================================================================*/
+  while (1) {
+    if (src_pal && dst_pal) {
+      result = Palette_To_Palette(src_pal, dst_pal,
+                                  (TickCount.Time() - pal_start), (ULONG)delay);
+      if (!result) break;
 
-			if (callback) {
-				(*cb_ptr)();
-			}
-		}
-	}
+      if (callback) {
+        (*cb_ptr)();
+      }
+    }
+  }
 
-	return;
+  return;
 
-}	/* end of Morph_Palette */
-
+} /* end of Morph_Palette */
 
 /***************************************************************************
  * Palette_To_Palette -- morph src palette to a dst palette                *
  *                                                                         *
- * Creates & sets a palette that's in-between 'src_palette' & 					*
- * 'dst_palette'; how close it is to dst_palette is based on how close 		*
- * 'current_time' is to 'delay'.  'current_time' & 'delay' are based on		*
- * 0 being the start time.																	*
+ * Creates & sets a palette that's in-between 'src_palette' &
+ ** 'dst_palette'; how close it is to dst_palette is based on how close
+ ** 'current_time' is to 'delay'.  'current_time' & 'delay' are based on
+ ** 0 being the start time.
+ **
  *                                                                         *
  * INPUT:               VOID *src_palette =  palette we want to morph from *
  *                      VOID *dst_palette =  palette we want to morph to   *
- *                      LONG current_time =  time we started morph pal		*
- *                      LONG delay         = time we want the morph to take*
+ *                      LONG current_time =  time we started morph pal * LONG
+ *delay         = time we want the morph to take*
  *                                                                         *
- * OUTPUT:					WORD if the time had elapsed and no chages were		*
- *									  necessary this routine returns FALSE				*
- *									  otherwise it will always return TRUE (this		*
- *									  was necessary to detect the end of the ice		*
- *									  effect.													*
+ * OUTPUT:					WORD if the time had elapsed and
+ *no chages were		* necessary this routine returns FALSE
+ ** otherwise it will always return TRUE (this		* was necessary to
+ *detect the end of the ice		* effect.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   05/24/1993  MC : Created.                                             *
  *=========================================================================*/
-PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette, 
-	ULONG current_time, ULONG delay)
-{
-	BYTE	colour;
-	BYTE	diff;
-	WORD	chgval;
-	WORD	lp;
-	WORD	change;
-	static BYTE  palette[768];
+PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette,
+                                      ULONG current_time, ULONG delay) {
+  BYTE colour;
+  BYTE diff;
+  WORD chgval;
+  WORD lp;
+  WORD change;
+  static BYTE palette[768];
 
-	/*======================================================================*/
-	/* Loop through each RGB value attempting to change it to the correct	*/
-	/*		color.																				*/
-	/*======================================================================*/
-	for (change = lp = 0; lp < 768; lp++) {
-		if (current_time < delay ) {
-			diff		= ( ( ((BYTE *)dst_palette)[lp] & 63) - 
-				( ((BYTE *)src_palette)[lp] & 63) );
-			if (diff) 
-				change = TRUE;
-			chgval	= SCALE(diff, delay, current_time);
-			colour 	= ( ((BYTE *)src_palette)[lp] & 63) + chgval;
-		} 
-		else {
-			colour = ((BYTE *)dst_palette)[lp] & 63;
-			change = FALSE;
-		}
-		palette[lp] = colour;
-	}
-	/*======================================================================*/
-	/* Set the palette to the color that we created.								*/
-	/*======================================================================*/
-	Set_Palette(palette);
-	return(change);
+  /*======================================================================*/
+  /* Loop through each RGB value attempting to change it to the correct	*/
+  /*		color.
+   */
+  /*======================================================================*/
+  for (change = lp = 0; lp < 768; lp++) {
+    if (current_time < delay) {
+      diff =
+          ((((BYTE *)dst_palette)[lp] & 63) - (((BYTE *)src_palette)[lp] & 63));
+      if (diff) change = TRUE;
+      chgval = SCALE(diff, delay, current_time);
+      colour = (((BYTE *)src_palette)[lp] & 63) + chgval;
+    } else {
+      colour = ((BYTE *)dst_palette)[lp] & 63;
+      change = FALSE;
+    }
+    palette[lp] = colour;
+  }
+  /*======================================================================*/
+  /* Set the palette to the color that we created.
+   */
+  /*======================================================================*/
+  Set_Palette(palette);
+  return (change);
 
-}	/* end of Palette_To_Palette */
-
+} /* end of Palette_To_Palette */
 
 /*************************** End of morphpal.cpp ***************************/
-
 

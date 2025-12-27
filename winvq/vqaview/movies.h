@@ -32,43 +32,40 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *   Choose_VQA - Brings up choice of VQA files.									  *
- *   Draw_To_Video_Callback -- callback after draw VQA frame to video      *
+ *   Choose_VQA - Brings up choice of VQA files.
+ ** Draw_To_Video_Callback -- callback after draw VQA frame to video      *
  *   Draw_To_Buffer_Callback -- callback after draw VQA frame to buffer    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
 
 //==========================================================================
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-extern int Initialize_Movie_System( void );
-extern void Free_Movie_System( void );
-extern void Choose_Movie( WindowHandle window_handle );
-extern long Draw_To_Video_Callback( unsigned char *buffer, long frame_number );
-extern long Draw_To_Buffer_Callback( unsigned char *buffer, long frame_number );
-extern void Create_Palette_Interpolation_Table( void );
+extern int Initialize_Movie_System(void);
+extern void Free_Movie_System(void);
+extern void Choose_Movie(WindowHandle window_handle);
+extern long Draw_To_Video_Callback(unsigned char *buffer, long frame_number);
+extern long Draw_To_Buffer_Callback(unsigned char *buffer, long frame_number);
+extern void Create_Palette_Interpolation_Table(void);
 
 //==========================================================================
 // PRIVATE DEFINES
 //==========================================================================
 
-#define DRAW_TO_VIDEO		FALSE
-
+#define DRAW_TO_VIDEO FALSE
 
 //==========================================================================
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-#if( DRAW_TO_VIDEO )
+#if (DRAW_TO_VIDEO)
 
-#define MOVIE_WIDTH	640
-#define MOVIE_HEIGHT	480
+#define MOVIE_WIDTH 640
+#define MOVIE_HEIGHT 480
 
 #else
 
-#define MOVIE_WIDTH	320
-#define MOVIE_HEIGHT	200
+#define MOVIE_WIDTH 320
+#define MOVIE_HEIGHT 200
 
 #endif
-

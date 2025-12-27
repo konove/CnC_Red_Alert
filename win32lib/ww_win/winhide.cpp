@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: g:/library/source/rcs/./winhide.c 1.10 1994/05/20 15:35:50 joe_bostic Exp $ */
+/* $Header: g:/library/source/rcs/./winhide.c 1.10 1994/05/20 15:35:50
+ * joe_bostic Exp $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
@@ -37,12 +38,11 @@
  *   Window_Show_Mouse -- Shows the mouse after Window_Hide_Mouse hides it.*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include	<wwstd.h>
-#include	<keyboard.h>
+#include <wwstd.h>
+#include <keyboard.h>
 #include "ww_win.h"
 
-
-#if(IBM)
+#if (IBM)
 /***************************************************************************
  * WINDOW_HIDE_MOUSE -- Hides the mouse when it enters a window.           *
  *                                                                         *
@@ -60,17 +60,15 @@
  * HISTORY:                                                                *
  *   04/26/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Window_Hide_Mouse(int window)
-{
-	int	x,y,w,h;
+void Window_Hide_Mouse(int window) {
+  int x, y, w, h;
 
-	x = WindowList[window][WINDOWX]<<3;
-	y = WindowList[window][WINDOWY];
-	w = WindowList[window][WINDOWWIDTH]<<3;
-	h = WindowList[window][WINDOWHEIGHT];
-//	Conditional_Hide_Mouse(x,y,x+w-1,y+h-1);
+  x = WindowList[window][WINDOWX] << 3;
+  y = WindowList[window][WINDOWY];
+  w = WindowList[window][WINDOWWIDTH] << 3;
+  h = WindowList[window][WINDOWHEIGHT];
+  //	Conditional_Hide_Mouse(x,y,x+w-1,y+h-1);
 }
-
 
 /***************************************************************************
  * WINDOW_SHOW_MOUSE -- Shows the mouse after Window_Hide_Mouse hides it.  *
@@ -87,11 +85,8 @@ void Window_Hide_Mouse(int window)
  * HISTORY:                                                                *
  *   05/22/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Window_Show_Mouse(void)
-{
-//	Conditional_Show_Mouse();
+void Window_Show_Mouse(void) {
+  //	Conditional_Show_Mouse();
 }
 #endif
-
-
 

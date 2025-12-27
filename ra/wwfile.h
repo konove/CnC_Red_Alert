@@ -18,35 +18,37 @@
 
 /* $Header: /CounterStrike/WWFILE.H 1     3/03/97 10:26a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Westwood Library                                             *
+ *                 Project Name : Westwood Library *
  *                                                                                             *
- *                    File Name : WWFILE.H                                                     *
+ *                    File Name : WWFILE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : August 8, 1994                                               *
+ *                   Start Date : August 8, 1994 *
  *                                                                                             *
- *                  Last Update : August 8, 1994   [JLB]                                       *
+ *                  Last Update : August 8, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef WWFILE_Hx
 #define WWFILE_Hx
 
-#define YEAR(dt)	(((dt & 0xFE000000) >> (9 + 16)) + 1980)
-#define MONTH(dt)	 ((dt & 0x01E00000) >> (5 + 16))
-#define DAY(dt)	 ((dt & 0x001F0000) >> (0 + 16))
-#define HOUR(dt)	 ((dt & 0x0000F800) >> 11)
+#define YEAR(dt) (((dt & 0xFE000000) >> (9 + 16)) + 1980)
+#define MONTH(dt) ((dt & 0x01E00000) >> (5 + 16))
+#define DAY(dt) ((dt & 0x001F0000) >> (0 + 16))
+#define HOUR(dt) ((dt & 0x0000F800) >> 11)
 #define MINUTE(dt) ((dt & 0x000007E0) >> 5)
 #define SECOND(dt) ((dt & 0x0000001F) << 1)
 
-#include	<stdio.h>
-#include	<stddef.h>
+#include <stdio.h>
+#include <stddef.h>
 
 #ifndef READ
 #define READ 1
@@ -55,29 +57,28 @@
 #define WRITE 2
 #endif
 
+class FileClass {
+ public:
+  virtual ~FileClass(void){};
+  virtual char const *File_Name(void) const = 0;
+  virtual char const *Set_Name(char const *filename) = 0;
+  virtual int Create(void) = 0;
+  virtual int Delete(void) = 0;
+  virtual int Is_Available(int forced = false) = 0;
+  virtual int Is_Open(void) const = 0;
+  virtual int Open(char const *filename, int rights = READ) = 0;
+  virtual int Open(int rights = READ) = 0;
+  virtual long Read(void *buffer, long size) = 0;
+  virtual long Seek(long pos, int dir = SEEK_CUR) = 0;
+  virtual long Size(void) = 0;
+  virtual long Write(void const *buffer, long size) = 0;
+  virtual void Close(void) = 0;
+  virtual unsigned long Get_Date_Time(void) { return (0); }
+  virtual bool Set_Date_Time(unsigned long) { return (false); }
+  virtual void Error(int error, int canretry = false,
+                     char const *filename = NULL) = 0;
 
-class FileClass
-{
-	public:
-		virtual ~FileClass(void) {};
-		virtual char const * File_Name(void) const = 0;
-		virtual char const * Set_Name(char const *filename) = 0;
-		virtual int Create(void) = 0;
-		virtual int Delete(void) = 0;
-		virtual int Is_Available(int forced=false) = 0;
-		virtual int Is_Open(void) const = 0;
-		virtual int Open(char const *filename, int rights=READ) = 0;
-		virtual int Open(int rights=READ) = 0;
-		virtual long Read(void *buffer, long size) = 0;
-		virtual long Seek(long pos, int dir=SEEK_CUR) = 0;
-		virtual long Size(void) = 0;
-		virtual long Write(void const *buffer, long size) = 0;
-		virtual void Close(void) = 0;
-		virtual unsigned long Get_Date_Time(void) {return(0);}
-		virtual bool Set_Date_Time(unsigned long ) {return(false);}
-		virtual void Error(int error, int canretry = false, char const * filename=NULL) = 0;
-
-		operator char const * () {return File_Name();};
+  operator char const *() { return File_Name(); };
 };
 
 #endif

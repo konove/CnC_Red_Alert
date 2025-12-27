@@ -16,36 +16,31 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 #include <windows.h>
 
 extern "C" {
-	BOOL FAR PASCAL Thipx_ThunkConnect16_(LPSTR pszDll16, LPSTR pszDll32, WORD  hInst, DWORD dwReason);
+BOOL FAR PASCAL Thipx_ThunkConnect16_(LPSTR pszDll16, LPSTR pszDll32,
+                                      WORD hInst, DWORD dwReason);
 }
 
-int CALLBACK LibMain (HANDLE, WORD, WORD, LPSTR)
-{
-	return (1);
-}
-
+int CALLBACK LibMain(HANDLE, WORD, WORD, LPSTR) { return (1); }
 
 extern "C" {
-	BOOL FAR PASCAL DllEntryPoint_ (DWORD dwReason, WORD hInst, WORD, WORD, DWORD, WORD);
+BOOL FAR PASCAL DllEntryPoint_(DWORD dwReason, WORD hInst, WORD, WORD, DWORD,
+                               WORD);
 }
 
+BOOL FAR PASCAL DllEntryPoint_(DWORD dwReason, WORD hInst, WORD, WORD, DWORD,
+                               WORD) {
+  OutputDebugString(
+      "In 16bit DLL entry point. Calling Thipx_ThunkConnect16\r\n");
 
-BOOL FAR PASCAL DllEntryPoint_ (DWORD dwReason, WORD hInst, WORD, WORD, DWORD, WORD)
-{
-	OutputDebugString("In 16bit DLL entry point. Calling Thipx_ThunkConnect16\r\n");
+  if (!Thipx_ThunkConnect16_("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)) {
+    OutputDebugString(
+        "In 16bit DllEntryPoint: thkThunkConnect16 ret FALSE\r\n");
+    return FALSE;
+  }
 
-	if (!Thipx_ThunkConnect16_("THIPX16.DLL", "THIPX32.DLL", hInst, dwReason)){
-        OutputDebugString("In 16bit DllEntryPoint: thkThunkConnect16 ret FALSE\r\n");
-        return FALSE;
-    }
-
-    OutputDebugString("In 16bit DllEntryPoint: thkThunkConnect16 ret TRUE\r\n");
-    return TRUE;
+  OutputDebugString("In 16bit DllEntryPoint: thkThunkConnect16 ret TRUE\r\n");
+  return TRUE;
 }
-
-

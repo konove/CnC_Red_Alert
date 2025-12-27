@@ -19,24 +19,24 @@
 #ifndef VQMCOMP_H
 #define VQMCOMP_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     compress.h
-*
-* DESCRIPTION
-*     Compression definitions. (32-Bit protected mode)
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     January 26, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     compress.h
+ *
+ * DESCRIPTION
+ *     Compression definitions. (32-Bit protected mode)
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     January 26, 1995
+ *
+ ****************************************************************************/
 
 /* Prototypes */
 
@@ -45,9 +45,9 @@ extern "C" {
 #endif
 
 unsigned long cdecl LCW_Compress(char const *source, char *dest,
-		unsigned long length);
+                                 unsigned long length);
 unsigned long cdecl LCW_Uncompress(char const *source, char *dest,
-		unsigned long length);
+                                   unsigned long length);
 long AudioZap(void *source, void *dest, long size);
 long cdecl AudioUnzap(void *source, void *dest, long);
 
@@ -56,4 +56,3 @@ long cdecl AudioUnzap(void *source, void *dest, long);
 #endif
 
 #endif /* VQMCOMP_H */
-

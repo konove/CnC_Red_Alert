@@ -1,10 +1,9 @@
 #pragma once
 
-enum SocketEvent
-{
-    SOCKEV_READ,
-    SOCKEV_WRITE,
-    SOCKEV_ERROR,
+enum SocketEvent {
+  SOCKEV_READ,
+  SOCKEV_WRITE,
+  SOCKEV_ERROR,
 };
 
 typedef void (*SocketCallback)(int, SocketEvent, void *);

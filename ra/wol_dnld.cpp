@@ -26,238 +26,239 @@
 #include "WolStrng.h"
 
 //***********************************************************************************************
-bool WOL_Download_Dialog( IDownload* pDownload, RADownloadEventSink* pDownloadSink, const char* szTitle )
-{
-	//	This dialog is presented for each file that is to be downloaded during a WOLAPI patch.
+bool WOL_Download_Dialog(IDownload* pDownload,
+                         RADownloadEventSink* pDownloadSink,
+                         const char* szTitle) {
+  //	This dialog is presented for each file that is to be downloaded during a
+  //WOLAPI patch.
 
-	bool bReturn = true;
-	DWORD dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
+  bool bReturn = true;
+  DWORD dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
 
-	/*
-	** Dialog & button dimensions
-	*/
-	int d_dialog_w = 200*RESFACTOR;										// dialog width
-	int d_dialog_h = 90*RESFACTOR;										// dialog height
-	int d_dialog_x = ((320*RESFACTOR - d_dialog_w) / 2);				// dialog x-coord
-	int d_dialog_y = ((200*RESFACTOR - d_dialog_h) / 2);				// centered y-coord
-	int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);		// center x-coord
+  /*
+  ** Dialog & button dimensions
+  */
+  int d_dialog_w = 200 * RESFACTOR;                       // dialog width
+  int d_dialog_h = 90 * RESFACTOR;                        // dialog height
+  int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
+  int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
+  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
-	int d_margin = 34;
-	int d_txt6_h = 15;
+  int d_margin = 34;
+  int d_txt6_h = 15;
 
 #if (GERMAN | FRENCH)
-	int d_cancel_w = 50*RESFACTOR;
+  int d_cancel_w = 50 * RESFACTOR;
 #else
-	int d_cancel_w = 40*RESFACTOR;
+  int d_cancel_w = 40 * RESFACTOR;
 #endif
-	int d_cancel_h = 9*RESFACTOR;
-	int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
-	int d_cancel_y = d_dialog_y + d_dialog_h - 20*RESFACTOR;
+  int d_cancel_h = 9 * RESFACTOR;
+  int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
+  int d_cancel_y = d_dialog_y + d_dialog_h - 20 * RESFACTOR;
 
-	int d_progress_w = 100*RESFACTOR;
-	int d_progress_h = 10*RESFACTOR;
-	int d_progress_x = (SeenBuff.Get_Width()/2) - d_progress_w/2;
-	int d_progress_y = d_dialog_y + 45*RESFACTOR;
+  int d_progress_w = 100 * RESFACTOR;
+  int d_progress_h = 10 * RESFACTOR;
+  int d_progress_x = (SeenBuff.Get_Width() / 2) - d_progress_w / 2;
+  int d_progress_y = d_dialog_y + 45 * RESFACTOR;
 
-//	int	width;
-//	int	height;
-//	char* info_string = (char*)szTitle;
+  //	int	width;
+  //	int	height;
+  //	char* info_string = (char*)szTitle;
 
-	Fancy_Text_Print( TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-						TBLACK, TPF_CENTER|TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW );
+  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
+                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-//	Format_Window_String( info_string, SeenBuff.Get_Height(), width, height );
+  //	Format_Window_String( info_string, SeenBuff.Get_Height(), width, height
+  //);
 
+  /*
+  ** Button Enumerations
+  */
+  enum { BUTTON_CANCEL = 100, BUTTON_PROGRESS };
 
-	/*
-	** Button Enumerations
-	*/
-	enum {
-		BUTTON_CANCEL = 100,
-		BUTTON_PROGRESS
-	};
-
-	/*
-	** Buttons
-	*/
-	TextButtonClass cancelbtn( BUTTON_CANCEL, TXT_CANCEL, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+  /*
+  ** Buttons
+  */
+  TextButtonClass cancelbtn(
+      BUTTON_CANCEL, TXT_CANCEL,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #if (GERMAN | FRENCH)
-									d_cancel_x, d_cancel_y );
+      d_cancel_x, d_cancel_y);
 #else
-									d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h );
+      d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
 #endif
 
-	GaugeClass progress_meter( BUTTON_PROGRESS, d_progress_x, d_progress_y, d_progress_w, d_progress_h );
-	progress_meter.Use_Thumb( 0 );
+  GaugeClass progress_meter(BUTTON_PROGRESS, d_progress_x, d_progress_y,
+                            d_progress_w, d_progress_h);
+  progress_meter.Use_Thumb(0);
 
-	StaticButtonClass StatTitle( 0, szTitle, TPF_CENTER|TPF_TEXT, d_dialog_x + d_margin, d_dialog_y + 28, d_dialog_w - 2 * d_margin, d_txt6_h );
-	StaticButtonClass StatStatus( 0, "", TPF_CENTER|TPF_TEXT, d_dialog_x + d_margin, d_dialog_y + 49, d_dialog_w - 2 * d_margin, d_txt6_h );
-	StaticButtonClass StatBytes( 0, "", TPF_CENTER|TPF_TEXT, d_dialog_x + d_margin, d_dialog_y + 71, d_dialog_w - 2 * d_margin, d_txt6_h );
-	StaticButtonClass StatTime( 0, "", TPF_CENTER|TPF_TEXT, d_dialog_x + d_margin, d_dialog_y + 117, d_dialog_w - 2 * d_margin, d_txt6_h );
+  StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | TPF_TEXT,
+                              d_dialog_x + d_margin, d_dialog_y + 28,
+                              d_dialog_w - 2 * d_margin, d_txt6_h);
+  StaticButtonClass StatStatus(0, "", TPF_CENTER | TPF_TEXT,
+                               d_dialog_x + d_margin, d_dialog_y + 49,
+                               d_dialog_w - 2 * d_margin, d_txt6_h);
+  StaticButtonClass StatBytes(0, "", TPF_CENTER | TPF_TEXT,
+                              d_dialog_x + d_margin, d_dialog_y + 71,
+                              d_dialog_w - 2 * d_margin, d_txt6_h);
+  StaticButtonClass StatTime(0, "", TPF_CENTER | TPF_TEXT,
+                             d_dialog_x + d_margin, d_dialog_y + 117,
+                             d_dialog_w - 2 * d_margin, d_txt6_h);
 
-	typedef enum {
-		REDRAW_NONE = 0,
-		REDRAW_PROGRESS,
-		REDRAW_BUTTONS,
-		REDRAW_BACKGROUND,
-		REDRAW_ALL = REDRAW_BACKGROUND
-	} RedrawType;
+  typedef enum {
+    REDRAW_NONE = 0,
+    REDRAW_PROGRESS,
+    REDRAW_BUTTONS,
+    REDRAW_BACKGROUND,
+    REDRAW_ALL = REDRAW_BACKGROUND
+  } RedrawType;
 
+  bool process = true;
+  RedrawType display = REDRAW_ALL;  // redraw level
+  KeyNumType input;
+  GadgetClass* commands;  // button list
 
-	bool 		process = true;
-	RedrawType 	display = REDRAW_ALL;		// redraw level
-	KeyNumType 	input;
-	GadgetClass* commands;					// button list
+  commands = &cancelbtn;
+  progress_meter.Add_Tail(*commands);
+  StatTitle.Add_Tail(*commands);
+  StatBytes.Add_Tail(*commands);
+  StatTime.Add_Tail(*commands);
+  StatStatus.Add_Tail(*commands);
 
-	commands = &cancelbtn;
-	progress_meter.Add_Tail(*commands);
-	StatTitle.Add_Tail(*commands);
-	StatBytes.Add_Tail(*commands);
-	StatTime.Add_Tail(*commands);
-	StatStatus.Add_Tail(*commands);
+  progress_meter.Set_Maximum(100);  // Max is 100%
+  progress_meter.Set_Value(0);      // Current is 0%
 
-	progress_meter.Set_Maximum(100);		// Max is 100%
-	progress_meter.Set_Value(0);			// Current is 0%
-
-	do	{
+  do {
 #ifdef WIN32
-		/*
-		** If we have just received input focus again after running in the background then
-		** we need to redraw.
-		*/
-		if (AllSurfaces.SurfacesRestored) {
-			AllSurfaces.SurfacesRestored=FALSE;
-			display = REDRAW_ALL;
-		}
+    /*
+    ** If we have just received input focus again after running in the
+    *background then
+    ** we need to redraw.
+    */
+    if (AllSurfaces.SurfacesRestored) {
+      AllSurfaces.SurfacesRestored = FALSE;
+      display = REDRAW_ALL;
+    }
 #endif
 
-		if (display){
+    if (display) {
+      if (display >= REDRAW_BACKGROUND) {
+        Hide_Mouse();
+        /*
+        ** Redraw backgound & dialog box
+        */
+        Load_Title_Page(true);
+        Set_Palette(CCPalette);
 
-			if (display >= REDRAW_BACKGROUND){
+        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-				Hide_Mouse();
-				/*
-				** Redraw backgound & dialog box
-				*/
-				Load_Title_Page(true);
-				Set_Palette(CCPalette);
+        /*
+        ** Dialog & Field labels
+        */
+        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-				Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        //				Fancy_Text_Print(info_string,
+        //d_dialog_cx-width/2, d_dialog_y + 25*RESFACTOR,
+        //									GadgetClass::Get_Color_Scheme(),
+        //TBLACK, 									TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-				/*
-				** Dialog & Field labels
-				*/
-				Draw_Caption (TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Show_Mouse();
+      }
 
-//				Fancy_Text_Print(info_string, d_dialog_cx-width/2, d_dialog_y + 25*RESFACTOR,
-//									GadgetClass::Get_Color_Scheme(), TBLACK,
-//									TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      if (display >= REDRAW_BUTTONS) {
+        commands->Draw_All();
+      }
 
-				Show_Mouse();
+      if (display >= REDRAW_PROGRESS) {
+        progress_meter.Draw_Me(true);
+      }
 
-			}
+      display = REDRAW_NONE;
+    }
 
-			if (display >= REDRAW_BUTTONS){
+    if (process) {
+      input = cancelbtn.Input();
+      switch (input) {
+        /*
+        ** Cancel. Just return to the main menu
+        */
+        case (KN_ESC):
+        case (BUTTON_CANCEL | KN_BUTTON):
+          pDownload->Abort();
+          process = false;
+          bReturn = false;
+          break;
+      }
+    }
 
-				commands->Draw_All();
+    if (::timeGetTime() > dwTimeNextPump) {
+      pDownload->PumpMessages();
+      if (pDownloadSink->bFlagEnd) {
+        pDownloadSink->bFlagEnd = false;
+        process = false;
+        break;
+      }
+      if (pDownloadSink->bFlagError) {
+        WWMessageBox().Process(TXT_WOL_DOWNLOADERROR);
+        pDownloadSink->bFlagError = false;
+        process = false;
+        bReturn = false;
+        break;
+      }
+      if (pDownloadSink->bFlagProgressUpdate) {
+        pDownloadSink->bFlagProgressUpdate = false;
+        progress_meter.Set_Value((pDownloadSink->iBytesRead * 100) /
+                                 pDownloadSink->iTotalSize);
+        char szText[200];
+        sprintf(szText, TXT_WOL_DOWNLOADBYTES, pDownloadSink->iBytesRead,
+                pDownloadSink->iTotalSize,
+                (pDownloadSink->iBytesRead * 100) / pDownloadSink->iTotalSize);
+        StatBytes.Set_Text(szText);
+        sprintf(szText, TXT_WOL_DOWNLOADTIME, pDownloadSink->iTimeLeft / 60,
+                pDownloadSink->iTimeLeft % 60);
+        StatTime.Set_Text(szText);
+        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+      }
+      if (pDownloadSink->bFlagStatusUpdate) {
+        pDownloadSink->bFlagStatusUpdate = false;
+        switch (pDownloadSink->iStatus) {
+          case DOWNLOADSTATUS_CONNECTING:
+            StatStatus.Set_Text(TXT_WOL_DOWNLOADCONNECTING);
+            break;
 
-			}
+          case DOWNLOADSTATUS_FINDINGFILE:
+            StatStatus.Set_Text(TXT_WOL_DOWNLOADLOCATING);
+            break;
 
-			if (display >= REDRAW_PROGRESS){
-				progress_meter.Draw_Me(true);
-			}
+          case DOWNLOADSTATUS_DOWNLOADING:
+            StatStatus.Set_Text(TXT_WOL_DOWNLOADDOWNLOADING);
+            break;
 
-			display = REDRAW_NONE;
-		}
+          default:
+            //					debugprint( "Unknown status
+            //update!\n" );
+            break;
+        }
+        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+      }
+      if (pDownloadSink->bFlagQueryResume) {
+        if (pDownloadSink->bResumed) {
+          char szTitleNew[200];
+          sprintf(szTitleNew, TXT_WOL_DOWNLOADRESUMED, szTitle);
+          StatTitle.Set_Text(szTitleNew);
+          if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
+        }
+      }
 
-		if (process){
-			input = cancelbtn.Input();
-			switch (input) {
+      dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
+    }
 
-				/*
-				** Cancel. Just return to the main menu
-				*/
-				case (KN_ESC):
-				case (BUTTON_CANCEL | KN_BUTTON):
-					pDownload->Abort();
-					process = false;
-					bReturn = false;
-					break;
-			}
-		}
+    //	Invoke game callback
+    Call_Back();
 
-		if( ::timeGetTime() > dwTimeNextPump )
-		{
-			pDownload->PumpMessages();
-			if( pDownloadSink->bFlagEnd )
-			{
-				pDownloadSink->bFlagEnd = false;
-				process = false;
-				break;
-			}
-			if( pDownloadSink->bFlagError )
-			{
-				WWMessageBox().Process( TXT_WOL_DOWNLOADERROR );
-				pDownloadSink->bFlagError = false;
-				process = false;
-				bReturn = false;
-				break;
-			}
-			if( pDownloadSink->bFlagProgressUpdate )
-			{
-				pDownloadSink->bFlagProgressUpdate = false;
-				progress_meter.Set_Value( ( pDownloadSink->iBytesRead * 100 ) / pDownloadSink->iTotalSize );
-				char szText[200];
-				sprintf( szText, TXT_WOL_DOWNLOADBYTES, pDownloadSink->iBytesRead, pDownloadSink->iTotalSize,
-							( pDownloadSink->iBytesRead * 100 ) / pDownloadSink->iTotalSize );
-				StatBytes.Set_Text( szText );
-				sprintf( szText, TXT_WOL_DOWNLOADTIME, pDownloadSink->iTimeLeft / 60, pDownloadSink->iTimeLeft % 60 );
-				StatTime.Set_Text( szText );
-				if( display < REDRAW_BUTTONS ) display = REDRAW_BUTTONS;
-			}
-			if( pDownloadSink->bFlagStatusUpdate )
-			{
-				pDownloadSink->bFlagStatusUpdate = false;
-				switch( pDownloadSink->iStatus )
-				{
-				case DOWNLOADSTATUS_CONNECTING:
-					StatStatus.Set_Text( TXT_WOL_DOWNLOADCONNECTING );
-					break;
+  } while (process);
 
-				case DOWNLOADSTATUS_FINDINGFILE:
-					StatStatus.Set_Text( TXT_WOL_DOWNLOADLOCATING );
-					break;
-
-				case DOWNLOADSTATUS_DOWNLOADING:
-					StatStatus.Set_Text( TXT_WOL_DOWNLOADDOWNLOADING );
-					break;
-
-				default:
-//					debugprint( "Unknown status update!\n" );
-					break;
-				}
-				if( display < REDRAW_BUTTONS ) display = REDRAW_BUTTONS;
-			}
-			if( pDownloadSink->bFlagQueryResume )
-			{
-				if( pDownloadSink->bResumed )
-				{
-					char szTitleNew[200];
-					sprintf( szTitleNew, TXT_WOL_DOWNLOADRESUMED, szTitle );
-					StatTitle.Set_Text( szTitleNew );
-					if( display < REDRAW_BUTTONS ) display = REDRAW_BUTTONS;
-				}
-			}
-
-			dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
-		}
-
-		//	Invoke game callback
-		Call_Back();
-
-	} while ( process );
-
-	return bReturn;
+  return bReturn;
 }
 
 #endif

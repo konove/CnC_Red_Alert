@@ -18,74 +18,77 @@
 
 /* $Header: /CounterStrike/TEMPLATE.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TEMPLATE.H                                                   *
+ *                    File Name : TEMPLATE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : May 17, 1994                                                 *
+ *                   Start Date : May 17, 1994 *
  *                                                                                             *
- *                  Last Update : May 17, 1994   [JLB]                                         *
+ *                  Last Update : May 17, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
-#include	"object.h"
-#include	"type.h"
-
+#include "object.h"
+#include "type.h"
 
 /******************************************************************************
-**	This class controls the template object. Template objects function congruously
-**	to carpet on a floor. They have no depth, but merely control the icon to be rendered
-**	as the cell's bottom most layer.
+**	This class controls the template object. Template objects function
+*congruously *	to carpet on a floor. They have no depth, but merely control the
+*icon to be rendered *	as the cell's bottom most layer.
 */
-class TemplateClass : public ObjectClass
-{
-	public:
-		/*
-		**	This is a pointer to the template object's class.
-		*/
-		CCPtr<TemplateTypeClass> Class;
+class TemplateClass : public ObjectClass {
+ public:
+  /*
+  **	This is a pointer to the template object's class.
+  */
+  CCPtr<TemplateTypeClass> Class;
 
-		/*-------------------------------------------------------------------
-		**	Constructors and destructors.
-		*/
-		static void * operator new(size_t size)  throw();
-		static void * operator new(size_t , void * ptr) throw() {return(ptr);};
-		static void operator delete(void *ptr);
-		TemplateClass(TemplateType type, CELL pos=-1);
-		TemplateClass(NoInitClass const & x) : ObjectClass(x), Class(x) {};
-		virtual ~TemplateClass(void) {if (GameActive) TemplateClass::Limbo();Class=0;};
-		operator TemplateType(void) const {return Class->Type;};
+  /*-------------------------------------------------------------------
+  **	Constructors and destructors.
+  */
+  static void *operator new(size_t size) throw();
+  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+  static void operator delete(void *ptr);
+  TemplateClass(TemplateType type, CELL pos = -1);
+  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(x){};
+  virtual ~TemplateClass(void) {
+    if (GameActive) TemplateClass::Limbo();
+    Class = 0;
+  };
+  operator TemplateType(void) const { return Class->Type; };
 
-		static void Init(void);
+  static void Init(void);
 
-		/*
-		**	Query functions.
-		*/
-		virtual ObjectTypeClass const & Class_Of(void) const {return *Class;};
-		int Icon_Number(CELL cell);
+  /*
+  **	Query functions.
+  */
+  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  int Icon_Number(CELL cell);
 
-		/*
-		**	Display and rendering support functionality. Supports imagery and how
-		**	object interacts with the map and thus indirectly controls rendering.
-		*/
-		virtual void Draw_It(int , int , WindowNumberType ) const {};
-		virtual bool Mark(MarkType mark);
+  /*
+  **	Display and rendering support functionality. Supports imagery and how
+  **	object interacts with the map and thus indirectly controls rendering.
+  */
+  virtual void Draw_It(int, int, WindowNumberType) const {};
+  virtual bool Mark(MarkType mark);
 
-		/*
-		**	File I/O.
-		*/
-		bool Load(Straw & file);
-		bool Save(Pipe & file) const;
+  /*
+  **	File I/O.
+  */
+  bool Load(Straw &file);
+  bool Save(Pipe &file) const;
 };
 
 #endif

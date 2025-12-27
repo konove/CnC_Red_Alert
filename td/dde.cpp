@@ -22,7 +22,7 @@
  *                                                                         *
  *                 Project Name : Dynamic Data Encapsulation               *
  *                                                                         *
- *                    File Name : DDE.CPP		                              *
+ *                    File Name : DDE.CPP *
  *                                                                         *
  *                   Programmer : Steve Wetherill                          *
  *                                                                         *
@@ -38,135 +38,133 @@
  *   Instance_Class::Register_Servers -- registers a local DDE DNS service *
  *   Instance_Class::Cleanup_App -- currently does nothing                 *
  *   Instance_Class::Test_Server_Running -- does a trial connect to remote *
- *	  Instance_Class::Open_Poke_Connection -- pokes some data to server		*
- *   Instance_Class::Close_Poke_Connectionp -- closes connection to remote *
+ *	  Instance_Class::Open_Poke_Connection -- pokes some data to server
+ ** Instance_Class::Close_Poke_Connectionp -- closes connection to remote *
  *   Instance_Class::Poke_Server -- sends a chunk of data to remote        *
  *   Instance_Class::dde_callback -- processes DDE transactions            *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #define WIN32
-#include	<windows.h>
-#include	"dde.h"
+#include <windows.h>
+#include "dde.h"
 
 /***************************************************************************
  * These are static members of Instance_Class
  *=========================================================================*/
 
-static DWORD	Instance_Class::id_inst;			// instance identifier set by DdeInitialize
-static BOOL		Instance_Class::process_pokes;	// controls response to pokes
-static char 	Instance_Class::ascii_name[32];	// name of server
+static DWORD
+    Instance_Class::id_inst;  // instance identifier set by DdeInitialize
+static BOOL Instance_Class::process_pokes;   // controls response to pokes
+static char Instance_Class::ascii_name[32];  // name of server
 
-static BOOL CALLBACK	(*Instance_Class::callback) (
-			LPBYTE pointer,		// pointer to received data
-			long	length			// length of received data or advisory flag
-			) = NULL;
+static BOOL CALLBACK (*Instance_Class::callback)(
+    LPBYTE pointer,  // pointer to received data
+    long length      // length of received data or advisory flag
+    ) = NULL;
 
 /***************************************************************************
- * Instance_Class::InstanceClass -- class constructor              			*
+ * Instance_Class::InstanceClass -- class constructor *
  *                                                                         *
  * INPUT:                                                                  *
- *		name1		null terminated ASCII client name									*
- *		name1		null terminated ASCII server name									*
+ *		name1		null terminated ASCII client name
+ ** name1		null terminated ASCII server name
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		dde_error = TRUE if error occurs when initializing DDE					*
+ *		dde_error = TRUE if error occurs when initializing DDE
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		none.																						*
+ *		none.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-Instance_Class::Instance_Class( LPSTR name1, LPSTR name2 )
-{
+Instance_Class::Instance_Class(LPSTR name1, LPSTR name2) {
+  dde_error = FALSE;      // no errors
+  process_pokes = FALSE;  // disable pokes in callback
 
-	dde_error = FALSE;		// no errors
-	process_pokes = FALSE;	// disable pokes in callback
+  id_inst = 0;      // set to 0 for first time through
+  conv_handle = 0;  // conversation handle reset
 
-	id_inst = 0;				// set to 0 for first time through
-	conv_handle = 0;   		// conversation handle reset
+  lstrcpy(ascii_name, name1);  // keep a record of ASCII name
 
-	lstrcpy( ascii_name, name1 );	// keep a record of ASCII name
+  if (DdeInitialize(
+          (LPDWORD)&id_inst,  // instance identifier
+          dde_callback,
+          APPCLASS_STANDARD |            // filter server messages
+              CBF_FAIL_SELFCONNECTIONS,  // prevent from connecting with self
+          0) != DMLERR_NO_ERROR) {       // reserved
+    dde_error = TRUE;                    // flag an error
+  }
 
-	if	( DdeInitialize(
-		(LPDWORD) &id_inst,			// instance identifier
-		dde_callback,
-		APPCLASS_STANDARD | 			// filter server messages
-		CBF_FAIL_SELFCONNECTIONS,	// prevent from connecting with self
-		0) != DMLERR_NO_ERROR) {   // reserved
-			dde_error = TRUE;			// flag an error
-	}
+  local_name = DdeCreateStringHandle(id_inst,      // instance identifier
+                                     name1,        // string to register
+                                     CP_WINANSI);  // Windows ANSI code page
 
-	local_name = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-    	name1,     				// string to register
-    	CP_WINANSI);    		// Windows ANSI code page
+  remote_name = DdeCreateStringHandle(id_inst,      // instance identifier
+                                      name2,        // string to register
+                                      CP_WINANSI);  // Windows ANSI code page
 
-	remote_name = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-    	name2,     				// string to register
-    	CP_WINANSI);    		// Windows ANSI code page
+  poke_topic = DdeCreateStringHandle(id_inst,       // instance identifier
+                                     "POKE TOPIC",  // System topic
+                                     CP_WINANSI);   // Windows ANSI code page
 
-	poke_topic = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-		"POKE TOPIC", 			// System topic
-		CP_WINANSI);    		// Windows ANSI code page
+  poke_item = DdeCreateStringHandle(id_inst,      // instance identifier
+                                    "POKE ITEM",  // System topic
+                                    CP_WINANSI);  // Windows ANSI code page
 
-	poke_item = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-		"POKE ITEM", 			// System topic
-		CP_WINANSI);    		// Windows ANSI code page
-
-	system_topic = DdeCreateStringHandle(
-		id_inst,         		// instance identifier
-		SZDDESYS_TOPIC, 		// System topic
-		CP_WINANSI);    		// Windows ANSI code page
-
+  system_topic = DdeCreateStringHandle(id_inst,         // instance identifier
+                                       SZDDESYS_TOPIC,  // System topic
+                                       CP_WINANSI);  // Windows ANSI code page
 }
 
 /***************************************************************************
- * Instance_Class::~Instance_Class -- class destructor	              		*
+ * Instance_Class::~Instance_Class -- class destructor *
  *                                                                         *
  * INPUT:                                                                  *
  *    none.                                                                *
  *                                                                         *
  * OUTPUT:                                                                 *
- *		none.																						*
+ *		none.
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		none.																						*
+ *		none.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-Instance_Class::~Instance_Class()
-{
-	DdeUninitialize( id_inst );
-}
+Instance_Class::~Instance_Class() { DdeUninitialize(id_inst); }
 
 /***************************************************************************
- * Instance_Class::Enable_Callback -- enables user callback						*
+ * Instance_Class::Enable_Callback -- enables user callback
+ **
  *                                                                         *
  * INPUT:                                                                  *
- *    TRUE = enable poke processing														*
- *    FALSE = disable poke processing													*
+ *    TRUE = enable poke processing
+ ** FALSE = disable poke processing
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		echos the input																		*
+ *		echos the input
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		user callback must be explicitly enabled. Disbabled by default.		*
+ *		user callback must be explicitly enabled. Disbabled by default.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL	Instance_Class::Enable_Callback( BOOL flag )		// enable or disable callback
+BOOL Instance_Class::Enable_Callback(BOOL flag)  // enable or disable callback
 {
-	return (process_pokes = flag);
-
+  return (process_pokes = flag);
 }
 
 /***************************************************************************
@@ -176,177 +174,190 @@ BOOL	Instance_Class::Enable_Callback( BOOL flag )		// enable or disable callback
  *    BOOL CALLBACK ( *callback_fnc) ( LPBYTE, DWORD) = user poke callbacl *
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == success																		*
- *		FALSE == failed																		*
+ *		TRUE == success
+ ** FALSE == failed
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		none.																						*
+ *		none.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL	Instance_Class::Register_Server( BOOL CALLBACK ( *callback_fnc) (LPBYTE, long) )
-{
-
-	if (DdeNameService( id_inst, local_name,	0L, DNS_REGISTER ) != 0L) {
-		callback = callback_fnc;
-		return ( TRUE );
-	} else {
-		return ( FALSE );
-	}
+BOOL Instance_Class::Register_Server(BOOL CALLBACK (*callback_fnc)(LPBYTE,
+                                                                   long)) {
+  if (DdeNameService(id_inst, local_name, 0L, DNS_REGISTER) != 0L) {
+    callback = callback_fnc;
+    return (TRUE);
+  } else {
+    return (FALSE);
+  }
 }
 
 /***************************************************************************
  * Instance_Class::Test_Server_Running -- does a trial connect to remote   *
  *                                                                         *
  * INPUT:                                                                  *
- *    name = HSZ string handle of server name.										*
+ *    name = HSZ string handle of server name.
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully connected to remote										*
- *		FALSE == failed to connect															*
+ *		TRUE == successfully connected to remote
+ ** FALSE == failed to connect
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		- Can be called for local or remote server but of course will 			*
- *      fail if a called for local and local server is not "up".				*
- *		- Disconects before exiting.														*
+ *		- Can be called for local or remote server but of course will
+ ** fail if a called for local and local server is not "up".
+ **
+ *		- Disconects before exiting.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL	Instance_Class::Test_Server_Running( HSZ name )
-{
-
-	if( Open_Poke_Connection( name ) == TRUE) {
-		Close_Poke_Connection();
-		return( TRUE );
-	} else {
-		return( FALSE );
-	}
+BOOL Instance_Class::Test_Server_Running(HSZ name) {
+  if (Open_Poke_Connection(name) == TRUE) {
+    Close_Poke_Connection();
+    return (TRUE);
+  } else {
+    return (FALSE);
+  }
 }
 
 /***************************************************************************
- *	Instance_Class::Open_Poke_Connection -- open a connection to server		*
+ *	Instance_Class::Open_Poke_Connection -- open a connection to server
+ **
  *                                                                         *
  * INPUT:                                                                  *
- *    name = HSZ server name.																*
+ *    name = HSZ server name.
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully opened connection											*
- *		FALSE == failed to connect															*
+ *		TRUE == successfully opened connection
+ ** FALSE == failed to connect
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		Can be called for local or remote server but of course will 			*
- *    fail if a called for local and local server is not "up".					*
+ *		Can be called for local or remote server but of course will
+ ** fail if a called for local and local server is not "up".
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL	Instance_Class::Open_Poke_Connection( HSZ name )
-{
-	conv_handle = DdeConnect(
-		id_inst,           	// instance identifier
-		name,         			// service name string handle
-		poke_topic,        	// topic string handle
-		(PCONVCONTEXT) NULL);// use default context
+BOOL Instance_Class::Open_Poke_Connection(HSZ name) {
+  conv_handle = DdeConnect(id_inst,              // instance identifier
+                           name,                 // service name string handle
+                           poke_topic,           // topic string handle
+                           (PCONVCONTEXT)NULL);  // use default context
 
-	if (conv_handle == NULL) {
-		return FALSE;
-	} else {
-		return TRUE;
-	}
+  if (conv_handle == NULL) {
+    return FALSE;
+  } else {
+    return TRUE;
+  }
 }
 
 /***************************************************************************
- *	Instance_Class::Close_Poke_Connection -- closes poke connection			*
+ *	Instance_Class::Close_Poke_Connection -- closes poke connection
+ **
  *                                                                         *
  * INPUT:                                                                  *
- *    none.																						*
+ *    none.
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully closed connection											*
- *		FALSE == failed to close connection for some reason						*
+ *		TRUE == successfully closed connection
+ ** FALSE == failed to close connection for some reason
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		none.																						*
+ *		none.
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL	Instance_Class::Close_Poke_Connection( void )
-{
-	if( conv_handle ) {
-		HCONV	temp_handle = conv_handle;
-		conv_handle = NULL;
-		return( DdeDisconnect( temp_handle ));
-	} else {
-		return( TRUE );
-	}
+BOOL Instance_Class::Close_Poke_Connection(void) {
+  if (conv_handle) {
+    HCONV temp_handle = conv_handle;
+    conv_handle = NULL;
+    return (DdeDisconnect(temp_handle));
+  } else {
+    return (TRUE);
+  }
 }
 
 /***************************************************************************
- *	Instance_Class::Poke_Server -- pokes some data to server						*
+ *	Instance_Class::Poke_Server -- pokes some data to server
+ **
  *                                                                         *
  * INPUT:                                                                  *
- *    poke_data	points to data to send to remote									*
- *    poke_length	length of buffer to send											*
+ *    poke_data	points to data to send to remote
+ ** poke_length	length of buffer to send
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully poked the data												*
- *		FALSE == failed to connect															*
+ *		TRUE == successfully poked the data
+ ** FALSE == failed to connect
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *		has a 3 second timeout (change POKE_TIMEOUT, in milliseconds)			*
+ *		has a 3 second timeout (change POKE_TIMEOUT, in milliseconds)
+ **
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-#define	POKE_TIMEOUT	60*1000	      // 60 sec timeout
+#define POKE_TIMEOUT 60 * 1000  // 60 sec timeout
 
-BOOL	Instance_Class::Poke_Server( LPBYTE poke_data, DWORD poke_length )
-{
+BOOL Instance_Class::Poke_Server(LPBYTE poke_data, DWORD poke_length) {
+  if (DdeClientTransaction(
 
-	if( DdeClientTransaction(
-
-		poke_data,					// address of data to pass to server
-	  	poke_length,				// length of data
-		conv_handle,				// handle of conversation
-		poke_topic,					// handle of item name string
-		CF_TEXT,						// no special clipboard data format
-		XTYP_POKE,					// transaction type
-		POKE_TIMEOUT,							// time-out duration (millisecs)
-		(LPDWORD) NULL		 		// address of transaction result (don't check)
-	   ) == 0) {
-
-		return( FALSE);
-	} else {
-		return( TRUE );
-	}
+          poke_data,     // address of data to pass to server
+          poke_length,   // length of data
+          conv_handle,   // handle of conversation
+          poke_topic,    // handle of item name string
+          CF_TEXT,       // no special clipboard data format
+          XTYP_POKE,     // transaction type
+          POKE_TIMEOUT,  // time-out duration (millisecs)
+          (LPDWORD)NULL  // address of transaction result (don't check)
+          ) == 0) {
+    return (FALSE);
+  } else {
+    return (TRUE);
+  }
 }
 
 /***************************************************************************
- *	Instance_Class::dde_callback -- callback dde event handler					*
+ *	Instance_Class::dde_callback -- callback dde event handler
+ **
  *                                                                         *
  * INPUT:                                                                  *
- *		dde_event	transaction type														*
- *		uFmt			clipboard data format												*
- *		hconv			handle of the conversation											*
- *		hsz1			handle of a string													*
- *		hsz2			handle of a string													*
- *		hdata			handle of a global memory object									*
- *		dwData1		transaction-specific data											*
- *		dwData2 		transaction-specific data											*
+ *		dde_event	transaction type
+ ** uFmt			clipboard data format
+ ** hconv			handle of the conversation
+ ** hsz1			handle of a string
+ ** hsz2			handle of a string
+ ** hdata			handle of a global memory object
+ ** dwData1		transaction-specific data
+ ** dwData2 		transaction-specific data
+ **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		context specific HDDEDATA object													*
+ *		context specific HDDEDATA object
+ **
  *                                                                         *
  * WARNINGS:                                                               *
- *	  	NOTE: declared as HDDEDATA CALLBACK which means PASCAL parameters		*
+ *	  	NOTE: declared as HDDEDATA CALLBACK which means PASCAL
+ *parameters		*
  *                                                                         *
  * HISTORY:                                                                *
  *   6/1/1996 SW : Created.                                                *
@@ -354,97 +365,91 @@ BOOL	Instance_Class::Poke_Server( LPBYTE poke_data, DWORD poke_length )
 
 HDDEDATA CALLBACK Instance_Class::dde_callback(
 
-	UINT  dde_event,	// transaction type
-	UINT  uFmt,			// clipboard data format
-	HCONV  ,				// handle of the conversation
-	HSZ  hsz1,			// handle of a string
-	HSZ  hsz2,			// handle of a string
-	HDDEDATA  hdata,	// handle of a global memory object
-	DWORD  			,	// transaction-specific data
-	DWORD  			 	// transaction-specific data
-	)
-{
+    UINT dde_event,  // transaction type
+    UINT uFmt,       // clipboard data format
+    HCONV,           // handle of the conversation
+    HSZ hsz1,        // handle of a string
+    HSZ hsz2,        // handle of a string
+    HDDEDATA hdata,  // handle of a global memory object
+    DWORD,           // transaction-specific data
+    DWORD            // transaction-specific data
+) {
+  if (!Instance_Class::callback) {
+    return (HDDEDATA)NULL;
+  }
 
+  switch (dde_event) {
+    case XTYP_REGISTER:
+    case XTYP_UNREGISTER:
 
-	if (!Instance_Class::callback){
-		return (HDDEDATA) NULL;
-	}
+      return (HDDEDATA)NULL;
 
-	switch ( dde_event ) {
+    case XTYP_ADVDATA:
+      return (HDDEDATA)DDE_FACK;
 
-		case XTYP_REGISTER:
-      case XTYP_UNREGISTER:
+    case XTYP_XACT_COMPLETE:
 
-			return (HDDEDATA) NULL;
+      return (HDDEDATA)NULL;
 
-		case XTYP_ADVDATA:
-			return (HDDEDATA) DDE_FACK;
+    case XTYP_DISCONNECT:
 
-		case XTYP_XACT_COMPLETE:
+      Instance_Class::callback(NULL, DDE_ADVISE_DISCONNECT);
+      return (HDDEDATA)NULL;
 
-			return (HDDEDATA) NULL;
+    case XTYP_CONNECT: {
+      char buffer[32];
 
-		case XTYP_DISCONNECT:
+      DdeQueryString(Instance_Class::id_inst, hsz2, buffer, sizeof(buffer), 0);
 
-			Instance_Class::callback( NULL, DDE_ADVISE_DISCONNECT);
-			return (HDDEDATA) NULL;
+      if (0 != strcmp(buffer, Instance_Class::ascii_name)) {
+        return (HDDEDATA)NULL;
+      }
 
-		case	XTYP_CONNECT: {
+      DdeQueryString(Instance_Class::id_inst, hsz1, buffer, sizeof(buffer), 0);
 
-			char	buffer[32];
+      if (0 != strcmp(buffer, "POKE TOPIC")) {
+        return (HDDEDATA)NULL;
+      }
 
-			DdeQueryString (Instance_Class::id_inst, hsz2, buffer, sizeof (buffer), 0) ;
-
-			if (0 != strcmp (buffer, Instance_Class::ascii_name)) {
-				return (HDDEDATA) NULL;
-			}
-
-			DdeQueryString (Instance_Class::id_inst, hsz1, buffer, sizeof (buffer), 0) ;
-
-			if (0 != strcmp (buffer, "POKE TOPIC")) {
-				return (HDDEDATA) NULL;
-			}
-
-			Instance_Class::callback( NULL, DDE_ADVISE_CONNECT);
-			return (HDDEDATA) TRUE;
-		}
-
-		case	XTYP_POKE:
-
-			if	(Instance_Class::process_pokes == FALSE ) {
-				return (HDDEDATA) DDE_FNOTPROCESSED;	// processing disabled
-			} else {
-
-				char	buffer[32];
-
-				DdeQueryString (Instance_Class::id_inst, hsz1, buffer, sizeof (buffer), 0) ;
-
-				if (0 != strcmp (buffer, "POKE TOPIC")) {
-					return (HDDEDATA) DDE_FNOTPROCESSED;
-				} else if (uFmt == CF_TEXT) {					// make sure it's CF_TEXT
-
-					BOOL processed;
-					BYTE FAR *pdata;
-					DWORD dw_length;
-
-					if ( (pdata = DdeAccessData( hdata, &dw_length)) == NULL ) {
-						return (HDDEDATA) DDE_FNOTPROCESSED;
-					}
-
-					processed = Instance_Class::callback((LPBYTE) pdata, dw_length);
-
-					DdeUnaccessData( hdata );
-
-					if (processed == TRUE) {
-						return (HDDEDATA) DDE_FACK;
-					} else {
-						return (HDDEDATA) NULL;
-					}
-
-				}
-			}
-
-		default:
-      	return (HDDEDATA) NULL;
+      Instance_Class::callback(NULL, DDE_ADVISE_CONNECT);
+      return (HDDEDATA)TRUE;
     }
+
+    case XTYP_POKE:
+
+      if (Instance_Class::process_pokes == FALSE) {
+        return (HDDEDATA)DDE_FNOTPROCESSED;  // processing disabled
+      } else {
+        char buffer[32];
+
+        DdeQueryString(Instance_Class::id_inst, hsz1, buffer, sizeof(buffer),
+                       0);
+
+        if (0 != strcmp(buffer, "POKE TOPIC")) {
+          return (HDDEDATA)DDE_FNOTPROCESSED;
+        } else if (uFmt == CF_TEXT) {  // make sure it's CF_TEXT
+
+          BOOL processed;
+          BYTE FAR *pdata;
+          DWORD dw_length;
+
+          if ((pdata = DdeAccessData(hdata, &dw_length)) == NULL) {
+            return (HDDEDATA)DDE_FNOTPROCESSED;
+          }
+
+          processed = Instance_Class::callback((LPBYTE)pdata, dw_length);
+
+          DdeUnaccessData(hdata);
+
+          if (processed == TRUE) {
+            return (HDDEDATA)DDE_FACK;
+          } else {
+            return (HDDEDATA)NULL;
+          }
+        }
+      }
+
+    default:
+      return (HDDEDATA)NULL;
+  }
 }

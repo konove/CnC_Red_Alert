@@ -18,76 +18,79 @@
 
 /* $Header: /CounterStrike/LOADDLG.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                         						  *
- *                 Project Name : Command & Conquer                        						  *
+ *                 Project Name : Command & Conquer
+ **
  *                                                                         						  *
- *                    File Name : LOADDLG.H 	                              						  *
+ *                    File Name : LOADDLG.H
+ **
  *                                                                         						  *
- *                   Programmer : Maria Legg, Joe Bostic, Bill Randolph     						  *
+ *                   Programmer : Maria Legg, Joe Bostic, Bill Randolph
+ **
  *                                                                         						  *
- *                   Start Date : March 19, 1995															  *
+ *                   Start Date : March 19, 1995
+ **
  *                                                                         						  *
- *                  Last Update : March 19, 1995															  *
+ *                  Last Update : March 19, 1995
+ **
  *                                                                         						  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef LOADDLG_H
 #define LOADDLG_H
 
 class FileEntryClass {
-	public:
-		char Descr[80];				// save-game description
-		unsigned Scenario;			// scenario #
-		HousesType House;				// house
-		int Num;							// save file number (from the extension)
-		unsigned long DateTime;		// date/time stamp of file
-		bool Valid;						// Is the scenario valid?
+ public:
+  char Descr[80];          // save-game description
+  unsigned Scenario;       // scenario #
+  HousesType House;        // house
+  int Num;                 // save file number (from the extension)
+  unsigned long DateTime;  // date/time stamp of file
+  bool Valid;              // Is the scenario valid?
 };
 
-class LoadOptionsClass
-{
-	public:
-		/*
-		** This defines the style of the dialog
-		*/
-		typedef enum OperationModeEnum {
-			NONE = 0,
-			LOAD,
-			SAVE,
-			WWDELETE
-		} LoadStyleType;
+class LoadOptionsClass {
+ public:
+  /*
+  ** This defines the style of the dialog
+  */
+  typedef enum OperationModeEnum {
+    NONE = 0,
+    LOAD,
+    SAVE,
+    WWDELETE
+  } LoadStyleType;
 
-		LoadOptionsClass (LoadStyleType style = LoadOptionsClass::NONE);
-		~LoadOptionsClass ();
-		int Process (void);
+  LoadOptionsClass(LoadStyleType style = LoadOptionsClass::NONE);
+  ~LoadOptionsClass();
+  int Process(void);
 
+ protected:
+  /*
+  ** Internal routines
+  */
+  void Clear_List(ListClass *list);     // clears the list & game # array
+  void Fill_List(ListClass *list);      // fills the list & game # array
+  int Num_From_Ext(const char *fname);  // translates filename to file #
+  static int Compare(const void *p1, const void *p2);  // for qsort()
 
-	protected:
-		/*
-		** Internal routines
-		*/
-		void Clear_List (ListClass *list);		// clears the list & game # array
-		void Fill_List (ListClass *list);		// fills the list & game # array
-		int Num_From_Ext (const char *fname);			// translates filename to file #
-		static int Compare(const void *p1, const void *p2); // for qsort()
+  /*
+  ** This is the requested style of the dialog
+  */
+  LoadStyleType Style;
 
-		/*
-		** This is the requested style of the dialog
-		*/
-		LoadStyleType Style;
-
-		/*
-		** This is an array of pointers to FileEntryClass objects.  These objects
-		** are allocated on the fly as files are found, and pointers to them are
-		** added to the vector list.  Thus, all the objects must be free'd before
-		** the vector list is cleared.  This list is used for sorting the files
-		** by date/time.
-		*/
-		DynamicVectorClass<FileEntryClass *> Files;
+  /*
+  ** This is an array of pointers to FileEntryClass objects.  These objects
+  ** are allocated on the fly as files are found, and pointers to them are
+  ** added to the vector list.  Thus, all the objects must be free'd before
+  ** the vector list is cleared.  This list is used for sorting the files
+  ** by date/time.
+  */
+  DynamicVectorClass<FileEntryClass *> Files;
 };
-
 
 #endif
-

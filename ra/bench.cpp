@@ -18,150 +18,135 @@
 
 /* $Header: /CounterStrike/BENCH.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : BENCH.CPP                                                    *
+ *                    File Name : BENCH.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/17/96                                                     *
+ *                   Start Date : 07/17/96 *
  *                                                                                             *
- *                  Last Update : July 18, 1996 [JLB]                                          *
+ *                  Last Update : July 18, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   Benchmark::Begin -- Start the benchmark operation.                                        *
- *   Benchmark::Benchmark -- Constructor for the benchmark object.                             *
- *   Benchmark::End -- Mark the end of a benchmarked operation                                 *
- *   Benchmark::Reset -- Clear out the benchmark statistics.                                   *
- *   Benchmark::Value -- Fetch the current average benchmark time.                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * Benchmark::Begin -- Start the benchmark operation. *
+ *   Benchmark::Benchmark -- Constructor for the benchmark object. *
+ *   Benchmark::End -- Mark the end of a benchmarked operation *
+ *   Benchmark::Reset -- Clear out the benchmark statistics. * Benchmark::Value
+ *-- Fetch the current average benchmark time.                             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-
-#include	"bench.h"
-#include	"mpu.h"
-
+#include "bench.h"
+#include "mpu.h"
 
 /***********************************************************************************************
- * Benchmark::Benchmark -- Constructor for the benchmark object.                               *
+ * Benchmark::Benchmark -- Constructor for the benchmark object. *
  *                                                                                             *
- *    This will construct the benchmark object.                                                *
+ *    This will construct the benchmark object. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/18/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-Benchmark::Benchmark(void) :
-	Average(0),
-	Counter(0),
-	TotalCount(0)
-{
+Benchmark::Benchmark(void) : Average(0), Counter(0), TotalCount(0) {}
+
+/***********************************************************************************************
+ * Benchmark::Reset -- Clear out the benchmark statistics. *
+ *                                                                                             *
+ *    Use this routine to clear out all the accumulated statistics within this
+ *benchmark       * object. The object is set just as if it was freshly
+ *constructed.                         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/18/1996 JLB : Created. *
+ *=============================================================================================*/
+void Benchmark::Reset(void) {
+  Average = 0;
+  Counter = 0;
+  TotalCount = 0;
 }
 
-
 /***********************************************************************************************
- * Benchmark::Reset -- Clear out the benchmark statistics.                                     *
+ * Benchmark::Begin -- Start the benchmark operation. *
  *                                                                                             *
- *    Use this routine to clear out all the accumulated statistics within this benchmark       *
- *    object. The object is set just as if it was freshly constructed.                         *
+ *    Call this routine before the operation to be benchmarked is begun. The
+ *corresponding     * End() function must be called after the operation has
+ *completed.                         *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   reset -- Should the entire benchmark object be reset at this time as
+ *well?         *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   The Begin() and End() functions are NOT nestable. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/18/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void Benchmark::Reset(void)
-{
-	Average = 0;
-	Counter = 0;
-	TotalCount = 0;
+void Benchmark::Begin(bool reset) {
+  if (reset) Reset();
+  Clock = 0;
 }
 
-
 /***********************************************************************************************
- * Benchmark::Begin -- Start the benchmark operation.                                          *
+ * Benchmark::End -- Mark the end of a benchmarked operation *
  *                                                                                             *
- *    Call this routine before the operation to be benchmarked is begun. The corresponding     *
- *    End() function must be called after the operation has completed.                         *
+ *    This routine is called at the end of the operation that is being
+ *benchmarked. It is      * important to call this routine as soon as possible
+ *after the event being benchmarked     * has completed. *
  *                                                                                             *
- * INPUT:   reset -- Should the entire benchmark object be reset at this time as well?         *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   The Begin() and End() functions are NOT nestable.                               *
+ * WARNINGS:   The Being() and End() functions are NOT nestable. *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/18/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void Benchmark::Begin(bool reset)
-{
-	if (reset) Reset();
-	Clock = 0;
+void Benchmark::End(void) {
+  unsigned long value = Clock;
+
+  if (Counter == MAXIMUM_EVENT_COUNT) {
+    Average -= Average / MAXIMUM_EVENT_COUNT;
+    Average += value;
+  } else {
+    Average += value;
+    Counter++;
+  }
+  TotalCount++;
 }
 
-
 /***********************************************************************************************
- * Benchmark::End -- Mark the end of a benchmarked operation                                   *
+ * Benchmark::Value -- Fetch the current average benchmark time. *
  *                                                                                             *
- *    This routine is called at the end of the operation that is being benchmarked. It is      *
- *    important to call this routine as soon as possible after the event being benchmarked     *
- *    has completed.                                                                           *
+ *    This routine will take the statistics already accumulated and determine
+ *the average      * time recorded. This value will be returned. *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  Returns with the average time that all events tracked by this
+ *object.              *
  *                                                                                             *
- * WARNINGS:   The Being() and End() functions are NOT nestable.                               *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/18/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void Benchmark::End(void)
-{
-	unsigned long value = Clock;
-
-	if (Counter == MAXIMUM_EVENT_COUNT) {
-		Average -= Average / MAXIMUM_EVENT_COUNT;
-		Average += value;
-	} else {
-		Average += value;
-		Counter++;
-	}
-	TotalCount++;
-}
-
-
-/***********************************************************************************************
- * Benchmark::Value -- Fetch the current average benchmark time.                               *
- *                                                                                             *
- *    This routine will take the statistics already accumulated and determine the average      *
- *    time recorded. This value will be returned.                                              *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  Returns with the average time that all events tracked by this object.              *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/18/1996 JLB : Created.                                                                 *
- *=============================================================================================*/
-unsigned long Benchmark::Value(void) const
-{
-	if (Counter) {
-		return(Average / Counter);
-	}
-	return(0);
+unsigned long Benchmark::Value(void) const {
+  if (Counter) {
+    return (Average / Counter);
+  }
+  return (0);
 }

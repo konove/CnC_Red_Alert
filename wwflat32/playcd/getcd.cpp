@@ -20,22 +20,25 @@
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
  *                                                                         *
- *                 Project Name : WWLIB												*
+ *                 Project Name : WWLIB
+ **
  *                                                                         *
- *                    File Name : GETCD.CPP											*
+ *                    File Name : GETCD.CPP
+ **
  *                                                                         *
  *                   Programmer : STEVE WETHERILL BASED ON JOE BOSTIC CODE *
  *                                                                         *
- *                   Start Date : 5/13/94												*
+ *                   Start Date : 5/13/94
+ **
  *                                                                         *
  *                  Last Update : June 4, 1994   [SW]                      *
  *                                                                         *
  *-------------------------------------------------------------------------*
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *		GetCDClass::GetCDClass	--	default constructor                       *
- *		GetCDClass::~GetCDClass	--	destructor                                *
- *		GetCDClass::GetCDDrive	--	returns the logical CD drive              *
+ *		GetCDClass::GetCDClass	--	default constructor *
+ *		GetCDClass::~GetCDClass	--	destructor *
+ *		GetCDClass::GetCDDrive	--	returns the logical CD drive *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <stddef.h>
@@ -48,42 +51,40 @@
 #include "playcd.h"
 #include "wwmem.h"
 
-
 /***************************************************************************
- * GetCDClass -- default constructor													*
+ * GetCDClass -- default constructor
+ **
  *                                                                         *
  *                                                                         *
  *                                                                         *
  * INPUT:                                                                  *
- *       none 																					*
- * OUTPUT:                                                                 *
- *			none                          												*
- * WARNINGS:                                                               *
+ *       none
+ ** OUTPUT:                                                                 *
+ *			none
+ ** WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/26/1994 SW   : Created.                                            *
  *=========================================================================*/
 
-GetCDClass::GetCDClass(VOID)
-{
-	memset ( this , 0 , sizeof ( GetCDClass ) ) ;
+GetCDClass::GetCDClass(VOID) {
+  memset(this, 0, sizeof(GetCDClass));
 
-	if	(DPMI_real_alloc(2, &cdDrive_addrp, &largestp))
-		exit(1);
+  if (DPMI_real_alloc(2, &cdDrive_addrp, &largestp)) exit(1);
 
-	CDCount = 0;
-	CDIndex = 0;
+  CDCount = 0;
+  CDIndex = 0;
 
-	/*
-	** Set all CD drive placeholders to empty
-	*/
-	memset (CDDrives, NO_CD_DRIVE, MAX_CD_DRIVES);
+  /*
+  ** Set all CD drive placeholders to empty
+  */
+  memset(CDDrives, NO_CD_DRIVE, MAX_CD_DRIVES);
 
-	/*
-	** Dos will only currently support one cd drive so just
-	** set the first entry to it.
-	*/
-	GetCDDrives();
+  /*
+  ** Dos will only currently support one cd drive so just
+  ** set the first entry to it.
+  */
+  GetCDDrives();
 }
 
 /***************************************************************************
@@ -92,19 +93,18 @@ GetCDClass::GetCDClass(VOID)
  *                                                                         *
  *                                                                         *
  * INPUT:                                                                  *
- *    	none																					*
- * OUTPUT:                                                                 *
- *			none																					*
- * WARNINGS:                                                               *
+ *    	none
+ ** OUTPUT:                                                                 *
+ *			none
+ ** WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/26/1994 SW: Created.                                          	   *
  *=========================================================================*/
 
-GetCDClass::~GetCDClass(VOID)
-{
-	if(cdDrive_addrp.seg)
-		DPMI_real_free(cdDrive_addrp);		// free up those conventional buffers
+GetCDClass::~GetCDClass(VOID) {
+  if (cdDrive_addrp.seg)
+    DPMI_real_free(cdDrive_addrp);  // free up those conventional buffers
 }
 
 /***************************************************************************
@@ -113,39 +113,38 @@ GetCDClass::~GetCDClass(VOID)
  *                                                                         *
  *                                                                         *
  * INPUT:                                                                  *
- *			none																					*
- * OUTPUT:                                                                 *
- *			WORD logical_drive																*
- * WARNINGS:                                                               *
+ *			none
+ ** OUTPUT:                                                                 *
+ *			WORD logical_drive
+ ** WARNINGS:                                                               *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/26/1994 SW : Created.                                              *
  *=========================================================================*/
 
-void  GetCDClass::GetCDDrives(VOID)
+void GetCDClass::GetCDDrives(VOID)
 
 {
-	for (int lp = 0; lp < 26; lp++ ) {
-		/*
-		** This call determines if the current specifed drive is a
-		** CD ROM drive.
-		** Input:
-		** AX = 150Bh
-		** CX = CD rom drive letter to check (A = 0, B = 1)
-		** Output:
-		** AX = non zero if drive is a CD ROM, zero if it is not.
-		** BX = Signature word (ADADh if CD rom extension are installed)
-		*/
-		sregs . es 	= cdDrive_addrp . seg ;
-		regs . x . ebx  = 0;
-		regs . x . eax  = 0x150B;
-		regs . x . ecx  = lp;
-		DPMI_real_intr ( 0x2F , & regs , & sregs ) ;
+  for (int lp = 0; lp < 26; lp++) {
+    /*
+    ** This call determines if the current specifed drive is a
+    ** CD ROM drive.
+    ** Input:
+    ** AX = 150Bh
+    ** CX = CD rom drive letter to check (A = 0, B = 1)
+    ** Output:
+    ** AX = non zero if drive is a CD ROM, zero if it is not.
+    ** BX = Signature word (ADADh if CD rom extension are installed)
+    */
+    sregs.es = cdDrive_addrp.seg;
+    regs.x.ebx = 0;
+    regs.x.eax = 0x150B;
+    regs.x.ecx = lp;
+    DPMI_real_intr(0x2F, &regs, &sregs);
 
-		if (regs.x.ebx == 0xADAD && regs.x.eax != 0) {
-			CDDrives[CDCount++] = lp;
-		}
-	}
+    if (regs.x.ebx == 0xADAD && regs.x.eax != 0) {
+      CDDrives[CDCount++] = lp;
+    }
+  }
 }
 /* ==================================================================== */
-

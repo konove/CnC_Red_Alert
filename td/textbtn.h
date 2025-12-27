@@ -16,59 +16,60 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\textbtn.h_v   2.18   16 Oct 1995 16:46:54   JOE_BOSTIC  $ */
-/*********************************************************************************************** 
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               *** 
- *********************************************************************************************** 
- *                                                                                             * 
- *                 Project Name : Command & Conquer                                            * 
- *                                                                                             * 
- *                    File Name : TEXTBTN.H                                                    * 
- *                                                                                             * 
- *                   Programmer : Joe L. Bostic                                                * 
- *                                                                                             * 
- *                   Start Date : 01/15/95                                                     * 
- *                                                                                             * 
- *                  Last Update : January 15, 1995 [JLB]                                       * 
- *                                                                                             * 
- *---------------------------------------------------------------------------------------------* 
- * Functions:                                                                                  * 
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* $Header:   F:\projects\c&c\vcs\code\textbtn.h_v   2.18   16 Oct 1995 16:46:54
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TEXTBTN.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/15/95 *
+ *                                                                                             *
+ *                  Last Update : January 15, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef TEXTBTN_H
 #define TEXTBTN_H
 
-#include	"toggle.h"
+#include "toggle.h"
 
+class TextButtonClass : public ToggleClass {
+ public:
+  TextButtonClass(void);
+  TextButtonClass(unsigned id, char const *text, TextPrintType style, int x,
+                  int y, int w = -1, int h = -1, int blackborder = false);
+  TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
+                  int w = -1, int h = -1, int blackborder = false);
+  virtual int Draw_Me(int forced = false);
+  virtual void Set_Text(char const *text, bool resize = false);
+  virtual void Set_Text(int text, bool resize = false);
+  virtual void Set_Style(TextPrintType style) { PrintFlags = style; }
 
-class TextButtonClass : public ToggleClass
-{
-	public:
-		TextButtonClass(void);
-		TextButtonClass(unsigned id, char const * text, TextPrintType style, int x, int y, int w=-1, int h=-1, int blackborder=false);
-		TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y, int w=-1, int h=-1, int blackborder=false);
-		virtual int Draw_Me(int forced=false);
-		virtual void Set_Text(char const *text, bool resize = false);
-		virtual void Set_Text(int text, bool resize = false);
-		virtual void Set_Style (TextPrintType style) {PrintFlags = style;}
+ protected:
+  virtual void Draw_Background(void);
+  virtual void Draw_Text(char const *text);
 
-	protected:
+  unsigned IsBlackBorder : 1;
 
-		virtual void Draw_Background(void);
-		virtual void Draw_Text(char const * text);
+  /*
+  **	This points to a constant string that is used for the button's text.
+  */
+  char const *String;
 
-		unsigned IsBlackBorder:1;
-
-		/*
-		**	This points to a constant string that is used for the button's text. 
-		*/
-		char const * String;
-
-		/*
-		**	This is the print flags to use when rendering this button's text.
-		*/
-		TextPrintType PrintFlags;
+  /*
+  **	This is the print flags to use when rendering this button's text.
+  */
+  TextPrintType PrintFlags;
 };
 
 #endif
-

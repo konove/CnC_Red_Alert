@@ -25,17 +25,17 @@
 #include "wdebug.h"
 #include "process.h"
 
-void Apply_Patch(char *patchfile,ConfigFile &config,int skuIndex);
+void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex);
 
 // Print an error message
-#define ERRMSGX(X,F)\
-{\
-  char     timebuf[40]; \
-  time_t   clock=time(NULL); \
-  strcpy(timebuf,ctime(&clock)); \
-  if (MsgManager::errorStream()) \
-    (*(MsgManager::errorStream())) << "ERR " << timebuf << " [" << \
-        F <<  " " << __LINE__ << "] " << X << endl; \
-}
+#define ERRMSGX(X, F)                                                         \
+  {                                                                           \
+    char timebuf[40];                                                         \
+    time_t clock = time(NULL);                                                \
+    strcpy(timebuf, ctime(&clock));                                           \
+    if (MsgManager::errorStream())                                            \
+      (*(MsgManager::errorStream())) << "ERR " << timebuf << " [" << F << " " \
+                                     << __LINE__ << "] " << X << endl;        \
+  }
 
 #endif

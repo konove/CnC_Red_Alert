@@ -36,19 +36,19 @@
  *   CDTC::Stop -- Stop the timer.                                         *
  *   CDTC::Start -- Start a timer.                                         *
  *   CDTC::DownTimerClass -- Construct a timer class object.               *
- *   CDTC::Set -- Set the time of a timer.                           		*
- *   CDTC::Reset -- Clear the timer.                                       *
+ *   CDTC::Set -- Set the time of a timer. * CDTC::Reset -- Clear the timer. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <wwstd.h>
 #include "timer.H"
 
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Defines /////////////////////////////////////
+/////////////////////////////////// Defines
+////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Code ////////////////////////////////////////
-
+/////////////////////////////////// Code
+///////////////////////////////////////////
 
 /***************************************************************************
  * TC::CountDownTimerClass -- Construct a timer class object.              *
@@ -64,18 +64,15 @@
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
 CountDownTimerClass::CountDownTimerClass(BaseTimerEnum timer, long set, int on)
-							:TimerClass(timer, on)
-{
-	Set(set, on);
+    : TimerClass(timer, on) {
+  Set(set, on);
 }
 
 CountDownTimerClass::CountDownTimerClass(BaseTimerEnum timer, int on)
-							:TimerClass(timer, FALSE)
-{
-	DelayTime = 0;
-	if (on) Start();
+    : TimerClass(timer, FALSE) {
+  DelayTime = 0;
+  if (on) Start();
 }
-
 
 /***************************************************************************
  * CDTC::TIME -- Return the time on the timer.                             *
@@ -90,19 +87,17 @@ CountDownTimerClass::CountDownTimerClass(BaseTimerEnum timer, int on)
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long CountDownTimerClass::Time()
-{
-	long ticks = DelayTime - TimerClass::Time();
+long CountDownTimerClass::Time() {
+  long ticks = DelayTime - TimerClass::Time();
 
-	if (ticks < 0) {
-		ticks = 0;
-	}
-	return(ticks);
+  if (ticks < 0) {
+    ticks = 0;
+  }
+  return (ticks);
 }
 
-
 /***************************************************************************
- * CDTC::SET -- Set the time of a timer.                             		*
+ * CDTC::SET -- Set the time of a timer. *
  *                                                                         *
  *                                                                         *
  *                                                                         *
@@ -115,12 +110,8 @@ long CountDownTimerClass::Time()
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long CountDownTimerClass::Set(long value, BOOL start)
-{
-	DelayTime = value;
-	TimerClass::Reset(start);
-	return(Time());
+long CountDownTimerClass::Set(long value, BOOL start) {
+  DelayTime = value;
+  TimerClass::Reset(start);
+  return (Time());
 }
-
-
-

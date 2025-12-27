@@ -19,24 +19,24 @@
 #ifndef VQMALL_H
 #define VQMALL_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     all.h
-*
-* DESCRIPTION
-*     All VQMisc32 library definitions. (32-Bit protected mode)
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*
-* DATE
-*     July 5, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     all.h
+ *
+ * DESCRIPTION
+ *     All VQMisc32 library definitions. (32-Bit protected mode)
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     July 5, 1995
+ *
+ ****************************************************************************/
 
 #include <vqm32\iff.h>
 #include <vqm32\mono.h>
@@ -55,4 +55,3 @@
 #include <vqm32\mem.h>
 
 #endif /* VQMALL_H */
-

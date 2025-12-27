@@ -16,24 +16,26 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c0\vcs\code\inibin.cpv   4.40   04 Jul 1996 16:14:52   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c0\vcs\code\inibin.cpv   4.40   04 Jul 1996 16:14:52
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : INIBIN.CPP                                                   *
+ *                    File Name : INIBIN.CPP *
  *                                                                                             *
- *                   Programmer : David R. Dettmer                                             *
+ *                   Programmer : David R. Dettmer *
  *                                                                                             *
- *                   Start Date : October 20, 1995                                             *
+ *                   Start Date : October 20, 1995 *
  *                                                                                             *
- *                  Last Update : November 7, 1995   [DRD]                                     *
+ *                  Last Update : November 7, 1995   [DRD] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-#include	"function.h"
-
+#include "function.h"

@@ -18,26 +18,26 @@
 
 /* $Header: /CounterStrike/CCPTR.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CCPTR.CPP                                                    *
+ *                    File Name : CCPTR.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/07/96                                                     *
+ *                   Start Date : 06/07/96 *
  *                                                                                             *
- *                  Last Update : July 6, 1996 [JLB]                                           *
+ *                  Last Update : July 6, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   CCPtr<T>::operator > -- Greater than comparison operator.                                 *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * CCPtr<T>::operator > -- Greater than comparison operator. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-
-#include	"function.h"
+#include "function.h"
 
 /*
 **	These member functions for the CCPtr class cannot be declared inside the
@@ -45,34 +45,32 @@
 **	contain CCPtr objects. The recursive nature of this type of declaration
 **	is not handled by Watcom, hence the body declaration is dislocated here.
 */
-template<class T>
-CCPtr<T>::CCPtr(T * ptr) : ID(-1)
-{
-	if (ptr != NULL) {
-		ID = ptr->ID;
-	}
+template <class T>
+CCPtr<T>::CCPtr(T* ptr) : ID(-1) {
+  if (ptr != NULL) {
+    ID = ptr->ID;
+  }
 }
 
-
 /***********************************************************************************************
- * CCPtr<T>::operator > -- Greater than comparison operator.                                   *
+ * CCPtr<T>::operator > -- Greater than comparison operator. *
  *                                                                                             *
- *    This will compare two pointer value to see if the left hand value is greater than the    *
- *    right hand. The values are compared by comparing based on their Name() functions.        *
+ *    This will compare two pointer value to see if the left hand value is
+ *greater than the    * right hand. The values are compared by comparing based
+ *on their Name() functions.        *
  *                                                                                             *
- * INPUT:   rvalue   -- The right handle CCPtr value.                                          *
+ * INPUT:   rvalue   -- The right handle CCPtr value. *
  *                                                                                             *
- * OUTPUT:  Is the left hand value greater than the right hand value?                          *
+ * OUTPUT:  Is the left hand value greater than the right hand value? *
  *                                                                                             *
- * WARNINGS:   The values pointed to by CCPtr must have a Name() function defined.             *
+ * WARNINGS:   The values pointed to by CCPtr must have a Name() function
+ *defined.             *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   07/06/1996 JLB : Created.                                                                 *
+ * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-template<class T>
-bool CCPtr<T>::operator > (CCPtr<T> const & rvalue) const
-{
-	return (stricmp((*this)->Name(), rvalue->Name()) > 0);
+template <class T>
+bool CCPtr<T>::operator>(CCPtr<T> const& rvalue) const {
+  return (stricmp((*this)->Name(), rvalue->Name()) > 0);
 }
 
 template class CCPtr<AircraftClass>;

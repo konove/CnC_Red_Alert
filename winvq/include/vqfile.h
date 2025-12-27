@@ -19,24 +19,24 @@
 #ifndef VQFILE_H
 #define VQFILE_H
 /****************************************************************************
-*
-*        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
-*
-*----------------------------------------------------------------------------
-*
-* FILE
-*     VQFile.h
-*
-* DESCRIPTION
-*     VQ file format definitions.
-*
-* PROGRAMMER
-*     Denzil E. Long, Jr.
-*      
-* DATE
-*     September 27, 1995
-*
-****************************************************************************/
+ *
+ *        C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S
+ *
+ *----------------------------------------------------------------------------
+ *
+ * FILE
+ *     VQFile.h
+ *
+ * DESCRIPTION
+ *     VQ file format definitions.
+ *
+ * PROGRAMMER
+ *     Denzil E. Long, Jr.
+ *
+ * DATE
+ *     September 27, 1995
+ *
+ ****************************************************************************/
 
 #include <vqm32\iff.h>
 
@@ -67,52 +67,49 @@
  * ColorModel  - Color model of this VQ
  */
 typedef struct _VQHeader {
-	short Version;
-	short Flags;
-	short ImageWidth;
-	short ImageHeight;
-	short BlockType;
-	short BlockWidth;
-	short BlockHeight;
-	short BlockDepth;
-	short CBEntries;
-	short VPtrType;
-	short PalStart;
-	short PalLengh;
-	short PalDepth;
-	short ColorModel;
+  short Version;
+  short Flags;
+  short ImageWidth;
+  short ImageHeight;
+  short BlockType;
+  short BlockWidth;
+  short BlockHeight;
+  short BlockDepth;
+  short CBEntries;
+  short VPtrType;
+  short PalStart;
+  short PalLengh;
+  short PalDepth;
+  short ColorModel;
 } VQHeader;
-
 
 /* VQ file flags */
 #define VQHB_CBCOMP 0 /* Codebook compressed */
 #define VQHB_CTCOMP 1 /* Color table compressed */
 #define VQHB_VPCOMP 2 /* Vector pointers compressed */
-#define VQHF_CBCOMP (1<<VQHB_CBCOMP)
-#define VQHF_CTCOMP (1<<VQHB_CTCOMP)
-#define VQHF_VPCOMP (1<<VQHB_VPCOMP)
+#define VQHF_CBCOMP (1 << VQHB_CBCOMP)
+#define VQHF_CTCOMP (1 << VQHB_CTCOMP)
+#define VQHF_VPCOMP (1 << VQHB_VPCOMP)
 
 /* Block types */
 #define VQBT_RECT 0 /* Rectangle Width X Height */
 
 /* Color models */
 #define VQCM_PALETTED 0 /* Palette (8 bit indices) */
-#define VQCM_RGBTRUE  1 /* RBG truecolor (24 bit) */
-#define VQCM_YBRTRUE  2 /* YCbCr truecolor */
-
+#define VQCM_RGBTRUE 1  /* RBG truecolor (24 bit) */
+#define VQCM_YBRTRUE 2  /* YCbCr truecolor */
 
 /*---------------------------------------------------------------------------
  * VQ FILE CHUNK ID DEFINITIONS
  *-------------------------------------------------------------------------*/
 
-#define ID_VQHR MAKE_ID('V','Q','H','R') /* VQ Header */
-#define ID_VQCB MAKE_ID('V','Q','C','B') /* VQ Codebook */
-#define ID_VQCT MAKE_ID('V','Q','C','T') /* VQ Color Table (palette) */
-#define ID_VQVP MAKE_ID('V','Q','V','P') /* VQ Vector pointers */
+#define ID_VQHR MAKE_ID('V', 'Q', 'H', 'R') /* VQ Header */
+#define ID_VQCB MAKE_ID('V', 'Q', 'C', 'B') /* VQ Codebook */
+#define ID_VQCT MAKE_ID('V', 'Q', 'C', 'T') /* VQ Color Table (palette) */
+#define ID_VQVP MAKE_ID('V', 'Q', 'V', 'P') /* VQ Vector pointers */
 
 #ifdef __WATCOMC__
 #pragma pack();
 #endif
 
 #endif /* VQFILE_H */
-

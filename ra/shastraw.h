@@ -18,51 +18,50 @@
 
 /* $Header: /CounterStrike/SHASTRAW.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : SHASTRAW.H                                                   *
+ *                    File Name : SHASTRAW.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 07/02/96                                                     *
+ *                   Start Date : 07/02/96 *
  *                                                                                             *
- *                  Last Update : July 2, 1996 [JLB]                                           *
+ *                  Last Update : July 2, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef SHASTRAW_H
 #define SHASTRAW_H
 
-
-#include	"straw.h"
-#include	"sha.h"
+#include "straw.h"
+#include "sha.h"
 
 /*
-**	This class serves as a straw that generates a Secure Hash from the data stream that flows
-**	through it. It doesn't modify the data stream in any fashion.
+**	This class serves as a straw that generates a Secure Hash from the data
+*stream that flows *	through it. It doesn't modify the data stream in any
+*fashion.
 */
-class SHAStraw : public Straw
-{
-	public:
-		SHAStraw(void) {}
-		virtual int Get(void * source, int slen);
+class SHAStraw : public Straw {
+ public:
+  SHAStraw(void) {}
+  virtual int Get(void* source, int slen);
 
-		// Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
-		int Result(void * result) const;
+  // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
+  int Result(void* result) const;
 
-	protected:
-		SHAEngine SHA;
+ protected:
+  SHAEngine SHA;
 
-	private:
-		SHAStraw(SHAStraw & rvalue);
-		SHAStraw & operator = (SHAStraw const & straw);
+ private:
+  SHAStraw(SHAStraw& rvalue);
+  SHAStraw& operator=(SHAStraw const& straw);
 };
-
 
 #endif

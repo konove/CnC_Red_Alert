@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* 
+/*
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
  ***************************************************************************
@@ -35,12 +35,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "wwstd.h"
-		   
 
-
-PRIVATE BYTE *version = "Westwood Studios - 32 Bit Library Version " 
-	__DATE__
-	"\r\n";
+PRIVATE BYTE *version =
+    "Westwood Studios - 32 Bit Library Version " __DATE__ "\r\n";
 
 /***************************************************************************
  * VERSION -- Returns with current library version text.                   *
@@ -57,7 +54,4 @@ PRIVATE BYTE *version = "Westwood Studios - 32 Bit Library Version "
  * HISTORY:                                                                *
  *   07/26/1991 JLB : Created.                                             *
  *=========================================================================*/
-BYTE *cdecl Version(VOID)
-{
-	return(version);
-}
+BYTE *cdecl Version(VOID) { return (version); }

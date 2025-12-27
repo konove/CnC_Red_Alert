@@ -18,49 +18,50 @@
 
 /* $Header: /CounterStrike/SHAPIPE.H 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : SHAPIPE.H                                                    *
+ *                    File Name : SHAPIPE.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 06/30/96                                                     *
+ *                   Start Date : 06/30/96 *
  *                                                                                             *
- *                  Last Update : June 30, 1996 [JLB]                                          *
+ *                  Last Update : June 30, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef SHAPIPE_H
 #define SHAPIPE_H
 
-#include	"pipe.h"
-#include	"sha.h"
+#include "pipe.h"
+#include "sha.h"
 
 /*
-**	This class serves as a pipe that generates a Secure Hash from the data stream that flows
-**	through it. It doesn't modify the data stream in any fashion.
+**	This class serves as a pipe that generates a Secure Hash from the data
+*stream that flows *	through it. It doesn't modify the data stream in any
+*fashion.
 */
-class SHAPipe : public Pipe
-{
-	public:
-		SHAPipe(void) {}
-		virtual int Put(void const * source, int slen);
+class SHAPipe : public Pipe {
+ public:
+  SHAPipe(void) {}
+  virtual int Put(void const* source, int slen);
 
-		// Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
-		int Result(void * result) const;
+  // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
+  int Result(void* result) const;
 
-	protected:
-		SHAEngine SHA;
+ protected:
+  SHAEngine SHA;
 
-	private:
-		SHAPipe(SHAPipe & rvalue);
-		SHAPipe & operator = (SHAPipe const & pipe);
+ private:
+  SHAPipe(SHAPipe& rvalue);
+  SHAPipe& operator=(SHAPipe const& pipe);
 };
 
 #endif

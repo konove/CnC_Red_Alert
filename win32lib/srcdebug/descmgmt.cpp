@@ -38,7 +38,6 @@
 #include "descmgmt.h"
 #include "misc.h"
 
-
 /***************************************************************************
  * MAP_SEGMENT_TO_ADDRESS -- Maps a physical address into a selector       *
  *                                                                         *
@@ -54,60 +53,57 @@
  *   03/25/1994  jaw: Created.                                             *
  *=========================================================================*/
 
-ULONG Map_Segment_To_Address(ULONG address, ULONG length)
-{							 				
+ULONG Map_Segment_To_Address(ULONG address, ULONG length) {
+  // this function is not longer needed by RATIONAL SYSTEM DOS4GW
+  // linear addressing mode.
+  // a> the first megabyte of memory is mapped to linear adress 0 - 0x10000h
+  // b> all other addresses are linear offset from either ds: or es:
 
-// this function is not longer needed by RATIONAL SYSTEM DOS4GW
-// linear addressing mode.
-// a> the first megabyte of memory is mapped to linear adress 0 - 0x10000h
-// b> all other addresses are linear offset from either ds: or es:
+  /*
+          UWORD segment;
+          UWORD curDS;
+          CD_DES desc;
+          CD_DES cur_desc;
 
-/*
-	UWORD segment;
-	UWORD curDS;
-	CD_DES desc;
-	CD_DES cur_desc;
+          // allocate a selector
+          if(_dos_allocmem(0, &segment) != 0) {
+                  Exit(1, "Allocation of Descriptor.\n");
+          }
 
-	// allocate a selector
-	if(_dos_allocmem(0, &segment) != 0) {
-		Exit(1, "Allocation of Descriptor.\n");
-	}
+          // get the data for this selector
+          if(_dx_ldt_rd(segment, (UCHAR *)&desc) != 0) {
+                  Exit(1, "Reading Descriptor.\n");
+          }
 
-	// get the data for this selector
-	if(_dx_ldt_rd(segment, (UCHAR *)&desc) != 0) {
-		Exit(1, "Reading Descriptor.\n");
-	}
+          // get the data for current data segment
+          curDS = GetDs();
+          if(_dx_ldt_rd(curDS, (UCHAR *)&cur_desc) != 0) {
+                  Exit(1, "Reading Descriptor.\n");
+          }
 
-	// get the data for current data segment
-	curDS = GetDs();
-	if(_dx_ldt_rd(curDS, (UCHAR *)&cur_desc) != 0) {
-		Exit(1, "Reading Descriptor.\n");
-	}
-	
-	// set limit
-	desc.limit0_15 		= (USHORT)(length & 0xffff);
-	desc.limit16_19 	= ((UCHAR)(length >> 16L)) | DOS_32;
+          // set limit
+          desc.limit0_15 		= (USHORT)(length & 0xffff);
+          desc.limit16_19 	= ((UCHAR)(length >> 16L)) | DOS_32;
 
-	// set base address
-	desc.base0_15 		= (USHORT)(address & 0xffff);
-	desc.base16_23		= (UCHAR)((address >> 16) & 0xff);
-	desc.base24_31		= (UCHAR)((address >> 24) & 0xff);
+          // set base address
+          desc.base0_15 		= (USHORT)(address & 0xffff);
+          desc.base16_23		= (UCHAR)((address >> 16) & 0xff);
+          desc.base24_31		= (UCHAR)((address >> 24) & 0xff);
 
-	// set rights mark as icurrent data segment
-	desc.arights 		= cur_desc.arights;
-							 
-	// write to LDT selector
-	if(_dx_ldt_wr(segment, (UCHAR *)&desc) != 0) {
-		Exit(1, "Failed writing descriptor.\n");
-	}
+          // set rights mark as icurrent data segment
+          desc.arights 		= cur_desc.arights;
 
-	// return selector number
-	return segment;
- */
+          // write to LDT selector
+          if(_dx_ldt_wr(segment, (UCHAR *)&desc) != 0) {
+                  Exit(1, "Failed writing descriptor.\n");
+          }
 
-       if ( address & 0xfff0ffff ) 
-	    Exit ( 1 , "Error mapping real address to lineal address.\n" ) ;
+          // return selector number
+          return segment;
+   */
 
-       return address ;
+  if (address & 0xfff0ffff)
+    Exit(1, "Error mapping real address to lineal address.\n");
+
+  return address;
 }
-

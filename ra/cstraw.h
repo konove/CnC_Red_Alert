@@ -18,54 +18,52 @@
 
 /* $Header: /CounterStrike/CSTRAW.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CSTRAW.H                                                     *
+ *                    File Name : CSTRAW.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : 11/10/96                                                     *
+ *                   Start Date : 11/10/96 *
  *                                                                                             *
- *                  Last Update : November 10, 1996 [JLB]                                      *
+ *                  Last Update : November 10, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef CSTRAW_H
 #define CSTRAW_H
 
-#include	"straw.h"
-#include	"buff.h"
+#include "straw.h"
+#include "buff.h"
 
 /*
-**	This class handles transfer of data by perform regulated requests for data from the next
-**	class in the chain. It performs no translation on the data. By using this segment in a
-**	straw chain, data throughput can be regulated. This can yield great performance increases
-**	when dealing with a file source.
+**	This class handles transfer of data by perform regulated requests for
+*data from the next *	class in the chain. It performs no translation on the
+*data. By using this segment in a *	straw chain, data throughput can be
+*regulated. This can yield great performance increases *	when dealing
+*with a file source.
 */
-class CacheStraw : public Straw
-{
-	public:
-		CacheStraw(Buffer const & buffer) : BufferPtr(buffer), Index(0), Length(0) {}
-		CacheStraw(int length=4096) : BufferPtr(length), Index(0), Length(0) {}
-		virtual int Get(void * source, int slen);
+class CacheStraw : public Straw {
+ public:
+  CacheStraw(Buffer const& buffer) : BufferPtr(buffer), Index(0), Length(0) {}
+  CacheStraw(int length = 4096) : BufferPtr(length), Index(0), Length(0) {}
+  virtual int Get(void* source, int slen);
 
-	private:
-		Buffer BufferPtr;
-		int Index;
-		int Length;
+ private:
+  Buffer BufferPtr;
+  int Index;
+  int Length;
 
-		bool Is_Valid(void) {return(BufferPtr.Is_Valid());}
-		CacheStraw(CacheStraw & rvalue);
-		CacheStraw & operator = (CacheStraw const & pipe);
+  bool Is_Valid(void) { return (BufferPtr.Is_Valid()); }
+  CacheStraw(CacheStraw& rvalue);
+  CacheStraw& operator=(CacheStraw const& pipe);
 };
 
-
-
 #endif
-

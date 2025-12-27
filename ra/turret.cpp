@@ -16,99 +16,90 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c0\vcs\code\turret.cpv   3.1   13 Mar 1996 09:49:34   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c0\vcs\code\turret.cpv   3.1   13 Mar 1996 09:49:34
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : TURRET.CPP                                                   *
+ *                    File Name : TURRET.CPP *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : April 25, 1994                                               *
+ *                   Start Date : April 25, 1994 *
  *                                                                                             *
- *                  Last Update : August 13, 1995 [JLB]                                        *
+ *                  Last Update : August 13, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- *   TurretClass::AI -- Handles the reloading of the turret weapon.                            *
- *   TurretClass::Can_Fire -- Determines if turret can fire upon target.                       *
- *   TurretClass::Debug_Dump -- Debug printing of turret values.                               *
- *   TurretClass::Fire_At -- Try to fire upon the target specified.                            *
- *   TurretClass::Fire_Coord -- Determines the coorindate that projectile would appear.        *
- *   TurretClass::Fire_Direction -- Determines the directinon of firing.                       *
- *   TurretClass::Ok_To_Move -- Queries whether the vehicle can move.                          *
- *   TurretClass::TurretClass -- Normal constructor for the turret class.                      *
- *   TurretClass::TurretClass -- The default constructor for turret class objects.             *
- *   TurretClass::Unlimbo -- Unlimboes turret object.                                          *
- *   TurretClass::~TurretClass -- Default destructor for turret class objects.                 *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: * TurretClass::AI -- Handles the reloading of the turret weapon. *
+ *   TurretClass::Can_Fire -- Determines if turret can fire upon target. *
+ *   TurretClass::Debug_Dump -- Debug printing of turret values. *
+ *   TurretClass::Fire_At -- Try to fire upon the target specified. *
+ *   TurretClass::Fire_Coord -- Determines the coorindate that projectile would
+ *appear.        * TurretClass::Fire_Direction -- Determines the directinon of
+ *firing.                       * TurretClass::Ok_To_Move -- Queries whether the
+ *vehicle can move.                          * TurretClass::TurretClass --
+ *Normal constructor for the turret class.                      *
+ *   TurretClass::TurretClass -- The default constructor for turret class
+ *objects.             * TurretClass::Unlimbo -- Unlimboes turret object. *
+ *   TurretClass::~TurretClass -- Default destructor for turret class objects. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
-#include	"function.h"
-#include	"turret.h"
-
-
-/***********************************************************************************************
- * TurretClass::~TurretClass -- Default destructor for turret class objects.                   *
- *                                                                                             *
- *    This is the default destructor for turret class objects. It does nothing.                *
- *                                                                                             *
- * INPUT:   none                                                                               *
- *                                                                                             *
- * OUTPUT:  none                                                                               *
- *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   08/13/1995 JLB : Created.                                                                 *
- *=============================================================================================*/
-TurretClass::~TurretClass(void)
-{
-}
-
+#include "function.h"
+#include "turret.h"
 
 /***********************************************************************************************
- * TurretClass::TurretClass -- The default constructor for turret class objects.               *
+ * TurretClass::~TurretClass -- Default destructor for turret class objects. *
  *                                                                                             *
- *    This is the default constructor for turret class objects. It does nothing.               *
+ *    This is the default destructor for turret class objects. It does nothing.
+ **
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   08/13/1995 JLB : Created.                                                                 *
+ * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-TurretClass::TurretClass(void)
-{
-}
-
+TurretClass::~TurretClass(void) {}
 
 /***********************************************************************************************
- * TurretClass::TurretClass -- Normal constructor for the turret class.                        *
+ * TurretClass::TurretClass -- The default constructor for turret class objects.
+ **
  *                                                                                             *
- *    This is the normal constructor for the turret class. It merely sets the turret up to     *
- *    face north.                                                                              *
+ *    This is the default constructor for turret class objects. It does nothing.
+ **
  *                                                                                             *
- * INPUT:   classid  -- The type id for this particular unit.                                  *
+ * INPUT:   none *
  *                                                                                             *
- *          house    -- The house that this unit will belong to.                               *
+ * OUTPUT:  none *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * WARNINGS:   none *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
- *                                                                                             *
- * HISTORY:                                                                                    *
- *   02/02/1995 JLB : Created.                                                                 *
+ * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-TurretClass::TurretClass(UnitType classid, HousesType house) :
-	DriveClass(classid, house)
-{
-}
+TurretClass::TurretClass(void) {}
 
-
-
+/***********************************************************************************************
+ * TurretClass::TurretClass -- Normal constructor for the turret class. *
+ *                                                                                             *
+ *    This is the normal constructor for the turret class. It merely sets the
+ *turret up to     * face north. *
+ *                                                                                             *
+ * INPUT:   classid  -- The type id for this particular unit. *
+ *                                                                                             *
+ *          house    -- The house that this unit will belong to. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 02/02/1995 JLB : Created. *
+ *=============================================================================================*/
+TurretClass::TurretClass(UnitType classid, HousesType house)
+    : DriveClass(classid, house) {}

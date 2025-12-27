@@ -38,40 +38,20 @@
 // Public functions
 //==========================================================================
 
-long WM_Command_Func(
-	WindowHandle window_handle,
-	unsigned int message,
-	WPARAM w_param,
-	LPARAM l_param );
+long WM_Command_Func(WindowHandle window_handle, unsigned int message,
+                     WPARAM w_param, LPARAM l_param);
 
-long WM_Sys_Command_Func(
-	WindowHandle window_handle,
-	unsigned int message,
-	WPARAM w_param,
-	LPARAM l_param );
+long WM_Sys_Command_Func(WindowHandle window_handle, unsigned int message,
+                         WPARAM w_param, LPARAM l_param);
 
-long WM_Paint_Func(
-	WindowHandle window_handle,
-	unsigned int message,
-	unsigned int w_param,
-	long l_param );
+long WM_Paint_Func(WindowHandle window_handle, unsigned int message,
+                   unsigned int w_param, long l_param);
 
-long WM_Mouse_Button_Func(
-	WindowHandle window_handle,
-	unsigned int message,
-	unsigned int w_param,
-	long l_param );
+long WM_Mouse_Button_Func(WindowHandle window_handle, unsigned int message,
+                          unsigned int w_param, long l_param);
 
-long WM_ActivateApp_Func(
-	WindowHandle window_handle,
-	unsigned int message,
-	unsigned int w_param,
-	long l_param );
+long WM_ActivateApp_Func(WindowHandle window_handle, unsigned int message,
+                         unsigned int w_param, long l_param);
 
-long WM_Destroy_Func(
-	WindowHandle window_handle,
-	unsigned int message,
-	unsigned int w_param,
-	long l_param );
-
-
+long WM_Destroy_Func(WindowHandle window_handle, unsigned int message,
+                     unsigned int w_param, long l_param);

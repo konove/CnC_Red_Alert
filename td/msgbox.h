@@ -16,45 +16,50 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\msgbox.h_v   2.17   16 Oct 1995 16:47:50   JOE_BOSTIC  $ */
+/* $Header:   F:\projects\c&c\vcs\code\msgbox.h_v   2.17   16 Oct 1995 16:47:50
+ * JOE_BOSTIC  $ */
 /***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer                                            *
+ *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : OPTIONS.H                                                    *
+ *                    File Name : OPTIONS.H *
  *                                                                                             *
- *                   Programmer : Joe L. Bostic                                                *
+ *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : June 8, 1994                                                 *
+ *                   Start Date : June 8, 1994 *
  *                                                                                             *
- *                  Last Update : June 8, 1994   [JLB]                                         *
+ *                  Last Update : June 8, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:                                                                                  *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
 
 #ifndef MSGBOX_H
 #define MSGBOX_H
 
-#include	"jshell.h"
+#include "jshell.h"
 
-class CCMessageBox
-{
-		int Caption;
+class CCMessageBox {
+  int Caption;
 #ifdef JAPANESE
-		bool IsPicture;
+  bool IsPicture;
 #endif
-	public:
+ public:
 #ifdef JAPANESE
-		CCMessageBox(int caption=TXT_NONE, bool pict=false);
+  CCMessageBox(int caption = TXT_NONE, bool pict = false);
 #else
-		CCMessageBox(int caption=TXT_NONE) {Caption = caption;};
+  CCMessageBox(int caption = TXT_NONE) { Caption = caption; };
 #endif
-		int Process(const char *msg, const char *b1txt, const char *b2txt=NULL, const char *b3txt=NULL, bool preserve=false);
-		int Process(int msg, int b1txt=TXT_OK, int b2txt=TXT_NONE, int b3txt=TXT_NONE, bool preserve=false);
-		int Process(char const *msg, int b1txt=TXT_OK, int b2txt=TXT_NONE, int b3txt=TXT_NONE, bool preserve=false);
+  int Process(const char *msg, const char *b1txt, const char *b2txt = NULL,
+              const char *b3txt = NULL, bool preserve = false);
+  int Process(int msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
+              int b3txt = TXT_NONE, bool preserve = false);
+  int Process(char const *msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
+              int b3txt = TXT_NONE, bool preserve = false);
 };
 
 #endif
