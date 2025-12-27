@@ -21,8 +21,8 @@ add_compile_definitions(WIN32) # hopefully easier than DOS
 
 
 add_subdirectory(port)
-add_subdirectory(SDLLIB)
-add_subdirectory(WINVQ)
+add_subdirectory(sdllib)
+add_subdirectory(winvq)
 
-add_subdirectory(RA)
-add_subdirectory(TD)
+add_subdirectory(ra)
+add_subdirectory(td)
