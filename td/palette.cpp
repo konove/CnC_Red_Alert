@@ -1,7 +1,10 @@
-#include <stdio.h>
-
 #include "palette.h"
-#include "function.h"
+
+#include <cstring>
+
+#include "gbuffer.h"
+#include "timer.h"
+#include "ww_win.h"
 
 unsigned char CurrentPalette[3 * 256];
 

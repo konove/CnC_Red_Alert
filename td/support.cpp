@@ -1,4 +1,9 @@
+#include <cstdint>
+#include <cctype>
+#include <cstring>
+
 #include "function.h"
+#include "gbuffer.h"
 
 void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
                                  int frac) {

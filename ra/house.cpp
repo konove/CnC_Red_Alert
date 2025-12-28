@@ -151,6 +151,7 @@
 #include "function.h"
 #include "vortex.h"
 
+#include <algorithm>
 // #include "WolDebug.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
@@ -1064,8 +1065,8 @@ void HouseClass::AI(void) {
   *adjustments. If the *	power rating drops below zero, then make it
   *zero.
   */
-  Power = max(Power, 0);
-  Drain = max(Drain, 0);
+  Power = std::max(Power, 0);
+  Drain = std::max(Drain, 0);
 
   /*
   **	If the base has been alerted to the enemy and should be attacking, then
@@ -1265,7 +1266,7 @@ void HouseClass::AI(void) {
 #ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
   if (Scen.AutoSonarTimer == 0) {
     //	If house has nothing but subs left, do an automatic sonar pulse to
-    //reveal them.
+    // reveal them.
     if (VQuantity[VESSEL_SS] >
         0)  //	Includes count of VESSEL_MISSILESUBs. ajw
     {
@@ -1279,7 +1280,7 @@ void HouseClass::AI(void) {
         }
         if (!iCount) {
           //	ajw - Found bug - house's civilians are not removed from
-          //IQuantity when they die. 	Workaround...
+          // IQuantity when they die. 	Workaround...
           for (int i = 0; i <= INFANTRY_DOG; ++i) {
             iCount += IQuantity[i];
           }
@@ -1625,7 +1626,7 @@ void HouseClass::Super_Weapon_Handler(void) {
     */
     if ((ActiveBScan & STRUCTF_CHRONOSPHERE) &&
         //			(ActLike == HOUSE_GOOD || Session.Type !=
-        //GAME_NORMAL) &&
+        // GAME_NORMAL) &&
         Control.TechLevel >=
             BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
         //			Control.TechLevel >= Rule.ChronoTechLevel &&
@@ -2042,7 +2043,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   int retval = 0;
 
   Capacity += adjust;
-  Capacity = max(Capacity, 0L);
+  Capacity = std::max(Capacity, 0L);
   if (Tiberium > Capacity) {
     retval = Tiberium - Capacity;
     Tiberium = Capacity;
@@ -2251,10 +2252,10 @@ void HouseClass::Make_Ally(HousesType house) {
         sprintf(buffer, Text_String(TXT_HAS_ALLIED), IniName,
                 HouseClass::As_Pointer(house)->IniName);
         //				sprintf(buffer,
-        //Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
-        //HOUSE_MULTI1]->Name,
-        //Session.Players[((HouseClass::As_Pointer(house))->Class->House) -
-        //HOUSE_MULTI1]->Name);
+        // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
+        // HOUSE_MULTI1]->Name,
+        // Session.Players[((HouseClass::As_Pointer(house))->Class->House) -
+        // HOUSE_MULTI1]->Name);
         Session.Messages.Add_Message(
             NULL, 0, buffer, RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -2328,8 +2329,8 @@ void HouseClass::Make_Enemy(HousesType house) {
       sprintf(buffer, Text_String(TXT_AT_WAR), IniName,
               HouseClass::As_Pointer(house)->IniName);
       //			sprintf(buffer, Text_String(TXT_AT_WAR),
-      //Session.Players[Class->House - HOUSE_MULTI1]->Name,
-      //Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
+      // Session.Players[Class->House - HOUSE_MULTI1]->Name,
+      // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
       Session.Messages.Add_Message(
           NULL, 0, buffer, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -2784,8 +2785,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         }
 
         //				Create_Air_Reinforcement(this,
-        //AIRCRAFT_BADGER, 1, MISSION_HUNT, ::As_Target(cell), TARGET_NONE,
-        //INFANTRY_E1);
+        // AIRCRAFT_BADGER, 1, MISSION_HUNT, ::As_Target(cell), TARGET_NONE,
+        // INFANTRY_E1);
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
@@ -4447,19 +4448,19 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass *building) const {
     diff = zoneinfo.AntiAir - ZoneInfo[z].AirDefense;
     if (z == ZONE_CORE) diff /= 2;
     if (diff > 0) {
-      zonerating[z] += min(antiair, diff);
+      zonerating[z] += std::min(antiair, diff);
     }
 
     diff = zoneinfo.AntiArmor - ZoneInfo[z].ArmorDefense;
     if (z == ZONE_CORE) diff /= 2;
     if (diff > 0) {
-      zonerating[z] += min(antiarmor, diff);
+      zonerating[z] += std::min(antiarmor, diff);
     }
 
     diff = zoneinfo.AntiInfantry - ZoneInfo[z].InfantryDefense;
     if (z == ZONE_CORE) diff /= 2;
     if (diff > 0) {
-      zonerating[z] += min(antiinfantry, diff);
+      zonerating[z] += std::min(antiinfantry, diff);
     }
   }
 
@@ -4600,7 +4601,7 @@ void HouseClass::Recalc_Center(void) {
           radius += Distance(Center, b->Center_Coord());
         }
       }
-      Radius = max(radius / count, 2 * CELL_LEPTON_W);
+      Radius = std::max(radius / count, 2 * CELL_LEPTON_W);
 
       /*
       **	Determine the relative strength of each base defense zone.
@@ -5085,7 +5086,7 @@ UrgencyType HouseClass::Check_Raise_Power(void) const {
   if (Power_Fraction() < Rule.PowerEmergencyFraction && Power < Drain - 400) {
     //	if (Power_Fraction() < Rule.PowerEmergencyFraction &&
     //(BQuantity[STRUCT_CONST] == 0 || Available_Money() < 200 || Power <
-    //Drain-400)) {
+    // Drain-400)) {
     urgency = URGENCY_MEDIUM;
     if (State == STATE_ATTACKED) {
       urgency++;
@@ -5897,7 +5898,7 @@ int HouseClass::AI_Unit(void) {
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
             int subtype = ((UnitTypeClass const *)memtype)->Type;
             counter[subtype] =
-                max(counter[subtype], team->Members[subindex].Quantity);
+                std::max(counter[subtype], team->Members[subindex].Quantity);
           }
         }
       }
@@ -6038,7 +6039,7 @@ int HouseClass::AI_Vessel(void) {
                   ((VesselTypeClass const *)(team->Members[subindex].Class))
                       ->Type;
               counter[subtype] =
-                  max(counter[subtype], team->Members[subindex].Quantity);
+                  std::max(counter[subtype], team->Members[subindex].Quantity);
             }
           }
         }
@@ -6164,8 +6165,8 @@ int HouseClass::AI_Infantry(void) {
               //									counter[subtype]
               //= 1;
               counter[subtype] =
-                  max(counter[subtype], team->Members[subindex].Quantity);
-              counter[subtype] = min(counter[subtype], 5);
+                  std::max(counter[subtype], team->Members[subindex].Quantity);
+              counter[subtype] = std::min(counter[subtype], 5);
             }
           }
         }
@@ -6239,7 +6240,7 @@ int HouseClass::AI_Infantry(void) {
           InfantryTypeClass::As_Reference(index).Level <= Control.TechLevel) {
         typetrack[count].Value = 0;
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98 This looks like a potential bug.
-                   //It is prob. for save game format compatibility.
+                   // It is prob. for save game format compatibility.
         int clipindex = index;
         if (clipindex >= INFANTRY_RA_COUNT) clipindex -= INFANTRY_RA_COUNT;
         if ((enemy != NULL &&
@@ -6271,12 +6272,12 @@ int HouseClass::AI_Infantry(void) {
 
             case INFANTRY_RENOVATOR:
               if (CurInfantry > 5) {
-                typetrack[count].Value = 1 - max(IQuantity[index], 0);
+                typetrack[count].Value = 1 - std::max(IQuantity[index], 0);
               }
               break;
 
             case INFANTRY_TANYA:
-              typetrack[count].Value = 1 - max(IQuantity[index], 0);
+              typetrack[count].Value = 1 - std::max(IQuantity[index], 0);
               break;
 
             default:
@@ -7783,45 +7784,46 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       break;
 
     case ZONE_NORTH:
-      maxdist =
-          min(Radius * 3,
-              (Coord_Y(Center) - Cell_To_Lepton(Map.MapCellY)) - CELL_LEPTON_H);
+      maxdist = std::min(
+          Radius * 3,
+          (Coord_Y(Center) - Cell_To_Lepton(Map.MapCellY)) - CELL_LEPTON_H);
       if (maxdist < 0) break;
-      coord = Coord_Move(
-          Center, (DirType)(Random_Pick(DIR_N, DIR_E) - ((DirType)32)),
-          Random_Pick(min(Radius * 2, maxdist), min(Radius * 3, maxdist)));
+      coord = Coord_Move(Center,
+                         (DirType)(Random_Pick(DIR_N, DIR_E) - ((DirType)32)),
+                         Random_Pick(std::min(Radius * 2, maxdist),
+                                     std::min(Radius * 3, maxdist)));
       break;
 
     case ZONE_EAST:
-      maxdist = min(
+      maxdist = std::min(
           Radius * 3,
           (Cell_To_Lepton(Map.MapCellX + Map.MapCellWidth) - Coord_X(Center)) -
               CELL_LEPTON_W);
       if (maxdist < 0) break;
-      coord = Coord_Move(
-          Center, Random_Pick(DIR_NE, DIR_SE),
-          Random_Pick(min(Radius * 2, maxdist), min(Radius * 3, maxdist)));
+      coord = Coord_Move(Center, Random_Pick(DIR_NE, DIR_SE),
+                         Random_Pick(std::min(Radius * 2, maxdist),
+                                     std::min(Radius * 3, maxdist)));
       break;
 
     case ZONE_SOUTH:
-      maxdist = min(
+      maxdist = std::min(
           Radius * 3,
           (Cell_To_Lepton(Map.MapCellY + Map.MapCellHeight) - Coord_Y(Center)) -
               CELL_LEPTON_H);
       if (maxdist < 0) break;
-      coord = Coord_Move(
-          Center, Random_Pick(DIR_SE, DIR_SW),
-          Random_Pick(min(Radius * 2, maxdist), min(Radius * 3, maxdist)));
+      coord = Coord_Move(Center, Random_Pick(DIR_SE, DIR_SW),
+                         Random_Pick(std::min(Radius * 2, maxdist),
+                                     std::min(Radius * 3, maxdist)));
       break;
 
     case ZONE_WEST:
-      maxdist =
-          min(Radius * 3,
-              (Coord_X(Center) - Cell_To_Lepton(Map.MapCellX)) - CELL_LEPTON_W);
+      maxdist = std::min(
+          Radius * 3,
+          (Coord_X(Center) - Cell_To_Lepton(Map.MapCellX)) - CELL_LEPTON_W);
       if (maxdist < 0) break;
-      coord = Coord_Move(
-          Center, Random_Pick(DIR_SW, DIR_NW),
-          Random_Pick(min(Radius * 2, maxdist), min(Radius * 3, maxdist)));
+      coord = Coord_Move(Center, Random_Pick(DIR_SW, DIR_NW),
+                         Random_Pick(std::min(Radius * 2, maxdist),
+                                     std::min(Radius * 3, maxdist)));
       break;
   }
 

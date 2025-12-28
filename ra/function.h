@@ -140,16 +140,12 @@ UnitTypeClass      │   BuildingTypeClass      │  VesselTypeClass
 
 #endif
 
-#include <algorithm>
-
-using std::min;
-
 #ifndef BITMAPCLASS
 #define BITMAPCLASS
 class BitmapClass {
  public:
   BitmapClass(int w, int h, unsigned char *data)
-      : Width(w), Height(h), Data(data){};
+      : Width(w), Height(h), Data(data) {};
 
   int Width;
   int Height;
@@ -158,8 +154,8 @@ class BitmapClass {
 
 class TPoint2D {
  public:
-  TPoint2D(int xx, int yy) : x(xx), y(yy){};
-  TPoint2D(void) : x(0), y(0){};
+  TPoint2D(int xx, int yy) : x(xx), y(yy) {};
+  TPoint2D(void) : x(0), y(0) {};
 
   int x;
   int y;
@@ -378,7 +374,6 @@ CELL Coord_Cell(COORDINATE coord);
 #include "scenario.h"
 #include "msglist.h"  // Multiplayer chat message system
 #include "session.h"  // Multiplayer session class
-// #include "phone.h"			// Phone list manager
 #include "ipxmgr.h"   // IPX connection manager
 #include "nullmgr.h"  // Modem connection manager
 #include "readline.h"
@@ -558,10 +553,9 @@ void Shake_The_Screen(int shakes);
 */
 short const *Coord_Spillage_List(COORDINATE coord, Rect const &rect,
                                  bool nocenter = true);
-void Normal_Move_Point(short &x, short &y, register DirType dir,
+void Normal_Move_Point(short &x, short &y, DirType dir,
                        unsigned short distance);
-void Move_Point(short &x, short &y, register DirType dir,
-                unsigned short distance);
+void Move_Point(short &x, short &y, DirType dir, unsigned short distance);
 COORDINATE Coord_Move(COORDINATE start, DirType facing,
                       unsigned short distance);
 COORDINATE Coord_Scatter(COORDINATE coord, unsigned distance,
@@ -668,27 +662,6 @@ bool Init_Game(int argc, char *argv[]);
 bool Select_Game(bool fade = false);
 bool Parse_Command_Line(int argc, char *argv[]);
 void Parse_INI_File(void);
-
-/*
-** INTERPAL.CPP
-*/
-#define SIZE_OF_PALETTE 256
-extern "C" unsigned char *InterpolationPalette;
-extern bool InterpolationPaletteChanged;
-extern void Interpolate_2X_Scale(GraphicBufferClass *source,
-                                 GraphicViewPortClass *dest,
-                                 char const *palette_file_name);
-void Read_Interpolation_Palette(char const *palette_file_name);
-void Write_Interpolation_Palette(char const *palette_file_name);
-void Increase_Palette_Luminance(unsigned char *InterpolationPalette,
-                                int RedPercentage, int GreenPercentage,
-                                int BluePercentage, int cap);
-extern "C" {
-extern unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE]
-                                              [SIZE_OF_PALETTE];
-extern unsigned char *InterpolationPalette;
-void __cdecl Asm_Create_Palette_Interpolation_Table(void);
-}
 
 /*
 ** JSHELL.CPP
@@ -1023,12 +996,6 @@ char const *Version_Name(void);
 */
 WeaponType Weapon_From_Name(char const *name);
 ArmorType Armor_From_Name(char const *name);
-
-/*
-** Winstub.cpp
-*/
-void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
-                       unsigned char *palette);
 
 /*
 ** Egos.CPP

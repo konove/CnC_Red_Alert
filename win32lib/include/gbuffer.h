@@ -117,10 +117,6 @@
  *   GVPC::Print -- stub function to print a long on a graphic view port   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
-// #define _WIN32
-#endif  // _WIN32
-
 #define WIN32_LEAN_AND_MEAN
 #include <ddraw.h>
 
@@ -162,7 +158,7 @@
 class BitmapClass {
  public:
   BitmapClass(int w, int h, unsigned char *data)
-      : Width(w), Height(h), Data(data){};
+      : Width(w), Height(h), Data(data) {};
 
   int Width;
   int Height;
@@ -171,8 +167,8 @@ class BitmapClass {
 
 class TPoint2D {
  public:
-  TPoint2D(int xx, int yy) : x(xx), y(yy){};
-  TPoint2D(void) : x(0), y(0){};
+  TPoint2D(int xx, int yy) : x(xx), y(yy) {};
+  TPoint2D(void) : x(0), y(0) {};
 
   int x;
   int y;
@@ -346,7 +342,7 @@ class GraphicViewPortClass {
 
   //	This doesnt seem to exist anywhere?? - Steve T 9/26/95 6:05PM
   //		VOID Grey_Out_Region(int x, int y, int width, int height, int
-  //color);
+  // color);
 
   //
   // New members to lock and unlock the direct draw video memory
@@ -433,7 +429,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
 
  protected:
   LPDIRECTDRAWSURFACE
-      VideoSurfacePtr;  // Pointer to the related direct draw surface
+  VideoSurfacePtr;  // Pointer to the related direct draw surface
   DDSURFACEDESC VideoSurfaceDescription;  // Description of the said surface
 };
 

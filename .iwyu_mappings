@@ -1,0 +1,21 @@
+[
+  # SDL2 mappings
+  { "include": ["<SDL2/SDL.h>", "public", "<SDL.h>", "public"] },
+  { "include": ["@<SDL2/.*>", "public", "<SDL.h>", "public"] },
+
+  # Standard library mappings (common C++11 issues)
+  { "include": ["<bits/std_abs.h>", "private", "<cstdlib>", "public"] },
+  { "include": ["<bits/move.h>", "private", "<utility>", "public"] },
+  { "include": ["<bits/types/struct_tm.h>", "private", "<ctime>", "public"] },
+
+  # Legacy code - allow old-style C headers in legacy codebase
+  { "symbol": ["NULL", "private", "<cstddef>", "public"] },
+
+  # Project-specific mappings
+  { "include": ["\"function.h\"", "public", "\"function.h\"", "public"] },
+
+  # Windows compatibility stubs
+  { "include": ["\"fakesock.h\"", "public", "\"fakesock.h\"", "public"] },
+  { "include": ["\"wsproto.h\"", "public", "\"wsproto.h\"", "public"] },
+  { "include": ["\"tcpip.h\"", "public", "\"tcpip.h\"", "public"] }
+]

@@ -41,6 +41,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.
@@ -206,7 +207,7 @@ void CreditClass::AI(bool forced) {
   /*
   **	Make sure that the credit counter doesn't drop below zero.
   */
-  Credits = max(Credits, 0L);
+  Credits = std::max(Credits, 0L);
 
   if (Scen.MissionTimer.Is_Active() || Scen.MissionTimer) {
     IsToRedraw = true;

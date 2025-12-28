@@ -42,14 +42,18 @@
  **
  *                                                                         *
  * The class also contains routines to maintain a cumulative response time
- ** for this queue.  It's up to the caller to call Add_Delay() whenever * it detects that an outgoing message has been ACK'd; this class adds		*
- * that delay into a computed average delay over the last few message * delays.
+ ** for this queue.  It's up to the caller to call Add_Delay() whenever * it
+ * detects that an outgoing message has been ACK'd; this class adds
+ *	* that delay into a computed average delay over the last few message *
+ * delays.
  **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #ifndef COMBUF_H
 #define COMBUF_H
+
+#include <cstddef>
 
 /*
 ********************************** Defines **********************************

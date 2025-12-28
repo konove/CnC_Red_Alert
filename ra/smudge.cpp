@@ -48,6 +48,8 @@
 #include "function.h"
 #include "smudge.h"
 
+#include <algorithm>
+
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
 /***********************************************************************************************
@@ -182,7 +184,8 @@ bool SmudgeClass::Mark(MarkType mark) {
                 if (Class->IsCrater && cell->Smudge != SMUDGE_NONE &&
                     SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
                   cell->SmudgeData++;
-                  cell->SmudgeData = (int)min((int)cell->SmudgeData, (int)4);
+                  cell->SmudgeData =
+                      (int)std::min((int)cell->SmudgeData, (int)4);
                 }
 
                 if (cell->Smudge == SMUDGE_NONE) {

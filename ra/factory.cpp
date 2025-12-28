@@ -57,6 +57,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * FactoryClass::FactoryClass -- Default constructor for factory objects. *
@@ -197,7 +198,7 @@ void FactoryClass::AI(void) {
 
         int cost = Cost_Per_Tick();
 
-        cost = min(cost, Balance);
+        cost = std::min(cost, Balance);
 
         /*
         **	Enough time has expired so that another production step can

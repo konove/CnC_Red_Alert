@@ -120,7 +120,7 @@ class DisplayClass : public MapClass {
 
   //-------------------------------------------------------------------------
   DisplayClass(void);
-  DisplayClass(NoInitClass const &x) : MapClass(x){};
+  DisplayClass(NoInitClass const &x) : MapClass(x) {};
 
   virtual void Read_INI(CCINIClass &ini);
   void Write_INI(CCINIClass &ini);
@@ -180,7 +180,7 @@ class DisplayClass : public MapClass {
   CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1, CELL cell = -1,
                        SpeedType loco = SPEED_FOOT, bool zonecheck = true,
                        MZoneType mzone = MZONE_NORMAL) const;
-  bool In_View(register CELL cell) const;
+  bool In_View(CELL cell) const;
   bool Passes_Proximity_Check(ObjectTypeClass const *object, HousesType house,
                               short const *list, CELL trycell) const;
   ObjectClass *Cell_Object(CELL cell, int x = 0, int y = 0) const;
@@ -281,7 +281,7 @@ class DisplayClass : public MapClass {
     TacticalClass(void)
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true){};
+                      true) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

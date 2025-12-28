@@ -186,6 +186,9 @@ target_link_libraries(tdsdl PRIVATE port sdllib vqa32)
 
 install(TARGETS tdsdl)
 
+# Enable IWYU for all targets in this directory
+enable_iwyu_for_all_targets()
+
 if(EMSCRIPTEN)
 	set_target_properties(tdsdl PROPERTIES
 		SUFFIX ".html"

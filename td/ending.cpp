@@ -40,6 +40,7 @@
 
 #include "function.h"
 #include "textblit.h"
+#include "interpal.h"
 
 void GDI_Ending(void) {
 #ifdef DEMO
@@ -194,7 +195,7 @@ void Nod_Ending(void) {
   bool printedtext = false;
   while (!done) {
     if (!printedtext && !Is_Sample_Playing(kanefinl)) {
-      printedtext++;
+      printedtext = true;
       Alloc_Object(
           new ScorePrintClass(Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
       mouseshown = true;
@@ -212,7 +213,7 @@ void Nod_Ending(void) {
           int mousex = _Kbd->MouseQX;
           int mousey = _Kbd->MouseQY;
           if (mousey >= 22 * RESFACTOR && mousey <= 177 * RESFACTOR) {
-            done++;
+            done = true;
             if (mousex < 160 * RESFACTOR && mousey < 100 * RESFACTOR)
               selection = 2;
             if (mousex < 160 * RESFACTOR && mousey >= 100 * RESFACTOR)

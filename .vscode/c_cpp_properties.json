@@ -22,8 +22,8 @@
         "far="
       ],
       "compilerPath": "/usr/bin/g++",
-      "cStandard": "c11",
-      "cppStandard": "c++11",
+      "cStandard": "c23",
+      "cppStandard": "c++23",
       "intelliSenseMode": "linux-gcc-x64",
       "compileCommands": "${workspaceFolder}/build/compile_commands.json",
       "configurationProvider": "ms-vscode.cmake-tools"

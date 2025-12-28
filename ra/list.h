@@ -40,28 +40,14 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <algorithm>
-using std::max;
-
 #include "control.h"
 #include "shapebtn.h"
 #include "slider.h"
 
-/***************************************************************************
- * ListClass -- Like a Windows ListBox structure
- **
- *                                                                         *
- * INPUT:      int x -- x position of gadget
- ** int y -- y position of gadget
- ** int w -- width of gadget
- ** int h -- height of gadget
- ** UWORD flags -- see enumeration choices
- **
- *                                                                         *
- * OUTPUT:     none.
- ** WARNINGS:
- ** HISTORY:    01/03/1995 MML : Created.                                   *
- *=========================================================================*/
+// Scrollable list box widget similar to a Windows ListBox control.
+// Displays a list of text items with support for selection, scrolling, and tab stops.
+// Automatically manages an optional scroll bar when the list content exceeds visible area.
+// Items can be added/removed dynamically and accessed by index or text string.
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
@@ -476,9 +462,10 @@ int TListClass<T>::Draw_Me(int forced) {
                               Width - 2, LineHeight, (line == SelectedIndex),
                               TextFlags);
           //					List[index].Draw_It(line, X+1,
-          //Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
-          //SelectedIndex), TextFlags); 					Draw_Entry(line, X+1,
-          //Y+(LineHeight*index)+1, Width-2, (line == SelectedIndex));
+          // Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
+          // SelectedIndex), TextFlags);
+          // Draw_Entry(line, X+1, Y+(LineHeight*index)+1, Width-2, (line ==
+          // SelectedIndex));
         }
       }
     }

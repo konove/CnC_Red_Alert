@@ -97,6 +97,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
                                            2, 2, 2, 2, 1, 1, 1, 1, 1, 0};
@@ -465,7 +467,7 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
       int morefear = FEAR_ANXIOUS;
       if (Health_Ratio() > Rule.ConditionRed) morefear /= 2;
       if (Health_Ratio() > Rule.ConditionYellow) morefear /= 2;
-      Fear = FearType(min((int)Fear + morefear, int(FEAR_MAXIMUM)));
+      Fear = FearType(std::min((int)Fear + morefear, int(FEAR_MAXIMUM)));
     }
   }
   return (res);
@@ -500,7 +502,8 @@ int InfantryClass::Shape_Number(void) const {
   **	The infantry shape is always modulo the number of animation frames
   **	of the action stage that the infantry is doing.
   */
-  int shapenum = Fetch_Stage() % max(int(Class->DoControls[doit].Count), 1);
+  int shapenum =
+      Fetch_Stage() % std::max(int(Class->DoControls[doit].Count), 1);
 
   /*
   **	If facing makes a difference, then the shape number will be incremented
@@ -634,9 +637,9 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->Captured(House);
             } else {
 #ifdef FIXIT_ENGINEER  //	checked - ajw 9/28/98
-              int damage =
-                  min((tech->Techno_Type_Class()->MaxStrength) * EngineerDamage,
-                      tech->Strength - 1);
+              int damage = std::min(
+                  (tech->Techno_Type_Class()->MaxStrength) * EngineerDamage,
+                  tech->Strength - 1);
 #else
               int damage = min((tech->Techno_Type_Class()->MaxStrength) / 3,
                                tech->Strength - 1);
@@ -656,7 +659,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           if (*this == INFANTRY_SPY) {
             int housespy = (1 << (House->Class->House));
             //						tech->House->IsSpied =
-            //true;
+            // true;
 
             if (tech->Trigger.Is_Valid()) {
               tech->Trigger->Spring(TEVENT_SPIED, this);
@@ -1376,7 +1379,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
       *this case happens when a helicopter is landed *	at a helipad.
       */
       //			if ((Mission != MISSION_CAPTURE && Mission !=
-      //MISSION_SABOTAGE) || obj->What_Am_I() != RTTI_AIRCRAFT ||
+      // MISSION_SABOTAGE) || obj->What_Am_I() != RTTI_AIRCRAFT ||
       //!((AircraftClass *)obj)->In_Radio_Contact()) {
 
       /*
@@ -1384,7 +1387,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
       *infantry *	is trying to capture.
       */
       //				if (obj->What_Am_I() == RTTI_BUILDING ||
-      //obj->What_Am_I() == RTTI_AIRCRAFT || obj->What_Am_I() == RTTI_UNIT) { 					if
+      // obj->What_Am_I() == RTTI_AIRCRAFT || obj->What_Am_I() == RTTI_UNIT) {
+      // if
       //((Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
       //(obj->As_Target() == NavCom || obj->As_Target() == TarCom)) {
       //						return(MOVE_OK);
@@ -1616,7 +1620,7 @@ short const *InfantryClass::Overlap_List(bool) const
 #endif
 
     //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||
-    //IsSelected)?12:0)*/ ));
+    // IsSelected)?12:0)*/ ));
   }
 }
 
@@ -2809,7 +2813,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
         }
 
         //				if (bldg->Health_Ratio() <=
-        //Rule.ConditionRed && bldg->Class->IsCaptureable) {
+        // Rule.ConditionRed && bldg->Class->IsCaptureable) {
       }
     }
   }
@@ -3414,7 +3418,7 @@ void InfantryClass::Read_INI(CCINIClass &ini) {
             if (infantry->Strength > infantry->Class->MaxStrength - 3)
               infantry->Strength = infantry->Class->MaxStrength;
             //						infantry->Strength =
-            //Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength);
+            // Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength);
             if (Session.Type == GAME_NORMAL || infantry->House->IsHuman) {
               infantry->Assign_Mission(mission);
               infantry->Commence();
@@ -3824,7 +3828,7 @@ void InfantryClass::Movement_AI(void) {
         // hack: if it's tanya, spy, or engineer, let 'em move there anyway.
         if (!Class->IsCapture && Mission != MISSION_ENTER) {
           //				if (*this != INFANTRY_TANYA && *this !=
-          //INFANTRY_SPY && *this != INFANTRY_RENOVATOR) {
+          // INFANTRY_SPY && *this != INFANTRY_RENOVATOR) {
           Assign_Destination(TARGET_NONE);
         }
       }
@@ -4051,9 +4055,9 @@ void InfantryClass::Movement_AI(void) {
         /*
         **	Advance the infantry as far as it should go.
         */
-        MPHType maxspeed =
-            MPHType(min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
-                        int(MPH_LIGHT_SPEED)));
+        MPHType maxspeed = MPHType(
+            std::min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
+                     int(MPH_LIGHT_SPEED)));
 
         if (IsFormationMove) maxspeed = FormationMaxSpeed;
 

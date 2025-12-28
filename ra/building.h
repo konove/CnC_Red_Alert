@@ -40,13 +40,22 @@
 #ifndef BUILDING_H
 #define BUILDING_H
 
-#include "radio.h"
-#include "cargo.h"
-#include "mission.h"
-#include "bullet.h"
-#include "target.h"
+#include <cstddef>
+
+#include "ccini.h"
+#include "ccptr.h"
+#include "defines.h"
+#include "face.h"
 #include "factory.h"
+#include "ftimer.h"
+#include "house.h"
+#include "jshell.h"
+#include "object.h"
+#include "pipe.h"
+#include "radio.h"
+#include "straw.h"
 #include "techno.h"
+#include "type.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open
@@ -223,10 +232,11 @@ class BuildingClass : public TechnoClass {
   BuildingClass(StructType type, HousesType house);
 #ifdef FIXIT_MULTI_SAVE
   BuildingClass(NoInitClass const &x)
-      : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x){};
+      : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {
+        };
 #else
   BuildingClass(NoInitClass const &x)
-      : TechnoClass(x), Class(x), CountDown(x), PlacementDelay(x){};
+      : TechnoClass(x), Class(x), CountDown(x), PlacementDelay(x) {};
 #endif
   virtual ~BuildingClass(void);
   operator StructType(void) const { return Class->Type; };

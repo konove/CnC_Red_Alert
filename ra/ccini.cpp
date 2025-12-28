@@ -95,6 +95,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
@@ -257,10 +258,10 @@ int CCINIClass::Save(Pipe &pipe, bool withdigest) const {
 }
 
 static inline int _Scale_To_256(int val) {
-  val = min(val, 100);
-  val = max(val, 0);
+  val = std::min(val, 100);
+  val = std::max(val, 0);
   val = ((val * 256) / 100);
-  val = min(val, 255);
+  val = std::min(val, 255);
   return (val);
 }
 

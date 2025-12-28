@@ -111,6 +111,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *
  *                                                                                             *
@@ -1767,8 +1769,8 @@ void UnitClass::Per_Cell_Process(PCPType why) {
 
         new AnimClass(ANIM_MINE_EXP1, blcoord);
         //				new
-        //AnimClass(Combat_Anim(Rule.AVMineDamage, WARHEAD_HE,
-        //Map[cell].Land_Type()), blcoord);
+        // AnimClass(Combat_Anim(Rule.AVMineDamage, WARHEAD_HE,
+        // Map[cell].Land_Type()), blcoord);
 
         /*
         ** Vehicles blow up both mines, but they only take significant damage
@@ -1893,7 +1895,7 @@ int UnitClass::Shape_Number(void) const {
     */
     if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom && !IsDriving) {
       //			static char _hstage[] = {0, 1, 2, 3, 4, 5, 6, 7,
-      //0};
+      // 0};
       unsigned stage = Fetch_Stage();
       if (stage >= ARRAY_SIZE(Class->Harvester_Load_List))
         stage = ARRAY_SIZE(Class->Harvester_Load_List) - 1;
@@ -2249,7 +2251,8 @@ bool UnitClass::Harvesting(void) {
     //		int reducer = (ptr->OverlayData % 6) + 1;
     int reducer = 1;
     OverlayType overlay = ptr->Overlay;
-    reducer = ptr->Reduce_Tiberium(min(reducer, Rule.BailCount - Tiberium));
+    reducer =
+        ptr->Reduce_Tiberium(std::min(reducer, Rule.BailCount - Tiberium));
     Tiberium += reducer;
     switch (overlay) {
       case OVERLAY_GOLD1:
@@ -2802,7 +2805,8 @@ int UnitClass::Mission_Harvest(void) {
     */
     case HARVESTING:
       //			if (Fetch_Stage() >
-      //ARRAY_SIZE(Class->Harvester_Load_List)) { 				Set_Stage(0);
+      // ARRAY_SIZE(Class->Harvester_Load_List)) {
+      // Set_Stage(0);
       //			}
       if (Fetch_Rate() == 0) {
         Set_Stage(0);
@@ -3077,7 +3081,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         if (whead->IsWallDestroyer ||
             (whead->IsWoodDestroyer && optr->IsWooden)) {
           //					if (!House->IsHuman &&
-          //!House->Is_Ally(cellptr->Owner)) {
+          //! House->Is_Ally(cellptr->Owner)) {
           if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
           //					} else {
           //						return(MOVE_NO);
@@ -3609,7 +3613,7 @@ int UnitClass::Mission_Guard(void) {
     Assign_Mission(MISSION_HARVEST);
     return (1);
     //		return(MissionControl[Mission].Normal_Delay() + Random_Pick(0,
-    //2));
+    // 2));
   }
 
   if (*this == UNIT_MCV && House->IsBaseBuilding) {
@@ -4016,7 +4020,7 @@ DirType UnitClass::Fire_Direction(void) const {
       int diff2 = SecondaryFacing.Difference(DIR_W);
       diff1 = ABS(diff1);
       diff2 = ABS(diff2);
-      int diff = min(diff1, diff2);
+      int diff = std::min(diff1, diff2);
       int adj =
           Fixed_To_Cardinal(ABS(SecondaryFacing.Difference(DIR_N)), 64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {

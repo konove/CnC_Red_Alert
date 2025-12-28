@@ -50,6 +50,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
+
+#include <algorithm>
+
 #ifdef FIXIT_RANDOM_GAME
 #include "time.h"
 #endif
@@ -286,7 +289,7 @@ int Test_Null_Modem(void) {
   Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = max(width, 50 * RESFACTOR);
+  width = std::max(width, 50 * RESFACTOR);
   width += 40 * RESFACTOR;
   height += 60 * RESFACTOR;
 
@@ -626,7 +629,7 @@ static int Reconnect_Null_Modem(void) {
   Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = max(width, 50 * RESFACTOR);
+  width = std::max(width, 50 * RESFACTOR);
   width += 40 * RESFACTOR;
   height += 60 * RESFACTOR;
 
@@ -899,7 +902,7 @@ GameType Select_Serial_Dialog(void) {
   int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord
   int d_dialog_y = 80 * RESFACTOR;
   //	int d_dialog_y = ((136 * RESFACTOR - d_dialog_h) / 2);	// dialog
-  //y-coord
+  // y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
 
   int d_txt6_h = 7 * RESFACTOR;  // ht of 6-pt text
@@ -3372,7 +3375,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     if (Session.Options.AIPlayers > 7) {
       Session.Options.AIPlayers = 7;
     }
-    Session.Options.AIPlayers = max(Session.Options.AIPlayers, 1);
+    Session.Options.AIPlayers = std::max(Session.Options.AIPlayers, 1);
   } else {
     if (Session.Options.AIPlayers > 6) {
       Session.Options.AIPlayers = 6;
@@ -3403,7 +3406,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     for (j = 0; EngMisStr[j] != NULL; j++) {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
 #ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
-                   //assumed). 	Add mission if it's available to us.
+                   // assumed). 	Add mission if it's available to us.
         if (!((Is_Mission_Counterstrike(
                    (char *)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Counterstrike_Installed()) ||
@@ -3421,8 +3424,8 @@ int Com_Scenario_Dialog(bool skirmish) {
     }
     if (EngMisStr[j] == NULL) {
 #ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
-                   //assumed). Added officialness check. 	Add mission if it's
-                   //available to us.
+                   // assumed). Added officialness check. 	Add mission if
+                   // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
           !((Is_Mission_Counterstrike(
                  (char *)(Session.Scenarios[i]->Get_Filename())) &&
@@ -3642,8 +3645,8 @@ oh_dear_its_a_label:
               cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 2,
               d_color_y + 1 + d_color_h - 2, ColorRemaps[i].Box);
           //						(i ==
-          //PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
-          //ColorRemaps[i].Box);
+          // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
+          // ColorRemaps[i].Box);
 
           if (i == Session.ColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
@@ -3670,15 +3673,15 @@ oh_dear_its_a_label:
       //..................................................................
       if (display >= REDRAW_PARMS) {
         //				LogicPage->Fill_Rect(d_count_x +
-        //d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * RESFACTOR,
-        //d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
+        // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * RESFACTOR,
+        // d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
 
         sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
         staticcount.Set_Text(staticcountbuff);
         staticcount.Draw_Me();
         //				Fancy_Text_Print("%d ", d_count_x +
-        //d_count_w + 3 * RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT,
-        //Session.Options.UnitCount);
+        // d_count_w + 3 * RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT,
+        // Session.Options.UnitCount);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           sprintf(staticlevelbuff, "%d ", BuildLevel);
@@ -3688,21 +3691,21 @@ oh_dear_its_a_label:
         staticlevel.Set_Text(staticlevelbuff);
         staticlevel.Draw_Me();
         //				Fancy_Text_Print(txt, d_level_x +
-        //d_level_w + 3 * RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+        // d_level_w + 3 * RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
 
         sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
         staticcredits.Set_Text(staticcreditsbuff);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print("%d", d_credits_x +
-        //d_credits_w + 2 * RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT,
-        //Session.Options.Credits);
+        // d_credits_w + 2 * RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT,
+        // Session.Options.Credits);
 
         sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
         staticai.Set_Text(staticaibuff);
         staticai.Draw_Me();
         //				Fancy_Text_Print("%d", d_aiplayers_x +
-        //d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK, TPF_TEXT,
-        //Session.Options.AIPlayers);
+        // d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK, TPF_TEXT,
+        // Session.Options.AIPlayers);
       }
 
       /*
@@ -3845,7 +3848,7 @@ oh_dear_its_a_label:
         break;
 
 #else              //	FIXIT_VERSION_3		Whoever duplicated Netdlg into Nulldlg
-                   //should be shot. Wasn't it enough?
+                   // should be shot. Wasn't it enough?
 
       Abandon all hope ye who hit enter here.
 
@@ -3950,8 +3953,9 @@ oh_dear_its_a_label:
           Session.Options.AIPlayers += 1;  // Always one forced AI player.
           humans = 1;                      // One human.
                                            //						if
-          //(Session.Options.AIPlayers == 0) { 							Session.Options.AIPlayers = 1;
-          //							aiplayersgauge.Set_Value(0);
+          //(Session.Options.AIPlayers == 0) {
+          // Session.Options.AIPlayers = 1;
+          // aiplayersgauge.Set_Value(0);
           //						}
         }
         if (Session.Options.AIPlayers + humans >=
@@ -4624,15 +4628,16 @@ oh_dear_its_a_label:
     //
     if (!skirmish) {
       if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-        Session.MaxAhead = max(((((SendPacket.ScenarioInfo.ResponseTime / 8) +
-                                  (Session.FrameSendRate - 1)) /
-                                 Session.FrameSendRate) *
-                                Session.FrameSendRate),
-                               (Session.FrameSendRate * 2));
+        Session.MaxAhead =
+            std::max(((((SendPacket.ScenarioInfo.ResponseTime / 8) +
+                        (Session.FrameSendRate - 1)) /
+                       Session.FrameSendRate) *
+                      Session.FrameSendRate),
+                     (Session.FrameSendRate * 2));
       } else {
         Session.MaxAhead =
-            max(unsigned(SendPacket.ScenarioInfo.ResponseTime / 8),
-                MODEM_MIN_MAX_AHEAD);
+            std::max(unsigned(SendPacket.ScenarioInfo.ResponseTime / 8),
+                     MODEM_MIN_MAX_AHEAD);
       }
     }
     SendPacket.ID = Session.ModemType;
@@ -4866,7 +4871,7 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
           }
 // debugprint("digest = %s, digest_buffer = %s.\n", digest, digest_buffer);
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98. But don't know why this happens.
-                   //Because of autodownload?
+                   // Because of autodownload?
           /*
           ** If this is an aftermath scenario then ignore the digest and return
           *success.
@@ -4891,7 +4896,7 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
       }
       //			else
       //				debugprint("file not available '%s'.\n",
-      //Session.Scenarios[index]->Get_Filename());
+      // Session.Scenarios[index]->Get_Filename());
     }
   }
   // debugprint("failed match.\n");
@@ -5434,8 +5439,8 @@ int Com_Show_Scenario_Dialog(void) {
               d_color_y + 1 * RESFACTOR + d_color_h - 2 * RESFACTOR,
               ColorRemaps[i].Box);
           //						(i ==
-          //PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
-          //ColorRemaps[i].Box);
+          // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
+          // ColorRemaps[i].Box);
 
           if (i == Session.ColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
@@ -5473,14 +5478,14 @@ int Com_Show_Scenario_Dialog(void) {
             ............................................................*/
             // LogicPage->Fill_Rect(d_dialog_x + 16*RESFACTOR, d_scenario_y,
             //	d_dialog_x + d_dialog_w - 16*RESFACTOR, d_scenario_y + d_txt6_h,
-            //BLACK);
+            // BLACK);
 
             p = (char *)Text_String(TXT_SCENARIO_COLON);
             if (Session.Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
-              //%s",p, Session.Options.ScenarioDescription); 							Fancy_Text_Print
-              //(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK, TPF_TEXT |
-              //TPF_CENTER);
+              //%s",p, Session.Options.ScenarioDescription);
+              // Fancy_Text_Print (txt, d_dialog_cx, d_scenario_y, scheme,
+              // TBLACK, TPF_TEXT | TPF_CENTER);
 
               // EW - Scenario language translation goes here!!!!!!!! VG
               for (i = 0; EngMisStr[i] != NULL; i++) {
@@ -5512,7 +5517,8 @@ int Com_Show_Scenario_Dialog(void) {
             // Unit count, tech level, credits
             //.........................................................
             // LogicPage->Fill_Rect(d_count_x + d_count_w + 2 * RESFACTOR,
-            // d_count_y, 	d_count_x + d_count_w + 35 * RESFACTOR, d_aiplayers_y
+            // d_count_y, 	d_count_x + d_count_w + 35 * RESFACTOR,
+            // d_aiplayers_y
             //+ d_aiplayers_h+RESFACTOR, 	BLACK);
 
             sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
@@ -6257,16 +6263,16 @@ int Com_Show_Scenario_Dialog(void) {
                 }
               } else {
 #ifndef FIXIT_VERSION_3  //	Removed restriction on downloading official
-                         //maps.
-                         /*
-                          ** Oh dear. Thats a scenario I dont have. Request that the host
-                          *sends the          *	scenario to me provided it isnt an official
-                          *Westwood scenario.
-                          **
-                          ** If the file is received OK then we will get a true return
-                          *value and the
-                          ** actual file name to load will be in Session.ScenarioFileName
-                          */
+                         // maps.
+                /*
+                 ** Oh dear. Thats a scenario I dont have. Request that the host
+                 *sends the          *	scenario to me provided it isnt an
+                 * official Westwood scenario.
+                 **
+                 ** If the file is received OK then we will get a true return
+                 *value and the
+                 ** actual file name to load will be in Session.ScenarioFileName
+                 */
                 if (Session.ScenarioIsOfficial) {
                   /*
                   ** We dont have the scenario and we dont want to request that
@@ -6331,15 +6337,15 @@ int Com_Show_Scenario_Dialog(void) {
             //
             if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
               Session.MaxAhead =
-                  max(((((ReceivePacket.ScenarioInfo.ResponseTime / 8) +
-                         (Session.FrameSendRate - 1)) /
-                        Session.FrameSendRate) *
-                       Session.FrameSendRate),
-                      (Session.FrameSendRate * 2));
+                  std::max(((((ReceivePacket.ScenarioInfo.ResponseTime / 8) +
+                              (Session.FrameSendRate - 1)) /
+                             Session.FrameSendRate) *
+                            Session.FrameSendRate),
+                           (Session.FrameSendRate * 2));
             } else {
-              Session.MaxAhead =
-                  max(unsigned(ReceivePacket.ScenarioInfo.ResponseTime / 8),
-                      MODEM_MIN_MAX_AHEAD);
+              Session.MaxAhead = std::max(
+                  unsigned(ReceivePacket.ScenarioInfo.ResponseTime / 8),
+                  MODEM_MIN_MAX_AHEAD);
             }
 
             process = false;
@@ -6527,7 +6533,7 @@ int Com_Show_Scenario_Dialog(void) {
   Load_Title_Page(true);
   // #ifdef WIN32
   //	Load_Uncompress(CCFileClass("TITLE.CPS"), SysMemPage, SysMemPage,
-  //CCPalette); 	SysMemPage.Scale(SeenPage); #else
+  // CCPalette); 	SysMemPage.Scale(SeenPage); #else
   //	Load_Uncompress(CCFileClass("TITLE.CPS"), HidPage, HidPage, CCPalette);
   //	HidPage.Blit(SeenPage);
   // #endif

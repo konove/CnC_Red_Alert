@@ -122,7 +122,7 @@ class DisplayClass : public MapClass {
 
   //-------------------------------------------------------------------------
   DisplayClass(void);
-  DisplayClass(NoInitClass const &x) : MapClass(x){};
+  DisplayClass(NoInitClass const &x) : MapClass(x) {};
 
   virtual void Read_INI(char *buffer);
   void Write_INI(char *buffer);
@@ -176,7 +176,7 @@ class DisplayClass : public MapClass {
   void Remove(ObjectClass const *object, LayerType layer);
   void Submit(ObjectClass const *object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, HousesType house);
-  bool In_View(register CELL cell);
+  bool In_View(CELL cell);
   bool Passes_Proximity_Check(ObjectTypeClass const *object);
   ObjectClass *Cell_Object(CELL cell, int x = 0, int y = 0);
   ObjectClass *Next_Object(ObjectClass *object);
@@ -280,7 +280,7 @@ class DisplayClass : public MapClass {
     TacticalClass(void)
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true){};
+                      true) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

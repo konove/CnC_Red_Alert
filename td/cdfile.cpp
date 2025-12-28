@@ -45,7 +45,7 @@
  *- - - - - - - */
 
 #include "function.h"
-// #include	"cdfile.h"
+#include <cerrno>
 
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH

@@ -244,7 +244,6 @@ add_executable(rasdl WIN32
 	# win32
 	#2keyfbuf.asm
 	#cpuid.asm
-	#getcpu.cpp # unused
 	interpal.cpp
 	#winasm.asm
 	#2txtprnt.asm
@@ -281,6 +280,9 @@ target_compile_definitions(rasdl PRIVATE
 target_link_libraries(rasdl PRIVATE tech jshell port sdllib vqa32) # mpgdll wwipx32
 
 install(TARGETS rasdl)
+
+# Enable IWYU for all targets in this directory
+enable_iwyu_for_all_targets()
 
 if(EMSCRIPTEN)
 	set_target_properties(rasdl PROPERTIES

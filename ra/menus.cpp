@@ -38,6 +38,8 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
+
 #ifdef WIN32
 #include "ccdde.h"
 #else  // WIN32
@@ -229,7 +231,7 @@ void Setup_Menu(int menu, char const *text[], unsigned long field, int index,
         TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[idx], menux, drawy, menuptr[HILITE],
-    //TBLACK);
+    // TBLACK);
   }
   MenuSkip = skip;
   Show_Mouse();
@@ -257,13 +259,12 @@ int Check_Menu(int menu, char const *text[], char *, long field, int index) {
   // selection++;
   // /* get rid of warning	*/
 
-  menuptr = &MenuList[menu][0];     /* get pointer to menu	*/
-  maxitem = menuptr[ITEMSHIGH] - 1; /* find max items			*/
-  newitem = item =
-      menuptr[MSELECTED] % (maxitem + 1); /* find selected */
-  select = -1;                            /* no selection made		*/
-  menuskip = FontHeight + MenuSkip;       /* calc new font height	*/
-  halfskip = MenuSkip >> 1;               /* adjustment for menus	*/
+  menuptr = &MenuList[menu][0];                        /* get pointer to menu	*/
+  maxitem = menuptr[ITEMSHIGH] - 1;                    /* find max items			*/
+  newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
+  select = -1;                                         /* no selection made		*/
+  menuskip = FontHeight + MenuSkip; /* calc new font height	*/
+  halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
   menuy = WinY + menuptr[MENUY];   /* get the absolute 		*/
   menux = (WinX + menuptr[MENUX]); /*		coords of menu		*/
@@ -293,8 +294,8 @@ int Check_Menu(int menu, char const *text[], char *, long field, int index) {
   **	the heck outta here. If we are somewhere on the menu, then figure
   **	out the new selected item, and continue forward.
   */
-  mx1 =
-      (WinX) + (menuptr[MENUX] * FontWidth); /* get menu coords		*/
+  mx1 = (WinX) + (menuptr[MENUX] * FontWidth); /* get menu coords
+                                                */
   my1 = (WinY) + (menuptr[MENUY]) -
         halfskip; /*		from the menu		*/
   mx2 = mx1 + (menuptr[ITEMWIDTH] * FontWidth) -
@@ -452,7 +453,7 @@ int Do_Menu(char const **strings, bool) {
   length = 0;
   ptr = strings;
   while (*ptr) {
-    length = max(length, (int)String_Pixel_Width(*ptr));
+    length = std::max(length, (int)String_Pixel_Width(*ptr));
     ptr++;
   }
   length += 7;
@@ -681,7 +682,7 @@ int Main_Menu(unsigned long) {
 
   // #if defined(MPEGMOVIE) // Denzil 6/26/98 Video settings
   //	TextButtonClass moviebutton(BUTTON_MOVIE, "Movie Settings", TPF_BUTTON,
-  //d_movie_x, starty, d_movie_w, d_movie_h); 	starty += ystep; #endif	//WIN32
+  // d_movie_x, starty, d_movie_w, d_movie_h); 	starty += ystep; #endif	//WIN32
 
   TextButtonClass loadbtn(BUTTON_LOAD, TXT_LOAD_MISSION, TPF_BUTTON, d_load_x,
                           starty, d_load_w, d_load_h);
@@ -822,8 +823,8 @@ int Main_Menu(unsigned long) {
       */
       Set_Logic_Page(HidPage);
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
-      //d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x, d_dialog_y,
-      //d_dialog_w);
+      // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
+      // d_dialog_y, d_dialog_w);
       commands->Draw_All();
 #ifdef FIXIT_VERSION_3
       Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - (18 * RESFACTOR),
@@ -927,7 +928,8 @@ int Main_Menu(unsigned long) {
         //			#if defined(MPEGMOVIE)
         //			case (BUTTON_MOVIE | KN_BUTTON):
         //				retval = (input & 0x7FFF) -
-        //BUTTON_EXPAND; 				process = false; 			break; 			#endif
+        // BUTTON_EXPAND; 				process = false;
+        // break; 			#endif
 
       case (BUTTON_LOAD | KN_BUTTON):
         retval = (input & 0x7FFF) - BUTTON_EXPAND;

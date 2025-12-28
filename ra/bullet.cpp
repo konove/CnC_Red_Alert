@@ -56,6 +56,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * BulletClass::BulletClass -- Bullet constructor. *
@@ -715,15 +716,15 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       */
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
         int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
-        scatterdist = min(scatterdist, int(Rule.HomingScatter));
-        scatterdist = max(scatterdist, 0);
+        scatterdist = std::min(scatterdist, int(Rule.HomingScatter));
+        scatterdist = std::max(scatterdist, 0);
 
         dir = (DirType)((dir + (Random_Pick(0, 10) - 5)) & 0x00FF);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
-        scatterdist = min(scatterdist, int(Rule.BallisticScatter));
-        scatterdist = max(scatterdist, 0);
+        scatterdist = std::min(scatterdist, int(Rule.BallisticScatter));
+        scatterdist = std::max(scatterdist, 0);
         tcoord = Coord_Move(tcoord, dir, Random_Pick(0, scatterdist));
       }
     }
@@ -759,7 +760,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.
       */
-      speed = max(speed, 25);
+      speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
       Fly_Speed(255, (MPHType)speed);
@@ -786,7 +787,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       IsFalling = true;
       Height = 1;
       Riser = ((Distance(tcoord) / 2) / (speed + 1)) * Rule.Gravity;
-      Riser = max(Riser, 10);
+      Riser = std::max(Riser, 10);
     }
     if (Class->IsDropping) {
       IsFalling = true;
@@ -796,7 +797,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       if (Class->IsParachuted) {
         AnimClass *anim = new AnimClass(ANIM_PARA_BOMB, Target_Coord());
         //				AnimClass * anim = new
-        //AnimClass(ANIM_PARACHUTE, Target_Coord());
+        // AnimClass(ANIM_PARACHUTE, Target_Coord());
         if (anim) {
           anim->Attach_To(this);
         }
@@ -1054,7 +1055,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   }
 
   //				if (Payback && Payback->House == PlayerPtr &&
-  //stricmp(Class->Name(), "GPSSATELLITE") == 0) {
+  // stricmp(Class->Name(), "GPSSATELLITE") == 0) {
   if (Payback && Class->Type == BULLET_GPS_SATELLITE) {
     if (Payback->House == PlayerPtr) {
       if (!Map.Is_Radar_Active()) {

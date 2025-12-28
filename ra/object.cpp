@@ -116,6 +116,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 /*
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
@@ -244,11 +246,11 @@ void ObjectClass::AI(void) {
     }
     if (IsAnimAttached) {
       Riser -= 1;
-      Riser = max(Riser, -3);
+      Riser = std::max(Riser, -3);
     } else {
       Riser -= Rule.Gravity;
       //			Riser -= GRAVITY;
-      Riser = max(Riser, -100);
+      Riser = std::max(Riser, -100);
     }
 
     if (layer != In_Which_Layer()) {
@@ -1108,7 +1110,7 @@ bool ObjectClass::Select(void) {
     HouseClass *tryhptr = HouseClass::As_Pointer(Owner());
     HouseClass *oldhptr = HouseClass::As_Pointer(CurrentObject[0]->Owner());
     //		if (Owner() != CurrentObject[0]->Owner() ||
-    //CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
+    // CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
     if (oldhptr->IsPlayerControl != tryhptr->IsPlayerControl ||
         !oldhptr->IsPlayerControl) {
       Unselect_All();

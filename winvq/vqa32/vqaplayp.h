@@ -43,9 +43,9 @@
  ****************************************************************************/
 #include <stdint.h>
 
-#include <vqm32/video.h>
-#include <vqm32/soscomp.h>
-#include <vqm32/captoken.h>
+#include "vqm32/video.h"
+#include "vqm32/soscomp.h"
+#include "vqm32/captoken.h"
 #include "vqafile.h"
 #include "vqaplay.h"
 #include "caption.h"

@@ -65,6 +65,11 @@
  *- - - - - - - */
 
 #include "function.h"
+
+#include <algorithm>
+
+#include "graphics_loader.h"
+
 #ifdef WIN32
 #include "tcpip.h"
 #include "ccdde.h"
@@ -314,9 +319,10 @@ bool Start_Scenario(char *name, bool briefing) {
   //			 if((Scen.Scenario >= 20 && Scen.ScenarioName[2] == 'G'
   //|| Scen.ScenarioName[2] == 'U') || Scen.ScenarioName[2] == 'A'
   //				|| (Scen.ScenarioName[2] == 'M' && Scen.Scenario
-  //>= 25)) 		       	    RequiredCD = 2; 			 else if(Scen.ScenarioName[2] == 'U') 			    RequiredCD = 1;
-  //			 else if(Scen.ScenarioName[2] == 'G')
-  //			    RequiredCD = 0;
+  //>= 25)) 		       	    RequiredCD = 2; 			 else
+  // if(Scen.ScenarioName[2] == 'U') 			    RequiredCD = 1;
+  // else if(Scen.ScenarioName[2] == 'G') 			    RequiredCD =
+  // 0;
   //			}
   //
   // #ifdef FIXIT_FORCE_CD
@@ -406,7 +412,7 @@ bool Read_Scenario(char *name) {
   ScenarioInit++;
   if (Read_Scenario_INI(name)) {
 #ifdef FIXIT_CSII  //	ajw - Added runtime check for Aftermath to skirmish mode
-                   //case.
+                   // case.
     bool readini = false;
     switch (Session.Type) {
       case GAME_NORMAL:
@@ -419,7 +425,7 @@ bool Read_Scenario(char *name) {
         break;
       case GAME_INTERNET:
 #ifndef FIXIT_VERSION_3  //	Loading of Aftermath rules depends on
-                         //bAftermathMultiplayer now.
+                         // bAftermathMultiplayer now.
         if (Is_Mission_Counterstrike(name)) {
           readini = false;  // Don't allow AM units on a CS map in WChat
           break;
@@ -882,7 +888,7 @@ void Do_Win(void) {
 #ifdef FIXIT_ANTS
       AntsEnabled = false;
 //			Mono_Printf("Scenario.cpp one time only antsenabled is
-//false\n");
+// false\n");
 #endif
       return;
     }
@@ -1028,7 +1034,7 @@ void Do_Win(void) {
   ** Generate a new scenario filename
   */
   //	Scen.Set_Scenario_Name(Scen.Scenario, Scen.ScenPlayer, Scen.ScenDir,
-  //Scen.ScenVar);
+  // Scen.ScenVar);
   Start_Scenario(Scen.ScenarioName);
 
   /*
@@ -1396,18 +1402,18 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + 2;
-    bwidth = max((String_Pixel_Width(b1txt) + 8), 80u);
+    bwidth = std::max((String_Pixel_Width(b1txt) + 8), 80u);
     if (b2txt) {
       numbuttons = 2;
       b2char = toupper(b2txt[0]);
-      bwidth = max((String_Pixel_Width(b2txt) + 8), unsigned(bwidth));
+      bwidth = std::max((String_Pixel_Width(b2txt) + 8), unsigned(bwidth));
       //			b1x = x + 10;
       //// left side
 
       if (b3txt) {
         numbuttons = 3;
         b3char = toupper(b3txt[0]);
-        bwidth = max((String_Pixel_Width(b3txt) + 8), unsigned(bwidth));
+        bwidth = std::max((String_Pixel_Width(b3txt) + 8), unsigned(bwidth));
       }
 
     } else {
@@ -1748,7 +1754,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
   switch (retval) {
     case 0:
       //			BlackPalette.Set(FADE_PALETTE_MEDIUM,
-      //Call_Back); 			SeenPage.Clear();
+      // Call_Back); 			SeenPage.Clear();
       ////			CCPalette.Set();
       //			break;
     case 1:
@@ -1969,7 +1975,7 @@ void ScenarioClass::Set_Scenario_Name(char const *name) {
  *=============================================================================================*/
 bool Read_Scenario_INI(char *fname, bool) {
   //	char fname[_MAX_FNAME+_MAX_EXT];			// full INI
-  //filename
+  // filename
 
   ScenarioInit++;
 
@@ -1992,7 +1998,7 @@ bool Read_Scenario_INI(char *fname, bool) {
   ** have already verified its existance. ST 3/1/97 4:52PM.
   */
 #ifdef FIXIT_VERSION_3  //	Avoid CD check if official scenario was
-                        //downloaded.
+                        // downloaded.
   if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
       stricmp(Scen.ScenarioName, "download.tmp")) {
 #else
@@ -2007,7 +2013,7 @@ bool Read_Scenario_INI(char *fname, bool) {
       RequiredCD = -1;
     } else {
       //			Mono_Printf("Read_SCen_INI scenario is: %s\n",
-      //Scen.ScenarioName);
+      // Scen.ScenarioName);
       /*
       ** If this is a multiplayer scenario we need to find out if its a
       *counterstrike
@@ -2066,7 +2072,7 @@ bool Read_Scenario_INI(char *fname, bool) {
           } else {
             if (Scen.ScenarioName[2] == 'G') {
               //							Mono_Printf("We
-              //are setting REquiredCD to 0");
+              // are setting REquiredCD to 0");
               RequiredCD = 0;
             }
           }
@@ -2153,17 +2159,17 @@ bool Read_Scenario_INI(char *fname, bool) {
 #ifdef FIXIT_ANTS
   Session.Messages.Reset();
   //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
-  //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
+  // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
-  //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
+  // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
-  //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
+  // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
-  //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
+  // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
-  //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
+  // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
-  //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
+  // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   WeaponTypeClass::As_Pointer(WEAPON_FLAMER)->Sound = VOC_NONE;
   InfantryTypeClass::As_Reference(INFANTRY_THIEF).IsDoubleOwned = false;
   InfantryTypeClass::As_Reference(INFANTRY_E4).IsDoubleOwned = false;
@@ -2189,7 +2195,7 @@ bool Read_Scenario_INI(char *fname, bool) {
   Rule.Objects(RuleINI);
   Rule.Difficulty(RuleINI);
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98 - Except does this _change_ any
-                   //rules, or just add to them? - Just adds.
+                   // rules, or just add to them? - Just adds.
   Rule.General(AftermathINI);
   Rule.Recharge(AftermathINI);
   Rule.AI(AftermathINI);
@@ -2280,8 +2286,8 @@ bool Read_Scenario_INI(char *fname, bool) {
     PlayerPtr->Assign_Handicap(Scen.Difficulty);
     int carryover;
     if (Scen.CarryOverCap != -1) {
-      carryover =
-          min(Scen.CarryOverMoney * Scen.CarryOverPercent, Scen.CarryOverCap);
+      carryover = std::min(Scen.CarryOverMoney * Scen.CarryOverPercent,
+                           Scen.CarryOverCap);
     } else {
       carryover = Scen.CarryOverMoney * Scen.CarryOverPercent;
     }
@@ -2413,8 +2419,8 @@ bool Read_Scenario_INI(char *fname, bool) {
     **	this scenario.
     */
     if (Session.Options.Goodies) {
-      int count = max(Rule.CrateMinimum, Session.NumPlayers);
-      count = min(count, Rule.CrateMaximum);
+      int count = std::max(Rule.CrateMinimum, Session.NumPlayers);
+      count = std::min(count, Rule.CrateMaximum);
       for (int index = 0; index < count; index++) {
         Map.Place_Random_Crate();
       }
@@ -2627,7 +2633,7 @@ void Assign_Houses(void) {
     Session.Players[index]->Player.ID = house;
 
     //		debugprint( "Assigned ID of %i to %s\n", house,
-    //Session.Players[index]->Name );
+    // Session.Players[index]->Name );
   }
 
   //------------------------------------------------------------------------
@@ -2769,8 +2775,8 @@ static void Create_Units(bool official) {
       //		{5,	1,INFANTRY_RENOVATOR,	1,INFANTRY_RENOVATOR},
       //		{6,	1,INFANTRY_SPY,			1,INFANTRY_DOG},
       //		{10,	1,INFANTRY_THIEF,
-      //1,INFANTRY_DOG}, 		{12,	1,INFANTRY_MEDIC,
-      //2,INFANTRY_DOG}
+      // 1,INFANTRY_DOG}, 		{12,	1,INFANTRY_MEDIC,
+      // 2,INFANTRY_DOG}
   };
   static int
       num_infantry[ARRAY_SIZE(itable)];  // # of each type of infantry to create
@@ -2868,14 +2874,15 @@ static void Create_Units(bool official) {
   *waypoints are used *	if there are 4 or fewer players. Unofficial maps will
   *pick from all the *	available waypoints.
   */
-  int look_for = max(4, Session.Players.Count() + Session.Options.AIPlayers);
+  int look_for =
+      std::max(4, Session.Players.Count() + Session.Options.AIPlayers);
   if (!official) {
     look_for = 8;
   }
 
   for (int waycount = 0; waycount < look_for; waycount++) {
     //	for (int waycount = 0; waycount < max(4,
-    //Session.Players.Count()+Session.Options.AIPlayers); waycount++) {
+    // Session.Players.Count()+Session.Options.AIPlayers); waycount++) {
     if (Scen.Waypoint[waycount] != -1) {
       waypts[num_waypts] = Scen.Waypoint[waycount];
       taken[num_waypts] = false;
@@ -2889,7 +2896,7 @@ static void Create_Units(bool official) {
   */
   int deficiency = look_for - num_waypts;
   //	int deficiency = (Session.Players.Count() + Session.Options.AIPlayers) -
-  //num_waypts;
+  // num_waypts;
   if (deficiency > 0) {
     for (int index = 0; index < deficiency; index++) {
       CELL trycell =

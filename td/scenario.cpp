@@ -49,6 +49,8 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "interpal.h"
+
 extern int PreserveVQAScreen;
 
 /***********************************************************************************************

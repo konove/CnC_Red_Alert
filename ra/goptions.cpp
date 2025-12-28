@@ -40,6 +40,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 #include "goptions.h"
 #include "loaddlg.h"
 #include "sounddlg.h"
@@ -229,7 +231,7 @@ void GameOptionsClass::Process(void) {
   */
   GadgetClass* g = buttons;
   while (g != NULL) {
-    g->Width = max(maxwidth, 90 * RESFACTOR);
+    g->Width = std::max(maxwidth, 90 * RESFACTOR);
     g->X = OptionX + (OptionWidth - g->Width) / 2;
     g = g->Get_Next();
   }

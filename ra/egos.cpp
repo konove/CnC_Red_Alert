@@ -42,6 +42,7 @@
  *- - */
 
 #include "function.h"
+#include "graphics_loader.h"
 
 /*
 ** List of Ego Class instances
@@ -637,8 +638,8 @@ void Show_Who_Was_Responsible(void) {
   // Load_Title_Page(true);
   // #ifdef WIN32
   //	Load_Picture("EGOPAL.CPS", SysMemPage, SysMemPage, CCPalette,
-  //BM_DEFAULT); #else	//WIN32 	Load_Picture("EGOPAL.CPS", HidPage, HidPage,
-  //CCPalette, BM_DEFAULT); #endif	//WIN32
+  // BM_DEFAULT); #else	//WIN32 	Load_Picture("EGOPAL.CPS", HidPage,
+  // HidPage, CCPalette, BM_DEFAULT); #endif	//WIN32
 
   CCFileClass("EGOPAL.PAL").Read(&CCPalette, sizeof(CCPalette));
 

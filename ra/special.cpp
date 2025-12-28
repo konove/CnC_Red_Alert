@@ -43,6 +43,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 #ifdef WIN32
 #define OPTION_WIDTH 236 * 2
 #define OPTION_HEIGHT 162 * 2
@@ -234,7 +236,7 @@ class PWEditClass : public EditClass {
  public:
   PWEditClass(int id, char* text, int max_len, TextPrintType flags, int x,
               int y, int w = -1, int h = -1)
-      : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC){};
+      : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC) {};
 
  protected:
   virtual void Draw_Text(char const* text);
@@ -334,8 +336,8 @@ char const* Fetch_Password(int caption, int message, int btext) {
   **	Build the button list.
   */
   bheight = FontHeight + FontYSpacing + 2 * RESFACTOR;
-  bwidth = max((String_Pixel_Width(Text_String(btext)) + 8 * RESFACTOR),
-               30u * RESFACTOR);
+  bwidth = std::max((String_Pixel_Width(Text_String(btext)) + 8 * RESFACTOR),
+                    30u * RESFACTOR);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -348,7 +350,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
   int height;
   Format_Window_String(buffer, 255, width, height);
 
-  width = max(width, 50 * RESFACTOR);
+  width = std::max(width, 50 * RESFACTOR);
   width += 40 * RESFACTOR;
   height += (60 + 25) * RESFACTOR;
 
@@ -547,8 +549,8 @@ int Fetch_Difficulty(void)
       **	Draw the body of the message.
       */
       //			Fancy_Text_Print(buffer, x + 20*RESFACTOR, y +
-      //15*RESFACTOR, GadgetClass::Get_Color_Scheme(), TBLACK,
-      //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
+      // 15*RESFACTOR, GadgetClass::Get_Color_Scheme(), TBLACK,
+      // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
       Fancy_Text_Print(buffer, x + 20 * RESFACTOR, y + 15 * RESFACTOR,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_6PT_GRAD | TPF_NOSHADOW);

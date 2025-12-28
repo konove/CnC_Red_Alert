@@ -82,11 +82,11 @@ class RGBClass {
   //	static RGBClass const BlackColor;
 
  public:
-  RGBClass(void) : Red(0), Green(0), Blue(0){};
+  RGBClass(void) : Red(0), Green(0), Blue(0) {};
   RGBClass(unsigned char red, unsigned char green, unsigned char blue)
       : Red((unsigned char)(red >> 2)),
         Green((unsigned char)(green >> 2)),
-        Blue((unsigned char)(blue >> 2)){};
+        Blue((unsigned char)(blue >> 2)) {};
   operator HSVClass(void) const;
   RGBClass& operator=(RGBClass const& rgb) {
     if (this == &rgb) return (*this);

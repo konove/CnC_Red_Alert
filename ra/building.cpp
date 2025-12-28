@@ -122,6 +122,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 enum SAMState {
   SAM_READY,  // Launcher can be facing any direction tracking targets.
@@ -284,7 +285,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass *from,
             //						if
             //(Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
             //							param =
-            //(long)As_Target(); 							Transmit_Message(RADIO_MOVE_HERE, param, from);
+            //(long)As_Target();
+            // Transmit_Message(RADIO_MOVE_HERE, param, from);
             //						}
           }
         } else {
@@ -664,7 +666,8 @@ int BuildingClass::Shape_Number(void) const {
         **	fetch their frame from the embedded animation sequencer.
         */
         //				if (Status == SAM_READY || Status ==
-        //SAM_FIRING || Status == SAM_LOCKING) { 					shapenum = Fetch_Stage();
+        // SAM_FIRING || Status == SAM_LOCKING) {
+        // shapenum = Fetch_Stage();
         //				}
         if (Health_Ratio() <= Rule.ConditionYellow) {
           shapenum += 35;
@@ -714,13 +717,13 @@ int BuildingClass::Shape_Number(void) const {
                         Class->Anims[BSTATE_IDLE].Count;
             int last2 = Class->Anims[BSTATE_ACTIVE].Start +
                         Class->Anims[BSTATE_ACTIVE].Count;
-            int largest = max(last1, last2);
+            int largest = std::max(last1, last2);
             last2 = Class->Anims[BSTATE_AUX1].Start +
                     Class->Anims[BSTATE_AUX1].Count;
-            largest = max(largest, last2);
+            largest = std::max(largest, last2);
             last2 = Class->Anims[BSTATE_AUX2].Start +
                     Class->Anims[BSTATE_AUX2].Count;
-            largest = max(largest, last2);
+            largest = std::max(largest, last2);
             shapenum += largest;
           }
         }
@@ -1265,7 +1268,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
         if (IsToRebuild && Class->Level != -1 &&
             Base.House == House->Class->House && Base.Get_Node(this) == 0) {
           //				if (IsToRebuild && Class->IsBuildable &&
-          //Base.House == House->Class->House && Base.Get_Node(this) == 0) {
+          // Base.House == House->Class->House && Base.Get_Node(this) == 0) {
           Base.Nodes.Add(BaseNodeClass(Class->Type, Coord_Cell(Coord)));
         }
 
@@ -2405,7 +2408,7 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
   //		}
   //		if (Class->PrimaryWeapon->Bullet->IsAntiGround) {
   //			threat = threat |
-  //THREAT_BUILDINGS|THREAT_INFANTRY|THREAT_BOATS|THREAT_VEHICLES;
+  // THREAT_BUILDINGS|THREAT_INFANTRY|THREAT_BOATS|THREAT_VEHICLES;
   //		}
   //		threat = threat | THREAT_RANGE;
   //	}
@@ -2744,7 +2747,7 @@ ActionType BuildingClass::What_Action(CELL cell) const {
   if (action == ACTION_ATTACK && Class->PrimaryWeapon != NULL &&
       !Class->PrimaryWeapon->Bullet->IsAntiGround) {
     //	if (action == ACTION_ATTACK && (*this == STRUCT_SAM || *this ==
-    //STRUCT_AAGUN)) {
+    // STRUCT_AAGUN)) {
     action = ACTION_NONE;
   }
 
@@ -4028,8 +4031,9 @@ int BuildingClass::Mission_Repair(void) {
             if (pfrac < fixed::_1_2) pfrac = fixed::_1_2;
             int time = Inverse(pfrac) * Rule.ReloadRate * TICKS_PER_MINUTE;
             //						int time =
-            //Bound((int)(TICKS_PER_SECOND * Saturate(House->Power_Fraction(),
-            //1)), 0, TICKS_PER_SECOND); 						time = (TICKS_PER_SECOND*3) - time;
+            // Bound((int)(TICKS_PER_SECOND * Saturate(House->Power_Fraction(),
+            // 1)), 0, TICKS_PER_SECOND);
+            // time = (TICKS_PER_SECOND*3) - time;
             IsReadyToCommence = false;
             return (time);
           }
@@ -4521,7 +4525,8 @@ int BuildingClass::Mission_Unload(void) {
             }
             unit->Force_Track(DriveClass::OUT_OF_WEAPON_FACTORY, coord);
             //						unit->Force_Track(DriveClass::OUT_OF_WEAPON_FACTORY,
-            //Adjacent_Cell(Adjacent_Cell(Center_Coord(), FACING_S), FACING_S));
+            // Adjacent_Cell(Adjacent_Cell(Center_Coord(), FACING_S),
+            // FACING_S));
             unit->Set_Speed(128);
             Status = LEAVE;
           } else {
@@ -5048,7 +5053,7 @@ void BuildingClass::Read_INI(CCINIClass &ini) {
         b->IsToRepair = rebuild || *b == STRUCT_CONST;
 
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
-          strength = min(strength, 0x100);
+          strength = std::min(strength, 0x100);
           strength = b->Class->MaxStrength * fixed(strength, 256);
           b->Strength = strength;
           if (b->Strength > b->Class->MaxStrength - 3)
@@ -5653,7 +5658,7 @@ void BuildingClass::Remove_Gap_Effect(void) {
       obj->IsJamming = false;
       obj->Arm = 0;
       //			Map.Jam_From(Coord_Cell(obj->Center_Coord()),
-      //Rule.GapShroudRadius, PlayerPtr);
+      // Rule.GapShroudRadius, PlayerPtr);
     }
   }
 }

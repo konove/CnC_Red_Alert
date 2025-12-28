@@ -77,6 +77,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
 
@@ -529,15 +531,15 @@ void RadarClass::Draw_It(bool forced) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < (RadIWidth - 1) &&
               RadarHeight < (RadIHeight - 1)) {
 #ifdef WIN32
-            LogicPage->Draw_Rect(RadX + RadOffX + BaseX - 1,
-                                 RadY + RadOffY + BaseY - 1,
-                                 RadX + RadOffX + BaseX + RadarWidth,
-                                 //													RadX
-                                 //+ RadOffX + BaseX + RadarWidth +1,
-                                 RadY + RadOffY + BaseY + RadarHeight,
-                                 //													RadY
-                                 //+ RadOffY + BaseY + RadarHeight +1,
-                                 WHITE);
+            LogicPage->Draw_Rect(
+                RadX + RadOffX + BaseX - 1, RadY + RadOffY + BaseY - 1,
+                RadX + RadOffX + BaseX + RadarWidth,
+                //													RadX
+                //+ RadOffX + BaseX + RadarWidth +1,
+                RadY + RadOffY + BaseY + RadarHeight,
+                //													RadY
+                //+ RadOffY + BaseY + RadarHeight +1,
+                WHITE);
 #endif
           }
         } else {
@@ -731,18 +733,18 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
       //*)obj)->House->RemapColor].BrightColor;
       int xoff;
       int yoff;
-      int subsize = max(1, size / 3);
+      int subsize = std::max(1, size / 3);
 
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY:
           xoff = (Coord_XLepton(obj->Coord) / (CELL_LEPTON_W / (size + 1))) -
                  subsize / 2;
-          xoff = max(xoff, 0);
-          xoff = min(xoff, size - subsize);
+          xoff = std::max(xoff, 0);
+          xoff = std::min(xoff, size - subsize);
           yoff = (Coord_YLepton(obj->Coord) / (CELL_LEPTON_H / (size + 1))) -
                  subsize / 2;
-          yoff = max(yoff, 0);
-          yoff = min(yoff, size - subsize);
+          yoff = std::max(yoff, 0);
+          yoff = std::min(yoff, size - subsize);
 
           /*
           ** Draw the infantryman's pixel.  If he's a spy, draw in my house
@@ -751,7 +753,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           if (*(InfantryClass *)obj == INFANTRY_SPY) {
             color = ColorRemaps[PlayerPtr->RemapColor].Bar;
             //						color =
-            //ColorRemaps[PlayerPtr->RemapColor].BrightColor;
+            // ColorRemaps[PlayerPtr->RemapColor].BrightColor;
           }
           LogicPage->Fill_Rect(x + xoff, y + yoff, x + xoff + (subsize - 1),
                                y + yoff + (subsize - 1), color);
@@ -800,15 +802,15 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
           LogicPage->Put_Pixel(x, y, DKGREY);
 
           //					_IconStage.Scale(*LogicPage, 0,
-          //0, x, y, 3, 3, size, size, TRUE, (char *)&FadingShade[0]);
+          // 0, x, y, 3, 3, size, size, TRUE, (char *)&FadingShade[0]);
         } else {
           _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, TRUE,
                            (char *)&FadingYellow[0]);
         }
         //				_IconStage.Scale(*LogicPage, 0, 0, x, y,
-        //3, 3, size, size, TRUE, (char *)&FadingGreen[0]); 			} else {
-        //				_IconStage.Scale(*LogicPage, 0, 0, x, y,
-        //3, 3, size, size, TRUE, (char *)&FadingBrighten[0]);
+        // 3, 3, size, size, TRUE, (char *)&FadingGreen[0]);
+        // } else { 				_IconStage.Scale(*LogicPage, 0,
+        // 0, x, y, 3, 3, size, size, TRUE, (char *)&FadingBrighten[0]);
       }
 
 #else
@@ -825,8 +827,9 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
                 LogicPage->Put_Pixel(x + lpx, y + lpy, FadingYellow[*icon]);
               }
               //							LogicPage->Put_Pixel(x
-              //+ lpx, y + lpy, FadingGreen[*icon]); 						} else {
-              //							LogicPage->Put_Pixel(x
+              //+ lpx, y + lpy, FadingGreen[*icon]);
+              //} else {
+              // LogicPage->Put_Pixel(x
               //+ lpx, y + lpy, FadingBrighten[*icon]);
             }
           }
@@ -879,7 +882,7 @@ void RadarClass::Zoom_Mode(CELL cell) {
   if (!IsZoomed) {
     int xfactor = RadIWidth / MapCellWidth;
     int yfactor = RadIHeight / MapCellHeight;
-    ZoomFactor = max(min(xfactor, yfactor), 1);
+    ZoomFactor = std::max(std::min(xfactor, yfactor), 1);
     map_c_width = MapCellWidth;
     map_c_height = MapCellHeight;
   } else {
@@ -894,21 +897,21 @@ void RadarClass::Zoom_Mode(CELL cell) {
   */
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 #ifdef WIN32
-  map_c_width = min(map_c_width, RadIWidth);
-  map_c_width = min(map_c_width, MapCellWidth);
-  map_c_height = min(map_c_height, RadIHeight);
-  map_c_height = min(map_c_height, MapCellHeight);
+  map_c_width = std::min(map_c_width, RadIWidth);
+  map_c_width = std::min(map_c_width, MapCellWidth);
+  map_c_height = std::min(map_c_height, RadIHeight);
+  map_c_height = std::min(map_c_height, MapCellHeight);
 #else
-  map_c_width = min(map_c_width, 62 * RESFACTOR);
-  map_c_width = min(map_c_width, MapCellWidth);
-  map_c_height = min(map_c_height, 62 * RESFACTOR);
-  map_c_height = min(map_c_height, MapCellHeight);
+  map_c_width = std::min(map_c_width, 62 * RESFACTOR);
+  map_c_width = std::min(map_c_width, MapCellWidth);
+  map_c_height = std::min(map_c_height, 62 * RESFACTOR);
+  map_c_height = std::min(map_c_height, MapCellHeight);
 #endif
 #else
-  map_c_width = min(map_c_width, 62 * RESFACTOR);
-  map_c_width = min(map_c_width, MapCellWidth);
-  map_c_height = min(map_c_height, 62 * RESFACTOR);
-  map_c_height = min(map_c_height, MapCellHeight);
+  map_c_width = std::min(map_c_width, 62 * RESFACTOR);
+  map_c_width = std::min(map_c_width, MapCellWidth);
+  map_c_height = std::min(map_c_height, 62 * RESFACTOR);
+  map_c_height = std::min(map_c_height, MapCellHeight);
 #endif
 
   /*
@@ -970,7 +973,7 @@ void RadarClass::Zoom_Mode(CELL cell) {
 bool RadarClass::Is_Zoomable(void) const {
   int xfactor = RadIWidth / MapCellWidth;
   int yfactor = RadIHeight / MapCellHeight;
-  int factor = max(min(xfactor, yfactor), 1);
+  int factor = std::max(std::min(xfactor, yfactor), 1);
   if (factor == 3) {
     return (false);
   }
@@ -1094,7 +1097,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
                          TRUE);
       } else {
         //				LogicPage->Fill_Rect(x, y,
-        //x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));
+        // x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));
         /*BG*/ LogicPage->Put_Pixel(x, y, cellptr->Cell_Color(false));
       }
     } else {
@@ -1179,7 +1182,7 @@ int RadarClass::Click_In_Radar(int &ptr_x, int &ptr_y, bool change) const {
     if ((unsigned)x < RadarWidth + (ZoomFactor - 1) &&
         (unsigned)y < RadarHeight + (ZoomFactor - 1)) {
       //		if ((unsigned)x < RadarWidth && (unsigned)y <
-      //RadarHeight) {
+      // RadarHeight) {
       x = RadarX + (x / ZoomFactor);
       y = RadarY + (y / ZoomFactor);
       if (change) {
@@ -1749,7 +1752,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType &key) {
     if (cell != -1 && Map.In_Radar(cell)) {
       shadow = (!Map[cell].IsMapped && !Debug_Unshroud);
       //			shadow	= (!Map[cell].IsVisible &&
-      //!Debug_Unshroud);
+      //! Debug_Unshroud);
       cellx = 12;
       celly = 12;
 
@@ -1837,9 +1840,9 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType &key) {
             int cellx = Cell_X(cell);
             int celly = Cell_Y(cell);
             cellx -= Lepton_To_Cell(Map.TacLeptonWidth) / 2;
-            cellx = max(cellx, Map.MapCellX);
+            cellx = std::max(cellx, Map.MapCellX);
             celly -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
-            celly = max(celly, Map.MapCellY);
+            celly = std::max(celly, Map.MapCellY);
             cell = XY_Cell(cellx, celly);
             shadow = (!Map[cell].IsMapped && !Debug_Unshroud);
             //						shadow =
@@ -2312,7 +2315,7 @@ bool RadarClass::Draw_House_Info(void) {
     txt[0] = 0;
     sprintf(txt, "%s", ptr->IniName);  // Text_String(ptr->Class->FullName));
     //		sprintf(txt, "%s",
-    //ptr->Name());//Text_String(ptr->Class->FullName));
+    // ptr->Name());//Text_String(ptr->Class->FullName));
     if (strlen(txt)) {
       if (strlen(txt) > 9) {
         txt[9] = '.';

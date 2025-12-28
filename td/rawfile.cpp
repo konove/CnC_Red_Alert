@@ -56,6 +56,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <cerrno>
 #ifndef PORTABLE
 #include <direct.h>
 #include <fcntl.h>

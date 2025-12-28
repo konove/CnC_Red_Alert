@@ -56,6 +56,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 /*
 **	This is the list of animation stages to use when the harvester
 **	is to dump its load into the refinery. The offsets are based from the
@@ -768,7 +770,7 @@ static UnitTypeClass const UnitPhase(
     false,        // Is there an associated firing animation?
     false,        // Must the turret be in a locked down position while moving?
     true,         //		false,				// Is this a
-                  //gigundo-rotund-enormous unit?
+                  // gigundo-rotund-enormous unit?
     false,        // Does the unit have a constant animation?
     false,        // Is the unit capable of jamming radar?
     false,        // Is the unit a mobile gap generator?
@@ -1071,11 +1073,11 @@ void UnitTypeClass::One_Time(void) {
 
     ((void const *&)uclass.ImageData) = ptr;
     if (ptr != NULL) {
-      largest = max(largest, (int)Get_Build_Frame_Width(ptr));
-      largest = max(largest, (int)Get_Build_Frame_Height(ptr));
+      largest = std::max(largest, (int)Get_Build_Frame_Width(ptr));
+      largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
     }
 
-    ((int &)uclass.MaxSize) = max(largest, 8);
+    ((int &)uclass.MaxSize) = std::max(largest, 8);
   }
 
   /*
@@ -1179,9 +1181,9 @@ UnitTypeClass &UnitTypeClass::As_Reference(UnitType type) {
  *=============================================================================================*/
 void UnitTypeClass::Dimensions(int &width, int &height) const {
   width = MaxSize - (MaxSize / 4);
-  width = min(width, 48);
+  width = std::min(width, 48);
   height = MaxSize - (MaxSize / 4);
-  height = min(height, 48);
+  height = std::min(height, 48);
 }
 
 /***********************************************************************************************

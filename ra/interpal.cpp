@@ -44,6 +44,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "interpal.h"
 #include "function.h"
 
 #ifndef LORES
@@ -234,10 +235,11 @@ void Create_Palette_Interpolation_Table(void) {
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:    ptr to palette * percentage increase of red * percentage increase
- *of green                                                      * percentage
- *increase of blue                                                       * cap
- *value for colours *
+ * INPUT:    ptr to palette
+ * percentage increase of red
+ * percentage increase of green
+ * percentage increase of blue
+ * cap value for colours
  *                                                                                             *
  *                                                                                             *
  * OUTPUT:   Nothing *

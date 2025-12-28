@@ -53,6 +53,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 // #include	<string.h>
 
 /*
@@ -577,7 +578,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
           */
           if (Passable_Cell(next, FACING_NONE, threat, threshhold)) {
             //					if ((Passable_Cell(next,
-            //FACING_NONE, threat, threshhold)) || (next == dest)) {
+            // FACING_NONE, threat, threshhold)) || (next == dest)) {
             break;
           }
 
@@ -624,10 +625,10 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
                            threat, threat_stage, MAX_MLIST_SIZE, threshhold);
         //				left = Follow_Edge(startcell, next,
         //&pleft, COUNTERCLOCK, direction, threat, threat_stage, follow_len,
-        //threshhold);
+        // threshhold);
 
         if (left) {
-          follow_len = min(maxlen, pleft.Length + (pleft.Length >> 1));
+          follow_len = std::min(maxlen, pleft.Length + (pleft.Length >> 1));
         }
 
         Mem_Copy(&path, &pright, sizeof(PathType));
@@ -639,7 +640,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
                             threat_stage, MAX_MLIST_SIZE, threshhold);
         //				right = Follow_Edge(startcell, next,
         //&pright, CLOCK, direction, threat, threat_stage, follow_len,
-        //threshhold);
+        // threshhold);
 
         /*
         **	If we could find a path, break from this loop. Otherwise this
@@ -712,7 +713,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
       **	this may not be the end of the find path logic.
       */
       len = which->Length;
-      len = min(len, maxlen);
+      len = std::min(len, maxlen);
       if (len > 0) {
         memcpy(&path.Overlap[0], &which->Overlap[0], sizeof(LeftOverlap));
         memcpy(&path.Command[0], &which->Command[0], len * sizeof(FacingType));
@@ -1277,7 +1278,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
       if (::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) >
           (THREAT_THRESHOLD * CELL_LEPTON_W)) {
         //			if (Map.Cell_Distance(cell, DestLocation) >
-        //THREAT_THRESHOLD) {
+        // THREAT_THRESHOLD) {
         if (Map.Cell_Threat(cell, Owner()) > threat) return (0);
       }
     }

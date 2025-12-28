@@ -50,11 +50,13 @@
  ** Mono_Debug_Print -- Debug output routine                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include <stdio.h>
 #include "combuf.h"
-#include "connect.h"  // for command names for debug output
-#include "wwlib32.h"  // to enable mono output
+
+#include <stdio.h>
+#include <string.h>
+#include "connect.h"
+#include "monoc.h"
+#include "wwlib32.h"
 
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *
@@ -369,8 +371,9 @@ int CommBufferClass::Queue_Send(void *buf, int buflen, void *extrabuf,
 /***************************************************************************
  * CommBufferClass::UnQueue_Send -- removes next entry from send queue *
  *                                                                         *
- * Frees the given entry; the index given by the caller is the "active" * index value (ie the "nth" active entry), not the actual index in the		*
- * array.
+ * Frees the given entry; the index given by the caller is the "active" * index
+ * value (ie the "nth" active entry), not the actual index in the
+ *	* array.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -565,8 +568,9 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen, void *extrabuf,
  * CommBufferClass::UnQueue_Receive -- removes next entry from send queue
  **
  *                                                                         *
- * Frees the given entry; the index given by the caller is the "active" * index value (ie the "nth" active entry), not the actual index in the		*
- * array.
+ * Frees the given entry; the index given by the caller is the "active" * index
+ * value (ie the "nth" active entry), not the actual index in the
+ *	* array.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -799,8 +803,9 @@ void CommBufferClass::Reset_Response_Time(void) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *

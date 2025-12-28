@@ -51,7 +51,7 @@
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
-// #include	<errno.h>
+#include <cerrno>
 // #include	<share.h>
 // #include	"ccfile.h"
 
@@ -560,8 +560,8 @@ int __cdecl Find_Disk_Number(char const *) { return (0); }
 // dest_buff, VOID *reserved_data)
 //{
 //	return(Load_Uncompress(CCFileClass(file), uncomp_buff, dest_buff,
-//reserved_data)); 	return(CCFileClass(file).Load_Uncompress(uncomp_buff,
-//dest_buff, reserved_data));
+// reserved_data)); 	return(CCFileClass(file).Load_Uncompress(uncomp_buff,
+// dest_buff, reserved_data));
 // }
 
 // extern "C" {

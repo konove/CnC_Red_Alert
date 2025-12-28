@@ -40,14 +40,21 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "building.h"
+#include "ccini.h"
+#include "defines.h"
+#include "pipe.h"
+#include "straw.h"
+#include "vector.h"
+
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node
 ** contains a type of building to build, and the COORDINATE to build it at.
 */
 class BaseNodeClass {
  public:
-  BaseNodeClass(void){};
-  BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell){};
+  BaseNodeClass(void) {};
+  BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {};
   int operator==(BaseNodeClass const &node);
   int operator!=(BaseNodeClass const &node);
   int operator>(BaseNodeClass const &node);
@@ -65,7 +72,7 @@ class BaseClass {
   /*
   ** Constructor/Destructor
   */
-  BaseClass(void){};
+  BaseClass(void) {};
   virtual ~BaseClass() { Nodes.Clear(); }
 
   /*

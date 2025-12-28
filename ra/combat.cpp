@@ -41,6 +41,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *
@@ -120,11 +121,11 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
     **	that at least one damage point is done.
     */
     if (distance < 4) {
-      damage = max(damage, Rule.MinDamage);
+      damage = std::max(damage, Rule.MinDamage);
     }
   }
 
-  damage = min(damage, Rule.MaxDamage);
+  damage = std::min(damage, Rule.MaxDamage);
   return (damage);
 }
 
@@ -308,7 +309,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
   static AnimType _aplist[] = {
       ANIM_VEH_HIT3,  // Small fragment throwing explosion -- burn/exp mix.
       ANIM_VEH_HIT2,  //	Small fragment throwing explosion -- pop &
-                      //sparkles.
+                      // sparkles.
       ANIM_FRAG1,     // Medium fragment throwing explosion -- short decay.
       ANIM_FBALL1,    // Large fireball explosion (bulges rightward).
   };
@@ -316,7 +317,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
   static AnimType _helist[] = {
       ANIM_VEH_HIT1,  //	Small fireball explosion (bulges rightward).
       ANIM_VEH_HIT2,  //	Small fragment throwing explosion -- pop &
-                      //sparkles.
+                      // sparkles.
       ANIM_ART_EXP1,  // Large fragment throwing explosion -- many sparkles.
       ANIM_FBALL1,    // Large fireball explosion (bulges rightward).
   };
@@ -350,24 +351,25 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       //	Fixed math error
       if (land == LAND_WATER)
         return (_waterlist[(ARRAY_SIZE(_waterlist) - 1) *
-                           fixed(min(damage, 90), 90)]);
-      return (_aplist[(ARRAY_SIZE(_aplist) - 1) * fixed(min(damage, 90), 90)]);
+                           fixed(std::min(damage, 90), 90)]);
+      return (
+          _aplist[(ARRAY_SIZE(_aplist) - 1) * fixed(std::min(damage, 90), 90)]);
 
     case 5:
       if (land == LAND_NONE) return (ANIM_FLAK);
       if (land == LAND_WATER)
         return (_waterlist[(ARRAY_SIZE(_waterlist) - 1) *
-                           fixed(min(damage, 130), 130)]);
-      return (
-          _helist[(ARRAY_SIZE(_helist) - 1) * fixed(min(damage, 130), 130)]);
+                           fixed(std::min(damage, 130), 130)]);
+      return (_helist[(ARRAY_SIZE(_helist) - 1) *
+                      fixed(std::min(damage, 130), 130)]);
 
     case 3:
       if (land == LAND_NONE) return (ANIM_FLAK);
       if (land == LAND_WATER)
         return (_waterlist[(ARRAY_SIZE(_waterlist) - 1) *
-                           fixed(min(damage, 150), 150)]);
+                           fixed(std::min(damage, 150), 150)]);
       return (_firelist[(ARRAY_SIZE(_firelist) - 1) *
-                        fixed(min(damage, 150), 150)]);
+                        fixed(std::min(damage, 150), 150)]);
 
     case 1:
       return (ANIM_PIFF);

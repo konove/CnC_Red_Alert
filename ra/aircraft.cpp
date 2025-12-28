@@ -106,6 +106,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac
@@ -175,23 +176,9 @@ static bool _Counts_As_Civ_Evac(ObjectClass const *candidate) {
   return (true);
 }
 
-/***********************************************************************************************
- * AircraftClass::operator new -- Allocates a new aircraft object from the pool
- **
- *                                                                                             *
- *    This routine will allocate an aircraft object from the free aircraft
- *object pool. If     * there are no free object available, then this routine
- *will fail (return NULL).           *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocate aircraft object or NULL if
- *none were        * available. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
+// Allocates a new aircraft object from the free object pool.
+// Marks the allocated object as active by setting its IsActive flag to true.
+// Returns nullptr if no free objects are available in the pool.
 void *AircraftClass::operator new(size_t) throw() {
   void *ptr = Aircraft.Allocate();
   if (ptr) {
@@ -1027,8 +1014,8 @@ short const *AircraftClass::Overlap_List(bool redraw) const {
 #ifdef PARTIAL
     Rect rect;
     if (!IsSelected && Class->DimensionData != NULL && Class->IsFixedWing) {
-      int shapenum = min(Shape_Number(),
-                         Get_Build_Frame_Count(Class->Get_Image_Data()) - 1);
+      int shapenum = std::min(
+          Shape_Number(), Get_Build_Frame_Count(Class->Get_Image_Data()) - 1);
       if (!Class->DimensionData[shapenum].Is_Valid()) {
         Class->DimensionData[shapenum] =
             Shape_Dimensions(Class->Get_Image_Data(), shapenum);
@@ -1811,7 +1798,7 @@ int AircraftClass::Mission_Move(void) {
         }
 
         //				SecondaryFacing.Set_Desired(::Direction(Fire_Coord(0),
-        //As_Coord(NavCom)));
+        // As_Coord(NavCom)));
         SecondaryFacing.Set_Desired(Direction(NavCom));
 
       } else {
@@ -1935,7 +1922,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           */
           if (Team.Is_Valid()) {
             //					if (Team.Is_Valid() &&
-            //!House->IsHuman) {
+            //! House->IsHuman) {
             mission = MISSION_GUARD;
           } else {
             mission = MISSION_UNLOAD;
@@ -2085,7 +2072,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
   PrimaryFacing.Set_Desired(Direction(coord));
 
   if (slowdown) {
-    int speed = min(distance, 0x0300);
+    int speed = std::min(distance, 0x0300);
     speed = Bound(speed / 3, 0x0020, 0x00FF);
     if (Speed != speed) {
       Set_Speed(speed);
@@ -3419,7 +3406,7 @@ int AircraftClass::Mission_Enter(void) {
           } else {
             SecondaryFacing.Set_Desired(Direction(NavCom));
             //						SecondaryFacing.Set_Desired(::Direction(Fire_Coord(0),
-            //As_Coord(NavCom)));
+            // As_Coord(NavCom)));
           }
         }
         return (3);
@@ -3543,8 +3530,8 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  MPHType sp = MPHType(min(Class->MaxSpeed * SpeedBias * House->AirspeedBias,
-                           int(MPH_LIGHT_SPEED)));
+  MPHType sp = MPHType(std::min(
+      Class->MaxSpeed * SpeedBias * House->AirspeedBias, int(MPH_LIGHT_SPEED)));
   Fly_Speed(speed, sp);
 }
 
@@ -3946,7 +3933,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
     if (Distance(target) < (camera ? 0x0380 : 0x0200) &&
         Map.In_Radar(Coord_Cell(Center_Coord()))) {
       //		if (Distance(target) < (camera ? 0x0380 : 0x0280) &&
-      //Map.In_Radar(Coord_Cell(Center_Coord()))) {
+      // Map.In_Radar(Coord_Cell(Center_Coord()))) {
       return (FIRE_OK);
     }
     return (FIRE_RANGE);
@@ -4084,7 +4071,7 @@ bool AircraftClass::Landing_Takeoff_AI(void) {
           Transmit_Message(RADIO_TETHER);
           Look();
           //					Map.Sight_From(Coord_Cell(Coord),
-          //1, House, false);
+          // 1, House, false);
         } else {
           Transmit_Message(RADIO_UNTETHER);
 
@@ -4284,7 +4271,7 @@ void AircraftClass::Assign_Destination(TARGET dest) {
     //(Target_Legal(NavCom) && dest != NavCom))) {
 
     //		if (Class->IsFixedWing || As_Cell(dest) !=
-    //Coord_Cell(Center_Coord())) {
+    // Coord_Cell(Center_Coord())) {
     Process_Take_Off();
     Status = 0;
     //		}

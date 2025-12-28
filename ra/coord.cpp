@@ -54,6 +54,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * Coord_Cell -- Convert a coordinate into a cell number. *
@@ -206,7 +207,7 @@ short const *Coord_Spillage_List(COORDINATE coord, int maxsize) {
   *cell unnecessarily.
   */
   if (maxsize > ICON_PIXEL_W) {
-    maxsize = min(maxsize, (ICON_PIXEL_W * 2)) / 2;
+    maxsize = std::min(maxsize, (ICON_PIXEL_W * 2)) / 2;
 
     x = (ICON_PIXEL_W * Coord_XLepton(coord)) / ICON_LEPTON_W;
     y = (ICON_PIXEL_H * Coord_YLepton(coord)) / ICON_LEPTON_H;

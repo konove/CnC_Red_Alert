@@ -5,7 +5,20 @@
 #include "ww_win.h"
 
 #undef WIN32
-#include <SDL.h>  // sdl includes leaking into the rest of the code is bad
+#include <SDL_events.h>
+#include <SDL_video.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "externs.h"
+#include "gbuffer.h"
+#include "keyboard.h"
+#include "misc.h"
+#include "mouse.h"
+#include "msgbox.h"
+#include "nullconn.h"
+#include "palette.h"
+#include "timer.h"
 
 bool ReadyToQuit = 0;
 

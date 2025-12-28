@@ -69,6 +69,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {
     /* 0  */ 0,
@@ -1271,7 +1273,7 @@ void MapClass::Logic(void) {
   **	Tiberium cells that can grow or spread.
   */
   int subcount = MAP_CELL_TOTAL / (Rule.GrowthRate * TICKS_PER_MINUTE);
-  subcount = max(subcount, 1);
+  subcount = std::max(subcount, 1);
   int index;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
     CELL cell = index;
@@ -1578,7 +1580,7 @@ int MapClass::Validate(void) {
       if (((uintptr_t)obj & 0xff000000) ||
           ((uintptr_t)obj->Next & 0xff000000) ||
           //				((unsigned int)obj->Trigger &
-          //0xff000000) ||
+          // 0xff000000) ||
           obj->IsInLimbo ||
           ((unsigned int)Coord_Cell(obj->Coord) >= MAP_CELL_TOTAL)) {
         return (false);
@@ -1594,7 +1596,7 @@ int MapClass::Validate(void) {
         if (((uintptr_t)obj & 0xff000000) ||
             ((uintptr_t)obj->Next & 0xff000000) ||
             //					((unsigned int)obj->Trigger &
-            //0xff000000) ||
+            // 0xff000000) ||
             obj->IsInLimbo ||
             ((unsigned int)Coord_Cell(obj->Coord) >= MAP_CELL_TOTAL)) {
           return (false);
@@ -1843,7 +1845,7 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
       break;
     }
   }
-  xbegin = max(xbegin, MapCellX);
+  xbegin = std::max(xbegin, MapCellX);
 
   /*
   **	Scan rightward until a boundary is reached. This will then define the
@@ -1859,7 +1861,7 @@ int MapClass::Zone_Span(CELL cell, int zone, MZoneType check) {
       break;
     }
   }
-  xend = min(xend, MapCellX + MapCellWidth - 1);
+  xend = std::min(xend, MapCellX + MapCellWidth - 1);
 
   /*
   **	At this point we know the bounds of the current span. Fill in the zone

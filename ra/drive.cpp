@@ -63,6 +63,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 #ifdef NEVER
 void test(void) {
@@ -629,9 +630,9 @@ bool DriveClass::While_Moving(void) {
   **	visibly move on the map, then process accordingly.
   ** Slow the unit down if he's carrying a flag.
   */
-  MPHType maxspeed = MPHType(
-      min(Techno_Type_Class()->MaxSpeed * SpeedBias * House->GroundspeedBias,
-          (int)MPH_LIGHT_SPEED));
+  MPHType maxspeed = MPHType(std::min(
+      Techno_Type_Class()->MaxSpeed * SpeedBias * House->GroundspeedBias,
+      (int)MPH_LIGHT_SPEED));
   if (IsFormationMove) maxspeed = FormationMaxSpeed;
 
   int actual;  // Working movement addition value.
@@ -952,7 +953,7 @@ bool DriveClass::Start_Of_Move(void) {
               } else {
                 cellptr->Incoming(0, true, false);
                 //								cellptr->Incoming(0,
-                //true, true);
+                // true, true);
               }
             }
           }
@@ -1014,7 +1015,7 @@ bool DriveClass::Start_Of_Move(void) {
           } else {
             cellptr->Incoming(0, true, false);
             //						cellptr->Incoming(0,
-            //true, true);
+            // true, true);
           }
         }
       }
@@ -1527,7 +1528,7 @@ void DriveClass::Fixup_Path(PathType *path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      memmove((char *)&stage[0], (char *)path->Command, max(counter, 1));
+      memmove((char *)&stage[0], (char *)path->Command, std::max(counter, 1));
       path->Length = counter;
     } else {
       /*

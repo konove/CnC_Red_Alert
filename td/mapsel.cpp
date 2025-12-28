@@ -42,6 +42,7 @@
 
 #include "function.h"
 #include "textblit.h"
+#include "interpal.h"
 
 #ifndef DEMO
 
@@ -215,8 +216,8 @@ struct countrylist {
 
     // NOD SCENARIO CHOICES
     //	  		choices   E/W start continue   East colors    West
-    //colors  E shape    W shape	  direction
-    //variant
+    // colors  E shape    W shape	  direction
+    // variant
     /*  1 */
     {{2, 1},
      {0, 0},
@@ -705,9 +706,9 @@ void Map_Selection(void) {
       Play_Sample(beepy2, 255, Options.Normalize_Sound(90));
     if (frame == 74) Play_Sample(target2, 255, Options.Normalize_Sound(110));
 
-      // the HEARTH_* animations don't have the text, but the EARTH_* ones do
-      // (they're the same resolution, but the H are only available with
-      // UPDATE.MIX)
+    // the HEARTH_* animations don't have the text, but the EARTH_* ones do
+    // (they're the same resolution, but the H are only available with
+    // UPDATE.MIX)
 #ifndef LORES
     switch (frame) {
       case 1:
@@ -1268,7 +1269,7 @@ void Map_Selection(void) {
 #endif
     Set_Palette(localpalette);
     //		Load_Data(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL",
-    //localpalette, 768);
+    // localpalette, 768);
 
     Hide_Mouse();
 #if (GERMAN | FRENCH)

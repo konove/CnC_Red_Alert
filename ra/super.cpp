@@ -50,6 +50,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 /***********************************************************************************************
  * SuperClass::SuperClass -- Constructor for special super weapon objects. *
  *                                                                                             *
@@ -317,7 +319,7 @@ int SuperClass::Anim_Stage(void) const {
 
     int stage =
         ANIMATION_STAGES * fixed(RechargeTime - Control.Value(), RechargeTime);
-    stage = min(stage, ANIMATION_STAGES - 1);
+    stage = std::min(stage, ANIMATION_STAGES - 1);
     return (stage);
   }
   return (0);

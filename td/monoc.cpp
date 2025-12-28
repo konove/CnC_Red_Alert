@@ -52,10 +52,8 @@
  *- - - - - - - */
 
 // #pragma inline
-#include "function.h"
 #include "monoc.h"
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -178,7 +176,7 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
     cell.Character = CharData[thick].BottomEdge;
     Store_Cell(cell, x + xpos + 1, y + h - 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+xpos+1,
-    //y+h-1));
+    // y+h-1));
   }
 
   /*
@@ -191,7 +189,7 @@ void MonoClass::Draw_Box(int x, int y, int w, int h, char attrib,
     cell.Character = CharData[thick].RightEdge;
     Store_Cell(cell, x + w - 1, y + ypos + 1);
     //		MonoSegment.Copy_Word_To(*(short*)&cell, Offset(x+w-1,
-    //y+ypos+1));
+    // y+ypos+1));
   }
 
   /*
@@ -331,7 +329,7 @@ void MonoClass::Scroll(int lines) {
           (LINES - lines) * COLUMNS * sizeof(CellType));
 
   //	DOSSegmentClass::Copy(MonoSegment, Offset(0, lines), MonoSegment,
-  //Offset(0, 0), (LINES-lines)*COLUMNS*sizeof(CellType));
+  // Offset(0, 0), (LINES-lines)*COLUMNS*sizeof(CellType));
 
   Y--;
   cell.Attribute = Attrib;
@@ -341,7 +339,7 @@ void MonoClass::Scroll(int lines) {
     for (int index = 0; index < COLUMNS; index++) {
       Store_Cell(cell, index, l);
       //			MonoSegment.Copy_Word_To(*(short*)&cell,
-      //Offset(index, l));
+      // Offset(index, l));
     }
   }
 }
@@ -472,7 +470,7 @@ void MonoClass::Print(char const *ptr) {
         cell.Character = *text;
         Store_Cell(cell, X, Y);
         //				MonoSegment.Copy_Word_To(*(short*)&cell,
-        //optr); 				optr += sizeof(CellType);
+        // optr); 				optr += sizeof(CellType);
 
         X++;
         if (X >= COLUMNS) {
@@ -565,7 +563,7 @@ MonoClass &MonoClass::operator=(MonoClass const &src) {
   memcpy((void *)((long)MonoSegment + src.Offset(0, 0)),
          (void *)((long)MonoSegment + Offset(0, 0)), SIZE_OF_PAGE);
   //	DOSSegmentClass::Copy(MonoSegment, src.Offset(0, 0), MonoSegment,
-  //Offset(0,0), SIZE_OF_PAGE);
+  // Offset(0,0), SIZE_OF_PAGE);
   Set_Cursor(src.X, src.Y);
   return (*this);
 }
@@ -608,7 +606,7 @@ void MonoClass::View(void) {
     memcpy((void *)((long)MonoSegment + Offset(0, 0)), &temp[0], SIZE_OF_PAGE);
 
     //		DOSSegmentClass::Swap(MonoSegment, Offset(0, 0), MonoSegment, 0,
-    //SIZE_OF_PAGE);
+    // SIZE_OF_PAGE);
     displace->Page = Page;
 
   } else {
@@ -619,7 +617,7 @@ void MonoClass::View(void) {
     memcpy(MonoSegment, (void *)((long)MonoSegment + Offset(0, 0)),
            SIZE_OF_PAGE);
     //		DOSSegmentClass::Copy(MonoSegment, Offset(0, 0), MonoSegment, 0,
-    //SIZE_OF_PAGE);
+    // SIZE_OF_PAGE);
   }
   PageUsage[Page] = displace;
   PageUsage[0] = this;

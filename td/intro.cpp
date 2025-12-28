@@ -40,6 +40,7 @@
 
 #include "function.h"
 #include "textblit.h"
+#include "interpal.h"
 
 #ifndef DEMO
 

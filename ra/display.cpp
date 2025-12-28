@@ -102,6 +102,7 @@
 
 #include "function.h"
 #include "vortex.h"
+#include <algorithm>
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -734,13 +735,14 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
         }
 
         /* BG: modifications to allow buildings one cell away from other
-        *buildings.
-        ** This is done by scanning each cell that fails the check (hence
-        *getting
-        ** to this point) and looking at the n/s/e/w adjacent cells to see if
-        *they
-        ** have buildings in them.  If they do, and they match us, then succeed.
-        */
+         *buildings.
+         ** This is done by scanning each cell that fails the check (hence
+         *getting
+         ** to this point) and looking at the n/s/e/w adjacent cells to see if
+         *they
+         ** have buildings in them.  If they do, and they match us, then
+         * succeed.
+         */
         if (retval != -1) break;
 
         for (FacingType newface = FACING_N; newface < FACING_COUNT; newface++) {
@@ -931,16 +933,16 @@ void DisplayClass::Get_Occupy_Dimensions(int &w, int &h,
       x = (*list) % MAP_CELL_W;
       y = (*list) / MAP_CELL_H;
 
-      max_x = max(max_x, x);
-      min_x = min(min_x, x);
-      max_y = max(max_y, y);
-      min_y = min(min_y, y);
+      max_x = std::max(max_x, x);
+      min_x = std::min(min_x, x);
+      max_y = std::max(max_y, y);
+      min_y = std::min(min_y, y);
 
       list++;
     }
 
-    w = max(1, max_x - min_x + 1);
-    h = min(1, max_y - min_y + 1);
+    w = std::max(1, max_x - min_x + 1);
+    h = std::min(1, max_y - min_y + 1);
   }
 }
 
@@ -1975,8 +1977,10 @@ void DisplayClass::Draw_It(bool forced) {
       **	Draw the infantry bodies in this special layer.
       */
       //			for (int index = 0; index < Anims.Count();
-      //index++) { 				AnimClass * anim = Anims.Ptr(index); 				if (*anim >=
-      //ANIM_CORPSE1 && *anim <= ANIM_CORPSE3) { 					anim->Render(forced);
+      // index++) { 				AnimClass * anim =
+      // Anims.Ptr(index); 				if (*anim >=
+      // ANIM_CORPSE1 && *anim <= ANIM_CORPSE3) {
+      // anim->Render(forced);
       //				}
       //			}
 
@@ -2025,8 +2029,9 @@ void DisplayClass::Draw_It(bool forced) {
 #endif
 
           //					if (ptr->What_Am_I() ==
-          //RTTI_ANIM && *((AnimClass*)ptr) >= ANIM_CORPSE1 &&
-          //*((AnimClass*)ptr) <= ANIM_CORPSE3) { 						continue;
+          // RTTI_ANIM && *((AnimClass*)ptr) >= ANIM_CORPSE1 &&
+          //*((AnimClass*)ptr) <= ANIM_CORPSE3) {
+          // continue;
           //					}
           assert(ptr->IsActive);
           ptr->Render(forced);
@@ -2424,10 +2429,10 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   */
   if (trycell != -1) {
     x = Cell_X(trycell) - MapCellX;
-    x = min(x, (-Cell_X(trycell) + (MapCellX + MapCellWidth)));
+    x = std::min(x, (-Cell_X(trycell) + (MapCellX + MapCellWidth)));
 
     y = Cell_Y(trycell) - MapCellY;
-    y = min(y, (-Cell_Y(trycell) + (MapCellY + MapCellHeight)));
+    y = std::min(y, (-Cell_Y(trycell) + (MapCellY + MapCellHeight)));
 
     if (x < y) {
       vert = true;
@@ -2916,7 +2921,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
           if (!uobject->Can_Teleport_Here(cell)) {
             //					if (((UnitClass
             //*)As_Object(PlayerPtr->UnitToTeleport))->Can_Enter_Cell(cell,
-            //FACING_NONE) != MOVE_OK) {
+            // FACING_NONE) != MOVE_OK) {
             action = ACTION_NOMOVE;
           }
 
@@ -4460,7 +4465,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
       TechnoClass *tech = ((TechnoClass *)object);
 
       //			if (tech->What_Am_I() == RTTI_BUILDING &&
-      //units_only) continue;
+      // units_only) continue;
 
       if (tech->House->IsPlayerControl) {
         if (tech->IsDiscoveredByPlayer &&

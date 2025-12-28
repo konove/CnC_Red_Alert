@@ -50,6 +50,8 @@
 #include "function.h"
 #include "slider.h"
 
+#include <algorithm>
+
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
  *gadget.            *
@@ -153,8 +155,8 @@ int SliderClass::Set_Maximum(int value) {
  *01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void SliderClass::Set_Thumb_Size(int value) {
-  Thumb = min(value, MaxValue);
-  Thumb = max(Thumb, 1);
+  Thumb = std::min(value, MaxValue);
+  Thumb = std::max(Thumb, 1);
   Flag_To_Redraw();
   Recalc_Thumb();
 }
@@ -171,7 +173,7 @@ void SliderClass::Set_Thumb_Size(int value) {
  ** HISTORY:   01/15/1995 JLB : Created. *
  *=============================================================================================*/
 int SliderClass::Set_Value(int value) {
-  value = min(value, MaxValue - Thumb);
+  value = std::min(value, MaxValue - Thumb);
 
   if (GaugeClass::Set_Value(value)) {
     Recalc_Thumb();
@@ -195,12 +197,12 @@ void SliderClass::Recalc_Thumb(void) {
   int length = IsHorizontal ? Width : Height;
   int size = length * fixed(Thumb, MaxValue);
   //	int size   = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue,
-  //Thumb));
-  ThumbSize = max(size, 4);
+  // Thumb));
+  ThumbSize = std::max(size, 4);
   int start = length * fixed(CurValue, MaxValue);
   //	int start  = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue,
-  //CurValue));
-  ThumbStart = min(start, length - ThumbSize);
+  // CurValue));
+  ThumbStart = std::min(start, length - ThumbSize);
 }
 
 /***********************************************************************************************

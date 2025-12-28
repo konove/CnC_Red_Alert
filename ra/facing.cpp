@@ -43,6 +43,7 @@
 
 #include "function.h"
 #include "facing.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *
@@ -141,7 +142,7 @@ int FacingClass::Rotation_Adjust(int rate) {
   **	same as the current facing.
   */
   if (Is_Rotating()) {
-    rate = min(rate, 127);
+    rate = std::min(rate, 127);
 
     DirType oldfacing = CurrentFacing;
     int diff = Difference();

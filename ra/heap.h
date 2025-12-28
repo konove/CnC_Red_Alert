@@ -42,13 +42,27 @@
 
 #include "vector.h"
 
-/**************************************************************************
-**	This is a block memory management handler. It is used when memory is to
-**	be treated as a series of blocks of fixed size. This is similar to an
-**	array of integral types, but unlike such an array, the memory blocks
-**	are anonymously. This facilitates the use of this class when overloading
-**	the new and delete operators for a normal class object.
-*/
+// Fixed-size block memory allocator that manages a pool of uniformly-sized memory blocks.
+//
+// This class provides efficient allocation and deallocation of fixed-size memory blocks,
+// similar to an array but with dynamic allocation tracking. Each block is the same size,
+// determined at construction time. The class is commonly used to implement custom operator
+// new/delete for game objects, enabling fast allocation from a pre-allocated pool.
+//
+// Key features:
+// - Allocates blocks from a contiguous buffer (user-provided or internally allocated)
+// - Tracks free/allocated blocks using a bitmap (BooleanVectorClass)
+// - Supports indexed access to blocks via operator[]
+// - Returns nullptr when no blocks are available
+// - Provides Count() for active allocations and Avail() for remaining capacity
+//
+// Thread safety: Not thread-safe. Caller must synchronize access if used concurrently.
+//
+// Example usage:
+//   FixedHeapClass heap(sizeof(MyClass));
+//   heap.Set_Heap(100);  // Pre-allocate 100 blocks
+//   void* ptr = heap.Allocate();  // Get a block
+//   heap.Free(ptr);  // Return block to pool
 class FixedHeapClass {
  public:
   FixedHeapClass(int size);
@@ -111,11 +125,9 @@ class FixedHeapClass {
   FixedHeapClass(FixedHeapClass const &);
 };
 
-/**************************************************************************
-**	This template serves only as an interface to the heap manager class. By
-**	using this template, the object pointers are automatically converted
-**	to the correct type without any code overhead.
-*/
+// Type-safe wrapper around FixedHeapClass that provides automatic type conversion.
+// Eliminates the need for manual casting when allocating/freeing objects of type T.
+// No runtime overhead - all type conversions happen at compile time.
 template <class T>
 class TFixedHeapClass : public FixedHeapClass {
  public:
@@ -136,12 +148,10 @@ class TFixedHeapClass : public FixedHeapClass {
   };
 };
 
-/**************************************************************************
-**	This is a derivative of the fixed heap class. This class adds the
-**	ability to quickly iterate through the active (allocated) objects. Since
-*the *	active array is a sequence of pointers, the overhead of this class
-**	is 4 bytes per potential allocated object (be warned).
-*/
+// Fixed-size block allocator with fast iteration over active (allocated) objects.
+// Extends FixedHeapClass by maintaining an array of pointers to all allocated blocks,
+// enabling efficient iteration without scanning the entire pool for active objects.
+// Memory overhead: 4-8 bytes per potential block (pointer size) in ActivePointers vector.
 class FixedIHeapClass : public FixedHeapClass {
  public:
   FixedIHeapClass(int size) : FixedHeapClass(size){};
@@ -169,11 +179,9 @@ class FixedIHeapClass : public FixedHeapClass {
   DynamicVectorClass<void *> ActivePointers;
 };
 
-/**************************************************************************
-**	This template serves only as an interface to the iteratable heap manager
-**	class. By using this template, the object pointers are automatically
-*converted *	to the correct type without any code overhead.
-*/
+// Type-safe wrapper around FixedIHeapClass with automatic type conversion.
+// Provides type-safe access to iterable heap functionality plus serialization support.
+// All type conversions are compile-time with zero runtime overhead.
 class FileClass;
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {

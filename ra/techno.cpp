@@ -157,6 +157,8 @@
 
 #include "function.h"
 
+#include <algorithm>
+
 /***************************************************************************
 **	Cloaking control values.
 */
@@ -755,7 +757,7 @@ int TechnoClass::Time_To_Build(void) const {
     // Hack: allow the multiple-factory bonus, but only up to two factories if
     //			this is an AM<->AM game.
     if (NewUnitsEnabled) {
-      val /= min(divisor, 2);
+      val /= std::min(divisor, 2);
     } else {
       val /= divisor;
     }
@@ -1046,9 +1048,9 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass *from,
       */
       if (Health_Ratio() < Rule.ConditionGreen) {
         int cost = Techno_Type_Class()->Repair_Cost();
-        cost = max(cost, 1);
+        cost = std::max(cost, 1);
         int step = Techno_Type_Class()->Repair_Step();
-        step = max(step, 1);
+        step = std::max(step, 1);
 
         /*
         **	If there is sufficient money to repair the unit one step, then
@@ -1830,7 +1832,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       //(((dist/ICON_LEPTON_W)*(dist/ICON_LEPTON_W))+1);
 
       //		if (value < MAP_CELL_W*2) value = dist/ICON_LEPTON_W;
-      value = max(value, 1);
+      value = std::max(value, 1);
       BEnd(BENCH_EVAL_OBJECT);
       return (true);
     }
@@ -2139,7 +2141,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 
       int crange = range / ICON_LEPTON_W;
       if (range == 0) {
-        crange = max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
+        crange = std::max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
         crange++;
       }
       CELL cell = Coord_Cell(Fire_Coord(0));
@@ -3403,7 +3405,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       if (House->IsPlayerControl && ctrldown && altdown &&
           Can_Player_Move() /*KO && Can_Player_Fire()*/) {
         //		if (House->IsPlayerControl && ctrldown && altdown &&
-        //Can_Player_Move() && Can_Player_Fire()) {
+        // Can_Player_Move() && Can_Player_Fire()) {
         return (ACTION_GUARD_AREA);
       }
 
@@ -4688,7 +4690,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     */
     int range = Techno_Type_Class()->ThreatRange;
     if (range == 0) {
-      range = max(Weapon_Range(0), Weapon_Range(1));
+      range = std::max(Weapon_Range(0), Weapon_Range(1));
     }
 
     range *= 2;
@@ -4969,7 +4971,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
             }
             if (value[lp] < newweakest) {
               //					if (value[count] <
-              //newweakest) {
+              // newweakest) {
               newweakest = value[lp];
             }
           }
@@ -5570,7 +5572,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         int greenpips = pips * fixed(nickel, Rule.BailCount);
 
         while (greenpips + graypips < pips) {
-          int ironnickelmax = max(iron, nickel);
+          int ironnickelmax = std::max(iron, nickel);
           if (iron > nickel) {
             graypips++;
           } else {
@@ -5888,7 +5890,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	account for the credits of the load.
     */
 //	cost += Fixed_To_Cardinal(UnitTypeClass::FULL_LOAD_CREDITS,
-//Tiberium_Load())/2;
+// Tiberium_Load())/2;
 #endif
 
     if (House->IsHuman) {
@@ -5965,7 +5967,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       WeaponTypeClass const *weapon = Techno_Type_Class()->PrimaryWeapon;
       BulletTypeClass const *bullet = weapon->Bullet;
       WarheadTypeClass const *warhead = weapon->WarheadPtr;
-      int mrange = min(int(weapon->Range), 0x0400);
+      int mrange = std::min(int(weapon->Range), 0x0400);
 
       int value = ((weapon->Attack * warhead->Modifier[ARMOR_STEEL]) * mrange *
                    warhead->SpreadFactor) /
@@ -6008,7 +6010,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       WeaponTypeClass const *weapon = Techno_Type_Class()->PrimaryWeapon;
       BulletTypeClass const *bullet = weapon->Bullet;
       WarheadTypeClass const *warhead = weapon->WarheadPtr;
-      int mrange = min(int(weapon->Range), 0x0400);
+      int mrange = std::min(int(weapon->Range), 0x0400);
 
       int value = ((weapon->Attack * warhead->Modifier[ARMOR_NONE]) * mrange *
                    warhead->SpreadFactor) /
@@ -6304,10 +6306,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    * HISTORY: * 06/17/1996 JLB : Created. *
    *=============================================================================================*/
   static inline int _Scale_To_256(int val) {
-    val = min(val, 100);
-    val = max(val, 0);
+    val = std::min(val, 100);
+    val = std::max(val, 0);
     val = ((val * 256) / 100);
-    val = min(val, 255);
+    val = std::min(val, 255);
     return (val);
   }
 

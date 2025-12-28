@@ -77,7 +77,9 @@
  ** who haven't been ACK'd yet.  Thus, order of delivery is NOT guaranteed;
  ** but, the performance is better than a "sequenced" approach.  Also, the
  ** Packet ID scheme (see below) ensures that the application will read * the
- *packets in the proper order.  Thus, this class guarantees delivery	* and order of deliver.																	*
+ *packets in the proper order.  Thus, this class guarantees delivery	* and
+ * order of deliver.
+ *									*
  *																									*
  * Each packet has a unique numerical ID; the ID is set to a count of the
  ** number of packets sent.  Different count values are provided, for both *
@@ -108,6 +110,8 @@
 /*
 ********************************* Includes **********************************
 */
+#include <cstdint>
+
 #include "combuf.h"
 
 /*

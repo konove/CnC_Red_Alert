@@ -54,6 +54,11 @@ extern short StreamLowImpact;
 
 #include "function.h"
 
+#include <algorithm>
+
+#include "interpal.h"
+#include "graphics_loader.h"
+
 #define SCORETEXT_X 184
 #define SCORETEXT_Y 8
 #define CASUALTY_Y 88
@@ -590,7 +595,7 @@ void ScoreClass::Presentation(void) {
   leadership =
       100 * fixed(leadership, (house ? NKilled + NBKilled + leadership
                                      : GKilled + GBKilled + leadership));
-  leadership = min(150, leadership);
+  leadership = std::min(150, leadership);
 
   /*
   **	Determine economy rating.
@@ -603,11 +608,11 @@ void ScoreClass::Presentation(void) {
                       PlayerPtr->StolenBuildingsCredits,
                   PlayerPtr->HarvestedCredits +
                       (unsigned)PlayerPtr->Control.InitialCredits + 1);
-  economy = min(economy, 150);
+  economy = std::min(economy, 150);
 
   int total = ((uspoints * leadership) / 100) + ((uspoints * economy) / 100);
   if (total < -9999) total = -9999;
-  total = min(total, 99999);
+  total = std::min(total, 99999);
 
   Keyboard->Clear();
   for (i = 0; i <= 130; i++) {
@@ -750,9 +755,9 @@ void ScoreClass::Presentation(void) {
   Keyboard->Clear();
 
   if (!house) Show_Credits(house, _greenpal);
-    /*
-    ** Hall of fame display and processing
-    */
+  /*
+  ** Hall of fame display and processing
+  */
 #ifdef WIN32
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
 #else
@@ -1046,7 +1051,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
     /*BG		if (!Keyboard->Check()) */ Call_Back_Delay(1);
   }
 
-  int i = max(GBKilled, NBKilled);
+  int i = std::max(GBKilled, NBKilled);
   for (int q = 0; q <= i; q++) {
     Set_Font_Palette(_redpal);
     Count_Up_Print("%d", q, NBKilled, BUILDING_X + 16, BUILDING_Y + 10);
@@ -1102,7 +1107,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
 #endif
   int gdikilled = gkilled, nodkilled = nkilled;
 
-  maxval = max(gdikilled, nodkilled);
+  maxval = std::max(gdikilled, nodkilled);
   if (!maxval) maxval = 1;
 
   gdikilled = (gdikilled * SIZEGBAR) / maxval;
@@ -1112,7 +1117,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
     nodkilled = nkilled * 5;
   }
 
-  maxval = max(gdikilled, nodkilled);
+  maxval = std::max(gdikilled, nodkilled);
   if (!maxval) maxval = 1;
 
   // Draw the white-flash shape on the hidpage
@@ -1226,7 +1231,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
 
   gdikilled = GKilled;
   nodkilled = NKilled;
-  maxval = max(gdikilled, nodkilled);
+  maxval = std::max(gdikilled, nodkilled);
 
   if (!maxval) maxval = 1;
   if ((gdikilled > (MAX_BAR_X - BARGRAPH_X)) ||
@@ -1235,7 +1240,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
     nodkilled = (nodkilled * (MAX_BAR_X - BARGRAPH_X)) / maxval;
   }
 
-  maxval = max(gdikilled, nodkilled);
+  maxval = std::max(gdikilled, nodkilled);
   if (!maxval) maxval = 1;
 
   /*
@@ -1518,7 +1523,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
-        ascii = key;  // ascii = KN_To_KA(key);
+        ascii = key;                  // ascii = KN_To_KA(key);
         if (ascii >= 'a' && ascii <= 'z') ascii -= ('a' - 'A');
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
           HidPage.Blit(SeenPage, (xpos + (index * 6)) * RESFACTOR,
@@ -1721,14 +1726,15 @@ void New_Infantry_Anim(int index, int anim) {
  *=========================================================================*/
 void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
   if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 4 * RESFACTOR, 0 + min(i, gkilled) * RESFACTOR,
+    LogicPage->Fill_Rect(0, 0 + 4 * RESFACTOR,
+                         0 + std::min(i, gkilled) * RESFACTOR,
                          0 + 5 * RESFACTOR, RED);
     LogicPage->Draw_Line(0 + 1 * RESFACTOR, 0 + 6 * RESFACTOR,
-                         (0 + min(i, gkilled) + 1) * RESFACTOR,
+                         (0 + std::min(i, gkilled) + 1) * RESFACTOR,
                          0 + 6 * RESFACTOR, TBLACK);
     LogicPage->Draw_Line(
         (0 + MIN(i, gkilled) + 1) * RESFACTOR, 0 + 5 * RESFACTOR,
-        (0 + min(i, gkilled) + 1) * RESFACTOR, 0 + 5 * RESFACTOR, TBLACK);
+        (0 + std::min(i, gkilled) + 1) * RESFACTOR, 0 + 5 * RESFACTOR, TBLACK);
     if (i <= gkilled) {
       int anim = InfantryMan[i / 11].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
@@ -1739,19 +1745,20 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
           New_Infantry_Anim(i / 11, DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
-        //VOC_SCREAM5));
+        // VOC_SCREAM5));
       }
     }
   }
   if (nkilled) {
-    LogicPage->Fill_Rect(0, 0 + 16 * RESFACTOR, 0 + min(i, nkilled) * RESFACTOR,
+    LogicPage->Fill_Rect(0, 0 + 16 * RESFACTOR,
+                         0 + std::min(i, nkilled) * RESFACTOR,
                          0 + 17 * RESFACTOR, LTCYAN);
     LogicPage->Draw_Line(0 + 1 * RESFACTOR, 0 + 18 * RESFACTOR,
-                         (0 + min(i, nkilled) + 1) * RESFACTOR,
+                         (0 + std::min(i, nkilled) + 1) * RESFACTOR,
                          0 + 18 * RESFACTOR, TBLACK);
     LogicPage->Draw_Line(
-        (0 + MIN(i, nkilled) + 1) * RESFACTOR, 0 + 17 * RESFACTOR,
-        (0 + min(i, nkilled) + 1) * RESFACTOR, 0 + 17 * RESFACTOR, TBLACK);
+        (0 + std::min(i, nkilled) + 1) * RESFACTOR, 0 + 17 * RESFACTOR,
+        (0 + std::min(i, nkilled) + 1) * RESFACTOR, 0 + 17 * RESFACTOR, TBLACK);
     if (i <= nkilled) {
       int anim = InfantryMan[(NUMINFANTRYMEN / 2) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
@@ -1762,7 +1769,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
           New_Infantry_Anim((NUMINFANTRYMEN / 2) + (i / 11), DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
-        //VOC_SCREAM5));
+        // VOC_SCREAM5));
       }
     }
   }
@@ -1976,7 +1983,7 @@ void Multi_Score_Presentation(void) {
           new ScorePrintClass(Int_Print(Session.Score[i].Wins), 118, y, remap));
       Call_Back_Delay(6);
 
-      for (k = 0; k <= min(Session.CurGame, MAX_MULTI_GAMES - 2); k++) {
+      for (k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2); k++) {
         if (Session.Score[i].Kills[k] >= 0) {
           Alloc_Object(new ScorePrintClass(Int_Print(Session.Score[i].Kills[k]),
                                            225 + (24 * k), y, remap));

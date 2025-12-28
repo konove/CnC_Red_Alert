@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
 project(CnCRedAlert)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Include What You Use integration
+include(cmake/IWYU.cmake)
 
 if(MSVC)
     add_compile_options(

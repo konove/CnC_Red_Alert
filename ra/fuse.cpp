@@ -41,6 +41,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * FuseClass::FuseClass -- Constructor. *
@@ -89,9 +90,9 @@ FuseClass::FuseClass(void) {
  *=============================================================================================*/
 void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
                          int arming) {
-  timeto = max(timeto, arming);
-  Timer = min(timeto, 0xFF);
-  Arming = min(arming, 0xFF);
+  timeto = std::max(timeto, arming);
+  Timer = std::min(timeto, 0xFF);
+  Arming = std::min(arming, 0xFF);
   HeadTo = target;
   Proximity = Distance(location, target);
 }

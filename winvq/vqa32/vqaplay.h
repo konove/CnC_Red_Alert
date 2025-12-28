@@ -18,6 +18,9 @@
 
 #ifndef VQAPLAY_H
 #define VQAPLAY_H
+
+#include <cstdint>
+
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S

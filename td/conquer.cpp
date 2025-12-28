@@ -76,6 +76,7 @@
 #endif
 
 #include "ccdde.h"
+#include "interpal.h"
 
 #define SHAPE_TRANS 0x40
 
@@ -381,8 +382,8 @@ void Main_Game(int argc, char *argv[]) {
 #endif
       GameToPlay = GAME_NORMAL;  // Have to do this or we will got straight to
                                  // the multiplayer menu
-      Spawn_WChat(false);  // Will switch back to Wchat. It must be there
-                           // because its been poking us
+      Spawn_WChat(false);        // Will switch back to Wchat. It must be there
+                                 // because its been poking us
       // break;
     }
 #endif  // FORCE_WINSOCK
@@ -1848,11 +1849,11 @@ unsigned long __stdcall Thread_Read(void *file) {
     //}else{
     //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead, read_this_time/4);
     //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead+read_this_time/4,
-    //read_this_time/4);
+    // read_this_time/4);
     //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead+(read_this_time/4)*2,
-    //read_this_time/4);
+    // read_this_time/4);
     //	ccfile->Read(VQThreadBuffer+VQThreadBlockHead+(read_this_time/4)*3,
-    //read_this_time/4);
+    // read_this_time/4);
     //}
     VQThreadBlockHead += read_this_time;
     left_to_read -= read_this_time;
@@ -3297,7 +3298,8 @@ void Dump_Heap_Pointers(void) {
         while (aptr < lptr) {
           if ((*(int *)(aptr)) == -1) {
             //						Smart_Printf( "end alloc
-            //chain %p.\n", aptr ); 						Hex_Dump_Data( aptr, 0x10);
+            // chain %p.\n", aptr );
+            // Hex_Dump_Data( aptr, 0x10);
             break;
           }
 
@@ -3363,7 +3365,8 @@ void Dump_Heap_Pointers(void) {
         while (aptr < clptr) {
           if ((*(int *)(aptr)) == -1) {
             //						Smart_Printf( "end alloc
-            //chain %p.\n", aptr ); 						Hex_Dump_Data( aptr, 0x10);
+            // chain %p.\n", aptr );
+            // Hex_Dump_Data( aptr, 0x10);
             break;
           }
 
@@ -3404,7 +3407,8 @@ void Dump_Heap_Pointers(void) {
         while (aptr < nptr) {
           if ((*(int *)(aptr)) == -1) {
             //						Smart_Printf( "end alloc
-            //chain %p.\n", aptr ); 						Hex_Dump_Data( aptr, 0x10);
+            // chain %p.\n", aptr );
+            // Hex_Dump_Data( aptr, 0x10);
             break;
           }
 

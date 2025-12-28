@@ -41,6 +41,7 @@
 #include "function.h"
 #include "msgbox.h"
 #include "gadget.h"
+#include <algorithm>
 
 #ifdef FIXIT_VERSION_3
 bool cancel_current_msgbox = false;
@@ -109,13 +110,13 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + (2 * RESFACTOR);
-    bwidth =
-        max((String_Pixel_Width(b1txt) + (8 * RESFACTOR)), (30u * RESFACTOR));
+    bwidth = std::max((String_Pixel_Width(b1txt) + (8 * RESFACTOR)),
+                      (30u * RESFACTOR));
 
     if (b2txt != NULL) {
       numbuttons = 2;
-      bwidth =
-          max((String_Pixel_Width(b2txt) + (8 * RESFACTOR)), unsigned(bwidth));
+      bwidth = std::max((String_Pixel_Width(b2txt) + (8 * RESFACTOR)),
+                        unsigned(bwidth));
 
       if (b3txt != NULL) {
         numbuttons = 3;
@@ -138,7 +139,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   int lines = Format_Window_String(buffer, 255 * RESFACTOR, width, height);
   TextPrintType tpf = TPF_TEXT;
 
-  width = max(width, (90 * RESFACTOR));
+  width = std::max(width, (90 * RESFACTOR));
   width += 40 * RESFACTOR;
   height += (numbuttons == 0) ? (40 * RESFACTOR) : (60 * RESFACTOR);
 

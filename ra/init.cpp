@@ -62,6 +62,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "graphics_loader.h"
 #include "loaddlg.h"
 #ifdef WIN32
 #ifdef WINSOCK_IPX

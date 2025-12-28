@@ -90,6 +90,7 @@
 
 #include "function.h"
 #include "vortex.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *
@@ -1108,8 +1109,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             BuildingClass *obj = (BuildingClass *)(Map.PendingObjectPtr);
             loco = obj->Class->Speed;
             //					if (*obj == STRUCT_SUB_PEN ||
-            //*obj == STRUCT_SHIP_YARD || 					    *obj == STRUCT_FAKE_PEN || *obj ==
-            //STRUCT_FAKE_YARD) loco = SPEED_FLOAT;
+            //*obj == STRUCT_SHIP_YARD ||
+            //*obj == STRUCT_FAKE_PEN || *obj == STRUCT_FAKE_YARD) loco =
+            // SPEED_FLOAT;
           }
         }
 
@@ -2048,7 +2050,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
 
       if (gems) {
         OverlayData = _adjgem[count];
-        OverlayData = min(int(OverlayData), 2);
+        OverlayData = std::min(int(OverlayData), 2);
       } else {
         OverlayData = _adj[count];
       }
@@ -2176,7 +2178,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
 
           //				case CRATE_HEAL_BASE:
           //					if (object->House->BScan == 0)
-          //powerup = CRATE_UNIT;
+          // powerup = CRATE_UNIT;
 
         case CRATE_MONEY:
           break;
@@ -2223,7 +2225,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
                     bcount += hptr->QuantityB(j);
                   }
                   ucount += bcount / 2;  // weight buildings less
-                  minunits = min(minunits, ucount);
+                  minunits = std::min(minunits, ucount);
                 }
               }
               if (Random_Pick(0, minunits) == minunits) {

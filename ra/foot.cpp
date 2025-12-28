@@ -91,6 +91,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <algorithm>
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *
@@ -388,7 +389,7 @@ bool FootClass::Basic_Path(void) {
       PathType path1;
       FacingType workpath1[200];  // Staging area for path list.
       //			FacingType	workpath2[200];	// Staging area
-      //for path list.
+      // for path list.
       MoveType maxtype = MOVE_TEMP;
       if (!House->IsHuman) {
         maxtype = MOVE_TEMP;
@@ -460,7 +461,7 @@ bool FootClass::Basic_Path(void) {
           for (MoveType move = (MoveType)(MOVE_CLOAK + 1);
                move < (MoveType)(maxtype - 1); move++) {
             //					for (MoveType move =
-            //MOVE_MOVING_BLOCK; move < maxtype-1; move++) {
+            // MOVE_MOVING_BLOCK; move < maxtype-1; move++) {
             path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
             if (path && path->Cost &&
                 path->Cost < max((path1.Cost + (path1.Cost / 2)), 3)) {
@@ -478,7 +479,8 @@ bool FootClass::Basic_Path(void) {
       */
       if (found1) {
         Fixup_Path(&path1);
-        memcpy(&Path[0], &workpath1[0], min(path->Length, (int)sizeof(Path)));
+        memcpy(&Path[0], &workpath1[0],
+               std::min(path->Length, (int)sizeof(Path)));
       }
 
       Mark(MARK_DOWN);
@@ -888,7 +890,7 @@ void FootClass::Approach_Target(void) {
 
     if (!Target_Legal(NavCom) && (!In_Range(TarCom, primary) || !IsLocked)) {
       //		if (!Target_Legal(NavCom) && (Distance(TarCom) >
-      //maxrange || !IsLocked)) {
+      // maxrange || !IsLocked)) {
 
       /*
       ** If the object that we are attacking is a building adjust the unit's
@@ -913,7 +915,7 @@ void FootClass::Approach_Target(void) {
         maxrange -= 0x00B7;
       }
 #endif
-      maxrange = max(maxrange, 0);
+      maxrange = std::max(maxrange, 0);
 
       COORDINATE tcoord = ::As_Coord(TarCom);
       COORDINATE trycoord = 0;
@@ -1877,14 +1879,14 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
+    speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
 
     int ratio = (speed > 0) ? Max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.
     */
-    threat = max(threat / ratio, 1);
+    threat = std::max(threat / ratio, 1);
   }
   return (threat);
 }

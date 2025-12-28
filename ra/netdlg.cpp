@@ -53,9 +53,11 @@
  ** Currently, bridges are handled by specifying the destination IPX address of
  *the				  * "server" (game owner's system) on the
  *command-line.  This address is used to * derive a broadcast address to that
- *destination network, and this system's queries			  * are broadcast over its network & the server's network; replies to the queries come			  *
- * with each system's IPX address attached, so once we have the address, we can
- *form			  * a connection with any system on the bridged net.
+ *destination network, and this system's queries			  * are
+ * broadcast over its network & the server's network; replies to the queries
+ * come			  * with each system's IPX address attached, so once we
+ * have the address, we can form			  * a connection with
+ * any system on the bridged net.
  **
  *                                                                         						  *
  * The flaw in this plan is that we can only cross one bridge.  If there are 3
@@ -121,6 +123,9 @@
 //	Warning - Most disgusting cpp file of all time. ajw
 
 #include "function.h"
+
+#include <algorithm>
+
 #ifdef WIN32
 #ifdef WINSOCK_IPX
 #include "wsproto.h"
@@ -1910,8 +1915,8 @@ static int Net_Join_Dialog(void) {
                                d_color_y + 1 + d_color_h - 2,
                                ColorRemaps[i].Box);
           //						(i ==
-          //PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
-          //ColorRemaps[i].Box);
+          // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
+          // ColorRemaps[i].Box);
 
           if (i == Session.ColorIdx) {
             Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
@@ -1948,7 +1953,7 @@ static int Net_Join_Dialog(void) {
         //...............................................................
         //				LogicPage->Fill_Rect(d_dialog_x + 16
         //*RESFACTOR, d_name_y, d_dialog_x + d_dialog_w - 16 *RESFACTOR,
-        //d_name_y + d_txt6_h, BLACK);
+        // d_name_y + d_txt6_h, BLACK);
 
         p = Text_String(TXT_SCENARIO_COLON);
         if (Session.Options.ScenarioDescription[0]) {
@@ -1970,22 +1975,22 @@ static int Net_Join_Dialog(void) {
           descrip.Set_Text(txt);
 
           //					sprintf(txt, "%s %s", p,
-          //Session.Options.ScenarioDescription); 					descrip.Set_Text(txt);
-          //					Fancy_Text_Print("%s %s",
-          //d_dialog_cx, d_name_y, scheme, BLACK, TPF_TEXT | TPF_CENTER, p,
-          //Session.Options.ScenarioDescription);
+          // Session.Options.ScenarioDescription);
+          // descrip.Set_Text(txt);
+          // Fancy_Text_Print("%s %s", d_dialog_cx, d_name_y, scheme, BLACK,
+          // TPF_TEXT | TPF_CENTER, p, Session.Options.ScenarioDescription);
         } else {
           sprintf(txt, "%s %s", p, Text_String(TXT_NOT_FOUND));
           descrip.Set_Text(txt);
           //					Fancy_Text_Print("%s %s",
-          //d_dialog_cx, d_name_y, &ColorRemaps[PCOLOR_RED], TBLACK, TPF_TEXT |
-          //TPF_CENTER, p, Text_String(TXT_NOT_FOUND));
+          // d_dialog_cx, d_name_y, &ColorRemaps[PCOLOR_RED], TBLACK, TPF_TEXT |
+          // TPF_CENTER, p, Text_String(TXT_NOT_FOUND));
         }
         //...............................................................
         // Unit count, tech level, credits, ai players
         //...............................................................
         //				LogicPage->Fill_Rect(d_count_x +
-        //d_count_w + 2 *RESFACTOR, d_count_y, d_count_x + d_count_w + 35
+        // d_count_w + 2 *RESFACTOR, d_count_y, d_count_x + d_count_w + 35
         //*RESFACTOR, d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
 
         Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
@@ -1995,7 +2000,7 @@ static int Net_Join_Dialog(void) {
         staticcount.Set_Text(txt);
         staticcount.Draw_Me();
         //				Fancy_Text_Print(txt, d_count_x +
-        //d_count_w + 2 *RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT);
+        // d_count_w + 2 *RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT);
 
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
@@ -2007,7 +2012,7 @@ static int Net_Join_Dialog(void) {
         staticlevel.Set_Text(txt);
         staticlevel.Draw_Me();
         //				Fancy_Text_Print(txt, d_level_x +
-        //d_level_w + 2 *RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+        // d_level_w + 2 *RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
 
         Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2 * RESFACTOR,
                          d_credits_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
@@ -2015,7 +2020,7 @@ static int Net_Join_Dialog(void) {
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
-        //d_credits_w + 2 *RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT);
+        // d_credits_w + 2 *RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT);
 
         Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
                          d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
@@ -2023,7 +2028,8 @@ static int Net_Join_Dialog(void) {
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
         //				Fancy_Text_Print(txt, d_aiplayers_x +
-        //d_aiplayers_w + 2 *RESFACTOR, d_aiplayers_y, scheme, BLACK, TPF_TEXT);
+        // d_aiplayers_w + 2 *RESFACTOR, d_aiplayers_y, scheme, BLACK,
+        // TPF_TEXT);
       }
 
       Show_Mouse();
@@ -2587,7 +2593,7 @@ static int Net_Join_Dialog(void) {
           }
         } else {
 #ifndef FIXIT_VERSION_3  //	Removed restriction on downloading official
-                         //maps.
+                         // maps.
           /*
           ** Oh dear. Thats a scenario I don't have. Request that the host sends
           *the *	scenario to me provided it's not an official scenario.
@@ -2764,7 +2770,7 @@ static int Net_Join_Dialog(void) {
       //.....................................................................
       // EV_GAME_SIGNOFF:
       //	A game before the one I've selected is gone, so we have a new
-      //index
+      // index
       // now. 'game_index' must be kept set to the currently-selected list
       // item, so we send out queries for the currently-selected game.  It's
       // therefore imperative that we detect any changes to the game list.
@@ -2971,7 +2977,7 @@ static int Net_Join_Dialog(void) {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    int i = max(Ipx.Global_Response_Time() * 2, 60ul);
+    int i = std::max(Ipx.Global_Response_Time() * 2, 60ul);
     starttime = TickCount;
     while (TickCount - starttime < i) {
       Ipx.Service();
@@ -2985,7 +2991,7 @@ static int Net_Join_Dialog(void) {
   //	Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //		Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
-                 max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games & Players vectors.
@@ -3107,7 +3113,7 @@ static int Request_To_Join(char *playername, int join_index, HousesType house,
 #ifdef FIXIT_VERSION_3
   //	Guest sends host his version.
   //	Added to the transmitted _min_ version number is a bit indicating
-  //presence of Aftermath expansion.
+  // presence of Aftermath expansion.
   if (Is_Aftermath_Installed()) {
     //		debugprint( "Guest tells host 'I have Aftermath'\n" );
     Session.GPacket.PlayerInfo.MinVersion = VerNum.Min_Version() | 0x80000000;
@@ -3423,7 +3429,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
 
   //------------------------------------------------------------------------
   //	If we're joined in a game, handle the packet in a standard way;
-  //otherwise, 	don't answer standard queries.
+  // otherwise, 	don't answer standard queries.
   //------------------------------------------------------------------------
   if ((*joinstate) == JOIN_CONFIRMED &&
       Process_Global_Packet(&Session.GPacket, &Session.GAddress) != 0) {
@@ -3432,7 +3438,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
 
   //------------------------------------------------------------------------
   //	NET_ANSWER_GAME:  Another system is answering our GAME query, so add
-  //that 	system to our list box if it's new.
+  // that 	system to our list box if it's new.
   //------------------------------------------------------------------------
   if (Session.GPacket.Command == NET_ANSWER_GAME) {
     //.....................................................................
@@ -3507,7 +3513,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
 
       //..................................................................
       //	Create a string for "xxx's Game", leaving room for brackets
-      //around 	the string if it's a closed game
+      // around 	the string if it's a closed game
       //..................................................................
       item = new char[MPLAYER_NAME_MAX + 64];
       if (Session.GPacket.GameInfo.IsOpen) {
@@ -3558,8 +3564,8 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       //..................................................................
       //	If the address is already present, re-copy their name, color &
       //	house into the existing entry, in case they've changed it
-      //without 	our knowledge; set the 'found' flag so we won't create a new
-      //entry.
+      // without 	our knowledge; set the 'found' flag so we won't create a
+      // new entry.
       //..................................................................
       if (Session.Players[i]->Address == Session.GAddress) {
         strcpy(Session.Players[i]->Name, Session.GPacket.Name);
@@ -3734,7 +3740,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       Session.Options.Tiberium = Session.GPacket.ScenarioInfo.IsTiberium;
       Session.Options.Goodies = Session.GPacket.ScenarioInfo.IsGoodies;
       //			Session.Options.Ghosts =
-      //Session.GPacket.ScenarioInfo.IsGhosties;
+      // Session.GPacket.ScenarioInfo.IsGhosties;
       Session.Options.AIPlayers = Session.GPacket.ScenarioInfo.AIPlayers;
       BuildLevel = Session.GPacket.ScenarioInfo.BuildLevel;
       Session.Options.UnitCount = Session.GPacket.ScenarioInfo.UnitCount;
@@ -3745,15 +3751,15 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
 #ifdef FIXIT_VERSION_3
       //	Guest receives game version number from host.
       //	Added to the transmitted version number is a bit indicating
-      //presence of Aftermath expansion.
+      // presence of Aftermath expansion.
       unsigned long lVersion = Session.GPacket.ScenarioInfo.Version &
                                ~0x80000000;  //	Actual version number.
       Session.CommProtocol = VerNum.Version_Protocol(lVersion);
       bAftermathMultiplayer = Session.GPacket.ScenarioInfo.Version & 0x80000000;
 //			if( bAftermathMultiplayer )
 //				debugprint( "Guest hears host say 'This is an
-//Aftermath game'\n" ); 			else 				debugprint( "Guest hears host say 'This is NOT an
-//Aftermath game'\n" );
+// Aftermath game'\n" ); 			else
+// debugprint( "Guest hears host say 'This is NOT an Aftermath game'\n" );
 #else
       Session.CommProtocol =
           VerNum.Version_Protocol(Session.GPacket.ScenarioInfo.Version);
@@ -4025,8 +4031,9 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
 
   //------------------------------------------------------------------------
   //	NET_PING: Someone is pinging me to get a response time measure (will
-  //only 	happen after I've joined a game).  Do nothing; the IPX Manager will
-  //handle 	sending an ACK, and updating the response time measurements.
+  // only 	happen after I've joined a game).  Do nothing; the IPX Manager
+  // will handle 	sending an ACK, and updating the response time
+  // measurements.
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_PING) {
     retcode = EV_NONE;
@@ -4345,7 +4352,7 @@ static int Net_New_Dialog(void) {
     for (j = 0; EngMisStr[j] != NULL; j++) {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
 #ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
-                   //assumed). 	Add mission if it's available to us.
+                   // assumed). 	Add mission if it's available to us.
         if (!((Is_Mission_Counterstrike(
                    (char *)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Counterstrike_Installed()) ||
@@ -4364,8 +4371,8 @@ static int Net_New_Dialog(void) {
     }
     if (EngMisStr[j] == NULL) {
 #ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
-                   //assumed). Added officialness check. 	Add mission if it's
-                   //available to us.
+                   // assumed). Added officialness check. 	Add mission if
+                   // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
           !((Is_Mission_Counterstrike(
                  (char *)(Session.Scenarios[i]->Get_Filename())) &&
@@ -4581,14 +4588,14 @@ static int Net_New_Dialog(void) {
       //..................................................................
       if (display >= REDRAW_PARMS) {
         //				LogicPage->Fill_Rect(d_count_x +
-        //d_count_w + 2*RESFACTOR, d_count_y, d_count_x + d_count_w +
-        //35*RESFACTOR, d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
+        // d_count_w + 2*RESFACTOR, d_count_y, d_count_x + d_count_w +
+        // 35*RESFACTOR, d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
 
         sprintf(txt, "%d", Session.Options.UnitCount);
         staticunit.Set_Text(txt);
         staticunit.Draw_Me();
         //				Fancy_Text_Print(txt, d_count_x +
-        //d_count_w + 2*RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT);
+        // d_count_w + 2*RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT);
 
         if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
           sprintf(txt, "%d", BuildLevel);
@@ -4598,19 +4605,19 @@ static int Net_New_Dialog(void) {
         staticlevel.Set_Text(txt);
         staticlevel.Draw_Me();
         //				Fancy_Text_Print(txt, d_level_x +
-        //d_level_w + 2*RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+        // d_level_w + 2*RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
 
         sprintf(txt, "%d", Session.Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
-        //d_credits_w + 2*RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT);
+        // d_credits_w + 2*RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT);
 
         sprintf(txt, "%d", Session.Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
         //				Fancy_Text_Print(txt, d_aiplayers_x +
-        //d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK, TPF_TEXT);
+        // d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK, TPF_TEXT);
       }
 
       Show_Mouse();
@@ -4678,7 +4685,7 @@ static int Net_New_Dialog(void) {
 
       //..................................................................
       //	Reject the currently-selected player (don't allow rejecting
-      //myself, 	who will be the first entry in the list)
+      // myself, 	who will be the first entry in the list)
       //..................................................................
       case (BUTTON_REJECT | KN_BUTTON):
         index = playerlist.Current_Index();
@@ -4817,18 +4824,18 @@ static int Net_New_Dialog(void) {
         //	an OK; force a wait longer than 1 second (to give all players
         //	a chance to know about this new guy)
         //...............................................................
-        i = max(Ipx.Global_Response_Time() * 2, 60ul);
+        i = std::max(Ipx.Global_Response_Time() * 2, 60ul);
         while (TickCount - ok_timer < i) {
           Ipx.Service();
         }
 
         //...............................................................
         //	If there are at least 2 players, go ahead & play; error
-        //otherwise
+        // otherwise
         //...............................................................
         if (Session.Players.Count() > 1) {
           //				if (Session.Players.Count() +
-          //Session.Options.AIPlayers > 1 ) {
+          // Session.Options.AIPlayers > 1 ) {
           rc = TRUE;
           process = FALSE;
         } else {
@@ -4998,7 +5005,7 @@ static int Net_New_Dialog(void) {
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
       }
 #ifdef FIXIT_VERSION_3  //	All scenarios now allowable for download,
-                        //regardless of if CS scen. or 126x126 scen.
+                        // regardless of if CS scen. or 126x126 scen.
       if (display < REDRAW_PARMS) display = REDRAW_PARMS;
 #else              //	FIXIT_VERSION_3
       if (oldversion == PlayingAgainstVersion) {
@@ -5100,7 +5107,7 @@ static int Net_New_Dialog(void) {
 #ifdef FIXIT_VERSION_3
         Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
         //	Host encodes whether or not this is an Aftermath game in the
-        //highest bit.
+        // highest bit.
         if (bAftermathMultiplayer) {
           //					debugprint( "Host tells guests
           //'This is an Aftermath game'\n" );
@@ -5167,14 +5174,14 @@ static int Net_New_Dialog(void) {
     //	  value, 4 more to convert from ticks to frames)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      Session.MaxAhead = max(
+      Session.MaxAhead = std::max(
           ((((Ipx.Global_Response_Time() / 8) + (Session.FrameSendRate - 1)) /
             Session.FrameSendRate) *
            Session.FrameSendRate),
           (Session.FrameSendRate * 2));
     } else {
-      Session.MaxAhead =
-          max(unsigned(Ipx.Global_Response_Time() / 8), NETWORK_MIN_MAX_AHEAD);
+      Session.MaxAhead = std::max(unsigned(Ipx.Global_Response_Time() / 8),
+                                  NETWORK_MIN_MAX_AHEAD);
     }
 
     Ipx.Set_Timing(25, (unsigned long)-1, 1000);
@@ -5271,7 +5278,7 @@ static int Net_New_Dialog(void) {
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   // Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
-                 max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games or Players vectors.
@@ -5293,7 +5300,7 @@ static int Net_New_Dialog(void) {
   Load_Title_Page(true);
   // #ifdef WIN32
   //	Load_Uncompress(CCFileClass("TITLE.CPS"), SysMemPage, SysMemPage,
-  //CCPalette); 	SysMemPage.Scale(SeenPage); #else
+  // CCPalette); 	SysMemPage.Scale(SeenPage); #else
   //	Load_Uncompress(CCFileClass("TITLE.CPS"), HidPage, HidPage, CCPalette);
   //	HidPage.Blit(SeenPage);
   // #endif	//WIN32
@@ -5384,7 +5391,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
     //	- If the name matches, but the address is different, reject this player
     //	- If the name & address match, this packet must be a re-send of a
     //	  previous request; in this case, do nothing.  The other player must
-    //have 	  received my CONFIRM_JOIN packet (since it was sent with an ACK
+    // have 	  received my CONFIRM_JOIN packet (since it was sent with an ACK
     //	  required), so we can ignore this resend.
     //.....................................................................
     found = 0;
@@ -5454,19 +5461,19 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
       //..................................................................
 #ifdef FIXIT_VERSION_3
       //	Added to the transmitted _min_ version number is a bit
-      //indicating presence of Aftermath expansion.
+      // indicating presence of Aftermath expansion.
       bool bGuestHasAftermath =
           Session.GPacket.PlayerInfo.MinVersion & 0x80000000;
       if (bGuestHasAftermath)
         //				debugprint( "Host hears guest say 'I
-        //have Aftermath'\n" );
+        // have Aftermath'\n" );
         ;
       else {
         //				debugprint( "Host hears guest say 'I
-        //don't have Aftermath'\n" );
+        // don't have Aftermath'\n" );
         if (bAftermathMultiplayer) {
           //					debugprint( "Host decides this
-          //is no longer an Aftermath game!\n" );
+          // is no longer an Aftermath game!\n" );
           bAftermathMultiplayer = false;
         }
       }
@@ -5525,7 +5532,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
 
       //..................................................................
       //	Set player's color; if requested color isn't used, give it to
-      //him; 	otherwise, give him the 1st available color.  Mark the color we
+      // him; 	otherwise, give him the 1st available color.  Mark the color we
       //	give him as used.
       //..................................................................
       if (color_used[Session.GPacket.PlayerInfo.Color] == 0) {
@@ -5776,7 +5783,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
     buf3 = Text_String(TXT_PRESS_ESC);
 
-    w = max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
+    w = std::max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
 
 #if defined(FIXIT_VERSION_3) && defined(WOLAPI_INTEGRATION)
     char szNewCancelMessage[300];
@@ -5793,7 +5800,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
       w += (d_margin * 5);
     }
 #else
-    w = max(String_Pixel_Width(buf3), unsigned(w)) * RESFACTOR;
+    w = std::max(String_Pixel_Width(buf3), unsigned(w)) * RESFACTOR;
     w += (d_margin * 5);
 #endif
 
@@ -7948,7 +7955,7 @@ static int Net_Fake_New_Dialog(void) {
 
           //...............................................................
           //	If there are at least 2 players, go ahead & play; error
-          //otherwise
+          // otherwise
           //...............................................................
           if (Session.Solo || Session.Players.Count() > 1 ||
               Session.Options.Ghosts) {
@@ -7997,7 +8004,7 @@ static int Net_Fake_New_Dialog(void) {
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
         //	ajw - I don't understand why this check is done here and not
-        //later.
+        // later.
         if (!file.Is_Available()) {
           /*
           ** Special new kludge for counterstrike.
@@ -8286,7 +8293,7 @@ static int Net_Fake_New_Dialog(void) {
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //	Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
-                 max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   Clear_Listbox(&playerlist);
 
@@ -8905,7 +8912,7 @@ static int Net_Fake_Join_Dialog(void) {
             }
           } else {
 #ifndef FIXIT_VERSION_3  //	Removed restriction on downloading official
-                         //maps.
+                         // maps.
             /*
             ** Oh dear. Thats a scenario I dont have. Request that the host
             *sends the *	scenario to me provided its not an official
@@ -9153,7 +9160,7 @@ static int Net_Fake_Join_Dialog(void) {
       Session.NumPlayers = Session.Players.Count();
       ///*
       //**	Hack to fake a scenario name as if it had been sent over the
-      //connection.
+      // connection.
       //*/
       // sprintf(Scen.ScenarioName, "SCM%02dEA.INI",
       // Session.Options.ScenarioIndex+1);
@@ -9180,7 +9187,7 @@ static int Net_Fake_Join_Dialog(void) {
   // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
   //	Ipx.Global_Response_Time() * 4);
   Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, (unsigned long)-1,
-                 max(120ul, Ipx.Global_Response_Time() * 8));
+                 std::max(120ul, Ipx.Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games & Players vectors.

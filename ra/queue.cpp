@@ -81,6 +81,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "function.h"
 
+#include <algorithm>
+
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"
 #include "WolapiOb.h"
@@ -218,7 +220,9 @@ void Check_Mirror(void);
  * Queue_Mission -- Queue a mega mission event.                            *
  *                                                                         *
  * This routine is called when the player causes a change to a game unit. * The
- *event that initiates the change is queued to as a result of a call 	* to this routine.                 													*
+ *event that initiates the change is queued to as a result of a call 	* to
+ * this routine.
+ *							*
  *                                                                         *
  * INPUT:                                                                  *
  *		whom		Whom this mission request applies to (a friendly
@@ -387,7 +391,9 @@ void Queue_AI(void) {
  **
  * - Transfers items in the OutList to the DoList
  **
- * - Executes any commands in the DoList that are supposed to be done on * this frame #			  																	*
+ * - Executes any commands in the DoList that are supposed to be done on * this
+ * frame #
+ *											*
  * - Cleans out the DoList
  **
  *                                                                         *
@@ -478,7 +484,8 @@ static void Queue_AI_Normal(void) {
  *FRAMEINFO packet to not get lost; the other system may then 		*
  * advance past the frame # the command is to execute on!  So, to prevent *
  * this, all FRAMEINFO packets include a CommandCount field.  This value * tells
- *the other system how many events it should have received by this 	* time.  This system can therefore keep track of how many commands it's	*
+ *the other system how many events it should have received by this 	* time.
+ * This system can therefore keep track of how many commands it's	*
  * actually received, and compare it to the CommandCount field, to see if * it's
  *missed an event packet.  The # of events we've received from each 	* system
  *is stored in 'their_recv[]', and the # events they say they've 	* sent
@@ -521,12 +528,13 @@ static void Queue_AI_Normal(void) {
  *following properties:
  **
  * - It compresses packets, so that the minimum number of bytes are
- ** transmitted.  Packets are compressed by extracting all info common to * the events into the packet header, and then sending only the bytes 	* relevant
- *to each type of event.  For instance, if 100 infantry guys 	* are told to
- *move to the same location, the command itself & the 		* location will
- *be included in the 1st movement command only; after 		* that, there
- *will be a rep count then 99 infantry TARGET numbers, 		* identifying
- *all the infantry told to move.
+ ** transmitted.  Packets are compressed by extracting all info common to * the
+ * events into the packet header, and then sending only the bytes 	*
+ * relevant to each type of event.  For instance, if 100 infantry guys 	* are
+ * told to move to the same location, the command itself & the 		*
+ * location will be included in the 1st movement command only; after
+ *	* that, there will be a rep count then 99 infantry TARGET numbers,
+ *	* identifying all the infantry told to move.
  **
  * - The protocol also only sends packets out every 'n' frames.  This cuts *
  *   the data rate dramatically.  It means that 'Session.MaxAhead' must be *
@@ -850,7 +858,7 @@ static void Queue_AI_Multiplayer(void) {
       Register_Game_End_Time();
 #ifdef WOLAPI_INTEGRATION
       //	New rule - if you cancel a waiting to reconnect dialog, you
-      //lose.
+      // lose.
       bReconnectDialogCancelled = (rc == RC_CANCEL);
 #endif
     }
@@ -1033,7 +1041,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
 #ifdef WOLAPI_INTEGRATION
         //	"Reconnecting" dialog is about to be shown.
         //	At this point, begin wolapi "disconnect pinging", if
-        //appropriate.
+        // appropriate.
         if (Session.Type == GAME_INTERNET && pWolapi &&
             pWolapi->GameInfoCurrent.bTournament)
           pWolapi->Init_DisconnectPinging();
@@ -1095,7 +1103,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
             Session.EmergencySave = 1;
             // printf("Saving emergency game; frame:%d,
             // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before Save:
-            // Count1:%d, Count2:%d, Seed:%d\n", 	Scen.RandomNumber.Count1,
+            // Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
             Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
@@ -1365,10 +1373,10 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent) {
       //..................................................................
       if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
         ev.Data.FrameInfo.Delay =
-            max(((((resp_time / 8) + (Session.FrameSendRate - 1)) /
-                  Session.FrameSendRate) *
-                 Session.FrameSendRate),
-                (Session.FrameSendRate * 2));
+            std::max(((((resp_time / 8) + (Session.FrameSendRate - 1)) /
+                       Session.FrameSendRate) *
+                      Session.FrameSendRate),
+                     (Session.FrameSendRate * 2));
       }
       //..................................................................
       // For sending packets every frame, just use the 1-way connection
@@ -1377,13 +1385,13 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent) {
       else {
         if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
           ev.Data.FrameInfo.Delay =
-              max(unsigned(resp_time / 8), MODEM_MIN_MAX_AHEAD);
+              std::max(unsigned(resp_time / 8), MODEM_MIN_MAX_AHEAD);
         } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
           ev.Data.FrameInfo.Delay =
-              max(unsigned(resp_time / 8), NETWORK_MIN_MAX_AHEAD);
+              std::max(unsigned(resp_time / 8), NETWORK_MIN_MAX_AHEAD);
         } else if (Session.Type == GAME_TEN || Session.Type == GAME_MPATH) {
           ev.Data.FrameInfo.Delay =
-              max(unsigned(resp_time / 8), MODEM_MIN_MAX_AHEAD);
+              std::max(unsigned(resp_time / 8), MODEM_MIN_MAX_AHEAD);
         }
       }
       OutList.Add(ev);
@@ -2344,7 +2352,7 @@ static int Handle_Timeout(ConnManClass *net, long *their_frame,
       Register_Game_End_Time();
       ConnectionLost = true;
       Send_Statistics_Packet();  //	Disconnect, and I'll be the only one
-                                 //left.
+                                 // left.
     }
 #endif  // WIN32
 
@@ -3362,7 +3370,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 
       //..................................................................
       //	If this event was from the currently-executing player ID, and
-      //it's 	time to execute it, execute it.
+      // it's 	time to execute it, execute it.
       //..................................................................
       if (DoList[j].ID == hptr->ID && Frame >= DoList[j].Frame &&
           !DoList[j].IsExecuted) {
@@ -3420,7 +3428,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                 !GameStatisticsPacketSent) {
               Register_Game_End_Time();
               Send_Statistics_Packet();  //	Event - player aborted, and
-                                         //there were only 2 left.
+                                         // there were only 2 left.
             }
           }
 #endif  // WIN32
@@ -4264,7 +4272,8 @@ static void Print_CRCs(EventClass *ev) {
 /***************************************************************************
  * Init_Queue_Mono -- inits mono display                                   *
  *                                                                         *
- * This routine steals control of the mono screen away from the rest of * the engine, by setting the global IsMono; if IsMono is set, the other	*
+ * This routine steals control of the mono screen away from the rest of * the
+ * engine, by setting the global IsMono; if IsMono is set, the other	*
  * routines in this module turn off the Mono display when they're done * with
  *it, so the rest of the engine won't over-write what we're writing.	*
  *                                                                         *

@@ -53,6 +53,7 @@
 #else
 #include <unistd.h>
 #endif
+#include "vqaplay.h"
 #include "vqaplayp.h"
 
 #ifndef O_BINARY

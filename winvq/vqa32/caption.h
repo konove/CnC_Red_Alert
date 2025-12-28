@@ -18,6 +18,9 @@
 
 #ifndef VQACAPTION_H
 #define VQACAPTION_H
+
+#include "vqm32/captoken.h"
+
 /****************************************************************************
  *
  *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S

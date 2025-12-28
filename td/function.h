@@ -394,31 +394,9 @@ void const *Hires_Retrieve(char *name);
 int Get_Resolution_Factor(void);
 
 /*
-** INTERPAL.CPP
-*/
-#define SIZE_OF_PALETTE 256
-extern "C" unsigned char *InterpolationPalette;
-extern bool InterpolationPaletteChanged;
-extern void Interpolate_2X_Scale(GraphicBufferClass *source,
-                                 GraphicViewPortClass *dest,
-                                 char const *palette_file_name);
-void Read_Interpolation_Palette(char const *palette_file_name);
-void Write_Interpolation_Palette(char const *palette_file_name);
-void Increase_Palette_Luminance(unsigned char *InterpolationPalette,
-                                int RedPercentage, int GreenPercentage,
-                                int BluePercentage, int cap);
-extern "C" {
-extern unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE]
-                                              [SIZE_OF_PALETTE];
-extern unsigned char *InterpolationPalette;
-void __cdecl Asm_Create_Palette_Interpolation_Table(void);
-}
-
-/*
 **	COORD.CPP
 */
-void Move_Point(short &x, short &y, register DirType dir,
-                unsigned short distance);
+void Move_Point(short &x, short &y, DirType dir, unsigned short distance);
 COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir);
 COORDINATE Coord_Move(COORDINATE start, DirType facing,
                       unsigned short distance);
@@ -980,12 +958,6 @@ extern void Colour_Debug(int call_number);
 extern unsigned char *InterpolatedPalettes[100];
 extern bool PalettesRead;
 extern unsigned PaletteCounter;
-
-extern "C" {
-extern unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE]
-                                              [SIZE_OF_PALETTE];
-extern unsigned char *InterpolationPalette;
-}
 
 extern void Free_Interpolated_Palettes(void);
 extern int Load_Interpolated_Palettes(char const *filename, bool add = false);

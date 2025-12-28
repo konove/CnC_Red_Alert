@@ -52,6 +52,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
+
+#include <algorithm>
+
 #ifdef WIN32
 #ifdef _WIN32
 #include <windows.h>
@@ -436,7 +439,7 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
   }
 
   //	UseRtsCts( Port, 1 );			// use RTS CTS hardware flow
-  //control
+  // control
 
   /*------------------------------------------------------------------------
   Init the Connection
@@ -970,10 +973,10 @@ int NullModemClass::Service(void) {
            Port->status, Port->count);
 #endif
     //			Smart_Printf( "ReadBuffer status = %d, port status = %d,
-    //count = %d \n", status, Port->status, Port->count );
+    // count = %d \n", status, Port->status, Port->count );
     if (status < ASSUCCESS && status != ASBUFREMPTY) {
       //				Smart_Printf( "ReadBuffer
-      //ERRRRRRORRRRRR! \n" );
+      // ERRRRRRORRRRRR! \n" );
     } else {
       moredata = 1;
     }
@@ -1272,8 +1275,9 @@ void *NullModemClass::Oldest_Send(void) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -1414,7 +1418,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   int lines =
       Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = max(width, 90 * RESFACTOR);
+  width = std::max(width, 90 * RESFACTOR);
   width += 40 * RESFACTOR;
   height += 40 * RESFACTOR;
 
@@ -1712,7 +1716,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
-  width = max(width, 90 * RESFACTOR);
+  width = std::max(width, 90 * RESFACTOR);
   width += 40 * RESFACTOR;
   height += 60 * RESFACTOR;
 
@@ -1924,7 +1928,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
   text_width = width;
-  width = max(width, 90 * RESFACTOR);
+  width = std::max(width, 90 * RESFACTOR);
   width += 40 * RESFACTOR;
   height += 60 * RESFACTOR;
 
@@ -2040,7 +2044,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
         text_width = width;
-        width = max(width, 90 * RESFACTOR);
+        width = std::max(width, 90 * RESFACTOR);
         width += 40 * RESFACTOR;
         height += 60 * RESFACTOR;
 
@@ -2299,7 +2303,7 @@ void NullModemClass::Print_EchoBuf(void) {
     }
   }
   //	Smart_Printf( "Echo buffer length %d (%s)\n", NullModem.EchoCount,
-  //NullModem.EchoBuf );
+  // NullModem.EchoBuf );
 }
 
 /***********************************************************************************************

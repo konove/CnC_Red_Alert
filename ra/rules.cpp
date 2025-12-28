@@ -56,6 +56,8 @@
 #include "function.h"
 #include "vortex.h"
 
+#include <algorithm>
+
 /***********************************************************************************************
  * _Scale_To_256 -- Scales a 1..100 number into a 1..255 number. *
  *                                                                                             *
@@ -73,7 +75,7 @@
  *=============================================================================================*/
 static inline int _Scale_To_256(int val) {
   val = fixed(100, 256) * val;
-  val = min(val, 255);
+  val = std::min(val, 255);
   return (val);
 }
 
@@ -399,8 +401,8 @@ bool RulesClass::General(CCINIClass& ini) {
 #endif
 #ifdef FIXIT_ENGINEER  //	checked - ajw 9/28/98
     //	Engineer changing fields were specifically left out of Aftrmath.ini,
-    //thus these values are not found to set. ajw 	Implies interesting security
-    //hole if user creates a separate Aftrmath.ini file!
+    // thus these values are not found to set. ajw 	Implies interesting
+    // security hole if user creates a separate Aftrmath.ini file!
     EngineerDamage =
         ini.Get_Fixed(AFTERMATH, "EngineerDamage",
                       EngineerDamage);  // Amount of damage an engineer does

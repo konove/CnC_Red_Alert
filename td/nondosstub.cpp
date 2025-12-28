@@ -18,6 +18,20 @@
 */
 
 #include "function.h"
+#include <stdio.h>
+#include <string.h>
+#include "ccfile.h"
+#include "compat.h"
+#include "defines.h"
+#include "externs.h"
+#include "filepcx.h"
+#include "gbuffer.h"
+#include "iconcach.h"
+#include "interpal.h"
+#include "mouse.h"
+#include "palette.h"
+#include "theme.h"
+#include "wwstd.h"
 
 void output(short, short) {}
 

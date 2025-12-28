@@ -16,8 +16,15 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <string_view>
 
+#include "graphics_loader.h"
 #include "function.h"
+#include "interpal.h"
 
 void output(short, short) {}
 
@@ -45,7 +52,7 @@ void Focus_Loss(void) {
 void Focus_Restore(void) {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
-  Start_Primary_Sound_Buffer(TRUE);
+  Start_Primary_Sound_Buffer(true);
   if (WWMouse) WWMouse->Set_Cursor_Clip();
 #ifndef PORTABLE
   VisiblePage.Clear();
@@ -94,11 +101,11 @@ void __cdecl SetPalette(unsigned char *palette, long, unsigned long) {
 
 GraphicBufferClass *Read_PCX_File(char const *name, char *Palette, void *Buff,
                                   long Size);
-void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
+void Load_Title_Screen(std::string_view name, GraphicViewPortClass *video_page,
                        unsigned char *palette) {
   GraphicBufferClass *load_buffer;
 
-  load_buffer = Read_PCX_File(name, (char *)palette, NULL, 0);
+  load_buffer = Read_PCX_File(name.data(), (char *)palette, nullptr, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -146,13 +153,13 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
 
 GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
                                   long Size) {
-  unsigned i, j;
+  int32_t i, j;
   unsigned rle;
   unsigned color;
   unsigned scan_pos;
   char *file_ptr;
   int width;
-  int height;
+  int32_t height;
   char *buffer;
   PCX_HEADER header;
   RGB *pal;
@@ -161,14 +168,17 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
 
   CCFileClass file_handle(name);
 
-  if (!file_handle.Is_Available()) return (NULL);
+  if (!file_handle.Is_Available()) {
+    return nullptr;
+  }
 
   file_handle.Open(READ);
 
   file_handle.Read(&header, sizeof(PCX_HEADER));
 
-  if (header.id != 10 && header.version != 5 && header.pixelsize != 8)
-    return NULL;
+  if (header.id != 10 && header.version != 5 && header.pixelsize != 8) {
+    return nullptr;
+  }
 
   width = header.width - header.x + 1;
   height = header.height - header.y + 1;
@@ -176,12 +186,12 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
   if (Buff) {
     buffer = (char *)Buff;
     i = Size / width;
-    height = MIN(i - 1, height);
+    height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    if (!(pic && pic->Get_Buffer())) return nullptr;
   } else {
-    pic = new GraphicBufferClass(width, height, NULL, width * (height + 4));
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    pic = new GraphicBufferClass(width, height, nullptr, width * (height + 4));
+    if (!(pic && pic->Get_Buffer())) return nullptr;
   }
 
   buffer = (char *)pic->Get_Buffer();

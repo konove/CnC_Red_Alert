@@ -52,6 +52,7 @@
 
 #include "function.h"
 #include "textblit.h"
+#include "interpal.h"
 #define SCORETEXT_X 184
 #define SCORETEXT_Y 8
 #define CASUALTY_Y 88
@@ -1719,7 +1720,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
-        ascii = key;  // ascii = KN_To_KA(key);
+        ascii = key;                  // ascii = KN_To_KA(key);
         if (ascii >= 'a' && ascii <= 'z') ascii -= ('a' - 'A');
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
@@ -1922,7 +1923,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
           New_Infantry_Anim(i / 11, DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
-        //VOC_SCREAM5));
+        // VOC_SCREAM5));
       }
     }
   }
@@ -1942,7 +1943,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
           New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11), DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
-        //VOC_SCREAM5));
+        // VOC_SCREAM5));
       }
     }
   }
@@ -1964,7 +1965,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
                             DO_GUN_DEATH);
         }
         //				Sound_Effect(Random_Pick(VOC_SCREAM1,
-        //VOC_SCREAM5));
+        // VOC_SCREAM5));
       }
     }
   }

@@ -41,3 +41,6 @@ if (LIBSERIALPORT_LIBRARIES AND LIBSERIALPORT_INCLUDE_DIR)
     target_include_directories(sdllib PRIVATE ${LIBSERIALPORT_INCLUDE_DIR})
     target_link_libraries(sdllib ${LIBSERIALPORT_LIBRARIES})
 endif()
+
+# Enable IWYU for all targets in this directory
+enable_iwyu_for_all_targets()
