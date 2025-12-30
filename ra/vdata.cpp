@@ -57,6 +57,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 // Submarine
 static VesselTypeClass const VesselSubmarine(
     VESSEL_SS,
@@ -517,8 +519,6 @@ void VesselTypeClass::Dimensions(int &width, int &height) const {
  *=============================================================================================*/
 void VesselTypeClass::One_Time(void) {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    char buffer[_MAX_FNAME];
     VesselTypeClass const &uclass = As_Reference(index);
 #ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
@@ -530,16 +530,19 @@ void VesselTypeClass::One_Time(void) {
       /*
       **	Fetch the supporting data files for the unit.
       */
-      sprintf(buffer, "%sICON", uclass.Graphic_Name());
-      _makepath(fullname, NULL, NULL, buffer, ".SHP");
-      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+      auto filename = std::string(uclass.Graphic_Name()) + "ICON";
+      auto fullname =
+          std::filesystem::path(filename).replace_extension(".SHP").string();
+      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname.c_str());
     }
 
     /*
     **	Fetch a pointer to the unit's shape data.
     */
-    _makepath(fullname, NULL, NULL, uclass.Graphic_Name(), ".SHP");
-    ((void const *&)uclass.ImageData) = MFCD::Retrieve(fullname);
+    auto fullname = std::filesystem::path(uclass.Graphic_Name())
+                        .replace_extension(".SHP")
+                        .string();
+    ((void const *&)uclass.ImageData) = MFCD::Retrieve(fullname.c_str());
 
     ((int &)uclass.MaxSize) = 26;
   }

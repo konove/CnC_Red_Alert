@@ -174,11 +174,7 @@ class HouseTypeClass : public AbstractTypeClass {
 */
 class ObjectTypeClass : public AbstractTypeClass {
  public:
-  /*
-  **	This is the base name of the graphic data associated with this object
-  **	type. If the graphic name is a null string, then there is no graphic
-  **	associated with this object type.
-  */
+  // Base filename for graphic data. Empty string indicates no graphic.
   char GraphicName[_MAX_FNAME];
 
   /*

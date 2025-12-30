@@ -48,6 +48,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *
  *                                                                                             *
@@ -192,20 +194,21 @@ void BulletTypeClass::One_Time(void) {
   */
   for (BulletType index = BULLET_FIRST; index < BULLET_COUNT; index++) {
     BulletTypeClass const &bullet = As_Reference(index);
-    char fullname[_MAX_FNAME + _MAX_EXT];
 
     if (!bullet.IsInvisible) {
-      _makepath(fullname, NULL, NULL, bullet.GraphicName, ".SHP");
+      auto fullname = std::filesystem::path(bullet.GraphicName)
+                          .replace_extension(".SHP")
+                          .string();
 
 #ifdef NDEBUG
-      ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname);
+      ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname.c_str());
 #else
-      RawFileClass file(fullname);
+      RawFileClass file(fullname.c_str());
 
       if (file.Is_Available()) {
         ((void const *&)bullet.ImageData) = Load_Alloc_Data(file);
       } else {
-        ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname);
+        ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname.c_str());
       }
 #endif
     }

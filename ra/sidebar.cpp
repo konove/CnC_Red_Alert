@@ -90,6 +90,9 @@
 
 #include "function.h"
 
+#include <filesystem>
+#include <format>
+
 void *SidebarClass::SidebarShape = NULL;
 void *SidebarClass::SidebarMiddleShape = NULL;
 void *SidebarClass::SidebarBottomShape = NULL;
@@ -165,7 +168,7 @@ SidebarClass::SidebarClass(void)
   WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
       StripClass::MAX_VISIBLE * StripClass::OBJECT_HEIGHT;
   //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = StripClass::MAX_VISIBLE *
-  //StripClass::OBJECT_HEIGHT-1;
+  // StripClass::OBJECT_HEIGHT-1;
 
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
@@ -237,7 +240,7 @@ void SidebarClass::One_Time(void) {
   WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] =
       (StripClass::MAX_VISIBLE * StripClass::OBJECT_HEIGHT) * RESFACTOR;
   //	WindowList[WINDOW_SIDEBAR][WINDOWHEIGHT] = (StripClass::MAX_VISIBLE *
-  //StripClass::OBJECT_HEIGHT-1) * RESFACTOR;
+  // StripClass::OBJECT_HEIGHT-1) * RESFACTOR;
 
   /*
   ** Top of the window seems to be wrong for the new sidebar. ST - 5/2/96 2:49AM
@@ -1063,12 +1066,10 @@ void SidebarClass::StripClass::One_Time(int) {
   ClockShapes = MFCD::Retrieve("CLOCK.SHP");
 
   for (SpecialWeaponType lp = SPC_FIRST; lp < SPC_COUNT; lp++) {
-    char buffer[_MAX_FNAME];
-    sprintf(buffer, "%sICON", SpecialWeaponFile[lp]);
-
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    SpecialShapes[lp] = MFCD::Retrieve(fullname);
+    auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
+    auto fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
+    SpecialShapes[lp] = MFCD::Retrieve(fullname.c_str());
   }
 }
 
@@ -1200,8 +1201,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
 
   if ((theater != THEATER_NONE) && (theater != ::LastTheater)) {
     static TLucentType const ClockCols[1] = {
-        {GREEN, BLACK, 100, 0}
-        //			{GREEN, LTGREY, 180, 0}
+        {GREEN, BLACK, 100, 0}  //			{GREEN, LTGREY, 180, 0}
     };
 
     /*
@@ -1214,7 +1214,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
 
     //		Mem_Copy(GamePalette, OriginalPalette, 768);
     //		memset(&GamePalette[CYCLE_COLOR_START*3], 0x3f,
-    //CYCLE_COLOR_COUNT*3);
+    // CYCLE_COLOR_COUNT*3);
 
     /*
     **	Create the translucent table used for the sidebar.

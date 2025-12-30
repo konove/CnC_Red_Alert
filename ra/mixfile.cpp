@@ -52,6 +52,7 @@
 #include "function.h"
 #include <errno.h>
 #include "mixfile.h"
+#include <filesystem>
 
 #include "cdfile.h"
 extern MFCD temp;
@@ -221,8 +222,8 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
 
   Count = fileheader.count;
   DataSize = fileheader.size;
-  // BGMono_Printf("Mixfileclass %s DataSize: %08x
-  // \n",filename,DataSize);Get_Key();
+  // Mono_Printf("Mixfileclass %s DataSize: %08x\n", filename, DataSize);
+  // Get_Key();
   /*
   **	Load up the offset control array. If RAM is exhausted, then the mixfile
   *is invalid.

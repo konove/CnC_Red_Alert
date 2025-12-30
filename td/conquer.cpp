@@ -69,6 +69,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
+#include <filesystem>
 #ifndef PORTABLE
 #include <io.h>
 #include <dos.h>
@@ -2292,11 +2293,10 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
 #endif
 
   if (name) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    char palname[_MAX_FNAME + _MAX_EXT];
-
-    _makepath(fullname, NULL, NULL, name, ".VQA");
-    _makepath(palname, NULL, NULL, name, ".VQP");
+    auto fullname =
+        std::filesystem::path(name).replace_extension(".VQA").string();
+    auto palname =
+        std::filesystem::path(name).replace_extension(".VQP").string();
 #ifdef CHEAT_KEYS
     Mono_Set_Cursor(0, 0);
     Mono_Printf("[%s]", fullname);
@@ -2338,7 +2338,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
 
     if ((vqa = VQA_Alloc()) != NULL) {
       VQA_Init(vqa, MixFileHandler);
-      if (VQA_Open(vqa, fullname, &AnimControl) == 0) {
+      if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
         Brokeout = false;
         // Suspend_Audio_Thread();
 
@@ -2375,7 +2375,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
 
 #endif  // GERMAN
 
-        Load_Interpolated_Palettes(palname);
+        Load_Interpolated_Palettes(palname.c_str());
         // Set_Palette(BlackPalette);
 #ifdef LORES
         HidPage.Clear();
@@ -2459,12 +2459,11 @@ void Unselect_All(void) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 char const *Fading_Table_Name(char const *base, TheaterType theater) {
-  static char _buffer[_MAX_FNAME + _MAX_EXT];
-  char root[_MAX_FNAME];
-
-  sprintf(root, "%1.1s%s", Theaters[theater].Root, base);
-  _makepath(_buffer, NULL, NULL, root, ".MRF");
-  return (_buffer);
+  // Build filename: first character of theater root + base name + .MRF
+  // extension
+  const auto root = std::string(1, Theaters[theater].Root[0]) + base;
+  const auto file_path = std::filesystem::path(root).replace_extension(".MRF");
+  return file_path.string().c_str();
 }
 
 /***********************************************************************************************
@@ -3933,7 +3932,7 @@ static void Do_Record_Playback(void) {
  * HISTORY:                                                                *
  *   01/25/1996     : Created.                                             *
  *=========================================================================*/
-void const *Hires_Retrieve(char *name) {
+void const *Hires_Retrieve(const char *name) {
   char filename[30];
 
   if (SeenBuff.Get_Width() != 320) {

@@ -2,66 +2,10 @@
 #include <cctype>
 #include <compare>
 #include <cstring>
-#include <filesystem>
+#include <functional>
 #include <ranges>
 #include <span>
-#include <string>
 #include <string_view>
-
-void _makepath(char *path, const char *drive, const char *dir,
-               const char *fname, const char *ext) {
-  // Use std::filesystem for robust path construction
-  std::filesystem::path full_path;
-
-  // 1. Handle Drive
-  if (drive != nullptr && strlen(drive) > 0) {
-    full_path += drive;
-    // _makepath expects the caller to provide the colon, but if missing,
-    // std::filesystem logic or manual checks might be needed depending on
-    // strictness. Standard _makepath behavior simply concatenates.
-  }
-
-  // 2. Handle Directory
-  if (dir != nullptr && strlen(dir) > 0) {
-    // Modern approach: standard path concatenation handles separators
-    full_path /= dir;
-  }
-
-  // 3. Handle Filename
-  if (fname != nullptr && strlen(fname) > 0) {
-    // If 'dir' didn't end in a separator and 'fname' doesn't start with one,
-    // std::filesystem::path::operator/= handles it. However, _makepath
-    // historically is a simple string builder.
-    // To strictly mimic _makepath behavior (concatenation) while using modern
-    // types:
-    std::string dir_str = full_path.string();
-
-    // _makepath logic usually dictates that if dir doesn't end in \ or /,
-    // insert one. std::filesystem handles this naturally via concatenation.
-    if (!dir_str.empty() && dir_str.back() != '/' && dir_str.back() != '\\') {
-      full_path /= fname;
-    } else {
-      // If it ends with separator, simple concatenation to avoid double slash
-      full_path += fname;
-    }
-  }
-
-  // 4. Handle Extension
-  if (ext != nullptr && strlen(ext) > 0) {
-    std::string ext_str = ext;
-    // _makepath automatically adds '.' if missing and ext is not empty
-    if (ext_str[0] != '.') {
-      full_path += ".";
-    }
-    full_path += ext_str;
-  }
-
-  // Copy to output buffer
-  // Note: The caller is responsible for ensuring 'path' is large enough
-  // (typically _MAX_PATH).
-  const std::string final_str = full_path.string();
-  std::strcpy(path, final_str.c_str());
-}
 
 int stricmp(const char *string1, const char *string2) {
   const std::string_view view1(string1);

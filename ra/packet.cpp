@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
+#include <cstring>
 
 #include "packet.h"
 
@@ -105,11 +106,11 @@ PacketClass::PacketClass(char *curbuf) {
   //
   // Pull the size and packet ID out of the linear packet stream.
   //
-  Size = *(unsigned short *)curbuf;
-  curbuf += sizeof(unsigned short);
+  std::memcpy(&Size, curbuf, sizeof(Size));
+  curbuf += sizeof(Size);
   Size = ntohs(Size);
-  ID = *(short *)curbuf;
-  curbuf += sizeof(short);
+  std::memcpy(&ID, curbuf, sizeof(ID));
+  curbuf += sizeof(ID);
   ID = ntohs(ID);
   Head = NULL;
 

@@ -55,6 +55,9 @@
 #include "function.h"
 #include "type.h"
 
+#include <filesystem>
+#include <string>
+
 static OverlayTypeClass const Road(
     OVERLAY_ROAD,  // Overlay type number.
     "ROAD",        // INI name of overlay.
@@ -871,15 +874,19 @@ void OverlayTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
       OverlayTypeClass const &overlay = As_Reference(index);
-      char fullname[_MAX_FNAME + _MAX_EXT];  // Fully constructed iconset name.
+      std::string fullname;  // Fully constructed iconset name.
 
       if (overlay.IsTheater) {
-        _makepath(fullname, NULL, NULL, overlay.IniName,
-                  Theaters[theater].Suffix);
+        fullname = std::filesystem::path(overlay.IniName)
+                       .replace_extension(Theaters[theater].Suffix)
+                       .string();
       } else {
-        _makepath(fullname, NULL, NULL, overlay.IniName, ".SHP");
+        fullname = std::filesystem::path(overlay.IniName)
+                       .replace_extension(".SHP")
+                       .string();
       }
-      ((void const *&)overlay.ImageData) = MixFileClass::Retrieve(fullname);
+      ((void const *&)overlay.ImageData) =
+          MixFileClass::Retrieve(fullname.c_str());
 
       IsTheaterShape = overlay.IsTheater;
       if (overlay.RadarIcon) delete[] (char *)overlay.RadarIcon;

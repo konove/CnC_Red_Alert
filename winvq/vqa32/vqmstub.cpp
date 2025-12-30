@@ -1,13 +1,14 @@
+#include <array>
 #include <cstdio>
 #include <cstdint>
 
 #include "vqm32/compress.h"
 #include "vqm32/soscomp.h"
 
-static const int8_t ima_adpcm_index_table[] = {-1, -1, -1, -1, 2, 4, 6, 8,
-                                               -1, -1, -1, -1, 2, 4, 6, 8};
+static constexpr std::array<int8_t, 16> ima_adpcm_index_table = {
+    -1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8};
 
-static const int16_t ima_adpcm_step_table[89] = {
+static constexpr std::array<int16_t, 89> ima_adpcm_step_table = {
     7,     8,     9,     10,    11,    12,    13,    14,    16,    17,
     19,    21,    23,    25,    28,    31,    34,    37,    41,    45,
     50,    55,    60,    66,    73,    80,    88,    97,    107,   118,
@@ -47,7 +48,7 @@ uint64_t VQA_sosCODECDecompressData(_SOS_COMPRESS_INFO *info,
   uint64_t out_index = 0;
 
   for (; uncomp_size != 0; uncomp_size -= 4) {
-    auto adpcm_byte = in_ptr[in_index++];
+    const auto adpcm_byte = in_ptr[in_index++];
 
     uint32_t nibble = adpcm_byte & 0xF;
     int32_t step = ima_adpcm_step_table[info->wStep];

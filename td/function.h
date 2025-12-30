@@ -390,7 +390,7 @@ void Heap_Dump_Check(char *string);
 void Dump_Heap_Pointers(void);
 
 void Validate_Error(char *name);
-void const *Hires_Retrieve(char *name);
+void const *Hires_Retrieve(const char *name);
 int Get_Resolution_Factor(void);
 
 /*

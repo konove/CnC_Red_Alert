@@ -2028,7 +2028,7 @@ void DisplayClass::Draw_It(bool forced) {
 // Colour_Debug(4);
 #ifdef FIX_ME_LATER
 //		HidPage.Blit(HidPage, 0, HidPage.Get_Height()-1, 0,
-//HidPage.Get_Height(), HidPage.Get_Width(), 1, false);
+// HidPage.Get_Height(), HidPage.Get_Width(), 1, false);
 #endif  // FIX_ME_LATER
     if (HidPage.Lock()) {
       // Redraw_Icons(CELL_DRAW_ONLY);
@@ -2806,9 +2806,9 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
     */
     if (!shadow) {
       //			int xxx = x +
-      //Lepton_To_Pixel(Coord_XLepton(Map.TacticalCoord)); 			int yyy = y +
-      //Lepton_To_Pixel(Coord_YLepton(Map.TacticalCoord)); 			object =
-      //Map.Cell_Object(cell, xxx % CELL_PIXEL_W, yyy % CELL_PIXEL_H);
+      // Lepton_To_Pixel(Coord_XLepton(Map.TacticalCoord));
+      // int yyy = y + Lepton_To_Pixel(Coord_YLepton(Map.TacticalCoord));
+      // object = Map.Cell_Object(cell, xxx % CELL_PIXEL_W, yyy % CELL_PIXEL_H);
       object = Map.Close_Object(coord);
 
       /*
@@ -3687,7 +3687,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
  * HISTORY: * 04/30/1994 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-bool DisplayClass::In_View(register CELL cell) {
+bool DisplayClass::In_View(CELL cell) {
   COORDINATE coord = Cell_Coord(cell) & 0xFF00FF00L;
   COORDINATE tcoord = TacticalCoord & 0xFF00FF00L;
 

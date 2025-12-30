@@ -54,6 +54,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 static TemplateTypeClass const Empty(TEMPLATE_CLEAR1,
                                      THEATERF_TEMPERATE | THEATERF_SNOW |
                                          THEATERF_INTERIOR,
@@ -1743,25 +1745,26 @@ short const *TemplateTypeClass::Occupy_List(bool) const {
  *loading now (as it should).                         *
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
-  char fullname[_MAX_FNAME + _MAX_EXT];  // Fully constructed iconset name.
-  void const *ptr;                       // Working loaded iconset pointer.
-
   for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
     TemplateTypeClass const &tplate = As_Reference(index);
 
-    ((void const *&)tplate.ImageData) = NULL;
+    const_cast<void const *&>(tplate.ImageData) = nullptr;
     if (tplate.Theater & (1 << theater)) {
-      _makepath(fullname, NULL, NULL, tplate.IniName, Theaters[theater].Suffix);
-      ptr = MFCD::Retrieve(fullname);
-      ((void const *&)tplate.ImageData) = ptr;
+      auto fullname = std::filesystem::path(tplate.IniName)
+                          .replace_extension(Theaters[theater].Suffix)
+                          .string();
+
+      // Working loaded iconset pointer.
+      void const *ptr = MFCD::Retrieve(fullname.c_str());
+      const_cast<void const *&>(tplate.ImageData) = ptr;
 
 #ifdef WIN32
-      Register_Icon_Set((void *)ptr,
-                        TRUE);  // Register icon set for video memory caching
+      // Register icon set for video memory caching
+      Register_Icon_Set(const_cast<void *>(ptr), true);
 #endif
 
-      ((unsigned char &)tplate.Width) = Get_IconSet_MapWidth(ptr);
-      ((unsigned char &)tplate.Height) = Get_IconSet_MapHeight(ptr);
+      const_cast<unsigned char &>(tplate.Width) = Get_IconSet_MapWidth(ptr);
+      const_cast<unsigned char &>(tplate.Height) = Get_IconSet_MapHeight(ptr);
     }
   }
 }

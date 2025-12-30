@@ -151,8 +151,6 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
   }
 }
 
-#include "filepcx.h"
-
 /***************************************************************************
  * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *
  *                                                                         *

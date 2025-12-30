@@ -43,6 +43,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 /***************************************************************************
 **	Detailed information about each class of bullet (projectile) in the
 *game.
@@ -578,17 +580,19 @@ void BulletTypeClass::One_Time(void) {
   */
   for (index = BULLET_FIRST; index < BULLET_COUNT; index++) {
     BulletTypeClass const &bullet = As_Reference(index);
-    char fullname[_MAX_FNAME + _MAX_EXT];
 
     if (!bullet.IsInvisible) {
-      _makepath(fullname, NULL, NULL, bullet.IniName, ".SHP");
+      auto fullname = std::filesystem::path(bullet.IniName)
+                          .replace_extension(".SHP")
+                          .string();
 
-      RawFileClass file(fullname);
+      RawFileClass file(fullname.c_str());
 
       if (file.Is_Available()) {
         ((void const *&)bullet.ImageData) = Load_Alloc_Data(file);
       } else {
-        ((void const *&)bullet.ImageData) = MixFileClass::Retrieve(fullname);
+        ((void const *&)bullet.ImageData) =
+            MixFileClass::Retrieve(fullname.c_str());
       }
     }
   }

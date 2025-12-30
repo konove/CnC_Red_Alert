@@ -46,6 +46,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <filesystem>
 
 static AnimTypeClass const AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.
@@ -2156,24 +2157,26 @@ void AnimTypeClass::Init_Heap(void) {
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimTypeClass::One_Time(void) {
-  for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-
-    AnimTypeClass const &anim = As_Reference(index);
+  for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; ++index) {
+    const AnimTypeClass &anim = As_Reference(index);
 
     if (!anim.IsTheater) {
-      _makepath(fullname, NULL, NULL, As_Reference(index).IniName, ".SHP");
+      auto fullname = std::filesystem::path(As_Reference(index).IniName)
+                          .replace_extension(".SHP")
+                          .string();
 
 #ifndef NDEBUG
-      RawFileClass file(fullname);
+      RawFileClass file(fullname.c_str());
       if (file.Is_Available()) {
-        ((void const *&)As_Reference(index).ImageData) = Load_Alloc_Data(file);
+        const_cast<void const *&>(As_Reference(index).ImageData) =
+            Load_Alloc_Data(file);
       } else {
-        ((void const *&)As_Reference(index).ImageData) =
-            MFCD::Retrieve(fullname);
+        const_cast<void const *&>(As_Reference(index).ImageData) =
+            MFCD::Retrieve(fullname.c_str());
       }
 #else
-      ((void const *&)As_Reference(index).ImageData) = MFCD::Retrieve(fullname);
+      const_cast<void const *&>(As_Reference(index).ImageData) =
+          MFCD::Retrieve(fullname.c_str());
 #endif
     }
   }
@@ -2200,10 +2203,12 @@ void AnimTypeClass::Init(TheaterType theater) {
       AnimTypeClass const &anim = As_Reference(index);
 
       if (anim.IsTheater) {
-        char
-            fullname[_MAX_FNAME + _MAX_EXT];  // Fully constructed iconset name.
-        _makepath(fullname, NULL, NULL, anim.IniName, Theaters[theater].Suffix);
-        ((void const *&)anim.ImageData) = MFCD::Retrieve(fullname);
+        auto fullname = std::filesystem::path(anim.IniName)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+
+        const_cast<void const *&>(anim.ImageData) =
+            MFCD::Retrieve(fullname.c_str());
       }
     }
   }

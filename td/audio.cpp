@@ -44,6 +44,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
 */
@@ -63,7 +65,7 @@ static struct {
     **	Special voices (typically associated with the commando).
     */
     {"BOMBIT1", 20, IN_NOVAR},  //	VOC_RAMBO_PRESENT		"I've
-                                //got a present for	ya"
+                                // got a present for	ya"
     {"CMON1", 20, IN_NOVAR},    //	VOC_RAMBO_CMON			"c'mon"
     {"GOTIT1", 20,
      IN_NOVAR},  //	VOC_RAMBO_UGOTIT		"you got it" *
@@ -74,8 +76,8 @@ static struct {
      IN_NOVAR},  //	VOC_RAMBO_LEFTY		"that was left handed" *
     {"NOPRBLM1", 20,
      IN_NOVAR},  //	VOC_RAMBO_NOPROB		"no problem"
-                 //	{"OHSH1",		20, IN_NOVAR},		//	VOC_RAMBO_OHSH
-                 //"oh shiiiiii...."
+                 //	{"OHSH1",		20, IN_NOVAR},		//
+                 // VOC_RAMBO_OHSH "oh shiiiiii...."
     {"ONIT1", 20,
      IN_NOVAR},                  //	VOC_RAMBO_ONIT			"I'm on it"
     {"RAMYELL1", 20, IN_NOVAR},  //	VOC_RAMBO_YELL "ahhhhhhh"
@@ -105,10 +107,10 @@ static struct {
      IN_VAR},  //	VOC_AFFIRM			"affirmative"
     {"AWAIT1", 10,
      IN_VAR},  //	VOC_AWAIT1			"awaiting orders"
-               //	{"BACKUP",		10,	IN_VAR},	// VOC_BACKUP
-               //"send backup"
-               //	{"HELP",			10,	IN_VAR},	// VOC_HELP
-               //"send help"
+               //	{"BACKUP",		10,	IN_VAR},	//
+               // VOC_BACKUP "send backup"
+               //	{"HELP",			10,	IN_VAR},
+               //// VOC_HELP "send help"
     {"MOVOUT1", 10,
      IN_VAR},                 //	VOC_MOVEOUT			"movin' out"
     {"NEGATV1", 10, IN_VAR},  //	VOC_NEGATIVE		"negative"
@@ -119,12 +121,12 @@ static struct {
      IN_VAR},                 //	VOC_REPORT			"reporting"
     {"RITWAWA", 10, IN_VAR},  // VOC_RIGHT_AWAY		"right away sir"
     {"ROGER", 10, IN_VAR},    // VOC_ROGER			"roger"
-                              //	{"SIR1",			10,	IN_VAR},	//	VOC_SIR1
-                              //"sir?"
-                              //	{"SQUAD1",		10,	IN_VAR},	//	VOC_SQUAD1
-                              //"squad reporting"
-                              //	{"TARGET1",		10,	IN_VAR},	//	VOC_PRACTICE
-                              //"target practice"
+                              //	{"SIR1",			10,	IN_VAR},
+                              ////	VOC_SIR1 "sir?"
+                              //	{"SQUAD1",		10,	IN_VAR},
+                              ////	VOC_SQUAD1 "squad reporting"
+                              //	{"TARGET1",		10,	IN_VAR},
+                              ////	VOC_PRACTICE "target practice"
     {"UGOTIT", 10, IN_VAR},   // VOC_UGOTIT			"you got it"
     {"UNIT1", 10, IN_VAR},    //	VOC_UNIT1			"unit reporting"
     {"VEHIC1", 10,
@@ -169,16 +171,16 @@ static struct {
     {"NUKEXPLO", 1,
      IN_JUV},                 //	VOC_NUKE_EXPLODE	long but not loud explosion
     {"OBELRAY1", 1, IN_JUV},  //	VOC_LASER			humming
-                              //star wars laser beam
+                              // star wars laser beam
     {"OBELPOWR", 1,
      IN_JUV},  // VOC_LASER_POWER	warming-up sound of star wars laser beam
     {"POWRDN1", 1, IN_JUV},  //	VOC_RADAR_OFF		doom door slide
     {"RAMGUN2", 1,
      IN_JUV},                 //	VOC_SNIPER			silenced rifle fire
     {"ROCKET1", 1, IN_JUV},   //	VOC_ROCKET1			rocket launch
-                              //variation #1
+                              // variation #1
     {"ROCKET2", 1, IN_JUV},   //	VOC_ROCKET2			rocket launch
-                              //variation #2
+                              // variation #2
     {"SAMMOTR2", 1, IN_JUV},  // VOC_MOTOR			dentists drill
     {"SCOLD2", 1, IN_JUV},    // VOC_SCOLD			cannot perform
                               // action feedback tone
@@ -244,35 +246,35 @@ static struct {
     {"MHELLO1", 10, IN_NOVAR},  //	VOC_HELLO			"Hello?"
     {"MHMMM1", 10,
      IN_NOVAR},  //	VOC_HMMM				"Hmmm?"
-                 //	{"MHASTE1", 	10,	IN_NOVAR},	//	VOC_PROCEED1
-                 //"I will proceed, post haste."
-                 //	{"MONCE1", 		10,	IN_NOVAR},	//	VOC_PROCEED2
-                 //"I will proceed, at once."
-                 //	{"MIMMD1", 		10,	IN_NOVAR},	//	VOC_PROCEED3
-                 //"I will proceed, immediately."
-                 //	{"MPLAN1", 		10,	IN_NOVAR},	//	VOC_EXCELLENT1
-                 //"That is an excellent plan."
-                 //	{"MPLAN2", 		10,	IN_NOVAR},	//	VOC_EXCELLENT2
-                 //"Yes, that is an excellent plan."
+                 //	{"MHASTE1", 	10,	IN_NOVAR},	//
+                 // VOC_PROCEED1 "I will proceed, post haste."
+                 //	{"MONCE1", 		10,	IN_NOVAR},	//
+                 // VOC_PROCEED2 "I will proceed, at once."
+                 //	{"MIMMD1", 		10,	IN_NOVAR},	//
+                 // VOC_PROCEED3 "I will proceed, immediately."
+                 //	{"MPLAN1", 		10,	IN_NOVAR},	//
+                 // VOC_EXCELLENT1 "That is an excellent plan."
+                 //	{"MPLAN2", 		10,	IN_NOVAR},	//
+                 // VOC_EXCELLENT2 "Yes, that is an excellent plan."
     {"MPLAN3", 10,
      IN_NOVAR},  //	VOC_EXCELLENT3		"A wonderful plan."
-                 //	{"MACTION1", 	10,	IN_NOVAR},	//	VOC_EXCELLENT4
-                 //"Astounding plan of action commander."
-                 //	{"MREMARK1", 	10,	IN_NOVAR},	// VOC_EXCELLENT5
-                 //"Remarkable contrivance."
+                 //	{"MACTION1", 	10,	IN_NOVAR},	//
+                 // VOC_EXCELLENT4 "Astounding plan of action commander."
+                 //	{"MREMARK1", 	10,	IN_NOVAR},	//
+                 // VOC_EXCELLENT5 "Remarkable contrivance."
     {"MCOURSE1", 10, IN_NOVAR},  // VOC_OF_COURSE		"Of course."
     {"MYESYES1", 10, IN_NOVAR},  // VOC_YESYES			"Yes yes yes."
     {"MTIBER1", 10,
      IN_NOVAR},  //	VOC_QUIP1			"Mind the Tiberium."
-                 //	{"MMG1", 		10,	IN_NOVAR},	//	VOC_QUIP2
-                 //"A most remarkable  Metasequoia Glyptostroboides."
+                 //	{"MMG1", 		10,	IN_NOVAR},	//
+                 // VOC_QUIP2 "A most remarkable  Metasequoia Glyptostroboides."
     {"MTHANKS1", 10,
      IN_NOVAR},  //	VOC_THANKS			"Thank you."
 
     {"CASHTURN", 1,
      IN_NOVAR},                //	VOC_CASHTURN		Sound of money being piled up.
     {"BLEEP2", 10, IN_NOVAR},  //	VOC_BLEEPY3			Clean
-                               //computer bleep sound.
+                               // computer bleep sound.
     {"DINOMOUT", 10,
      IN_NOVAR},  //	VOC_DINOMOUT		Movin' out in dino-speak.
     {"DINOYES", 10,
@@ -362,8 +364,6 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
  *=============================================================================================*/
 int Sound_Effect(VocType voc, VolType volume, int variation,
                  signed short pan_value) {
-  char name[_MAX_FNAME + _MAX_EXT];  // Working filename of sound effect.
-
   if (!Options.Volume || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
     return (-1);
@@ -397,8 +397,11 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
       }
     }
   }
-  _makepath(name, NULL, NULL, SoundEffectName[voc].Name, ext);
-  void const *ptr = MixFileClass::Retrieve(name);
+  // Working filename of sound effect.
+  auto name = std::filesystem::path(SoundEffectName[voc].Name)
+                  .replace_extension(ext)
+                  .string();
+  void const *ptr = MixFileClass::Retrieve(name.c_str());
 
   /*
   **	If the sound data pointer is not null, then presume that it is valid.
@@ -427,9 +430,9 @@ char const *Speech[VOX_COUNT] = {
     "CIVDEAD1",  //	civilian killed
                  //	"EVAYES1",		//	affirmative
                  //	"EVANO1",		//	negative
-                 //	"UPUNIT1",		//	upgrade complete, new unit available
-                 //	"UPSTRUC1",		//	upgrade complete, new structure
-                 //available
+                 //	"UPUNIT1",		//	upgrade complete, new
+                 // unit available 	"UPSTRUC1",		//	upgrade
+                 // complete, new structure available
     "NOCASH1",   //	insufficient funds
     "BATLCON1",  //	battle control terminated
     "REINFOR1",  //	reinforcements have arrived
@@ -442,8 +445,10 @@ char const *Speech[VOX_COUNT] = {
     "INCOME1",   //	incoming missile
     "ENEMYA",    //	enemy planes approaching
     "NUKE1",     //	nuclear warhead approaching
-                 //	"RADOK1",		//	radiation levels are acceptable
-                 //	"RADFATL1",		//	radiation levels are fatal
+                 //	"RADOK1",		//	radiation levels are
+                 // acceptable 	"RADFATL1",		//	radiation levels
+                 // are
+    // fatal
     "NOBUILD1",  //	unable to build more
     "PRIBLDG1",  //	primary building selected
                  //	"REPDONE1",		//	repairs completed
@@ -470,42 +475,45 @@ char const *Speech[VOX_COUNT] = {
     "GSTRUC1",   //	GDI structure destroyed
     "NSTRUC1",   //	NOD structure destroyed
     "ENMYUNIT",  // Enemy unit destroyed
-    //	"GUKILL1",		//	gold unit destroyed
-    //	"GSTRUD1",		//	gold structure destroyed
-    //	"GONLINE1",		//	gold player online
-    //	"GLEFT1",		//	gold player has departed
-    //	"GOLDKILT",		//	gold player destroyed
-    //	"GOLDWIN",		//	gold player is victorious
-    //	"RUKILL1",		//	red unit destroyed
-    //	"RSTRUD1",		//	red structure destroyed
-    //	"RONLINE1",		//	red player online
-    //	"RLEFT1",		//	red player has departed
-    //	"REDKILT",		//	red player destroyed
-    //	"REDWIN",		//	red player is victorious
-    //	"GYUKILL1",		//	grey unit destroyed
-    //	"GYSTRUD1",		//	grey structure destroyed
-    //	"GYONLINE",		//	grey player online
-    //	"GYLEFT1",		//	grey player has departed
-    //	"GREYKILT",		//	grey player destroyed
-    //	"GREYWIN",		//	grey player is victorious
-    //	"OUKILL1",		//	orange unit destroyed
-    //	"OSTRUD1",		//	orange structure destroyed
-    //	"OONLINE1",		//	orange player online
-    //	"OLEFT1",		//	orange player has departed
-    //	"ORANKILT",		//	orange player destroyed
-    //	"ORANWIN",		//	orange player is victorious
-    //	"GNUKILL1",		//	green unit destroyed
-    //	"GNSTRUD1",		//	green structure destroyed
-    //	"GNONLINE",		//	green player online
-    //	"GNLEFT1",		//	green player has departed
-    //	"GRENKILT",		//	green player destroyed
-    //	"GRENWIN",		//	green player is victorious
-    //	"BUKILL1",		//	blue unit destroyed
-    //	"BSTRUD1",		//	blue structure destroyed
-    //	"BONLINE1",		//	blue player online
-    //	"BLEFT1",		//	blue player has departed
-    //	"BLUEKILT",		//	blue player destroyed
-    //	"BLUEWIN"		//	blue player is victorious
+                 //	"GUKILL1",		//	gold unit destroyed
+                 //	"GSTRUD1",		//	gold structure destroyed
+                 //	"GONLINE1",		//	gold player online
+                 //	"GLEFT1",		//	gold player has departed
+                 //	"GOLDKILT",		//	gold player destroyed
+                 //	"GOLDWIN",		//	gold player is
+                 // victorious 	"RUKILL1",		//	red unit
+                 // destroyed 	"RSTRUD1",		//	red structure
+                 // destroyed 	"RONLINE1",		//	red player
+                 // online 	"RLEFT1",		//	red player has
+                 // departed 	"REDKILT",		//	red player
+                 // destroyed
+                 //	"REDWIN",		//	red player is victorious
+                 //	"GYUKILL1",		//	grey unit destroyed
+                 //	"GYSTRUD1",		//	grey structure destroyed
+                 //	"GYONLINE",		//	grey player online
+                 //	"GYLEFT1",		//	grey player has departed
+                 //	"GREYKILT",		//	grey player destroyed
+                 //	"GREYWIN",		//	grey player is
+                 // victorious 	"OUKILL1",		//	orange unit
+                 // destroyed 	"OSTRUD1",		//	orange structure
+                 // destroyed 	"OONLINE1",		//	orange player
+                 // online 	"OLEFT1",		//	orange player
+                 // has departed 	"ORANKILT",		//	orange
+                 // player destroyed 	"ORANWIN",		//	orange
+                 // player is victorious 	"GNUKILL1",		//
+                 // green unit destroyed 	"GNSTRUD1",		//
+                 // green structure destroyed 	"GNONLINE",		//
+                 // green player online 	"GNLEFT1",		//
+                 // green player has departed 	"GRENKILT",		//
+                 // green player destroyed 	"GRENWIN",		//
+                 // green player is victorious 	"BUKILL1",		//
+                 // blue unit destroyed 	"BSTRUD1",		//
+                 // blue structure destroyed 	"BONLINE1",		//
+                 // blue player
+                 // online 	"BLEFT1",		//	blue player has
+                 // departed 	"BLUEKILT",		//	blue player
+                 // destroyed 	"BLUEWIN"		//	blue player is
+                 // victorious
 };
 static VoxType CurrentVoice = VOX_NONE;
 
@@ -554,10 +562,11 @@ void Speak_AI(void) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       if (SpeakQueue != _last) {
-        char name[_MAX_FNAME + _MAX_EXT];
+        auto name = std::filesystem::path(Speech[SpeakQueue])
+                        .replace_extension(".AUD")
+                        .string();
 
-        _makepath(name, NULL, NULL, Speech[SpeakQueue], ".AUD");
-        if (CCFileClass(name).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
+        if (CCFileClass(name.c_str()).Read(SpeechBuffer, SPEECH_BUFFER_SIZE)) {
           Play_Sample(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;

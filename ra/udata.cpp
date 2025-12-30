@@ -57,6 +57,8 @@
 #include "function.h"
 
 #include <algorithm>
+#include <filesystem>
+#include <string>
 
 /*
 **	This is the list of animation stages to use when the harvester
@@ -1028,8 +1030,6 @@ void UnitTypeClass::Prep_For_Add(void) {
  *=============================================================================================*/
 void UnitTypeClass::One_Time(void) {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    char buffer[_MAX_FNAME];
     UnitTypeClass const &uclass = As_Reference(index);
     CCFileClass file;
 
@@ -1042,33 +1042,36 @@ void UnitTypeClass::One_Time(void) {
     /*
     **	Fetch the supporting data files for the unit.
     */
-    sprintf(buffer, "%sICON", uclass.Graphic_Name());
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
+    auto filename = std::string(uclass.Graphic_Name()) + "ICON";
+    auto fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
 #ifndef NDEBUG
-    RawFileClass datafile(fullname);
+    RawFileClass datafile(fullname.c_str());
     if (datafile.Is_Available()) {
       ((void const *&)uclass.CameoData) = Load_Alloc_Data(datafile);
     } else {
-      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname.c_str());
     }
 #else
-    ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+    ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname.c_str());
 #endif
     //		}
 
     /*
     **	Fetch a pointer to the unit's shape data.
     */
-    _makepath(fullname, NULL, NULL, uclass.Graphic_Name(), ".SHP");
+    fullname = std::filesystem::path(uclass.Graphic_Name())
+                   .replace_extension(".SHP")
+                   .string();
 #ifndef NDEBUG
-    RawFileClass shpfile(fullname);
+    RawFileClass shpfile(fullname.c_str());
     if (shpfile.Is_Available()) {
       ptr = Load_Alloc_Data(shpfile);
     } else {
-      ptr = MFCD::Retrieve(fullname);
+      ptr = MFCD::Retrieve(fullname.c_str());
     }
 #else
-    ptr = MFCD::Retrieve(fullname);
+    ptr = MFCD::Retrieve(fullname.c_str());
 #endif
 
     ((void const *&)uclass.ImageData) = ptr;

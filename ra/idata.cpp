@@ -58,6 +58,8 @@
 #include "function.h"
 #include "type.h"
 
+#include <filesystem>
+
 static DoInfoStruct DogDoControls[DO_COUNT] = {
     {0, 1, 1},      // DO_STAND_READY
     {0, 1, 1},      // DO_STAND_GUARD
@@ -1204,44 +1206,42 @@ InfantryType InfantryTypeClass::From_Name(char const *name) {
  *=============================================================================================*/
 void InfantryTypeClass::One_Time(void) {
   for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
     InfantryTypeClass const *uclass;
     CCFileClass file;
 
     uclass = &As_Reference(index);
 
-    /*
-    **	Generic shape for all houses load method.
-    */
-    _makepath(fullname, NULL, NULL, uclass->Graphic_Name(), ".SHP");
+    // Generic shape for all houses load method.
+    auto fullname = std::filesystem::path(uclass->Graphic_Name())
+                        .replace_extension(".SHP")
+                        .string();
 
 #ifndef NDEBUG
-    RawFileClass sfile(fullname);
+    RawFileClass sfile(fullname.c_str());
     if (sfile.Is_Available()) {
       ((void const *&)uclass->ImageData) = Load_Alloc_Data(sfile);
     } else {
-      ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname);
+      ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname.c_str());
     }
 #else
-    ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname);
+    ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname.c_str());
 #endif
 
-    /*
-    **	The small build image icon sized shapes are always generic.
-    */
-    char buffer[_MAX_FNAME];
-    sprintf(buffer, "%.4sICON", uclass->Graphic_Name());
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
+    // The small build image icon sized shapes are always generic.
+    const auto filename =
+        std::string(uclass->Graphic_Name()).substr(0, 4) + "ICON";
+    fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
 
 #ifndef NDEBUG
-    RawFileClass ifile(fullname);
+    RawFileClass ifile(fullname.c_str());
     if (ifile.Is_Available()) {
       ((void const *&)uclass->CameoData) = Load_Alloc_Data(ifile);
     } else {
-      ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname);
+      ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname.c_str());
     }
 #else
-    ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname);
+    ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname.c_str());
 #endif
   }
 }

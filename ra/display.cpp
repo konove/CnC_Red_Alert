@@ -3966,7 +3966,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
  * HISTORY: * 04/30/1994 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-bool DisplayClass::In_View(register CELL cell) const {
+bool DisplayClass::In_View(CELL cell) const {
   if (cell & 0xC000) return (false);
 
   COORDINATE coord = Coord_Whole(Cell_Coord(cell));

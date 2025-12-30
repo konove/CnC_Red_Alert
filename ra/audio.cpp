@@ -45,6 +45,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <filesystem>
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
@@ -132,9 +133,9 @@ static struct {
      IN_NOVAR},                 //	VOC_FIRE_EXPLODE	Fireball explode sound.
     {"GRENADE1", 1, IN_NOVAR},  //	VOC_GRENADE_TOSS	Grenade toss.
     {"GUN11", 1, IN_NOVAR},     //	VOC_GUN_5			5 round gun
-                                //burst (slow).
+                                // burst (slow).
     {"GUN13", 1, IN_NOVAR},     //	VOC_GUN_7			7 round gun
-                                //burst (fast).
+                                // burst (fast).
     {"EYESSIR1", 20,
      IN_NOVAR},              //	VOC_ENG_YES,		Engineer: "yes sir"
     {"GUN27", 1, IN_NOVAR},  //	VOC_GUN_RIFLE		Rifle shot.
@@ -145,7 +146,7 @@ static struct {
     {"INVUL2", 1,
      IN_NOVAR},                //	VOC_INVULNERABLE	Invulnerability effect.
     {"KABOOM1", 1, IN_NOVAR},  //	VOC_KABOOM1			Long
-                               //explosion (muffled).
+                               // explosion (muffled).
     {"KABOOM12", 1,
      IN_NOVAR},  //	VOC_KABOOM12		Very long explosion (muffled).
     {"KABOOM15", 1,
@@ -156,7 +157,7 @@ static struct {
     {"AACANON3", 1, IN_NOVAR},
     {"TANDETH1", 10, IN_NOVAR},
     {"MGUNINF1", 1, IN_NOVAR},  //	VOC_GUN_5F			5 round
-                                //gun burst (fast).
+                                // gun burst (fast).
     {"MISSILE1", 1,
      IN_NOVAR},  //	VOC_MISSILE_1		Missile with high tech effect.
     {"MISSILE6", 1,
@@ -165,16 +166,16 @@ static struct {
      IN_NOVAR},  //	VOC_MISSILE_3		Short missile launch.
     {"x", 1, IN_NOVAR},
     {"PILLBOX1", 1, IN_NOVAR},  //	VOC_GUN_5R			5 round
-                                //gun burst (rattles).
+                                // gun burst (rattles).
     {"RABEEP1", 1, IN_NOVAR},   //	VOC_BEEP
-                                //Generic beep sound.
+                                // Generic beep sound.
     {"RAMENU1", 1,
      IN_NOVAR},                 //	VOC_CLICK			Generic click sound.
     {"SILENCER", 1, IN_NOVAR},  //	VOC_SILENCER		Silencer.
     {"TANK5", 1, IN_NOVAR},     //	VOC_CANNON6			Long muffled
-                                //cannon shot.
+                                // cannon shot.
     {"TANK6", 1, IN_NOVAR},     //	VOC_CANNON7			Sharp mechanical
-                                //cannon fire.
+                                // cannon fire.
     {"TORPEDO1", 1,
      IN_NOVAR},  //	VOC_TORPEDO			Torpedo launch.
     {"TURRET1", 1,
@@ -252,7 +253,7 @@ static struct {
     {"GUN5", 5,
      IN_NOVAR},  //	VOC_TRIPLE_SHOT		Three quick shots in succession.
     {"SUBSHOW1", 5, IN_NOVAR},  //	VOC_SUBSHOW
-                                //Submarine surface sound.
+                                // Submarine surface sound.
     {"EINAH1", 20,
      IN_NOVAR},  //	VOC_E_AH,				Einstien "ah"
     {"EINOK1", 20,
@@ -325,25 +326,25 @@ static struct {
      IN_NOVAR},  // VOC_MECHWRENCH1		Mechanic: "I'll get my wrench."
 
     {"JBURN1", 20, IN_NOVAR},   //	VOC_STBURN1
-                                //Shock Trooper: "Burn baby burn!"
+                                // Shock Trooper: "Burn baby burn!"
     {"JCHRGE1", 20, IN_NOVAR},  //	VOC_STCHRGE1			Shock
-                                //Trooper: "Fully charged!"
+                                // Trooper: "Fully charged!"
     {"JCRISP1", 20, IN_NOVAR},  //	VOC_STCRISP1			Shock
-                                //Trooper: "Extra Crispy!"
+                                // Trooper: "Extra Crispy!"
     {"JDANCE1", 20, IN_NOVAR},  //	VOC_STDANCE1			Shock
-                                //Trooper: "Let's Dance!"
+                                // Trooper: "Let's Dance!"
     {"JJUICE1", 20, IN_NOVAR},  //	VOC_STJUICE1			Shock
-                                //Trooper: "Got juice?"
+                                // Trooper: "Got juice?"
     {"JJUMP1", 20, IN_NOVAR},   //	VOC_STJUMP1
-                                //Shock Trooper: "Need a jump?"
+                                // Shock Trooper: "Need a jump?"
     {"JLIGHT1", 20, IN_NOVAR},  //	VOC_STLIGHT1			Shock
-                                //Trooper: "Lights out!"
+                                // Trooper: "Lights out!"
     {"JPOWER1", 20, IN_NOVAR},  //	VOC_STPOWER1			Shock
-                                //Trooper: "Power on!"
+                                // Trooper: "Power on!"
     {"JSHOCK1", 20, IN_NOVAR},  //	VOC_STSHOCK1			Shock
-                                //Trooper: "Shocking!"
+                                // Trooper: "Shocking!"
     {"JYES1", 20, IN_NOVAR},    //	VOC_STYES1
-                                //Shock Trooper: "Yesssss!"
+                                // Shock Trooper: "Yesssss!"
 
     {"CHROTNK1", 20,
      IN_NOVAR},  // VOC_CHRONOTANK1		Chrono tank teleport
@@ -499,8 +500,6 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
  *=============================================================================================*/
 int Sound_Effect(VocType voc, fixed volume, int variation,
                  signed short pan_value, HousesType house) {
-  char name[_MAX_FNAME + _MAX_EXT];  // Working filename of sound effect.
-
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
     return (-1);
@@ -562,8 +561,10 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
       }
     }
   }
-  _makepath(name, NULL, NULL, SoundEffectName[voc].Name, ext);
-  void const* ptr = MFCD::Retrieve(name);
+  auto name = std::filesystem::path(SoundEffectName[voc].Name)
+                  .replace_extension(ext)
+                  .string();
+  void const* ptr = MFCD::Retrieve(name.c_str());
 
   /*
   **	If the sound data pointer is not null, then presume that it is valid.
@@ -581,41 +582,41 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
 */
 static char const* Speech[VOX_COUNT] = {
     "MISNWON1",    //	VOX_ACCOMPLISHED
-                   //mission accomplished
+                   // mission accomplished
     "MISNLST1",    //	VOX_FAIL
-                   //your mission has failed
+                   // your mission has failed
     "PROGRES1",    //	VOX_NO_FACTORY
-                   //unable to comply, building in progress
+                   // unable to comply, building in progress
     "CONSCMP1",    //	VOX_CONSTRUCTION
-                   //construction complete
+                   // construction complete
     "UNITRDY1",    //	VOX_UNIT_READY unit ready
     "NEWOPT1",     //	VOX_NEW_CONSTRUCT
-                   //new construction options
+                   // new construction options
     "NODEPLY1",    //	VOX_DEPLOY
-                   //cannot deploy here
+                   // cannot deploy here
     "STRCKIL1",    //	VOX_STRUCTURE_DESTROYED,		structure
-                   //destroyed
+                   // destroyed
     "NOPOWR1",     //	VOX_INSUFFICIENT_POWER,			insufficient
-                   //power
+                   // power
     "NOFUNDS1",    //	VOX_NO_CASH
-                   //insufficient funds
+                   // insufficient funds
     "BCT1",        //	VOX_CONTROL_EXIT					battle
-                   //control terminated
+                   // control terminated
     "REINFOR1",    //	VOX_REINFORCEMENTS
-                   //reinforcements have arrived
+                   // reinforcements have arrived
     "CANCLD1",     //	VOX_CANCELED
-                   //canceled
+                   // canceled
     "ABLDGIN1",    //	VOX_BUILDING
-                   //building
+                   // building
     "LOPOWER1",    //	VOX_LOW_POWER low power
     "NOFUNDS1",    //	VOX_NEED_MO_MONEY
-                   //insufficent funds
+                   // insufficent funds
     "BASEATK1",    //	VOX_BASE_UNDER_ATTACK			our base is
-                   //under attack
+                   // under attack
     "NOBUILD1",    //	VOX_UNABLE_TO_BUILD				unable
-                   //to build more
+                   // to build more
     "PRIBLDG1",    //	VOX_PRIMARY_SELECTED				primary
-                   //building selected
+                   // building selected
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 #ifdef ENGLISH
     "TANK01",  // VOX_MADTANK_DEPLOYED				M.A.D. Tank
@@ -627,26 +628,26 @@ static char const* Speech[VOX_COUNT] = {
     "none",
 #endif
     "none",      //	VOX_SOVIET_CAPTURED				Allied building
-                 //captured
+                 // captured
     "UNITLST1",  // VOX_UNIT_LOST unit lost
     "SLCTTGT1",  // VOX_SELECT_TARGET					select
                  // target
     "ENMYAPP1",  //	VOX_PREPARE
-                 //enemy approaching
+                 // enemy approaching
     "SILOND1",   //	VOX_NEED_MO_CAPACITY				silos
-                 //needed
+                 // needed
     "ONHOLD1",   //	VOX_SUSPENDED on hold
     "REPAIR1",   //	VOX_REPAIRING
-                 //repairing
-    "none",     "none",
+                 // repairing
+    "none", "none",
     "AUNITL1",  //	VOX_AIRCRAFT_LOST
-                //airborne unit lost
+                // airborne unit lost
     "none",
     "AAPPRO1",   //	VOX_ALLIED_FORCES_APPROACHING	allied forces
-                 //approaching
+                 // approaching
     "AARRIVE1",  // VOX_ALLIED_APPROACHING			allied
                  // reinforcements have arrived
-    "none",     "none",
+    "none", "none",
     "BLDGINF1",  // VOX_BUILDING_INFILTRATED		building infiltrated
     "CHROCHR1",  // VOX_CHRONO_CHARGING				chronosphere
                  // charging
@@ -654,30 +655,30 @@ static char const* Speech[VOX_COUNT] = {
     "CHROYES1",  // VOX_CHRONO_TEST
                  // chronosphere test successful
     "CMDCNTR1",  //	VOX_HQ_UNDER_ATTACK				command
-                 //center under attack
+                 // center under attack
     "CNTLDED1",  //	VOX_CENTER_DEACTIVATED			control center
-                 //deactivated
+                 // deactivated
     "CONVYAP1",  //	VOX_CONVOY_APPROACHING			convoy
-                 //approaching
+                 // approaching
     "CONVLST1",  // VOX_CONVOY_UNIT_LOST				convoy
                  // unit lost
     "XPLOPLC1",  //	VOX_EXPLOSIVE_PLACED
-                 //explosive charge placed
+                 // explosive charge placed
     "CREDIT1",   // VOX_MONEY_STOLEN					credits
                  // stolen
     "NAVYLST1",  // VOX_SHIP_LOST
                  // naval unit lost
     "SATLNCH1",  //	VOX_SATALITE_LAUNCHED			satalite
-                 //launched
+                 // launched
     "PULSE1",    //	VOX_SONAR_AVAILABLE				sonar
-                 //pulse available
+                 // pulse available
     "none",
     "SOVFAPP1",  //	VOX_SOVIET_FORCES_APPROACHING	soviet forces
-                 //approaching
+                 // approaching
     "SOVREIN1",  // VOX_SOVIET_REINFROCEMENTS		soviet reinforcements
                  // have arrived
     "TRAIN1",    //	VOX_TRAINING
-                 //training
+                 // training
     "AREADY1",   //	VOX_ABOMB_READY
     "ALAUNCH1",  //	VOX_ABOMB_LAUNCH
     "AARRIVN1",  //	VOX_ALLIES_N
@@ -831,10 +832,11 @@ void Speak_AI(void) {
       if (speech == NULL) {
         _index = (_index + 1) % ARRAY_SIZE(SpeechRecord);
 
-        char name[_MAX_FNAME + _MAX_EXT];
+        auto name = std::filesystem::path(Speech[SpeakQueue])
+                        .replace_extension(".AUD")
+                        .string();
 
-        _makepath(name, NULL, NULL, Speech[SpeakQueue], ".AUD");
-        CCFileClass file(name);
+        CCFileClass file(name.c_str());
         if (file.Is_Available() &&
             file.Read(SpeechBuffer[_index], SPEECH_BUFFER_SIZE)) {
           speech = SpeechBuffer[_index];

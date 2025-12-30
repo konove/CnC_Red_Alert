@@ -101,27 +101,27 @@
 
 #define FIXIT_CSII  // Adds Aftermath CounterStrike II units
 //	ajw 9/28/98 - Note about FIXIT_CSII. Changes seem to have been made for
-//Aftermath ("Counterstrike II") that: a) were 	bug fixes that should never be
-//rolled back, b) change the nature of the game, at least in multi-player. This
-//meant 	that the "Red Alert" executable ( == Counterstrike executable ) could no
-//longer be built. Apparently, at the time, 	this was justified, as it was
-//believed that no further patches to the RA executable would ever be necessary.
-//	Given that Denzil's DVD changes and my WOLAPI integration are
-//essentially a patch, we've got a problem. 	We've decided to level the field and
-//make sure every who gets or patches to the new version of Red Alert, CS, AM,
-//(and 	their DVD equivalent(s)) will have the same executable. So we're assuming
-//that all of the FIXIT_CSII changes are 	permanent (as, in fact, all prior
-//FIXIT_'s are - makes me wonder why the old non-compiling code has to hang
-//around 	forever), and fixing the code so that the assumption "this is an
-//Aftermath game" is no longer hard-coded, but can 	change at runtime. (Which is
-//what should have been done when Aftermath was created.) 	<This goes for the
-//following three defines as well.>
+// Aftermath ("Counterstrike II") that: a) were 	bug fixes that should
+// never be rolled back, b) change the nature of the game, at least in
+// multi-player. This meant 	that the "Red Alert" executable ( ==
+// Counterstrike executable ) could no longer be built. Apparently, at the time,
+// this was justified, as it was believed that no further patches to the RA
+// executable would ever be necessary. 	Given that Denzil's DVD changes and my
+// WOLAPI integration are essentially a patch, we've got a problem. 	We've
+// decided to level the field and make sure every who gets or patches to the new
+// version of Red Alert, CS, AM, (and 	their DVD equivalent(s)) will have the
+// same executable. So we're assuming that all of the FIXIT_CSII changes are
+// permanent (as, in fact, all prior FIXIT_'s are - makes me wonder why the old
+// non-compiling code has to hang around 	forever), and fixing the code so
+// that the assumption "this is an Aftermath game" is no longer hard-coded, but
+// can 	change at runtime. (Which is what should have been done when Aftermath
+// was created.) 	<This goes for the following three defines as well.>
 #define FIXIT_CARRIER         // Adds Aftermath aircraft carrier
 #define FIXIT_PHASETRANSPORT  // Adds Aftermath cloaking APC
 //	ajw - Discovered that engineer changing fields were specifically left
-//out of aftrmath.ini, thus this has no effect. 	Engineer changes (and other game
-//rule changes) are in mplayer.ini, which was loaded before aftermath-only
-//mplayer games.
+// out of aftrmath.ini, thus this has no effect. 	Engineer changes (and
+// other game rule changes) are in mplayer.ini, which was loaded before
+// aftermath-only mplayer games.
 #define FIXIT_ENGINEER  // Adds Engineer rules.ini overrides
 
 // #define	FIXIT_FAST_LOAD			// Enables faster INI loading
@@ -147,7 +147,7 @@
 #endif
 
 //	Denotes changes made for version 3 - reunification of all existing
-//versions and undoing of Aftermath divergence. - ajw
+// versions and undoing of Aftermath divergence. - ajw
 #define FIXIT_VERSION_3
 #define DVD
 
@@ -794,9 +794,9 @@ typedef enum SpecialWeaponType {
 */
 // typedef enum IQType {
 //	IQ_DEAD=0x0000,			// Player controlled (computer does
-//nothing). 	IQ_IDIOT=0x0040, 	IQ_IMBECILE=0x0080, 	IQ_MORON=0x00C0,
+// nothing). 	IQ_IDIOT=0x0040, 	IQ_IMBECILE=0x0080, 	IQ_MORON=0x00C0,
 //	IQ_MENSA=0x0100			// Complete computer control -- look
-//out! } IQType;
+// out! } IQType;
 
 /**********************************************************************
 **	These are the response values when checking to see if an object
@@ -2777,15 +2777,15 @@ typedef enum LandType {
 /**********************************************************************
 **	The theaters of operation are as follows.
 */
-typedef enum TheaterType {
+enum TheaterType {
   THEATER_NONE = -1,
-  THEATER_TEMPERATE,
-  THEATER_SNOW,
-  THEATER_INTERIOR,
+  THEATER_TEMPERATE = 0,
+  THEATER_SNOW = 1,
+  THEATER_INTERIOR = 2,
 
-  THEATER_COUNT,
+  THEATER_COUNT = 3,
   THEATER_FIRST = 0
-} TheaterType;
+};
 
 #define THEATERF_TEMPERATE (1 << THEATER_TEMPERATE)
 #define THEATERF_SNOW (1 << THEATER_SNOW)

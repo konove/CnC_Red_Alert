@@ -69,6 +69,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <filesystem>
+#include <format>
 #ifdef TESTCODE
 class A {
  public:
@@ -1232,7 +1234,7 @@ static void Message_Input(KeyNumType &input) {
         if (*pWolapi->szExternalPager) {
           //	Respond to a page from external ww online user that paged me.
           //	Set MessageAddress to all zeroes, as a flag to ourselves later
-          //on.
+          // on.
           NetNumType blip;
           NetNodeType blop;
           memset(blip, 0, 4);
@@ -1351,7 +1353,7 @@ static void Message_Input(KeyNumType &input) {
 #ifdef WOLAPI_INTEGRATION
       if (pWolapi)
         //	Just in case user was responding to a page from outside the
-        //game, and we had frozen the "szExternalPager".
+        // game, and we had frozen the "szExternalPager".
         pWolapi->bFreezeExternalPager = false;
 #endif
     } else {
@@ -1677,7 +1679,7 @@ void Call_Back(void) {
               Rule.MessageDelay * TICKS_PER_MINUTE);
           Sound_Effect(WOLSOUND_LOGOUT);
           //	ajw (Wolapi object is now left around, so we can try to send
-          //game results.)
+          // game results.)
           //					//	Kill wolapi.
           //					pWolapi->UnsetupCOMStuff();
           //					delete pWolapi;
@@ -1686,7 +1688,7 @@ void Call_Back(void) {
       }
     } else {
       //	When showing a modal dialog during chat, this pumping is turned
-      //on. It's turned off immediately following.
+      // on. It's turned off immediately following.
       if (pWolapi->bPump_In_Call_Back &&
           (::timeGetTime() > pWolapi->dwTimeNextWolapiPump)) {
         pWolapi->pChat->PumpMessages();
@@ -2833,17 +2835,17 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
 #endif  // CHEAT_KEYS
 
   if (name) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    _makepath(fullname, NULL, NULL, name, ".VQA");
+    auto fullname =
+        std::filesystem::path(name).replace_extension(".VQA").string();
 #ifdef WIN32
-    char palname[_MAX_FNAME + _MAX_EXT];
-    _makepath(palname, NULL, NULL, name, ".VQP");
+    auto palname =
+        std::filesystem::path(name).replace_extension(".VQP").string();
 #endif  // WIN32
 #ifdef CHEAT_KEYS
 //			Mono_Set_Cursor(0, 0);Mono_Printf("[%s]", fullname);
 #endif
 
-    if (!CCFileClass(fullname).Is_Available()) {
+    if (!CCFileClass(fullname.c_str()).Is_Available()) {
 #ifdef CHEAT_KEYS
 //		 Mono_Printf("fullname: %s\n", fullname);
 #endif  // CHEAT_KEYS
@@ -2898,16 +2900,16 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
     if ((vqa = VQA_Alloc()) != NULL) {
       VQA_Init(vqa, MixFileHandler);
 
-      if (VQA_Open(vqa, fullname, &AnimControl) == 0) {
+      if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
         Brokeout = false;
 #ifdef WIN32
 // Suspend_Audio_Thread();
 #ifdef MOVIE640
         if (!IsVQ640) {
-          Load_Interpolated_Palettes(palname);
+          Load_Interpolated_Palettes(palname.c_str());
         }
 #else
-        Load_Interpolated_Palettes(palname);
+        Load_Interpolated_Palettes(palname.c_str());
 #endif
 // Set_Palette(BlackPalette);
 #ifdef LORES
@@ -3159,28 +3161,27 @@ void Unselect_All(void) {
 /***********************************************************************************************
  * Fading_Table_Name -- Builds a theater specific fading table name. *
  *                                                                                             *
- *    This routine builds a standard fading table name. This name is dependant
- *on the theater  * being played, since each theater has its own palette. *
+ *    This routine builds a standard fading table name. This name is dependent
+ * on the theater * being played, since each theater has its own palette. *
  *                                                                                             *
- * INPUT:   base  -- The base name of this fading table. The base name can be no
- *longer than   * seven characters. *
+ * INPUT:   base  -- The base name of this fading table. *
  *                                                                                             *
  *          theater  -- The theater that this fading table is specific to. *
  *                                                                                             *
- * OUTPUT:  Returns with a pointer to the constructed fading table filename.
- *This pointer is   * valid until this function is called again. *
+ * OUTPUT:  Returns with a pointer to the constructed fading table filename. *
+ *          This pointer is valid until this function is called again. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
+ *          * 12/30/2025 : Modernized to use C++23 features. *
  *=============================================================================================*/
 char const *Fading_Table_Name(char const *base, TheaterType theater) {
-  static char _buffer[_MAX_FNAME + _MAX_EXT];
-  char root[_MAX_FNAME];
-
-  sprintf(root, "%1.1s%s", Theaters[theater].Root, base);
-  _makepath(_buffer, NULL, NULL, root, ".MRF");
-  return (_buffer);
+  // Build filename: first character of theater root + base name + .MRF
+  // extension
+  const auto root = std::string(1, Theaters[theater].Root[0]) + base;
+  const auto file_path = std::filesystem::path(root).replace_extension(".MRF");
+  return file_path.string().c_str();
 }
 
 /***********************************************************************************************
@@ -4091,11 +4092,14 @@ void Handle_View(int view, int action) {
 #endif
 
 static char const *_CD_Volume_Label[] = {
-    "CD1",   "CD2", "CD3", "CD4",
+    "CD1",
+    "CD2",
+    "CD3",
+    "CD4",
 // Denzil 4/15/98
 #ifdef DVD
     "CD1",  //	ajw - Pushes RADVD to position 5, to match enum in
-            //Force_CD_Available(). 4 will never be returned here.
+            // Force_CD_Available(). 4 will never be returned here.
     "RADVD",
 #endif
 };
@@ -4336,7 +4340,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     cd_desired = CD_DVD;
     //		if( RequiredCD != -1 )
     //			RequiredCD = CD_DVD;		//	Just seems like
-    //a good idea. Not sure if necessary.	ajw
+    // a good idea. Not sure if necessary.	ajw
   }
 
   if (cd_current >= 0) {
@@ -4379,7 +4383,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     */
     if (last_drive &&
         last_drive != CCFileClass::Get_CD_Drive())  //	Else we have already
-                                                    //checked this cd.
+                                                    // checked this cd.
     {
       /*
       ** Find out if there is a C&C cd in the last drive and if so is it the one
@@ -4543,12 +4547,12 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 
   //	ajw - Added condition of cd_desired != 5 to the following if.
   //	Reason: This was triggering before Init_Secondary_Mixfiles(), which was
-  //screwing up the mixfile system somehow.
+  // screwing up the mixfile system somehow.
   //
   //	Since the DVD is the only disk that can possibly be required when
-  //Using_DVD(), I never have to reload the mix 	files here, because no other
-  //disk could ever have been asked for. And if not Using_DVD(), cd_desired will
-  //never 	be equal to 5. So this is safe.
+  // Using_DVD(), I never have to reload the mix 	files here, because no
+  // other disk could ever have been asked for. And if not Using_DVD(),
+  // cd_desired will never 	be equal to 5. So this is safe.
   if (cd_desired > -1 && _last != cd_desired && cd_desired != 5) {
     _last = cd_desired;
 
@@ -5392,7 +5396,7 @@ void Enable_Secret_Units(void) {
 #ifdef FIXIT_VERSION_3
 bool Force_Scenario_Available(const char *szName) {
   //	Calls Force_CD_Available based on type of scenario. szName is assumed to
-  //be an official scenario here.
+  // be an official scenario here.
   if (Is_Mission_Counterstrike((char *)szName)) {
     //		debugprint( "Force_Scenario_Available requiring disk 4...\n" );
     return Force_CD_Available(4);

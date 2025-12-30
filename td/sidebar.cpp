@@ -90,6 +90,9 @@
 
 #include "function.h"
 
+#include <filesystem>
+#include <string>
+
 /*
 **	Define "_RETRIEVE" if the palette morphing tables are part of the loaded
 *data. If this *	is undefined, then the files will be created.
@@ -758,7 +761,8 @@ void SidebarClass::Draw_It(bool complete) {
       //	} else {
       //		if (IsToRedraw || complete) {
       //			LogicPage->Fill_Rect(TacPixelX +
-      //Lepton_To_Pixel(TacLeptonWidth), SIDE_Y, 319, SIDE_Y+TOP_HEIGHT, BLACK);
+      // Lepton_To_Pixel(TacLeptonWidth), SIDE_Y, 319, SIDE_Y+TOP_HEIGHT,
+      // BLACK);
       //		}
 
       LogicPage->Unlock();
@@ -1104,17 +1108,16 @@ void SidebarClass::StripClass::One_Time(int) {
   LogoShapes = Hires_Retrieve("STRIP.SHP");
   ClockShapes = Hires_Retrieve("CLOCK.SHP");
 
-  char fullname[_MAX_FNAME + _MAX_EXT];
-  char buffer[_MAX_FNAME];
-
   for (int lp = 0; lp < 3; lp++) {
+    std::string filename;
     if (Get_Resolution_Factor()) {
-      sprintf(buffer, "%sICNH", _file[lp]);
+      filename = std::string(_file[lp]) + "ICNH";
     } else {
-      sprintf(buffer, "%sICON", _file[lp]);
+      filename = std::string(_file[lp]) + "ICON";
     }
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    SpecialShapes[lp] = MixFileClass::Retrieve(fullname);
+    auto fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
+    SpecialShapes[lp] = MixFileClass::Retrieve(fullname.c_str());
   }
 }
 
@@ -1226,22 +1229,20 @@ void SidebarClass::StripClass::Init_IO(int id) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
-  // if (theater != LastTheater) {
-
   static char *_file[3] = {"ION", "ATOM", "BOMB"};
-  int factor = Get_Resolution_Factor();
-  char fullname[_MAX_FNAME + _MAX_EXT];
-  char buffer[_MAX_FNAME];
   void const *cameo_ptr;
 
   for (int lp = 0; lp < 3; lp++) {
+    std::string filename;
     if (Get_Resolution_Factor()) {
-      sprintf(buffer, "%sICNH", _file[lp]);
+      filename = std::string(_file[lp]) + "ICNH";
     } else {
-      sprintf(buffer, "%sICON", _file[lp]);
+      filename = std::string(_file[lp]) + "ICON";
     }
-    _makepath(fullname, NULL, NULL, buffer, Theaters[theater].Suffix);
-    cameo_ptr = MixFileClass::Retrieve(fullname);
+    auto fullname = std::filesystem::path(filename)
+                        .replace_extension(Theaters[theater].Suffix)
+                        .string();
+    cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
     if (cameo_ptr) {
       SpecialShapes[lp] = cameo_ptr;
     }
@@ -1271,7 +1272,6 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
       .Read(ClockTranslucentTable, sizeof(ClockTranslucentTable));
 #endif
   LastTheater = theater;
-  //}
 }
 
 /***********************************************************************************************
@@ -1908,8 +1908,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                   Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
               WINDOW_SIDEBAR, SHAPE_CENTER);
           //					Fancy_Text_Print(TXT_READY,
-          //x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
-          //TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
+          // x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
+          // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
         } else {
           CC_Draw_Shape(
               ClockShapes, stage + 1,
@@ -1931,8 +1931,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                     8,  // Moved up now that icons have names on them
                 WINDOW_SIDEBAR, SHAPE_CENTER);
             //						Fancy_Text_Print(TXT_HOLDING,
-            //x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
-            //TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
+            // x+TEXT_X_OFFSET, y+TEXT_Y_OFFSET, TEXT_COLOR, TBLACK,
+            // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
           }
         }
       }
@@ -2019,8 +2019,8 @@ bool SidebarClass::StripClass::Recalc(void) {
 
         case SPC_AIR_STRIKE:
           //					ok = (PlayerPtr->BScan &
-          //STRUCTF_SAM) == 0; 					ok =
-          //!PlayerPtr->Does_Enemy_Building_Exist(STRUCT_SAM);
+          // STRUCTF_SAM) == 0; 					ok =
+          //! PlayerPtr->Does_Enemy_Building_Exist(STRUCT_SAM);
           ok = (PlayerPtr->AirPresent /*&& !PlayerPtr->Does_Enemy_Building_Exist(STRUCT_SAM)*/) || PlayerPtr->AirOneTimeFlag;
           if (!ok) {
             PlayerPtr->Remove_Air_Strike();

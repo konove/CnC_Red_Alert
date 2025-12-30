@@ -50,6 +50,8 @@
 #include "terrain.h"
 #include "type.h"
 
+#include <filesystem>
+
 #define TREE_NORMAL 600
 #define TREE_WEAK 400
 #define TREE_STRONG 800
@@ -663,7 +665,6 @@ void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
       TerrainTypeClass const &terrain = As_Reference(index);
-      char fullname[_MAX_FNAME + _MAX_EXT];
 
       /*
       **	Clear any existing shape pointer. All terrain is theater
@@ -676,9 +677,11 @@ void TerrainTypeClass::Init(TheaterType theater) {
         /*
         **	Load in the appropriate object shape data.
         */
-        _makepath(fullname, NULL, NULL, terrain.IniName,
-                  Theaters[theater].Suffix);
-        ((void const *&)terrain.ImageData) = MixFileClass::Retrieve(fullname);
+        auto fullname = std::filesystem::path(terrain.IniName)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+        ((void const *&)terrain.ImageData) =
+            MixFileClass::Retrieve(fullname.c_str());
 
         IsTheaterShape = true;
         if (terrain.RadarIcon) delete[] (char *)terrain.RadarIcon;

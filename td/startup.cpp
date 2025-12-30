@@ -126,8 +126,7 @@ void CD_Test(void) {
 HINSTANCE ProgramInstance;
 #endif
 extern bool CC95AlreadyRunning;
-void Move_Point(short &x, short &y, register DirType dir,
-                unsigned short distance);
+void Move_Point(short &x, short &y, DirType dir, unsigned short distance);
 
 void Check_Use_Compressed_Shapes(void);
 

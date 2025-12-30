@@ -65,6 +65,9 @@
 
 #include "function.h"
 
+#include <filesystem>
+#include <string>
+
 #define MCW MAP_CELL_W
 
 #define XYCELL(x, y) (y * MAP_CELL_W + x)
@@ -3736,29 +3739,31 @@ void BuildingTypeClass::One_Time(void) {
   };
 
   for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    char buffer[_MAX_FNAME];
     BuildingTypeClass const &building = As_Reference(sindex);
 
     /*
     **	Fetch the sidebar cameo image for this building.
     */
     if (building.IsBuildable) {
+      std::string filename;
       if (Get_Resolution_Factor()) {
-        sprintf(buffer, "%sICNH", building.IniName);
+        filename = std::string(building.IniName) + "ICNH";
       } else {
-        sprintf(buffer, "%sICON", building.IniName);
+        filename = std::string(building.IniName) + "ICON";
       }
-      _makepath(fullname, NULL, NULL, buffer, ".SHP");
-      ((void const *&)building.CameoData) = MixFileClass::Retrieve(fullname);
+      auto fullname =
+          std::filesystem::path(filename).replace_extension(".SHP").string();
+      ((void const *&)building.CameoData) =
+          MixFileClass::Retrieve(fullname.c_str());
     }
 
     /*
     **	Fetch the construction animation for this building.
     */
-    sprintf(buffer, "%sMAKE", building.IniName);
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    void const *dataptr = MixFileClass::Retrieve(fullname);
+    std::string filename = std::string(building.IniName) + "MAKE";
+    auto fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
+    void const *dataptr = MixFileClass::Retrieve(fullname.c_str());
     ((void const *&)building.BuildupData) = dataptr;
     if (dataptr) {
       int timedelay = 1;
@@ -3772,14 +3777,15 @@ void BuildingTypeClass::One_Time(void) {
     /*
     **	Fetch the normal game shape for this building.
     */
-    _makepath(fullname, NULL, NULL, building.IniName, ".SHP");
-    ((void const *&)building.ImageData) = MixFileClass::Retrieve(fullname);
+    fullname = std::filesystem::path(building.IniName)
+                   .replace_extension(".SHP")
+                   .string();
+    ((void const *&)building.ImageData) =
+        MixFileClass::Retrieve(fullname.c_str());
   }
 
   // Try to load weap2.shp
-  char fullname[_MAX_FNAME + _MAX_EXT];
-  _makepath(fullname, NULL, NULL, (char const *)"WEAP2", ".SHP");
-  WarFactoryOverlay = MixFileClass::Retrieve(fullname);
+  WarFactoryOverlay = MixFileClass::Retrieve("WEAP2.SHP");
 
   /*
   **	Install all the special animation sequences for the different building
@@ -4090,27 +4096,29 @@ BuildingClass *BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-
     for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
       BuildingTypeClass const *classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
-        _makepath(fullname, NULL, NULL, classptr->IniName,
-                  Theaters[theater].Suffix);
-        ((void const *&)classptr->ImageData) = MixFileClass::Retrieve(fullname);
+        auto fullname = std::filesystem::path(classptr->IniName)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+        ((void const *&)classptr->ImageData) =
+            MixFileClass::Retrieve(fullname.c_str());
       }
 
       if (Get_Resolution_Factor()) {
-        char buffer[_MAX_FNAME];
-        char fullname[_MAX_FNAME + _MAX_EXT];
         void const *cameo_ptr;
 
         ((void const *&)classptr->CameoData) = NULL;
+        const auto filename =
+            std::string(classptr->IniName).substr(0, 4) + "ICNH";
 
-        sprintf(buffer, "%.4sICNH", classptr->IniName);
-        _makepath(fullname, NULL, NULL, buffer, Theaters[theater].Suffix);
-        cameo_ptr = MixFileClass::Retrieve(fullname);
+        auto fullname = std::filesystem::path(filename)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+
+        cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
           ((void const *&)classptr->CameoData) = cameo_ptr;
         }

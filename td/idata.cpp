@@ -55,6 +55,8 @@
 #include "function.h"
 #include "type.h"
 
+#include <filesystem>
+
 /*
  * There were too many parameters for the InfantryTypeClass constructor so I
  * have created a table of Do Controls for each unit type and I am passing a
@@ -1782,7 +1784,6 @@ void InfantryTypeClass::One_Time(void) {
   InfantryType index;
 
   for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
     InfantryTypeClass const *uclass;
     CCFileClass file;
 
@@ -1791,20 +1792,25 @@ void InfantryTypeClass::One_Time(void) {
     /*
     **	Generic shape for all houses load method.
     */
-    _makepath(fullname, NULL, NULL, uclass->IniName, ".SHP");
-    ((void const *&)uclass->ImageData) = MixFileClass::Retrieve(fullname);
+    auto fullname = std::filesystem::path(uclass->IniName)
+                        .replace_extension(".SHP")
+                        .string();
+    ((void const *&)uclass->ImageData) =
+        MixFileClass::Retrieve(fullname.c_str());
 
     /*
     **	The small build image icon sized shapes are always generic.
     */
-    char buffer[_MAX_FNAME];
+    std::string filename;
     if (Get_Resolution_Factor()) {
-      sprintf(buffer, "%.4sICNH", uclass->IniName);
+      filename = std::string(uclass->IniName) + "ICNH";
     } else {
-      sprintf(buffer, "%.4sICON", uclass->IniName);
+      filename = std::string(uclass->IniName) + "ICON";
     }
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    ((void const *&)uclass->CameoData) = MixFileClass::Retrieve(fullname);
+    fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
+    ((void const *&)uclass->CameoData) =
+        MixFileClass::Retrieve(fullname.c_str());
   }
 }
 
@@ -1826,8 +1832,6 @@ void InfantryTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor()) {
     if (theater != LastTheater) {
       InfantryType index;
-      char buffer[_MAX_FNAME];
-      char fullname[_MAX_FNAME + _MAX_EXT];
       void const *cameo_ptr;
 
       for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
@@ -1838,9 +1842,13 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
         ((void const *&)uclass->CameoData) = NULL;
 
-        sprintf(buffer, "%.4sICNH", uclass->IniName);
-        _makepath(fullname, NULL, NULL, buffer, Theaters[theater].Suffix);
-        cameo_ptr = MixFileClass::Retrieve(fullname);
+        const auto filename =
+            std::string(uclass->IniName).substr(0, 4) + "ICNH";
+
+        auto fullname = std::filesystem::path(filename)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+        cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
           ((void const *&)uclass->CameoData) = cameo_ptr;
         }

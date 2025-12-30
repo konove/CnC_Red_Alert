@@ -44,15 +44,13 @@
 
 #include "field.h"
 
+#include <cstdint>
+
 class PacketClass {
  public:
-  PacketClass(short id = 0) {
-    Size = 0;
-    ID = id;
-    Head = 0;
-  }
+  PacketClass(short id = 0) : Size(0), ID(id), Head(nullptr) {}
   PacketClass(char *cur_buf);
-  ~PacketClass(void);
+  ~PacketClass();
 
   //
   // This function allows us to add a field to the start of the list.  As the
@@ -62,7 +60,7 @@ class PacketClass {
   void Add_Field(FieldClass *field);
 
   //
-  // These conveniance functions allow us to add a field directly to the list
+  // These convenience functions allow us to add a field directly to the list
   // without having to worry about newing one first.
   //
   void Add_Field(char const *field, char data) {
@@ -107,8 +105,8 @@ class PacketClass {
   char *Create_Comms_Packet(int &size);
 
  private:
-  unsigned short Size;
-  short ID;
+  uint16_t Size;
+  int16_t ID;
   FieldClass *Head;
   FieldClass *Current;
 };

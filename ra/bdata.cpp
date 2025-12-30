@@ -71,6 +71,10 @@
 
 #include "function.h"
 
+#include <filesystem>
+#include <format>
+#include <string>
+
 #define FATSHIP
 
 #define MCW MAP_CELL_W
@@ -1198,8 +1202,8 @@ static BuildingTypeClass const ClassBarracks(
     TXT_BARRACKS,       // NAME:			Short name of the structure.
     "BARR",             // NAME:			Short name of the structure.
     FACING_NONE,        // Foundation direction from center of building.
-                        //	XYP_COORD(24,47),				// Exit point for
-                        //produced units.
+                        //	XYP_COORD(24,47),				// Exit
+                        // point for produced units.
     XYP_COORD(18, 47),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
@@ -3120,14 +3124,16 @@ void BuildingTypeClass::Init_Heap(void) {
  * HISTORY: * 05/28/1994 JLB : Created. * 06/11/1994 JLB : Updated construction
  *time and frame count logic.                         *
  *=============================================================================================*/
-void BuildingTypeClass::One_Time(void) {
-  static const struct {
+void BuildingTypeClass::One_Time() {
+  struct AnimData {
     StructType Class;  // Building class number.
     BStateType Stage;  // Animation sequence to assign animation range to.
     int Start;         // Starting frame number.
     int Length;        // Number of frames (-1 means use all frames).
     int Rate;          // Rate of animation.
-  } _anims[] = {
+  };
+
+  static constexpr AnimData anims[] = {
       {STRUCT_CHRONOSPHERE, BSTATE_IDLE, 0, 4, 3},  // idling
       {STRUCT_CHRONOSPHERE, BSTATE_ACTIVE, 4, 16,
        3},  // charging up and activating
@@ -3167,33 +3173,34 @@ void BuildingTypeClass::One_Time(void) {
   };
 
   for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    char buffer[_MAX_FNAME];
-    BuildingTypeClass const &building = As_Reference(sindex);
+    const BuildingTypeClass &building = As_Reference(sindex);
+
     /*
     **	Fetch the sidebar cameo image for this building.
     */
     if (building.Level != -1) {
-      //		if (building.IsBuildable) {
-      sprintf(buffer, "%sICON", building.Graphic_Name());
+      std::string buffer = std::string(building.Graphic_Name()) + "{}ICON";
 
       if (building.IsFake) {
         buffer[3] = 'F';
       }
 
-      _makepath(fullname, NULL, NULL, buffer, ".SHP");
-      ((void const *&)building.CameoData) = MFCD::Retrieve(fullname);
+      auto fullname =
+          std::filesystem::path(buffer).replace_extension(".SHP").string();
+      const_cast<void const *&>(building.CameoData) =
+          MFCD::Retrieve(fullname.c_str());
     }
 
     /*
     **	Fetch the construction animation for this building.
     */
-    sprintf(buffer, "%sMAKE", building.Graphic_Name());
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    void const *dataptr;
-    dataptr = MFCD::Retrieve(fullname);
-    ((void const *&)building.BuildupData) = dataptr;
-    if (dataptr != NULL) {
+    auto fullname =
+        std::filesystem::path(std::string(building.Graphic_Name()) + "MAKE")
+            .replace_extension(".SHP")
+            .string();
+    void const *dataptr = MFCD::Retrieve(fullname.c_str());
+    const_cast<void const *&>(building.BuildupData) = dataptr;
+    if (dataptr != nullptr) {
       int timedelay = 1;
       int count = Get_Build_Frame_Count(dataptr);
       if (count > 0) {
@@ -3205,26 +3212,28 @@ void BuildingTypeClass::One_Time(void) {
     /*
     **	Fetch the normal game shape for this building.
     */
-    _makepath(fullname, NULL, NULL, building.Graphic_Name(), ".SHP");
-    ((void const *&)building.ImageData) = MFCD::Retrieve(fullname);
+    fullname = std::filesystem::path(building.Graphic_Name())
+                   .replace_extension(".SHP")
+                   .string();
+    const_cast<void const *&>(building.ImageData) =
+        MFCD::Retrieve(fullname.c_str());
   }
 
   // Try to load weap2.shp and tesla coil's lightning shapes
-  char fullname[_MAX_FNAME + _MAX_EXT];
-  _makepath(fullname, NULL, NULL, (char const *)"WEAP2", ".SHP");
-  WarFactoryOverlay = MFCD::Retrieve(fullname);
-  _makepath(fullname, NULL, NULL, (char const *)"LITNING", ".SHP");
-  LightningShapes = MFCD::Retrieve(fullname);
+  auto fullname =
+      std::filesystem::path("WEAP2").replace_extension(".SHP").string();
+  WarFactoryOverlay = MFCD::Retrieve(fullname.c_str());
+  fullname =
+      std::filesystem::path("LITNING").replace_extension(".SHP").string();
+  LightningShapes = MFCD::Retrieve(fullname.c_str());
 
   /*
   **	Install all the special animation sequences for the different building
   *types.
   */
-  for (unsigned index = 0; index < (sizeof(_anims) / sizeof(_anims[0]));
-       index++) {
-    As_Reference(_anims[index].Class)
-        .Init_Anim(_anims[index].Stage, _anims[index].Start,
-                   _anims[index].Length, _anims[index].Rate);
+  for (const auto &anim : anims) {
+    As_Reference(anim.Class)
+        .Init_Anim(anim.Stage, anim.Start, anim.Length, anim.Rate);
   }
 }
 
@@ -3410,23 +3419,25 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-
     for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
       BuildingTypeClass const *classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
-        _makepath(fullname, NULL, NULL, classptr->Graphic_Name(),
-                  Theaters[theater].Suffix);
-        ((void const *&)classptr->ImageData) = MFCD::Retrieve(fullname);
+        auto fullname = std::filesystem::path(classptr->Graphic_Name())
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+        ((void const *&)classptr->ImageData) = MFCD::Retrieve(fullname.c_str());
 
         /*
         **	Buildup data is probably theater specific as well. Fetch a
         *pointer to the *	data at this time as well.
         */
-        sprintf(fullname, "%sMAKE.%s", classptr->Graphic_Name(),
-                Theaters[theater].Suffix);
-        ((void const *&)classptr->BuildupData) = MFCD::Retrieve(fullname);
+        fullname = std::filesystem::path(std::string(classptr->Graphic_Name()) +
+                                         "MAKE")
+                       .replace_extension(Theaters[theater].Suffix)
+                       .string();
+        ((void const *&)classptr->BuildupData) =
+            MFCD::Retrieve(fullname.c_str());
         if (classptr->BuildupData) {
           int timedelay = 1;
           int count = Get_Build_Frame_Count(classptr->BuildupData);

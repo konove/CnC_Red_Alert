@@ -50,6 +50,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 static char const _slope00000001[] = {7, -1};
 static char const _slope000000101[] = {6, 8, -1};
 static char const _slope00000011[] = {6, 7, -1};
@@ -1319,23 +1321,23 @@ short const *TemplateTypeClass::Occupy_List(bool) const {
  *loading now (as it should).                         *
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
-  // if (theater != LastTheater){
-  char fullname[_MAX_FNAME + _MAX_EXT];  // Fully constructed iconset name.
-  void const *ptr;                       // Working loaded iconset pointer.
+  void const *ptr;  // Working loaded iconset pointer.
 
   for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
     TemplateTypeClass const &tplate = As_Reference(index);
 
     ((void const *&)tplate.ImageData) = NULL;
     if (tplate.Theater & (1 << theater)) {
-      _makepath(fullname, NULL, NULL, tplate.IniName, Theaters[theater].Suffix);
-      ptr = MixFileClass::Retrieve(fullname);
+      // Fully constructed iconset name.
+      auto fullname = std::filesystem::path(tplate.IniName)
+                          .replace_extension(Theaters[theater].Suffix)
+                          .string();
+      ptr = MixFileClass::Retrieve(fullname.c_str());
       ((void const *&)tplate.ImageData) = ptr;
       Register_Icon_Set((void *)ptr,
                         TRUE);  // Register icon set for video memory caching
     }
   }
-  //}
 }
 
 #ifdef SCENARIO_EDITOR

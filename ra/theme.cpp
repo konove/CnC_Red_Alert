@@ -55,6 +55,8 @@
 #include "function.h"
 #include "theme.h"
 
+#include <filesystem>
+
 #ifndef WIN32
 extern short StreamLowImpact;
 #endif  // WIN32
@@ -364,11 +366,11 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *support.                                                 *
  *=============================================================================================*/
 char const *ThemeClass::Theme_File_Name(ThemeType theme) {
-  static char name[_MAX_FNAME + _MAX_EXT];
-
   if (theme >= THEME_FIRST && theme < THEME_COUNT) {
-    _makepath(name, NULL, NULL, _themes[theme].Name, ".AUD");
-    return ((char const *)(&name[0]));
+    static const auto name = std::filesystem::path(_themes[theme].Name)
+                                 .replace_extension(".AUD")
+                                 .string();
+    return name.data();
   }
 
   return ("");

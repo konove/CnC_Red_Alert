@@ -57,6 +57,8 @@
 #include "terrain.h"
 #include "type.h"
 
+#include <filesystem>
+
 static short const _List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};
 static short const _List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL};
@@ -492,8 +494,6 @@ void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
       TerrainTypeClass const &terrain = As_Reference(index);
-      char fullname[_MAX_FNAME + _MAX_EXT];
-
       /*
       **	Clear any existing shape pointer. All terrain is theater
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
@@ -505,9 +505,10 @@ void TerrainTypeClass::Init(TheaterType theater) {
         /*
         **	Load in the appropriate object shape data.
         */
-        _makepath(fullname, NULL, NULL, terrain.IniName,
-                  Theaters[theater].Suffix);
-        ((void const *&)terrain.ImageData) = MFCD::Retrieve(fullname);
+        auto fullname = std::filesystem::path(terrain.IniName)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+        ((void const *&)terrain.ImageData) = MFCD::Retrieve(fullname.c_str());
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape

@@ -53,6 +53,9 @@
 
 #include "function.h"
 
+#include <filesystem>
+#include <string>
+
 void const *UnitTypeClass::WakeShapes = 0;
 
 // Visceroid
@@ -1413,8 +1416,6 @@ void UnitTypeClass::Prep_For_Add(void) {
  *=============================================================================================*/
 void UnitTypeClass::One_Time(void) {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    char buffer[_MAX_FNAME];
     UnitTypeClass const &uclass = As_Reference(index);
     CCFileClass file;
     int largest;  // Largest dimension of shape (so far).
@@ -1426,21 +1427,26 @@ void UnitTypeClass::One_Time(void) {
       /*
       **	Fetch the supporting data files for the unit.
       */
+      std::string filename;
       if (Get_Resolution_Factor()) {
-        sprintf(buffer, "%sICNH", uclass.IniName);
+        filename = std::string(uclass.IniName) + "ICNH";
       } else {
-        sprintf(buffer, "%sICON", uclass.IniName);
+        filename = std::string(uclass.IniName) + "ICON";
       }
-      _makepath(fullname, NULL, NULL, buffer, ".SHP");
-      ((void const *&)uclass.CameoData) = MixFileClass::Retrieve(fullname);
+      auto fullname =
+          std::filesystem::path(filename).replace_extension(".SHP").string();
+      ((void const *&)uclass.CameoData) =
+          MixFileClass::Retrieve(fullname.c_str());
     }
 
     /*
     **	Fetch a pointer to the unit's shape data.
     */
     if (!uclass.IsPieceOfEight || (Special.IsJurassic && AreThingiesEnabled)) {
-      _makepath(fullname, NULL, NULL, uclass.IniName, ".SHP");
-      ptr = MixFileClass::Retrieve(fullname);
+      auto fullname = std::filesystem::path(uclass.IniName)
+                          .replace_extension(".SHP")
+                          .string();
+      ptr = MixFileClass::Retrieve(fullname.c_str());
     } else {
       ptr = NULL;
     }
@@ -1484,8 +1490,6 @@ void UnitTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor()) {
     if (theater != LastTheater) {
       void const *cameo_ptr;
-      char fullname[_MAX_FNAME + _MAX_EXT];
-      char buffer[_MAX_FNAME];
 
       for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
         UnitTypeClass const &uclass = As_Reference(index);
@@ -1493,9 +1497,11 @@ void UnitTypeClass::Init(TheaterType theater) {
         ((void const *&)uclass.CameoData) = NULL;
 
         if (uclass.IsBuildable) {
-          sprintf(buffer, "%sICNH", uclass.IniName);
-          _makepath(fullname, NULL, NULL, buffer, Theaters[theater].Suffix);
-          cameo_ptr = MixFileClass::Retrieve(fullname);
+          auto fullname =
+              std::filesystem::path(std::string(uclass.IniName) + "ICNH")
+                  .replace_extension(".VQA")
+                  .string();
+          cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
           if (cameo_ptr) {
             ((void const *&)uclass.CameoData) = cameo_ptr;
           }

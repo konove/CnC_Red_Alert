@@ -55,6 +55,9 @@
 
 #include "function.h"
 
+#include <filesystem>
+#include <string>
+
 void const *AircraftTypeClass::LRotorData = NULL;
 void const *AircraftTypeClass::RRotorData = NULL;
 
@@ -350,26 +353,31 @@ void AircraftTypeClass::One_Time(void) {
   AircraftType index;
 
   for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
     AircraftTypeClass const &uclass = As_Reference(index);
 
     /*
     **	Fetch the supporting data files for the unit.
     */
-    char buffer[_MAX_FNAME];
+    std::string filename;
     if (Get_Resolution_Factor()) {
-      sprintf(buffer, "%sICNH", uclass.IniName);
+      filename = std::string(uclass.IniName) + "ICNH";
     } else {
-      sprintf(buffer, "%sICON", uclass.IniName);
+      filename = std::string(uclass.IniName) + "ICON";
     }
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    ((void const *&)uclass.CameoData) = MixFileClass::Retrieve(fullname);
+    auto fullname =
+        std::filesystem::path(filename).replace_extension(".SHP").string();
+    ((void const *&)uclass.CameoData) =
+        MixFileClass::Retrieve(fullname.c_str());
 
     /*
     **	Generic shape for all houses load method.
     */
-    _makepath(fullname, NULL, NULL, uclass.IniName, ".SHP");
-    ((void const *&)uclass.ImageData) = MixFileClass::Retrieve(fullname);
+    fullname = std::filesystem::path(uclass.IniName)
+                   .replace_extension(".SHP")
+                   .string();
+
+    ((void const *&)uclass.ImageData) =
+        MixFileClass::Retrieve(fullname.c_str());
   }
 
   LRotorData = MixFileClass::Retrieve("LROTOR.SHP");
@@ -641,8 +649,6 @@ void AircraftTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     if (Get_Resolution_Factor()) {
       AircraftType index;
-      char buffer[_MAX_FNAME];
-      char fullname[_MAX_FNAME + _MAX_EXT];
       void const *cameo_ptr;
 
       for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
@@ -650,9 +656,13 @@ void AircraftTypeClass::Init(TheaterType theater) {
 
         ((void const *&)uclass.CameoData) = NULL;
 
-        sprintf(buffer, "%.4sICNH", uclass.IniName);
-        _makepath(fullname, NULL, NULL, buffer, Theaters[theater].Suffix);
-        cameo_ptr = MixFileClass::Retrieve(fullname);
+        const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
+
+        auto fullname = std::filesystem::path(filename)
+                            .replace_extension(Theaters[theater].Suffix)
+                            .string();
+
+        cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
           ((void const *&)uclass.CameoData) = cameo_ptr;
         }

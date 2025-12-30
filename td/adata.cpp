@@ -42,6 +42,8 @@
 
 #include "function.h"
 
+#include <filesystem>
+
 // Dinosaur death animations
 static AnimTypeClass const TricDie(
     ANIM_TRIC_DIE,  // Animation number.
@@ -2252,20 +2254,18 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const *name, int size,
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimTypeClass::One_Time(void) {
-  AnimType index;
+void AnimTypeClass::One_Time() {
+  for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; ++index) {
+    auto fullname = std::filesystem::path(As_Reference(index).IniName)
+                        .replace_extension(".SHP")
+                        .string();
 
-  for (index = ANIM_FIRST; index < ANIM_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-
-    _makepath(fullname, NULL, NULL, As_Reference(index).IniName, ".SHP");
-
-    RawFileClass file(fullname);
+    RawFileClass file(fullname.c_str());
     if (file.Is_Available()) {
       ((void const *&)As_Reference(index).ImageData) = Load_Alloc_Data(file);
     } else {
       ((void const *&)As_Reference(index).ImageData) =
-          MixFileClass::Retrieve(fullname);
+          MixFileClass::Retrieve(fullname.c_str());
     }
   }
 }

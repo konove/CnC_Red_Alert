@@ -53,6 +53,8 @@
 #include "function.h"
 #include "type.h"
 
+#include <filesystem>
+
 static SmudgeTypeClass const Crater1(
 
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,
@@ -274,11 +276,13 @@ void SmudgeTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
       SmudgeTypeClass const &smudge = As_Reference(index);
-      char fullname[_MAX_FNAME +
-                    _MAX_EXT];  // Fully constructed smudge data set name.
 
-      _makepath(fullname, NULL, NULL, smudge.IniName, Theaters[theater].Suffix);
-      ((void const *&)smudge.ImageData) = MixFileClass::Retrieve(fullname);
+      // Fully constructed smudge data set name.
+      auto fullname = std::filesystem::path(smudge.IniName)
+                          .replace_extension(Theaters[theater].Suffix)
+                          .string();
+      ((void const *&)smudge.ImageData) =
+          MixFileClass::Retrieve(fullname.c_str());
     }
   }
 }

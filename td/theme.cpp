@@ -56,6 +56,8 @@
 
 #include "theme.h"
 
+#include <filesystem>
+
 /*
 **	These are the actual filename list for the theme sample files.
 */
@@ -72,7 +74,7 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
     {"HEAVYG", TXT_THEME_HEAVYG, 0, 180, true, false, false, true},
     {"J1", TXT_THEME_J1, 4, 187, true, false, false, true},
     //	{"J1",			TXT_THEME_J1,			4,
-    //187,	false,	false,false,true},
+    // 187,	false,	false,false,true},
     {"JDI_V2", TXT_THEME_JDI_V2, 5, 183, true, false, false, true},
     {"RADIO", TXT_THEME_RADIO, 6, 183, true, false, false, true},
     {"RAIN", TXT_THEME_RAIN, 7, 156, true, false, false, true},
@@ -338,17 +340,20 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *support.                                                 *
  *=============================================================================================*/
 char const *ThemeClass::Theme_File_Name(ThemeType theme) {
-  static char name[_MAX_FNAME + _MAX_EXT];
-
   if (_themes[theme].Variation && Special.IsVariation) {
-    _makepath(name, NULL, NULL, _themes[theme].Name, ".VAR");
-    CCFileClass file(name);
+    static auto name = std::filesystem::path(_themes[theme].Name)
+                           .replace_extension(".VAR")
+                           .string();
+    CCFileClass file(name.c_str());
     if (file.Is_Available()) {
-      return ((char const *)(&name[0]));
+      return name.data();
     }
   }
-  _makepath(name, NULL, NULL, _themes[theme].Name, ".AUD");
-  return ((char const *)(&name[0]));
+  static auto name = std::filesystem::path(_themes[theme].Name)
+                         .replace_extension(".AUD")
+                         .string();
+
+  return name.data();
 }
 
 /***********************************************************************************************

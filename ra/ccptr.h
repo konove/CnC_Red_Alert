@@ -106,12 +106,12 @@ class CCPtr {
 *desirable.
 */
 template <class T>
-int operator==(CCPtr<T>& lvalue, T* rvalue) {
+bool operator==(CCPtr<T>& lvalue, T* rvalue) {
   return ((T*)lvalue == rvalue);
 }
 
 template <class T>
-int operator==(T* lvalue, CCPtr<T>& rvalue) {
+bool operator==(T* lvalue, CCPtr<T>& rvalue) {
   return (lvalue == (T*)rvalue);
 }
 

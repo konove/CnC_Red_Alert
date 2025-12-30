@@ -74,7 +74,10 @@
  *- - - - - - - */
 
 #include "function.h"
+
+#include <filesystem>
 #include <stdlib.h>
+#include <string>
 
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
@@ -329,15 +332,17 @@ void RadarClass::Draw_It(bool forced) {
 
   static HousesType _house = HOUSE_NONE;
   if (PlayerPtr->ActLike != _house) {
-    char name[_MAX_NAME + _MAX_EXT];
+    std::string name;
 
     if (Special.IsJurassic && AreThingiesEnabled) {
-      strcpy(name, "RADAR.JP");
+      name = "RADAR.JP";
     } else {
-      _makepath(name, NULL, NULL, "RADAR",
-                HouseTypeClass::As_Reference(PlayerPtr->ActLike).Suffix);
+      name = std::filesystem::path("RADAR")
+                 .replace_extension(
+                     HouseTypeClass::As_Reference(PlayerPtr->ActLike).Suffix)
+                 .string();
     }
-    RadarAnim = Hires_Retrieve(name);
+    RadarAnim = Hires_Retrieve(name.c_str());
     _house = PlayerPtr->ActLike;
   }
 
@@ -1752,7 +1757,7 @@ bool RadarClass::Cell_On_Radar(CELL cell) {
   //		return(true);
   //	}
   //	return(!(((Cell_X(cell) - RadarX) > RadarCellWidth) || ((Cell_Y(cell) -
-  //RadarY) > RadarCellHeight)));
+  // RadarY) > RadarCellHeight)));
 }
 
 /***********************************************************************************************
