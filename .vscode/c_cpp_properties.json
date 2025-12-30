@@ -7,8 +7,8 @@
         "${workspaceFolder}/sdllib/include",
         "${workspaceFolder}/port",
         "${workspaceFolder}/ra",
-        "${workspaceFolder}/vq/include",
-        "${workspaceFolder}/winvq"
+        "${workspaceFolder}/winvq",
+        "${workspaceFolder}/winvq/include"
       ],
       "defines": [
         "WIN32",

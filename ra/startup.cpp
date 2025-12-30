@@ -38,6 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <filesystem>
+
 #include "function.h"
 #ifdef WIN32
 #ifndef PORTABLE
@@ -258,36 +260,16 @@ int main(int argc, char *argv[])
 
 #endif  // WIN32
 
-  /*
-  **	Change directory to the where the executable is located. Handle the
-  **	case where there is no path attached to argv[0].
-  */
-  char drive[_MAX_DRIVE];
-  char path[_MAX_PATH];
-  unsigned drivecount;
-  _splitpath(argv[0], drive, path, NULL, NULL);
+  // Change to executable's directory (if path is present)
+  auto dir_path = std::filesystem::path(argv[0]).parent_path();
 
-#ifndef PORTABLE
-  if (!drive[0]) {
-    unsigned olddrive;
-    _dos_getdrive(&olddrive);
-    drive[0] = ('A' + olddrive) - 1;
+  if (!dir_path.empty()) {
+    std::filesystem::current_path(dir_path);
   }
-  _dos_setdrive(toupper((drive[0]) - 'A') + 1, &drivecount);
-#endif
-
-  if (!path[0]) {
-    strcpy(path, ".");
-  }
-
-  if (path[strlen(path) - 1] == '\\') {
-    path[strlen(path) - 1] = '\0';
-  }
-  chdir(path);
 
 #ifdef WOLAPI_INTEGRATION
   //	Look for special wolapi install program, used after the patch to version
-  //3, to install "Shared Internet Components".
+  // 3, to install "Shared Internet Components".
   WIN32_FIND_DATA wfd;
   HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
   bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
@@ -295,7 +277,7 @@ int main(int argc, char *argv[])
   //		debugprint( "Found wolsetup.exe\n" );
   FindClose(hWOLSetupFile);
   //	Look for special registry entry that tells us when the setup exe has
-  //done its thing.
+  // done its thing.
   HKEY hKey;
   RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey);
   DWORD dwValue;
@@ -313,10 +295,10 @@ int main(int argc, char *argv[])
   RegCloseKey(hKey);
 
   //	I've been having problems getting the patch to delete "conquer.eng",
-  //which is present in the game 	directory for 1.08, but which must NOT be
-  //present for this version (Aftermath mix files provide the 	string overrides
-  //that the 1.08 separate conquer.eng did before Aftermath). 	Delete conquer.eng
-  //if it's found.
+  // which is present in the game 	directory for 1.08, but which must NOT
+  // be present for this version (Aftermath mix files provide the 	string
+  // overrides that the 1.08 separate conquer.eng did before Aftermath).
+  // Delete conquer.eng if it's found.
   if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE)
     DeleteFile("conquer.eng");
 
@@ -459,16 +441,17 @@ int main(int argc, char *argv[])
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 #else   // WIN32
     if (!Debug_Quiet) {
-      Audio_Init(NewConfig.DigitCard, NewConfig.Port, NewConfig.IRQ,
-                 NewConfig.DMA, PLAYBACK_RATE_NORMAL,
-                 //						(NewConfig.Speed)
-                 //? PLAYBACK_RATE_SLOW : PLAYBACK_RATE_NORMAL,
-                 NewConfig.BitsPerSample,
-                 //						4,
-                 (Get_CPU() < 5) ? 3 : 5,
-                 //						(NewConfig.Speed)
-                 //? 3 : 5,
-                 NewConfig.Reverse);
+      Audio_Init(
+          NewConfig.DigitCard, NewConfig.Port, NewConfig.IRQ, NewConfig.DMA,
+          PLAYBACK_RATE_NORMAL,
+          //						(NewConfig.Speed)
+          //? PLAYBACK_RATE_SLOW : PLAYBACK_RATE_NORMAL,
+          NewConfig.BitsPerSample,
+          //						4,
+          (Get_CPU() < 5) ? 3 : 5,
+          //						(NewConfig.Speed)
+          //? 3 : 5,
+          NewConfig.Reverse);
       SoundOn = true;
     } else {
       Audio_Init(0, -1, -1, -1, PLAYBACK_RATE_NORMAL, 8, 5, false);

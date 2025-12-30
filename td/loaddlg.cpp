@@ -43,6 +43,8 @@
  *   LoadOptionsClass::~LoadOptionsClass -- class destructor *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include <filesystem>
+#include <charconv>
 
 #include "function.h"
 #ifdef _WIN32
@@ -439,8 +441,8 @@ int LoadOptionsClass::Process(void) {
         game_idx = listbtn.Current_Index();
         if (Disk_Space_Available() < SAVE_GAME_DISK_SPACE && game_idx == 0) {
           //					CCMessageBox().Process("Insuficent
-          //disk space to save a game.  Please delete a previous save to free up
-          //some disk space and try again.");
+          // disk space to save a game.  Please delete a previous save to free
+          // up some disk space and try again.");
           CCMessageBox().Process(TXT_SPACE_CANT_SAVE);
           firsttime = true;
           display = true;
@@ -675,11 +677,13 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int LoadOptionsClass::Num_From_Ext(const char *fname) {
-  char ext[_MAX_EXT];
+  auto ext = std::filesystem::path(fname).extension().string();
 
-  _splitpath(fname, NULL, NULL, NULL, ext);
-  int num = atoi(ext + 1);  // skip the '.'
-  return (num);
+  int num = 0;
+  if (ext.size() > 1) {  // Has more than just '.'
+    std::from_chars(ext.data() + 1, ext.data() + ext.size(), num);
+  }
+  return num;
 }
 
 /***********************************************************************************************

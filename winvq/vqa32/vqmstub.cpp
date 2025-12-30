@@ -1,6 +1,5 @@
-// don't need much from VQM32, and it's all asm
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdio>
+#include <cstdint>
 
 #include "vqm32/compress.h"
 #include "vqm32/soscomp.h"
@@ -19,7 +18,7 @@ static const int16_t ima_adpcm_step_table[89] = {
     5894,  6484,  7132,  7845,  8630,  9493,  10442, 11487, 12635, 13899,
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
-long AudioUnzap(void *source, void *dest, long) {
+long AudioUnzap(void * /*source*/, void * /*dest*/, long /*uncomp_size*/) {
   printf("%s\n", __func__);
   return 0;
 }
@@ -30,40 +29,44 @@ void VQA_sosCODECInitStream(_SOS_COMPRESS_INFO *info) {
   info->wStep = info->wStep2 = 0;
 }
 
-unsigned long VQA_sosCODECDecompressData(_SOS_COMPRESS_INFO *info,
-                                         unsigned long uncomp_size) {
+uint64_t VQA_sosCODECDecompressData(_SOS_COMPRESS_INFO *info,
+                                    uint64_t uncomp_size) {
   if (info->wChannels != 1 || info->wBitSize != 16) {
     printf("%s (%i/%i)\n", __func__, info->wChannels, info->wBitSize);
     return 0;
   }
 
-  auto clamp = [](int v, int min, int max) {
+  auto clamp = [](int32_t v, int32_t min, int32_t max) {
     return v < min ? min : (v > max ? max : v);
   };
 
-  auto in_ptr = (uint8_t *)info->lpSource;
-  auto out_ptr = (int16_t *)info->lpDest;
+  auto *in_ptr = reinterpret_cast<uint8_t *>(info->lpSource);
+  auto *out_ptr = reinterpret_cast<int64_t *>(info->lpDest);
 
-  for (; uncomp_size; uncomp_size -= 4) {
-    auto b = *in_ptr++;
+  uint64_t in_index = 0;
+  uint64_t out_index = 0;
 
-    int nibble = b & 0xF;
-    int step = ima_adpcm_step_table[info->wStep];
+  for (; uncomp_size != 0; uncomp_size -= 4) {
+    auto adpcm_byte = in_ptr[in_index++];
+
+    uint32_t nibble = adpcm_byte & 0xF;
+    int32_t step = ima_adpcm_step_table[info->wStep];
     info->wStep = clamp(info->wStep + ima_adpcm_index_table[nibble], 0, 88);
 
-    int diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
+    int32_t diff =
+        ((((nibble & 7u) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
     info->dwPredicted = clamp(info->dwPredicted + diff, -32768, 32767);
 
-    *out_ptr++ = info->dwPredicted;
+    out_ptr[out_index++] = info->dwPredicted;
 
-    nibble = b >> 4;
+    nibble = adpcm_byte >> 4;
     step = ima_adpcm_step_table[info->wStep];
     info->wStep = clamp(info->wStep + ima_adpcm_index_table[nibble], 0, 88);
 
     diff = ((((nibble & 7) * 2 + 1) * step) >> 3) * (nibble & 8 ? -1 : 1);
     info->dwPredicted = clamp(info->dwPredicted + diff, -32768, 32767);
 
-    *out_ptr++ = info->dwPredicted;
+    out_ptr[out_index++] = info->dwPredicted;
   }
 
   return 0;

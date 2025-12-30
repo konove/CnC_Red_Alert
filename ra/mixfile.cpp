@@ -292,27 +292,15 @@ template <class T>
 MixFileClass<T> *MixFileClass<T>::Finder(char const *filename) {
   MixFileClass<T> *ptr = MixList.First();
   while (ptr->Is_Valid()) {
-    char path[_MAX_PATH];
-    char name[_MAX_FNAME];
-    char ext[_MAX_EXT];
+    // Extract just the filename+extension (no path or drive)
+    auto file_only = std::filesystem::path(ptr->Filename).filename().string();
 
-    /*
-    **	Strip the drive and path (if present) off of the filename
-    **	in the mixfile list. This enables a simple comparison to the
-    **	filename specified. The filename specified won't have a path attached
-    *and *	the full pathname in the mixfile list WILL have a path attached.
-    *Hence, this
-    ** stripping of the path is necessary.
-    */
-    _splitpath(ptr->Filename, NULL, NULL, name, ext);
-    _makepath(path, NULL, NULL, name, ext);
-
-    if (stricmp(path, filename) == 0) {
-      return (ptr);
+    if (stricmp(file_only.c_str(), filename) == 0) {
+      return ptr;
     }
     ptr = ptr->Next();
   }
-  return (0);
+  return nullptr;
 }
 
 /***********************************************************************************************

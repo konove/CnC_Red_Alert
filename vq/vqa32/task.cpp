@@ -315,27 +315,6 @@ long VQA_Play(VQAHandle *vqa, long mode) {
         if (mode == VQAMODE_WALK) {
           break;
         }
-#if (VQASTANDALONE)
-        else {
-
-          /* Do single-stepping check. */
-          if (config->OptionFlags & VQAOPTF_STEP) {
-            while ((key = Check_Key()) == 0);
-            Get_Key();
-
-            /* Escape key still quits. */
-            if (key == 27) {
-              break;
-            }
-          }
-
-          /* Check for ESC */
-          if ((key = Check_Key()) != 0) {
-            mode = VQAMODE_STOP;
-            break;
-          }
-        }
-#endif
       }
       break;
   }

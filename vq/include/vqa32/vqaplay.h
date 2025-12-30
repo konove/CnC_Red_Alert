@@ -46,21 +46,6 @@
  * CONDITIONAL COMPILATION FLAGS
  *-------------------------------------------------------------------------*/
 
-#ifdef __WATCOMC__
-#define VQASTANDALONE 0 /* Stand alone player */
-#define VQAVOC_ON 0     /* Enable VOC file override */
-#define VQAMONO_ON 0    /* Mono display output enable/disable */
-#define VQAAUDIO_ON 1   /* Audio playback enable/disable */
-#define VQAVIDEO_ON 0   /* Video manager enable/disable */
-#define VQAMCGA_ON 1    /* MCGA enable/disable */
-#define VQAXMODE_ON 0   /* Xmode enable/disable */
-#define VQAVESA_ON 0    /* VESA enable/disable */
-#define VQABLOCK_2X2 0  /* 2x2 block decode enable/disable */
-#define VQABLOCK_2X3 0  /* 2x2 block decode enable/disable */
-#define VQABLOCK_4X2 1  /* 4x2 block decode enable/disable */
-#define VQABLOCK_4X4 0  /* 4x4 block decode enable/disable */
-#define VQAWOOFER_ON 0
-#else
 #define VQASTANDALONE 0 /* Stand alone player */
 #define VQAVOC_ON 0     /* Enable VOC file override */
 #define VQAMONO_ON 1    /* Mono display output enable/disable */
@@ -74,7 +59,6 @@
 #define VQABLOCK_4X2 1  /* 4x2 block decode enable/disable */
 #define VQABLOCK_4X4 0  /* 4x4 block decode enable/disable */
 #define VQAWOOFER_ON 0
-#endif
 
 /*---------------------------------------------------------------------------
  * GENERAL CONSTANT DEFINITIONS

@@ -56,6 +56,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <format>
 #include "function.h"
 
 void const *AircraftTypeClass::LRotorData = NULL;
@@ -363,39 +364,22 @@ AircraftType AircraftTypeClass::From_Name(char const *name) {
   return (AIRCRAFT_NONE);
 }
 
-/***********************************************************************************************
- * AircraftTypeClass::One_Time -- Performs one time initialization of the
- *aircraft type class. *
- *                                                                                             *
- *    This routine is used to perform the onetime initialization of the aircraft
- *type. This    * includes primarily the shape and other graphic data loading. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This goes to disk and also must only be called ONCE. *
- *                                                                                             *
- * HISTORY: * 07/26/1994 JLB : Created. *
- *=============================================================================================*/
-void AircraftTypeClass::One_Time(void) {
+/// Performs one-time initialization of aircraft type class data
+/// Loads graphics and other data files for all aircraft types
+/// WARNING: Reads from disk - must only be called ONCE
+void AircraftTypeClass::One_Time() {
   for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
-    char fullname[_MAX_FNAME + _MAX_EXT];
-    AircraftTypeClass const &uclass = As_Reference(index);
+    const auto &uclass = As_Reference(index);
 
-    /*
-    **	Fetch the supporting data files for the unit.
-    */
-    char buffer[_MAX_FNAME];
-    sprintf(buffer, "%sICON", uclass.Graphic_Name());
-    _makepath(fullname, NULL, NULL, buffer, ".SHP");
-    ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+    // Load cameo icon: "<GraphicName>ICON.SHP"
+    auto cameo_file = std::format("{}ICON.SHP", uclass.Graphic_Name());
+    const_cast<void const *&>(uclass.CameoData) =
+        MFCD::Retrieve(cameo_file.c_str());
 
-    /*
-    **	Generic shape for all houses load method.
-    */
-    _makepath(fullname, NULL, NULL, uclass.Graphic_Name(), ".SHP");
-    ((void const *&)uclass.ImageData) = MFCD::Retrieve(fullname);
+    // Load aircraft shape: "<GraphicName>.SHP"
+    auto shape_file = std::format("{}.SHP", uclass.Graphic_Name());
+    const_cast<void const *&>(uclass.ImageData) =
+        MFCD::Retrieve(shape_file.c_str());
   }
 
   LRotorData = MFCD::Retrieve("LROTOR.SHP");

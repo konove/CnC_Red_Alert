@@ -44,6 +44,9 @@
  *- - - - - - - */
 
 #include "function.h"
+#include <filesystem>
+#include <charconv>
+
 #ifdef _WIN32
 #include <io.h>  // for unlink
 #else
@@ -723,11 +726,13 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int LoadOptionsClass::Num_From_Ext(const char *fname) {
-  char ext[_MAX_EXT];
+  auto ext = std::filesystem::path(fname).extension().string();
 
-  _splitpath(fname, NULL, NULL, NULL, ext);
-  int num = atoi(ext + 1);  // skip the '.'
-  return (num);
+  int num = 0;
+  if (ext.size() > 1) {  // Has more than just '.'
+    std::from_chars(ext.data() + 1, ext.data() + ext.size(), num);
+  }
+  return num;
 }
 
 /***********************************************************************************************

@@ -41,60 +41,41 @@
  *
  ****************************************************************************/
 
-#include <vqm32/iff.h>
+#include <array>
+#include <cstdint>
 
-#ifdef __WATCOMC__
-#pragma pack(1);
-#endif
+#include "vqm32/iff.h"
 
 /*---------------------------------------------------------------------------
  * STRUCTURE DEFINITIONS AND RELATED DEFINES.
  *-------------------------------------------------------------------------*/
 
-/* VQAHeader: VQA movie description header. (VQHD)
- *
- * Version       - VQA version.
- * Flags         - Various flags. (See below)
- * ImageWidth    - Image width in pixels.
- * ImageHeight   - Image height in pixels.
- * BlockWidth    - Block width in pixels.
- * BlockHeight   - Block height in pixels.
- * Frames        - Total number of frames in the movie.
- * FPS           - Playback rate (Frame Per Second).
- * Groupsize     - Frame grouping size (frames per codebook).
- * Num1Colors    - Number of 1 color colors.
- * CBentries     - Number of codebook entries.
- * Xpos          - X position to draw frames. (-1 = Center)
- * Ypos          - Y position to draw frames. (-1 = Center)
- * MaxFramesize  - Size of largest frame.
- * SampleRate    - Sample rate of primary audio stream.
- * Channels      - Number of channels in primary audio stream.
- * BitsPerSample - Sample bit size in primary audio stream.
- * FutureUse     - Reserved for future expansion.
- */
-typedef struct _VQAHeader {
-  unsigned short Version;
-  unsigned short Flags;
-  unsigned short Frames;
-  unsigned short ImageWidth;
-  unsigned short ImageHeight;
-  unsigned char BlockWidth;
-  unsigned char BlockHeight;
-  unsigned char FPS;
-  unsigned char Groupsize;
-  unsigned short Num1Colors;
-  unsigned short CBentries;
-  unsigned short Xpos;
-  unsigned short Ypos;
-  unsigned short MaxFramesize;
-  unsigned short SampleRate;
-  unsigned char Channels;
-  unsigned char BitsPerSample;
-  unsigned short AltSampleRate;
-  unsigned char AltChannels;
-  unsigned char AltBitsPerSample;
-  unsigned short FutureUse[5];
-} VQAHeader;
+// VQAHeader: VQA movie description header (VQHD chunk)
+#pragma pack(push, 1)
+struct VQAHeader {
+  uint16_t Version;          // VQA format version number
+  uint16_t Flags;            // Bitfield flags for various options
+  uint16_t Frames;           // Total number of frames in the movie
+  uint16_t ImageWidth;       // Frame width in pixels
+  uint16_t ImageHeight;      // Frame height in pixels
+  uint8_t BlockWidth;        // Compression block width in pixels
+  uint8_t BlockHeight;       // Compression block height in pixels
+  uint8_t FPS;               // Playback frame rate (frames per second)
+  uint8_t Groupsize;         // Frame grouping size (frames per codebook)
+  uint16_t Num1Colors;       // Number of single-color blocks
+  uint16_t CBentries;        // Number of codebook entries
+  uint16_t Xpos;             // X position for drawing frames (-1 = center)
+  uint16_t Ypos;             // Y position for drawing frames (-1 = center)
+  uint16_t MaxFramesize;     // Size of largest frame in bytes
+  uint16_t SampleRate;       // Audio sample rate (Hz) for primary stream
+  uint8_t Channels;          // Number of audio channels in primary stream
+  uint8_t BitsPerSample;     // Audio sample bit depth in primary stream
+  uint16_t AltSampleRate;    // Audio sample rate (Hz) for alternate stream
+  uint8_t AltChannels;       // Number of audio channels in alternate stream
+  uint8_t AltBitsPerSample;  // Audio sample bit depth in alternate stream
+  std::array<uint16_t, 5> FutureUse;  // Reserved for future expansion
+};
+#pragma pack(pop)
 
 /* Version type. */
 #define VQAHD_VER1 1
@@ -166,15 +147,18 @@ typedef struct _VQAHeader {
 #define ID_CBF0 MAKE_ID('C', 'B', 'F', '0') /* Full codebook. */
 #define ID_CBFZ MAKE_ID('C', 'B', 'F', 'Z') /* Full codebook (compressed). */
 #define ID_CBP0 MAKE_ID('C', 'B', 'P', '0') /* Partial codebook. */
-#define ID_CBPZ MAKE_ID('C', 'B', 'P', 'Z') /* Partial codebook (compressed). \
+#define ID_CBPZ                                                               \
+  MAKE_ID('C', 'B', 'P', 'Z')               /* Partial codebook (compressed). \
                                              */
 #define ID_VPT0 MAKE_ID('V', 'P', 'T', '0') /* Vector pointers. */
-#define ID_VPTZ MAKE_ID('V', 'P', 'T', 'Z') /* Vector pointers (compressed). \
+#define ID_VPTZ                                                              \
+  MAKE_ID('V', 'P', 'T', 'Z')               /* Vector pointers (compressed). \
                                              */
 #define ID_VPTK MAKE_ID('V', 'P', 'T', 'K') /* Vector pointers (Delta Key). */
 #define ID_VPTD MAKE_ID('V', 'P', 'T', 'D') /* Vector pointers (Delta). */
 #define ID_VPTR MAKE_ID('V', 'P', 'T', 'R') /* Pointers RSD compressed. */
-#define ID_VPRZ MAKE_ID('V', 'P', 'R', 'Z') /* Pointers RSD, lcw compressed. \
+#define ID_VPRZ                                                              \
+  MAKE_ID('V', 'P', 'R', 'Z')               /* Pointers RSD, lcw compressed. \
                                              */
 #define ID_CPL0 MAKE_ID('C', 'P', 'L', '0') /* Color palette. */
 #define ID_CPLZ MAKE_ID('C', 'P', 'L', 'Z') /* Color palette (compressed). */
@@ -190,9 +174,5 @@ typedef struct _VQAHeader {
 
 #define ID_CAP0 MAKE_ID('C', 'A', 'P', '0') /* Caption text */
 #define ID_EVA0 MAKE_ID('E', 'V', 'A', '0') /* EVA text */
-
-#ifdef __WATCOMC__
-#pragma pack();
-#endif
 
 #endif /* VQAFILE_H */

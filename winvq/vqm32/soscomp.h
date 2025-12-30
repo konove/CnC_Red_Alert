@@ -33,6 +33,8 @@
 #ifndef _SOS_COMPRESS
 #define _SOS_COMPRESS
 
+#include <cstdint>
+
 /* compression types */
 enum {
   _ADPCM_TYPE_1,
@@ -47,7 +49,7 @@ typedef struct _tagCOMPRESS_INFO {
   short wBitSize;
   short wChannels;
   unsigned long dwSampleIndex;
-  long dwPredicted;
+  int64_t dwPredicted;
   long dwDifference;
   short wCodeBuf;
   short wCode;

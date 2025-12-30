@@ -479,7 +479,7 @@ long User_Update(VQAHandle *vqa);
 long VQA_StartTimerInt(VQAHandleP *vqap, long init);
 void VQA_StopTimerInt(VQAHandleP *vqap);
 void VQA_SetTimer(VQAHandleP *vqap, long time, long method);
-unsigned long VQA_GetTime(VQAHandleP *vqap);
+int64_t VQA_GetTime(VQAHandleP *vqap);
 long VQA_TimerMethod(void);
 
 /* Audio system. */

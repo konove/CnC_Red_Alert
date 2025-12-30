@@ -40,6 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <filesystem>
+
 #include "function.h"
 #ifdef WIN32
 #ifndef PORTABLE
@@ -244,30 +246,12 @@ int main(int argc, char *argv[])
   } while (command_char != 0 && command_char != 13 && argc < 20);
 #endif
 
-  /*
-  **	Change directory to the where the executable is located. Handle the
-  **	case where there is no path attached to argv[0].
-  */
-  char drive[_MAX_DRIVE];
-  char path[_MAX_PATH];
-  unsigned drivecount;
-  _splitpath(argv[0], drive, path, NULL, NULL);
-#ifndef PORTABLE
-  if (!drive[0]) {
-    unsigned olddrive;
-    _dos_getdrive(&olddrive);
-    drive[0] = ('A' + olddrive) - 1;
-  }
-  _dos_setdrive(toupper((drive[0]) - 'A') + 1, &drivecount);
-#endif
-  if (!path[0]) {
-    strcpy(path, ".");
-  }
+  // Change to executable's directory (if path is present)
+  auto dir_path = std::filesystem::path(argv[0]).parent_path();
 
-  if (path[strlen(path) - 1] == '\\') {
-    path[strlen(path) - 1] = '\0';
+  if (!dir_path.empty()) {
+    std::filesystem::current_path(dir_path);
   }
-  chdir(path);
 
 #ifdef JAPANESE
   ForceEnglish = false;

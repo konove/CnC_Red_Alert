@@ -67,19 +67,17 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-#include <stdlib.h>
-#include "vq.h"
-#include "vqaplayp.h"
-#include <vqm32/all.h>
-#include "caption.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include "vqa32/vqafile.h"
+#include "vqa32/vqaplay.h"
+#include "vqa32/vqaplayp.h"
+#include "vqm32/compress.h"
+#include "vqm32/iff.h"
+#include "vqm32/mem.h"
+#include "vqm32/palette.h"
+#include "vqm32/soscomp.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
@@ -99,17 +97,9 @@ static long Load_CPL0(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_CPLZ(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_VPT0(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_VPTZ(VQAHandleP *vqap, unsigned long iffsize);
-
-#if (VQAAUDIO_ON)
 static long Load_SND0(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_SND1(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize);
-
-#if (VQAVOC_ON)
-static void Load_AudFrame(VQAHandleP *vqap);
-#endif /* VQAVOC_ON */
-
-#endif /* VQAAUDIO_ON */
 
 extern "C" {
 void __cdecl Force_VM_Page_In(void *buffer, int length);
@@ -272,7 +262,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
           config->DrawRate = header->FPS;
         }
 
-#if (VQAAUDIO_ON)
         /* If an alternate audio track is not available then turn it off.
          * This enables the primary audio track to be played.
          */
@@ -280,7 +269,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
             !(header->Flags & VQAHDF_ALTAUDIO)) {
           config->OptionFlags &= ~VQAOPTF_ALTAUDIO;
         }
-#endif
 
         /*-------------------------------------------------------------------
          * ALLOCATE THE BUFFERS THAT WE NEED TO PLAY THE VQA.
@@ -292,108 +280,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
 
         found |= OPEN_VQHD;
         break;
-
-#if (VQACAPTIONS_ON)
-
-      /*---------------------------------------------------------------------
-       * READ IN AND OPEN THE CAPTIONS STREAM.
-       *-------------------------------------------------------------------*/
-      case ID_CAP0:
-        if ((config->CapFont != NULL) &&
-            (config->OptionFlags & VQAOPTF_CAPTIONS)) {
-          short size = 0;
-
-          /* Get uncompressed size of captions. */
-          if (vqap->IOHandler(vqa, VQACMD_READ, &size, sizeof(short))) {
-            VQA_Close(vqa);
-            return (VQAERR_READ);
-          }
-
-          /* Allocate buffer for captions. */
-          i = size + 50;
-
-          if ((ptr = (char *)malloc(i)) == NULL) {
-            VQA_Close(vqa);
-            return (VQAERR_NOMEM);
-          }
-
-          /* Read in the captions chunk. */
-          i -= PADSIZE(chunk.size);
-
-          if (vqap->IOHandler(vqa, VQACMD_READ, (ptr + i),
-                              PADSIZE(chunk.size - sizeof(short)))) {
-            free(ptr);
-            VQA_Close(vqa);
-            return (VQAERR_READ);
-          }
-
-          /* Decompress the captions. */
-          LCW_Uncompress((ptr + i), ptr, size);
-          vqap->Caption = OpenCaptions(ptr, config->CapFont);
-
-          if (vqap->Caption == NULL) {
-            VQA_Close(vqa);
-            return (VQAERR_NOMEM);
-          }
-
-          found |= OPEN_CAPTIONS;
-        } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void *)SEEK_CUR,
-                              PADSIZE(chunk.size))) {
-            VQA_Close(vqa);
-            return (VQAERR_SEEK);
-          }
-        }
-        break;
-
-      case ID_EVA0:
-        if ((config->EVAFont != NULL) && (config->OptionFlags & VQAOPTF_EVA)) {
-          short size = 0;
-
-          /* Get uncompressed size of captions. */
-          if (vqap->IOHandler(vqa, VQACMD_READ, &size, sizeof(short))) {
-            VQA_Close(vqa);
-            return (VQAERR_READ);
-          }
-
-          /* Allocate buffer for captions. */
-          i = size + 50;
-
-          if ((ptr = (char *)malloc(i)) == NULL) {
-            VQA_Close(vqa);
-            return (VQAERR_NOMEM);
-          }
-
-          /* Read in the captions chunk. */
-          i -= PADSIZE(chunk.size);
-
-          if (vqap->IOHandler(vqa, VQACMD_READ, (ptr + i),
-                              PADSIZE(chunk.size - sizeof(short)))) {
-            free(ptr);
-            VQA_Close(vqa);
-            return (VQAERR_READ);
-          }
-
-          /* Decompress the captions. */
-          LCW_Uncompress((ptr + i), ptr, size);
-          vqap->EVA = OpenCaptions(ptr, config->EVAFont);
-
-          if (vqap->EVA == NULL) {
-            VQA_Close(vqa);
-            return (VQAERR_NOMEM);
-          }
-
-          found |= OPEN_EVA;
-        } else {
-          if (vqap->IOHandler(vqa, VQACMD_SEEK, (void *)SEEK_CUR,
-                              PADSIZE(chunk.size))) {
-            VQA_Close(vqa);
-            return (VQAERR_SEEK);
-          }
-        }
-        break;
-
-#endif
 
       /*---------------------------------------------------------------------
        * READ FRAME INFORMATION
@@ -417,58 +303,16 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
     }
   }
 
-/*-------------------------------------------------------------------------
- * INITIALIZE THE VIDEO SYSTEM IF WE ARE REQUIRED TO HANDLE THAT.
- *-----------------------------------------------------------------------*/
-#if (VQAVIDEO_ON)
-  if ((vqap->VQABuf->Drawer.Display = SetVideoMode(config->Vmode)) == 0) {
-    VQA_Close(vqa);
-    return (VQAERR_VIDEO);
-  }
-
-  /* Set the VBIBit polarity. */
-  vqap->VQABuf->VBIBit = GetVBIBit();
-#else
-
-#if !PORTABLE
-  if (config->VBIBit == -1) {
-    config->VBIBit = TestVBIBit();
-  }
-#endif
-
+  /*-------------------------------------------------------------------------
+   * INITIALIZE THE VIDEO SYSTEM IF WE ARE REQUIRED TO HANDLE THAT.
+   *-----------------------------------------------------------------------*/
   vqap->VQABuf->VBIBit = config->VBIBit;
 
-#if (VQACAPTIONS_ON)
+  /*-------------------------------------------------------------------------
+   * AUDIO TRACK OVERRIDE FROM EXTERNAL FILE (.VOC)
+   *-----------------------------------------------------------------------*/
 
-  if (found & OPEN_CAPTIONS | OPEN_EVA) {
-    SetDAC(251, 255, 255, 255); /* White */
-    SetDAC(252, 255, 000, 000); /* Red */
-    SetDAC(253, 000, 255, 000); /* Green */
-    SetDAC(254, 255, 255, 255);
-    SetDAC(255, 255, 000, 255); /* Cycle */
-  }
-
-#endif
-
-#endif /* VQAVIDEO_ON */
-
-/*-------------------------------------------------------------------------
- * AUDIO TRACK OVERRIDE FROM EXTERNAL FILE (.VOC)
- *-----------------------------------------------------------------------*/
-
-/* Open VOC file if one is requested. */
-#if (VQAVOC_ON && VQAAUDIO_ON)
-  if (config->VocFile != NULL) {
-    vqap->vocfh = open(config->VocFile, (O_RDONLY | O_BINARY));
-  } else {
-    vqap->vocfh = -1;
-  }
-
-  /* Make sure we won't try to play audio. */
-  if ((vqap->vocfh == -1) && ((header->Flags & VQAHDF_AUDIO) == 0)) {
-    config->OptionFlags &= (~VQAOPTF_AUDIO);
-  }
-#else  /* VQAVOC_ON */
+  /* Open VOC file if one is requested. */
 
   /* If the movie does not contain an audio track make sure we won't try
    * to play one.
@@ -476,12 +320,10 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
   if (((header->Flags & VQAHDF_AUDIO) == 0)) {
     config->OptionFlags &= (~VQAOPTF_AUDIO);
   }
-#endif /* VQAVOC_ON */
 
-/*-------------------------------------------------------------------------
- * INITIALIZE THE AUDIO PLAYBACK/TIMING SYSTEM.
- *-----------------------------------------------------------------------*/
-#if (VQAAUDIO_ON)
+  /*-------------------------------------------------------------------------
+   * INITIALIZE THE AUDIO PLAYBACK/TIMING SYSTEM.
+   *-----------------------------------------------------------------------*/
   if (config->OptionFlags & VQAOPTF_AUDIO) {
     VQAAudio *audio;
 
@@ -514,26 +356,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
     audio->ADPCM_Info.dwCompSize =
         audio->ADPCM_Info.dwUnCompSize / (audio->ADPCM_Info.wBitSize / 4);
   }
-
-  /* Turn off audio if the HMI DigiHandle is invalid. */
-#if (!VQADIRECT_SOUND) && !VQASDL_SOUND
-  if (config->DigiHandle == -1) {
-    config->OptionFlags &= ~VQAOPTF_AUDIO;
-  }
-
-  /* Setup the timer interrupt if the client requests it for the timing
-   * source.
-   */
-  if (!(config->OptionFlags & VQAOPTF_AUDIO) ||
-      (config->TimerMethod == VQA_TMETHOD_INT)) {
-    /* Start HMI timer system for timing. */
-    if (VQA_StartTimerInt(vqap, (config->OptionFlags & VQAOPTF_HMIINIT))) {
-      VQA_Close(vqa);
-      return (VQAERR_AUDIO);
-    }
-  }
-#endif  // VQADIRECT_SOUND
-#endif  /* VQAAUDIO_ON */
 
   /*-------------------------------------------------------------------------
    * PRIME THE BUFFERS BY PRE-LOADING THEM WITH FRAME DATA.
@@ -570,54 +392,18 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
 void VQA_Close(VQAHandle *vqa) {
   long (*iohandler)(VQAHandle *, long, void *, long);
 
-/* Restore video mode to text. */
-#if (VQAVIDEO_ON)
-  SetVideoMode(TEXT_VIDEO);
-#endif /* VQAVIDEO_ON */
-
-/* Shutdown audio/timing system. */
-#if (VQAAUDIO_ON)
+  /* Shutdown audio/timing system. */
   if (((VQAHandleP *)vqa)->Config.OptionFlags & VQAOPTF_AUDIO) {
     VQA_CloseAudio((VQAHandleP *)vqa);
   } else {
     VQA_StopTimerInt((VQAHandleP *)vqa);
   }
-#endif /* VQAAUDIO_ON */
-
-#if (VQACAPTIONS_ON)
-
-  /* Free captions. */
-  if (((VQAHandleP *)vqa)->Caption != NULL) {
-    if (((VQAHandleP *)vqa)->Caption->Buffer != NULL) {
-      free(((VQAHandleP *)vqa)->Caption->Buffer);
-    }
-
-    CloseCaptions(((VQAHandleP *)vqa)->Caption);
-  }
-
-  /* Free EVA. */
-  if (((VQAHandleP *)vqa)->EVA != NULL) {
-    if (((VQAHandleP *)vqa)->EVA->Buffer != NULL) {
-      free(((VQAHandleP *)vqa)->EVA->Buffer);
-    }
-
-    CloseCaptions(((VQAHandleP *)vqa)->EVA);
-  }
-
-#endif
 
   /* Free memory */
   if (((VQAHandleP *)vqa)->VQABuf != NULL) {
     FreeBuffers(((VQAHandleP *)vqa)->VQABuf, &((VQAHandleP *)vqa)->Config,
                 &((VQAHandleP *)vqa)->Header);
   }
-
-/* Close the VOC override file if one was opened */
-#if (VQAVOC_ON && VQAAUDIO_ON)
-  if (((VQAHandleP *)vqa)->vocfh != -1) {
-    close(((VQAHandleP *)vqa)->vocfh);
-  }
-#endif /* VQAVOC_ON */
 
   /* Close the VQA file */
   ((VQAHandleP *)vqa)->IOHandler(vqa, VQACMD_CLOSE, NULL, 0);
@@ -690,13 +476,6 @@ long VQA_LoadFrame(VQAHandle *vqa) {
   if (loader->CurFrameNum >= vqap->Header.Frames) {
     return (VQAERR_EOF);
   }
-
-/* If we're reading audio from a VOC file then service that requirement. */
-#if (VQAVOC_ON && VQAAUDIO_ON)
-  if (vqap->vocfh != -1) {
-    Load_AudFrame(vqap);
-  }
-#endif /* VQAAUDIO_ON & VQAVOC_ON */
 
   /* If no buffer is available for loading then return. This allows the
    * drawer to service one of the buffers more readily. (We'll wait for one
@@ -852,13 +631,12 @@ long VQA_LoadFrame(VQAHandle *vqa) {
         frame_loaded = 1;
         break;
 
-/* Uncompressed audio frame.
- *
- *  - Make sure the sound load buffer (Audio.TempBuf) is empty; if not
- *    go into a sleep state.
- *  - Load the data into TempBuf.
- */
-#if (VQAAUDIO_ON)
+        /* Uncompressed audio frame.
+         *
+         *  - Make sure the sound load buffer (Audio.TempBuf) is empty; if not
+         *    go into a sleep state.
+         *  - Load the data into TempBuf.
+         */
       case ID_SND0:
         if (!(vqap->Config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
@@ -1002,7 +780,6 @@ long VQA_LoadFrame(VQAHandle *vqa) {
           }
         }
         break;
-#endif
 
       /* Skip any unknown chunks. */
       default:
@@ -1072,12 +849,8 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
   long group;
   long i;
   long rc = VQAERR_NONE;
-
-#if (VQAAUDIO_ON)
   VQAAudio *audio;
   long audio_on;
-#endif
-
   /* Dereference commonly used data members for quick access. */
   vqap = (VQAHandleP *)vqa;
   vqabuf = vqap->VQABuf;
@@ -1087,13 +860,11 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
 
   fromwhere = fromwhere;
 
-#if (VQAAUDIO_ON)
   audio = &vqabuf->Audio;
 
   /* Stop audio playback. */
   audio_on = (audio->Flags & VQAAUDF_ISPLAYING);
   VQA_StopAudio(vqap);
-#endif
 
   /* Make sure the requested frame is valid and the frame information
    * array is allocated before continuing.
@@ -1156,8 +927,7 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
        */
       if (!vqap->IOHandler(vqa, VQACMD_SEEK, (void *)SEEK_SET,
                            VQAFRAME_OFFSET(vqabuf->Foff[group]))) {
-/* Throw away any audio frames that were loaded. */
-#if (VQAAUDIO_ON)
+        /* Throw away any audio frames that were loaded. */
         if ((config->OptionFlags & VQAOPTF_AUDIO) && (audio->Buffer != NULL)) {
           memset(audio->IsLoaded, 0, audio->NumAudBlocks * sizeof(short));
           memset(audio->Buffer, 0, config->AudioBufSize);
@@ -1172,7 +942,6 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
             audio->IsLoaded[i] = 1;
           }
         }
-#endif
 
         /* Force the loader to the desired frame. */
         loader->NumPartialCB = 0;
@@ -1188,9 +957,7 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
           /* Fool the loader into thinking the frame has been drawn. */
           loader->CurFrame->Flags = 0;
 
-#if (VQAAUDIO_ON)
           audio->TempBufLen = 0;
-#endif
 
           /* Load the frame. */
           if ((rc = VQA_LoadFrame(vqa)) != 0) {
@@ -1232,12 +999,10 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
     }
   }
 
-/* Restart audio playback. */
-#if (VQAAUDIO_ON)
+  /* Restart audio playback. */
   if (audio_on) {
     VQA_StartAudio(vqap);
   }
-#endif
 
   return (rc);
 }
@@ -1283,7 +1048,6 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
   VQACBNode *this_cb;
   VQAFrameNode *framenode;
   VQAFrameNode *this_frame;
-  long i;
 
   /* Check the configuration for valid values. */
   if ((config->NumCBBufs == 0) || (config->NumFrameBufs == 0)) {
@@ -1303,9 +1067,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
    * and'd with 0xFFFC to make the size divisible by 4, to ensure DWORD
    * alignment.
    *-----------------------------------------------------------------------*/
-#if (!VQADIRECT_SOUND)
   DPMI_Lock(vqa, sizeof(VQAData));
-#endif  // VQADIRECT_SOUND
 
   memset(vqa, 0, sizeof(VQAData));
   vqa->MemUsed = sizeof(VQAData);
@@ -1333,7 +1095,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE THE CODEBOOK BUFFERS.
    *-----------------------------------------------------------------------*/
-  for (i = 0; i < config->NumCBBufs; i++) {
+  for (size_t i = 0; i < config->NumCBBufs; i++) {
     /* Allocate a codebook node. */
     cbnode = (VQACBNode *)malloc((sizeof(VQACBNode) + vqa->Max_CB_Size));
 
@@ -1344,12 +1106,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
     }
 
     /* Lock the buffer to prevent page swapping. */
-#if (!VQADIRECT_SOUND)
     DPMI_Lock(cbnode, (sizeof(VQACBNode) + vqa->Max_CB_Size));
-#else   //! VQADIRECT_SOUND
-    /* Make sure the allocated memory is paged in */
-    Force_VM_Page_In(cbnode, (sizeof(VQACBNode) + vqa->Max_CB_Size));
-#endif  //(!VQADIRECT_SOUND)
 
     /* Keep count of the memory usage. */
     vqa->MemUsed += (long)(sizeof(VQACBNode) + vqa->Max_CB_Size);
@@ -1378,7 +1135,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE THE FRAME BUFFERS.
    *-----------------------------------------------------------------------*/
-  for (i = 0; i < config->NumFrameBufs; i++) {
+  for (size_t i = 0; i < config->NumFrameBufs; i++) {
     /* Allocate a pointer node */
     framenode = (VQAFrameNode *)malloc(
         (sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size));
@@ -1390,14 +1147,8 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
     }
 
     /* Lock the buffer to prevent page swapping. */
-#if (!VQADIRECT_SOUND)
     DPMI_Lock(framenode,
               sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size);
-#else   //! VQADIRECT_SOUND
-    /* Make sure the allocated memory is paged in */
-    Force_VM_Page_In(framenode, sizeof(VQAFrameNode) + vqa->Max_Ptr_Size +
-                                    vqa->Max_Pal_Size);
-#endif  //(!VQADIRECT_SOUND)
 
     /* Keep count of the memory usage. */
     vqa->MemUsed +=
@@ -1434,7 +1185,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
    *-----------------------------------------------------------------------*/
   if (config->ImageBuf == NULL) {
     /* Allocate our own buffer. */
-    if (config->DrawFlags & VQACFGF_BUFFER) {
+    if (config->DrawFlags & VQACFGF_BUFFER != 0) {
       vqa->Drawer.ImageBuf =
           (unsigned char *)malloc((header->ImageWidth * header->ImageHeight));
 
@@ -1445,13 +1196,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       }
 
       /* Lock to prevent page swapping. */
-#if (!VQADIRECT_SOUND)
       DPMI_Lock(vqa->Drawer.ImageBuf, header->ImageWidth * header->ImageHeight);
-#else   //! VQADIRECT_SOUND
-      /* Make sure the allocated memory is paged in */
-      Force_VM_Page_In(vqa->Drawer.ImageBuf,
-                       header->ImageWidth * header->ImageHeight);
-#endif  //(!VQADIRECT_SOUND)
 
       /* Plugin image buffer information. */
       vqa->Drawer.ImageWidth = header->ImageWidth;
@@ -1468,11 +1213,11 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
     vqa->Drawer.ImageHeight = config->ImageHeight;
   }
 
-/*-------------------------------------------------------------------------
- * ALLOCATE AND INITIALIZE AUDIO BUFFERS AND STRUCTURES.
- *-----------------------------------------------------------------------*/
-#if (VQAAUDIO_ON)
-  if ((header->Flags & VQAHDF_AUDIO) && (config->OptionFlags & VQAOPTF_AUDIO)) {
+  /*-------------------------------------------------------------------------
+   * ALLOCATE AND INITIALIZE AUDIO BUFFERS AND STRUCTURES.
+   *-----------------------------------------------------------------------*/
+  if ((header->Flags & VQAHDF_AUDIO != 0) &&
+      (config->OptionFlags & VQAOPTF_AUDIO != 0)) {
     /* Dereference audio structure for quick access. */
     VQAAudio *audio = &vqa->Audio;
 
@@ -1498,12 +1243,6 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
           ((audio->SampleRate * audio->Channels) * (audio->BitsPerSample >> 3));
     }
 
-/* Adjust the HMI buffer to accomodate the amount of data. */
-#if (0)
-    config->HMIBufSize *= (audio->SampleRate / 22050);
-    config->HMIBufSize *= audio->Channels * (audio->BitsPerSample >> 3);
-#endif
-
     /* The default audio buffer size should be large enough to hold
      * 1.5 seconds of data.
      */
@@ -1511,8 +1250,8 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       /* Compute the number of HMI buffers that will completly fit into
        * 1.5 seconds of audio data.
        */
-      i = ((audio->BytesPerSec + (audio->BytesPerSec / 2)) /
-           config->HMIBufSize);
+      auto i = ((audio->BytesPerSec + (audio->BytesPerSec / 2)) /
+                config->HMIBufSize);
       config->AudioBufSize = (config->HMIBufSize * i);
     }
 
@@ -1530,12 +1269,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
           return (NULL);
         }
 
-#if (!VQADIRECT_SOUND)
         DPMI_Lock(audio->Buffer, config->AudioBufSize);
-#else   //! VQADIRECT_SOUND
-        /* Make sure the allocated memory is paged in */
-        Force_VM_Page_In(audio->Buffer, config->AudioBufSize);
-#endif  //(!VQADIRECT_SOUND)
 
         /* Add audio buffer size to memory usage. */
         vqa->MemUsed += config->AudioBufSize;
@@ -1554,12 +1288,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       }
 
       /* Lock to prevent page swapping. */
-#if (!VQADIRECT_SOUND)
       DPMI_Lock(audio->IsLoaded, audio->NumAudBlocks * sizeof(short));
-#else   //! VQADIRECT_SOUND
-      /* Make sure the allocated memory is paged in */
-      Force_VM_Page_In(audio->IsLoaded, audio->NumAudBlocks * sizeof(short));
-#endif  //(!VQADIRECT_SOUND)
 
       /* Add IsLoaded flags array to memory usage. */
       vqa->MemUsed += (audio->NumAudBlocks * sizeof(short));
@@ -1577,18 +1306,12 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       }
 
       /* Lock to prevent page swapping. */
-#if (!VQADIRECT_SOUND)
       DPMI_Lock(audio->TempBuf, audio->TempBufSize);
-#else   //! VQADIRECT_SOUND
-      /* Make sure the allocated memory is paged in */
-      Force_VM_Page_In(audio->TempBuf, audio->TempBufSize);
-#endif  //(!VQADIRECT_SOUND)
 
       /* Add temporary buffer size to memory usage. */
       vqa->MemUsed += audio->TempBufSize;
     }
   }
-#endif /* VQAAUDIO_ON */
 
   /*-------------------------------------------------------------------------
    * ALLOCATE THE FRAME INFORMATION TABLE IF REQUESTED.
@@ -1601,12 +1324,7 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
   }
 
   /* Lock to prevent page swapping. */
-#if (!VQADIRECT_SOUND)
   DPMI_Lock(vqa->Foff, header->Frames * sizeof(long));
-#else   //! VQADIRECT_SOUND
-  /* Make sure the allocated memory is paged in */
-  Force_VM_Page_In(vqa->Foff, header->Frames * sizeof(long));
-#endif  //(!VQADIRECT_SOUND)
 
   /* Keep a running total of memory usage. */
   vqa->MemUsed += (header->Frames * sizeof(long));
@@ -1637,18 +1355,16 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
  *
  ****************************************************************************/
 
-static void FreeBuffers(VQAData *vqa, VQAConfig *config, VQAHeader *header) {
+static void FreeBuffers(VQAData *vqa, VQAConfig *config,
+                        VQAHeader * /*header*/) {
   VQACBNode *cb_this, *cb_next;
   VQAFrameNode *frame_this, *frame_next;
-  long i;
 
   /*-------------------------------------------------------------------------
    * FREE THE FRAME INFORMATION TABLE.
    *-----------------------------------------------------------------------*/
   if (vqa->Foff) {
-#if (!VQADIRECT_SOUND)
     DPMI_Unlock(vqa->Foff, header->Frames * sizeof(long));
-#endif  //(!VQADIRECT_SOUND)
     free(vqa->Foff);
   }
 
@@ -1656,38 +1372,28 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config, VQAHeader *header) {
    * FREE THE AUDIO BUFFERS.
    *-----------------------------------------------------------------------*/
 
-#if (VQAAUDIO_ON)
   if ((config->AudioBuf == NULL) && (vqa->Audio.Buffer)) {
-#if (!VQADIRECT_SOUND)
     DPMI_Unlock(vqa->Audio.Buffer, config->AudioBufSize);
-#endif  //(!VQADIRECT_SOUND)
     free(vqa->Audio.Buffer);
   }
 
   /* Free the audio segments loaded flag array. */
   if (vqa->Audio.IsLoaded) {
-#if (!VQADIRECT_SOUND)
     DPMI_Unlock(vqa->Audio.IsLoaded, vqa->Audio.NumAudBlocks * sizeof(short));
-#endif  //(!VQADIRECT_SOUND)
     free(vqa->Audio.IsLoaded);
   }
 
   /* Free the temporary audio buffer. */
   if (vqa->Audio.TempBuf) {
-#if (!VQADIRECT_SOUND)
     DPMI_Unlock(vqa->Audio.TempBuf, vqa->Audio.TempBufSize);
-#endif  //(!VQADIRECT_SOUND)
     free(vqa->Audio.TempBuf);
   }
-#endif /* VQAAUDIO_ON */
 
   /*-------------------------------------------------------------------------
    * FREE THE IMAGE BUFFER ONLY IF WE ALLOCATED IT.
    *-----------------------------------------------------------------------*/
   if ((config->ImageBuf == NULL) && vqa->Drawer.ImageBuf) {
-#if (!VQADIRECT_SOUND)
     DPMI_Unlock(vqa->Drawer.ImageBuf, header->ImageWidth * header->ImageHeight);
-#endif  //(!VQADIRECT_SOUND)
     free(vqa->Drawer.ImageBuf);
   }
 
@@ -1696,13 +1402,11 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config, VQAHeader *header) {
    *-----------------------------------------------------------------------*/
   frame_this = vqa->FrameData;
 
-  for (i = 0; i < config->NumFrameBufs; i++) {
+  for (size_t i = 0; i < config->NumFrameBufs; i++) {
     if (frame_this) {
       frame_next = frame_this->Next;
-#if (!VQADIRECT_SOUND)
       DPMI_Unlock(frame_this,
                   sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size);
-#endif  //(!VQADIRECT_SOUND)
       free(frame_this);
       frame_this = frame_next;
     } else {
@@ -1715,12 +1419,10 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config, VQAHeader *header) {
    *-----------------------------------------------------------------------*/
   cb_this = vqa->CBData;
 
-  for (i = 0; i < config->NumCBBufs; i++) {
+  for (size_t i = 0; i < config->NumCBBufs; i++) {
     if (cb_this) {
       cb_next = cb_this->Next;
-#if (!VQADIRECT_SOUND)
       DPMI_Unlock(cb_this, sizeof(VQACBNode) + vqa->Max_CB_Size);
-#endif  //(!VQADIRECT_SOUND)
       free(cb_this);
       cb_this = cb_next;
     } else {
@@ -1731,9 +1433,7 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config, VQAHeader *header) {
   /*-------------------------------------------------------------------------
    * FREE THE VQA DATA STRUCTURES.
    *-----------------------------------------------------------------------*/
-#if (!VQADIRECT_SOUND)
   DPMI_Unlock(vqa, sizeof(VQAData));
-#endif  //(!VQADIRECT_SOUND)
   free(vqa);
 }
 
@@ -2442,7 +2142,6 @@ static long Load_VPTZ(VQAHandleP *vqap, unsigned long iffsize) {
   return (0);
 }
 
-#if (VQAAUDIO_ON)
 /****************************************************************************
  *
  * NAME
@@ -2470,7 +2169,6 @@ static long Load_VPTZ(VQAHandleP *vqap, unsigned long iffsize) {
 
 static long Load_SND0(VQAHandleP *vqap, unsigned long iffsize) {
   VQAData *vqabuf;
-  VQALoader *loader;
   VQAAudio *audio;
   VQAConfig *config;
   unsigned long padsize;
@@ -2478,21 +2176,14 @@ static long Load_SND0(VQAHandleP *vqap, unsigned long iffsize) {
 
   /* Dereference commonly used data members for quicker access. */
   vqabuf = vqap->VQABuf;
-  loader = &vqabuf->Loader;
   audio = &vqabuf->Audio;
   config = &vqap->Config;
   padsize = PADSIZE(iffsize);
 
-/* If sound is disabled, or if we're playing from a VOC file, or if
- * there's no Audio Buffer, just skip the chunk.
- */
-#if (VQAVOC_ON && VQAAUDIO_ON)
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (vqap->vocfh != -1) ||
-      (audio->Buffer == NULL)) {
-#else  /* VQAVOC_ON */
+  /* If sound is disabled, or if we're playing from a VOC file, or if
+   * there's no Audio Buffer, just skip the chunk.
+   */
   if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (audio->Buffer == NULL)) {
-#endif /* VQAVOC_ON */
-
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_SEEK, (void *)SEEK_CUR,
                         padsize)) {
       return (VQAERR_SEEK);
@@ -2557,7 +2248,6 @@ static long Load_SND0(VQAHandleP *vqap, unsigned long iffsize) {
 
 static long Load_SND1(VQAHandleP *vqap, unsigned long iffsize) {
   VQAData *vqabuf;
-  VQALoader *loader;
   VQAAudio *audio;
   VQAConfig *config;
   unsigned char *loadbuf;
@@ -2567,21 +2257,14 @@ static long Load_SND1(VQAHandleP *vqap, unsigned long iffsize) {
 
   /* Dereference commonly used data members for quicker access. */
   vqabuf = vqap->VQABuf;
-  loader = &vqabuf->Loader;
   audio = &vqabuf->Audio;
   config = &vqap->Config;
   padsize = PADSIZE(iffsize);
 
-/* If sound is disabled, or if we're playing from a VOC file, or if
- * there's no Audio Buffer, just skip the chunk
- */
-#if (VQAVOC_ON && VQAAUDIO_ON)
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (vqap->vocfh != -1) ||
-      (audio->Buffer == NULL)) {
-#else
+  /* If sound is disabled, or if we're playing from a VOC file, or if
+   * there's no Audio Buffer, just skip the chunk
+   */
   if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (audio->Buffer == NULL)) {
-#endif /* VQAVOC_ON */
-
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_SEEK, (void *)SEEK_CUR,
                         padsize)) {
       return (VQAERR_SEEK);
@@ -2681,7 +2364,6 @@ static long Load_SND1(VQAHandleP *vqap, unsigned long iffsize) {
 
 static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize) {
   VQAData *vqabuf;
-  VQALoader *loader;
   VQAAudio *audio;
   VQAConfig *config;
   unsigned char *loadbuf;
@@ -2691,21 +2373,14 @@ static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize) {
 
   /* Dereference commonly used data members for quicker access. */
   vqabuf = vqap->VQABuf;
-  loader = &vqabuf->Loader;
   audio = &vqabuf->Audio;
   config = &vqap->Config;
   padsize = PADSIZE(iffsize);
 
-/* If sound is disabled, or if we're playing from a VOC file, or if
- * there's no Audio Buffer, just skip the chunk
- */
-#if (VQAVOC_ON && VQAAUDIO_ON)
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (vqap->vocfh != -1) ||
-      (audio->Buffer == NULL)) {
-#else  /* VQAVOC_ON */
+  /* If sound is disabled, or if we're playing from a VOC file, or if
+   * there's no Audio Buffer, just skip the chunk
+   */
   if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (audio->Buffer == NULL)) {
-#endif /* VQAVOC_ON */
-
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_SEEK, (void *)SEEK_CUR,
                         padsize)) {
       return (VQAERR_SEEK);
@@ -2757,101 +2432,3 @@ static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize) {
 
   return (0);
 }
-
-#if (VQAVOC_ON)
-/****************************************************************************
- *
- * NAME
- *     Load_AudFrame - Loads blocks from seperate VOC file.
- *
- * SYNOPSIS
- *     Load_AudFrame(VQA)
- *
- *     void Load_AudFrame(VQAHandleP *);
- *
- * FUNCTION
- *
- * INPUTS
- *     VQA - Pointer to private VQA handle.
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
-
-static void Load_AudFrame(VQAHandleP *vqap) {
-  VQAData *vqabuf;
-  VQALoader *loader;
-  VQAAudio *audio;
-  VQAConfig *config;
-  static long lastplayblock = -1;
-  static long myblock = 0;
-  static long firsttime = 1;
-  long numblocks;
-  long i;
-
-  /* Dereference commonly used data members for quicker access. */
-  vqabuf = vqap->VQABuf;
-  loader = &vqabuf->Loader;
-  audio = &vqabuf->Audio;
-  config = &vqap->Config;
-
-  /* Do nothing if no buffer */
-  if (audio->Buffer == NULL) {
-    return;
-  }
-
-  /* If this is the first time we're called, pre-load the 1st 'n' audio
-   * blocks, where 'n' is half the total audio buffer size; this way, we'll
-   * always stay ahead of HMI.
-   */
-  if (firsttime) {
-    numblocks = (audio->NumAudBlocks / 2);
-    read(vqap->vocfh, audio->Buffer, config->HMIBufSize * numblocks);
-    audio->AudBufPos += config->HMIBufSize * numblocks;
-
-    if (audio->AudBufPos >= config->AudioBufSize) {
-      audio->AudBufPos = 0;
-    }
-
-    for (i = 0; i < numblocks; i++) {
-      audio->IsLoaded[i] = 1;
-    }
-
-    myblock += numblocks;
-
-    if (myblock >= audio->NumAudBlocks) {
-      myblock = 0;
-    }
-
-    firsttime = 0;
-  }
-
-  /* If HMI's block has changed, load the next block & mark it as loaded */
-  if (audio->PlayPosition / config->HMIBufSize != lastplayblock) {
-    /* update HMI's last known block position */
-    lastplayblock = audio->PlayPosition / config->HMIBufSize;
-
-    /* read the VOC data */
-    read(vqap->vocfh, (audio->Buffer + myblock * config->HMIBufSize),
-         config->HMIBufSize);
-
-    audio->AudBufPos += config->HMIBufSize;
-
-    if (audio->AudBufPos >= config->AudioBufSize) {
-      audio->AudBufPos = 0;
-    }
-
-    /* set the IsLoaded flags */
-    audio->IsLoaded[myblock] = 1;
-
-    /* increment my block counter */
-    myblock++;
-
-    if (myblock >= audio->NumAudBlocks) {
-      myblock = 0;
-    }
-  }
-}
-#endif /* VQAVOC_ON */
-#endif /* VQAAUDIO_ON */

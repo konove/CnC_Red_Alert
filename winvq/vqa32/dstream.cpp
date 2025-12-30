@@ -48,17 +48,9 @@
  ****************************************************************************/
 
 #include <fcntl.h>
-#ifdef _WIN32
-#include <io.h>
-#else
 #include <unistd.h>
-#endif
 #include "vqaplay.h"
 #include "vqaplayp.h"
-
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
@@ -158,7 +150,7 @@ static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
 
     /* VQACMD_OPEN asks that you open the file for access. */
     case VQACMD_OPEN:
-      error = open((char *)buffer, (O_RDONLY | O_BINARY));
+      error = open(static_cast<const char *>(buffer), O_RDONLY);
 
       if (error != -1) {
         vqa->VQAio = error;

@@ -94,25 +94,10 @@ static char *GetFilePart(char *path);
 void Print_Play_Stats(VQAConfig *config, VQAStatistics *stats);
 long VQCallback(unsigned char *screen, long framenum);
 
-#ifdef __cplusplus
 extern "C" {
-#endif
-
 int __cdecl Check_Key(void);
 int __cdecl Get_Key(void);
-
-#ifdef __cplusplus
 }
-#endif
-
-#ifndef __WATCOMC__
-#if (0)
-int HardErr_Handler(int errval, int ax, int bp, int si);
-#endif
-#else
-int __far HardErr_Handler(unsigned deverror, unsigned errcode,
-                          unsigned __far *devhdr);
-#endif
 
 /****************************************************************************
  *
@@ -324,19 +309,12 @@ static void Usage(long showall) {
     puts("  -p:     Enable slow palette setting");
     puts("  -w:     Enable woofer drawing.");
 
-#if (VQAMONO_ON)
-    puts("  -m:     Enable mono screen output");
-#endif
-
 #if (VQAAUDIO_ON)
     puts("  -a:     Audio playback rate");
     puts("  -ac:    Compatibility mode (Force SoundBlaster).");
     puts("  -alt:   Play alternate audio track.");
     puts("  -s:     Disable sound");
 
-#if (VQAVOC_ON)
-    puts("  -cname: Name of VOC file to play instead of interleaved audio");
-#endif
 #endif
 
     puts("  -t_:    Timer method:");
@@ -345,23 +323,6 @@ static void Usage(long showall) {
     puts("    d = DOS");
 
     puts("  -v_:    Video mode:");
-
-#if (VQAMCGA_ON)
-    puts("    m = MCGA");
-#endif
-
-#if (VQAXMODE_ON)
-    puts("    w = XMODE 320x200");
-    puts("    x = XMODE 320x240");
-    puts("    y = XMODE 320x200, VRAM mode");
-    puts("    z = XMODE 320x240, VRAM mode");
-#endif
-
-#if (VQAVESA_ON)
-    puts("    u = VESA 320x200");
-    puts("    v = VESA 640x480 in a window (buffered only)");
-    puts("    s = VESA 640x480 scaled to 640x400 (buffered only)");
-#endif
   }
 }
 
@@ -422,13 +383,6 @@ static void Options(long argc, char *argv[], VQAConfig *config) {
           config->DrawFlags |= VQACFGF_BUFFER;
           break;
 
-/* VOC File Name */
-#if (VQAAUDIO_ON && VQAVOC_ON)
-        case 'C':
-          config->VocFile = (argv[l] + 2);
-          break;
-#endif
-
         /* Turn off vertical blank wait */
         case 'D':
           config->DrawFlags |= VQACFGF_NODRAW;
@@ -443,13 +397,6 @@ static void Options(long argc, char *argv[], VQAConfig *config) {
         case 'L':
           config->FrameRate = atoi(&argv[l][2]);
           break;
-
-/* Mono mode */
-#if (VQAMONO_ON)
-        case 'M':
-          config->OptionFlags |= VQAOPTF_MONO;
-          break;
-#endif
 
         /* Output statistics */
         case 'O':
@@ -491,33 +438,7 @@ static void Options(long argc, char *argv[], VQAConfig *config) {
         case 'V':
           if (argv[l][2] == 'M') {
             config->Vmode = MCGA;
-          }
-#if (VQAXMODE_ON)
-          else if (argv[l][2] == 'W') {
-            config->Vmode = XMODE_320X200;
-          } else if (argv[l][2] == 'X') {
-            config->Vmode = XMODE_320X240;
-          } else if (argv[l][2] == 'Y') {
-            config->Vmode = XMODE_320X200;
-            config->DrawFlags |= VQACFGF_VRAMCB;
-          } else if (argv[l][2] == 'Z') {
-            config->Vmode = XMODE_320X240;
-            config->DrawFlags |= VQACFGF_VRAMCB;
-          }
-#endif
-
-#if (VQAVESA_ON)
-          else if (argv[l][2] == 'V') {
-            config->Vmode = VESA_640X480_256;
-            config->DrawFlags |= VQACFGF_BUFFER;
-          } else if (argv[l][2] == 'S') {
-            config->Vmode = VESA_640X480_256;
-            config->DrawFlags |= (VQACFGF_BUFFER | VQACFGF_SCALEX2);
-          } else if (argv[l][2] == 'U') {
-            config->Vmode = VESA_320X200_32K_1;
-          }
-#endif
-          else {
+          } else {
             printf("Unsupported video mode flag: %c\n", argv[l][2]);
             exit(0);
           }
@@ -545,59 +466,36 @@ static void Options(long argc, char *argv[], VQAConfig *config) {
 }
 
 /****************************************************************************
+ * Find a filename on the command line, excluding anything with "/" or "-".
+ * Adds the given extension if the filename has no extension.
  *
- * NAME
- *     Find_File_Name - Find a filename on the command line.
- *
- * SYNOPSIS
- *     Name = Fine_File_Name(ArgC, ArgV, Ext, Anim)
- *
- *     char * Fine_File_Name(short, char *[], char *, VQAnim);
- *
- * FUNCTION
- *      Finds a file name on the command line, excluding anything with "/" or
- *      "-" on it. The given extension is added to the name if there is no
- *      extension in the filename.
- *
- * INPUTS
- *      ArgC - Argument count same as in main().
- *      ArgV - Argument array same as in main().
- *      Ext  - Pointer to filename extension.
- *      Anim - Pointer to VQAnim structure.
- *
- * RESULT
- *      Name = Pointer to filename.
- *
+ * @param argc Argument count (same as main)
+ * @param argv Argument array (same as main)
+ * @param desired_ext Extension to add if none present
+ * @return Pointer to filename, or nullptr if not found
  ****************************************************************************/
-
 static char *Find_File_Name(long argc, char *argv[], char *desired_ext) {
-  long opt = 1;
-  static char drive[_MAX_DRIVE] = {0};
-  static char dir[_MAX_DIR] = {0};
-  static char fname[_MAX_FNAME] = {0};
-  static char ext[_MAX_EXT] = {0};
-  static char pathname[_MAX_PATH] = {0};
+  static std::string pathname;  // Static to preserve lifetime
 
-  /* Search for a non '-' option */
-  while ((argv[opt][0] == '/') || (argv[opt][0] == '-')) {
+  // Find first argument that isn't an option (doesn't start with '/' or '-')
+  long opt = 1;
+  while (opt < argc && (argv[opt][0] == '/' || argv[opt][0] == '-')) {
     opt++;
   }
 
-  if (argc == opt) {
-    return (NULL);
+  if (opt >= argc) {
+    return nullptr;
   }
 
-  /* Split the filename into its components */
-  _splitpath(argv[opt], drive, dir, fname, ext);
+  std::filesystem::path result(argv[opt]);
 
-  if (strlen(ext) == 0) {
-    strcpy(ext, desired_ext);
+  // Add default extension if no extension present
+  if (!result.has_extension() && desired_ext && strlen(desired_ext) > 0) {
+    result.replace_extension(desired_ext);
   }
 
-  /* Rebuild the complete filename */
-  _makepath(pathname, drive, dir, fname, ext);
-
-  return (pathname);
+  pathname = result.string();
+  return pathname.data();
 }
 
 /****************************************************************************
@@ -634,30 +532,6 @@ void Print_Play_Stats(VQAConfig *config, VQAStatistics *stats) {
       puts("MCGA");
     }
   }
-#if (VQAXMODE_ON)
-  else if (config->Vmode == XMODE_320X200) {
-    if (config->DrawFlags & VQACFGF_BUFFER) {
-      puts("XMODE 320x200 Buffered");
-    } else {
-      if (config->DrawFlags & VQACFGF_VRAMCB) {
-        puts("XMODE 320x200 VRAM");
-      } else {
-        puts("XMODE 320x200");
-      }
-    }
-  } else if (config->Vmode == XMODE_320X240) {
-    if (config->DrawFlags & VQACFGF_BUFFER) {
-      puts("XMODE 320x240 Buffered");
-    } else {
-      if (config->DrawFlags & VQACFGF_VRAMCB) {
-        puts("XMODE 320x240 VRAM");
-      } else {
-        puts("XMODE 320x240");
-      }
-    }
-  }
-#endif
-
 #if (VQAVESA_ON)
   else if (config->Vmode == VESA_640X480_256) {
     if (config->DrawFlags & VQACFGF_SCALEX2) {

@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <cstdint>
 
 #include "vqa32/unvq.h"
 
@@ -98,7 +98,7 @@ void UnVQ_4x4(unsigned char *codebook, unsigned char *pointers,
       }
 
       dst_ptr += 4;
-    } while (--count);
+    } while (--count != 0);
 
     dst_ptr = dst_ptr_start + rowoffset;
     dst_ptr_start = dst_ptr;

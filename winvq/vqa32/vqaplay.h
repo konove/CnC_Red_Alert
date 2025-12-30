@@ -52,55 +52,18 @@
 // MEG - 11.28.95 - added for debug
 extern void Debug_Printf(char *format_string, ...);
 
-#ifdef __WATCOMC__
-#define VQASTANDALONE 0   /* Stand alone player */
-#define VQAVOC_ON 0       /* Enable VOC file override */
-#define VQAMONO_ON 0      /* Mono display output enable/disable */
-#define VQADIRECT_SOUND 1 /* Use windows direct sound system */
-#define VQAAUDIO_ON 1     /* Audio playback enable/disable */
-#define VQAVIDEO_ON 0     /* Video manager enable/disable */
-#define VQAMCGA_ON 1      /* MCGA enable/disable */
-#define VQAXMODE_ON 0     /* Xmode enable/disable */
-#define VQAVESA_ON 0      /* VESA enable/disable */
-#define VQABLOCK_2X2 0    /* 2x2 block decode enable/disable */
-#define VQABLOCK_2X3 0    /* 2x2 block decode enable/disable */
-#define VQABLOCK_4X2 1    /* 4x2 block decode enable/disable */
-#define VQABLOCK_4X4 0    /* 4x4 block decode enable/disable */
-#define VQAWOOFER_ON 0
-#else
 #define VQASTANDALONE 0 /* Stand alone player */
 #define VQAVOC_ON 0     /* Enable VOC file override */
-#if PORTABLE
-#define VQAMONO_ON 0
-#define VQADIRECT_SOUND 0
-#define VQASDL_SOUND 1
-#else
-#define VQAMONO_ON 1      /* Mono display output enable/disable */
-#define VQADIRECT_SOUND 1 /* Use windows direct sound system */
-#define VQASDL_SOUND 0
-#endif
-#define VQAAUDIO_ON 1  /* Audio playback enable/disable */
-#define VQAVIDEO_ON 0  /* Video manager enable/disable */
-#define VQAMCGA_ON 0   /* MCGA enable/disable */
-#define VQAXMODE_ON 0  /* Xmode enable/disable */
-#define VQAVESA_ON 0   /* VESA enable/disable */
-#define VQABLOCK_2X2 0 /* 2x2 block decode enable/disable */
-#define VQABLOCK_2X3 0 /* 2x2 block decode enable/disable */
-#define VQABLOCK_4X2 1 /* 4x2 block decode enable/disable */
-#define VQABLOCK_4X4 1 /* 4x4 block decode enable/disable */
+#define VQAAUDIO_ON 1   /* Audio playback enable/disable */
+#define VQAVIDEO_ON 0   /* Video manager enable/disable */
+#define VQAMCGA_ON 0    /* MCGA enable/disable */
+#define VQAXMODE_ON 0   /* Xmode enable/disable */
+#define VQAVESA_ON 0    /* VESA enable/disable */
+#define VQABLOCK_2X2 0  /* 2x2 block decode enable/disable */
+#define VQABLOCK_2X3 0  /* 2x2 block decode enable/disable */
+#define VQABLOCK_4X2 1  /* 4x2 block decode enable/disable */
+#define VQABLOCK_4X4 1  /* 4x4 block decode enable/disable */
 #define VQAWOOFER_ON 0
-#endif
-
-#if (VQAAUDIO_ON && VQADIRECT_SOUND)
-#define WIN32 1
-#ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
-#define _WIN32
-#endif  // _WIN32
-#undef WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <windowsx.h>
-#include "dsound.h"
-#endif
 
 /*---------------------------------------------------------------------------
  * GENERAL CONSTANT DEFINITIONS
@@ -201,15 +164,9 @@ typedef struct _VQAConfig {
   long OptionFlags;
   long NumFrameBufs;
   long NumCBBufs;
-#if VQASDL_SOUND
   uint32_t AudioDeviceID;  // SDL_AudioDeviceID
   void (**AudioCallback)(uint8_t *, int);
   void *AudioSpec;  // pointer to an SDL_AudioSpec
-#endif
-#if (VQADIRECT_SOUND)
-  LPDIRECTSOUND SoundObject;
-  LPDIRECTSOUNDBUFFER PrimaryBufferPtr;
-#endif  //(VQADIRECT_SOUND)
   char *VocFile;
   unsigned char *AudioBuf;
   long AudioBufSize;
@@ -308,9 +265,9 @@ typedef struct _VQAStatistics {
  *
  * VQAio - Something meaningful to the IO manager. (See DOCS)
  */
-typedef struct _VQAHandle {
+struct VQAHandle {
   uintptr_t VQAio;
-} VQAHandle;
+};
 
 /* Possible IO command values */
 #define VQACMD_INIT 1    /* Prepare the IO for a session */

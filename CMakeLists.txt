@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 project(CnCRedAlert)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;--checks=*,-llvmlibc-implementation-in-namespace,-llvmlibc-callee-namespace,-modernize-use-trailing-return-type,-fuchsia-default-arguments-calls,-llvmlibc-restrict-system-libc-headers")
+# set(CMAKE_CXX_CLANG_TIDY "clang-tidy;--checks=-*,google-*,modernize-*,bugprone-*,readability-*,misc-*,clang-analyzer-deadcode.*")
 
 # Include What You Use integration
 include(cmake/IWYU.cmake)

@@ -41,27 +41,14 @@
  *     August 21, 1995
  *
  ****************************************************************************/
-#include <stdint.h>
+#include <cstdint>
 
 #include "vqm32/video.h"
 #include "vqm32/soscomp.h"
-#include "vqm32/captoken.h"
-#include "vqafile.h"
-#include "vqaplay.h"
-#include "caption.h"
+#include "vqa32/vqafile.h"
+#include "vqa32/vqaplay.h"
 
-#if (VQAAUDIO_ON)
-#if VQASDL_SOUND
 extern void *MainWindow;
-#ifndef __cdecl
-#define __cdecl
-#endif
-#elif (VQADIRECT_SOUND)
-extern HWND MainWindow;
-#else
-#include "sos.h"
-#endif
-#endif
 
 /*---------------------------------------------------------------------------
  * GENERAL CONSTANT DEFINITIONS
@@ -286,12 +273,6 @@ typedef struct _VQAFlipper {
   long LastFrameNum;
 } VQAFlipper;
 
-#if (VQAAUDIO_ON)
-
-#ifdef __WATCOMC__
-#pragma pack(4);
-#endif
-
 /* VQAAudio: Data needed exclusively by audio playback.
  *           (Make sure this structure's size is always DWORD aligned.)
  *
@@ -355,29 +336,7 @@ typedef struct _VQAAudio {
   unsigned char BitsPerSample;
   unsigned long BytesPerSec;
   _SOS_COMPRESS_INFO ADPCM_Info;
-#if VQASDL_SOUND
   unsigned ChunksMovedToAudioBuffer;
-#elif (!VQADIRECT_SOUND)
-  WORD DigiHandle;
-  WORD SampleHandle;
-  WORD DigiTimer;
-  _SOS_START_SAMPLE sSOSSampleData;
-  _SOS_CAPABILITIES DigiCaps;
-  _SOS_HARDWARE DigiHardware;
-  _SOS_INIT_DRIVER sSOSInitDriver;
-#else
-  unsigned TimerHandle;
-  unsigned SoundTimerHandle;
-  LPDIRECTSOUNDBUFFER SecondaryBufferPtr;
-  WAVEFORMATEX DsBuffFormat;
-  DSBUFFERDESC BufferDesc;
-  unsigned SecondaryBufferSize;
-  unsigned EndLastAudioChunk;
-  unsigned ChunksMovedToAudioBuffer;
-  unsigned LastChunkPosition;
-  BOOL CreatedSoundObject;
-  BOOL CreatedSoundBuffer;
-#endif
 } VQAAudio;
 
 /* Audio flags. */
@@ -399,12 +358,6 @@ typedef struct _VQAAudio {
 #define HMI_UNINIT 0  /* Unitialize state. */
 #define HMI_VQAINIT 1 /* VQA initialized */
 #define HMI_APPINIT 2 /* Application initialized */
-
-#ifdef __WATCOMC__
-#pragma pack(1);
-#endif
-
-#endif /* VQAAUDIO_ON */
 
 /* VQAData: This stucture contains all the data used for playing a VQA.
  *
@@ -431,25 +384,14 @@ typedef struct _VQAAudio {
  */
 typedef struct _VQAData {
   long (*Draw_Frame)(VQAHandle *vqa);
-  long (*Page_Flip)(VQAHandle *vqa);
 
-#ifndef PHARLAP_TNT
   void __cdecl (*UnVQ)(unsigned char *codebook, unsigned char *pointers,
                        unsigned char *buffer, unsigned long blocksperrow,
                        unsigned long numrows, unsigned long bufwidth);
-#else
-  void __cdecl (*UnVQ)(unsigned char *codebook, unsigned char *pointers,
-                       FARPTR buffer, unsigned long blocksperrow,
-                       unsigned long numrows, unsigned long bufwidth);
-#endif
 
   VQAFrameNode *FrameData;
   VQACBNode *CBData;
-
-#if (VQAAUDIO_ON)
   VQAAudio Audio;
-#endif
-
   VQALoader Loader;
   VQADrawer Drawer;
   VQAFlipper Flipper;
@@ -486,23 +428,20 @@ typedef struct _VQAData {
  *             VQA_Alloc() and freed through VQA_Free(). This is the only
  *             legal way to obtain and dispose of a VQAHandle.
  *
- * VQAio     - Something meaningful to the IO manager. (See DOCS)
+ * Inherits VQAio from VQAHandle base class.
  * IOHandler - IO handler callback.
  * VQABuf    - Pointer to internal data buffers.
  * Config    - Configuration structure.
  * Header    - VQA header structure.
  * vocfh     - Override audiotrack file handle.
  */
-typedef struct _VQAHandleP {
-  unsigned long VQAio;
+struct VQAHandleP : VQAHandle {
   long (*IOHandler)(VQAHandle *vqa, long action, void *buffer, long nbytes);
   VQAData *VQABuf;
   VQAConfig Config;
   VQAHeader Header;
   long vocfh;
-  CaptionInfo *Caption;
-  CaptionInfo *EVA;
-} VQAHandleP;
+};
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
@@ -517,21 +456,15 @@ long User_Update(VQAHandle *vqa);
 long VQA_StartTimerInt(VQAHandleP *vqap, long init);
 void VQA_StopTimerInt(VQAHandleP *vqap);
 void VQA_SetTimer(VQAHandleP *vqap, long time, long method);
-unsigned long VQA_GetTime(VQAHandleP *vqap);
+int64_t VQA_GetTime(VQAHandleP *vqap);
 long VQA_TimerMethod(void);
 
 /* Audio system. */
-#if (VQAAUDIO_ON)
-#if VQASDL_SOUND
 long VQA_OpenAudio(VQAHandleP *vqap, void *window);
-#else
-long VQA_OpenAudio(VQAHandleP *vqap, HWND window);
-#endif
 void VQA_CloseAudio(VQAHandleP *vqap);
 long VQA_StartAudio(VQAHandleP *vqap);
 void VQA_StopAudio(VQAHandleP *vqap);
 long CopyAudio(VQAHandleP *vqap);
-#endif
 
 /* Debugging system. */
 void VQA_InitMono(VQAHandleP *vqap);

@@ -1,22 +1,15 @@
 add_library(vqa32 STATIC
-    config.cpp
-    task.cpp
-    loader.cpp
-    drawer.cpp
     audio.cpp
-    monodisp.cpp
+    config.cpp
+    drawer.cpp
     dstream.cpp
-    #unvqbuff.asm
-    #unvqvesa.asm
-    vertag.cpp
-    caption.cpp
-
+    loader.cpp
+    task.cpp
     unvqbuff.cpp
     vqmstub.cpp
 )
 
-target_include_directories(vqa32 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
-target_compile_definitions(vqa32 PRIVATE PORTABLE=1)
+target_include_directories(vqa32 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
 target_link_libraries(vqa32 PRIVATE port)
 
 find_package(SDL2 REQUIRED)

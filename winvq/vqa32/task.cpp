@@ -58,33 +58,21 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/timeb.h>
-#include <vqm32/all.h>
-#include "vqaplayp.h"
-#include <vqm32/font.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
+#include <cstdint>
+#include "vqa32/vqafile.h"
+#include "vqa32/vqaplay.h"
+#include "vqa32/vqaplayp.h"
+#include "vqm32/font.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
 /* Externals */
-#ifdef __cplusplus
 extern "C" {
-#endif
-
 extern int __cdecl Check_Key(void);
 extern int __cdecl Get_Key(void);
-
-#ifdef __cplusplus
 }
-#endif
 
 /****************************************************************************
  *
@@ -109,14 +97,9 @@ extern int __cdecl Get_Key(void);
  *
  ****************************************************************************/
 
-VQAHandle *VQA_Alloc(void) {
-  VQAHandleP *vqa;
-
-  if ((vqa = (VQAHandleP *)malloc(sizeof(VQAHandleP))) != NULL) {
-    memset(vqa, 0, sizeof(VQAHandleP));
-  }
-
-  return ((VQAHandle *)vqa);
+VQAHandle *VQA_Alloc() {
+  auto vqa = new VQAHandleP{};  // {} zero-initializes all members
+  return vqa;                   // Automatic upcast to VQAHandle*
 }
 
 /****************************************************************************
@@ -142,7 +125,7 @@ VQAHandle *VQA_Alloc(void) {
  ****************************************************************************/
 
 void VQA_Free(VQAHandle *vqa) {
-  if (vqa) free(vqa);
+  delete static_cast<VQAHandleP *>(vqa);  // Safe downcast to derived type
 }
 
 /****************************************************************************
@@ -168,9 +151,10 @@ void VQA_Free(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
-                                                void *buffer, long nbytes)) {
-  ((VQAHandleP *)vqa)->IOHandler = iohandler;
+void VQA_Init(VQAHandle *vqa,
+              int64_t (*iohandler)(VQAHandle *vqa, int64_t action, void *buffer,
+                                   int64_t nbytes)) {
+  static_cast<VQAHandleP *>(vqa)->IOHandler = iohandler;
 }
 
 /****************************************************************************
@@ -194,10 +178,8 @@ void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
  ****************************************************************************/
 
 void VQA_Reset(VQAHandle *vqa) {
-  VQAData *vqabuf;
-
   /* Dereference data members for quick access */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  auto *vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
 
   vqabuf->Flags = 0;
   vqabuf->LoadedFrames = 0;
@@ -233,20 +215,19 @@ int VQAMovieDone;
  *
  ****************************************************************************/
 
-long VQA_Play(VQAHandle *vqa, long mode) {
+int64_t VQA_Play(VQAHandle *vqa, int64_t mode) {
   VQAData *vqabuf;
   VQAConfig *config;
   VQADrawer *drawer;
-  long rc;
-  long i;
-  long key;
+  int64_t rc;
+  int64_t key;
 
 #ifdef WIN32
   unsigned char *pal;
-  long palsize;
-  long slowpal;
+  int64_t palsize;
+  int64_t slowpal;
   VQAFrameNode *curframe;
-  int setpalette;
+  int32_t setpalette;
 #endif  // WIN32
 
 #ifdef _WIN32
@@ -258,35 +239,27 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 #endif  // WIN32
 
   /* Dereference commonly used data members for quick access. */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
   drawer = &vqabuf->Drawer;
-  config = &((VQAHandleP *)vqa)->Config;
+  config = &static_cast<VQAHandleP *>(vqa)->Config;
 
   /* One time player priming. */
-  if (!(vqabuf->Flags & VQADATF_PRIMED)) {
+  if ((vqabuf->Flags & VQADATF_PRIMED) == 0) {
     /* Init the Drawer's configuration */
-    VQA_Configure_Drawer((VQAHandleP *)vqa);
+    VQA_Configure_Drawer(static_cast<VQAHandleP *>(vqa));
 
-/* If audio enabled & loaded, start playing */
-#if (VQAAUDIO_ON)
-    if ((config->OptionFlags & VQAOPTF_AUDIO) && vqabuf->Audio.IsLoaded[0]) {
-      VQA_StartAudio((VQAHandleP *)vqa);
+    /* If audio enabled & loaded, start playing */
+    if ((config->OptionFlags & VQAOPTF_AUDIO) != 0 &&
+        vqabuf->Audio.IsLoaded[0] != 0) {
+      VQA_StartAudio(static_cast<VQAHandleP *>(vqa));
     }
-#endif
 
     /* Initialize the timer */
-    i = ((vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS) /
-         config->DrawRate);
+    auto i = ((vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS) /
+              config->DrawRate);
 
-    VQA_SetTimer((VQAHandleP *)vqa, i, config->TimerMethod);
-    vqabuf->StartTime = VQA_GetTime((VQAHandleP *)vqa);
-
-/* Set up the Mono screen */
-#if (VQAMONO_ON)
-    if (config->OptionFlags & VQAOPTF_MONO) {
-      VQA_InitMono((VQAHandleP *)vqa);
-    }
-#endif
+    VQA_SetTimer(static_cast<VQAHandleP *>(vqa), i, config->TimerMethod);
+    vqabuf->StartTime = VQA_GetTime(static_cast<VQAHandleP *>(vqa));
 
     /* Priming is complete. */
     vqabuf->Flags |= VQADATF_PRIMED;
@@ -297,14 +270,12 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     case VQAMODE_PAUSE:
       if ((vqabuf->Flags & VQADATF_PAUSED) == 0) {
         vqabuf->Flags |= VQADATF_PAUSED;
-        vqabuf->EndTime = VQA_GetTime((VQAHandleP *)vqa);
+        vqabuf->EndTime = VQA_GetTime(static_cast<VQAHandleP *>(vqa));
 
-/* Stop the audio while the movie is paused. */
-#if (VQAAUDIO_ON)
-        if (vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) {
-          VQA_StopAudio((VQAHandleP *)vqa);
+        /* Stop the audio while the movie is paused. */
+        if ((vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) != 0) {
+          VQA_StopAudio(static_cast<VQAHandleP *>(vqa));
         }
-#endif
       }
 
       rc = VQAERR_PAUSED;
@@ -315,35 +286,35 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     default:
 
       /* Start up the movie if is it currently paused. */
-      if (vqabuf->Flags & VQADATF_PAUSED) {
+      if ((vqabuf->Flags & VQADATF_PAUSED) != 0) {
         vqabuf->Flags &= ~VQADATF_PAUSED;
 
-/* Start the audio if it was previously on. */
-#if (VQAAUDIO_ON)
-        if (config->OptionFlags & VQAOPTF_AUDIO) {
-          if (VQA_StartAudio((VQAHandleP *)vqa) != 0) {
+        /* Start the audio if it was previously on. */
+        if ((config->OptionFlags & VQAOPTF_AUDIO) != 0) {
+          if (VQA_StartAudio(static_cast<VQAHandleP *>(vqa)) != 0) {
             /* Stop audio, if it's playing. */
-            VQA_StopAudio((VQAHandleP *)vqa);
+            VQA_StopAudio(static_cast<VQAHandleP *>(vqa));
 #ifdef _WIN32
             /*
             ** Restore the process priority level
             */
             SetPriorityClass(GetCurrentProcess(), process_priority);
-#endif  // WIN32
+#endif  // _WIN32
             return (VQAERR_EOF);
           }
         }
-#endif
 
-        VQA_SetTimer((VQAHandleP *)vqa, vqabuf->EndTime, config->TimerMethod);
+        VQA_SetTimer(static_cast<VQAHandleP *>(vqa), vqabuf->EndTime,
+                     config->TimerMethod);
       }
 
       /* Load, Draw, Load, Draw, Load, Draw ... */
       while ((vqabuf->Flags & (VQADATF_DDONE | VQADATF_LDONE)) !=
              (VQADATF_DDONE | VQADATF_LDONE)) {
         /* Load a frame */
-        if (!(vqabuf->Flags & VQADATF_LDONE)) {
-          if ((rc = VQA_LoadFrame(vqa)) == 0) {
+        if ((vqabuf->Flags & VQADATF_LDONE) == 0) {
+          rc = VQA_LoadFrame(vqa);
+          if (rc == 0) {
             vqabuf->LoadedFrames++;
           } else {
             if ((rc != VQAERR_NOBUFFER) && (rc != VQAERR_SLEEPING)) {
@@ -357,7 +328,8 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 
         /* Draw a frame */
         if ((config->DrawFlags & VQACFGF_NODRAW) == 0) {
-          if ((rc = (*(vqabuf->Draw_Frame))(vqa)) == 0) {
+          rc = (*(vqabuf->Draw_Frame))(vqa);
+          if (rc == 0) {
             vqabuf->DrawnFrames++;
             rc = vqabuf->Drawer.LastFrameNum;
 
@@ -374,7 +346,7 @@ long VQA_Play(VQAHandle *vqa, long mode) {
             }
 #endif
 
-            if (User_Update(vqa)) {
+            if (User_Update(vqa) != 0) {
               vqabuf->Flags |= (VQADATF_DDONE | VQADATF_LDONE);
             }
 #ifdef WIN32never
@@ -389,17 +361,18 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 #endif  // WIN32
 
           } else {
-            if (rc == VQAERR_EOF) break;
-            if ((vqabuf->Flags & VQADATF_LDONE) && (rc == VQAERR_NOBUFFER)) {
+            if (rc == VQAERR_EOF) {
+              break;
+            }
+            if ((vqabuf->Flags & VQADATF_LDONE) != 0 &&
+                (rc == VQAERR_NOBUFFER)) {
               vqabuf->Flags |= VQADATF_DDONE;
             }
 
-#ifdef PORTABLE
-            if (rc == VQAERR_NOT_TIME && config->EventHandler) {
+            if (rc == VQAERR_NOT_TIME && config->EventHandler != nullptr) {
               // zzz
-              config->EventHandler(VQAEVENT_SYNC, NULL, 0);
+              config->EventHandler(VQAEVENT_SYNC, nullptr, 0);
             }
-#endif
           }
         } else {
           vqabuf->Flags |= VQADATF_DDONE;
@@ -407,37 +380,9 @@ long VQA_Play(VQAHandle *vqa, long mode) {
           drawer->CurFrame = drawer->CurFrame->Next;
         }
 
-/* Update Mono output */
-#if (VQAMONO_ON)
-        if (config->OptionFlags & VQAOPTF_MONO) {
-          VQA_UpdateMono((VQAHandleP *)vqa);
-        }
-#endif
-
         if (mode == VQAMODE_WALK) {
           break;
         }
-#if (VQASTANDALONE)
-        else {
-
-          /* Do single-stepping check. */
-          if (config->OptionFlags & VQAOPTF_STEP) {
-            while ((key = Check_Key()) == 0);
-            Get_Key();
-
-            /* Escape key still quits. */
-            if (key == 27) {
-              break;
-            }
-          }
-
-          /* Check for ESC */
-          if ((key = Check_Key()) != 0) {
-            mode = VQAMODE_STOP;
-            break;
-          }
-        }
-#endif
       }
       break;
   }
@@ -449,18 +394,16 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     /* Record the end time; must be done before stopping audio, since we're
      * getting the elapsed time from the audio DMA position.
      */
-    vqabuf->EndTime = VQA_GetTime((VQAHandleP *)vqa);
+    vqabuf->EndTime = VQA_GetTime(static_cast<VQAHandleP *>(vqa));
 
     /* Movie is finished. */
     rc = VQAERR_EOF;
   }
 
-/* Stop audio, if it's playing. */
-#if (VQAAUDIO_ON)
-  if (vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) {
-    VQA_StopAudio((VQAHandleP *)vqa);
+  /* Stop audio, if it's playing. */
+  if ((vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) != 0) {
+    VQA_StopAudio(static_cast<VQAHandleP *>(vqa));
   }
-#endif
 
 #ifdef _WIN32
   /*
@@ -495,19 +438,18 @@ long VQA_Play(VQAHandle *vqa, long mode) {
  *
  ****************************************************************************/
 
-long VQA_SetStop(VQAHandle *vqa, long stop) {
-  long oldstop = -1;
-  VQAHeader *header;
+auto VQA_SetStop(VQAHandle *vqa, int64_t stop) -> int64_t {
+  int64_t oldstop = -1;
 
   /* Get a local pointer to the header. */
-  header = &((VQAHandleP *)vqa)->Header;
+  auto *header = &static_cast<VQAHandleP *>(vqa)->Header;
 
-  if ((stop > 0) && (header->Frames >= stop)) {
+  if (stop > 0 && header->Frames >= stop) {
     oldstop = header->Frames;
     header->Frames = stop;
   }
 
-  return (oldstop);
+  return oldstop;
 }
 
 /****************************************************************************
@@ -533,15 +475,12 @@ long VQA_SetStop(VQAHandle *vqa, long stop) {
  ****************************************************************************/
 
 void VQA_GetInfo(VQAHandle *vqa, VQAInfo *info) {
-  VQAHeader *header;
-
-  /* Dereference header structure. */
-  header = &((VQAHandleP *)vqa)->Header;
+  auto *header = &static_cast<VQAHandleP *>(vqa)->Header;
 
   info->NumFrames = header->Frames;
   info->ImageHeight = header->ImageHeight;
   info->ImageWidth = header->ImageWidth;
-  info->ImageBuf = ((VQAHandleP *)vqa)->VQABuf->Drawer.ImageBuf;
+  info->ImageBuf = static_cast<VQAHandleP *>(vqa)->VQABuf->Drawer.ImageBuf;
 }
 
 /****************************************************************************
@@ -570,7 +509,7 @@ void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats) {
   VQAData *vqabuf;
 
   /* Dereference VQAData structure from VQAHandle */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
 
   stats->MemUsed = vqabuf->MemUsed;
   stats->StartTime = vqabuf->StartTime;
@@ -579,12 +518,7 @@ void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats) {
   stats->FramesDrawn = vqabuf->DrawnFrames;
   stats->FramesSkipped = vqabuf->Drawer.NumSkipped;
   stats->MaxFrameSize = vqabuf->Loader.MaxFrameSize;
-
-#if (VQAAUDIO_ON)
   stats->SamplesPlayed = vqabuf->Audio.SamplesPlayed;
-#else
-  stats->SamplesPlayed = 0;
-#endif
 }
 
 /****************************************************************************
@@ -608,7 +542,7 @@ void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats) {
  *
  ****************************************************************************/
 
-char *VQA_Version(void) { return (VQA_VERSION); }
+char *VQA_Version() { return (VQA_VERSION); }
 
 /****************************************************************************
  *
@@ -631,7 +565,7 @@ char *VQA_Version(void) { return (VQA_VERSION); }
  *
  ****************************************************************************/
 
-char *VQA_IDString(void) { return (VQA_IDSTRING); }
+char *VQA_IDString() { return (VQA_IDSTRING); }
 
 /****************************************************************************
  *
@@ -653,26 +587,19 @@ char *VQA_IDString(void) { return (VQA_IDSTRING); }
  *
  ****************************************************************************/
 
-long User_Update(VQAHandle *vqa) {
-  VQAData *vqabuf;
-  long rc = 0;
+int64_t User_Update(VQAHandle *vqa) {
+  auto *vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
 
-  /* Dereference data members for quicker access. */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
-
-  if (vqabuf->Flags & VQADATF_UPDATE) {
-    /* Invoke the page flip routine */
-    rc = (*(vqabuf->Page_Flip))(vqa);
-
-    /* Update data for mono output */
+  if ((vqabuf->Flags & VQADATF_UPDATE) != 0) {
+    // Update data for mono output
     vqabuf->Flipper.LastFrameNum = vqabuf->Flipper.CurFrame->FrameNum;
 
-    /* Mark the frame as loadable */
-    vqabuf->Flipper.CurFrame->Flags = 0L;
+    // Mark the frame as loadable
+    vqabuf->Flipper.CurFrame->Flags = 0;
     vqabuf->Flags &= (~VQADATF_UPDATE);
   }
 
-  return (rc);
+  return 0;
 }
 
-void VQA_Dummy(void) { Set_Font(NULL); }
+void VQA_Dummy() { Set_Font(nullptr); }

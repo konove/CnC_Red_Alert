@@ -1126,7 +1126,7 @@ void VQA_SetTimer(VQAHandleP *vqap, long time, long method) {
  *
  ****************************************************************************/
 
-unsigned long VQA_GetTime(VQAHandleP *vqap) {
+int64_t VQA_GetTime(VQAHandleP *vqap) {
 #if (VQAAUDIO_ON)
   VQAAudio *audio;
   VQAConfig *config;

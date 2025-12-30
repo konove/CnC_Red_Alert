@@ -38,6 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <filesystem>
+
 #define WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <wwlib32.h>
@@ -106,26 +108,18 @@ int PASCAL WinMain(HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpszCmdParam,
   unsigned olddrive;
   char oldpath[PATH_MAX];
 
-  /*
-  ** Get a path to the executable and make sure that we are pointing
-  ** at the location our datafiles are located at.
-  */
-  GetModuleFileName(hInstance, &path_to_exe[0], 132);
-  getcwd(oldpath, sizeof(oldpath));
-  _dos_getdrive(&olddrive);
+  // Save current directory (in case we need to restore it later)
+  auto old_path = std::filesystem::current_path();
 
-  _splitpath(path_to_exe, drive, path, NULL, NULL);
-  if (!drive[0]) {
-    drive[0] = (char)(('A' + olddrive) - 1);
-  }
-  if (!path[0]) {
-    strcpy(path, ".");
-  }
-  _dos_setdrive(toupper((drive[0]) - 'A') + 1, &drivecount);
-  if (path[strlen(path) - 1] == '\\') {
-    path[strlen(path) - 1] = '\0';
-  }
-  chdir(path);
+  // Get executable path and change to its directory
+  char exe_path_buf[MAX_PATH];
+  GetModuleFileName(hInstance, exe_path_buf, MAX_PATH);
+
+  std::filesystem::path exe_dir =
+      std::filesystem::path(exe_path_buf).parent_path();
+
+  std::error_code ec;
+  std::filesystem::current_path(exe_dir, ec);
 
   //
   // Register the window class

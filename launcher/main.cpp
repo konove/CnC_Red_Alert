@@ -49,6 +49,7 @@ app.
 
 \*****************************************************************************/
 
+#include <filesystem>
 #include "dialog.h"
 #include "patch.h"
 #include "findpatch.h"
@@ -195,33 +196,17 @@ void CreatePrimaryWin(char *prefix) {
   }
 }
 
-// void DestroyPrimaryWin(void)
-//{
-//   DestroyWindow(PrimaryWin);
-//   UnregisterClass(classname);
-// }
+// Change to the directory containing the given file path
+void myChdir(const char *path) {
+  namespace fs = std::filesystem;
 
-//
-// If given a file, it'll goto it's directory.  If on a diff drive,
-//   it'll go there.
-//
-void myChdir(char *path) {
-  char drive[10];
-  char dir[255];
-  char file[255];
-  char ext[64];
-  char filepath[513];
-  int abc;
+  try {
+    fs::path dir_path = fs::path(path).parent_path();
 
-  _splitpath(path, drive, dir, file, ext);
-  _makepath(filepath, drive, dir, NULL, NULL);
-
-  if (filepath[strlen(filepath) - 1] == '\\') {
-    filepath[strlen(filepath) - 1] = '\0';
+    if (!dir_path.empty()) {
+      fs::current_path(dir_path);
+    }
+  } catch (const fs::filesystem_error &err) {
+    std::cerr << "Failed to change directory: " << err.what() << '\n';
   }
-  abc = (unsigned)(toupper(filepath[0]) - 'A' + 1);
-  if (!_chdrive(abc)) {
-    abc = chdir(filepath);  // Will fail with ending '\\'
-  }
-  // should be in proper folder now....
 }
