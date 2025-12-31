@@ -41,7 +41,7 @@
 #define CCFILE_H
 
 // #include	<wwlib32.h>
-#include <limits.h>
+#include <climits>
 #include "mixfile.h"
 #include "cdfile.h"
 #include "buff.h"

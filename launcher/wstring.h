@@ -29,8 +29,8 @@ Last Update : June 17, 1997
 #ifndef WSTRING_HEADER
 #define WSTRING_HEADER
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "wstypes.h"
 
 class Wstring {

@@ -56,9 +56,9 @@
 #include <dos.h>
 #include <fcntl.h>
 #include <io.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <search.h>
 #include <sys\stat.h>
 

@@ -38,8 +38,8 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <stdint.h>
-#include <time.h>
+#include <cstdint>
+#include <ctime>
 
 /*=========================================================================*/
 /* File IO system defines and enumerations

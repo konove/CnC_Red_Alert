@@ -53,7 +53,7 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include <malloc.h>
 #include <io.h>
 #include <fcntl.h>

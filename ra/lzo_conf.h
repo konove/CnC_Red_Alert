@@ -74,8 +74,8 @@
 //
 ************************************************************************/
 
-#include <stddef.h> /* ptrdiff_t, size_t */
-#include <string.h> /* memcpy, memmove, memcmp, memset */
+#include <cstddef> /* ptrdiff_t, size_t */
+#include <cstring> /* memcpy, memmove, memcmp, memset */
 
 #if 0 && !defined(assert)
 #error <assert.h> not included

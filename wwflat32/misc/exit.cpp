@@ -38,10 +38,10 @@
 #include "wwstd.h"
 #include "misc.h"
 
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#include <ctime>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdarg>
 
 /***************************************************************************
  * EXIT -- Exit routine with message.                                      *

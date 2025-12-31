@@ -45,8 +45,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <sys\types.h>
 #include <sys\stat.h>
 #include <fcntl.h>
@@ -94,8 +94,8 @@ unsigned EndCodeSegment;  // Length of the sampled programs code segments
 typedef struct tFunction {
   unsigned FunctionAddress;  // Address of function relative to start of code
                              // seg
-  char *FunctionName;  // Ptr to name of function in FunctionNames buffer
-  int Hits;            // Number of times function was 'hit' when sampling
+  char *FunctionName;        // Ptr to name of function in FunctionNames buffer
+  int Hits;                  // Number of times function was 'hit' when sampling
 } Function;
 
 Function FunctionList[10000];  // max 10,000 functions in map file.

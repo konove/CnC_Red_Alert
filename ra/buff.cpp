@@ -43,7 +43,7 @@
  *- - - - - - - */
 
 #include "buff.h"
-#include <stddef.h>
+#include <cstddef>
 
 /***********************************************************************************************
  * Buffer::Buffer -- Constructor for buffer object. *

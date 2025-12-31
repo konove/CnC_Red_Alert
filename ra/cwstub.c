@@ -16,56 +16,53 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <process.h>
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 
-char *dos4g_path()
-{
-	static char *paths_to_check[] = {
-		"DOS4GPATH",
-		"PATH"
-	};
-	static char fullpath[80];
-	char *dos4gpath;
-	int i;
-	
-	/* If DOS4GPATH points to an executable file name, don't bother
-	   searching any paths for DOS4GW.EXE.
-	*/
-	if (dos4gpath = getenv("DOS4GPATH")) {
-	 	strlwr(strcpy(fullpath, dos4gpath));
-		if (strstr(fullpath, ".exe")) {
-			return(fullpath);
-		}
-	}
-	for( i = 0; i < sizeof(paths_to_check) / sizeof(paths_to_check[0]); i++ ) {
-		_searchenv("dos4gw.exe", paths_to_check[i], fullpath);
-		if (fullpath[0]) {
-			return( &fullpath );
-		}
-	}
-	return("dos4gw.exe");
+char *dos4g_path() {
+  static char *paths_to_check[] = {"DOS4GPATH", "PATH"};
+  static char fullpath[80];
+  char *dos4gpath;
+  int i;
+
+  /* If DOS4GPATH points to an executable file name, don't bother
+     searching any paths for DOS4GW.EXE.
+  */
+  if (dos4gpath = getenv("DOS4GPATH")) {
+    strlwr(strcpy(fullpath, dos4gpath));
+    if (strstr(fullpath, ".exe")) {
+      return (fullpath);
+    }
+  }
+  for (i = 0; i < sizeof(paths_to_check) / sizeof(paths_to_check[0]); i++) {
+    _searchenv("dos4gw.exe", paths_to_check[i], fullpath);
+    if (fullpath[0]) {
+      return (&fullpath);
+    }
+  }
+  return ("dos4gw.exe");
 }
 
-main( int argc, char *argv[] )
-{
-	char	*av[4];
-	auto char	cmdline[128];
-	
-	av[0] = dos4g_path();		/* Locate the DOS/4GW loader */
-	av[1] = argv[0];			/* name of executable to run */
-	av[2] = getcmd(cmdline);	/* command line */
-	av[3] = NULL;				/* end of list */
+main(int argc, char *argv[]) {
+  char *av[4];
+  auto char cmdline[128];
+
+  av[0] = dos4g_path();    /* Locate the DOS/4GW loader */
+  av[1] = argv[0];         /* name of executable to run */
+  av[2] = getcmd(cmdline); /* command line */
+  av[3] = NULL;            /* end of list */
 #ifdef VMM
-	putenv("DOS4GVM=MINMEM#2000 MAXMEM#16000 SWAPMIN#4096 SWAPINC#1024 VIRTUALSIZE#10000 SWAPFILE#CONQUER.SWP DELETESWAP @CONQUER.VMC");
+  putenv(
+      "DOS4GVM=MINMEM#2000 MAXMEM#16000 SWAPMIN#4096 SWAPINC#1024 "
+      "VIRTUALSIZE#10000 SWAPFILE#CONQUER.SWP DELETESWAP @CONQUER.VMC");
 #endif
 #ifdef QUIET
-	putenv("DOS4G=QUIET");	/* disables DOS/4GW Copyright banner */
+  putenv("DOS4G=QUIET"); /* disables DOS/4GW Copyright banner */
 #endif
-	execvp(av[0], av);
-	perror(av[0]);
-	exit(1);					/* indicate error */
+  execvp(av[0], av);
+  perror(av[0]);
+  exit(1); /* indicate error */
 }

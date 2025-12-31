@@ -56,7 +56,7 @@
 
 #include <WINDOWS.H>
 #include "ccdde.h"
-#include <stdio.h>
+#include <cstdio>
 #include <timer.h>
 
 DDEServerClass DDEServer;  // Instance of the DDE Server class

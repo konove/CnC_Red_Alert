@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #include "iff.h"
 
 unsigned long Uncompress_Data(void const *src, void *dst) {

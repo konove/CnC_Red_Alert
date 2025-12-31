@@ -21,7 +21,7 @@
 #include <sys\stat.h>
 #include <fcntl.h>
 #include <io.h>
-#include <stdio.h>
+#include <cstdio>
 
 unsigned char thunk_file[1000000];
 unsigned char thunk_file_out[100050];

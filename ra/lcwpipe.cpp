@@ -42,8 +42,8 @@
 
 #include "lcwpipe.h"
 #include "lcw.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /***********************************************************************************************
  * LCWPipe::LCWPipe -- Constructor for the LCW processor pipe. *

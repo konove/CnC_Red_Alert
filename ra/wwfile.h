@@ -47,8 +47,8 @@
 #define MINUTE(dt) ((dt & 0x000007E0) >> 5)
 #define SECOND(dt) ((dt & 0x0000001F) << 1)
 
-#include <stdio.h>
-#include <stddef.h>
+#include <cstdio>
+#include <cstddef>
 
 #ifndef READ
 #define READ 1
@@ -59,7 +59,7 @@
 
 class FileClass {
  public:
-  virtual ~FileClass(void){};
+  virtual ~FileClass(void) {};
   virtual char const *File_Name(void) const = 0;
   virtual char const *Set_Name(char const *filename) = 0;
   virtual int Create(void) = 0;

@@ -57,7 +57,7 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include <malloc.h>
 #include <dos.h>
 #include <mem.h>

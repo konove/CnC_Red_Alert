@@ -42,8 +42,8 @@
 // Once it is, the FALSE parts should be removed from the source code.
 #define LIB_EXTERNS_RESOLVED FALSE
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <dos.h>
 #include <bios.h>
 
@@ -213,7 +213,7 @@ typedef void VOID;
 #define PROC_PENTIUM 2
 
 // Inline Routines
-// ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //
 // These Template functions are generally used
 // by classes when they havce over loaded > and <.

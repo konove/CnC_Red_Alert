@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <stdio.h>
+#include <cstdio>
 #include <forward_list>
 
 #include "net_select.h"

@@ -41,7 +41,7 @@
 #ifndef JSHELL_H
 #define JSHELL_H
 
-#include <stdint.h>
+#include <cstdint>
 
 /*
 **	Interface class to the keyboard. This insulates the game from library

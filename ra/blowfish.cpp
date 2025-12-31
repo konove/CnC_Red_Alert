@@ -45,8 +45,8 @@
  *- - - - - - - */
 
 #include "blowfish.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /*
 **	Byte order controlled long integer. This integer is constructed

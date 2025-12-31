@@ -42,7 +42,7 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include <mem.h>
 #include <dos.h>
 #include "video.h"

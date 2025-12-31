@@ -42,7 +42,7 @@
 
 #include "random.h"
 #ifdef RANDOM_COUNT
-#include <stdio.h>
+#include <cstdio>
 extern long Frame;
 #endif
 

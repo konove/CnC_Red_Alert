@@ -52,8 +52,8 @@
 
 #include "combuf.h"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "connect.h"
 #include "monoc.h"
 #include "wwlib32.h"

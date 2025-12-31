@@ -67,10 +67,10 @@
 
 #include "function.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
 #include <algorithm>
 #include "inline.h"
 #include "list.h"

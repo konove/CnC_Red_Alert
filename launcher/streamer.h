@@ -19,11 +19,11 @@
 #ifndef STREAMER_HEADER
 #define STREAMER_HEADER
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
 #include <iostream.h>
-#include <string.h>
+#include <cstring>
 
 #include "odevice.h"
 

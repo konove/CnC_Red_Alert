@@ -36,7 +36,7 @@
 #ifndef MEMFLAG_H
 #define MEMFLAG_H
 
-#include <stddef.h>
+#include <cstddef>
 
 // Memory Flags
 /*

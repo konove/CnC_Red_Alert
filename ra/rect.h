@@ -40,7 +40,7 @@
 #ifndef RECT_H
 #define RECT_H
 
-#include <stddef.h>
+#include <cstddef>
 
 class Rect {
  public:

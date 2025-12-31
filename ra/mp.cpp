@@ -85,11 +85,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cassert>
+#include <climits>
 #include "mp.h"
 
 #ifndef __BORLANDC__

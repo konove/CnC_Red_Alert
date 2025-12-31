@@ -63,7 +63,7 @@
 #include "function.h"
 #include "wsproto.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _WIN32
 typedef int socklen_t;

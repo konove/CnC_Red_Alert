@@ -43,7 +43,7 @@
 #include "straw.h"
 #include "buff.h"
 #include "wwfile.h"
-#include <stddef.h>
+#include <cstddef>
 
 /*
 **	This class is used to manage a buffer as a data source. Data requests

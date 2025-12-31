@@ -57,7 +57,7 @@
 
 #include <direct.h>
 #include <search.h>
-#include <string.h>
+#include <cstring>
 
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */

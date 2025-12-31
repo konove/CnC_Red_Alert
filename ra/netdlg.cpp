@@ -138,7 +138,7 @@
 #include <dos.h>
 #endif  // WIN32
 
-#include <time.h>
+#include <ctime>
 
 #include "woldebug.h"
 

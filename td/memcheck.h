@@ -567,12 +567,12 @@ extern unsigned _STACKTOP; /* top of stack */
 /* End CCDEFS */
 
 #if !defined(NULL) /* pull in stdio.h if not already */
-#include <stdio.h>
+#include <cstdio>
 #endif
 
 /* Backup... sometimes NULL defined in other headers */
 #if !defined(_IOFBF) /* pull in stdio.h if not already */
-#include <stdio.h>
+#include <cstdio>
 #endif
 
 /* *** MemCheck Constants *** */
@@ -1448,7 +1448,7 @@ extern "C" {
     the behavior of host code.
 */
 #if !defined(va_start) /* avoid multiple inclusion... */
-#include <stdarg.h>
+#include <cstdarg>
 #endif
 
 /* *** Compiler-specific includes *** */
@@ -1461,7 +1461,7 @@ extern "C" {
 #endif
 
 #if !defined(_INC_STRING) /* C7.x and later optimization */
-#include <string.h>
+#include <cstring>
 #endif
 
 #elif defined(_CC_BORLAND_)
@@ -1472,7 +1472,7 @@ extern "C" {
 
 /* String functions must be proto'd before pragmas */
 #if !defined(__STRING_H)
-#include <string.h>
+#include <cstring>
 #endif
 
 #endif /* Compiler-specific includes */

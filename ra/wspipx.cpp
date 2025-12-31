@@ -46,8 +46,8 @@
 #include "wspipx.h"
 #include "ipxaddr.h"
 
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #ifdef _WIN32
 /*

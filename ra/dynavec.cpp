@@ -47,7 +47,7 @@
 #include "wsproto.h"
 #include "wspudp.h"
 #endif  // WINSOCK_IPX
-#include <stdio.h>
+#include <cstdio>
 
 /***********************************************************************************************
  * DynamicVectorClass<T>::DynamicVectorClass -- Constructor for dynamic vector.

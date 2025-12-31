@@ -65,8 +65,8 @@
 #endif
 #endif
 
-#include <stdlib.h>
-#include <stddef.h>
+#include <cstdlib>
+#include <cstddef>
 
 /**************************************************************************
 **	This is a general purpose vector class. A vector is defined by this
@@ -82,7 +82,7 @@
 template <class T>
 class VectorClass {
  public:
-  VectorClass(NoInitClass const &){};
+  VectorClass(NoInitClass const &) {};
   VectorClass(unsigned size = 0, T const *array = nullptr);
   VectorClass(VectorClass<T> const &);  // Copy constructor.
   virtual ~VectorClass(void);

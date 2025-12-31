@@ -43,7 +43,7 @@
  *
  ****************************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <dos.h>
 #include <conio.h>
 

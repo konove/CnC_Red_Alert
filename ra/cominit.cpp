@@ -21,8 +21,8 @@
 //
 
 #include "cominit.h"
-// #include <stdlib.h>
-// #include <stdio.h>
+// #include <cstdlib>
+// #include <cstdio>
 // #include <windows.h>
 #include <objbase.h>
 // #include "externs.h"

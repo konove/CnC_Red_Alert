@@ -41,11 +41,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <malloc.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 #include <dos.h>
 #include <bios.h>
-#include <stdio.h>
+#include <cstdio>
 
 #ifndef WWMEM_H
 #include "wwmem.h"
@@ -416,7 +416,8 @@ void Free(void const *pointer) {
 //			*(byteptr + 2) || *(byteptr + 3) ) {
 //			if (Memory_Error_Exit != NULL) {
 //				sprintf( string, "Error freeing pointer %p.
-//Header invalid!!!\n", pointer ); 				Memory_Error_Exit( string );
+// Header invalid!!!\n", pointer );
+// Memory_Error_Exit( string );
 //			}
 //		}
 #else

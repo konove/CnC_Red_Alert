@@ -70,7 +70,7 @@
 #include <misc.h>
 #include <iff.h>
 #include <mem.h>
-#include <string.h>
+#include <cstring>
 
 //
 // WSA animation header allocation type.

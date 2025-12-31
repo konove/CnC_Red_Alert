@@ -1,7 +1,6 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstdlib>
 
 #include "misc.h"
 #include "timer.h"

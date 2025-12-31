@@ -40,7 +40,7 @@
 #ifndef JSHELL_H
 #define JSHELL_H
 
-#include <assert.h>
+#include <cassert>
 
 #ifdef WIN32
 // #define getch	Get_Key_Num

@@ -41,8 +41,8 @@
 
 #include "lzostraw.h"
 #include "lzo.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /***********************************************************************************************
  * LZWStraw::LZWStraw -- Constructor for LZW straw object. *

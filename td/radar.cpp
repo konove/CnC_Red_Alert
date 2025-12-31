@@ -76,7 +76,7 @@
 #include "function.h"
 
 #include <filesystem>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 
 // void const * RadarClass::CoverShape;
@@ -1331,10 +1331,10 @@ void RadarClass::AI(KeyNumType &input, int x, int y) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
-  CELL cell;                // cell num click happened over
-  int x, y;                 // Sub cell pixel coordinates.
-  int cellx, celly;         // Sub cell pixel coordinates.
-  bool shadow;              // is the cell in shadow or not
+  CELL cell;                      // cell num click happened over
+  int x, y;                       // Sub cell pixel coordinates.
+  int cellx, celly;               // Sub cell pixel coordinates.
+  bool shadow;                    // is the cell in shadow or not
   ObjectClass *object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.

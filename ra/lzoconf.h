@@ -48,7 +48,7 @@
 #define LZO_VERSION_STRING "0.20"
 #define LZO_VERSION_DATE "11 Aug 1996"
 
-#include <limits.h> /* CHAR_BIT, UINT_MAX, ULONG_MAX */
+#include <climits> /* CHAR_BIT, UINT_MAX, ULONG_MAX */
 #if !defined(CHAR_BIT) || (CHAR_BIT != 8)
 #error invalid CHAR_BIT
 #endif

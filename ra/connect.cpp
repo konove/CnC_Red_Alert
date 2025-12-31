@@ -46,7 +46,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
-#include <stdio.h>
+#include <cstdio>
 #include <sys/timeb.h>
 #include "connect.h"
 

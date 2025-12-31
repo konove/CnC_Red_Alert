@@ -40,9 +40,9 @@
  *- - - - - - - */
 
 #include "function.h"
-#include <stdarg.h>
+#include <cstdarg>
 #include <filepcx.h>
-#include <stdio.h>
+#include <cstdio>
 #ifdef CHEAT_KEYS
 
 extern bool ScreenRecording;
@@ -164,7 +164,7 @@ void Debug_Key(unsigned input) {
 
       case KN_Z:
         //				new AnimClass(ANIM_LZ_SMOKE,
-        //Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
+        // Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
         GDI_Ending();
         break;
 

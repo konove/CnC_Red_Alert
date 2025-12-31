@@ -19,8 +19,8 @@
 #ifndef MONOD_HEADER
 #define MONOD_HEADER
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include "odevice.h"
 
 ///////////////////////// WIN32 ONLY ///////////////////////////////////

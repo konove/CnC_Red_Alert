@@ -33,7 +33,7 @@
 #include "function.h"
 
 // #include "cominit.h"
-#include <stdio.h>
+#include <cstdio>
 
 //	From OBJBASE.H
 #define interface struct
@@ -45,7 +45,7 @@
 
 // namespace WOL		//	namespace is workaround due to the use
 // of "Server" as a global in Red Alert. 	ajw - Can't use namespaces in
-//Watcom 10.5 it seems...
+// Watcom 10.5 it seems...
 //{
 #include "wolapi\wolapi.h"
 #define IID_DEFINED
@@ -165,7 +165,7 @@ class RAChatEventSink
 
   unsigned long GetPlayerGameIP(const char* szPlayerName) const;
   void DeleteUserList();  //	Deletes from heap all users pointed to through
-                          //pUserList.
+                          // pUserList.
   void DeleteUserIPList();
   unsigned long GetUserIP(const char* szName) const;
 
@@ -173,10 +173,10 @@ class RAChatEventSink
 
  public:
   //	These vars are rather hackish. Basically, they are set before a callback
-  //is expected to be fired, and 	then checked immediately afterwards. The rest
-  //of the time, their values are meaningless. 	The idea is to force wolapi act
-  //in a modal way. In many places I "block" until a callback response to a
-  //	wolapi request has been received.
+  // is expected to be fired, and 	then checked immediately afterwards. The
+  // rest of the time, their values are meaningless. 	The idea is to force
+  // wolapi act in a modal way. In many places I "block" until a callback
+  // response to a 	wolapi request has been received.
   bool bRequestServerListWait;
   bool bRequestConnectionWait;
   bool bRequestLogoutWait;
@@ -190,10 +190,10 @@ class RAChatEventSink
 
   bool bRequestChannelListForLobbiesWait;
 
-  bool
-      bIgnoreChannelLists;  //	Used to temporarily turn off response to channel
-                            //lists, when we are in the midst 	of some processing
-                            //that depends on pChannelList remaining constant.
+  bool bIgnoreChannelLists;  //	Used to temporarily turn off response to channel
+                             // lists, when we are in the midst 	of some
+                             // processing that depends on pChannelList
+                             // remaining constant.
 
   bool bRequestGameStartWait;
 
@@ -203,7 +203,7 @@ class RAChatEventSink
 
   Channel* pChannelList;        //	First element of channel list, or null.
   CHANNELFILTER ChannelFilter;  //	Affects what channels are included in
-                                //channel list when built.
+                                // channel list when built.
 
   User* pUserList;  //	First element of user list, or null.
   User* pUserTail;  //	Last element of user list, or null.
@@ -219,22 +219,22 @@ class RAChatEventSink
   HRESULT hresRequestJoinResult;  //	Used to pass hresult.
 
   bool bGotKickedTrigger;  //	Special flag meaning do some more processing
-                           //after callback has exited.
+                           // after callback has exited.
 
   User* pGameUserList;  //	First element of start game user list, or null.
   int iGameID;          //	WW Online game id received from OnGameStart.
                         //	Is also a flag indicating "OnGameStart() called,
-                        //TriggerGameStart() not yet called".
+                        // TriggerGameStart() not yet called".
 
   User* pUserIPList;  //	List that holds user IP's, used for pinging in
-                      //game channel.
+                      // game channel.
   User* pUserIPListTail;
 
  protected:
   WolapiObject* pOwner;  //	Link back to the object that contains me.
 
   void DeleteChannelList();  //	Deletes from heap all channels pointed to
-                             //through pChannelList.
+                             // through pChannelList.
   bool DownloadUpdates(Update* pUpdateList, int iUpdates);
   bool bSpecialMessage(const char* szMessage);
   void InsertUserSorted(User* pUserNew);
@@ -249,7 +249,7 @@ class RADownloadEventSink :
     public IDownloadEvent {
  public:
   RADownloadEventSink();
-  virtual ~RADownloadEventSink(){};
+  virtual ~RADownloadEventSink() {};
 
   //  BEGIN_COM_MAP(RADownloadEventSink)
   //    COM_INTERFACE_ENTRY(IDownloadEvent)
@@ -310,7 +310,7 @@ class RANetUtilEventSink :
   STDMETHOD(OnPing)(HRESULT res, int time, unsigned long ip, int handle);
 
   void DeleteLadderList();  //	Deletes from heap all users pointed to through
-                            //pUserList.
+                            // pUserList.
   unsigned int GetUserRank(const char* szName, bool bRankRA);
 
   Ladder* pLadderList;    //	First element of Ladder list, or null.
@@ -343,7 +343,7 @@ class RANetUtilEventSink :
 #define LOB_PREFIX "Lob_21_"
 
 //	Sent to gameres server in order to receive Red Alert or Aftermath ladder
-//rankings. (Sent in RequestLadderList.)
+// rankings. (Sent in RequestLadderList.)
 #define LADDER_CODE_RA 1005
 #define LADDER_CODE_AM 500
 

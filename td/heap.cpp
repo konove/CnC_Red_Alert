@@ -55,9 +55,9 @@
 
 #include "function.h"
 #include "heap.h"
-#include <stdio.h>
-#include <stddef.h>
-#include <string.h>
+#include <cstdio>
+#include <cstddef>
+#include <cstring>
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

@@ -44,10 +44,10 @@
 #ifndef RAWFILE_Hx
 #define RAWFILE_Hx
 
-#include <limits.h>
-#include <errno.h>
-#include <stddef.h>
-#include <stdlib.h>
+#include <climits>
+#include <cerrno>
+#include <cstddef>
+#include <cstdlib>
 
 #ifdef PORTABLE
 #define NULL_HANDLE NULL

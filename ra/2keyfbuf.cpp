@@ -1,7 +1,7 @@
 // re-implemented from assembly in 2keyfbuf.asm
-#include <stdarg.h>
-#include <stdint.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstdint>
+#include <cstring>
 
 #include "shape.h"
 

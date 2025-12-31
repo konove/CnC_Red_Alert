@@ -73,10 +73,10 @@ extern void Colour_Debug(int call_number);
 #include <mem.h>
 #include <wwmem.h>
 #include "soundint.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <direct.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <process.h>
 #include <keyboard.h>
 #include <file.h>

@@ -62,12 +62,12 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <fcntl.h>
 #include <io.h>
 #include <mem.h>
-#include <string.h>
+#include <cstring>
 #include "mixfile.h"
 #include "crc.h"
 

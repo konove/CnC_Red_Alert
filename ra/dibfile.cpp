@@ -47,12 +47,12 @@
 //*******************************************************************
 
 #include <windows.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include <math.h>
 #include <io.h>
 #include <direct.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include "dibutil.h"
 #include "dibapi.h"
 
@@ -530,13 +530,13 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
 
   // read the BITMAPFILEHEADER from our file
   //	if (sizeof (BITMAPFILEHEADER) != _lread (hFile, (LPSTR)&bmfHeader,
-  //sizeof (BITMAPFILEHEADER))) 		goto ErrExit;
+  // sizeof (BITMAPFILEHEADER))) 		goto ErrExit;
   if (pData + sizeof(BITMAPFILEHEADER) >= pDataEnd) {
     //		debugprint( "LoadDIB_FromMemory error: bad size\n" );
     goto ErrExit;
   }
   //	debugprint( "LoadDIB_FromMemory, memcpy BITMAPFILEHEADER %i bytes\n",
-  //sizeof( BITMAPFILEHEADER ) );
+  // sizeof( BITMAPFILEHEADER ) );
   memcpy(&bmfHeader, pData, sizeof(BITMAPFILEHEADER));
   pData += sizeof(BITMAPFILEHEADER);
 
@@ -548,13 +548,13 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
 
   // read the BITMAPINFOHEADER
   //	if (sizeof(BITMAPINFOHEADER) != _lread (hFile, (LPSTR)lpbi,
-  //sizeof(BITMAPINFOHEADER))) 		goto ErrExit;
+  // sizeof(BITMAPINFOHEADER))) 		goto ErrExit;
   if (pData + sizeof(BITMAPINFOHEADER) >= pDataEnd) {
     //		debugprint( "LoadDIB_FromMemory error: bad size 2\n" );
     goto ErrExit;
   }
   //	debugprint( "LoadDIB_FromMemory, memcpy BITMAPINFOHEADER %i bytes\n",
-  //sizeof( BITMAPINFOHEADER ) );
+  // sizeof( BITMAPINFOHEADER ) );
   memcpy(lpbi, pData, sizeof(BITMAPINFOHEADER));
   pData += sizeof(BITMAPINFOHEADER);
 
@@ -591,8 +591,8 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
   if (lpbi->biClrUsed == 0) lpbi->biClrUsed = nNumColors;
 
   //	debugprint( "biSizeImage is %i. I would say it was %i, because the bpp
-  //is %i.\n", lpbi->biSizeImage, ((((lpbi->biWidth * (DWORD)lpbi->biBitCount) +
-  //31) & ~31) >> 3) * lpbi->biHeight, lpbi->biBitCount );
+  // is %i.\n", lpbi->biSizeImage, ((((lpbi->biWidth * (DWORD)lpbi->biBitCount)
+  // + 31) & ~31) >> 3) * lpbi->biHeight, lpbi->biBitCount );
   if (lpbi->biSizeImage == 0) {
     lpbi->biSizeImage =
         ((((lpbi->biWidth * (DWORD)lpbi->biBitCount) + 31) & ~31) >> 3) *
@@ -602,8 +602,8 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
   // get a proper-sized buffer for header, color table and bits
   GlobalUnlock(hDIB);
   //	debugprint( "LoadDIB_FromMemory, GlobalReAlloc: lpbi->biSize=%i,
-  //nNumColors=%i, lpbi->biSizeImage=%i\n", lpbi->biSize,
-  //nNumColors,lpbi->biSizeImage );
+  // nNumColors=%i, lpbi->biSizeImage=%i\n", lpbi->biSize,
+  // nNumColors,lpbi->biSizeImage );
   hDIBtmp = GlobalReAlloc(
       hDIB, lpbi->biSize + nNumColors * sizeof(RGBQUAD) + lpbi->biSizeImage, 0);
 
@@ -618,8 +618,8 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
 
   // read the color table
   //	_lread (hFile, (LPSTR)(lpbi) + lpbi->biSize, nNumColors *
-  //sizeof(RGBQUAD)); 	debugprint( "LoadDIB_FromMemory, memcpy color table %i
-  //colors, so %i bytes\n", nNumColors, nNumColors * sizeof(RGBQUAD) );
+  // sizeof(RGBQUAD)); 	debugprint( "LoadDIB_FromMemory, memcpy color table %i
+  // colors, so %i bytes\n", nNumColors, nNumColors * sizeof(RGBQUAD) );
   memcpy((LPSTR)(lpbi) + lpbi->biSize, pData, nNumColors * sizeof(RGBQUAD));
   pData += nNumColors * sizeof(RGBQUAD);
 
@@ -639,23 +639,24 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
   //	if (MyRead(hFile, (LPSTR)lpbi + offBits, lpbi->biSizeImage))
   //		goto OKExit;
   //	debugprint( "Checking that pData(%i) + biSizeImage(%i), which is %i, is
-  //equal to pDataEnd(%i)\n", 					pData, lpbi->biSizeImage, pData +
-  //lpbi->biSizeImage, pDataEnd ); 	if( pData + lpbi->biSizeImage != pDataEnd )
-  //condition relaxed
+  // equal to pDataEnd(%i)\n", 					pData,
+  // lpbi->biSizeImage, pData + lpbi->biSizeImage, pDataEnd ); 	if( pData +
+  // lpbi->biSizeImage != pDataEnd ) condition relaxed
   //	{
   //		debugprint( "LoadDIB_FromMemory error: bad size 3\n" );
   //		goto ErrExit;
   //	}
 
   //	debugprint( "LoadDIB_FromMemory, memcpy the bits, %i bytes. Image is w
-  //%i, h.%i\n", 								lpbi->biSizeImage, lpbi->biWidth, lpbi->biHeight ); 	debugprint(
+  //%i, h.%i\n",
+  // lpbi->biSizeImage, lpbi->biWidth, lpbi->biHeight ); 	debugprint(
   //"Writing to lpbi (%i) + offBits (%i)\n", lpbi, offBits );
 
   memcpy((LPSTR)lpbi + offBits, pData, lpbi->biSizeImage);
   //	pData += lpbi->biSizeImage;
   //	if( pData != pDataEnd )		//	Should end up one byte past end
-  //of data. - condition relaxed 		debugprint( "LoadDIB_FromMemory: ERROR! Ended
-  //up at %i instead of %i\n", pData, pDataEnd );
+  // of data. - condition relaxed 		debugprint( "LoadDIB_FromMemory:
+  // ERROR! Ended up at %i instead of %i\n", pData, pDataEnd );
   goto OKExit;
 
 ErrExit:

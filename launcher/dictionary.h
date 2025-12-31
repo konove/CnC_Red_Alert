@@ -38,10 +38,10 @@ your hashing function is good.
 #ifndef DICTIONARY_HEADER
 #define DICTIONARY_HEADER
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
 
 #include "wstypes.h"
 #include "wdebug.h"
@@ -332,7 +332,7 @@ bit8 Dictionary<K, V>::remove(IN K &key, OUT V &value) {
   last = node;
   if (node == nullptr) return (FALSE);
 
-    // special case table points to thing to delete
+  // special case table points to thing to delete
 
 #ifdef KEY_MEM_OPS
   if (0 == memcmp(&(node->key), &key, sizeof(K)))
@@ -445,7 +445,8 @@ bit8 Dictionary<K, V>::getValue(IN K &key, OUT V &value) {
 #ifdef KEY_MEM_OPS
   while ((node != NULL) && (memcmp(&(node->key), &key, sizeof(K))))
 #else
-  while ((node != nullptr) && (!((node->key) == key)))  // odd syntax so you don't
+  while ((node != nullptr) &&
+         (!((node->key) == key)))  // odd syntax so you don't
 #endif  // have to do oper !=
   {
     node = node->hashNext;

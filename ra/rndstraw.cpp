@@ -46,8 +46,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <limits.h>
-#include <string.h>
+#include <climits>
+#include <cstring>
 #include "rndstraw.h"
 #include "sha.h"
 

@@ -39,8 +39,8 @@
  *- - - - - - - */
 
 #include "blwstraw.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /***********************************************************************************************
  * BlowStraw::Get -- Fetch a block of data from the straw. *

@@ -230,10 +230,10 @@ typedef struct {
   unsigned char reserved;
 } TLucentType;
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stddef.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cstddef>
 #ifdef PORTABLE
 #include "ex_string.h"
 #else
@@ -242,9 +242,9 @@ typedef struct {
 #include <direct.h>
 #include <process.h>
 #endif
-#include <stdarg.h>
-#include <ctype.h>
-#include <assert.h>
+#include <cstdarg>
+#include <cctype>
+#include <cassert>
 #include <new>
 
 #ifdef WIN32
@@ -261,7 +261,7 @@ typedef struct {
 extern bool GameActive;
 extern long LParam;
 
-#include <assert.h>
+#include <cassert>
 #include "vector.h"
 #include "heap.h"
 #include "ccfile.h"
@@ -536,8 +536,9 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
                            int zoomfactor);
 void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata = nullptr, void const *ghostdata = nullptr,
-                   DirType rotation = DIR_N, long scale = 0x0100);
+                   void const *fadingdata = nullptr,
+                   void const *ghostdata = nullptr, DirType rotation = DIR_N,
+                   long scale = 0x0100);
 void Go_Editor(bool flag);
 long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes);
 char *CC_Get_Shape_Filename(void const *shapeptr);

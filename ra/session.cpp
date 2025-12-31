@@ -57,7 +57,7 @@
 #ifndef PORTABLE
 #include <dos.h>  // for station ID computation
 #endif
-#include <time.h>  // for station ID computation
+#include <ctime>  // for station ID computation
 
 #include "ex_string.h"
 
@@ -192,14 +192,14 @@ SessionClass::SessionClass(void) {
   strcpy(SerialDefaults.CallWaitString, "");
   ModemType = MODEM_NULL_HOST;  // set from INI file
 
-  TrapFrame = 0x7fffffff;     // frame to start trapping object values at
-  TrapObjType = RTTI_NONE;    // type of object to trap
+  TrapFrame = 0x7fffffff;        // frame to start trapping object values at
+  TrapObjType = RTTI_NONE;       // type of object to trap
   TrapObject.Ptr.All = nullptr;  // ptr to object being trapped
-  TrapCoord = 0;              // COORDINATE of object to trap
-  TrapTarget = TARGET_NONE;   // TARGET value of object to trap
+  TrapCoord = 0;                 // COORDINATE of object to trap
+  TrapTarget = TARGET_NONE;      // TARGET value of object to trap
   TrapCell = nullptr;            // for trapping a cell
-  TrapCheckHeap = 0;          // start checking the Heap
-  TrapPrintCRC = 0;           // output CRC file
+  TrapCheckHeap = 0;             // start checking the Heap
+  TrapPrintCRC = 0;              // output CRC file
 
 #if (TEN)
   TenPacket = NULL;
@@ -810,8 +810,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       entry = new char[INITSTRBUF_MAX];
       entry[0] = 0;
       ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
-                     nullptr,
-                     entry, INITSTRBUF_MAX);
+                     nullptr, entry, INITSTRBUF_MAX);
       strupr(entry);
       InitStrings.Add(entry);
     }
@@ -831,8 +830,8 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       phone = new PhoneEntryClass();
 
       //	Read the entire entry in
-      ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), nullptr, buf,
-                     sizeof(buf));
+      ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), nullptr,
+                     buf, sizeof(buf));
 
       //	Extract name, phone # & serial port settings
       tokenptr = strtok(buf, "|");

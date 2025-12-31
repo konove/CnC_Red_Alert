@@ -40,8 +40,8 @@
  *- - - - - - - */
 
 #include "straw.h"
-#include <stddef.h>
-#include <string.h>
+#include <cstddef>
+#include <cstring>
 
 /***********************************************************************************************
  * Straw::~Straw -- Destructor for a straw segment. *

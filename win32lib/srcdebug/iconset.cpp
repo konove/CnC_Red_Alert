@@ -42,8 +42,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <dos.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <mem.h>
 #include <wwstd.h>
 #include <file.h>

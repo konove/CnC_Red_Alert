@@ -41,8 +41,8 @@
 
 #include "lcwstraw.h"
 #include "lcw.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /***********************************************************************************************
  * LCWStraw::LCWStraw -- Constructor for LCW straw object. *

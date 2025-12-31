@@ -40,7 +40,7 @@
 #ifndef INI_H
 #define INI_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "listnode.h"
 #include "pipe.h"
 #include "wwfile.h"
@@ -130,7 +130,8 @@ class INIClass {
   **	The entry identifier and value string are combined into this object.
   */
   struct INIEntry : Node<INIEntry> {
-    INIEntry(char *entry = nullptr, char *value = nullptr) : Entry(entry), Value(value) {}
+    INIEntry(char *entry = nullptr, char *value = nullptr)
+        : Entry(entry), Value(value) {}
     ~INIEntry(void) {
       free(Entry);
       Entry = nullptr;

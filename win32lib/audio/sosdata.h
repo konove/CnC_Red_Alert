@@ -35,7 +35,7 @@
 #ifndef _SOS_DATA
 #define _SOS_DATA
 
-#include <stddef.h>
+#include <cstddef>
 
 #pragma pack(4)
 extern WORD _sosDIGIData_Start;

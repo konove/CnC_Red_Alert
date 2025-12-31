@@ -50,7 +50,7 @@
 
 #include "function.h"
 #include "vector.h"
-#include <stdio.h>
+#include <cstdio>
 
 /*
 **	The following template function can be located here ONLY if all the

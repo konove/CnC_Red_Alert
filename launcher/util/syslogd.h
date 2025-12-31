@@ -19,10 +19,10 @@
 #ifndef SYSLOGD_HEADER
 #define SYSLOGD_HEADER
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <syslog.h>
-#include <string.h>
+#include <cstring>
 #include "odevice.h"
 
 class SyslogD : public OutputDevice {

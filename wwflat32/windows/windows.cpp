@@ -46,11 +46,11 @@
  *   Window_Print -- Displays and wraps text into a window.                *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
 #include <wwstd.h>
 #include "window.h"
 #include <keyboard.h>

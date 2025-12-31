@@ -7,9 +7,9 @@
 #undef WIN32
 #include <SDL_events.h>
 #include <SDL_video.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include "externs.h"
 #include "gbuffer.h"
 #include "keyboard.h"

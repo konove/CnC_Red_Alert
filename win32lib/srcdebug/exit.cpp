@@ -37,11 +37,11 @@
 
 #include "misc.h"
 
-#include <stdio.h>
+#include <cstdio>
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdarg>
+#include <ctime>
 
 /***************************************************************************
  * EXIT -- Exit routine with message.                                      *

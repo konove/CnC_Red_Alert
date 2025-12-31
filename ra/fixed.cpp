@@ -41,10 +41,10 @@
  *- - - - - - - */
 
 #include "fixed.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
 
 /*
 **	These are some handy fixed point constants. Using these constants

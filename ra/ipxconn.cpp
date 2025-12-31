@@ -47,8 +47,8 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "function.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "ipxconn.h"
 
 #ifdef WINSOCK_IPX

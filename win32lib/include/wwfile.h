@@ -41,7 +41,7 @@
 #ifndef WWFILE_H
 #define WWFILE_H
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifndef READ
 #define READ 1
@@ -52,7 +52,7 @@
 
 class FileClass {
  public:
-  virtual ~FileClass(void){};
+  virtual ~FileClass(void) {};
   virtual char const *File_Name(void) const = 0;
   virtual char const *Set_Name(char const *filename) = 0;
   virtual int Create(void) = 0;

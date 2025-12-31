@@ -73,10 +73,10 @@ extern void Colour_Debug(int call_number);
 #include <mem.h>
 #include <wwmem.h>
 #include "soundint.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <direct.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <process.h>
 #include <keyboard.h>
 #include <file.h>
@@ -1810,7 +1810,8 @@ int Play_Sample_Handle(void const *sample, int priority, int volume,
     st->PlayBuffer->SetVolume(Convert_HMI_To_Direct_Sound_Volume(
         (LockedData.SoundVolume * volume) / 256));
     // return_code = st->PlayBuffer->SetVolume (- ( ( (32768- ( (st->Volume >>
-    // 8) *LockedData.SoundVolume) ) 															*1000) >>15 ) );
+    // 8) *LockedData.SoundVolume) )
+    // *1000) >>15 ) );
     if (return_code == DSERR_BUFFERLOST) {
       if (!Attempt_Audio_Restore(st->PlayBuffer)) return (-1);
     }
@@ -1941,7 +1942,8 @@ int Set_Score_Vol(int volume) {
 
     if (st->IsScore && st->Active) {
       // st->PlayBuffer->SetVolume (- ( ( (32768- ( (st->Volume >> 8)
-      // *LockedData.ScoreVolume) ) 														*1000) >>15 ) );
+      // *LockedData.ScoreVolume) )
+      // *1000) >>15 ) );
 
       // st->PlayBuffer->SetVolume ( Convert_HMI_To_Direct_Sound_Volume (
       // st->Volume >>7 ) );

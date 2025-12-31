@@ -43,8 +43,8 @@
 #include "lzwpipe.h"
 #include "lzw.h"
 #include "buff.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /***********************************************************************************************
  * LZWPipe::LZWPipe -- Constructor for the LZW processor pipe. *

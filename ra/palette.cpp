@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 
 #include "palette.h"
 #include "function.h"

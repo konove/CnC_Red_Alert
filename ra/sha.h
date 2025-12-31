@@ -40,10 +40,10 @@
 #ifndef SHA_H
 #define SHA_H
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+#include <cstdlib>
 #include <new>
 
 /*

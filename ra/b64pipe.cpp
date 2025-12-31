@@ -40,7 +40,7 @@
 
 #include "b64pipe.h"
 #include "base64.h"
-#include <string.h>
+#include <cstring>
 
 /***********************************************************************************************
  * Base64Pipe::Put -- Processes a block of data through the pipe. *

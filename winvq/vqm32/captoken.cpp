@@ -36,11 +36,11 @@
  *
  ****************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <cctype>
 #include "captoken.h"
 
 /*---------------------------------------------------------------------------
@@ -89,11 +89,11 @@ Token tokens[] = {
     "Y",        TOKEN_YPOS,   "YPOS",  TOKEN_YPOS,  "ABS",   TOKEN_ABS,
     "ABSOLUTE", TOKEN_ABS,    "LEFT",  TOKEN_LEFT,  "RIGHT", TOKEN_RIGHT,
     "CENTER",   TOKEN_CENTER, "FLASH", TOKEN_FLASH, "CPF",   TOKEN_CPF,
-    "END",      TOKEN_END,    nullptr,    TOKEN_NULL,
+    "END",      TOKEN_END,    nullptr, TOKEN_NULL,
 };
 
 Token colors[] = {
-    "BLACK", 0,        "WHITE", 251,     "RED", 252,  "GREEN",
+    "BLACK", 0,        "WHITE", 251,     "RED", 252,     "GREEN",
     253,     "SHADOW", 254,     "CYCLE", 255,   nullptr, -1,
 };
 

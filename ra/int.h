@@ -41,8 +41,8 @@
 #define INT_H
 
 #include <memory.h>
-#include <limits.h>
-#include <assert.h>
+#include <climits>
+#include <cassert>
 #include "mp.h"
 #include "straw.h"
 
@@ -335,10 +335,10 @@ class Int {
                                          Int<PRECISION> const *);
   friend Int<PRECISION> Gcd<>(const Int<PRECISION> &a, const Int<PRECISION> &b);
   //		friend bool NextPrime(Int<PRECISION> & p, const Int<PRECISION> &
-  //max, bool blumInt=false); 		friend Int<PRECISION> a_exp_b_mod_pq(const
-  //Int<PRECISION> & a, const Int<PRECISION> & ep, const Int<PRECISION> & eq,
-  //const Int<PRECISION> & p, const Int<PRECISION> & q, const Int<PRECISION> &
-  //u);
+  // max, bool blumInt=false); 		friend Int<PRECISION>
+  // a_exp_b_mod_pq(const Int<PRECISION> & a, const Int<PRECISION> & ep, const
+  // Int<PRECISION> & eq, const Int<PRECISION> & p, const Int<PRECISION> & q,
+  // const Int<PRECISION> & u);
 
   static int Error;
 

@@ -48,10 +48,10 @@
  ** RedBookClass::StopCDMusic(VOID)
  ** = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <dos.h>
 
 #include "wwstd.h"

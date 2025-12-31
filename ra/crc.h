@@ -40,8 +40,8 @@
 #ifndef CRC_H
 #define CRC_H
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
 /*
 **	This is a CRC engine class. It will process submitted data and generate

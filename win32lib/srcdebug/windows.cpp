@@ -46,11 +46,11 @@
  *   Window_Print -- Displays and wraps text into a window.                *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cstdarg>
 #include <wwstd.h>
 #include "ww_win.h"
 #include <keyboard.h>
@@ -620,8 +620,8 @@ void Window_Print(char const string[], ...) {
         */
         //			case KA_LITERAL:
         //				if (c != (char) 127) {	// check if fell
-        //thru from extend case 					c = 0;					// set
-        //to zero for literal case
+        // thru from extend case 					c = 0;
+        // // set to zero for literal case
         //				}
         //				c += Fetch_Char();
 

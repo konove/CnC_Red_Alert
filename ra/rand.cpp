@@ -112,9 +112,9 @@ int Sim_IRandom(int minval, int maxval) {
 **	different every time it's run.
 */
 #if 0
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <conio.h>
 
 void main(void);

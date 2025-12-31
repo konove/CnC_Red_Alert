@@ -35,7 +35,7 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <stdint.h>
+#include <cstdint>
 
 /***************************************************************************
  * LCW_Uncomp -- Decompress an LCW encoded data block.                     *

@@ -35,9 +35,9 @@
  *   Mono_Printf -- Prints formated text to the monochrome screen.         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstring>
+#include <cstdio>
 #include "mono.h"
 
 /***************************************************************************

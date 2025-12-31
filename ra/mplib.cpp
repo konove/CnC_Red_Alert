@@ -22,7 +22,7 @@
 #include "rtq.h"
 #include <mem.h>
 #include <i86.h>
-#include <assert.h>
+#include <cassert>
 #include "mplib.h"
 
 #define CHUNNEL_INT 0x48

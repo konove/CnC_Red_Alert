@@ -41,14 +41,17 @@
  *   IPXGlobalConnClass::Set_Bridge -- Sets up connection to cross a bridge*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "function.h"
-#include <stdio.h>
+#include <cstdio>
 #include "ipxgconn.h"
 
 /***************************************************************************
  * IPXGlobalConnClass::IPXGlobalConnClass -- class constructor             *
  *                                                                         *
  * This routine chains to the parent constructor, but it adjusts the size
- ** of the packet by the added bytes in the GlobalHeaderType structure. * This forces the parent classes to allocate the proper sized PacketBuf	* for outgoing packets, and to set MaxPacketLen to the proper value.		*
+ ** of the packet by the added bytes in the GlobalHeaderType structure. * This
+ * forces the parent classes to allocate the proper sized PacketBuf	* for
+ * outgoing packets, and to set MaxPacketLen to the proper value.
+ *	*
  *                                                                         *
  * INPUT:                                                                  *
  *		numsend			desired # of entries for the send queue
@@ -74,7 +77,7 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
           numsend, numreceive,
           maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType),
           GLOBAL_MAGICNUM,          // magic number for this connection
-          nullptr,                     // IPX Address (none)
+          nullptr,                  // IPX Address (none)
           0,                        // Connection ID
           "",                       // Connection Name
           sizeof(IPXAddressClass))  // extra storage for the sender's address

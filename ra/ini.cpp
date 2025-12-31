@@ -69,11 +69,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <string.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstddef>
+#include <cstdio>
+#include <cctype>
 #include "ini.h"
 #include "readline.h"
 #include "xpipe.h"

@@ -51,8 +51,8 @@
 #include "internet.h"
 #include "wspudp.h"
 
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #ifdef _WIN32
 #include <svcguid.h>

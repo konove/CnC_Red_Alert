@@ -29,10 +29,10 @@ A fairly typical string class.  This string class always copies any input
 string to it's own memory (for assignment or construction).
 \***************************************************************************/
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cctype>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 
 #include "wstring.h"
 

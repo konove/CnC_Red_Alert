@@ -19,8 +19,8 @@
 #ifndef LOADBMP_HEADER
 #define LOADBMP_HEADER
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include "wstypes.h"
 #include "winblows.h"
 

@@ -56,8 +56,8 @@
 // Once it is, the FALSE parts should be removed from the source code.
 #define LIB_EXTERNS_RESOLVED FALSE
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <dos.h>
 #include <bios.h>
 

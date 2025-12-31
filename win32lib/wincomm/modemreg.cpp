@@ -50,7 +50,7 @@
  *- - - - - - - */
 
 #include "modemreg.h"
-#include <stdio.h>
+#include <cstdio>
 
 extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
 

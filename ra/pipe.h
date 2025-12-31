@@ -40,7 +40,7 @@
 #ifndef PIPE_H
 #define PIPE_H
 
-#include <stddef.h>
+#include <cstddef>
 
 /*
 **	A "push through" pipe interface abstract class used for such purposes as

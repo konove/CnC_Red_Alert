@@ -60,10 +60,10 @@
 
 /* header files */
 #include <windows.h>
-#include <assert.h>
+#include <cassert>
 #include "dibapi.h"
 #include "dibutil.h"
-#include <stdio.h>
+#include <cstdio>
 
 /*************************************************************************
  *

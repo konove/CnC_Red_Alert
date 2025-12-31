@@ -43,11 +43,11 @@
 
 #pragma inline
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
 #include <dir.h>
-#include <string.h>
+#include <cstring>
 
 #define FALSE 0
 #define TRUE 1

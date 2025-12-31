@@ -68,7 +68,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
-#include <stdio.h>
+#include <cstdio>
 #include "ipxmgr.h"
 #include "wwlib32.h"  // to enable mono output
 

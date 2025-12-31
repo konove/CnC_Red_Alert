@@ -67,7 +67,7 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
 #include <fcntl.h>
 #include <io.h>
 #include <malloc.h>

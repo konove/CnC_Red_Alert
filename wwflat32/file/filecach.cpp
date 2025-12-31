@@ -49,7 +49,7 @@
 #include <wwmem.h>
 #endif
 
-#include <string.h>
+#include <cstring>
 
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */

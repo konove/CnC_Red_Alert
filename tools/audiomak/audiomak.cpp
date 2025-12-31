@@ -35,12 +35,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <dir.h>
 #include <dos.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstring>
+#include <cctype>
 #include <conio.h>
 
 #define FALSE 0
@@ -94,7 +94,7 @@ typedef struct {
   // Even more bytes can go here... examine dwDataLength to verify.
   // Optional for Sonarc
   //		LONG cbSize;					// Size of the
-  //extra portion of fmt (always 2) 		WORD wCompType;
+  // extra portion of fmt (always 2) 		WORD wCompType;
   //// Compression algorithm index
 } RIFFfmtType;
 

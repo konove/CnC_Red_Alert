@@ -38,7 +38,7 @@
  *- - - - - - - */
 
 #include "cstraw.h"
-#include <string.h>
+#include <cstring>
 
 /***********************************************************************************************
  * CacheStraw::Get -- Fetch data from the data source. *

@@ -41,8 +41,8 @@
  *- - - - - - - */
 
 #include "pipe.h"
-#include <stddef.h>
-#include <string.h>
+#include <cstddef>
+#include <cstring>
 
 /***********************************************************************************************
  * Pipe::~Pipe -- Destructor for pipe class object. *

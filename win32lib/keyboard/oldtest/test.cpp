@@ -40,7 +40,7 @@
  *- - - - - - - */
 
 #include <misc.h>
-#include <stdio.h>
+#include <cstdio>
 #include "keyboard.h"
 
 #define NAME "DRAWBUFF test"

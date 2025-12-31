@@ -37,8 +37,8 @@
 #ifndef WWSTD_H
 #define WWSTD_H
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 /*
 **	Common constants used in normal code.

@@ -53,8 +53,8 @@
 #include <windows.h>
 
 // #include	<wwlib32.h>
-#include <limits.h>
-#include <errno.h>
+#include <climits>
+#include <cerrno>
 #include <windows.h>
 // #include	<algo.h>
 #include "wwfile.h"

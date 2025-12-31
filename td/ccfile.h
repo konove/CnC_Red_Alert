@@ -42,7 +42,7 @@
 #define CCFILE_H
 
 #include <wwlib32.h>
-#include <limits.h>
+#include <climits>
 #include "mixfile.h"
 #include "cdfile.h"
 
@@ -56,7 +56,7 @@ class CCFileClass : public CDFileClass {
  public:
   CCFileClass(char const *filename);
   CCFileClass(void);
-  virtual ~CCFileClass(void){};
+  virtual ~CCFileClass(void) {};
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
@@ -115,7 +115,7 @@ class CCFileClass : public CDFileClass {
 
   // Force these to never be invoked.
   CCFileClass const operator=(CCFileClass const &c);
-  CCFileClass(CCFileClass const &){};
+  CCFileClass(CCFileClass const &) {};
 };
 
 #endif

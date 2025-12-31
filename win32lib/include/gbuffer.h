@@ -145,7 +145,7 @@
 #ifndef WINDOWS_H
 #include "ww_win.h"
 #endif
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "iconcach.h"
 

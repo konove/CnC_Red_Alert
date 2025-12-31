@@ -97,9 +97,9 @@ B<A> test;
 #include "fakesock.h"
 TcpipManagerClass Winsock;
 #endif
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <fcntl.h>
 
 #ifndef WIN32

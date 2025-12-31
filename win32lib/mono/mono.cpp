@@ -54,12 +54,12 @@
 // #pragma inline
 #include "mono.h"
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <dos.h>
 #include <mem.h>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstring>
 
 extern void output(short port, short data);
 #pragma aux output parm[dx][ax] =           \

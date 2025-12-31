@@ -57,7 +57,7 @@
 #include "wwmem.h"
 #include <timer.h>
 
-#include <stddef.h>
+#include <cstddef>
 #include <memory.h>
 
 #define DEBUG_FILL FALSE

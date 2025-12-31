@@ -43,10 +43,10 @@
  *
  ****************************************************************************/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <fcntl.h>
 #include <io.h>
-#include <string.h>
+#include <cstring>
 #include <malloc.h>
 #include "font.h"
 

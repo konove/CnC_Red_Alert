@@ -32,7 +32,7 @@
 class BitmapClass {
  public:
   BitmapClass(int w, int h, unsigned char *data)
-      : Width(w), Height(h), Data(data){};
+      : Width(w), Height(h), Data(data) {};
 
   int Width;
   int Height;
@@ -41,8 +41,8 @@ class BitmapClass {
 
 class TPoint2D {
  public:
-  TPoint2D(int xx, int yy) : x(xx), y(yy){};
-  TPoint2D(void) : x(0), y(0){};
+  TPoint2D(int xx, int yy) : x(xx), y(yy) {};
+  TPoint2D(void) : x(0), y(0) {};
 
   int x;
   int y;
@@ -55,7 +55,6 @@ class TPoint2D {
 #define WWMEM_H
 #define WWFILE_Hx
 #include <wwlib32.h>
-#include <stdio.h>
 // #include "gbuffer.h"
 // #include "math.h"
 
@@ -233,7 +232,7 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass &bmp, TPoint2D const &pt,
           ((unsigned char *)Get_Buffer())[scrpos] =
               pixel;  // draw if not transparent
         //				if (pixel) Data[scrpos]=pixel;	//draw
-        //if not transparent
+        // if not transparent
         pxerror += bmp.Width;  // update position in bitmap
         while (pxerror > f_deltax) {
           pixpos++;

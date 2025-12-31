@@ -1,10 +1,8 @@
 #include <algorithm>
-#include <assert.h>
-#include <string.h>
+#include <cstring>
 
 #include "drawbuff.h"
 #include "font.h"
-#include "gbuffer.h"
 #include "misc.h"
 
 void *MainWindow;

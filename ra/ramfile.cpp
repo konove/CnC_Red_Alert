@@ -50,7 +50,7 @@
  *- - - - - - - */
 
 #include "ramfile.h"
-#include <string.h>
+#include <cstring>
 
 /***********************************************************************************************
  * RAMFileClass::RAMFileClass -- Construct a RAM buffer based "file" object. *

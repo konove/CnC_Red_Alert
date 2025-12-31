@@ -21,7 +21,7 @@
 #ifndef MIXFILE_H
 #define MIXFILE_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "listnode.h"
 #include "pk.h"
 #include "buff.h"

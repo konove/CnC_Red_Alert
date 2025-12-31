@@ -56,10 +56,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stddef.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cstddef>
 
 #include "rawfile.h"
 

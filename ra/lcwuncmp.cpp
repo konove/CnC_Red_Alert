@@ -35,7 +35,7 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <stdint.h>
+#include <cstdint>
 
 extern "C" {
 

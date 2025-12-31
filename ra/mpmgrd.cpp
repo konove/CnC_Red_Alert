@@ -19,10 +19,10 @@
 #include "mpmgrd.h"
 
 extern "C" {
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
 #include "types.h"
 #include "rtq.h"
 #include "services.h"

@@ -40,8 +40,8 @@
  *- - - - - - - */
 
 #include "xstraw.h"
-#include <stddef.h>
-#include <string.h>
+#include <cstddef>
+#include <cstring>
 
 //---------------------------------------------------------------------------------------------------------
 // BufferStraw

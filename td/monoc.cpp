@@ -54,9 +54,9 @@
 // #pragma inline
 #include "monoc.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
 
 // extern void output(short port, short data);
 // #pragma aux output parm [dx] [ax] =		\
@@ -66,8 +66,8 @@
 //		"out	dx,al"
 
 int MonoClass::Enabled = 0;
-MonoClass *MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES] = {nullptr, nullptr, nullptr, nullptr,
-                                                              nullptr, nullptr, nullptr, nullptr};
+MonoClass *MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES] = {
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 // DOSSegmentClass MonoClass::MonoSegment(MonoClass::SEGMENT);
 void *MonoClass::MonoSegment = (void *)0x000b0000;
 

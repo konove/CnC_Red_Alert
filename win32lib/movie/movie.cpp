@@ -37,7 +37,7 @@
 #include <streams.h>
 #include <amstream.h>
 #include <ddstream.h>
-#include <stdio.h>
+#include <cstdio>
 
 // We declare these variables global because RA doesn't like the DirectXMedia
 // header files.

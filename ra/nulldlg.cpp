@@ -54,13 +54,13 @@
 #include <algorithm>
 
 #ifdef FIXIT_RANDOM_GAME
-#include "time.h"
+#include <ctime>
 #endif
 #ifdef WIN32
 #include "wincomm.h"
 #include "modemreg.h"
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
-#endif                                          // WIN32
+#endif                                             // WIN32
 
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool Is_Mission_126x126(char *file_name);
@@ -286,7 +286,8 @@ int Test_Null_Modem(void) {
   **	These dimensions will control how the dialog box looks.
   */
   strcpy(buffer, Text_String(TXT_WAITING_CONNECT));
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   width = std::max(width, 50 * RESFACTOR);
@@ -626,7 +627,8 @@ static int Reconnect_Null_Modem(void) {
   **	These dimensions will control how the dialog box looks.
   */
   strcpy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+                   TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   width = std::max(width, 50 * RESFACTOR);
@@ -2250,7 +2252,8 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_CENTER | TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+                         TPF_CENTER | TPF_TEXT);
 
         /*
         ** Dialog & Field labels
@@ -3477,8 +3480,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)
-    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN, TPF_TEXT,
-                                 -1);
+    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
+                                 TPF_TEXT, -1);
 
   ModemRXString[0] = '\0';
 
@@ -3590,7 +3593,8 @@ oh_dear_its_a_label:
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_CENTER | TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+                         TPF_CENTER | TPF_TEXT);
 
         /*...............................................................
         Dialog & Field labels
@@ -5320,8 +5324,8 @@ int Com_Show_Scenario_Dialog(void) {
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)
-    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN, TPF_TEXT,
-                                 -1);
+    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
+                                 TPF_TEXT, -1);
 
   ModemRXString[0] = '\0';
 
@@ -6749,7 +6753,8 @@ static int Phone_Dialog(void) {
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_CENTER | TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+                         TPF_CENTER | TPF_TEXT);
 
         /*...............................................................
         Dialog & Field labels

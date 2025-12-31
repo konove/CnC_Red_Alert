@@ -163,10 +163,10 @@ typedef struct {
 } TLucentType;
 
 // Don't complain if these headers aren't referenced.
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stddef.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cstddef>
 #ifdef PORTABLE
 #include "ex_string.h"
 #else
@@ -175,9 +175,9 @@ typedef struct {
 #include <direct.h>
 #include <process.h>
 #endif
-#include <stdarg.h>
-#include <ctype.h>
-#include <assert.h>
+#include <cstdarg>
+#include <cctype>
+#include <cassert>
 #include <new>
 
 /*
@@ -377,7 +377,8 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
                            int zoomfactor);
 void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata = nullptr, void const *ghostdata = nullptr);
+                   void const *fadingdata = nullptr,
+                   void const *ghostdata = nullptr);
 void Go_Editor(bool flag);
 long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes);
 

@@ -54,9 +54,11 @@
  ** Currently, bridges are handled by specifying the destination IPX address of
  *the				  * "server" (game owner's system) on the
  *command-line.  This address is used to * derive a broadcast address to that
- *destination network, and this system's queries			  * are broadcast over its network & the server's network; replies to the queries come			  *
- * with each system's IPX address attached, so once we have the address, we can
- *form			  * a connection with any system on the bridged net.
+ *destination network, and this system's queries			  * are
+ * broadcast over its network & the server's network; replies to the queries
+ * come			  * with each system's IPX address attached, so once we
+ * have the address, we can form			  * a connection with
+ * any system on the bridged net.
  **
  *                                                                         						  *
  * The flaw in this plan is that we can only cross one bridge.  If there are 3
@@ -119,7 +121,7 @@
  *- - - - - - - */
 
 #include "function.h"
-#include <time.h>
+#include <ctime>
 #include "tcpip.h"
 #include "ccdde.h"
 #define SHOW_MONO 0

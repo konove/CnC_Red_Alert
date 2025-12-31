@@ -59,9 +59,9 @@
 #define _WIN32
 #include <windows.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <direct.h>
 #include <fcntl.h>
 #include <io.h>
@@ -149,9 +149,9 @@ void RawFileClass::Error(int error, int, char const *) {
   if (canretry) {
     if (GraphicMode == TXT_MODE) strcat(message, "\n");
 #ifdef GERMAN
-    strcat(message, " Beliebige Taste drÅcken fÅr erneuten Versuch.");
+    strcat(message, " Beliebige Taste drÔøΩcken fÔøΩr erneuten Versuch.");
     if (GraphicMode == TXT_MODE) strcat(message, "\n");
-    strcat(message, " <ESC> drÅcken, um das Programm zu verlassen.");
+    strcat(message, " <ESC> drÔøΩcken, um das Programm zu verlassen.");
 #else
 #ifdef FRENCH
     strcat(message, " Appuyez sur une touche pour recommencer.");
@@ -167,7 +167,7 @@ void RawFileClass::Error(int error, int, char const *) {
   } else {
     if (GraphicMode == TXT_MODE) strcat(message, "\n");
 #ifdef GERMAN
-    strcat(message, " Beliebige Taste drÅcken, um das Programm zu verlassen.");
+    strcat(message, " Beliebige Taste drÔøΩcken, um das Programm zu verlassen.");
 #else
 #ifdef FRENCH
     strcat(message, " Appuyez sur une touche pour quitter le programme.");
@@ -468,7 +468,7 @@ int RawFileClass::Open(int rights) {
     */
     if (Handle == 0) {
 //			Error(errno, false, Filename);		//this kills
-//windoze!!!!    ST - 9/28/95 5:33PM
+// windoze!!!!    ST - 9/28/95 5:33PM
 #ifdef NEVER
       /*
       **	If this flag is set, then some hard error occurred. Just assume
@@ -635,7 +635,7 @@ void RawFileClass::Close(void) {
       */
       //			if (Hard_Error_Occured) {
       //				Error(Hard_Error_Occured, true,
-      //Filename); 				continue;
+      // Filename); 				continue;
       //			}
       break;
     }
@@ -724,7 +724,7 @@ long RawFileClass::Read(void *buffer, long size) {
     //		if (Hard_Error_Occured) {
     //			Error(Hard_Error_Occured, true, Filename);
     //			continue;			// Not technically
-    //needed, but to be consistent... 		} else {
+    // needed, but to be consistent... 		} else {
 
     /*
     **	If negative one is returned from the read operation, then this indicates
@@ -813,7 +813,7 @@ long RawFileClass::Write(void const *buffer, long size) {
     //		if (Hard_Error_Occured) {
     //			Error(Hard_Error_Occured, true, Filename);
     //			continue;			// Not technically
-    //needed, but to be consistent... 		} else {
+    // needed, but to be consistent... 		} else {
 
     /*
     **	If negative one is returned by the DOS read, then this indicates a bad
@@ -968,7 +968,8 @@ long RawFileClass::Size(void) {
       */
       //			if (Hard_Error_Occured) {
       //				Error(Hard_Error_Occured, true,
-      //Filename); 				continue; 			} else {
+      // Filename); 				continue;
+      // } else {
       if (size == -1) {
         Error(errno, false, Filename);
       }
@@ -1073,7 +1074,7 @@ int RawFileClass::Delete(void) {
       */
       //			if (Hard_Error_Occured) {
       //				Error(Hard_Error_Occured, true,
-      //Filename); 				continue;
+      // Filename); 				continue;
       //			}
 
       /*
@@ -1234,8 +1235,8 @@ int __cdecl Load_File(const char *file_name, void *load_addr) {
 // dest_buff, VOID *reserved_data)
 //{
 //	return(Load_Uncompress(RawFileClass(file), uncomp_buff, dest_buff,
-//reserved_data)); 	return(RawFileClass(file).Load_Uncompress(uncomp_buff,
-//dest_buff, reserved_data));
+// reserved_data)); 	return(RawFileClass(file).Load_Uncompress(uncomp_buff,
+// dest_buff, reserved_data));
 // }
 extern "C" {
 int MaxDevice;

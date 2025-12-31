@@ -43,8 +43,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <dos.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "misc.h"
 
 // PRIVATE unsigned Divide_With_Round(unsigned num, unsigned den);

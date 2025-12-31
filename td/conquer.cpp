@@ -65,9 +65,9 @@
 
 #include "function.h"
 #include "tcpip.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <fcntl.h>
 #include <filesystem>
 #ifndef PORTABLE
@@ -572,9 +572,11 @@ void Keyboard_Process(KeyNumType &input) {
     */
     case VK_N:
       if (action) {
-        obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+        obj =
+            Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
       } else {
-        obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
+        obj =
+            Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
       }
       if (obj) {
         Unselect_All();

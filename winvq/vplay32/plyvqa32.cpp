@@ -54,14 +54,14 @@
 
 #define CAPTIONS 0
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <conio.h>
 #include <sys\timeb.h>
 #include <mem.h>
 #include <io.h>
-#include <ctype.h>
+#include <cctype>
 #include <process.h>
 #include <dos.h>
 

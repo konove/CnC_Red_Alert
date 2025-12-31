@@ -54,7 +54,7 @@
  *- - - - - - - */
 
 #include "bfiofile.h"
-#include <string.h>
+#include <cstring>
 
 /***********************************************************************************************
  * BufferIOFileClass::BufferIOFileClass -- Filename based constructor for a file

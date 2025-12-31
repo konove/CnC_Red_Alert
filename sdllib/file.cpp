@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #ifdef _WIN32
 #include <windows.h>
 #else

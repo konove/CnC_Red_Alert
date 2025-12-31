@@ -46,8 +46,8 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "vq.h"
 #include "vqaplayp.h"
 #include <vqm32\all.h>

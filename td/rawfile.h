@@ -44,9 +44,9 @@
 #ifndef RAWFILE_H
 #define RAWFILE_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "compat.h"
-#include <limits.h>
+#include <climits>
 #include "wwfile.h"
 
 #ifdef NEVER

@@ -40,7 +40,7 @@
 
 #include "b64straw.h"
 #include "base64.h"
-#include <string.h>
+#include <cstring>
 
 /***********************************************************************************************
  * Base64Straw::Get -- Fetch data and convert it to/from base 64 encoding. *

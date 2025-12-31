@@ -141,7 +141,7 @@
 #include "buffer.h"
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 
 /*=========================================================================*/
 /* Define the screen width and height to make portability to other modules
@@ -260,7 +260,8 @@ class GraphicViewPortClass {
   BOOL Scale(VideoViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
              char *remap);
-  BOOL Scale(VideoViewPortClass &dest, BOOL trans = FALSE, char *remap = nullptr);
+  BOOL Scale(VideoViewPortClass &dest, BOOL trans = FALSE,
+             char *remap = nullptr);
   BOOL Scale(VideoViewPortClass &dest, char *remap);
   unsigned long Print(char const *string, int x_pixel, int y_pixel, int fcolor,
                       int bcolor);

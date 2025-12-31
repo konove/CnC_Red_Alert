@@ -56,7 +56,7 @@ will you be ready to leave grasshopper.
 #include <iostream.h>
 #include "odevice.h"
 #include "streamer.h"
-#include <time.h>
+#include <ctime>
 
 // Print an information message
 #define INFMSG(X)                                                            \
@@ -118,13 +118,17 @@ will you be ready to leave grasshopper.
 
 #define DBG(X)
 #define DBGSTREAM(X) \
-  {}
+  {                  \
+  }
 #define PVAR(v) \
-  {}
+  {             \
+  }
 #define DBGMSG(X) \
-  {}
+  {               \
+  }
 #define VERBOSE(X) \
-  {}
+  {                \
+  }
 
 #else  // DEBUG _is_ defined
 

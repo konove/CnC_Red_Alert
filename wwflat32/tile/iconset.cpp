@@ -38,8 +38,8 @@
 
 // #include	"function.h"
 #include <dos.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <mem.h>
 #include <wwstd.h>
 #include <file.h>
@@ -88,7 +88,8 @@ typedef struct {
   short Width;      // Width of icons (pixels).
   short Height;     // Height of icons (pixels).
   short Count;      // Number of (logical) icons in this set.
-                    //	BOOL	Allocated;		// Was this iconset allocated?
+                    //	BOOL	Allocated;		// Was this iconset
+                    // allocated?
   short Allocated;  // Was this iconset allocated?
   short MapWidth;   // Width of map (in icons).
   short MapHeight;  // Height of map (in icons).

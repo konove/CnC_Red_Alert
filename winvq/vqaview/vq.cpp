@@ -60,7 +60,7 @@
 #include <windowsx.h>
 #include <westwood.h>
 #include <file.h>
-#include <stdio.h>
+#include <cstdio>
 #include <memflag.h>
 #include <vq.h>
 #include <mainwind.h>

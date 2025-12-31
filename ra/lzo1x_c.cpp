@@ -43,7 +43,7 @@
 
 #include "lzo1x.h"
 #define NDEBUG
-#include <assert.h>
+#include <cassert>
 #include "lzo_conf.h"
 
 #if !defined(LZO1X) && !defined(LZO1Y)

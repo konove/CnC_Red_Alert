@@ -46,7 +46,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "function.h"
-#include <stdio.h>
+#include <cstdio>
 #include "ipxaddr.h"
 
 #ifdef WINSOCK_IPX

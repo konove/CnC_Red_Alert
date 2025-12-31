@@ -50,7 +50,7 @@
 
 #include "buff.h"
 #include "function.h"
-#include <errno.h>
+#include <cerrno>
 #include "mixfile.h"
 #include <filesystem>
 

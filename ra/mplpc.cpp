@@ -21,7 +21,7 @@ extern "C" {
 #include "types.h"
 #include "services.h"
 #include "rtq.h"
-#include <stdio.h>
+#include <cstdio>
 #include <mem.h>
 };
 #include "mplib.h"

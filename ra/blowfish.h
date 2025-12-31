@@ -40,7 +40,7 @@
 #ifndef BLOWFISH_H
 #define BLOWFISH_H
 
-#include <limits.h>
+#include <climits>
 
 /*
 **	This engine will process data blocks by encryption and decryption.

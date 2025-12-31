@@ -47,8 +47,8 @@
 #include <wwstd.h>
 #include "iff.h"
 #include "file.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 // A BitMapHeader is stored in a BMHD chunk.  This structure MUST be an even
 // size

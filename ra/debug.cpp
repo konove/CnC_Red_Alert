@@ -42,7 +42,7 @@
 
 #include "function.h"
 #include "vortex.h"
-#include <stdarg.h>
+#include <cstdarg>
 
 #ifdef CHEAT_KEYS
 
@@ -288,7 +288,7 @@ void Debug_Key(unsigned input) {
         //			case KN_F4:
         //				if (Session.Type == GAME_NORMAL) {
         //					Debug_Unshroud = (Debug_Unshroud
-        //== false); 					Map.Flag_To_Redraw(true);
+        //== false); Map.Flag_To_Redraw(true);
         //				}
         //				break;
 

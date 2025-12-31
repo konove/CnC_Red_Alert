@@ -19,11 +19,11 @@
 #include "function.h"
 
 #ifdef WOLAPI_INTEGRATION  //	Now implies also WINSOCK_IPX, WIN32, and
-                           //FIXIT_CSII must be true
+                           // FIXIT_CSII must be true
 
 #include "wol_gsup.h"
 #include "IconList.h"
-#include <time.h>
+#include <ctime>
 #include "WolStrng.h"
 #include "wsproto.h"
 #include "BigCheck.h"
@@ -231,7 +231,7 @@ void WOL_GameSetupDialog::Initialize() {
   d_color_h = 9 * RESFACTOR;
   d_color_x = 294;  // 54;		//d_dialog_x + ((d_dialog_w / 4) * 3) -
                     // (d_color_w * 3);
-  d_color_y = 89;  // 142;	//d_house_y;
+  d_color_y = 89;   // 142;	//d_house_y;
 
   d_house_w = 60 * RESFACTOR;
   d_house_h = (8 * 5 * RESFACTOR);
@@ -257,7 +257,7 @@ void WOL_GameSetupDialog::Initialize() {
 
   d_scenariolist_w = 200;
   //	d_scenariolist_h = (4 * d_txt6_h) + 3*RESFACTOR;		// 4
-  //rows high
+  // rows high
   d_scenariolist_x = d_dialog_x + d_dialog_w - d_margin1 - d_scenariolist_w;
   d_scenariolist_y = d_disc_y + d_tab_h;
   d_scenariolist_h = d_disc_y + d_disc_h - d_scenariolist_y;
@@ -359,8 +359,8 @@ void WOL_GameSetupDialog::Initialize() {
                                  TPF_TYPE, MFCD::Retrieve("BTN-UP.SHP"),
                                  MFCD::Retrieve("BTN-DN.SHP"), true, 2);
   //	ListClass scenariolist(BUTTON_SCENARIOLIST, d_scenariolist_x,
-  //d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, TPF_TEXT,
-  //MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
+  // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, TPF_TEXT,
+  // MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
   pILScens = new IconListClass(
       BUTTON_SCENARIOLIST, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
       d_scenariolist_h, TPF_TYPE, MFCD::Retrieve("BTN-UP.SHP"),
@@ -373,7 +373,7 @@ void WOL_GameSetupDialog::Initialize() {
                             TPF_TEXT, d_send_x, d_send_y, d_send_w, d_send_h);
 
   //	TextButtonClass rejectbtn( BUTTON_REJECT, TXT_REJECT, TPF_BUTTON,
-  //d_reject_x, d_reject_y );
+  // d_reject_x, d_reject_y );
   pGaugeCount =
       new GaugeClass(BUTTON_COUNT, d_count_x, d_count_y, d_count_w, d_count_h);
   pGaugeLevel =
@@ -386,8 +386,8 @@ void WOL_GameSetupDialog::Initialize() {
       BUTTON_PARAMS, d_options_x, d_options_y, d_options_w, d_options_h,
       TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, TPF_BUTTON, d_ok_x,
-  //d_ok_y, 60*RESFACTOR ); 	TextButtonClass loadbtn(BUTTON_LOAD,
-  //TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x, d_load_y, 60*RESFACTOR);
+  // d_ok_y, 60*RESFACTOR ); 	TextButtonClass loadbtn(BUTTON_LOAD,
+  // TXT_LOAD_BUTTON, TPF_BUTTON, d_load_x, d_load_y, 60*RESFACTOR);
   pTextBtnCancel =
       new TextButtonClass(BUTTON_CANCEL, TXT_WOL_CANCELGAME, TPF_BUTTON,
                           d_cancel_x, d_cancel_y, d_cancel_w);
@@ -429,9 +429,9 @@ void WOL_GameSetupDialog::Initialize() {
   if (bHost) pTextBtnAcceptStart->Disable();
 
   //	pStaticDescrip is no longer used - can't get the bloody thing to clip
-  //text. You'd think a StaticButton control would.
+  // text. You'd think a StaticButton control would.
   //	pStaticDescrip = new StaticButtonClass( 0, "", TPF_TYPE, d_gamekind_x,
-  //d_gamekind_y, d_gamekind_w, d_gamekind_h );
+  // d_gamekind_y, d_gamekind_w, d_gamekind_h );
   pStaticUnit = new StaticButtonClass(
       0, "    ", TPF_TEXT, d_count_x + d_count_w + 2 * RESFACTOR, d_count_y);
   pStaticLevel = new StaticButtonClass(
@@ -558,7 +558,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   bool bRetractHouseDropDown = false;
 
   if (!pWO->OnEnteringGameSetup())  //	Gets a userlist setup, among other
-                                    //things.
+                                    // things.
     strcpy(szNameOfHostWhoJustBailedOnUs,
            TXT_WOL_THEGAMEHOST);  //	Will cause immediate exit.
 
@@ -575,8 +575,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     SetPlayerColor(
         pWO->szMyName,
         ColorNextAvailable());  //	Unless I'm host, this will be changed
-                                //quite immediately, 	but nice to have it be a
-                                //valid value until then.
+                                // quite immediately, 	but nice to have it be a
+                                // valid value until then.
 
   DWORD dwTimeNextPlayerPing = ::timeGetTime() + PING_AND_DISPLAY_WAIT;
   DWORD dwTimeNextPingDisplay =
@@ -590,7 +590,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   pILPlayers->Set_Tabs(tabs);
 
   //	If we have not already received a param update from a host, set default
-  //param values.
+  // param values.
   if (!bParamsReceived) {
     if (!bHost)
       //	Accept button disabled until first params arrive.
@@ -645,15 +645,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           if (Is_Mission_Counterstrike(
                   (char*)(Session.Scenarios[i]->Get_Filename()))) {
             //					debugprint( " ----------------
-            //Adding scenario %s as CS\n", szScenarioNameShow );
+            // Adding scenario %s as CS\n", szScenarioNameShow );
             ar_szScenarios[SCENARIO_CS].Add(szScenarioNameShow);
             ar_szScenIndexes[SCENARIO_CS].Add((void*)i);
           } else if (Is_Mission_Aftermath(
                          (char*)(Session.Scenarios[i]->Get_Filename()))) {
             //					debugprint( " ----------------
-            //Adding scenario %s as AM\n", szScenarioNameShow ); 	If this is not
-            //an Aftermath game channel, we must filter out any AM maps that
-            //have 	special AM units on them.
+            // Adding scenario %s as AM\n", szScenarioNameShow ); 	If this
+            // is not an Aftermath game channel, we must filter out any AM maps
+            // that have 	special AM units on them.
             if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
                 !bSpecialAftermathScenario(pMMission->Description())) {
               ar_szScenarios[SCENARIO_AM].Add(szScenarioNameShow);
@@ -661,13 +661,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             }
           } else {
             //					debugprint( " ----------------
-            //Adding scenario %s as RA\n", szScenarioNameShow );
+            // Adding scenario %s as RA\n", szScenarioNameShow );
             ar_szScenarios[SCENARIO_RA].Add(szScenarioNameShow);
             ar_szScenIndexes[SCENARIO_RA].Add((void*)i);
           }
         } else {
           //				debugprint( " ---------------- Adding
-          //scenario %s as User\n", szScenarioNameShow );
+          // scenario %s as User\n", szScenarioNameShow );
           ar_szScenarios[SCENARIO_USER].Add(szScenarioNameShow);
           ar_szScenIndexes[SCENARIO_USER].Add((void*)i);
         }
@@ -692,11 +692,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       */
       Session.Options.ScenarioIndex = 0;  // 1st scenario is selected
 
-      ScenarioDisplayMode(
-          SCENARIO_RA);  //	Always start on RedAlert tab. Next line depends
-                         //on selected item in 	list matching selected scenario.
+      ScenarioDisplayMode(SCENARIO_RA);  //	Always start on RedAlert tab.
+                                         //Next line depends on selected item in
+                                         // list matching selected scenario.
       //			pStaticDescrip->Set_Text( pILScens->Get_Item(
-      //pILScens->Current_Index() ), false );
+      // pILScens->Current_Index() ), false );
       strcpy(szScenarioNameDisplay,
              pILScens->Get_Item(pILScens->Current_Index()));
     }
@@ -764,7 +764,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 #endif
 
     //	Check for change of house. Occurs on first loop and when user changes
-    //house.
+    // house.
     if (HousePrevious != Session.House) {
       if (bHost) {
         //	Host changed house.
@@ -780,17 +780,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       } else {
         User* pUserHost = pWO->pGameHost();
         if (pUserHost)  //	Else we have not received the user list yet and
-                        //don't know who the host is. 	We'll keep trying this
-                        //until we get a host - HousePrevious keeps us
-                        //triggering until then.
+                        // don't know who the host is. 	We'll keep trying this
+                        // until we get a host - HousePrevious keeps us
+                        // triggering until then.
         {
           //					debugprint( "Session.House
-          //changed.\n" ); 	Tell host we changed our house.
+          // changed.\n" ); 	Tell host we changed our house.
           char szSend[20];
           sprintf(szSend, "%02u %02u", WOL_GAMEOPT_REQHOUSE, Session.House);
           pWO->SendGameOpt(szSend, pUserHost);
           //	Set house in our own list. This is fine because we know that the
-          //change must be affirmed by the host.
+          // change must be affirmed by the host.
           SetPlayerHouse(pWO->szMyName, Session.House);
           HousePrevious = Session.House;
         }
@@ -799,8 +799,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
     //	Regularly ping other players to assess latencies.
     //	Display of ping results is on a parallel timer, slightly behind the ping
-    //so that we'll be likely to have 	a fresh average to show. Not too big a
-    //deal if OnPings haven't arrived by then (though they should have).
+    // so that we'll be likely to have 	a fresh average to show. Not too big a
+    // deal if OnPings haven't arrived by then (though they should have).
     if (::timeGetTime() > dwTimeNextPlayerPing) {
       pWO->RequestPlayerPings();
       dwTimeNextPlayerPing = ::timeGetTime() + PING_AND_DISPLAY_WAIT;
@@ -827,7 +827,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         bProcess = false;
         ResultReturn = RESULT_WOLGSUP_BACKTOCHAT;  //	Return to chat.
         //	Leave the bGotKickedTrigger flag so we can react to it upon
-        //reentering the chat dialog. pWO->pChatSink->bGotKickedTrigger = false;
+        // reentering the chat dialog. pWO->pChatSink->bGotKickedTrigger =
+        // false;
         display = REDRAW_ALL;
       }
       pWO->dwTimeNextWolapiPump = ::timeGetTime() + WOLAPIPUMPWAIT;
@@ -836,7 +837,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     if (bHostSayGo) {
       //			debugprint( "bHostSayGo trigger\n" );
       //	We are the host, now ready to tell everyone to GO and start our
-      //game.
+      // game.
       HostSaysGo();
       /*	Part of old method of game start.
                               bProcess = false;
@@ -847,16 +848,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                               break;
       */
     } else if (*szNameOfHostWhoJustBailedOnUs)  //	Host left channel -
-                                                //cancel setup.
+                                                // cancel setup.
     {
       //			debugprint( "Guest about to exit game setup
-      //dialog because host bailed on us.\n" );
+      // dialog because host bailed on us.\n" );
       if (ExitGameChannel()) {
         pWO->RejoinLobbyAfterGame();
         bProcess = false;
         ResultReturn = RESULT_WOLGSUP_HOSTLEFT;  //	Return to chat.
         //	Add a message explaining what happened to the saved chat that
-        //will be restored in the chat dialog.
+        // will be restored in the chat dialog.
         pWO->AddHostLeftMessageToSavedChat(szNameOfHostWhoJustBailedOnUs);
       } else {
         bProcess = false;
@@ -866,13 +867,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       break;
     } else if (bLeaveDueToRulesMismatchTrigger) {
       //			debugprint( "Guest about to exit game setup
-      //dialog because of rules.ini mismatch.\n" );
+      // dialog because of rules.ini mismatch.\n" );
       if (ExitGameChannel()) {
         pWO->RejoinLobbyAfterGame();
         bProcess = false;
         ResultReturn = RESULT_WOLGSUP_RULESMISMATCH;  //	Return to chat.
         //	Add a message explaining what happened to the saved chat that
-        //will be restored in the chat dialog.
+        // will be restored in the chat dialog.
         pWO->AddMessageToSavedChat(TXT_WOL_RULESMISMATCH);
       } else {
         bProcess = false;
@@ -898,7 +899,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       else
         ResultReturn = RESULT_WOLGSUP_STARTGAME;
       //			debugprint( "About to exit game setup dialog for
-      //game.\n" );
+      // game.\n" );
       if (!ExitGameChannel())
         ResultReturn =
             RESULT_WOLGSUP_FATALERROR;  //	Return with an error value.
@@ -908,7 +909,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     if (bHost && bWaitingToStart && !bExitForGameTrigger &&
         timeGetTime() > timeWaitingToStartTimeout) {
       ClearAllAccepts();  //	Results in all required steps to cancel game
-                          //start.
+                          // start.
       WOL_PrintMessage(*pILDisc, TXT_WOL_STARTTIMEOUT,
                        WOLCOLORREMAP_LOCALMACHINEMESS);
       Sound_Effect(WOLSOUND_ERROR);
@@ -961,8 +962,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       ** Collapse the country list if we are going to redraw the game list
       */
       //			if (pILScens->Is_To_Redraw() &&
-      //pDropListHouse->IsDropped) { 				pDropListHouse->Collapse(); 				if (display <
-      //REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
+      // pDropListHouse->IsDropped) {
+      // pDropListHouse->Collapse(); 				if (display <
+      // REDRAW_BACKGROUND) display = REDRAW_BACKGROUND;
       //			}
 
       //..................................................................
@@ -988,8 +990,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                            TPF_TYPE | TPF_RIGHT);
         //				else
         //					Fancy_Text_Print(
-        //TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
-        //d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_TEXT | TPF_CENTER);
+        // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
+        // d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_TEXT | TPF_CENTER);
         Fancy_Text_Print(TXT_COUNT, d_count_x - 2 * RESFACTOR, d_count_y,
                          scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 2 * RESFACTOR, d_level_y,
@@ -1024,7 +1026,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             break;
           default:
             //					debugprint( "Illegal
-            //GameInfoCurrent value." ); Fatal( "Illegal GameInfoCurrent value."
+            // GameInfoCurrent value." ); Fatal( "Illegal GameInfoCurrent
+            // value."
             // );
             szGameKind = TXT_WOL_CG_AMGAME;
             pDIB = NULL;
@@ -1104,8 +1107,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       if (display >= REDRAW_MESSAGE) {
         //				Draw_Box(d_disc_x, d_disc_y, d_disc_w,
-        //d_disc_h, BOXSTYLE_BOX, true); 				Draw_Box(d_send_x, d_send_y, d_send_w,
-        //d_send_h, BOXSTYLE_BOX, true); 				Session.Messages.Draw();
+        // d_disc_h, BOXSTYLE_BOX, true);
+        // Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
+        // Session.Messages.Draw();
       }
 
       //..................................................................
@@ -1152,7 +1156,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             sprintf(txt, "%s", szScenarioDesc);
           }
           //					pStaticDescrip->Set_Text( txt,
-          //false );
+          // false );
           strcpy(szScenarioNameDisplay, txt);
 
           //	Show icon for gamekind of scenario.
@@ -1174,7 +1178,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           // Text_String(TXT_NOT_FOUND));
           sprintf(txt, "%s", TXT_WOL_SCENARIONAMEWAIT);
           //					pStaticDescrip->Set_Text( txt,
-          //false );
+          // false );
           strcpy(szScenarioNameDisplay, txt);
         }
 
@@ -1210,7 +1214,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
-    //disappearing cursors.
+    // disappearing cursors.
     while (Get_Mouse_State()) Show_Mouse();
     //	Be nice to other apps.
     Sleep(50);
@@ -1326,7 +1330,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           //					debugprint( "Logging out from
-          //gsup.\n" );
+          // gsup.\n" );
           ExitGameChannel();
           pWO->Logout();
           bProcess = false;
@@ -1439,11 +1443,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             bInformParamChange = true;
             if (!pILScens->SetSelectType(
                     1))  //	Hack to deal with ListClass "highlighting
-                         //nothing" problem.
+                         // nothing" problem.
               //	SelectType was 0 before call.
               pILScens->Flag_To_Redraw();
             //						pStaticDescrip->Set_Text(
-            //pILScens->Get_Item( pILScens->Current_Index() ), false );
+            // pILScens->Get_Item( pILScens->Current_Index() ), false );
             strcpy(szScenarioNameDisplay,
                    pILScens->Get_Item(pILScens->Current_Index()));
             // if (display < REDRAW_PARMS) display = REDRAW_PARMS;
@@ -1576,16 +1580,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           //	Guest wishes to accept game params.
           User* pUserHost = pWO->pGameHost();
           if (pUserHost)  //	Else it's too early to even be thinking about
-                          //accepting, anyway.
+                          // accepting, anyway.
           {
             //	Set ourself as accepted. We want to do this immediately so the
-            //user has feedback for pressing button. 	Besides, the host is
-            //guaranteed to allow this and set us to "accepted", unless it is
-            //simultaneously 	sending us a new update we haven't received yet. If
-            //this is the case, we will get that update in a 	second and will set
-            //ourselves to unaccepted, which will match the unaccepted state on
-            //the server. 	Upshot - We can ignore messages from the server
-            //telling us that we, ourself, accepted.
+            // user has feedback for pressing button. 	Besides, the host is
+            // guaranteed to allow this and set us to "accepted", unless it is
+            // simultaneously 	sending us a new update we haven't received yet.
+            // If this is the case, we will get that update in a 	second
+            // and will set ourselves to unaccepted, which will match the
+            // unaccepted state on the server. 	Upshot - We can ignore messages
+            // from the server telling us that we, ourself, accepted.
             if (pToolTipHitLast && pToolTipHitLast->bShowing)
               pToolTipHitLast->Unshow();
             pTextBtnAcceptStart->Disable();
@@ -1604,18 +1608,19 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         } else {
           //	Host says start the game.
           //	If we have changes just made and not yet sent, don't say start,
-          //because we're about to send changes 	that will unaccept everyone.
+          // because we're about to send changes 	that will unaccept
+          // everyone.
           if (!bParamsUnfresh()) {
             //	Force user to put the correct disk in before proceeding. (Not
-            //crucial, but can lead to ugly 	timeouts if the scenario has to be
-            //downloaded before game start.)
+            // crucial, but can lead to ugly 	timeouts if the scenario has to
+            // be downloaded before game start.)
             if (!Session.Scenarios[Session.Options.ScenarioIndex]
                      ->Get_Official() ||
                 Force_Scenario_Available(
                     Session.Scenarios[Session.Options.ScenarioIndex]
                         ->Get_Filename())) {
               //	Go into "waiting to start" mode, tell guests to, and
-              //wait for responses.
+              // wait for responses.
               bWaitingToStart = true;
               timeWaitingToStartTimeout = ::timeGetTime() + 30000;
               nHostLastParamID++;
@@ -1736,14 +1741,14 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
     pILPlayers->Add_Tail(*commands);
     if (bHost) {
       //	Draw order of tabs depends on which one is selected, as we want
-      //them to overlap appropriately. 	Also, the selected tab must appear over
-      //the scenario list, while the unselected tabs are below it. 	This assures
-      //that that bottom of the tab overlaps the scenario list border, making it
-      //look connected.
+      // them to overlap appropriately. 	Also, the selected tab must
+      // appear over the scenario list, while the unselected tabs are below it.
+      // This assures that that bottom of the tab overlaps the scenario list
+      // border, making it look connected.
 
       //	ajw I could make all maps always available now that they're
-      //downloadable. Playing CS map with AM rules 	would mean switching CDs,
-      //though. 	Would mean no difference between RA and CS games.
+      // downloadable. Playing CS map with AM rules 	would mean switching
+      // CDs, though. 	Would mean no difference between RA and CS games.
 
       switch (ScenKindCurrent) {
         case SCENARIO_RA:
@@ -1766,7 +1771,7 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
           pShpBtnScenarioRA->DRAWTABUP;
           break;
         case SCENARIO_CS:  //	pWO->GameInfoCurrent.GameKind must be
-                           //CREATEGAMEINFO::CSGAME.
+                           // CREATEGAMEINFO::CSGAME.
           if (!pWO->GameInfoCurrent.bTournament) {
             pShpBtnScenarioUser->Add_Tail(*commands);
             pShpBtnScenarioUser->DRAWTABDOWN;
@@ -1778,8 +1783,8 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
           pShpBtnScenarioCS->DRAWTABUP;
           break;
         case SCENARIO_AM:  //	pWO->GameInfoCurrent.GameKind must be
-                           //CREATEGAMEINFO::AMGAME, or RAGAME with AM
-                           //installed.
+                           // CREATEGAMEINFO::AMGAME, or RAGAME with AM
+                           // installed.
           if (!pWO->GameInfoCurrent.bTournament) {
             pShpBtnScenarioUser->Add_Tail(*commands);
             pShpBtnScenarioUser->DRAWTABDOWN;
@@ -1874,10 +1879,10 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
 //***********************************************************************************************
 void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   //	debugprint( "ScenarioDisplayMode, from %i going into %i mode.\n",
-  //ScenKindCurrent, ScenKind );
+  // ScenKindCurrent, ScenKind );
 
   //	Puts us into mode where we are viewing a particular gamekind of scenario
-  //list.
+  // list.
   if (ScenKindCurrent == ScenKind) return;
 
   //	Reorder tab buttons.
@@ -1888,8 +1893,8 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   //	Reset list items.
   pILScens->Clear();
   //	debugprint( "  *  *  *  *  *  *  ScenKind %i has %i items.\n", ScenKind,
-  //ar_szScenarios[ ScenKind ].Count() ); 	Check for the currently selected
-  //scenario.
+  // ar_szScenarios[ ScenKind ].Count() ); 	Check for the currently selected
+  // scenario.
   bool bFoundCurrentSelection = false;
   int iSelect;
   for (int i = 0; i != ar_szScenarios[ScenKind].Count(); i++) {
@@ -1900,16 +1905,17 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
     if (iScenIndex == Session.Options.ScenarioIndex &&
         !bFoundCurrentSelection) {
       //	(Choose first line of what can be multiline description of
-      //currently selected scenario.)
+      // currently selected scenario.)
       bFoundCurrentSelection = true;
       iSelect = i;
     }
   }
   //	If the current scenario selection is in this list, enable the list to
-  //show the selection, otherwise, 	make the listclass selection invisible,
-  //because it doesn't indicate the real scenario selection. 	Basically, problem
-  //is that I can't have no selection in ListClass, and I don't want to risk
-  //changing 	it as I'll affect the rest of the code. So I do this horrible hack.
+  // show the selection, otherwise, 	make the listclass selection invisible,
+  // because it doesn't indicate the real scenario selection. 	Basically,
+  // problem is that I can't have no selection in ListClass, and I don't want to
+  // risk changing 	it as I'll affect the rest of the code. So I do this
+  // horrible hack.
   if (bFoundCurrentSelection) {
     pILScens->SetSelectType(1);  //	Regular selection.
     pILScens->Set_Selected_Index(iSelect);
@@ -1956,10 +1962,10 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
   if (iItem == -1) {
     //	Player name was not found in list.
     //	This can happen when player color Informs arrive from the host before I
-    //have gotten a userlist. 	Insert an entry for user - color will be
-    //maintained when the userlist arrives. 	"early insertion"
+    // have gotten a userlist. 	Insert an entry for user - color will be
+    // maintained when the userlist arrives. 	"early insertion"
     //		debugprint( "SetPlayerColor could not find name '%s'!
-    //Inserting...\n", szName );
+    // Inserting...\n", szName );
     iItem = pILPlayers->Add_Item(szName);
   }
 
@@ -1995,10 +2001,10 @@ void WOL_GameSetupDialog::SetPlayerHouse(const char* szName, HousesType House) {
   if (iItem == -1) {
     //	Player name was not found in list.
     //	This can happen when player house Informs arrive from the host before I
-    //have gotten a userlist. 	Insert an entry for user - house will be
-    //maintained when the userlist arrives. 	"early insertion"
+    // have gotten a userlist. 	Insert an entry for user - house will be
+    // maintained when the userlist arrives. 	"early insertion"
     //		debugprint( "SetPlayerHouse could not find name '%s'!
-    //Inserting...\n", szName );
+    // Inserting...\n", szName );
     iItem = pILPlayers->Add_Item(szName);
   }
 
@@ -2027,12 +2033,12 @@ bool WOL_GameSetupDialog::SetPlayerAccepted(const char* szName,
                                             bool bAccepted) {
   //	Sets player's 'accepted' state to true or false.
   //	Value is stored in the player list: if there is an accepted icon, player
-  //has accepted.
+  // has accepted.
   int iItem = pILPlayers->Find(szName);
   if (iItem == -1) {
     //	Player name was not found in list.
     //		debugprint( "SetPlayerAccepted() - could not find '%s'.\n",
-    //szName );
+    // szName );
     return false;
   }
   //	debugprint( "SetPlayerAccepted() - set '%s' to %s.\n", szName, bAccepted
@@ -2059,11 +2065,11 @@ bool WOL_GameSetupDialog::SetPlayerReadyToGo(const char* szName,
   if (iItem == -1) {
     //	Player name was not found in list.
     //		debugprint( "SetPlayerReadyToGo() - could not find '%s'.\n",
-    //szName );
+    // szName );
     return false;
   }
   //	debugprint( "SetPlayerReadyToGo() - set '%s' to %s.\n", szName,
-  //szReadyState );
+  // szReadyState );
   pWO->MarkItemReadyToGo(iItem, szReadyState);
 
   return true;
@@ -2089,7 +2095,7 @@ bool WOL_GameSetupDialog::bPlayerReadyToGo(const char* szName) {
 bool WOL_GameSetupDialog::bAllPlayersReadyToGo() {
   //	Returns true if all players are marked as "ready to go".
   //	debugprint( "Checking for all players ready - there are %i\n",
-  //pILPlayers->Count() );
+  // pILPlayers->Count() );
   for (int i = 0; i < pILPlayers->Count(); i++) {
     if (!pWO->bItemMarkedReadyToGo(i)) {
       //			debugprint( "Item %i NOT ready\n", i );
@@ -2105,10 +2111,10 @@ bool WOL_GameSetupDialog::bAllPlayersReadyToGo() {
 void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
                                               const char* szRequest) {
   //	Game host processes a request that arrived as a privategameopt from one
-  //of the guests. 	WOL_GAMEOPT_REQCOLOR format: 	2		WOL_GAMEOPT 	1
-  //space 	2		color 	1		null-terminator
-  //	debugprint( "ProcessGuestRequest. szRequest is '%s', len %i.\n",
-  //szRequest, strlen( szRequest ) );
+  // of the guests. 	WOL_GAMEOPT_REQCOLOR format: 	2
+  // WOL_GAMEOPT 	1 space 	2		color 	1
+  // null-terminator 	debugprint( "ProcessGuestRequest. szRequest is '%s', len
+  //%i.\n", szRequest, strlen( szRequest ) );
   WOL_GAMEOPT opt = (WOL_GAMEOPT)atoi(szRequest);
   szRequest += 3;
 
@@ -2125,8 +2131,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       } else {
         //	Color is not available.
         //			debugprint( "Color %i denied to %s\n",
-        //ColorDesired, (char*)pUser->name ); 	Tell requestor that his color is
-        //still the same.
+        // ColorDesired, (char*)pUser->name ); 	Tell requestor that his color is
+        // still the same.
         RemapControlType* pColorRemapCurrent =
             pILPlayers->Get_Item_Color(pILPlayers->Find((char*)pUser->name));
         InformAboutPlayerColor((char*)pUser->name,
@@ -2146,7 +2152,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     }
     case WOL_GAMEOPT_REQACCEPT:
       //	Does Param ID of accept request match the last param change ID
-      //sent? See notes at top.
+      // sent? See notes at top.
       if (atoi(szRequest) == nHostLastParamID) {
         //			debugprint( "Host received valid accept from
         //'%s'.\n", (char*)pUser->name );
@@ -2160,59 +2166,62 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         }
       } else {
         //			debugprint( "______________Host received invalid
-        //accept from '%s'. ID = %i when it should be %i.\n",
-        //(char*)pUser->name, 				atoi( szRequest ), nHostLastParamID );
+        // accept from '%s'. ID = %i when it should be %i.\n",
+        //(char*)pUser->name, 				atoi( szRequest ),
+        //nHostLastParamID );
       }
       break;
     case WOL_GAMEOPT_REQSTART:
       //	Does Param ID of accept request match the last param change ID
-      //sent? See notes at top.
+      // sent? See notes at top.
       if (atoi(szRequest) ==
           nHostLastParamID)  //	Otherwise ignore - it's old and we don't care.
                              //(Incredibly unlikely to happen, actually.)
       {
         //			debugprint( "Host received valid
-        //WOL_GAMEOPT_REQSTART from '%s'.\n", (char*)pUser->name );
+        // WOL_GAMEOPT_REQSTART from '%s'.\n", (char*)pUser->name );
         //			WOL_PrintMessage( *pILDisc,
         //"WOL_GAMEOPT_REQSTART response", WOLCOLORREMAP_LOCALMACHINEMESS );
         //			WOL_PrintMessage( *pILDisc, (char*)pUser->name,
-        //WOLCOLORREMAP_LOCALMACHINEMESS );
+        // WOLCOLORREMAP_LOCALMACHINEMESS );
         if (bWaitingToStart)
           //	If all responses are in, start the game!
           GuestIsReadyToPlay((char*)pUser->name, "ready");
         //			else
         //				debugprint( "Ignoring - I am no longer
-        //waiting to start a game.\n" );
+        // waiting to start a game.\n" );
       }
       break;
     case WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       //	Does Param ID of accept request match the last param change ID
-      //sent? See notes at top.
+      // sent? See notes at top.
       if (atoi(szRequest) ==
           nHostLastParamID)  //	Otherwise ignore - it's old and we don't care.
                              //(Incredibly unlikely to happen, actually.)
       {
         //			debugprint( "Host received valid
-        //WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO from '%s'.\n", (char*)pUser->name
+        // WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO from '%s'.\n",
+        // (char*)pUser->name
         //);
         if (bWaitingToStart)
           //	If all responses are in, start the game!
           GuestIsReadyToPlay((char*)pUser->name, "need scenario");
         //			else
         //				debugprint( "Ignoring - I am no longer
-        //waiting to start a game.\n" );
+        // waiting to start a game.\n" );
       }
       break;
     case WOL_GAMEOPT_INFGO:
       //	I have told myself to start game right now.
       //	This is the new method. Avoids apparent "private
-      //messages/gameopts are getting delayed" problem in chatserver... 	(I don't
-      //want to end up leaving the channel before guests get my go message.)
+      // messages/gameopts are getting delayed" problem in chatserver...
+      // (I don't want to end up leaving the channel before guests get my go
+      // message.)
       strcpy(szTriggerGameStartInfo, szRequest);
       break;
     default:
       //		debugprint( "Unhandled value of %i in
-      //ProcessGuestRequest!!!\n", opt );
+      // ProcessGuestRequest!!!\n", opt );
       break;
   }
 }
@@ -2235,29 +2244,29 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         PlayerColorType Color = (PlayerColorType)(atoi(szInform));
         szInform += 3;
         SetPlayerColor(szInform, Color);  //	(szInform is now sitting at the
-                                          //start of the name string.)
+                                          // start of the name string.)
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
       }
       case WOL_GAMEOPT_INFHOUSE:  //	Note: In theory, I could ignore this if
-                                  //it refers to me. I've already set my own
-                                  //house.
+                                  // it refers to me. I've already set my own
+                                  // house.
       {
         nGuestLastParamID = atoi(szInform);
         szInform += 7;
         HousesType House = (HousesType)(atoi(szInform));
         szInform += 3;
         SetPlayerHouse(szInform, House);  //	(szInform is now sitting at the
-                                          //start of the name string.)
+                                          // start of the name string.)
         ClearAllAccepts();
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
       }
       case WOL_GAMEOPT_INFACCEPT:  //	Note: In theory, I could ignore this if
-                                   //it refers to me.
+                                   // it refers to me.
         //	A guest has accepted.
         SetPlayerAccepted(szInform, true);  //	(szInform is now sitting at the
-                                            //start of the name string.)
+                                            // start of the name string.)
         break;
       case WOL_GAMEOPT_INFPARAMS:
         //	Game params have changed.
@@ -2271,25 +2280,26 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         break;
       case WOL_GAMEOPT_INFNEWGUESTPLAYERINFO:
         //	I have just joined and have received a message with info on all
-        //players in game.
+        // players in game.
         AcceptNewGuestPlayerInfo(szInform);
         Sound_Effect(VOC_OPTIONS_CHANGED);
         break;
       case WOL_GAMEOPT_INFSTART: {
         //	Host tells us to wait for start of game.
         //			debugprint( "Guest received
-        //WOL_GAMEOPT_INFSTART.\n" );
+        // WOL_GAMEOPT_INFSTART.\n" );
         nGuestLastParamID = atoi(szInform);
         //	The following check is not necessary. Rules.ini, if manually
-        //replaced by a cheater, is not reloaded. 	So prior checks (that occur on
-        //game params receives) are sufficient. 			szInform += 7;
+        // replaced by a cheater, is not reloaded. 	So prior checks (that
+        // occur on game params receives) are sufficient.
+        // szInform += 7;
         //			//	Check rules.ini compatibility.
         //			int iRulesID = atoi( szInform );
         //			if( RuleINI.Get_Unique_ID() != iRulesID )
         //			{
         //				//	Rules.ini incompatible. Don't
-        //respond to call for start. 				bLeaveDueToRulesMismatchTrigger = true;
-        //				break;
+        // respond to call for start.
+        // bLeaveDueToRulesMismatchTrigger = true; 				break;
         //			}
         User* pUserHost = pWO->pGameHost();
         if (pUserHost)  //	This better'd be true.
@@ -2309,14 +2319,14 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
           WWMessageBox().Process(TXT_WOL_WAITINGTOSTART, TXT_NONE);
           BindControls(false);
           //	If we are in a modal dialog, we must have arrived here through
-          //Call_Back()'s PumpMessages. 	Set global that will force edit dialogs
-          //to stop accepting characters. 	This is to fix a minor glitch: guests
-          //can keep typing into a "page" dialog editbox after the 	"Launching
-          //game..." message has appeared on top of it.
+          // Call_Back()'s PumpMessages. 	Set global that will force edit
+          // dialogs to stop accepting characters. 	This is to fix a minor
+          // glitch: guests can keep typing into a "page" dialog editbox after
+          // the 	"Launching game..." message has appeared on top of it.
           if (pWO->bPump_In_Call_Back) disable_current_msgbox = true;
         } else {
           //				debugprint( "Impossible arose on
-          //WOL_GAMEOPT_INFSTART.\n" );
+          // WOL_GAMEOPT_INFSTART.\n" );
           Fatal("Impossible arose on WOL_GAMEOPT_INFSTART.\n");
         }
         Sound_Effect(VOC_GAME_CLOSED);
@@ -2332,21 +2342,21 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         Sound_Effect(VOC_SYS_ERROR);
         display = REDRAW_ALL;
         //	If we are in a modal dialog, we must have arrived here through
-        //Call_Back()'s PumpMessages. Set global that will 	force a cancel out of
-        //the dialog.
+        // Call_Back()'s PumpMessages. Set global that will 	force a cancel
+        // out of the dialog.
         if (pWO->bPump_In_Call_Back) cancel_current_msgbox = true;
         break;
       case WOL_GAMEOPT_INFGO:
         //	Host says start game right now.
         strcpy(szTriggerGameStartInfo, szInform);
         //	If we are in a modal dialog, we must have arrived here through
-        //Call_Back()'s PumpMessages. Set global that will 	force a cancel out of
-        //the dialog.
+        // Call_Back()'s PumpMessages. Set global that will 	force a cancel
+        // out of the dialog.
         if (pWO->bPump_In_Call_Back) cancel_current_msgbox = true;
         break;
       default:
         //			debugprint( "Unhandled value of %i in
-        //ProcessInform!!!\n", opt ); WOL_PrintMessage( *pILDisc, "Error -
+        // ProcessInform!!!\n", opt ); WOL_PrintMessage( *pILDisc, "Error -
         // Unhandled value in ProcessInform!!!", WOLCOLORREMAP_LOCALMACHINEMESS
         // );
         Fatal("Error - Unhandled value in ProcessInform!");
@@ -2359,7 +2369,7 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
 //***********************************************************************************************
 bool WOL_GameSetupDialog::bParamsUnfresh() {
   //	Returns true if game setup parameters do not match what they were last
-  //time they were sent.
+  // time they were sent.
   GAMEPARAMS GParamsNow;
   SetGParamsToCurrent(GParamsNow);
 
@@ -2370,8 +2380,8 @@ bool WOL_GameSetupDialog::bParamsUnfresh() {
   //		debugprint( "-------------------  NEW...\n" );
   //		Debug_GlobalPacketType( GParamsNow.GPacket );
   //		debugprint( "old bAftermathUnits = %i\n",
-  //GParamsLastSent.bAftermathUnits ); 		debugprint( "new bAftermathUnits = %i\n",
-  //GParamsNow.bAftermathUnits );
+  // GParamsLastSent.bAftermathUnits ); 		debugprint( "new
+  // bAftermathUnits = %i\n", GParamsNow.bAftermathUnits );
   //	}
 
   return !(GParamsNow == GParamsLastSent);
@@ -2393,7 +2403,7 @@ void WOL_GameSetupDialog::SendParams() {
           "%s "
           "%01u "
           "%.32s "  //	No null-terminator on digest. There may be nothing at
-                    //all inserted here.
+                    // all inserted here.
           "%u "
           "%u "
           "%u "
@@ -2423,7 +2433,7 @@ void WOL_GameSetupDialog::SendParams() {
           GParamsLastSent.GPacket.ScenarioInfo.ShortFileName,
           //		strlen(
           //(char*)GParamsLastSent.GPacket.ScenarioInfo.FileDigest ),
-          //not null-terminated!
+          // not null-terminated!
           GParamsLastSent.GPacket.ScenarioInfo.FileDigest[0] ? 1 : 0,
           GParamsLastSent.GPacket.ScenarioInfo.FileDigest,
           GParamsLastSent.GPacket.ScenarioInfo.OfficialScenario,
@@ -2456,11 +2466,11 @@ void WOL_GameSetupDialog::SendParams() {
 //***********************************************************************************************
 bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	Reverse of SendParams() process. szParams has already been stripped of 2
-  //bytes header. Guest only.
+  // bytes header. Guest only.
 
   //	Returns false if rules.ini doesn't match that of the host.
   //	(Or if an error occurs due to the packet being incorrect - which
-  //happened once in test...)
+  // happened once in test...)
 
   char szDelimiter[] = " ";
   char* szToken;
@@ -2507,13 +2517,14 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
       szToken);  //	1 or 0, indicating if there is a digest following.
   if (iLen) {
     //		//	Set string pointer to start of string (previous field is
-    //1 digit). 		szRemaining = szToken + 2; 		iLen = sizeof( Session.ScenarioDigest
+    // 1 digit). 		szRemaining = szToken + 2; 		iLen =
+    // sizeof( Session.ScenarioDigest
     //);
     //		//	Read in string.
     //		memcpy( Session.ScenarioDigest, szRemaining, iLen );
     //		//	//	Null-terminate.
     //		//	Session.ScenarioDigest[ iLen ] = 0;
-    //Digest has no null-terminator!
+    // Digest has no null-terminator!
     //		//	Advance string pointer to next param.
     //		szRemaining += iLen + 1;
     //	There is a digest.
@@ -2777,7 +2788,7 @@ PlayerColorType PlayerColorTypeOf(RemapControlType* pColorRemap) {
 //***********************************************************************************************
 bool WOL_GameSetupDialog::RequestPlayerColor(PlayerColorType Color) {
   //	Local player sends a request to the game host asking for a particular
-  //color.
+  // color.
   char szSend[20];
 
   //	WOL_GAMEOPT_REQCOLOR format:
@@ -2808,7 +2819,7 @@ bool WOL_GameSetupDialog::InformAboutPlayerColor(const char* szName,
 
   if (Color == PCOLOR_NONE) {
     //		debugprint( "Bad Color for %s in InformAboutPlayerColor.\n",
-    //szName );
+    // szName );
     *szSend = 0;
   } else
     sprintf(szSend, "%02u %02u %s", WOL_GAMEOPT_INFCOLOR, Color, szName);
@@ -2834,7 +2845,7 @@ bool WOL_GameSetupDialog::InformAboutPlayerHouse(const char* szName,
 
   if (House == HOUSE_NONE) {
     //		debugprint( "Bad House for %s in InformAboutPlayerHouse.\n",
-    //szName );
+    // szName );
     *szSend = 0;
   } else
     sprintf(szSend, "%02u %06u %02u %s", WOL_GAMEOPT_INFHOUSE, nHostLastParamID,
@@ -2858,8 +2869,8 @@ bool WOL_GameSetupDialog::InformAboutPlayerAccept(const char* szName,
 bool WOL_GameSetupDialog::InformAboutStart() {
   //	Game host tells all guests that he wants to start the game.
   //	Note that nHostLastParamID is involved here. We want to make sure that
-  //guest responses apply 	to the latest WOL_GAMEOPT_INFSTART, and not to an
-  //earlier one we canceled out of.
+  // guest responses apply 	to the latest WOL_GAMEOPT_INFSTART, and not to
+  // an earlier one we canceled out of.
   char szSend[10];
 
   sprintf(szSend, "%02u %06u", WOL_GAMEOPT_INFSTART, nHostLastParamID);
@@ -2871,9 +2882,9 @@ bool WOL_GameSetupDialog::InformAboutStart() {
 bool WOL_GameSetupDialog::InformAboutCancelStart() {
   //	Game host tells all guests that he wants to start the game.
   //	Note that nHostLastParamID is involved here. We want to make sure that
-  //guest responses apply 	to the latest WOL_GAMEOPT_INFSTART, and not to an
-  //earlier one we canceled out of.
-  //	debugprint( "InformAboutCancelStart!\n" );
+  // guest responses apply 	to the latest WOL_GAMEOPT_INFSTART, and not to
+  // an earlier one we canceled out of. 	debugprint( "InformAboutCancelStart!\n"
+  //);
 
   char szSend[10];
 
@@ -2896,20 +2907,20 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 
   if (bHost) {
     //	Send the new guest the current setup.	Note that nHostLastParamID
-    //doesn't change here.
+    // doesn't change here.
 
     //	Assign color to new guest.
     PlayerColorType Color = ColorNextAvailable();
     SetPlayerColor((char*)pUser->name, Color);
 
     //	Previously, I was sending an individual color, house, and acceptedstate
-    //message for each other guest. 	Though convenient code-wise, this causes the
-    //initial info to arrive at the new guest in a very slow 	manner. This is
-    //because of the wonderful "anti-flood" feature of the chat server, which
-    //prevents a 	series of messages from a client from being passed on faster
-    //than a certain rate. 	For this reason, a new message that contains all of
-    //the info about all of the other guests has been 	created
-    //(WOL_GAMEOPT_INFNEWGUESTPLAYERINFO).
+    // message for each other guest. 	Though convenient code-wise, this causes
+    // the initial info to arrive at the new guest in a very slow 	manner.
+    // This is because of the wonderful "anti-flood" feature of the chat server,
+    // which prevents a 	series of messages from a client from being
+    // passed on faster than a certain rate. 	For this reason, a new message
+    // that contains all of the info about all of the other guests has been
+    // created (WOL_GAMEOPT_INFNEWGUESTPLAYERINFO).
 
     //	WOL_GAMEOPT_INFNEWGUESTPLAYERINFO format (items separated by spaces):
     //		WOL_GAMEOPT
@@ -2921,7 +2932,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     //			bool - is there a house field following?
     //			(house)
     //			// (removed) acceptedness - true for set player
-    //accepted, false for do nothing
+    // accepted, false for do nothing
     //		}
 
     //	Build up a big WOL_GAMEOPT_INFNEWGUESTPLAYERINFO message.
@@ -2929,13 +2940,13 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
     sprintf(szSend, "%02u %02u", WOL_GAMEOPT_INFNEWGUESTPLAYERINFO,
             pILPlayers->Count());
     //	Send color and house of all players (including himself) to the new
-    //guest.
+    // guest.
     for (int i = 0; i < pILPlayers->Count(); i++) {
       char szSendPiece[100];
       char szPlayerName[WOL_NAME_LEN_MAX];
       pWO->PullPlayerName_Into_From(szPlayerName, pILPlayers->Get_Item(i));
       //			InformAboutPlayerColor( szPlayerName,
-      //PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
+      // PlayerColorTypeOf( pILPlayers->Get_Item_Color( i ) ), pUser );
       sprintf(szSendPiece, " %02u %s %02u", strlen(szPlayerName), szPlayerName,
               PlayerColorTypeOf(pILPlayers->Get_Item_Color(i)));
 
@@ -2943,13 +2954,13 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
         HousesType House = pWO->PullPlayerHouse_From(pILPlayers->Get_Item(i));
         if (House != HOUSE_NONE) {
           //				InformAboutPlayerHouse( szPlayerName,
-          //House, pUser );
+          // House, pUser );
           char szSendHouse[50];
           sprintf(szSendHouse, " 1 %02u", (short)House);
           strcat(szSendPiece, szSendHouse);
         } else {
           //	Player must not have told me what house he is yet. Don't send
-          //house value.
+          // house value.
           strcat(szSendPiece, " 0");
         }
       } else {
@@ -2959,9 +2970,11 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 
       //	Acceptedness must be false! No need to send.
       //			//	Send "accepted" status of player. Ignore
-      //myself, as I'm the host. 			if( strcmp( szPlayerName, pWO->szMyName ) != 0
-      //&& pWO->bItemMarkedAccepted( i ) ) 				strcat( szSendPiece, " 1" ); 			else
-      //				strcat( szSendPiece, " 0" );
+      // myself, as I'm the host. 			if( strcmp(
+      // szPlayerName, pWO->szMyName ) != 0
+      //&& pWO->bItemMarkedAccepted( i ) ) 				strcat(
+      //szSendPiece, " 1" ); 			else 				strcat( szSendPiece, " 0"
+      //);
 
       strcat(szSend, szSendPiece);
     }
@@ -2972,12 +2985,13 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 
     //	Send game params.
     //	This is done last because it contains a param ID value, and we need to
-    //ensure that the new guest has 	received everything we are sending him here
-    //before he tries to send me an accept. 	If game params were sent first, he
-    //could theoretically receive them, then send an accept, even though he 	has
-    //not received the WOL_GAMEOPT_INFNEWGUESTPLAYERINFO. 	By doing this I avoid
-    //having to have a param ID in WOL_GAMEOPT_INFNEWGUESTPLAYERINFO, which
-    //would be hard, 	since it is a private message. 	For simplicity, send public.
+    // ensure that the new guest has 	received everything we are sending him
+    // here before he tries to send me an accept. 	If game params were sent
+    // first, he could theoretically receive them, then send an accept, even
+    // though he 	has not received the WOL_GAMEOPT_INFNEWGUESTPLAYERINFO.
+    // By doing this I avoid having to have a param ID in
+    // WOL_GAMEOPT_INFNEWGUESTPLAYERINFO, which would be hard, 	since it is a
+    // private message. 	For simplicity, send public.
     SendParams();
   }
 }
@@ -2994,7 +3008,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   unsigned int nPlayers = atoi(szToken);
 
   //	We have to assist strtok a bit because of calls below that may also call
-  //strtok()...
+  // strtok()...
   szRemaining = szMsg + 3;
 
   for (unsigned int nPlayer = 0; nPlayer != nPlayers; ++nPlayer) {
@@ -3019,7 +3033,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     SetPlayerColor(szPlayerName, Color);
 
     //	SetPlayerColor may call strtok, so we can't use the strtok( NULL,
-    //option... in the next call.
+    // option... in the next call.
     szRemaining += 3;
 
     //	Read whether there is a house field.
@@ -3032,7 +3046,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
       HousesType House = (HousesType)atoi(szToken);
       SetPlayerHouse(szPlayerName, House);
       //	SetPlayerHouse may call strtok, so we can't use the strtok(
-      //NULL, option... in the next call.
+      // NULL, option... in the next call.
       szRemaining += 5;
     } else
       szRemaining += 2;  //	Advance past "0 ".
@@ -3057,7 +3071,7 @@ void WOL_GameSetupDialog::OnGuestLeave(User* pUser) {
   //	pUser is about to leave but is still in our player list.
   if (pUser->flags & CHAT_USER_CHANNELOWNER) {
     //	Host is leaving the channel. We must be a guest, and so must leave also.
-    //This will trigger exit.
+    // This will trigger exit.
     strcpy(szNameOfHostWhoJustBailedOnUs, (char*)pUser->name);
   } else {
     ClearAllAccepts();
@@ -3072,7 +3086,7 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
     User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
     if (pUser && !(pUser->flags &
                    CHAT_USER_CHANNELOWNER))  //	pUser null if this is an "early
-                                             //insertion" entry on startup
+                                             // insertion" entry on startup
       pWO->MarkItemAccepted(i, false);
   }
 
@@ -3082,7 +3096,7 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
     pTextBtnAcceptStart->Disable();
     if (bWaitingToStart) {
       //	Something has happened that makes starting a game not possible
-      //now. 	Cancel out of waiting mode and tell guests to do the same.
+      // now. 	Cancel out of waiting mode and tell guests to do the same.
       bWaitingToStart = false;
       InformAboutCancelStart();
       BindControls(true);
@@ -3129,21 +3143,21 @@ void WOL_GameSetupDialog::GuestIsReadyToPlay(const char* szName,
     //		debugprint( "All players ready to go.\n" );
     //	We can start the game.
     bHostSayGo = true;  //	Set trigger to fire function after we're out of
-                        //callback.
+                        // callback.
   }
 }
 
 //***********************************************************************************************
 bool WOL_GameSetupDialog::bNeedScenarioDownload() {
   //	Returns true if we don't have the scenario and it is allowable as a
-  //download.
+  // download.
   if (!bHost) {
     if (Find_Local_Scenario(Session.Options.ScenarioDescription,
                             Session.ScenarioFileName,
                             Session.ScenarioFileLength, Session.ScenarioDigest,
                             Session.ScenarioIsOfficial)) {
       //			debugprint( "bNeedScenarioDownload() returning
-      //false.\n" );
+      // false.\n" );
       bRequestedScenarioDownload = false;
       return false;
     } else {
@@ -3188,9 +3202,9 @@ void WOL_GameSetupDialog::HostSaysGo() {
 
   //	Create WOL_GAMEOPT_INFGO message.
   //	This contains the color for each player, which can change about
-  //haphazardly at the end of setup, 	without causing "unacceptedness". This
-  //means that the colors everyone thinks everyone else is might not 	be sync'ed.
-  //Host sets everyone straight here.
+  // haphazardly at the end of setup, 	without causing "unacceptedness". This
+  // means that the colors everyone thinks everyone else is might not 	be
+  // sync'ed. Host sets everyone straight here.
   char szSend[(WOL_NAME_LEN_MAX + 10) * 4 + 50] = "";
   sprintf(szSend, "%02u", WOL_GAMEOPT_INFGO);
 
@@ -3200,7 +3214,7 @@ void WOL_GameSetupDialog::HostSaysGo() {
     PlayerColorType Color = GetPlayerColor((char*)pUser->name);
     sprintf(szUser, " %s %02u", (char*)pUser->name,
             Color);  //	What if player left just now, and got removed from list.
-                     //Ok to continue and fail on game start?
+                     // Ok to continue and fail on game start?
     strcat(szSend, szUser);
     pUser = pUser->next;
   }
@@ -3231,14 +3245,14 @@ void WOL_GameSetupDialog::HostSaysGo() {
 //***********************************************************************************************
 void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Last function before dialog is exited for game start. (Which must occur
-  //now.) 	Host or guest is about to start a game using final data in
-  //szGoMessage.
+  // now.) 	Host or guest is about to start a game using final data in
+  // szGoMessage.
 
   //	debugprint( "TriggerGameStart( %s )\n", szGoMessage );
 
   //	If we are in a modal dialog, we must have arrived here through
-  //Call_Back()'s PumpMessages. Set global that will 	force a cancel out of the
-  //dialog.
+  // Call_Back()'s PumpMessages. Set global that will 	force a cancel out of
+  // the dialog.
   if (pWO->bPump_In_Call_Back) cancel_current_msgbox = true;
 
   bHostWaitingForGoTrigger = false;
@@ -3247,7 +3261,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	The following is based on Read_Game_Options()...
 
   //	WWGetPrivateProfileString("Options", "Handle", "Noname", Session.Handle,
-  //sizeof(Session.Handle), buffer);
+  // sizeof(Session.Handle), buffer);
 
   strcpy(Session.Handle, pWO->szMyName);
 
@@ -3256,27 +3270,27 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	debugprint( "Session.GameName is %s\n", Session.GameName );
 
   //	gotit	Session.ColorIdx = (PlayerColorType)
-  //WWGetPrivateProfileInt("Options", "Color", 0, buffer); 	gotit
-  //Session.PrefColor = Session.ColorIdx; 	gotit	int temp =
-  //WWGetPrivateProfileInt("Options", "Side", 0, buffer); 	gotit	Session.House =
-  //(HousesType) ((int)HOUSE_USSR + temp);
+  // WWGetPrivateProfileInt("Options", "Color", 0, buffer); 	gotit
+  // Session.PrefColor = Session.ColorIdx; 	gotit	int temp =
+  // WWGetPrivateProfileInt("Options", "Side", 0, buffer); 	gotit
+  // Session.House = (HousesType) ((int)HOUSE_USSR + temp);
 
   //	gotit	Session.Options.Credits = WWGetPrivateProfileInt("Options",
   //"Credits", 0, buffer); 	gotit	Session.Options.Bases =
-  //WWGetPrivateProfileInt("Options", "Bases", 0, buffer); 	gotit
-  //Session.Options.Tiberium = WWGetPrivateProfileInt("Options", "Tiberium", 0,
-  //buffer); 	gotit	Session.Options.Goodies =
-  //WWGetPrivateProfileInt("Options", "Crates", 0, buffer); 	gotit
-  //Special.IsShadowGrow = WWGetPrivateProfileInt ("Options", "Shadow", 0,
-  //buffer); 	gotit	BuildLevel = WWGetPrivateProfileInt("Options",
+  // WWGetPrivateProfileInt("Options", "Bases", 0, buffer); 	gotit
+  // Session.Options.Tiberium = WWGetPrivateProfileInt("Options", "Tiberium", 0,
+  // buffer); 	gotit	Session.Options.Goodies =
+  // WWGetPrivateProfileInt("Options", "Crates", 0, buffer); 	gotit
+  // Special.IsShadowGrow = WWGetPrivateProfileInt ("Options", "Shadow", 0,
+  // buffer); 	gotit	BuildLevel = WWGetPrivateProfileInt("Options",
   //"BuildLevel", 0, buffer); 	gotit	Session.Options.UnitCount =
-  //WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer); 	gotit	Seed =
-  //WWGetPrivateProfileInt("Options", "Seed", 0, buffer); 	gotit
-  //Special.IsCaptureTheFlag = WWGetPrivateProfileInt("Options", "CapFlag", 0,
-  //buffer);
+  // WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer); 	gotit
+  // Seed = WWGetPrivateProfileInt("Options", "Seed", 0, buffer); 	gotit
+  // Special.IsCaptureTheFlag = WWGetPrivateProfileInt("Options", "CapFlag", 0,
+  // buffer);
 
   //	UnitBuildPenalty = WWGetPrivateProfileInt ("Options", "BuildRate", 100,
-  //buffer);
+  // buffer);
   if (bSlowUnitBuildRate)
     UnitBuildPenalty = 250;
   else
@@ -3312,25 +3326,26 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	The preceding was based on Read_Game_Options()...
 
   //	Now do whatever we've left out that the horrific Net_Fake_New_Dialog()
-  //and Net_Fake_Join_Dialog() used to do for us...
+  // and Net_Fake_Join_Dialog() used to do for us...
 
   //	Set up the Session.Players list.
   //	I think there is dependence on the local player being first, so put him
-  //there. 	Else put them in order listed in the szGoMessage. 	I will set "ID"
-  //based on a player's color, though it seems unclear if this is even used in
-  //the game, or what it should be.
+  // there. 	Else put them in order listed in the szGoMessage. 	I will
+  // set "ID" based on a player's color, though it seems unclear if this is even
+  // used in the game, or what it should be.
 
   Clear_Vector(&Session.Players);
 
   //	Make the pILPlayers a valid list of players in the game.
   //	Players might (incredibly rarely) have joined in the last split-second,
-  //and we only want the players listed in 	the szGoMessage. To test for whether
-  //they're in this list, first wipe the colors from all list items. 	Then we
-  //fill them in from info in szGoMessage. 	We can ignore any list items then
-  //that have no color assigned. 	Also, we'll know that the colors assigned to
-  //valid players indeed match up with what every other client has. 	Remember,
-  //all other data should already be sync'ed because it has been implemented in
-  //such a way that changes would 	cause "unacceptedness" of guests to occur.
+  // and we only want the players listed in 	the szGoMessage. To test for
+  // whether they're in this list, first wipe the colors from all list items.
+  // Then we fill them in from info in szGoMessage. 	We can ignore any list
+  // items then that have no color assigned. 	Also, we'll know that the colors
+  // assigned to valid players indeed match up with what every other client has.
+  // Remember, all other data should already be sync'ed because it has been
+  // implemented in such a way that changes would 	cause "unacceptedness"
+  // of guests to occur.
 
   //	Clear colors in list.
   for (int iItem = 0; iItem < pILPlayers->Count(); iItem++)
@@ -3364,36 +3379,36 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   pPlayerNew->Player.Color = GetPlayerColor(pWO->szMyName);
   //	This gets done later.
   //	pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
-  //HOUSE_MULTI1 );
+  // HOUSE_MULTI1 );
 
   Session.Players.Add(pPlayerNew);
 
   char szHostName[WOL_NAME_LEN_MAX] = "Game host";
 
   //	Add all other players to Session.Players list (if they have a valid
-  //color - see just above). 	Also in this step - build the scenario download
-  //requests array (used by hosts only).
+  // color - see just above). 	Also in this step - build the scenario download
+  // requests array (used by hosts only).
   memset(Session.ScenarioRequests, 0, sizeof(Session.ScenarioRequests));
   Session.RequestCount = 0;
   for (iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     //	The following is not very efficient, but doesn't have to be. Better in
-    //this case to keep it clear and simple.
+    // this case to keep it clear and simple.
     pWO->PullPlayerName_Into_From(szPlayerName, pILPlayers->Get_Item(iItem));
     if (strcmp(szPlayerName, pWO->szMyName) != 0 &&
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
       //			debugprint( "Creating player node '%s'\n",
-      //szPlayerName );
+      // szPlayerName );
       pPlayerNew = new NodeNameType;
       strcpy(pPlayerNew->Name, szPlayerName);
       //	Get player's IP address from pChatSink...
       unsigned long lAddress =
           (pWO->pChatSink->GetPlayerGameIP(szPlayerName));  // ntohl(
       //			debugprint( "IP address is %i, or 0x%x\n",
-      //lAddress, lAddress );
+      // lAddress, lAddress );
       if (pWO->GameInfoCurrent.bTournament) {
         //	This is a tournament game, and I therefore have only one
-        //opponent: this one. 	for convenience, save a copy of his IP address in
-        //case I need it later for disconnect pinging.
+        // opponent: this one. 	for convenience, save a copy of his IP address
+        // in case I need it later for disconnect pinging.
         pWO->TournamentOpponentIP = lAddress;
         pWO->bDisconnectPingingCompleted = false;
       }
@@ -3416,7 +3431,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       Session.Players.Add(pPlayerNew);
 
       //	If player is the game host, set HostAddress. This global is used
-      //when downloading scenarios; who knows where else.
+      // when downloading scenarios; who knows where else.
       User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(iItem);
       if (pUser && pUser->flags & CHAT_USER_CHANNELOWNER) {
         Session.HostAddress = pPlayerNew->Address;
@@ -3447,14 +3462,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
       if (bHost && pWO->bItemMarkedNeedScenario(iItem)) {
         //				debugprint( "%s has requested scenario
-        //download.\n", szPlayerName );
+        // download.\n", szPlayerName );
         Session.ScenarioRequests[Session.RequestCount++] =
             Session.Players.Count() - 1;
       }
     }
     //		else
     //			debugprint( "%s excluded from Session.Players\n",
-    //szPlayerName );
+    // szPlayerName );
   }
 
   //	From Init...
@@ -3478,15 +3493,17 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
                  600);  // give up after 10 seconds
 
   //	debugprint( "Session.ScenarioFileName is %s.\n",
-  //Session.ScenarioFileName );
+  // Session.ScenarioFileName );
 
   /*
   ** Read the scenario name from the .INI and try to match it with a scenario
   *file in our list.
   */
   //	gotit		WWGetPrivateProfileString("Options", "Scenario",
-  //"SCM01EA.INI", 										Session.Options.ScenarioDescription, 										sizeof
-  //(Session.Options.ScenarioDescription), 										buffer); WWDebugString ("RA95I -
+  //"SCM01EA.INI",
+  //Session.Options.ScenarioDescription,
+  //sizeof (Session.Options.ScenarioDescription),
+  //buffer); WWDebugString ("RA95I -
   // Scenario is "); WWDebugString (Session.Options.ScenarioDescription);
   // WWDebugString ("\n");
 
@@ -3496,7 +3513,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       Session.Options.ScenarioIndex = 1;
       if (bSpecialAftermathScenario(Session.Options.ScenarioDescription)) {
         //	Shouldn't ever happen. We should never have the opportunity to
-        //ask for one of these maps to be downloaded.
+        // ask for one of these maps to be downloaded.
         bExitForGameTrigger = false;
         *szTriggerGameStartInfo = 0;
         //	Trigger the "our host just left the channel" code...
@@ -3507,7 +3524,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       // debugprint( "Wait for download from game host.\n" );
       if (!Get_Scenario_File_From_Host(Session.ScenarioFileName, 1)) {
         //				debugprint( "Get_Scenario_File_From_Host
-        //failed!\n" );
+        // failed!\n" );
         bExitForGameTrigger = false;
         *szTriggerGameStartInfo = 0;
         //	Trigger the "our host just left the channel" code...
@@ -3516,10 +3533,10 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       }
       Scen.Scenario = Session.Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
-      //Scen.Scenario );
+      // Scen.Scenario );
       strcpy(Scen.ScenarioName, Session.ScenarioFileName);
       //			debugprint( "Scen.ScenarioName = %s\n",
-      //Scen.ScenarioName );
+      // Scen.ScenarioName );
     } else {
       //	Match ScenarioDescription to a ScenarioIndex.
       /*	This is how the same code existed previously. Insufficient
@@ -3533,17 +3550,17 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
                               }
       */
       //	(We have already done the lookup, in Find_Local_Scenario,
-      //above.)
+      // above.)
       Session.Options.ScenarioIndex =
           ScenarioIndex_From_Filename(Session.ScenarioFileName);
       _ASSERTE(Session.Options.ScenarioIndex != -1);
       Scen.Scenario = Session.Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
-      //Scen.Scenario );
+      // Scen.Scenario );
       strcpy(Scen.ScenarioName,
              Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
       //			debugprint( "Scen.ScenarioName = %s\n",
-      //Scen.ScenarioName );
+      // Scen.ScenarioName );
     }
   } else  //	bHost
   {
@@ -3609,7 +3626,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 //***********************************************************************************************
 bool bSpecialAftermathScenario(const char* szScenarioDescription) {
   //	Returns true if szScenarioDescription matches one of the descriptions
-  //for Aftermath multiplayer 	scenarios that have special Aftermath-only units
+  // for Aftermath multiplayer 	scenarios that have special Aftermath-only units
   //*embedded* within them.
   if (strcmp(szScenarioDescription, "Booby Traps (Mega 8 players)") == 0 ||
       strcmp(szScenarioDescription,
@@ -3629,7 +3646,7 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription) {
 //***********************************************************************************************
 int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   //	Returns the scenario index that matches the scenario filename, or -1 if
-  //no match found.
+  // no match found.
   for (int index = 0; index < Session.Scenarios.Count(); index++) {
     if (stricmp(szScenarioFilename, Session.Scenarios[index]->Get_Filename()) ==
         0)

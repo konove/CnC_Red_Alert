@@ -53,10 +53,10 @@
 #include "soundint.h"
 #include <dos.h>
 #include <mem.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <direct.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <wwmem.h>
 #include <keyboard.h>
 #include <file.h>
@@ -147,8 +147,9 @@ static int cdecl Stream_Sample(void *buffer, long size,
 /***************************************************************************
  * FILE_CALLBACK -- called to fill queue buffer for streaming sample       *
  *                                                                         *
- * This callback is called whenever the queue buffer playback has begun * and another buffer is needed for queuing up.  Returns TRUE if there		*
- * is more data to read from the file.
+ * This callback is called whenever the queue buffer playback has begun * and
+ * another buffer is needed for queuing up.  Returns TRUE if there
+ *	* is more data to read from the file.
  **
  *                                                                         *
  * INPUT:	WORD id			- the sample id number * WORD *odd
@@ -381,8 +382,9 @@ int File_Stream_Sample(char const *filename, BOOL real_time_start) {
  *                                                                         *
  * This function is called before a sample which streams from disk is      *
  * started.  It can be called to either fill the buffer in small chunks * from
- *the call back routine or to fill the entire buffer at once.  This	* is wholely dependant on whether the Loading bit is set within the 		*
- * sample tracker.
+ *the call back routine or to fill the entire buffer at once.  This	* is
+ * wholely dependant on whether the Loading bit is set within the 	* sample
+ * tracker.
  **
  *                                                                         *
  * INPUT:		LockedData.SampleTracker * to the header which tracks

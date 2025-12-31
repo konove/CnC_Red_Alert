@@ -81,7 +81,7 @@
 #endif
 #include "ccdde.h"
 
-#include <time.h>
+#include <ctime>
 
 #ifdef DONGLE
 #include "cbn_.h"

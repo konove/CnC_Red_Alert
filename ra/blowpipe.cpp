@@ -40,8 +40,8 @@
  *- - - - - - - */
 
 #include "blowpipe.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 /***********************************************************************************************
  * BlowPipe::Flush -- Flushes any pending data out the pipe. *

@@ -46,8 +46,8 @@
  *- - - - - - - */
 
 #include "cdfile.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "file.h"
 #include "ex_string.h"
 

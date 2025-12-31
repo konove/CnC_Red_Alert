@@ -44,7 +44,7 @@
 #ifdef WIN32
 #include "wincomm.h"
 #endif  // WIN32
-#include <stdio.h>
+#include <cstdio>
 #include "nullconn.h"
 
 /***************************************************************************

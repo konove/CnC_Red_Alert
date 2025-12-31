@@ -44,7 +44,7 @@
 #include <fcntl.h>
 #include <io.h>
 
-#include <errno.h>
+#include <cerrno>
 
 int FontXSpacing = 0;
 int FontYSpacing = 0;
@@ -59,7 +59,8 @@ char *FontWidthBlockPtr = NULL;
  * LOAD_FONT -- Loads a font from disk.                                    *
  *                                                                         *
  *    This loads a font from disk.  This function must be called as a *
- *    precursor to calling Set_Font().  You need only call this function * once per desired font at the beginning of your code, but AFTER     	*
+ *    precursor to calling Set_Font().  You need only call this function * once
+ * per desired font at the beginning of your code, but AFTER     	*
  *    Prog_Init() is called. *
  *                                                                         *
  * INPUT:      name  - Pointer to font name to use (eg. "topaz.font") *

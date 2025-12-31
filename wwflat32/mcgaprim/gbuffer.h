@@ -141,7 +141,7 @@
 #include "buffer.h"
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 
 /*=========================================================================*/
 /* Define the screen width and height to make portability to other modules
@@ -335,7 +335,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   ~GraphicBufferClass();
 
   //		void Scale_Rotate(BitmapClass &bmp,const TPoint2D &pt,long
-  //scale=0x0100,unsigned char angle=0);
+  // scale=0x0100,unsigned char angle=0);
 };
 
 /***************************************************************************

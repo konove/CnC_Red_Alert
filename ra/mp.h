@@ -44,8 +44,8 @@
 // lint -d_LINT=1
 
 #include "straw.h"
-#include <stdlib.h>
-#include <stdint.h>
+#include <cstdlib>
+#include <cstdint>
 
 extern unsigned short primeTable[3511];
 

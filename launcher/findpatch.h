@@ -19,8 +19,8 @@
 #ifndef FINDPATCH_HEADER
 #define FINDPATCH_HEADER
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <windows.h>
 #include <direct.h>
 #include "wstypes.h"

@@ -37,7 +37,7 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include <stdint.h>
+#include <cstdint>
 
 typedef struct {
   short Width;      // Width of icons (pixels).
@@ -59,7 +59,7 @@ typedef struct {
 #endif
   int32_t Map;  // Icon map offset (if present).
   //	unsigned char * Map;				// Icon map offset (if
-  //present).
+  // present).
 } IControl_Type;
 
 inline void *Get_Icon_Set_Map(void const *iconset) {
