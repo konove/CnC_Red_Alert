@@ -251,7 +251,7 @@ void InfantryClass::Debug_Dump(MonoClass *mono) const {
 #endif
 
 InfantryClass::InfantryClass(void)
-    : Class(0){};  // Default constructor does nothing.
+    : Class(nullptr){};  // Default constructor does nothing.
 
 /***********************************************************************************************
  * InfantryClass::InfantryClass -- The constructor for infantry objects. *
@@ -444,17 +444,17 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
     */
     if (*this == INFANTRY_E4) {
       new AnimClass(ANIM_NAPALM1, Coord);
-      Explosion_Damage(Coord, 80, 0, WARHEAD_FIRE);
+      Explosion_Damage(Coord, 80, nullptr, WARHEAD_FIRE);
     }
 
     if (*this == INFANTRY_E2) {
       new AnimClass(ANIM_ART_EXP1, Coord);
-      Explosion_Damage(Coord, 30, 0, WARHEAD_HE);
+      Explosion_Damage(Coord, 30, nullptr, WARHEAD_HE);
     }
 
     if (*this == INFANTRY_E5) {
       new AnimClass(ANIM_CHEM_BALL, Coord);
-      Explosion_Damage(Coord, 80, 0, WARHEAD_HE);
+      Explosion_Damage(Coord, 80, nullptr, WARHEAD_HE);
     }
 
     VocType sound;
@@ -1906,7 +1906,7 @@ void InfantryClass::Random_Animate(void) {
       }
     }
 
-    switch (Random_Picky((int)0, (int)55, (char *)NULL, (int)0)) {
+    switch (Random_Picky((int)0, (int)55, (char *)nullptr, (int)0)) {
       case 10:
         Do_Action(DO_SALUTE1);
         break;
@@ -2290,7 +2290,7 @@ bool InfantryClass::Limbo(void) {
  *=============================================================================================*/
 BulletClass *InfantryClass::Fire_At(TARGET target, int which) {
   Validate();
-  BulletClass *bullet = NULL;
+  BulletClass *bullet = nullptr;
   WeaponTypeClass const *weapon =
       (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
@@ -2856,14 +2856,14 @@ void InfantryClass::Read_INI(char *buffer) {
   /*------------------------------------------------------------------------
   Read the entire INFANTRY INI section into HIDBUF
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   while (*tbuffer != '\0') {
     /*
     **	Get an infantry entry
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -2874,7 +2874,7 @@ void InfantryClass::Read_INI(char *buffer) {
       /*
       **	2nd token: infantry type name.
       */
-      classid = InfantryTypeClass::From_Name(strtok(NULL, ",\n\r"));
+      classid = InfantryTypeClass::From_Name(strtok(nullptr, ",\n\r"));
 
       if (classid != INFANTRY_NONE) {
         infantry = new InfantryClass(classid, inhouse);
@@ -2882,26 +2882,26 @@ void InfantryClass::Read_INI(char *buffer) {
           /*
           **	3rd token: strength.
           */
-          int strength = atoi(strtok(NULL, ",\n\r"));
+          int strength = atoi(strtok(nullptr, ",\n\r"));
 
           /*
           **	4th token: cell #.
           */
-          COORDINATE coord = Cell_Coord((CELL)atoi(strtok(NULL, ",\n\r")));
+          COORDINATE coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",\n\r")));
 
           /*
           **	5th token: cell sub-location.
           */
           coord = Coord_Add(coord & 0xFF00FF00L,
-                            StoppingCoordAbs[atoi(strtok(NULL, ","))]);
+                            StoppingCoordAbs[atoi(strtok(nullptr, ","))]);
 
           /*
           **	Fetch the mission and facing.
           */
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(NULL, ",\n\r"));
-          DirType dir = (DirType)atoi(strtok(NULL, ",\n\r"));
-          infantry->Trigger = TriggerClass::As_Pointer(strtok(NULL, ",\n\r"));
+              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+          DirType dir = (DirType)atoi(strtok(nullptr, ",\n\r"));
+          infantry->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;
           }
@@ -2956,10 +2956,10 @@ void InfantryClass::Write_INI(char *buffer) {
   **	First, clear out all existing infantry data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 

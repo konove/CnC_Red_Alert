@@ -127,10 +127,10 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   */
   if (PacketTransport) {
     delete PacketTransport;
-    PacketTransport = NULL;
+    PacketTransport = nullptr;
   }
   PacketTransport = new WinsockInterfaceClass;
-  assert(PacketTransport != NULL);
+  assert(PacketTransport != nullptr);
 
   if (PacketTransport->Init()) {
     IPXStatus = 1;
@@ -138,7 +138,7 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
     IPXStatus = 0;
   }
   delete PacketTransport;
-  PacketTransport = NULL;
+  PacketTransport = nullptr;
 
 #else   // WINSOCK_IPX
 
@@ -200,9 +200,9 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   NumConnections = 0;
   CurConnection = 0;
   for (i = 0; i < CONNECT_MAX; i++) {
-    Connection[i] = 0;
+    Connection[i] = nullptr;
   }
-  GlobalChannel = 0;
+  GlobalChannel = nullptr;
 
   SendOverflows = 0;
   ReceiveOverflows = 0;
@@ -251,11 +251,11 @@ IPXManagerClass::~IPXManagerClass() {
   //------------------------------------------------------------------------
   if (GlobalChannel) {
     delete GlobalChannel;
-    GlobalChannel = 0;
+    GlobalChannel = nullptr;
   }
   for (i = 0; i < NumConnections; i++) {
     delete Connection[i];
-    Connection[i] = 0;
+    Connection[i] = nullptr;
   }
   NumConnections = 0;
 
@@ -336,11 +336,11 @@ int IPXManagerClass::Init() {
   //------------------------------------------------------------------------
   if (GlobalChannel) {
     delete GlobalChannel;
-    GlobalChannel = 0;
+    GlobalChannel = nullptr;
   }
   for (i = 0; i < NumConnections; i++) {
     delete Connection[i];
-    Connection[i] = 0;
+    Connection[i] = nullptr;
   }
   NumConnections = 0;
 
@@ -638,7 +638,7 @@ int IPXManagerClass::Connection_ID(int index) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		ptr to connection's name, NULL if not found
+ *		ptr to connection's name, nullptr if not found
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -657,7 +657,7 @@ char *IPXManagerClass::Connection_Name(int id) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 
 } /* end of Connection_Name */
 
@@ -670,7 +670,7 @@ char *IPXManagerClass::Connection_Name(int id) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		pointer to IXPAddressClass, NULL if not found
+ *		pointer to IXPAddressClass, nullptr if not found
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -689,7 +689,7 @@ IPXAddressClass *IPXManagerClass::Connection_Address(int id) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 
 } /* end of Connection_Address */
 
@@ -760,7 +760,7 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char *name) {
  *		buf			buffer to send
  ** buflen		length of buf
  ** ack_req		1 = ACK required; 0 = no ACK required
- ** address		address to send to; NULL = broadcast
+ ** address		address to send to; nullptr = broadcast
  **
  *                                                                         *
  * OUTPUT:                                                                 *
@@ -1078,8 +1078,8 @@ int IPXManagerClass::Service(void) {
                         int iConnectionIndex = Connection_Index(id);
                         if (iConnectionIndex !=
                             CONNECTION_NONE)  //	(else
-                                              //Create_Connections() has not yet
-                                              //been called)
+                                              // Create_Connections() has not
+                                              // yet been called)
                         {
                           /*
                           ** Found a likely candidate. Update his address. It
@@ -1118,7 +1118,7 @@ int IPXManagerClass::Service(void) {
     ** This is an internet connection so get the packets from winsock
     */
     while ((recv_length = Winsock.Read(temp_receive_buffer, 1024)) != 0) {
-      CurHeaderBuf = NULL;
+      CurHeaderBuf = nullptr;
       CurDataBuf = (char *)&temp_receive_buffer[0];
 
       /*.....................................................................
@@ -1292,7 +1292,7 @@ int IPXManagerClass::Service(void) {
   //------------------------------------------------------------------------
   if (GlobalChannel) {
     if (!GlobalChannel->Service()) {
-      GlobalChannel->Queue->UnQueue_Send(NULL, NULL, 0);
+      GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
       rc = 0;
     }
   }
@@ -1652,10 +1652,10 @@ void *IPXManagerClass::Oldest_Send(void) {
   unsigned long mintime = 0xffffffff;
   SendQueueType *send_entry;  // ptr to send entry header
   CommHeaderType *packet;
-  void *buf = NULL;
+  void *buf = nullptr;
 
   for (i = 0; i < NumConnections; i++) {
-    send_entry = NULL;
+    send_entry = nullptr;
 
     for (j = 0; j < Connection[i]->Queue->Num_Send(); j++) {
       send_entry = Connection[i]->Queue->Get_Send(j);
@@ -1665,12 +1665,12 @@ void *IPXManagerClass::Oldest_Send(void) {
             send_entry->IsACK == 0) {
           break;
         } else {
-          send_entry = NULL;
+          send_entry = nullptr;
         }
       }
     }
 
-    if (send_entry != NULL) {
+    if (send_entry != nullptr) {
       time = send_entry->FirstTime;
 
       if (time < mintime) {
@@ -1719,8 +1719,9 @@ void IPXManagerClass::Set_Bridge(NetNumType bridge) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *

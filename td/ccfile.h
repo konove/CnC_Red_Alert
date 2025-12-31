@@ -73,7 +73,7 @@ class CCFileClass : public CDFileClass {
   virtual long Write(void const *buffer, long size);
   virtual void Close(void);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = NULL);
+                     char const *filename = nullptr);
 
  private:
   /*

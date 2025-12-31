@@ -93,9 +93,9 @@
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
 */
-void const *ObjectTypeClass::SelectShapes = 0;
+void const *ObjectTypeClass::SelectShapes = nullptr;
 
-void const *ObjectTypeClass::PipShapes = 0;
+void const *ObjectTypeClass::PipShapes = nullptr;
 
 bool ObjectClass::Is_Infantry(void) const { return (false); }
 
@@ -133,7 +133,7 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
   IsImmune = is_immune;
   Armor = armor;
   MaxStrength = strength;
-  ImageData = NULL;
+  ImageData = nullptr;
   // RadarIcon = NULL;
 }
 
@@ -234,7 +234,7 @@ int ObjectTypeClass::Time_To_Build(HousesType) const { return (0); }
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -253,7 +253,7 @@ BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (NULL); }
+void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -274,8 +274,8 @@ void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (NULL); }
  *=============================================================================================*/
 ObjectClass::ObjectClass(void) {
   Coord = 0xFFFFFFFFL;  // Some bogus illegal value.
-  Next = 0;             // Not part of any object list.
-  Trigger = 0;          // No associated trigger.
+  Next = nullptr;             // Not part of any object list.
+  Trigger = nullptr;          // No associated trigger.
   IsToDamage = false;
   IsToDisplay = false;     // Redraw is presumed unnecessary.
   IsInLimbo = true;        // Always presumed to start in limbo state.
@@ -1318,7 +1318,7 @@ bool ObjectClass::Mark(MarkType mark) {
       house = tech->Owner();
       cell = Coord_Cell(Coord);
     } else
-      tech = NULL;
+      tech = nullptr;
 
     /*
     **	Marking down is only successful if the object isn't already
@@ -1380,7 +1380,7 @@ void ObjectClass::Init(void) { CurrentObject.Clear(); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Revealed(HouseClass *house) { return (house != NULL); }
+bool ObjectClass::Revealed(HouseClass *house) { return (house != nullptr); }
 
 // These can't be made inline (for various reasons).
 short const *ObjectClass::Occupy_List(bool placement) const {

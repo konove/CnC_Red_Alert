@@ -88,17 +88,17 @@ typedef enum {
 
 void *__cdecl Open_Animation(char const *file_name, char *user_buffer,
                              long user_buffer_size, WSAOpenType user_flags,
-                             unsigned char *palette = NULL);
+                             unsigned char *palette = nullptr);
 void __cdecl Close_Animation(void *handle);
 BOOL __cdecl Animate_Frame(void *handle, GraphicViewPortClass &view,
                            int frame_number, int x_pixel = 0, int y_pixel = 0,
                            WSAType flags_and_prio = WSA_NORMAL,
-                           void *magic_cols = NULL, void *magic = NULL);
+                           void *magic_cols = nullptr, void *magic = nullptr);
 int __cdecl Get_Animation_Frame_Count(void *handle);
 BOOL __cdecl Animate_Frame(void *handle, VideoViewPortClass &view,
                            int frame_number, int x_pixel = 0, int y_pixel = 0,
                            WSAType flags_and_prio = WSA_NORMAL,
-                           void *magic_cols = NULL, void *magic = NULL);
+                           void *magic_cols = nullptr, void *magic = nullptr);
 int __cdecl Get_Animation_Frame_Count(void *handle);
 int __cdecl Get_Animation_X(void const *handle);
 int __cdecl Get_Animation_Y(void const *handle);
@@ -124,8 +124,8 @@ unsigned long __cdecl Get_Animation_Size(void const *handle);
  *   05/24/1994 SKB : Created.                                             *
  *=========================================================================*/
 inline void *__cdecl Open_Animation(char *file_name, WSAOpenType user_flags,
-                                    unsigned char *palette = NULL) {
-  return (Open_Animation(file_name, NULL, 0L, user_flags, palette));
+                                    unsigned char *palette = nullptr) {
+  return (Open_Animation(file_name, nullptr, 0L, user_flags, palette));
 }
 
 /***************************************************************************
@@ -148,7 +148,7 @@ inline void *__cdecl Open_Animation(char *file_name, WSAOpenType user_flags,
  *=========================================================================*/
 inline void *__cdecl Open_Animation(char *file_name, BufferClass &buffer,
                                     WSAOpenType user_flags,
-                                    unsigned char *palette = NULL) {
+                                    unsigned char *palette = nullptr) {
   return (Open_Animation(file_name, (char *)buffer.Get_Buffer(),
                          buffer.Get_Size(), user_flags, palette));
 }

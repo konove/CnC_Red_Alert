@@ -356,8 +356,8 @@ EventClass::EventClass(EventType type, int id, CELL cell) {
  *=============================================================================================*/
 void EventClass::Execute(void) {
   TechnoClass *techno;
-  AnimClass *anim = 0;
-  HouseClass *house = 0;
+  AnimClass *anim = nullptr;
+  HouseClass *house = nullptr;
   char txt[80];
   int i;
   // #if (0)

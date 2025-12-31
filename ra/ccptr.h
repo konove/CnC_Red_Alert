@@ -32,13 +32,11 @@
  *                                                                                             *
  *                  Last Update : June 7, 1996 [JLB] *
  *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+ *---------------------------------------------------------------------------------------------*/
+#ifndef CNC_RED_ALERT_RA_CCPTR_H_
+#define CNC_RED_ALERT_RA_CCPTR_H_
 
-#ifndef CCPTR_H
-#define CCPTR_H
+#include <cassert>
 
 /*
 **	The CCPtr class is designed for a specific purpose. It functions like a
@@ -49,39 +47,39 @@
 template <class T>
 class CCPtr {
  public:
-  CCPtr(void) : ID(-1){};
-  CCPtr(NoInitClass const&){};
-  CCPtr(T* ptr);
+  CCPtr() : ID(-1) {};
+  CCPtr(NoInitClass const&) {};
+  explicit CCPtr(T* ptr);
 
-  operator T*(void) const {
-    if (ID == -1) return (NULL);
-    assert(Heap != NULL && (unsigned)ID < Heap->Length());
-    return ((T*)(*Heap)[ID]);
+  operator T*() const {
+    if (ID == -1) return nullptr;
+    assert(Heap != nullptr && ID < Heap->Length());
+    return (T*)(*Heap)[ID];
   }
-  T& operator*(void) const {
-    assert(Heap != NULL && (unsigned)ID < Heap->Length());
-    return (*(T*)(*Heap)[ID]);
+  T& operator*() const {
+    assert(Heap != nullptr && ID < Heap->Length());
+    return *(T*)(*Heap)[ID];
   }
-  T* operator->(void) const {
-    if (ID == -1) return (NULL);
-    assert(Heap != NULL && (unsigned)ID < Heap->Length());
-    return ((T*)(*Heap)[ID]);
-  }
-
-  bool Is_Valid(void) const { return (ID != -1); }
-
-  bool operator==(CCPtr<T> const& rvalue) const { return (ID == rvalue.ID); }
-  bool operator!=(CCPtr<T> const& rvalue) const { return (ID != rvalue.ID); }
-  bool operator>(CCPtr<T> const& rvalue) const;
-  bool operator<=(CCPtr<T> const& rvalue) const { return (rvalue > *this); }
-  bool operator<(CCPtr<T> const& rvalue) const {
-    return (*this != rvalue && rvalue > *this);
-  }
-  bool operator>=(CCPtr<T> const& rvalue) const {
-    return (*this == rvalue || rvalue > *this);
+  T* operator->() const {
+    if (ID == -1) return nullptr;
+    assert(Heap != nullptr && ID < Heap->Length());
+    return (T*)(*Heap)[ID];
   }
 
-  long Raw(void) const { return (ID); }
+  bool Is_Valid() const { return ID != -1; }
+
+  bool operator==(CCPtr const& rvalue) const { return ID == rvalue.ID; }
+  bool operator!=(CCPtr const& rvalue) const { return ID != rvalue.ID; }
+  bool operator>(CCPtr const& rvalue) const;
+  bool operator<=(CCPtr const& rvalue) const { return rvalue > *this; }
+  bool operator<(CCPtr const& rvalue) const {
+    return *this != rvalue && rvalue > *this;
+  }
+  bool operator>=(CCPtr const& rvalue) const {
+    return *this == rvalue || rvalue > *this;
+  }
+
+  long Raw() const { return ID; }
   void Set_Raw(long value) { ID = value; }
 
  private:
@@ -107,12 +105,12 @@ class CCPtr {
 */
 template <class T>
 bool operator==(CCPtr<T>& lvalue, T* rvalue) {
-  return ((T*)lvalue == rvalue);
+  return (T*)lvalue == rvalue;
 }
 
 template <class T>
 bool operator==(T* lvalue, CCPtr<T>& rvalue) {
-  return (lvalue == (T*)rvalue);
+  return lvalue == (T*)rvalue;
 }
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CCPTR_H_

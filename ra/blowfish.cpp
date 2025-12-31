@@ -80,7 +80,7 @@ typedef union {
  *=============================================================================================*/
 BlowfishEngine::~BlowfishEngine(void) {
   if (IsKeyed) {
-    Submit_Key(NULL, 0);
+    Submit_Key(nullptr, 0);
   }
 }
 
@@ -94,9 +94,10 @@ BlowfishEngine::~BlowfishEngine(void) {
  *56 bytes or less in length. This is necessary because      * any keys longer
  *than that will not correctly affect the encryption process.              *
  *                                                                                             *
- *    If the key pointer is NULL, then the S-Box tables are reset to identity.
- *This will       * mask the previous key setting. Use this method to clear the
- *engine after processing in   * order to gain a measure of security. *
+ *    If the key pointer is nullptr, then the S-Box tables are reset to
+ * identity. This will       * mask the previous key setting. Use this method to
+ * clear the engine after processing in   * order to gain a measure of security.
+ * *
  *                                                                                             *
  * INPUT:   key      -- Pointer to the key data block. *
  *                                                                                             *
@@ -122,7 +123,7 @@ void BlowfishEngine::Submit_Key(void const *key, int length) {
   /*
   **	Validate parameters.
   */
-  if (key == 0 || length == 0) {
+  if (key == nullptr || length == 0) {
     IsKeyed = false;
     return;
   }
@@ -210,10 +211,10 @@ void BlowfishEngine::Submit_Key(void const *key, int length) {
  *=============================================================================================*/
 int BlowfishEngine::Encrypt(void const *plaintext, int length,
                             void *cyphertext) {
-  if (plaintext == 0 || length == 0) {
+  if (plaintext == nullptr || length == 0) {
     return (0);
   }
-  if (cyphertext == 0) cyphertext = (void *)plaintext;
+  if (cyphertext == nullptr) cyphertext = (void *)plaintext;
 
   if (IsKeyed) {
     /*
@@ -276,10 +277,10 @@ int BlowfishEngine::Encrypt(void const *plaintext, int length,
  *=============================================================================================*/
 int BlowfishEngine::Decrypt(void const *cyphertext, int length,
                             void *plaintext) {
-  if (cyphertext == 0 || length == 0) {
+  if (cyphertext == nullptr || length == 0) {
     return (0);
   }
-  if (plaintext == 0) plaintext = (void *)cyphertext;
+  if (plaintext == nullptr) plaintext = (void *)cyphertext;
 
   if (IsKeyed) {
     /*

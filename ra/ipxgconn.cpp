@@ -74,7 +74,7 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
           numsend, numreceive,
           maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType),
           GLOBAL_MAGICNUM,          // magic number for this connection
-          NULL,                     // IPX Address (none)
+          nullptr,                     // IPX Address (none)
           0,                        // Connection ID
           "",                       // Connection Name
           sizeof(IPXAddressClass))  // extra storage for the sender's address
@@ -130,7 +130,7 @@ int IPXGlobalConnClass::Send_Packet(void *buf, int buflen,
   If this is a ACK-required packet, sent to a specific system, mark it as
   ACK-required; otherwise, mark as no-ACK-required.
   ------------------------------------------------------------------------*/
-  if (ack_req && address != NULL) {
+  if (ack_req && address != nullptr) {
     ((GlobalHeaderType *)PacketBuf)->Header.Code = PACKET_DATA_ACK;
   } else {
     ((GlobalHeaderType *)PacketBuf)->Header.Code = PACKET_DATA_NOACK;
@@ -152,7 +152,7 @@ int IPXGlobalConnClass::Send_Packet(void *buf, int buflen,
   Set this packet's destination address.  If no address is specified, use
   a Broadcast address (which IPXAddressClass's default constructor creates).
   ------------------------------------------------------------------------*/
-  if (address != NULL) {
+  if (address != nullptr) {
     dest_addr = (*address);
   }
 
@@ -364,7 +364,7 @@ int IPXGlobalConnClass::Get_Packet(void *buf, int *buflen,
   /*------------------------------------------------------------------------
   Read it if it's un-read
   ------------------------------------------------------------------------*/
-  if (rec_entry != NULL && rec_entry->IsRead == 0) {
+  if (rec_entry != nullptr && rec_entry->IsRead == 0) {
     /*.....................................................................
     Mark as read
     .....................................................................*/
@@ -439,7 +439,7 @@ int IPXGlobalConnClass::Send(char *buf, int buflen, void *extrabuf, int) {
     if (IsBridge && !memcmp(addr, BridgeNet, 4)) {
       rc = Send_To(buf, buflen, addr, BridgeNode);
     } else {
-      rc = Send_To(buf, buflen, addr, NULL);
+      rc = Send_To(buf, buflen, addr, nullptr);
     }
     return (rc);
   }
@@ -481,7 +481,7 @@ int IPXGlobalConnClass::Service_Receive_Queue(void) {
     rec_entry = Queue->Get_Receive(i);
 
     if (rec_entry->IsRead) {
-      Queue->UnQueue_Receive(NULL, NULL, i, NULL, NULL);
+      Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);
       i--;
     }
   }

@@ -143,9 +143,9 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
                                      ...) {
   if (!src) return 0;
 
-  uint8_t *IsTranslucent = NULL;
-  uint8_t *Translucent = NULL;
-  uint8_t *FadingTable = NULL;
+  uint8_t *IsTranslucent = nullptr;
+  uint8_t *Translucent = nullptr;
+  uint8_t *FadingTable = nullptr;
   int FadingNum = 0;
 
   ShapeHeaderType *header_pointer;

@@ -66,19 +66,19 @@
 *Such a *	gadget will be processed to the exclusion of all others until
 *the mouse button *	is no longer pressed.
 */
-GadgetClass *GadgetClass::StuckOn = 0;
+GadgetClass *GadgetClass::StuckOn = nullptr;
 
 /*
 **	This is a copy of a pointer to the last list used by the gadget input
 *system. *	If a change of list is detected, then all gadgets are forced to
 *be redrawn.
 */
-GadgetClass *GadgetClass::LastList = 0;
+GadgetClass *GadgetClass::LastList = nullptr;
 
 /*
 **	This points to the gadget that is intercepting all keyboard events.
 */
-GadgetClass *GadgetClass::Focused = 0;
+GadgetClass *GadgetClass::Focused = nullptr;
 
 /*
 ** This points to the current color scheme for drawing all gadgets.
@@ -166,15 +166,15 @@ GadgetClass::~GadgetClass(void) {
   }
 
   if (this == StuckOn) {
-    StuckOn = NULL;
+    StuckOn = nullptr;
   }
 
   if (this == LastList) {
-    LastList = NULL;
+    LastList = nullptr;
   }
 
   if (this == Focused) {
-    Focused = NULL;
+    Focused = nullptr;
   }
 }
 
@@ -427,7 +427,7 @@ int GadgetClass::Draw_Me(int forced) {
 void GadgetClass::Draw_All(bool forced) {
   GadgetClass *gadget = this;
 
-  while (gadget != NULL) {
+  while (gadget != nullptr) {
     gadget->Draw_Me(forced);
     gadget = gadget->Get_Next();
   }
@@ -457,8 +457,8 @@ KeyNumType GadgetClass::Input(void) {
   if (LastList != this) {
     LastList = this;
     forced = true;
-    StuckOn = NULL;
-    Focused = NULL;
+    StuckOn = nullptr;
+    Focused = nullptr;
   }
 
   /*
@@ -600,7 +600,7 @@ KeyNumType GadgetClass::Input(void) {
       *routine.
       */
       GadgetClass *next_button = this;
-      while (next_button != NULL) {
+      while (next_button != nullptr) {
         /*
         **	Maybe redraw the button if it needs to or is being forced to
         *redraw.
@@ -655,14 +655,14 @@ ControlClass *GadgetClass::Extract_Gadget(unsigned id) {
   GadgetClass *g = this;
 
   if (id != 0) {
-    while (g != NULL) {
+    while (g != nullptr) {
       if (g->Get_ID() == id) {
         return ((ControlClass *)g);
       }
       g = g->Get_Next();
     }
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -703,7 +703,7 @@ void GadgetClass::Sticky_Process(unsigned flags) {
     StuckOn = this;
   }
   if (StuckOn == this && (flags & LEFTRELEASE)) {
-    StuckOn = 0;
+    StuckOn = nullptr;
   }
 }
 
@@ -751,7 +751,7 @@ void GadgetClass::Set_Focus(void) {
 void GadgetClass::Clear_Focus(void) {
   if (Focused == this) {
     Flags &= ~KEYBOARD;
-    Focused = 0;
+    Focused = nullptr;
   }
 }
 
@@ -792,7 +792,7 @@ bool GadgetClass::Has_Focus(void) { return (this == Focused); }
 int GadgetClass::Is_List_To_Redraw(void) {
   GadgetClass *gadget = this;
 
-  while (gadget != NULL) {
+  while (gadget != nullptr) {
     if (gadget->IsToRepaint) {
       return (true);
     }

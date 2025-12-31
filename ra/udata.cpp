@@ -947,7 +947,7 @@ void UnitTypeClass::Init_Heap(void) {
  *function.                                            *
  *=============================================================================================*/
 UnitType UnitTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return (classid);
@@ -1075,7 +1075,7 @@ void UnitTypeClass::One_Time(void) {
 #endif
 
     ((void const *&)uclass.ImageData) = ptr;
-    if (ptr != NULL) {
+    if (ptr != nullptr) {
       largest = std::max(largest, (int)Get_Build_Frame_Width(ptr));
       largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
     }
@@ -1086,16 +1086,16 @@ void UnitTypeClass::One_Time(void) {
   /*
   **	Load any custom shapes at this time.
   */
-  if (WakeShapes == NULL) {
+  if (WakeShapes == nullptr) {
     WakeShapes = MFCD::Retrieve("WAKE.SHP");
   }
-  if (TurretShapes == NULL) {
+  if (TurretShapes == nullptr) {
     TurretShapes = MFCD::Retrieve("TURR.SHP");
   }
-  if (SamShapes == NULL) {
+  if (SamShapes == nullptr) {
     SamShapes = MFCD::Retrieve("SSAM.SHP");
   }
-  if (MGunShapes == NULL) {
+  if (MGunShapes == nullptr) {
     MGunShapes = MFCD::Retrieve("MGUN.SHP");
   }
 }
@@ -1119,7 +1119,7 @@ void UnitTypeClass::One_Time(void) {
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   UnitClass *unit = new UnitClass(Type, house);
-  if (unit != NULL) {
+  if (unit != nullptr) {
     return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
   }
   return (false);

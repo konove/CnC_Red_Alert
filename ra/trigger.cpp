@@ -270,10 +270,10 @@ bool TriggerClass::Spring(TEventType event, ObjectClass *obj, CELL cell,
       **	is one less attachment to keep track of.
       */
       if (obj) {
-        obj->Trigger = NULL;
+        obj->Trigger = nullptr;
       }
       if (cell) {
-        Map[cell].Trigger = NULL;
+        Map[cell].Trigger = nullptr;
       }
 
       /*
@@ -431,7 +431,7 @@ TARGET TriggerClass::As_Target(void) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 TriggerClass *Find_Or_Make(TriggerTypeClass *trigtype) {
-  if (!trigtype) return (NULL);
+  if (!trigtype) return (nullptr);
 
   for (int index = 0; index < Triggers.Count(); index++) {
     if (trigtype == Triggers.Ptr(index)->Class) {

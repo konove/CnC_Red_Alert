@@ -167,7 +167,7 @@ MonoClass::MonoClass(void)
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::~MonoClass(void) { PageUsage[Page] = 0; }
+MonoClass::~MonoClass(void) { PageUsage[Page] = nullptr; }
 
 /***********************************************************************************************
  * MonoClass::Pan -- Scroll the window right or left. *

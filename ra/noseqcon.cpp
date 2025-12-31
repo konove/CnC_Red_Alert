@@ -260,7 +260,7 @@ int NonSequencedConnClass::Receive_Packet(void *buf, int buflen) {
       /*
       ............... If ptr is valid, get ptr to its data ...............
       */
-      if (send_entry != NULL) {
+      if (send_entry != nullptr) {
         entry_data = (CommHeaderType *)send_entry->Buffer;
         /*
         .............. If ACK is for this entry, mark it ................

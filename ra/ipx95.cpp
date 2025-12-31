@@ -59,16 +59,16 @@ HINSTANCE IpxDllInstance = NULL;
 ** Function pointers
 */
 // extern "C" {
-IPXInitialiseType IPX_Initialise = NULL;
-IPXGetOutstandingBuffer95Type IPX_Get_Outstanding_Buffer95 = NULL;
-IPXShutDown95Type IPX_Shut_Down95 = NULL;
-IPXSendPacket95Type IPX_Send_Packet95 = NULL;
-IPXBroadcastPacket95Type IPX_Broadcast_Packet95 = NULL;
-IPXStartListening95Type IPX_Start_Listening95 = NULL;
-IPXOpenSocket95Type IPX_Open_Socket95 = NULL;
-IPXCloseSocket95Type IPX_Close_Socket95 = NULL;
-IPXGetConnectionNumber95Type IPX_Get_Connection_Number95 = NULL;
-IPXGetLocalTarget95 IPX_Get_Local_Target95 = NULL;
+IPXInitialiseType IPX_Initialise = nullptr;
+IPXGetOutstandingBuffer95Type IPX_Get_Outstanding_Buffer95 = nullptr;
+IPXShutDown95Type IPX_Shut_Down95 = nullptr;
+IPXSendPacket95Type IPX_Send_Packet95 = nullptr;
+IPXBroadcastPacket95Type IPX_Broadcast_Packet95 = nullptr;
+IPXStartListening95Type IPX_Start_Listening95 = nullptr;
+IPXOpenSocket95Type IPX_Open_Socket95 = nullptr;
+IPXCloseSocket95Type IPX_Close_Socket95 = nullptr;
+IPXGetConnectionNumber95Type IPX_Get_Connection_Number95 = nullptr;
+IPXGetLocalTarget95 IPX_Get_Local_Target95 = nullptr;
 //}
 
 char const *FunctionNames[] = {"_IPX_Initialise",
@@ -81,7 +81,7 @@ char const *FunctionNames[] = {"_IPX_Initialise",
                                "_IPX_Close_Socket95",
                                "_IPX_Get_Connection_Number95",
                                "_IPX_Get_Local_Target95",
-                               NULL};
+                               nullptr};
 
 extern void Get_OS_Version(void);
 bool WindowsNT = false;

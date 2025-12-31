@@ -80,7 +80,7 @@ MessageListClass::MessageListClass(void) {
   //------------------------------------------------------------------------
   // Init all data members
   //------------------------------------------------------------------------
-  MessageList = 0;
+  MessageList = nullptr;
   MessageX = 0;
   MessageY = 0;
   MaxMessages = 0;
@@ -92,7 +92,7 @@ MessageListClass::MessageListClass(void) {
   IsEdit = 0;
   EditX = 0;
   EditY = 0;
-  EditLabel = 0;
+  EditLabel = nullptr;
   EditBuf[0] = 0;
   OverflowBuf[0] = 0;
   EditCurPos = 0;
@@ -184,13 +184,13 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   //------------------------------------------------------------------------
   if (IsEdit) {
     delete EditLabel;
-    EditLabel = 0;
+    EditLabel = nullptr;
   }
 
   //------------------------------------------------------------------------
   //	Init variables
   //------------------------------------------------------------------------
-  MessageList = 0;
+  MessageList = nullptr;
   MessageX = x;
   MessageY = y;
 
@@ -218,7 +218,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
     EditX = edit_x;
     EditY = edit_y;
   }
-  EditLabel = 0;
+  EditLabel = nullptr;
   EditBuf[0] = 0;
   OverflowBuf[0] = 0;
   EditCurPos = 0;
@@ -276,14 +276,14 @@ void MessageListClass::Reset(void) {
   //------------------------------------------------------------------------
   if (IsEdit) {
     delete EditLabel;
-    EditLabel = 0;
+    EditLabel = nullptr;
   }
 
   //------------------------------------------------------------------------
   //	Init variables
   //------------------------------------------------------------------------
-  MessageList = 0;
-  EditLabel = 0;
+  MessageList = nullptr;
+  EditLabel = nullptr;
   IsEdit = 0;
 }
 
@@ -377,7 +377,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
   if ((MaxMessages > 0) && ((Num_Messages() + 1) > MaxMessages)) {
     txtlabel = MessageList;
 
-    if (txtlabel == NULL) return (NULL);
+    if (txtlabel == nullptr) return (nullptr);
 
     //.....................................................................
     //	Remove this message from the list; mark its buffer as being available.
@@ -418,7 +418,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
   }
   if (!found) {
     delete txtlabel;
-    return (NULL);
+    return (nullptr);
   }
 
   Sound_Effect(VOC_INCOMING_MESSAGE);
@@ -484,7 +484,7 @@ char *MessageListClass::Get_Message(int id) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 
 }  // end of Get_Message
 
@@ -523,7 +523,7 @@ TextLabelClass *MessageListClass::Get_Label(int id) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 
 }  // end of Get_Label
 
@@ -616,7 +616,7 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
         max_chars = min_chars;
       }
 
-      Trim_Message(NULL, msg, min_chars, max_chars, 0);
+      Trim_Message(nullptr, msg, min_chars, max_chars, 0);
 
       strcpy(concat_test, msg);
       strcat(concat_test, txt);
@@ -640,7 +640,7 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
     if (max_chars < min_chars) {
       max_chars = min_chars;
     }
-    Trim_Message(NULL, msg, min_chars, max_chars, 0);
+    Trim_Message(nullptr, msg, min_chars, max_chars, 0);
     strcat(msg, txt);
   }
 
@@ -727,7 +727,7 @@ TextLabelClass *MessageListClass::Add_Edit(PlayerColorType color,
   //------------------------------------------------------------------------
   if (IsEdit) {
     EditLabel->Set_Focus();
-    return (NULL);
+    return (nullptr);
   }
 
   //------------------------------------------------------------------------

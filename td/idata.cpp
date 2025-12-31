@@ -1840,7 +1840,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
 
         uclass = &As_Reference(index);
 
-        ((void const *&)uclass->CameoData) = NULL;
+        ((void const *&)uclass->CameoData) = nullptr;
 
         const auto filename =
             std::string(uclass->IniName).substr(0, 4) + "ICNH";
@@ -1887,7 +1887,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 BuildingClass *InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                    HousesType house) const {
-  BuildingClass *anybuilding = NULL;
+  BuildingClass *anybuilding = nullptr;
 
   for (int index = 0; index < Buildings.Count(); index++) {
     BuildingClass *building = Buildings.Ptr(index);

@@ -108,7 +108,7 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
     if (MaxExtraSize > 0) {
       SendQueue[i].ExtraBuffer = new char[MaxExtraSize];
     } else {
-      SendQueue[i].ExtraBuffer = NULL;
+      SendQueue[i].ExtraBuffer = nullptr;
     }
   }
 
@@ -117,7 +117,7 @@ CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen,
     if (MaxExtraSize > 0) {
       ReceiveQueue[i].ExtraBuffer = new char[MaxExtraSize];
     } else {
-      ReceiveQueue[i].ExtraBuffer = NULL;
+      ReceiveQueue[i].ExtraBuffer = nullptr;
     }
   }
 
@@ -237,7 +237,7 @@ void CommBufferClass::Init(void) {
   //------------------------------------------------------------------------
   DebugOffset = 0;
   DebugSize = 0;
-  DebugNames = NULL;
+  DebugNames = nullptr;
   DebugNameCount = 0;
 
 } /* end of Init */
@@ -346,7 +346,7 @@ int CommBufferClass::Queue_Send(void *buf, int buflen, void *extrabuf,
   //------------------------------------------------------------------------
   //	Fill in the extra data, if there is any
   //------------------------------------------------------------------------
-  if (extrabuf != NULL && extralen > 0 && extralen <= MaxExtraSize) {
+  if (extrabuf != nullptr && extralen > 0 && extralen <= MaxExtraSize) {
     memcpy(SendQueue[index].ExtraBuffer, extrabuf, extralen);
     SendQueue[index].ExtraLen = extralen;
   } else {
@@ -378,9 +378,9 @@ int CommBufferClass::Queue_Send(void *buf, int buflen, void *extrabuf,
  *                                                                         *
  * INPUT:                                                                  *
  *		buf			buffer to store entry's data in; if
- *NULL, it's discarded	* buflen		filled in with length of entry
- *retrieved						* index
- *"index" of entry to un-queue
+ *nullptr, it's discarded	* buflen		filled in with length of
+ * entry retrieved						* index "index"
+ * of entry to un-queue
  ** extrabuf		buffer for extra data (optional)
  ** extralen		ptr to length of extra data (optional)
  **
@@ -410,7 +410,7 @@ int CommBufferClass::UnQueue_Send(void *buf, int *buflen, int index,
   //------------------------------------------------------------------------
   //	Copy the data from the entry
   //------------------------------------------------------------------------
-  if (buf != NULL) {
+  if (buf != nullptr) {
     memcpy(buf, SendQueue[SendIndex[index]].Buffer,
            SendQueue[SendIndex[index]].BufLen);
     (*buflen) = SendQueue[SendIndex[index]].BufLen;
@@ -419,7 +419,7 @@ int CommBufferClass::UnQueue_Send(void *buf, int *buflen, int index,
   //------------------------------------------------------------------------
   //	Copy the extra data
   //------------------------------------------------------------------------
-  if (extrabuf != NULL && extralen != NULL) {
+  if (extrabuf != nullptr && extralen != nullptr) {
     memcpy(extrabuf, SendQueue[SendIndex[index]].ExtraBuffer,
            SendQueue[SendIndex[index]].ExtraLen);
     (*extralen) = SendQueue[SendIndex[index]].ExtraLen;
@@ -473,7 +473,7 @@ int CommBufferClass::UnQueue_Send(void *buf, int *buflen, int index,
  *=========================================================================*/
 SendQueueType *CommBufferClass::Get_Send(int index) {
   if (SendQueue[SendIndex[index]].IsActive == 0) {
-    return (NULL);
+    return (nullptr);
   } else {
     return (&SendQueue[SendIndex[index]]);
   }
@@ -542,7 +542,7 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen, void *extrabuf,
   //------------------------------------------------------------------------
   //	Fill in the extra data, if there is any
   //------------------------------------------------------------------------
-  if (extrabuf != NULL && extralen > 0 && extralen <= MaxExtraSize) {
+  if (extrabuf != nullptr && extralen > 0 && extralen <= MaxExtraSize) {
     memcpy(ReceiveQueue[index].ExtraBuffer, extrabuf, extralen);
     ReceiveQueue[index].ExtraLen = extralen;
   } else {
@@ -575,9 +575,9 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen, void *extrabuf,
  *                                                                         *
  * INPUT:                                                                  *
  *		buf			buffer to store entry's data in; if
- *NULL, it's discarded	* buflen		filled in with length of entry
- *retrieved						* index
- *index of entry to un-queue
+ *nullptr, it's discarded	* buflen		filled in with length of
+ * entry retrieved						* index index of
+ * entry to un-queue
  ** extrabuf		buffer for extra data (optional)
  ** extralen		ptr to length of extra data (optional)
  **
@@ -607,7 +607,7 @@ int CommBufferClass::UnQueue_Receive(void *buf, int *buflen, int index,
   //------------------------------------------------------------------------
   //	Copy the data from the entry
   //------------------------------------------------------------------------
-  if (buf != NULL) {
+  if (buf != nullptr) {
     memcpy(buf, ReceiveQueue[ReceiveIndex[index]].Buffer,
            ReceiveQueue[ReceiveIndex[index]].BufLen);
     (*buflen) = ReceiveQueue[ReceiveIndex[index]].BufLen;
@@ -616,7 +616,7 @@ int CommBufferClass::UnQueue_Receive(void *buf, int *buflen, int index,
   //------------------------------------------------------------------------
   //	Copy the extra data
   //------------------------------------------------------------------------
-  if (extrabuf != NULL && extralen != NULL) {
+  if (extrabuf != nullptr && extralen != nullptr) {
     memcpy(extrabuf, ReceiveQueue[ReceiveIndex[index]].ExtraBuffer,
            ReceiveQueue[ReceiveIndex[index]].ExtraLen);
     (*extralen) = ReceiveQueue[ReceiveIndex[index]].ExtraLen;
@@ -668,7 +668,7 @@ int CommBufferClass::UnQueue_Receive(void *buf, int *buflen, int index,
  *=========================================================================*/
 ReceiveQueueType *CommBufferClass::Get_Receive(int index) {
   if (ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
-    return (NULL);
+    return (nullptr);
   } else {
     return (&ReceiveQueue[ReceiveIndex[index]]);
   }

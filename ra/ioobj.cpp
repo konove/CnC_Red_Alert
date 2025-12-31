@@ -91,7 +91,7 @@ void TeamTypeClass::Code_Pointers(void) {
   */
   for (int i = 0; i < ClassCount; i++) {
     Members[i].Class = (TechnoTypeClass *)Members[i].Class->As_Target();
-    assert(Members[i].Class != NULL);
+    assert(Members[i].Class != nullptr);
   }
 }
 
@@ -115,7 +115,7 @@ void TeamTypeClass::Decode_Pointers(void) {
   */
   for (int i = 0; i < ClassCount; i++) {
     Members[i].Class = As_TechnoType((TARGET)(intptr_t)Members[i].Class);
-    assert(Members[i].Class != NULL);
+    assert(Members[i].Class != nullptr);
   }
 }
 
@@ -164,7 +164,7 @@ void TeamClass::Decode_Pointers(void) {
   */
   if (Member) {
     Member = (FootClass *)As_Techno((TARGET)Member);
-    assert(Member != NULL);
+    assert(Member != nullptr);
   }
 }
 
@@ -258,7 +258,7 @@ void BulletClass::Decode_Pointers(void) {
   */
   if (Payback) {
     Payback = As_Techno((TARGET)(intptr_t)Payback);
-    assert(Payback != NULL);
+    assert(Payback != nullptr);
   }
 
   /*
@@ -308,11 +308,11 @@ void FactoryClass::Code_Pointers(void) {
 void FactoryClass::Decode_Pointers(void) {
   if (Object) {
     Object = As_Techno((TARGET)(intptr_t)Object);
-    assert(Object != NULL);
+    assert(Object != nullptr);
   }
 
   ((HouseClass *&)House) = HouseClass::As_Pointer((HousesType)(intptr_t)House);
-  assert(House != NULL);
+  assert(House != nullptr);
 }
 
 /***********************************************************************************************
@@ -402,7 +402,7 @@ bool LayerClass::Save(Pipe &file) const {
 void LayerClass::Code_Pointers(void) {
   for (int index = 0; index < Count(); index++) {
     ObjectClass *obj = (*this)[index];
-    assert(obj != NULL);
+    assert(obj != nullptr);
     (*this)[index] = (ObjectClass *)(obj->As_Target());
   }
 }
@@ -425,7 +425,7 @@ void LayerClass::Decode_Pointers(void) {
   for (int index = 0; index < Count(); index++) {
     TARGET target = (TARGET)(intptr_t)(*this)[index];
     (*this)[index] = (ObjectClass *)As_Object(target);
-    assert((*this)[index] != NULL);
+    assert((*this)[index] != nullptr);
   }
 }
 
@@ -514,7 +514,7 @@ void ScoreClass::Decode_Pointers(void) { RealTime.Start(); }
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void FootClass::Code_Pointers(void) {
-  if (Member != NULL && Member->IsActive) {
+  if (Member != nullptr && Member->IsActive) {
     Member = (FootClass *)Member->As_Target();
   } else {
     Member = (FootClass *)TARGET_NONE;
@@ -540,7 +540,7 @@ void FootClass::Code_Pointers(void) {
 void FootClass::Decode_Pointers(void) {
   if ((TARGET)(intptr_t)Member != TARGET_NONE) {
     Member = (FootClass *)As_Techno((TARGET)(intptr_t)Member);
-    assert(Member != NULL);
+    assert(Member != nullptr);
   }
 
   TechnoClass::Decode_Pointers();
@@ -593,7 +593,7 @@ void RadioClass::Decode_Pointers(void) {
   */
   if (Radio) {
     Radio = As_Techno((TARGET)(intptr_t)Radio);
-    assert(Radio != NULL);
+    assert(Radio != nullptr);
   }
 
   MissionClass::Decode_Pointers();
@@ -684,7 +684,7 @@ void CargoClass::Decode_Pointers(void) {
   */
   if (CargoHold) {
     CargoHold = (FootClass *)As_Techno((TARGET)(intptr_t)CargoHold);
-    assert(CargoHold != NULL);
+    assert(CargoHold != nullptr);
   }
 }
 
@@ -727,6 +727,6 @@ void ObjectClass::Code_Pointers(void) {
 void ObjectClass::Decode_Pointers(void) {
   if (Next) {
     Next = As_Object((TARGET)Next);
-    assert(Next != NULL);
+    assert(Next != nullptr);
   }
 }

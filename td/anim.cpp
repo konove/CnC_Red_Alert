@@ -226,9 +226,9 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
   if (!IsInvisible) {
     void const *shapefile = Class->Get_Image_Data();
     if (shapefile) {
-      void const *transtable = NULL;
+      void const *transtable = nullptr;
       int shapenum = Class->Start + Fetch_Stage();
-      void const *remap = NULL;
+      void const *remap = nullptr;
 
       /*
       **	Some animations require special fixups.
@@ -568,7 +568,7 @@ void AnimClass::operator delete(void *ptr) {
 AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
-  Object = 0;
+  Object = nullptr;
   Owner = HOUSE_NONE;
 
   if (Class->Stages == -1) {
@@ -645,7 +645,7 @@ AnimClass::~AnimClass(void) {
     if (Object) {
       ObjectClass *to = Object;
 
-      Object = 0;
+      Object = nullptr;
 
       /*
       **	Scan for any other animations that are attached to the object
@@ -670,7 +670,7 @@ AnimClass::~AnimClass(void) {
     }
 
     Limbo();
-    Object = 0;
+    Object = nullptr;
   }
 }
 
@@ -952,8 +952,8 @@ void AnimClass::Middle(void) {
     **	order to properly enact retribution and record the kill for
     **	score purposes.
     */
-    BuildingClass *building = NULL;
-    TechnoClass *backup = NULL;
+    BuildingClass *building = nullptr;
+    TechnoClass *backup = nullptr;
     if (Owner != HOUSE_NONE) {
       for (int index = 0; index < Logic.Count(); index++) {
         ObjectClass *obj = Logic[index];
@@ -976,7 +976,7 @@ void AnimClass::Middle(void) {
     if (GameToPlay == GAME_NORMAL) {
       radius = 4;
       rawdamage = 1000;
-      Fade_Palette_To(WhitePalette, 30, NULL);
+      Fade_Palette_To(WhitePalette, 30, nullptr);
     }
     for (int x = -radius; x <= radius; x++) {
       for (int y = -radius; y <= radius; y++) {
@@ -1005,7 +1005,7 @@ void AnimClass::Middle(void) {
     }
     Shake_Screen(3);
     if (GameToPlay == GAME_NORMAL) {
-      Fade_Palette_To(GamePalette, 15, NULL);
+      Fade_Palette_To(GamePalette, 15, nullptr);
     }
   }
 
@@ -1075,8 +1075,8 @@ void AnimClass::Middle(void) {
   */
   switch (Class->Type) {
     case ANIM_ION_CANNON: {
-      BuildingClass *building = NULL;
-      TechnoClass *backup = NULL;
+      BuildingClass *building = nullptr;
+      TechnoClass *backup = nullptr;
       if (Owner != HOUSE_NONE) {
         for (int index = 0; index < Logic.Count(); index++) {
           ObjectClass *obj = Logic[index];
@@ -1203,7 +1203,7 @@ void AnimClass::Detach(TARGET target, bool all) {
   Validate();
   if (Object && Object->As_Target() == target && all) {
     Map.Remove(this, In_Which_Layer());
-    Object = NULL;
+    Object = nullptr;
     IsToDelete = true;
   }
 }

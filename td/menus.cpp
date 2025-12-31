@@ -597,7 +597,7 @@ int Main_Menu(unsigned long timeout) {
 #endif
   unsigned long starttime;
 
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
 #ifdef NEWMENU
 #ifdef BONUS_MISSIONS

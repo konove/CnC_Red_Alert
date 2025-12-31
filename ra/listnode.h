@@ -53,7 +53,7 @@
 class GenericList;
 class GenericNode {
  public:
-  GenericNode(void) : NextNode(0), PrevNode(0) {}
+  GenericNode(void) : NextNode(nullptr), PrevNode(nullptr) {}
   virtual ~GenericNode(void) { Unlink(); }
   GenericNode(GenericNode &node) { node.Link(this); }
   GenericNode &operator=(GenericNode &node) {
@@ -67,8 +67,8 @@ class GenericNode {
     if (Is_Valid()) {
       PrevNode->NextNode = NextNode;
       NextNode->PrevNode = PrevNode;
-      PrevNode = 0;
-      NextNode = 0;
+      PrevNode = nullptr;
+      NextNode = nullptr;
     }
   }
 
@@ -91,7 +91,7 @@ class GenericNode {
   GenericNode *Next(void) const { return (NextNode); }
   GenericNode *Prev(void) const { return (PrevNode); }
   bool Is_Valid(void) const {
-    return (this != NULL && NextNode != NULL && PrevNode != NULL);
+    return (this != nullptr && NextNode != nullptr && PrevNode != nullptr);
   }
 
  protected:

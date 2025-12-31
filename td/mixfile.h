@@ -56,9 +56,9 @@ class MixFileClass : public LinkClass {
   void Free(void);
   bool Cache(void);
   static bool Cache(char const *filename);
-  static bool Offset(char const *filename, void **realptr = 0,
-                     MixFileClass **mixfile = 0, long *offset = 0,
-                     long *size = 0);
+  static bool Offset(char const *filename, void **realptr = nullptr,
+                     MixFileClass **mixfile = nullptr, long *offset = nullptr,
+                     long *size = nullptr);
   static void const *Retrieve(char const *filename);
 
   struct SubBlock {
@@ -73,7 +73,7 @@ class MixFileClass : public LinkClass {
 
  private:
   static MixFileClass *Finder(char const *filename);
-  long Offset(long crc, long *size = 0);
+  long Offset(long crc, long *size = nullptr);
 
 #pragma pack(push, 1)
   typedef struct {

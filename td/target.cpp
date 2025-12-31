@@ -74,7 +74,7 @@
  *=============================================================================================*/
 TriggerClass *As_Trigger(TARGET target) {
   return (Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
-                                    : NULL);
+                                    : nullptr);
 }
 
 /***********************************************************************************************
@@ -93,7 +93,7 @@ TriggerClass *As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass *As_Team(TARGET target) {
-  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : NULL);
+  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr);
 }
 
 /***********************************************************************************************
@@ -114,7 +114,7 @@ TeamClass *As_Team(TARGET target) {
  *=============================================================================================*/
 TeamTypeClass *As_TeamType(TARGET target) {
   return (Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
-                                     : NULL);
+                                     : nullptr);
 }
 
 /***********************************************************************************************
@@ -136,7 +136,7 @@ TeamTypeClass *As_TeamType(TARGET target) {
  *=============================================================================================*/
 AnimClass *As_Animation(TARGET target) {
   return (Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
-                                      : NULL);
+                                      : nullptr);
 }
 
 /***********************************************************************************************
@@ -156,7 +156,7 @@ AnimClass *As_Animation(TARGET target) {
  *=============================================================================================*/
 BulletClass *As_Bullet(TARGET target) {
   return (Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
-                                   : NULL);
+                                   : nullptr);
 }
 
 /***********************************************************************************************
@@ -177,7 +177,7 @@ BulletClass *As_Bullet(TARGET target) {
  *=============================================================================================*/
 AircraftClass *As_Aircraft(TARGET target) {
   return (Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
-                                     : NULL);
+                                     : nullptr);
 }
 
 /***********************************************************************************************
@@ -204,7 +204,7 @@ TechnoClass *As_Techno(TARGET target) {
   if (obj && obj->Is_Techno()) {
     return (TechnoClass *)obj;
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -225,7 +225,7 @@ TechnoClass *As_Techno(TARGET target) {
  *=============================================================================================*/
 ObjectClass *As_Object(TARGET target) {
   int val = Target_Value(target);
-  ObjectClass *object = NULL;
+  ObjectClass *object = nullptr;
 
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
@@ -267,8 +267,8 @@ ObjectClass *As_Object(TARGET target) {
   **	object it refers to is destroyed between the time an event message
   **	is sent and when it is received.
   */
-  if (object != NULL && !object->IsActive) {
-    object = NULL;
+  if (object != nullptr && !object->IsActive) {
+    object = nullptr;
   }
 
   return (object);
@@ -290,7 +290,7 @@ ObjectClass *As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass *As_Unit(TARGET target) {
-  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : NULL);
+  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr);
 }
 
 /***********************************************************************************************
@@ -311,7 +311,7 @@ UnitClass *As_Unit(TARGET target) {
  *=============================================================================================*/
 InfantryClass *As_Infantry(TARGET target) {
   return (Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
-                                     : NULL);
+                                     : nullptr);
 }
 
 #ifdef NEVER
@@ -337,7 +337,7 @@ TerrainClass *As_Terrain(TARGET target) {
  *=============================================================================================*/
 BuildingClass *As_Building(TARGET target) {
   return (Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
-                                     : NULL);
+                                     : nullptr);
 }
 
 #ifdef NEVER

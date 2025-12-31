@@ -82,7 +82,7 @@ BufferIOFileClass::BufferIOFileClass(char const *filename)
       IsChanged(false),
       UseBuffer(false),
       BufferRights(0),
-      Buffer(0),
+      Buffer(nullptr),
       BufferSize(0),
       BufferPos(0),
       BufferFilePos(0),
@@ -116,7 +116,7 @@ BufferIOFileClass::BufferIOFileClass(void)
       IsChanged(false),
       UseBuffer(false),
       BufferRights(0),
-      Buffer(0),
+      Buffer(nullptr),
       BufferSize(0),
       BufferPos(0),
       BufferFilePos(0),
@@ -320,7 +320,7 @@ void BufferIOFileClass::Free(void) {
       IsAllocated = false;
     }
 
-    Buffer = 0;
+    Buffer = nullptr;
   }
 
   BufferSize = 0;

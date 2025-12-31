@@ -65,7 +65,7 @@ class OverlayClass : public ObjectClass {
   OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(x){};
   virtual ~OverlayClass(void) {
     if (GameActive) OverlayClass::Limbo();
-    Class = 0;
+    Class = nullptr;
   };
   operator OverlayType(void) const { return Class->Type; };
 

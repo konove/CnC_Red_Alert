@@ -57,7 +57,7 @@ class AircraftClass : public FootClass, public FlyClass {
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   void operator delete(void *);
   operator AircraftType(void) const { return Class->Type; };
-  AircraftClass(void) : Class(0){};
+  AircraftClass(void) : Class(nullptr){};
   AircraftClass(NoInitClass const &x)
       : FootClass(x),
         FlyClass(x),

@@ -98,7 +98,7 @@ void GameOptionsClass::Process(void) {
   /*
   **	Variables.
   */
-  TextButtonClass* buttons = 0;
+  TextButtonClass* buttons = nullptr;
   int selection;
   bool pressed;
 #ifdef FIXIT_VERSION_3  //	Stalemate games.
@@ -132,7 +132,7 @@ void GameOptionsClass::Process(void) {
 
   for (int index = 0; index < num_buttons; index++) {
     int text = _constants[index].Text;
-    buttonsel[index] = NULL;
+    buttonsel[index] = nullptr;
 
     if (Session.Type != GAME_NORMAL && !_constants[index].Multiplay) {
       continue;
@@ -208,7 +208,7 @@ void GameOptionsClass::Process(void) {
     if (g->Width > maxwidth) {
       maxwidth = g->Width;
     }
-    if (buttons == NULL) {
+    if (buttons == nullptr) {
       buttons = g;
     } else {
       g->Add_Tail(*buttons);
@@ -230,7 +230,7 @@ void GameOptionsClass::Process(void) {
   *button.
   */
   GadgetClass* g = buttons;
-  while (g != NULL) {
+  while (g != nullptr) {
     g->Width = std::max(maxwidth, 90 * RESFACTOR);
     g->X = OptionX + (OptionWidth - g->Width) / 2;
     g = g->Get_Next();

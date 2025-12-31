@@ -1131,7 +1131,7 @@ void BuildingClass::AI(void) {
       case 0:
         Factory->Abandon();
         delete Factory;
-        Factory = 0;
+        Factory = nullptr;
         break;
 
       case 1:
@@ -1141,7 +1141,7 @@ void BuildingClass::AI(void) {
       case 2:
         Factory->Completed();
         delete Factory;
-        Factory = 0;
+        Factory = nullptr;
         break;
     }
   }
@@ -1182,7 +1182,7 @@ void BuildingClass::AI(void) {
         if (PlacementDelay.Expired() && !Factory->Is_Building()) {
           Factory->Abandon();
           delete Factory;
-          Factory = 0;
+          Factory = nullptr;
         }
 
       } else {
@@ -1205,7 +1205,7 @@ void BuildingClass::AI(void) {
             if (Factory) {
               if (!Factory->Set(*techno, *House)) {
                 delete Factory;
-                Factory = 0;
+                Factory = nullptr;
               } else {
                 Factory->Start();
               }
@@ -1539,7 +1539,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
         Sound_Effect(VOC_XPLOBIG4, Coord);
         while (*offset != REFRESH_EOL) {
           CELL cell = Coord_Cell(Coord) + *offset++;
-          AnimClass *anim = NULL;
+          AnimClass *anim = nullptr;
 
           /*
           **	Show pieces of fire to indicate that a significant change in
@@ -1737,7 +1737,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   ActLike = House->ActLike;
   BState = BSTATE_NONE;
   CountDown.Set(0);
-  Factory = 0;
+  Factory = nullptr;
   House->CurBuildings++;
   WhomToRepay = TARGET_NONE;
   IsCaptured = false;
@@ -1856,12 +1856,12 @@ void BuildingClass::Drop_Debris(TARGET source) {
     **	Infantry could run out of a destroyed building.
     */
     if (!House->IsToDie && !IsSurvivorless) {
-      InfantryClass *i = NULL;
+      InfantryClass *i = nullptr;
 
       if (Random_Pick(0, odds) == 1) {
         i = new InfantryClass(Crew_Type(), House->Class->House);
         if (i) {
-          if (Class->Get_Buildup_Data() != NULL && i->Class->IsNominal)
+          if (Class->Get_Buildup_Data() != nullptr && i->Class->IsNominal)
             i->IsTechnician = true;
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
@@ -2625,7 +2625,7 @@ void BuildingClass::Grand_Opening(bool captured) {
       (!House->IsHuman || PurchasePrice == 0 ||
        PurchasePrice > Class->Raw_Cost())) {
     ScenarioInit++;
-    AircraftClass *air = 0;
+    AircraftClass *air = nullptr;
     if (House->ActLike == HOUSE_GOOD) {
       air = new AircraftClass(AIRCRAFT_ORCA, House->Class->House);
     } else {
@@ -2924,14 +2924,14 @@ void BuildingClass::Read_INI(char *buffer) {
   /*
   **	Read the entire building INI section into HIDBUF
   */
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   while (*tbuffer != '\0') {
     /*
     **	Get a building entry.
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -2942,7 +2942,7 @@ void BuildingClass::Read_INI(char *buffer) {
     /*
     **	2nd token: building name.
     */
-    classid = BuildingTypeClass::From_Name(strtok(NULL, ","));
+    classid = BuildingTypeClass::From_Name(strtok(nullptr, ","));
 
     if (bhouse != HOUSE_NONE && classid != STRUCT_NONE) {
       int strength;
@@ -2951,22 +2951,22 @@ void BuildingClass::Read_INI(char *buffer) {
       /*
       **	3rd token: strength.
       */
-      strength = atoi(strtok(NULL, ","));
+      strength = atoi(strtok(nullptr, ","));
 
       /*
       **	4th token: cell #.
       */
-      cell = atoi(strtok(NULL, ","));
+      cell = atoi(strtok(nullptr, ","));
 
       /*
       **	5th token: facing.
       */
-      facing = (DirType)atoi(strtok(NULL, ","));
+      facing = (DirType)atoi(strtok(nullptr, ","));
 
       /*
       **	6th token: triggername (can be NULL).
       */
-      trigname = strtok(NULL, ",");
+      trigname = strtok(nullptr, ",");
 
       b = new BuildingClass(classid, bhouse);
       if (b) {
@@ -3019,10 +3019,10 @@ void BuildingClass::Write_INI(char *buffer) {
   **	First, clear out all existing building data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 
@@ -3720,7 +3720,7 @@ int BuildingClass::Mission_Deconstruction(void) {
           *directly *	attributed to the enemy.
           */
           WhoLastHurtMe = HOUSE_NONE;
-          Record_The_Kill(NULL);
+          Record_The_Kill(nullptr);
 
           /*
           **	The player gets part of the money back for the sell.
@@ -4241,11 +4241,11 @@ int BuildingClass::Mission_Missile(void) {
         if (bullet) {
           COORDINATE launch = Coord_Move(Center_Coord(), (DirType)1, 0x1A0);
           bullet->Assign_Target(TARGET_NONE);
-          bullet->Payback = NULL;
+          bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(launch, DIR_N)) {
             delete bullet;
-            bullet = NULL;
+            bullet = nullptr;
           } else {
             bullet->PrimaryFacing.Set_Current(DIR_N);
             Sound_Effect(VOC_NUKE_FIRE, launch);
@@ -4273,7 +4273,7 @@ int BuildingClass::Mission_Missile(void) {
           //						Theme.Queue_Song(THEME_NONE);
           COORDINATE start = Cell_Coord(XY_Cell(Cell_X(House->NukeDest), 1));
           bullet->Assign_Target(::As_Target(House->NukeDest));
-          bullet->Payback = NULL;
+          bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(start, DIR_S)) {
             delete bullet;
@@ -4708,7 +4708,7 @@ void BuildingClass::Detach_All(bool all) {
   if (Factory) {
     Factory->Abandon();
     delete Factory;
-    Factory = 0;
+    Factory = nullptr;
   }
 
   /*
@@ -4744,7 +4744,7 @@ void BuildingClass::Detach_All(bool all) {
     /*
     **	Convert the factory number into a real factory pointer.
     */
-    FactoryClass *factory = 0;
+    FactoryClass *factory = nullptr;
     if (fnum != -1) {
       factory = Factories.Raw_Ptr(fnum);
     }

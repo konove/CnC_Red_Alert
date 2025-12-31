@@ -45,7 +45,7 @@ Surface::Surface(int w, int h, Buffer const* buffer, int pitch)
   **	If a buffer was specified, then this means that the surface will use the
   *buffer memory *	and thus not allocate and manage its own memory.
   */
-  if (buffer != NULL) {
+  if (buffer != nullptr) {
     SurfaceData = *buffer;
 
     /*

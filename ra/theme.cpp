@@ -183,7 +183,7 @@ char const *ThemeClass::Full_Name(ThemeType theme) const {
   if (theme >= THEME_FIRST && theme < THEME_COUNT) {
     return (Text_String(_themes[theme].Fullname));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -487,7 +487,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
   *don't allow *	it. If the player's house hasn't yet been determined,
   *then presume this test *	passes.
   */
-  if (PlayerPtr != NULL &&
+  if (PlayerPtr != nullptr &&
       ((1 << PlayerPtr->ActLike) & _themes[index].Owner) == 0)
     return (false);
 
@@ -541,7 +541,7 @@ ThemeType ThemeClass::From_Name(char const *name) const {
     **	yield a match, but is not guaranteed to be unique.
     */
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
-      if (strstr(Text_String(_themes[theme].Fullname), name) != NULL) {
+      if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
         return (theme);
       }
     }

@@ -105,8 +105,8 @@ CarryoverClass::CarryoverClass(TechnoClass *techno)
  * HISTORY: * 05/10/1996 JLB : Created. *
  *=============================================================================================*/
 bool CarryoverClass::Create(void) const {
-  TechnoClass *techno = 0;
-  TechnoTypeClass const *ttype = 0;
+  TechnoClass *techno = nullptr;
+  TechnoTypeClass const *ttype = nullptr;
 
   switch (RTTI) {
     case RTTI_UNIT:

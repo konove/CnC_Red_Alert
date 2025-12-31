@@ -92,17 +92,17 @@ typedef enum {
 
 VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
                            LONG user_buffer_size, WSAOpenType user_flags,
-                           UBYTE *palette = NULL);
+                           UBYTE *palette = nullptr);
 VOID cdecl Close_Animation(VOID *handle);
 BOOL cdecl Animate_Frame(VOID *handle, GraphicViewPortClass &view,
                          WORD frame_number, WORD x_pixel = 0, WORD y_pixel = 0,
                          WSAType flags_and_prio = WSA_NORMAL,
-                         VOID *magic_cols = NULL, VOID *magic = NULL);
+                         VOID *magic_cols = nullptr, VOID *magic = nullptr);
 WORD cdecl Get_Animation_Frame_Count(VOID *handle);
 BOOL cdecl Animate_Frame(VOID *handle, VideoViewPortClass &view,
                          WORD frame_number, WORD x_pixel = 0, WORD y_pixel = 0,
                          WSAType flags_and_prio = WSA_NORMAL,
-                         VOID *magic_cols = NULL, VOID *magic = NULL);
+                         VOID *magic_cols = nullptr, VOID *magic = nullptr);
 WORD cdecl Get_Animation_Frame_Count(VOID *handle);
 WORD cdecl Get_Animation_X(VOID const *handle);
 WORD cdecl Get_Animation_Y(VOID const *handle);
@@ -128,8 +128,8 @@ ULONG cdecl Get_Animation_Size(VOID const *handle);
  *   05/24/1994 SKB : Created.                                             *
  *=========================================================================*/
 inline VOID *cdecl Open_Animation(BYTE *file_name, WSAOpenType user_flags,
-                                  UBYTE *palette = NULL) {
-  return (Open_Animation(file_name, NULL, 0L, user_flags, palette));
+                                  UBYTE *palette = nullptr) {
+  return (Open_Animation(file_name, nullptr, 0L, user_flags, palette));
 }
 
 /***************************************************************************
@@ -152,7 +152,7 @@ inline VOID *cdecl Open_Animation(BYTE *file_name, WSAOpenType user_flags,
  *=========================================================================*/
 inline VOID *cdecl Open_Animation(BYTE *file_name, BufferClass &buffer,
                                   WSAOpenType user_flags,
-                                  UBYTE *palette = NULL) {
+                                  UBYTE *palette = nullptr) {
   return (Open_Animation(file_name, (BYTE *)buffer.Get_Buffer(),
                          buffer.Get_Size(), user_flags, palette));
 }

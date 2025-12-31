@@ -259,7 +259,7 @@ char *Extract_String(void const *data, int string) {
   unsigned short int const *ptr;
   unsigned int offset;
 
-  if (!data || string < 0) return (NULL);
+  if (!data || string < 0) return (nullptr);
 
   ptr = (unsigned short int const *)data;
   return (((char *)data) + ptr[string]);

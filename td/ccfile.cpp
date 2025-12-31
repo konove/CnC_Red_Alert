@@ -117,7 +117,7 @@ void CCFileClass::Error(int, int, char const *) {
 CCFileClass::CCFileClass(char const *filename)
     : CDFileClass(),
       FromDisk(false),
-      Pointer(0),
+      Pointer(nullptr),
       Position(0),
       Length(0),
       Start(0) {
@@ -139,7 +139,7 @@ CCFileClass::CCFileClass(char const *filename)
  *=============================================================================================*/
 CCFileClass::CCFileClass(void) {
   FromDisk = false;
-  Pointer = 0;
+  Pointer = nullptr;
   Position = 0;
   Length = 0;
   Start = 0;
@@ -364,7 +364,7 @@ int CCFileClass::Is_Open(void) const {
  *=============================================================================================*/
 void CCFileClass::Close(void) {
   FromDisk = false;
-  Pointer = 0;
+  Pointer = nullptr;
   Position = 0;  // Starts at beginning offset.
   Start = 0;
   Length = 0;
@@ -407,7 +407,7 @@ int CCFileClass::Open(int rights) {
   **	Check to see if file is part of a mixfile and that mixfile is currently
   *loaded *	into RAM.
   */
-  MixFileClass *mixfile = 0;
+  MixFileClass *mixfile = nullptr;
   if (MixFileClass::Offset(File_Name(), &Pointer, &mixfile, &Start, &Length)) {
     /*
     **	If the mixfile is located on disk, then fake out the file system to read
@@ -539,7 +539,7 @@ unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
 
 void WWDOS_Shutdown(void) {
   for (int index = 0; index < 10; index++) {
-    Handles[index].Set_Name(NULL);
+    Handles[index].Set_Name(nullptr);
   }
 }
 

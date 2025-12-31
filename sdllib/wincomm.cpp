@@ -10,9 +10,9 @@
 #include "wincomm.h"
 #include "modemreg.h"
 
-WinModemClass *SerialPort = NULL;
+WinModemClass *SerialPort = nullptr;
 
-WinModemClass::WinModemClass(void) : PortHandle(NULL) {}
+WinModemClass::WinModemClass(void) : PortHandle(nullptr) {}
 
 WinModemClass::~WinModemClass(void) {}
 
@@ -93,7 +93,7 @@ HANDLE WinModemClass::Serial_Port_Open(char *device_name, int baud, int parity,
 #else
 
   printf("WinModemClass::%s : no serial port support\n", __func__);
-  return NULL;
+  return nullptr;
 #endif
 }
 
@@ -169,14 +169,14 @@ void WinModemClass::Set_Abort_Function(int (*func)(void)) {
 HANDLE WinModemClass::Get_Port_Handle(void) { return PortHandle; }
 
 ModemRegistryEntryClass::ModemRegistryEntryClass(int modem_number)
-    : ModemName(NULL),
-      ModemDeviceName(NULL),
-      ErrorCorrectionEnable(NULL),
-      ErrorCorrectionDisable(NULL),
-      CompressionEnable(NULL),
-      CompressionDisable(NULL),
-      HardwareFlowControl(NULL),
-      NoFlowControl(NULL) {
+    : ModemName(nullptr),
+      ModemDeviceName(nullptr),
+      ErrorCorrectionEnable(nullptr),
+      ErrorCorrectionDisable(nullptr),
+      CompressionEnable(nullptr),
+      CompressionDisable(nullptr),
+      HardwareFlowControl(nullptr),
+      NoFlowControl(nullptr) {
 #ifdef LIBSERIALPORT
   struct sp_port **port_list;
 

@@ -66,7 +66,7 @@ PKPipe::PKPipe(CryptControl control, RandomStraw &rnd)
       Rand(rnd),
       BF((control == ENCRYPT) ? BlowPipe::ENCRYPT : BlowPipe::DECRYPT),
       Control(control),
-      CipherKey(NULL),
+      CipherKey(nullptr),
       Counter(0),
       BytesLeft(0) {}
 
@@ -89,16 +89,16 @@ PKPipe::PKPipe(CryptControl control, RandomStraw &rnd)
  *=============================================================================================*/
 void PKPipe::Put_To(Pipe *pipe) {
   if (BF.ChainTo != pipe) {
-    if (pipe != NULL && pipe->ChainFrom != NULL) {
-      pipe->ChainFrom->Put_To(NULL);
-      pipe->ChainFrom = NULL;
+    if (pipe != nullptr && pipe->ChainFrom != nullptr) {
+      pipe->ChainFrom->Put_To(nullptr);
+      pipe->ChainFrom = nullptr;
     }
 
-    if (BF.ChainTo != NULL) {
-      BF.ChainTo->ChainFrom = NULL;
+    if (BF.ChainTo != nullptr) {
+      BF.ChainTo->ChainFrom = nullptr;
     }
     BF.ChainTo = pipe;
-    if (pipe != NULL) {
+    if (pipe != nullptr) {
       pipe->ChainFrom = &BF;
     }
     BF.ChainFrom = this;
@@ -124,13 +124,13 @@ void PKPipe::Put_To(Pipe *pipe) {
  * HISTORY: * 07/07/1996 JLB : Created. *
  *=============================================================================================*/
 void PKPipe::Key(PKey const *key) {
-  if (key == NULL) {
+  if (key == nullptr) {
     Flush();
     IsGettingKey = false;
   }
   CipherKey = key;
 
-  if (CipherKey != NULL) {
+  if (CipherKey != nullptr) {
     IsGettingKey = true;
     if (Control == DECRYPT) {
       Counter = BytesLeft = Encrypted_Key_Length();
@@ -163,7 +163,7 @@ int PKPipe::Put(void const *source, int length) {
   **	If the parameter seem illegal, then pass the pipe request to the
   **	next pipe in the chain and let them deal with it.
   */
-  if (source == NULL || length < 1 || CipherKey == NULL) {
+  if (source == nullptr || length < 1 || CipherKey == nullptr) {
     return (Pipe::Put(source, length));
   }
 
@@ -248,7 +248,7 @@ int PKPipe::Put(void const *source, int length) {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKPipe::Encrypted_Key_Length(void) const {
-  if (CipherKey == NULL) return (0);
+  if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Crypt_Block_Size());
 }
@@ -273,7 +273,7 @@ int PKPipe::Encrypted_Key_Length(void) const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKPipe::Plain_Key_Length(void) const {
-  if (CipherKey == NULL) return (0);
+  if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Plain_Block_Size());
 }

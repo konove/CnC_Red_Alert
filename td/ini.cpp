@@ -1095,7 +1095,7 @@ static void Create_Units(void) {
         if (!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) {
           if (!Scan_Place_Object(obj, centroid)) {
             delete obj;
-            obj = NULL;
+            obj = nullptr;
           }
         }
         if (obj) {
@@ -1121,7 +1121,7 @@ static void Create_Units(void) {
           if (!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) {
             if (!Scan_Place_Object(obj, centroid)) {
               delete obj;
-              obj = NULL;
+              obj = nullptr;
             }
           }
           hptr->FlagHome = 0;  // turn house's flag off

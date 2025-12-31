@@ -118,7 +118,7 @@ void *Open_Animation(char const *file_name, char *user_buffer,
     anim_flags |= WSA_PALETTE_PRESENT;
     palette_adjust = 768;
 
-    if (palette != NULL) {
+    if (palette != nullptr) {
       Seek_File(fh, sizeof(uint32_t) * (file_header.total_frames), SEEK_CUR);
       Read_File(fh, palette, 768L);
     }
@@ -180,11 +180,11 @@ void *Open_Animation(char const *file_name, char *user_buffer,
   // check to see if buffer size is big enough for at least min required
   if (user_buffer && (user_buffer_size < min_buffer_size)) {
     Close_File(fh);
-    return (NULL);
+    return (nullptr);
   }
 
   // A buffer was not passed in, so do allocations
-  if (user_buffer == NULL) {
+  if (user_buffer == nullptr) {
     // If the user wants it from the disk, then let us give it to him,
     // otherwise, try to give a max allocation he can have.
     if (user_flags & WSA_OPEN_FROM_DISK) {
@@ -209,7 +209,7 @@ void *Open_Animation(char const *file_name, char *user_buffer,
 
       if (min_buffer_size > Ram_Free(MEM_NORMAL)) {
         Close_File(fh);
-        return (NULL);
+        return (nullptr);
       }
 
       // Else make buffer size the min and allocate it.
@@ -299,7 +299,7 @@ void *Open_Animation(char const *file_name, char *user_buffer,
     else
       anim_flags |= WSA_LINEAR_ONLY | WSA_FILE;
     ////
-    sys_header->file_buffer = NULL;
+    sys_header->file_buffer = nullptr;
   }
 
   // Figure where to back load frame 0 into the delta buffer.

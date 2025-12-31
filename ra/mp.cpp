@@ -145,7 +145,7 @@ static int _Byte_Precision(unsigned long value) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_DER_Length_Encode(unsigned long length, unsigned char *output) {
-  assert(output != NULL);
+  assert(output != nullptr);
 
   int header_length = 0;
 
@@ -184,8 +184,8 @@ int XMP_DER_Length_Encode(unsigned long length, unsigned char *output) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_DER_Encode(digit const *from, unsigned char *output, int precision) {
-  assert(from != NULL);
-  assert(output != NULL);
+  assert(from != nullptr);
+  assert(output != nullptr);
   assert(precision > 0);
 
   unsigned char buffer[MAX_UNIT_PRECISION * sizeof(digit) + 1];
@@ -221,8 +221,8 @@ int XMP_DER_Encode(digit const *from, unsigned char *output, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_DER_Decode(digit *result, unsigned char const *input, int precision) {
-  assert(result != NULL);
-  assert(input != NULL);
+  assert(result != nullptr);
+  assert(input != nullptr);
   assert(precision > 0);
 
   if (*input++ == 0x02) {
@@ -266,8 +266,8 @@ void XMP_DER_Decode(digit *result, unsigned char const *input, int precision) {
  *=============================================================================================*/
 unsigned XMP_Encode(unsigned char *to, unsigned tobytes, digit const *from,
                     int precision) {
-  assert(to != NULL);
-  assert(from != NULL);
+  assert(to != nullptr);
+  assert(from != nullptr);
   assert(tobytes > 0);
   assert(precision > 0);
 
@@ -311,8 +311,8 @@ unsigned XMP_Encode(unsigned char *to, unsigned tobytes, digit const *from,
  *=============================================================================================*/
 #pragma warning 364 9
 unsigned XMP_Encode(unsigned char *to, digit const *from, int precision) {
-  assert(to != NULL);
-  assert(from != NULL);
+  assert(to != nullptr);
+  assert(from != nullptr);
   assert(precision > 0);
 
   bool is_negative = XMP_Is_Negative(from, precision);
@@ -364,8 +364,8 @@ unsigned XMP_Encode(unsigned char *to, digit const *from, int precision) {
  *=============================================================================================*/
 void XMP_Signed_Decode(digit *result, const unsigned char *from, int frombytes,
                        int precision) {
-  assert(result != NULL);
-  assert(from != NULL);
+  assert(result != nullptr);
+  assert(from != nullptr);
   assert(frombytes > 0);
   assert(precision > 0);
 
@@ -414,8 +414,8 @@ void XMP_Signed_Decode(digit *result, const unsigned char *from, int frombytes,
  *=============================================================================================*/
 void XMP_Unsigned_Decode(digit *result, const unsigned char *from,
                          int frombytes, int precision) {
-  assert(result != NULL);
-  assert(from != NULL);
+  assert(result != nullptr);
+  assert(from != nullptr);
   assert(frombytes > 0);
   assert(precision > 0);
 
@@ -457,7 +457,7 @@ void XMP_Unsigned_Decode(digit *result, const unsigned char *from,
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 int XMP_Significance(const digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   number += precision;
@@ -484,7 +484,7 @@ int XMP_Significance(const digit *number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Inc(digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   do {
@@ -509,7 +509,7 @@ void XMP_Inc(digit *number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Dec(digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   do {
@@ -535,7 +535,7 @@ void XMP_Dec(digit *number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Neg(digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   XMP_Not(number, precision);
@@ -561,7 +561,7 @@ void XMP_Neg(digit *number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Abs(digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   if (XMP_Is_Negative(number, precision)) {
@@ -588,7 +588,7 @@ void XMP_Abs(digit *number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Shift_Right_Bits(digit *number, int bits, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(bits >= 0);
   assert(precision > 0);
 
@@ -674,7 +674,7 @@ void XMP_Shift_Right_Bits(digit *number, int bits, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Shift_Left_Bits(digit *number, int bits, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(bits >= 0);
   assert(precision > 0);
 
@@ -762,7 +762,7 @@ void XMP_Shift_Left_Bits(digit *number, int bits, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 bool XMP_Rotate_Left(digit *number, bool carry, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   while (precision--) {
@@ -791,7 +791,7 @@ bool XMP_Rotate_Left(digit *number, bool carry, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Not(digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   for (int index = 0; index < precision; index++) {
@@ -819,7 +819,7 @@ void XMP_Not(digit *number, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 void XMP_Init(digit *number, digit value, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   memset(number, '\0', precision * sizeof(digit));
@@ -844,7 +844,7 @@ void XMP_Init(digit *number, digit value, int precision) {
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
 unsigned XMP_Count_Bits(const digit *number, int precision) {
-  assert(number != NULL);
+  assert(number != nullptr);
   assert(precision > 0);
 
   int sub_precision = XMP_Significance(number, precision);
@@ -2179,7 +2179,7 @@ bool XMP_Is_Small_Prime(const digit *candidate, int precision) {
   unsigned long *ptr = (unsigned long *)bsearch(&candidate, &primeTable[0],
                                                 ARRAY_SIZE(primeTable),
                                                 sizeof(primeTable[0]), pfunc);
-  return (ptr != NULL);
+  return (ptr != nullptr);
 }
 
 /***********************************************************************************************

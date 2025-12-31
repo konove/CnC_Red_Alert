@@ -112,7 +112,7 @@ PacketClass::PacketClass(char *curbuf) {
   std::memcpy(&ID, curbuf, sizeof(ID));
   curbuf += sizeof(ID);
   ID = ntohs(ID);
-  Head = NULL;
+  Head = nullptr;
 
   //
   // Calculate the remaining size so that we can loop through the
@@ -268,7 +268,7 @@ FieldClass *PacketClass::Find_Field(char const *id) {
   for (FieldClass *current = Head; current; current = current->Next) {
     if (strncmp(id, current->ID, 4) == 0) return current;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**************************************************************************

@@ -55,7 +55,7 @@ class AudioClass {
   AudioClass(char const *name, MemoryClass &mem);
   virtual ~AudioClass(void);
 
-  bool Load(char const *name = 0);
+  bool Load(char const *name = nullptr);
   bool Free(void);
   bool Play(int volume = 0xFF);
   bool Stop(void);
@@ -68,8 +68,8 @@ class AudioClass {
 };
 
 inline AudioClass::AudioClass(void) {
-  Name = 0;
-  Data = 0;
+  Name = nullptr;
+  Data = nullptr;
   Mem = 0;
   Handle = -1;
 };
@@ -81,7 +81,7 @@ inline AudioClass::AudioClass(char const *name, MemoryClass &mem) {
     Mem = &::Mem;  // Uses global default memory handler.
   }
   Name = strdup(name);
-  Data = 0;
+  Data = nullptr;
   Handle = -1;
 };
 
@@ -89,8 +89,8 @@ inline AudioClass::~AudioClass(void) {
   if (GameActive) {
     if (Name) free(Name);
     if (Data) Mem->Free(Data);
-    Name = 0;
-    Data = 0;
+    Name = nullptr;
+    Data = nullptr;
     Handle = -1;
   }
 };

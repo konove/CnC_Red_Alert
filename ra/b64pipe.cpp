@@ -62,7 +62,7 @@
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int Base64Pipe::Put(void const *source, int slen) {
-  if (source == NULL || slen < 1) {
+  if (source == nullptr || slen < 1) {
     return (Pipe::Put(source, slen));
   }
 

@@ -140,10 +140,10 @@ void Nod_Ending(void) {
 
   oldfont = Set_Font(ScoreFontPtr);
 #ifndef LORES
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)NULL);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
 #endif
   TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)NULL);
+                                           SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
   SeenBuff.Clear();
@@ -155,7 +155,7 @@ void Nod_Ending(void) {
   CCFileClass f("SATSEL.PAL");
   void *localpal = Load_Alloc_Data(f);
   f.Open("SATSEL.CPS");
-  Load_Uncompress(f, SysMemPage, SysMemPage, NULL);
+  Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
 #ifdef NOT_FOR_WIN95
   memcpy(satpic, HidPage.Get_Buffer(), 64000);
 #elif !defined(LORES)
@@ -236,7 +236,7 @@ void Nod_Ending(void) {
   for (int i = 0; i < MAXSCOREOBJS; i++)
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
-      ScoreObjs[i] = 0;
+      ScoreObjs[i] = nullptr;
     }
   // erase the "choose a target" text
   SeenBuff.Fill_Rect(0, 180 * RESFACTOR, 319 * RESFACTOR, 199 * RESFACTOR, 0);

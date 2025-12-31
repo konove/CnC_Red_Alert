@@ -108,8 +108,8 @@ int BulletClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass::BulletClass(void) : Class(0) {
-  Payback = NULL;
+BulletClass::BulletClass(void) : Class(nullptr) {
+  Payback = nullptr;
   IsToAnimate = false;
   Altitude = 0;
   Riser = 0;
@@ -189,7 +189,7 @@ BulletClass::BulletClass(BulletType id)
   IsLocked = true;
   //	IsLocked = false;
   IsToAnimate = false;
-  Payback = 0;
+  Payback = nullptr;
   Riser = 0;
   Strength = Class->MaxStrength;
   TarCom = TARGET_NONE;
@@ -518,7 +518,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Altitude) {
     CC_Draw_Shape(shapeptr, shapenum, x, y, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  NULL, Map.FadingShade);
+                  nullptr, Map.FadingShade);
     y -= Lepton_To_Pixel(Altitude);
   }
 
@@ -530,7 +530,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
     flags = SHAPE_GHOST;
   }
   CC_Draw_Shape(shapeptr, shapenum, x, y, window,
-                flags | SHAPE_CENTER | SHAPE_WIN_REL, NULL, Map.UnitShadow);
+                flags | SHAPE_CENTER | SHAPE_WIN_REL, nullptr, Map.UnitShadow);
 }
 
 /***********************************************************************************************
@@ -583,7 +583,7 @@ void BulletClass::Detach(TARGET target, bool all) {
   ObjectClass *obj = As_Object(target);
 
   if (obj == Payback) {
-    Payback = 0;
+    Payback = nullptr;
   }
 
   if (all && target == TarCom) {
@@ -715,7 +715,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Arm the fuse.
     */
     Arm_Fuse(Coord, tcoord, range,
-             ((As_Aircraft(TarCom) != 0) ? 0 : Class->Arming));
+             ((As_Aircraft(TarCom) != nullptr) ? 0 : Class->Arming));
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine

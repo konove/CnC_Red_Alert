@@ -850,7 +850,7 @@ ObjectClass *OverlayTypeClass::Create_One_Of(HouseClass *) const {
 void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
                 Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                 Map.UnitShadow);
 }
 

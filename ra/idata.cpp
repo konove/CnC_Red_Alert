@@ -390,7 +390,7 @@ static InfantryTypeClass const Dog(
     DogDoControls,
     1,  // Frame of projectile launch.
     1,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Minigunners
@@ -410,7 +410,7 @@ static InfantryTypeClass const E1(
     E1DoControls,
     2,  // Frame of projectile launch.
     2,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Grenadiers
@@ -430,7 +430,7 @@ static InfantryTypeClass const E2(
     E2DoControls,
     14,  // Frame of projectile launch.
     6,   // Frame of projectile launch while prone.
-    0    // pointer to override remap table
+    nullptr    // pointer to override remap table
 );
 
 // Bazooka
@@ -450,7 +450,7 @@ static InfantryTypeClass const E3(
     E3DoControls,
     3,  // Frame of projectile launch.
     3,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Flamethrower
@@ -470,7 +470,7 @@ static InfantryTypeClass const E4(
     E4DoControls,
     2,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Renovator
@@ -490,7 +490,7 @@ static InfantryTypeClass const E6(
     E6DoControls,
     3,  // Frame of projectile launch.
     3,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Spy
@@ -510,7 +510,7 @@ static InfantryTypeClass const E8(
     SpyDoControls,
     3,  // Frame of projectile launch.
     3,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Thief
@@ -530,7 +530,7 @@ static InfantryTypeClass const E9(
     E9DoControls,
     3,  // Frame of projectile launch.
     3,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Tanya
@@ -550,7 +550,7 @@ static InfantryTypeClass const E7(
     E7DoControls,
     2,  // Frame of projectile launch.
     2,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 static InfantryTypeClass const Medic(
@@ -569,7 +569,7 @@ static InfantryTypeClass const Medic(
     MedicDoControls,
     25,  // Frame of projectile launch.
     25,  // Frame of projectile launch while prone.
-    0    // pointer to override remap table
+    nullptr    // pointer to override remap table
 );
 
 static InfantryTypeClass const General(
@@ -588,7 +588,7 @@ static InfantryTypeClass const General(
     GeneralDoControls,
     2,  // Frame of projectile launch.
     2,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 // Civilians
@@ -608,7 +608,7 @@ static InfantryTypeClass const C1(
     CivilianDoControls,
     2,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 static InfantryTypeClass const C2(
@@ -646,7 +646,7 @@ static InfantryTypeClass const C3(
     CivilianDoControls,
     2,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 static InfantryTypeClass const C4(
@@ -799,7 +799,7 @@ static InfantryTypeClass const Einstein(
     EinsteinDoControls,
     0,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 static InfantryTypeClass const Delphi(
@@ -818,7 +818,7 @@ static InfantryTypeClass const Delphi(
     CivilianDoControls,
     2,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 static InfantryTypeClass const DrChan(
@@ -837,7 +837,7 @@ static InfantryTypeClass const DrChan(
     EinsteinDoControls,
     2,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
@@ -859,7 +859,7 @@ static InfantryTypeClass const ShockTrooper(
     E4DoControls,
     2,  // Frame of projectile launch.
     0,  // Frame of projectile launch while prone.
-    0   // pointer to override remap table
+    nullptr   // pointer to override remap table
 );
 
 static InfantryTypeClass const Mechanic(
@@ -878,7 +878,7 @@ static InfantryTypeClass const Mechanic(
     MedicDoControls,
     25,  // Frame of projectile launch.
     25,  // Frame of projectile launch while prone.
-    0    // pointer to override remap table
+    nullptr    // pointer to override remap table
 );
 #endif
 
@@ -1062,7 +1062,7 @@ ObjectClass *InfantryTypeClass::Create_One_Of(HouseClass *house) const {
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   InfantryClass *i = new InfantryClass(Type, house);
-  if (i != NULL) {
+  if (i != nullptr) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return (i->Unlimbo(coord, DIR_E));
@@ -1177,7 +1177,7 @@ void InfantryTypeClass::Prep_For_Add(void) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryType InfantryTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
          classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {

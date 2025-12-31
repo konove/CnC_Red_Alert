@@ -85,7 +85,7 @@ RAMFileClass::RAMFileClass(void *buffer, int len)
       Access(READ),
       IsOpen(false),
       IsAllocated(false) {
-  if (buffer == NULL && len > 0) {
+  if (buffer == nullptr && len > 0) {
     Buffer = new char[len];
     IsAllocated = true;
   }
@@ -109,7 +109,7 @@ RAMFileClass::~RAMFileClass(void) {
   Close();
   if (IsAllocated) {
     delete[] Buffer;
-    Buffer = NULL;
+    Buffer = nullptr;
     IsAllocated = false;
   }
 }
@@ -228,7 +228,7 @@ int RAMFileClass::Open(char const *, int access) { return (Open(access)); }
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int RAMFileClass::Open(int access) {
-  if (Buffer == NULL || Is_Open()) {
+  if (Buffer == nullptr || Is_Open()) {
     return (false);
   }
 
@@ -274,7 +274,7 @@ int RAMFileClass::Open(int access) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 long RAMFileClass::Read(void *buffer, long size) {
-  if (Buffer == NULL || buffer == NULL || size == 0) {
+  if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return (0);
   }
 
@@ -320,7 +320,7 @@ long RAMFileClass::Read(void *buffer, long size) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 long RAMFileClass::Seek(long pos, int dir) {
-  if (Buffer == NULL || !Is_Open()) {
+  if (Buffer == nullptr || !Is_Open()) {
     return (Offset);
   }
 
@@ -390,7 +390,7 @@ long RAMFileClass::Size(void) { return (Length); }
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 long RAMFileClass::Write(void const *buffer, long size) {
-  if (Buffer == NULL || buffer == NULL || size == 0) {
+  if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return (0);
   }
 

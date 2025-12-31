@@ -501,14 +501,14 @@ void Map_Selection(void) {
   Theme.Queue_Song(THEME_MAP1);
 
 #ifndef LORES
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)NULL);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
 #endif
 
   /*
   ** Extra graphic buffer to draw text into
   */
   TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)NULL);
+                                           SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -516,10 +516,10 @@ void Map_Selection(void) {
   ** Now start the process where we fade the gray earth in.
   */
   greyearth = Open_Animation(
-      "GREYERTH.WSA", NULL, 0,
+      "GREYERTH.WSA", nullptr, 0,
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), localpalette);
   greyearth2 = Open_Animation(
-      "E-BWTOCL.WSA", NULL, 0,
+      "E-BWTOCL.WSA", nullptr, 0,
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), grey2palette);
 
   /*
@@ -534,11 +534,11 @@ void Map_Selection(void) {
         lastscenario ? "BOSNIA.WSA" : "EUROPE.WSA", NULL, 0,
         (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), progresspalette);
 #else
-    anim = Open_Animation("HEARTH_E.WSA", NULL, 0,
+    anim = Open_Animation("HEARTH_E.WSA", nullptr, 0,
                           (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
                           Palette);
     progress = Open_Animation(
-        lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", NULL, 0,
+        lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA", nullptr, 0,
         (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), progresspalette);
 #endif
   } else {
@@ -550,11 +550,11 @@ void Map_Selection(void) {
         lastscenario ? "S_AFRICA.WSA" : "AFRICA.WSA", NULL, 0,
         (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), progresspalette);
 #else
-    anim = Open_Animation("HEARTH_A.WSA", NULL, 0,
+    anim = Open_Animation("HEARTH_A.WSA", nullptr, 0,
                           (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
                           Palette);
     progress = Open_Animation(
-        lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", NULL, 0,
+        lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA", nullptr, 0,
         (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), progresspalette);
 #endif
   }
@@ -669,7 +669,7 @@ void Map_Selection(void) {
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
   Stop_Speaking();
@@ -686,7 +686,7 @@ void Map_Selection(void) {
   */
 #ifndef LORES
   SysMemPage.Blit(*PseudoSeenBuff);
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
   Play_Sample(sfx4, 255, Options.Normalize_Sound(130));
@@ -901,7 +901,7 @@ void Map_Selection(void) {
 #endif
 
 #ifndef LORES
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
@@ -942,7 +942,7 @@ void Map_Selection(void) {
 #endif
 
 #ifndef LORES
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
   startframe = CountryArray[scenario].ContAnim[ScenDir];
@@ -1123,7 +1123,7 @@ void Map_Selection(void) {
   }
 
 #ifndef LORES
-  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+  Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
   /*
@@ -1135,10 +1135,10 @@ void Map_Selection(void) {
 
   if (house == HOUSE_GOOD) {
     CCFileClass f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, NULL);
+    Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
   } else {
     CCFileClass f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
-    Load_Uncompress(f, SysMemPage, SysMemPage, NULL);
+    Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
     if (lastscenario) attackxcoord = 200;
   }
 
@@ -1215,7 +1215,7 @@ void Map_Selection(void) {
 #endif  // GERMAN
 
 #ifndef LORES
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
     /*
@@ -1231,12 +1231,12 @@ void Map_Selection(void) {
     int shape = CountryArray[scenario].CountryShape[ScenDir][selection];
     int xyindex = shape + (house == HOUSE_GOOD ? 0 : 18);
     CC_Draw_Shape(countryshape, shape, _countryx[xyindex], _countryy[xyindex],
-                  WINDOW_MAIN, SHAPE_WIN_REL | SHAPE_CENTER, 0, 0);
+                  WINDOW_MAIN, SHAPE_WIN_REL | SHAPE_CENTER, nullptr, nullptr);
 #ifdef LORES
     HidPage.Blit(SeenBuff);
 #else
     SysMemPage.Blit(*PseudoSeenBuff);
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 #endif
 
     /*
@@ -1254,7 +1254,7 @@ void Map_Selection(void) {
 #endif
     Fade_Palette_To(localpalette, FADE_PALETTE_MEDIUM, Call_Back);
 
-    countryshape = 0;
+    countryshape = nullptr;
 
     Print_Statistics(color & 0x7F, _countryx[xyindex], _countryy[xyindex]);
   } else {
@@ -1291,7 +1291,7 @@ void Map_Selection(void) {
                                BLACK);  // erase "Select country to attack"
 #endif
 #ifndef LORES  // FIXME?
-    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, NULL);
+    Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, nullptr);
 
     Animate_Frame(progress, *PseudoSeenBuff,
                   Get_Animation_Frame_Count(progress) - 1);
@@ -1305,12 +1305,12 @@ void Map_Selection(void) {
   }
 
   Theme.Queue_Song(THEME_NONE);
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, NULL);
+  Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, nullptr);
   delete europe;
   delete[] progresspalette;
   delete[] grey2palette;
   delete TextPrintBuffer;
-  TextPrintBuffer = NULL;
+  TextPrintBuffer = nullptr;
   BlitList.Clear();
 }
 
@@ -1750,5 +1750,5 @@ void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass *src,
 
 void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass *src,
                GraphicBufferClass *dest, int delay, int dagger) {
-  Bit_It_In_Scale(x, y, w, h, src, dest, NULL, delay, dagger);
+  Bit_It_In_Scale(x, y, w, h, src, dest, nullptr, delay, dagger);
 }

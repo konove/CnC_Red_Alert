@@ -47,7 +47,7 @@
 
 class CheckObject {
  public:
-  CheckObject(char const *text = 0, bool checked = false)
+  CheckObject(char const *text = nullptr, bool checked = false)
       : Text(text), IsChecked(checked){};
 
   char const *Text;

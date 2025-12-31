@@ -395,7 +395,7 @@ void HouseTypeClass::Init_Heap(void) {
  *function.                                            *
  *=============================================================================================*/
 HousesType HouseTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
         //			if (stricmp(Pointers[house]->IniName, name) ==

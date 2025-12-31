@@ -162,7 +162,7 @@ class InfantryClass : public FootClass {
   virtual ActionType What_Action(CELL cell) const;
   virtual BulletClass *Fire_At(TARGET target, int which);
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = 0, bool forced = false);
+                                 TechnoClass *source = nullptr, bool forced = false);
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
   virtual void Assign_Target(TARGET);
   void Set_Occupy_Bit(COORDINATE coord) {

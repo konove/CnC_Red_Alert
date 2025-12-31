@@ -237,7 +237,7 @@ void TurretClass::AI(void) {
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
 BulletClass *TurretClass::Fire_At(TARGET target, int which) {
-  BulletClass *bullet = NULL;
+  BulletClass *bullet = nullptr;
   WeaponTypeClass const *weapon =
       (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 

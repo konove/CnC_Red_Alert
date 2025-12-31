@@ -77,7 +77,7 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
   ------------------------------------------------------------------------*/
-  PortHandle = NULL;
+  PortHandle = nullptr;
 
   /*------------------------------------------------------------------------
   Allocate the Send Buffer; the parent constructor has set MaxPacketLen,
@@ -162,7 +162,7 @@ int NullModemConnClass::Send(char *buf, int buflen) {
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
-  if (PortHandle == NULL) return (false);
+  if (PortHandle == nullptr) return (false);
 
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer

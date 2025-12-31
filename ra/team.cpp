@@ -108,7 +108,7 @@ static inline bool _Is_It_Breathing(FootClass const *object) {
   **	If the object is not present or appears to be dead, then it
   **	certainly isn't an active member of the team.
   */
-  if (object == NULL || !object->IsActive || object->Strength == 0)
+  if (object == nullptr || !object->IsActive || object->Strength == 0)
     return (false);
 
   /*
@@ -255,7 +255,7 @@ void TeamClass::Init(void) { Teams.Free_All(); }
  *=============================================================================================*/
 void *TeamClass::operator new(size_t) throw() {
   void *ptr = Teams.Allocate();
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((TeamClass *)ptr)->IsActive = true;
   }
   return (ptr);
@@ -275,7 +275,7 @@ void *TeamClass::operator new(size_t) throw() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::operator delete(void *ptr) {
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((TeamClass *)ptr)->IsActive = false;
   }
   Teams.Free((TeamClass *)ptr);
@@ -313,7 +313,7 @@ TeamClass::~TeamClass(void) {
       if (Trigger->AttachCount == 0) {
         delete (TriggerClass *)Trigger;
       }
-      Trigger = NULL;
+      Trigger = nullptr;
     }
   }
 }
@@ -349,7 +349,7 @@ TeamClass::TeamClass(TeamTypeClass const *type, HouseClass *owner)
       IsNextMission(true),
       IsLeaveMap(false),
       Suspended(false),
-      Trigger(NULL),
+      Trigger(nullptr),
       Zone(TARGET_NONE),
       ClosestMember(TARGET_NONE),
       MissionTarget(TARGET_NONE),
@@ -360,12 +360,12 @@ TeamClass::TeamClass(TeamTypeClass const *type, HouseClass *owner)
       SuspendTimer(0),
       CurrentMission(-1),
       TimeOut(0),
-      Member(0) {
+      Member(nullptr) {
   assert(Class);
   assert(Class->IsActive);
   assert(Class->ClassCount > 0);
 
-  if (owner == NULL) {
+  if (owner == nullptr) {
     House = HouseClass::As_Pointer(Class->House);
   }
 
@@ -406,7 +406,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   */
   FootClass *unit = Member;
   if (MissionTarget != TARGET_NONE) {
-    while (unit != NULL) {
+    while (unit != nullptr) {
       bool tar = (unit->TarCom == MissionTarget);
       bool nav = (unit->NavCom == MissionTarget);
       if (tar || nav) {
@@ -590,8 +590,8 @@ void TeamClass::AI(void) {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass *b = Buildings.Ptr(index);
 
-        if (b != NULL && !b->IsInLimbo && b->House == House &&
-            b->Class->PrimaryWeapon == NULL) {
+        if (b != nullptr && !b->IsInLimbo && b->House == House &&
+            b->Class->PrimaryWeapon == nullptr) {
           CELL cell = Coord_Cell(b->Center_Coord());
           int dist = ::Distance(b->Center_Coord(), As_Coord(Zone)) *
                      (Map.Cell_Threat(cell, House->Class->House) + 1);
@@ -1003,7 +1003,7 @@ bool TeamClass::Can_Add(FootClass *obj, int &typeindex) const {
   *team.
   */
   if (obj->What_Am_I() == RTTI_AIRCRAFT &&
-      obj->Techno_Type_Class()->PrimaryWeapon != NULL && !obj->Ammo) {
+      obj->Techno_Type_Class()->PrimaryWeapon != nullptr && !obj->Ammo) {
     return (false);
   }
 
@@ -1071,7 +1071,7 @@ bool TeamClass::Remove(FootClass *obj, int typeindex) {
   *player team members that *	get removed from a reinforcement team.
   */
   if (obj->Trigger == Trigger && !obj->House->IsPlayerControl) {
-    obj->Attach_Trigger(NULL);
+    obj->Attach_Trigger(nullptr);
   }
 
   /*
@@ -1105,19 +1105,19 @@ bool TeamClass::Remove(FootClass *obj, int typeindex) {
   *then *	a new team captain must be chosen.
   */
   bool initiated = false;
-  FootClass *prev = 0;
+  FootClass *prev = nullptr;
   FootClass *curr = Member;
   bool found = false;
-  while (curr != NULL && (!found || !initiated)) {
+  while (curr != nullptr && (!found || !initiated)) {
     if (curr == obj) {
-      if (prev != NULL) {
+      if (prev != nullptr) {
         prev->Member = curr->Member;
       } else {
         Member = curr->Member;
       }
       FootClass *temp = curr->Member;
-      curr->Member = 0;
-      curr->Team = 0;
+      curr->Member = nullptr;
+      curr->Team = nullptr;
       curr->SuspendedMission = MISSION_NONE;
       curr->SuspendedNavCom = TARGET_NONE;
       curr->SuspendedTarCom = TARGET_NONE;
@@ -1206,7 +1206,7 @@ int TeamClass::Recruit(int typeindex) {
       */
       case RTTI_INFANTRYTYPE:
       case RTTI_INFANTRY: {
-        InfantryClass *best = 0;
+        InfantryClass *best = nullptr;
         int bestdist = -1;
 
         for (int index = 0; index < Infantry.Count(); index++) {
@@ -1229,7 +1229,7 @@ int TeamClass::Recruit(int typeindex) {
 
       case RTTI_AIRCRAFTTYPE:
       case RTTI_AIRCRAFT: {
-        AircraftClass *best = 0;
+        AircraftClass *best = nullptr;
         int bestdist = -1;
 
         for (int index = 0; index < Aircraft.Count(); index++) {
@@ -1252,7 +1252,7 @@ int TeamClass::Recruit(int typeindex) {
 
       case RTTI_UNITTYPE:
       case RTTI_UNIT: {
-        UnitClass *best = 0;
+        UnitClass *best = nullptr;
         int bestdist = -1;
 
         for (int index = 0; index < Units.Count(); index++) {
@@ -1287,7 +1287,7 @@ int TeamClass::Recruit(int typeindex) {
 
       case RTTI_VESSELTYPE:
       case RTTI_VESSEL: {
-        VesselClass *best = 0;
+        VesselClass *best = nullptr;
         int bestdist = -1;
 
         for (int index = 0; index < Vessels.Count(); index++) {
@@ -1360,7 +1360,7 @@ void TeamClass::Detach(TARGET target, bool) {
     MissionTarget = TARGET_NONE;
   }
   if (Trigger.Is_Valid() && Trigger->As_Target() == target) {
-    Trigger = 0;
+    Trigger = nullptr;
   }
 }
 
@@ -1401,7 +1401,7 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
   **	If there are no members of the team, then there can be no center point
   *of the team.
   */
-  if (team_member == NULL) return;
+  if (team_member == nullptr) return;
 
   /*
   **	If the team is supposed to follow a nearby friendly unit, then the
@@ -1415,7 +1415,7 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
     */
     if (!team_member) return;
 
-    FootClass const *closest = NULL;  // Current closest friendly object.
+    FootClass const *closest = nullptr;  // Current closest friendly object.
     int distance = -1;                // Record of last closest distance calc.
 
     /*
@@ -1486,7 +1486,7 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
     long y = 0;                    // Accumulated Y coordinate.
     int dist = 0;                  // Closest recorded distance to team target.
     int quantity = 0;              // Number of team members counted.
-    FootClass const *closest = 0;  // Closest member to target.
+    FootClass const *closest = nullptr;  // Closest member to target.
 
     /*
     **	Scan through all team members and accumulate the X and Y component of
@@ -1494,7 +1494,7 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
     *Also keep *	track of the team member that is closest to the team's
     *target.
     */
-    while (team_member != NULL) {
+    while (team_member != nullptr) {
       if (_Is_It_Playing(team_member)) {
         /*
         **	Accumulate X and Y components of qualified team members.
@@ -1545,7 +1545,7 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
     **	Record the position of the closest member to the team's target and
     **	that will be used as the regroup point.
     */
-    if (closest != NULL) {
+    if (closest != nullptr) {
       close_member = ::As_Target(Coord_Cell(closest->Center_Coord()));
     }
   }
@@ -1601,7 +1601,7 @@ void TeamClass::Took_Damage(FootClass *, ResultType result,
 
             if (techno &&
                 ((TechnoTypeClass const &)techno->Class_Of()).PrimaryWeapon !=
-                    NULL) {
+                    nullptr) {
               if (techno->In_Range(As_Coord(Zone), 0)) {
                 return;
               }
@@ -1686,7 +1686,7 @@ void TeamClass::Coordinate_Attack(void) {
     TeamMissionClass const *mission = &Class->MissionList[CurrentMission];
 
     FootClass *unit = Member;
-    while (unit != NULL) {
+    while (unit != nullptr) {
       Coordinate_Conscript(unit);
 
       if (_Is_It_Playing(unit)) {
@@ -1756,7 +1756,7 @@ bool TeamClass::Coordinate_Regroup(void) {
   /*
   **	Regroup default logic.
   */
-  while (unit != NULL) {
+  while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
     if (_Is_It_Playing(unit)) {
@@ -1823,7 +1823,7 @@ void TeamClass::Coordinate_Do(void) {
   **	For each unit either head it back to the team center or give it the main
   **	team mission order as appropriate.
   */
-  while (unit != NULL) {
+  while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
     if (_Is_It_Playing(unit)) {
@@ -1885,7 +1885,7 @@ void TeamClass::Coordinate_Move(void) {
 
   if (Target_Legal(Target)) {
     if (!Lagging_Units()) {
-      while (unit != NULL) {
+      while (unit != nullptr) {
         /*
         **	Tell the unit, if necessary, that it should regroup
         **	with the main team location. If the unit is regrouping, then
@@ -2037,7 +2037,7 @@ bool TeamClass::Lagging_Units(void) {
   // BG: HACK - if it's in a formation move, then disable the check for
   //  VG added NULL check 	 laggers, 'cause they're all moving
   //  simultaneously.
-  if (unit != NULL && unit->IsFormationMove) IsLagging = false;
+  if (unit != nullptr && unit->IsFormationMove) IsLagging = false;
 
   /*
   ** If the IsLagging bit is not set, then obviously there are no lagging
@@ -2049,7 +2049,7 @@ bool TeamClass::Lagging_Units(void) {
   **	Scan through all of the units, searching for units who are having
   ** trouble keeping up with the pack.
   */
-  while (unit != NULL) {
+  while (unit != nullptr) {
     if (_Is_It_Playing(unit)) {
       int stray = Rule.StrayDistance;
       if (unit->What_Am_I() == RTTI_AIRCRAFT) {
@@ -2113,7 +2113,7 @@ int TeamClass::TMission_Unload(void) {
   FootClass *unit = Member;
   bool finished = true;
 
-  while (unit != NULL) {
+  while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
     if (_Is_It_Playing(unit)) {
@@ -2147,7 +2147,7 @@ int TeamClass::TMission_Unload(void) {
         *retracting *	the mine layer. During this time, it should not be
         *considered to have *	finished its unload mission.
         */
-        if (Map[unit->Center_Coord()].Cell_Building() == NULL &&
+        if (Map[unit->Center_Coord()].Cell_Building() == nullptr &&
             unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Destination(TARGET_NONE);
           unit->Assign_Target(TARGET_NONE);
@@ -2196,13 +2196,13 @@ int TeamClass::TMission_Load(void) {
   assert(Teams.ID(this) == ID);
 
   FootClass *unit = Member;
-  FootClass *trans = 0;
+  FootClass *trans = nullptr;
 
   /*
   ** First locate the transport in the team, if there is one.  There should
   ** only be one transport in the team.
   */
-  while (unit != NULL && trans == NULL) {
+  while (unit != nullptr && trans == nullptr) {
     if (unit->Techno_Type_Class()->Max_Passengers() > 0) {
       trans = unit;
       break;
@@ -2214,7 +2214,7 @@ int TeamClass::TMission_Load(void) {
   **	In the case of no transport available, then consider the mission
   *complete *	since it can never complete otherwise.
   */
-  if (trans == NULL) {
+  if (trans == nullptr) {
     IsNextMission = true;
     return (1);
   }
@@ -2233,7 +2233,7 @@ int TeamClass::TMission_Load(void) {
   */
   bool finished = true;
   unit = Member;  // re-point at the first member of the team again.
-  while (unit != NULL && Total > 1) {
+  while (unit != nullptr && Total > 1) {
     Coordinate_Conscript(unit);
 
     /*
@@ -2317,7 +2317,7 @@ bool TeamClass::Is_A_Member(void const *who) const {
   assert(Teams.ID(this) == ID);
 
   FootClass *unit = Member;
-  while (unit != NULL) {
+  while (unit != nullptr) {
     if (unit == who) {
       return (true);
     }
@@ -2346,7 +2346,7 @@ void TeamClass::Suspend_Teams(int priority, HouseClass const *house) {
     **	If a team is below the "survival priority level", then it gets
     **	destroyed. The team members are then free to be reassigned.
     */
-    if (team != NULL && team->House == house &&
+    if (team != nullptr && team->House == house &&
         team->Class->RecruitPriority < priority) {
       FootClass *unit = team->Member;
       while (team->Member) {
@@ -2411,7 +2411,7 @@ bool TeamClass::Is_Leaving_Map(void) const {
 bool TeamClass::Has_Entered_Map(void) const {
   bool ok = true;
   FootClass *foot = Member;
-  while (foot != NULL) {
+  while (foot != nullptr) {
     if (!foot->IsLocked) {
       ok = false;
       break;
@@ -2444,7 +2444,7 @@ bool TeamClass::Has_Entered_Map(void) const {
 void TeamClass::Scan_Limit(void) {
   Assign_Mission_Target(TARGET_NONE);
   FootClass *foot = Member;
-  while (foot != NULL) {
+  while (foot != nullptr) {
     foot->Assign_Target(TARGET_NONE);
     foot->IsScanLimited = true;
     foot = foot->Member;
@@ -2485,7 +2485,7 @@ int TeamClass::TMission_Formation(void) {
   */
   switch (Formation) {
     case FORMATION_NONE:
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = 0xFF;
         member->XFormOffset = 0x80000000;
         member->YFormOffset = 0x80000000;
@@ -2494,7 +2494,7 @@ int TeamClass::TMission_Formation(void) {
       }
       break;
     case FORMATION_TIGHT:
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = 0;
         member->YFormOffset = 0;
@@ -2507,7 +2507,7 @@ int TeamClass::TMission_Formation(void) {
     case FORMATION_WEDGE_N:
       ydir = -(Total / 2);
       xdir = 0;
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
@@ -2524,7 +2524,7 @@ int TeamClass::TMission_Formation(void) {
     case FORMATION_WEDGE_E:
       xdir = (Total / 2);
       ydir = 0;
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
@@ -2541,7 +2541,7 @@ int TeamClass::TMission_Formation(void) {
     case FORMATION_WEDGE_S:
       ydir = (Total / 2);
       xdir = 0;
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
@@ -2558,7 +2558,7 @@ int TeamClass::TMission_Formation(void) {
     case FORMATION_WEDGE_W:
       xdir = -(Total / 2);
       ydir = 0;
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = xdir;
         member->YFormOffset = ydir;
@@ -2574,7 +2574,7 @@ int TeamClass::TMission_Formation(void) {
       break;
     case FORMATION_LINE_NS:
       ydir = -(Total / 2);
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = 0;
         member->YFormOffset = ydir;
@@ -2585,7 +2585,7 @@ int TeamClass::TMission_Formation(void) {
       break;
     case FORMATION_LINE_EW:
       xdir = -(Total / 2);
-      while (member != NULL) {
+      while (member != nullptr) {
         member->Group = group;
         member->XFormOffset = xdir;
         member->YFormOffset = 0;
@@ -2603,7 +2603,7 @@ int TeamClass::TMission_Formation(void) {
     TeamSpeed[group] = SPEED_WHEEL;
     TeamMaxSpeed[group] = MPH_LIGHT_SPEED;
     member = Member;
-    while (member != NULL) {
+    while (member != nullptr) {
       RTTIType mytype = member->What_Am_I();
       SpeedType memspeed;
       MPHType memmax;
@@ -2640,7 +2640,7 @@ int TeamClass::TMission_Formation(void) {
     ** speed to every member of the team.
     */
     member = Member;
-    while (member != NULL) {
+    while (member != nullptr) {
       member->FormationSpeed = TeamSpeed[group];
       member->FormationMaxSpeed = TeamMaxSpeed[group];
       if (member->What_Am_I() == RTTI_INFANTRY) {
@@ -2763,7 +2763,7 @@ int TeamClass::TMission_Spy(void) {
 #else
     ObjectClass *bldg = cellptr->Cell_Object();
 #endif
-    if (bldg != NULL) {
+    if (bldg != nullptr) {
       Assign_Mission_Target(bldg->As_Target());
       Coordinate_Attack();
     }
@@ -2862,7 +2862,7 @@ int TeamClass::TMission_Loop(void) {
  *=============================================================================================*/
 int TeamClass::TMission_Invulnerable(void) {
   FootClass *foot = Member;
-  while (foot != NULL) {
+  while (foot != nullptr) {
     foot->IronCurtainCountDown = Rule.IronCurtainDuration * TICKS_PER_MINUTE;
     foot->Mark(MARK_CHANGE);
     foot = foot->Member;
@@ -2929,7 +2929,7 @@ int TeamClass::TMission_Patrol(void) {
   */
   if (Frame % (Rule.PatrolTime * TICKS_PER_MINUTE) == 0) {
     FootClass *leader = Fetch_A_Leader();
-    if (leader != NULL) {
+    if (leader != nullptr) {
       TARGET target = leader->Greatest_Threat(THREAT_NORMAL | THREAT_RANGE);
 
       if (Target_Legal(target)) {
@@ -2959,7 +2959,7 @@ int TeamClass::TMission_Deploy(void) {
   FootClass *unit = Member;
   bool finished = true;
 
-  while (unit != NULL) {
+  while (unit != nullptr) {
     Coordinate_Conscript(unit);
 
     if (_Is_It_Playing(unit)) {
@@ -3022,7 +3022,7 @@ FootClass *TeamClass::Fetch_A_Leader(void) const {
   **	Scan through the team members trying to find one that is an active
   *member and *	is equipped with a weapon.
   */
-  while (leader != NULL) {
+  while (leader != nullptr) {
     if (_Is_It_Playing(leader) && leader->Is_Weapon_Equipped()) break;
     leader = leader->Member;
   }
@@ -3032,7 +3032,7 @@ FootClass *TeamClass::Fetch_A_Leader(void) const {
   *conveniently *	accessable team member. This presumes that some member
   *is better than no member *	at all.
   */
-  if (leader == NULL) {
+  if (leader == nullptr) {
     leader = Member;
   }
 

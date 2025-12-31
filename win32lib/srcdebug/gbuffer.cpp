@@ -81,7 +81,7 @@ BOOL AllowHardwareBlitFills = TRUE;
  *=========================================================================*/
 GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *gbuffer, int x,
                                            int y, int w, int h)
-    : LockCount(0), GraphicBuff(NULL) {
+    : LockCount(0), GraphicBuff(nullptr) {
   Attach(gbuffer, x, y, w, h);
 }
 
@@ -108,7 +108,7 @@ GraphicViewPortClass::GraphicViewPortClass(void) {}
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
 GraphicViewPortClass::~GraphicViewPortClass(void) {
-  Offset = 0;
+  Offset = nullptr;
   Width = 0;   // Record width of Buffer
   Height = 0;  // Record height of Buffer
   XAdd = 0;    // Record XAdd of Buffer
@@ -117,7 +117,7 @@ GraphicViewPortClass::~GraphicViewPortClass(void) {
   Pitch = 0;   // Record width of Buffer
   IsDirectDraw = FALSE;
   LockCount = 0;
-  GraphicBuff = NULL;
+  GraphicBuff = nullptr;
 }
 
 /***************************************************************************
@@ -284,7 +284,7 @@ void GraphicBufferClass::DD_Init(GBC_Enum flags) {
   Allocated = FALSE;    //	even if system alloced, dont flag it cuz
                         //   we dont want it freed.
   IsDirectDraw = TRUE;  //	flag it as a video surface
-  Offset = NOT_LOCKED;  //	flag it as unavailable for reading or writing
+  Offset = nullptr;  //	flag it as unavailable for reading or writing
   LockCount = 0;        //  surface is not locked
 }
 
@@ -441,7 +441,7 @@ GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer) {
  * HISTORY: * 09-21-95 04:19pm ST : Created *
  *====================================================================================*/
 GraphicBufferClass::GraphicBufferClass(int w, int h, GBC_Enum flags) {
-  Init(w, h, NULL, w * h, flags);
+  Init(w, h, nullptr, w * h, flags);
 }
 
 /*=========================================================================*
@@ -619,7 +619,7 @@ BOOL GraphicBufferClass::Unlock(void) {
       Unblock_Mouse(this);
       return (FALSE);
     } else {
-      Offset = NOT_LOCKED;
+      Offset = nullptr;
       LockCount--;
       Unblock_Mouse(this);
       return (TRUE);

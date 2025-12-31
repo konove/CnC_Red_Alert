@@ -114,7 +114,7 @@ void __cdecl Write_Iff_Chunk(int file, long id, void *buffer, long length);
 /*=========================================================================*/
 
 int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
-                         BufferClass &destbuf, unsigned char *palette = NULL,
+                         BufferClass &destbuf, unsigned char *palette = nullptr,
                          PicturePlaneType format = BM_DEFAULT);
 
 /*=========================================================================*/
@@ -130,7 +130,7 @@ void *__cdecl Load_Alloc_Data(char const *name, MemoryFlagType flags);
 unsigned long __cdecl Load_Uncompress(char const *file,
                                       BufferClass &uncomp_buff,
                                       BufferClass &dest_buff,
-                                      void *reserved_data = NULL);
+                                      void *reserved_data = nullptr);
 unsigned long __cdecl Uncompress_Data(void const *src, void *dst);
 void __cdecl Set_Uncomp_Buffer(int buffer_segment, int size_of_buffer);
 

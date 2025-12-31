@@ -194,10 +194,10 @@ SessionClass::SessionClass(void) {
 
   TrapFrame = 0x7fffffff;     // frame to start trapping object values at
   TrapObjType = RTTI_NONE;    // type of object to trap
-  TrapObject.Ptr.All = NULL;  // ptr to object being trapped
+  TrapObject.Ptr.All = nullptr;  // ptr to object being trapped
   TrapCoord = 0;              // COORDINATE of object to trap
   TrapTarget = TARGET_NONE;   // TARGET value of object to trap
-  TrapCell = NULL;            // for trapping a cell
+  TrapCell = nullptr;            // for trapping a cell
   TrapCheckHeap = 0;          // start checking the Heap
   TrapPrintCRC = 0;           // output CRC file
 
@@ -809,7 +809,8 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
     for (int index = 0; index < initcount; index++) {
       entry = new char[INITSTRBUF_MAX];
       entry[0] = 0;
-      ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index), NULL,
+      ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
+                     nullptr,
                      entry, INITSTRBUF_MAX);
       strupr(entry);
       InitStrings.Add(entry);
@@ -830,7 +831,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       phone = new PhoneEntryClass();
 
       //	Read the entire entry in
-      ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), NULL, buf,
+      ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), nullptr, buf,
                      sizeof(buf));
 
       //	Extract name, phone # & serial port settings
@@ -842,7 +843,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
         phone->Name[0] = 0;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         strcpy(phone->Number, tokenptr);
         strupr(phone->Number);
@@ -850,21 +851,21 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
         phone->Number[0] = 0;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         sscanf(tokenptr, "%x", &phone->Settings.Port);
       } else {
         phone->Settings.Port = 0;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         phone->Settings.IRQ = atoi(tokenptr);
       } else {
         phone->Settings.IRQ = -1;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         phone->Settings.Baud = atoi(tokenptr);
       } else {
@@ -879,7 +880,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       ** Find out if this phonebook entry has the new settings included. If not
       ** then we need to skip this section.
       */
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         strcpy(buf, tokenptr);
 
@@ -903,17 +904,17 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
         if (i == DIAL_METHODS) {
           phone->Settings.Compression = atoi(tokenptr);
 
-          tokenptr = strtok(NULL, "|");
+          tokenptr = strtok(nullptr, "|");
           if (tokenptr) {
             phone->Settings.ErrorCorrection = atoi(tokenptr);
           }
 
-          tokenptr = strtok(NULL, "|");
+          tokenptr = strtok(nullptr, "|");
           if (tokenptr) {
             phone->Settings.HardwareFlowControl = atoi(tokenptr);
           }
 
-          tokenptr = strtok(NULL, "|");
+          tokenptr = strtok(nullptr, "|");
         }
       }
 
@@ -936,21 +937,21 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
         phone->Settings.DialMethod = DIAL_TOUCH_TONE;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         phone->Settings.InitStringIndex = atoi(tokenptr);
       } else {
         phone->Settings.InitStringIndex = 0;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         phone->Settings.CallWaitStringIndex = atoi(tokenptr);
       } else {
         phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
         strcpy(phone->Settings.CallWaitString, tokenptr);
       } else {
@@ -1280,7 +1281,7 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 #ifdef FIXIT_VERSION_3
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
+      Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
                                      Is_Mission_Counterstrike((char *)fname)));
 #else              //	FIXIT_VERSION_3
 #ifdef FIXIT_CSII  //	checked - ajw
@@ -1330,7 +1331,7 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
 #ifdef FIXIT_VERSION_3
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
+      Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
                                      Is_Mission_Counterstrike((char *)fname)));
 #else              //	FIXIT_VERSION_3
 #ifdef FIXIT_CSII  //	checked - ajw
@@ -1374,7 +1375,7 @@ void SessionClass::Read_Scenario_Descriptions(void) {
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 #ifdef FIXIT_VERSION_3
         Scenarios.Add(
-            new MultiMission(fname, buffer, NULL, true,
+            new MultiMission(fname, buffer, nullptr, true,
                              Is_Mission_Counterstrike((char *)fname)));
 #else
       bool official = Is_Mission_126x126((char *)fname);
@@ -1413,7 +1414,7 @@ void SessionClass::Read_Scenario_Descriptions(void) {
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
         Scenarios.Add(
-            new MultiMission(fname, buffer, NULL, true,
+            new MultiMission(fname, buffer, nullptr, true,
                              Is_Mission_Counterstrike((char *)fname)));
       }
     }
@@ -1606,7 +1607,7 @@ void SessionClass::Trap_Object(void) {
   //------------------------------------------------------------------------
   // Initialize
   //------------------------------------------------------------------------
-  TrapObject.Ptr.All = NULL;
+  TrapObject.Ptr.All = nullptr;
 
   //------------------------------------------------------------------------
   // Search for the object based upon its type, then its coordinate or
@@ -1816,21 +1817,21 @@ void MultiMission::Draw_It(int, int x, int y, int width, int height,
 }
 
 void MultiMission::Set_Description(char const *description) {
-  if (description != NULL) {
+  if (description != nullptr) {
     strncpy(ScenarioDescription, description, ARRAY_SIZE(ScenarioDescription));
     ScenarioDescription[ARRAY_SIZE(ScenarioDescription) - 1] = '\0';
   }
 }
 
 void MultiMission::Set_Filename(char const *filename) {
-  if (filename != NULL) {
+  if (filename != nullptr) {
     strncpy(Filename, filename, ARRAY_SIZE(Filename));
     Filename[ARRAY_SIZE(Filename) - 1] = '\0';
   }
 }
 
 void MultiMission::Set_Digest(char const *digest) {
-  if (digest != NULL) {
+  if (digest != nullptr) {
     strncpy(Digest, digest, ARRAY_SIZE(Digest));
     Digest[ARRAY_SIZE(Digest) - 1] = '\0';
   } else {

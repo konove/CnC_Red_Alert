@@ -549,7 +549,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
   ** If we have been provided an illegal place to store our final moves
   ** then forget it.
   */
-  if (!final_moves) return (NULL);
+  if (!final_moves) return (nullptr);
   //	IsFindPath = true;
 
   /*

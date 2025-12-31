@@ -130,23 +130,23 @@ NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
   Init Port to NULL; we haven't opened Greenleaf yet.
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  PortHandle = NULL;
+  PortHandle = nullptr;
 #else   // WIN32
   Port = NULL;
 #endif  // WIN32
 
-  Connection = NULL;
+  Connection = nullptr;
 
   NumSend = numsend;
   NumReceive = numreceive;
   MaxLen = maxlen;
   MagicNum = magicnum;
 
-  RXBuf = 0;
-  BuildBuf = 0;
+  RXBuf = nullptr;
+  BuildBuf = nullptr;
 
   EchoSize = 500;
-  EchoBuf = 0;
+  EchoBuf = nullptr;
 
   OldIRQPri = -1;
 
@@ -347,7 +347,7 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
       */
       if (ModemRegistry) {
         delete ModemRegistry;
-        ModemRegistry = NULL;
+        ModemRegistry = nullptr;
       }
       for (i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
@@ -358,12 +358,12 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
           }
         }
         delete ModemRegistry;
-        ModemRegistry = NULL;
+        ModemRegistry = nullptr;
       }
       break;
 
     default:
-      device = NULL;
+      device = nullptr;
   }
 
   /*
@@ -371,7 +371,7 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
   */
   PortHandle = SerialPort->Serial_Port_Open(device, baud, parity, wordlen,
                                             stopbits, flowcontrol);
-  if (PortHandle == INVALID_HANDLE_VALUE) {
+  if (PortHandle == nullptr) {
     Shutdown();
     return (false);
   }
@@ -486,22 +486,22 @@ int NullModemClass::Num_Connections(void) { return (NumConnections); }
 int NullModemClass::Delete_Connection(void) {
   if (Connection) {
     delete Connection;
-    Connection = NULL;
+    Connection = nullptr;
   }
 
   if (RXBuf) {
     delete[] RXBuf;
-    RXBuf = NULL;
+    RXBuf = nullptr;
   }
 
   if (BuildBuf) {
     delete[] BuildBuf;
-    BuildBuf = NULL;
+    BuildBuf = nullptr;
   }
 
   if (EchoBuf) {
     delete[] EchoBuf;
-    EchoBuf = NULL;
+    EchoBuf = nullptr;
   }
 
   NumConnections = 0;
@@ -607,7 +607,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType *settings) {
       */
       if (ModemRegistry) {
         delete ModemRegistry;
-        ModemRegistry = NULL;
+        ModemRegistry = nullptr;
       }
       for (i = 0; i < 10; i++) {
         ModemRegistry = new ModemRegistryEntryClass(i);
@@ -621,7 +621,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType *settings) {
           }
         }
         delete ModemRegistry;
-        ModemRegistry = NULL;
+        ModemRegistry = nullptr;
       }
       break;
 
@@ -635,7 +635,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType *settings) {
   HANDLE porthandle = SerialPort->Serial_Port_Open(
       device, baud, 0, 8, 1, settings->HardwareFlowControl);
 
-  if (porthandle == INVALID_HANDLE_VALUE) {
+  if (porthandle == nullptr) {
     return (PORT_INVALID);
   }
 
@@ -765,8 +765,8 @@ void NullModemClass::Shutdown(void) {
   if (PortHandle && SerialPort) {
     SerialPort->Serial_Port_Close();
     delete SerialPort;
-    SerialPort = NULL;
-    PortHandle = NULL;
+    SerialPort = nullptr;
+    PortHandle = nullptr;
     Delete_Connection();
   }
 
@@ -1252,7 +1252,7 @@ void *NullModemClass::Oldest_Send(void) {
   int i;
   SendQueueType *send_entry;  // ptr to send entry header
   CommHeaderType *packet;
-  void *buf = NULL;
+  void *buf = nullptr;
 
   for (i = 0; i < Connection->Queue->Num_Send(); i++) {
     send_entry = Connection->Queue->Get_Send(i);
@@ -1414,7 +1414,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   ------------------------------------------------------------------------*/
   strcpy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
   int lines =
       Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
@@ -1537,7 +1537,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
         break;
       }
 
-      tokenptr = strtok(NULL, "|");
+      tokenptr = strtok(nullptr, "|");
     }
   }
 
@@ -1712,7 +1712,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
     strcpy(buffer, Text_String(TXT_DIALING));
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
@@ -1924,7 +1924,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     strcpy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
   text_width = width;
@@ -2040,7 +2040,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (strncmp(comm_buffer, "RING", 4) == 0) {
         strcpy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
         text_width = width;
@@ -2273,7 +2273,7 @@ void NullModemClass::Setup_Modem_Echo(void (*func)(char c)) {
 void NullModemClass::Remove_Modem_Echo(void) {
 //	Smart_Printf( "Remove Echo modem code\n" );
 #ifdef WIN32
-  SerialPort->Set_Echo_Function(NULL);
+  SerialPort->Set_Echo_Function(nullptr);
 #else  // WIN32
   HMSetUpEchoRoutine(NULL);
 #endif
@@ -2415,7 +2415,7 @@ void NullModemClass::Setup_Abort_Modem(void) {
  *=============================================================================================*/
 void NullModemClass::Remove_Abort_Modem(void) {
 #ifdef WIN32
-  SerialPort->Set_Abort_Function(NULL);
+  SerialPort->Set_Abort_Function(nullptr);
 
 #else   // WIN32
 

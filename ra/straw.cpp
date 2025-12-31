@@ -59,15 +59,15 @@
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 Straw::~Straw(void) {
-  if (ChainTo != NULL) {
+  if (ChainTo != nullptr) {
     ChainTo->ChainFrom = ChainFrom;
   }
-  if (ChainFrom != NULL) {
+  if (ChainFrom != nullptr) {
     ChainFrom->Get_From(ChainTo);
   }
 
-  ChainFrom = NULL;
-  ChainTo = NULL;
+  ChainFrom = nullptr;
+  ChainTo = nullptr;
 }
 
 /***********************************************************************************************
@@ -89,17 +89,17 @@ Straw::~Straw(void) {
  *=============================================================================================*/
 void Straw::Get_From(Straw* straw) {
   if (ChainTo != straw) {
-    if (straw != NULL && straw->ChainFrom != NULL) {
-      straw->ChainFrom->Get_From(NULL);
-      straw->ChainFrom = NULL;
+    if (straw != nullptr && straw->ChainFrom != nullptr) {
+      straw->ChainFrom->Get_From(nullptr);
+      straw->ChainFrom = nullptr;
     }
 
-    if (ChainTo != NULL) {
-      ChainTo->ChainFrom = NULL;
+    if (ChainTo != nullptr) {
+      ChainTo->ChainFrom = nullptr;
     }
 
     ChainTo = straw;
-    if (ChainTo != NULL) {
+    if (ChainTo != nullptr) {
       ChainTo->ChainFrom = this;
     }
   }
@@ -126,7 +126,7 @@ void Straw::Get_From(Straw* straw) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int Straw::Get(void* source, int slen) {
-  if (ChainTo != NULL) {
+  if (ChainTo != nullptr) {
     return (ChainTo->Get(source, slen));
   }
   return (0);

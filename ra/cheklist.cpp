@@ -121,7 +121,7 @@ char const *CheckListClass::Current_Item(void) const {
   if (obj) {
     return (obj->Text);
   }
-  return (0);
+  return nullptr;
 }
 
 /***********************************************************************************************
@@ -144,7 +144,7 @@ char const *CheckListClass::Get_Item(int index) const {
   if (obj) {
     return (obj->Text);
   }
-  return (0);
+  return nullptr;
 }
 
 /***********************************************************************************************

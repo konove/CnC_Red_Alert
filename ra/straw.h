@@ -51,7 +51,7 @@
 */
 class Straw {
  public:
-  Straw(void) : ChainTo(0), ChainFrom(0) {}
+  Straw(void) : ChainTo(nullptr), ChainFrom(nullptr) {}
   virtual ~Straw(void);
 
   virtual void Get_From(Straw* pipe);

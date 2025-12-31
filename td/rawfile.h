@@ -150,7 +150,7 @@ EZERO,                 // Non-error.
   virtual long Write(void const *buffer, long size);
   virtual void Close(void);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = NULL);
+                     char const *filename = nullptr);
 
  protected:
   /*
@@ -227,8 +227,8 @@ it must be     *
  *=============================================================================================*/
 #ifdef PORTABLE
 inline RawFileClass::RawFileClass(void)
-    : Handle(NULL),
-      Filename(0),
+    : Handle(nullptr),
+      Filename(nullptr),
       Allocated(false)
 #else
 inline RawFileClass::RawFileClass(void)
@@ -257,7 +257,7 @@ is.             *
  *=============================================================================================*/
 inline int RawFileClass::Is_Open(void) const {
 #ifdef PORTABLE
-  return Handle != NULL;
+  return Handle != nullptr;
 #else
   return (Handle >= 0);
 #endif

@@ -36,11 +36,11 @@ class MixFileClass : public Node<MixFileClass<T> > {
 
   static bool Free(char const *filename);
   void Free(void);
-  bool Cache(Buffer const *buffer = NULL);
-  static bool Cache(char const *filename, Buffer const *buffer = NULL);
-  static bool Offset(char const *filename, void **realptr = 0,
-                     MixFileClass **mixfile = 0, long *offset = 0,
-                     long *size = 0);
+  bool Cache(Buffer const *buffer = nullptr);
+  static bool Cache(char const *filename, Buffer const *buffer = nullptr);
+  static bool Offset(char const *filename, void **realptr = nullptr,
+                     MixFileClass **mixfile = nullptr, long *offset = nullptr,
+                     long *size = nullptr);
   static void const *Retrieve(char const *filename);
 
   struct SubBlock {
@@ -55,7 +55,7 @@ class MixFileClass : public Node<MixFileClass<T> > {
 
  private:
   static MixFileClass *Finder(char const *filename);
-  long Offset(long crc, long *size = 0) const;
+  long Offset(long crc, long *size = nullptr) const;
 
   /*
   **	If this mixfile has an attached message digest, then this flag

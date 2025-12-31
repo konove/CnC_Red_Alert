@@ -113,7 +113,7 @@ VOID cdecl Write_Iff_Chunk(WORD file, LONG id, VOID *buffer, LONG length);
 /*=========================================================================*/
 
 WORD cdecl Load_Picture(BYTE const *filename, BufferClass &scratchbuf,
-                        BufferClass &destbuf, UBYTE *palette = NULL,
+                        BufferClass &destbuf, UBYTE *palette = nullptr,
                         PicturePlaneType format = BM_DEFAULT);
 
 /*=========================================================================*/
@@ -125,7 +125,7 @@ ULONG cdecl Load_Data(BYTE const *name, VOID *ptr, ULONG size);
 ULONG cdecl Write_Data(BYTE const *name, VOID *ptr, ULONG size);
 VOID *cdecl Load_Alloc_Data(BYTE const *name, MemoryFlagType flags);
 ULONG cdecl Load_Uncompress(BYTE const *file, BufferClass &uncomp_buff,
-                            BufferClass &dest_buff, VOID *reserved_data = NULL);
+                            BufferClass &dest_buff, VOID *reserved_data = nullptr);
 ULONG cdecl Uncompress_Data(VOID const *src, VOID *dst);
 VOID cdecl Set_Uncomp_Buffer(WORD buffer_segment, UWORD size_of_buffer);
 

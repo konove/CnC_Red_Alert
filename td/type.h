@@ -1186,7 +1186,7 @@ class BulletTypeClass : public ObjectTypeClass {
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const {
     return false;
   };
-  virtual ObjectClass *Create_One_Of(HouseClass *) const { return 0; };
+  virtual ObjectClass *Create_One_Of(HouseClass *) const { return nullptr; };
 
  private:
   static BulletTypeClass const *const Pointers[BULLET_COUNT];
@@ -1505,7 +1505,7 @@ class AnimTypeClass : public ObjectTypeClass {
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const {
     return false;
   };
-  virtual ObjectClass *Create_One_Of(HouseClass *) const { return 0; };
+  virtual ObjectClass *Create_One_Of(HouseClass *) const { return nullptr; };
 
  private:
   static AnimTypeClass const *const Pointers[ANIM_COUNT];

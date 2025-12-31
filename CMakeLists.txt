@@ -15,8 +15,7 @@ if (MSVC)
             /wd4661 # missing template definitions, 10000s of these
     )
 else ()
-    # for noise
-    add_compile_options(-Wno-write-strings)
+    add_compile_options(-Wno-write-strings -Wall -Wextra -Wpedantic)
     # workarounds
     add_compile_definitions(__cdecl= __far= __stdcall= cdecl= far=)
 endif ()

@@ -179,7 +179,7 @@ TechnoTypeClass::TechnoTypeClass(
   Pre = pre;
   MaxAmmo = ammo;
   MaxSpeed = maxspeed;
-  CameoData = NULL;
+  CameoData = nullptr;
   Primary = primary, Secondary = secondary, Cost = cost;
   IsLeader = is_leader;
   IsScanner = is_scanner;
@@ -408,7 +408,7 @@ void TechnoClass::Debug_Dump(MonoClass *mono) const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass::TechnoClass(void) : TarCom(TARGET_NONE), House(0) {
+TechnoClass::TechnoClass(void) : TarCom(TARGET_NONE), House(nullptr) {
   Arm = 0;
   Ammo = -1;
   PurchasePrice = 0;
@@ -1240,7 +1240,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
 bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
                                 int range, TechnoClass const **object,
                                 int &value) const {
-  *object = NULL;
+  *object = nullptr;
   value = 0;
 
   /*
@@ -1288,7 +1288,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
  *scan method.                                           *
  *=============================================================================================*/
 TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
-  ObjectClass const *bestobject = NULL;
+  ObjectClass const *bestobject = nullptr;
   int bestval = -1;
 
   /*
@@ -1904,7 +1904,7 @@ BulletClass *TechnoClass::Fire_At(TARGET target, int which) {
   **	Perform a quick legality check to see if firing can occur.
   */
   if (Debug_Map || weapon->Fires == BULLET_NONE || !Target_Legal(target)) {
-    return (NULL);
+    return (nullptr);
   }
 
   /*
@@ -2184,7 +2184,7 @@ ActionType TechnoClass::What_Action(ObjectClass *object) const {
  *=============================================================================================*/
 ActionType TechnoClass::What_Action(CELL cell) const {
   CellClass const *cellptr = &Map[cell];
-  OverlayTypeClass const *optr = NULL;
+  OverlayTypeClass const *optr = nullptr;
 
   bool ctrldown = Keyboard::Down(KN_LCTRL) || Keyboard::Down(KN_RCTRL);
   bool shiftdown = Keyboard::Down(KN_LSHIFT) || Keyboard::Down(KN_RSHIFT);
@@ -2449,7 +2449,7 @@ bool TechnoClass::Captured(HouseClass *newowner) {
     /*
     **	Record this as a kill.
     */
-    Record_The_Kill(NULL);
+    Record_The_Kill(nullptr);
 
     /*
     **	Special kill record logic for capture process.
@@ -2906,7 +2906,8 @@ void TechnoClass::Techno_Draw_Object(void const *shapefile, int shapenum, int x,
       if (visual == VISUAL_SHADOWY) {
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, NULL,
+            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR,
+            nullptr,
             Map.FadingShade);
       } else {
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
@@ -3765,7 +3766,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
  *=============================================================================================*/
 BuildingClass *TechnoClass::Find_Docking_Bay(StructType b,
                                              bool friendly) const {
-  BuildingClass *best = 0;
+  BuildingClass *best = nullptr;
 
   /*
   **	First check to see if there are ANY buildings of the specified

@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
 #ifdef PORTABLE
       Read_Setup_Options(&cfile);
 
-      Create_Main_Window(NULL, 0, ScreenWidth, ScreenHeight);
+      Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 #elif defined(WIN32)
 
@@ -711,7 +711,7 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     if (WindowsTimer) {
       delete WindowsTimer;
-      WindowsTimer = NULL;
+      WindowsTimer = nullptr;
     }
 
 #else   // WIN32
@@ -770,10 +770,10 @@ bool InitDDraw(void) {
   } else
 #endif
   {
-    VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0,
+    VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                      (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
 #ifdef PORTABLE
-    HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
+    HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, (GBC_Enum)0);
 #else
     /* Check that we really got a video memory page. Failure is fatal. */
     memset(&surface_capabilities, 0, sizeof(surface_capabilities));
@@ -863,11 +863,11 @@ void __cdecl Prog_End(void) {
   Sound_End();
   if (WWMouse) {
     delete WWMouse;
-    WWMouse = NULL;
+    WWMouse = nullptr;
   }
   if (WindowsTimer) {
     delete WindowsTimer;
-    WindowsTimer = NULL;
+    WindowsTimer = nullptr;
   }
 }
 #else   // WIN32
@@ -1003,9 +1003,9 @@ void Read_Setup_Options(RawFileClass *config_file) {
     memset(netbuf, 0, sizeof(netbuf));
     char *netptr = netbuf;
     bool found =
-        ini.Get_String("Options", "DestNet", NULL, netbuf, sizeof(netbuf));
+        ini.Get_String("Options", "DestNet", nullptr, netbuf, sizeof(netbuf));
 
-    if (found && netptr != NULL && strlen(netbuf)) {
+    if (found && netptr != nullptr && strlen(netbuf)) {
       NetNumType net;
       NetNodeType node;
 
@@ -1015,7 +1015,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
       int i = 0;
       char *p = strtok(netbuf, ".");
       int x;
-      while (p != NULL) {
+      while (p != nullptr) {
         sscanf(p, "%x", &x);  // convert from hex string to int
         if (i < 4) {
           net[i] = (char)x;  // fill NetNum
@@ -1023,7 +1023,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
           node[i - 4] = (char)x;  // fill NetNode
         }
         i++;
-        p = strtok(NULL, ".");
+        p = strtok(nullptr, ".");
       }
 
       /*

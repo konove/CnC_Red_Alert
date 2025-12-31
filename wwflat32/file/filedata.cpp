@@ -63,6 +63,6 @@
 */
 
 FileDataType FileData[] = {
-    {"", 0L, 0L, 0, 0L, 0}
+    {"", 0L, nullptr, 0, 0L, 0}
     /* Must have an empty entry!!! */
 };

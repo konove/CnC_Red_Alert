@@ -46,8 +46,8 @@ class Rect {
  public:
   Rect(int x = 0, int y = 0, int w = 0, int h = 0);
 
-  Rect const Intersect(Rect const& rectangle, int* x = NULL,
-                       int* y = NULL) const;
+  Rect const Intersect(Rect const& rectangle, int* x = nullptr,
+                       int* y = nullptr) const;
   friend Rect const Union(Rect const& rect1, Rect const& rect2);
 
   bool Is_Valid(void) const;

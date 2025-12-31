@@ -116,7 +116,7 @@ class GadgetClass : public LinkClass {
   virtual void Draw_All(bool forced = true);
   virtual void Delete_List(void);
   virtual ControlClass* Extract_Gadget(unsigned id);
-  virtual void Flag_List_To_Redraw(void) { LastList = 0; };
+  virtual void Flag_List_To_Redraw(void) { LastList = nullptr; };
   virtual GadgetClass* Remove(void);
   virtual GadgetClass* Get_Next(void) const;
   virtual GadgetClass* Get_Prev(void) const;

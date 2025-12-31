@@ -207,7 +207,7 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
   **	are transmitted.
   */
   if (to == Radio && message == RADIO_OVER_OUT) {
-    Radio = 0;
+    Radio = nullptr;
   }
 
   /*

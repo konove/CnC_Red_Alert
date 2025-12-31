@@ -420,7 +420,7 @@ int IPXConnClass::Send(char *buf, int buflen) {
   if (Immed_Set) {
     return (Send_To(buf, buflen, &Address, ImmediateAddress));
   } else {
-    return (Send_To(buf, buflen, &Address, NULL));
+    return (Send_To(buf, buflen, &Address, nullptr));
   }
 
 } /* end of Send */

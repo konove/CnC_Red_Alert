@@ -69,14 +69,14 @@ class INIClass {
   /*
   **	Erase all data within this INI file manager.
   */
-  bool Clear(char const *section = 0, char const *entry = 0);
+  bool Clear(char const *section = nullptr, char const *entry = nullptr);
 
   int Line_Count(char const *section) const;
   bool Is_Loaded(void) const { return (!SectionList.Is_Empty()); }
   int Size(void) const;
-  bool Is_Present(char const *section, char const *entry = 0) const {
-    if (entry == 0) return (Find_Section(section) != 0);
-    return (Find_Entry(section, entry) != 0);
+  bool Is_Present(char const *section, char const *entry = nullptr) const {
+    if (entry == nullptr) return (Find_Section(section) != nullptr);
+    return (Find_Entry(section, entry) != nullptr);
   }
 
   /*
@@ -85,7 +85,7 @@ class INIClass {
   */
   int Section_Count(void) const;
   bool Section_Present(char const *section) const {
-    return (Find_Section(section) != NULL);
+    return (Find_Section(section) != nullptr);
   }
 
   /*
@@ -130,12 +130,12 @@ class INIClass {
   **	The entry identifier and value string are combined into this object.
   */
   struct INIEntry : Node<INIEntry> {
-    INIEntry(char *entry = 0, char *value = 0) : Entry(entry), Value(value) {}
+    INIEntry(char *entry = nullptr, char *value = nullptr) : Entry(entry), Value(value) {}
     ~INIEntry(void) {
       free(Entry);
-      Entry = 0;
+      Entry = nullptr;
       free(Value);
-      Value = 0;
+      Value = nullptr;
     }
     int Index_ID(void) const { return (CRCEngine()(Entry, strlen(Entry))); };
 
@@ -151,7 +151,7 @@ class INIClass {
     INISection(char *section) : Section(section) {}
     ~INISection(void) {
       free(Section);
-      Section = 0;
+      Section = nullptr;
       EntryList.Delete();
     }
     INIEntry *Find_Entry(char const *entry) const;

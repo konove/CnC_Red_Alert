@@ -228,12 +228,12 @@ bool GameInFocus;
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MixFileClass *TheaterData = NULL;
-MixFileClass *TheaterIcons = NULL;
+MixFileClass *TheaterData = nullptr;
+MixFileClass *TheaterIcons = nullptr;
 MixFileClass *LowTheaterData;
-MixFileClass *MoviesMix = 0;
-MixFileClass *GeneralMix = 0;
-MixFileClass *ScoreMix = 0;
+MixFileClass *MoviesMix = nullptr;
+MixFileClass *GeneralMix = nullptr;
+MixFileClass *ScoreMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
@@ -715,10 +715,10 @@ char *SerialPacketNames[] = {
 */
 long TrapFrame = 0x7fffffff;         // frame to start trapping object values at
 RTTIType TrapObjType = RTTI_NONE;    // type of object to trap
-TrapObjectType TrapObject = {NULL};  // ptr to object being trapped
+TrapObjectType TrapObject = {nullptr};  // ptr to object being trapped
 COORDINATE TrapCoord = 0;            // COORD of object to trap
-void *TrapThis = NULL;               // 'this' ptr of object to trap
-CellClass *TrapCell = NULL;          // for trapping a cell
+void *TrapThis = nullptr;               // 'this' ptr of object to trap
+CellClass *TrapCell = nullptr;          // for trapping a cell
 int TrapCheckHeap = 0;               // start checking the Heap
 
 /***************************************************************************
@@ -797,7 +797,7 @@ unsigned short GProductID;  // sender's Product ID
 ** The packet's size is IPX's max size (546), rounded down to accommodate
 ** the max number of events possible.
 */
-char *MetaPacket = 0;
+char *MetaPacket = nullptr;
 int MetaSize =
     ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass);
 
@@ -850,7 +850,7 @@ GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)NULL);
+GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)nullptr);
 int SoundOn;
 CountDownTimerClass FrameTimer(BT_SYSTEM, 0L);
 CountDownTimerClass DebugTimer(BT_SYSTEM, 0L);
@@ -921,7 +921,7 @@ int AreThingiesEnabled = false;
 **
 */
 
-WinTimerClass *WindowsTimer = NULL;
+WinTimerClass *WindowsTimer = nullptr;
 
 /*
 ** Command line arguments
@@ -939,7 +939,7 @@ int ScreenHeight = 200;
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 #endif
-WWMouseClass *WWMouse = NULL;
+WWMouseClass *WWMouse = nullptr;
 #ifndef PORTABLE
 HANDLE hInstance;
 #endif

@@ -162,7 +162,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   WWMouse->Erase_Mouse(&HidPage, FALSE);
 #else
   //	Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage,
-  //Map.ShadowPage->Get_Buffer());
+  // Map.ShadowPage->Get_Buffer());
   Hide_Mouse();
   HidPage.Blit(SeenBuff);
   Show_Mouse();
@@ -244,7 +244,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
  * Format_Window_String -- Separates a String into Lines. * This function will
  *take a long string and break it up into lines                          * which
  *are not longer then the window width. Any character < ' ' is * considered a
- *new line marker and will be replaced by a NULL.                              *
+ *new line marker and will be replaced by a nullptr.   *
  *                                                                                             *
  * INPUT:      char *String - string to be formated. * int maxlinelen - Max
  *length of any line in pixels.                              *
@@ -396,12 +396,12 @@ void Simple_Text_Print(char const *text, unsigned x, unsigned y,
                        TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
-  void const *font = 0;           // Font to use.
+  void const *font = nullptr;     // Font to use.
   int shadow;                     // Requested shadow value.
   unsigned char fontpalette[16];  // Working font palette array.
   int forecolor;
 
-  if (fore == NULL) {
+  if (fore == nullptr) {
     fore = &ColorRemaps[PCOLOR_RED];
   }
 
@@ -534,7 +534,7 @@ void Simple_Text_Print(char const *text, unsigned x, unsigned y,
       xspace -= 2;
       yspace += 2;
 #else  //	I am implicitly assuming that TPF_TYPE was no longer being used,
-       //before I came along, despite the following. ajw
+       // before I came along, despite the following. ajw
 #ifdef GERMAN
       yspace += 4;  // VG 10/17/96
 #endif
@@ -686,7 +686,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType *fore,
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
     */
-    Simple_Text_Print((char const *)0, x, y, fore, back, flag);
+    Simple_Text_Print(nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -740,9 +740,9 @@ void Fancy_Text_Print(char const *text, unsigned x, unsigned y,
   } else {
     /*
     **	Just the flags are desired to be changed, so call the simple print
-    *routine with *	a NULL text pointer.
+    *routine with *	a nullptr text pointer.
     */
-    Simple_Text_Print((char const *)0, x, y, fore, back, flag);
+    Simple_Text_Print(nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -787,7 +787,7 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
     **	Set the font and spacing characteristics according to the flag
     **	value passed in.
     */
-    Simple_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, flag);
+    Simple_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, flag);
 
     char *source = &buffer[0];
     unsigned offset = 0;
@@ -979,7 +979,7 @@ void Draw_Caption(char const *text, int x, int y, int w) {
   /*
   **	Draw the caption.
   */
-  if (text != NULL && *text != '\0') {
+  if (text != nullptr && *text != '\0') {
     if (Debug_Map) {
       Fancy_Text_Print(text, w / 2 + x, (2 * RESFACTOR) + y,
                        GadgetClass::Get_Color_Scheme(), TBLACK,

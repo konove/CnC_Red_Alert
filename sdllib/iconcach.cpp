@@ -4,12 +4,12 @@
 #include "iconcach.h"
 #include "gbuffer.h"
 
-static void const *LastIconset = NULL;
-static uint8_t *StampPtr = NULL;
+static void const *LastIconset = nullptr;
+static uint8_t *StampPtr = nullptr;
 
-static uint8_t *IsTrans = NULL;
+static uint8_t *IsTrans = nullptr;
 
-static uint8_t *MapPtr = NULL;
+static uint8_t *MapPtr = nullptr;
 static int IconWidth = 0;
 static int IconHeight = 0;
 static int IconSize = 0;
@@ -133,7 +133,7 @@ void Buffer_Draw_Stamp_Clip(void const *thisptr, void const *icondata, int icon,
 
   // If the remap table pointer passed in is NULL, then flag this condition
   // so that the faster (non-remapping) icon draw loop will be used.
-  bool doremap = remap != NULL;
+  bool doremap = remap != nullptr;
 
   // Get pointer to position to render icon.
   auto vp_dst = (GraphicViewPortClass *)thisptr;

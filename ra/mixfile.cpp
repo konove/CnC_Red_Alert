@@ -119,15 +119,15 @@ MixFileClass<T>::~MixFileClass(void) {
   if (Filename) {
     free((char *)Filename);
   }
-  if (Data != NULL && IsAllocated) {
+  if (Data != nullptr && IsAllocated) {
     delete[] Data;
     IsAllocated = false;
   }
-  Data = NULL;
+  Data = nullptr;
 
-  if (HeaderBuffer != NULL) {
+  if (HeaderBuffer != nullptr) {
     delete[] HeaderBuffer;
-    HeaderBuffer = NULL;
+    HeaderBuffer = nullptr;
   }
 
   /*
@@ -158,12 +158,12 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
     : IsDigest(false),
       IsEncrypted(false),
       IsAllocated(false),
-      Filename(0),
+      Filename(nullptr),
       Count(0),
       DataSize(0),
       DataStart(0),
-      HeaderBuffer(0),
-      Data(0) {
+      HeaderBuffer(nullptr),
+      Data(nullptr) {
   /*
   **	Check to see if the file is available. If it isn't, then
   **	no further processing is needed or possible.
@@ -229,7 +229,7 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
   *is invalid.
   */
   HeaderBuffer = new SubBlock[Count];
-  if (HeaderBuffer == NULL) return;
+  if (HeaderBuffer == nullptr) return;
   straw->Get(HeaderBuffer, Count * sizeof(SubBlock));
 
   /*
@@ -251,7 +251,7 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
  * MixFileClass::Retrieve -- Retrieves a pointer to the specified data file. *
  *                                                                                             *
  *    This routine will return with a pointer to the specified data file if the
- *file resides   * in memory. Otherwise, this routine returns NULL. Use this
+ *file resides   * in memory. Otherwise, this routine returns nullptr. Use this
  *routine to access a resident   * file directly rather than going through the
  *process of pseudo disk access. This will     * save both time and RAM. *
  *                                                                                             *
@@ -259,7 +259,7 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
  *pointer to.     *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the data file's data. If the file is not
- *in RAM, then    * NULL is returned. *
+ *in RAM, then    * nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -267,7 +267,7 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
  *=============================================================================================*/
 template <class T>
 void const *MixFileClass<T>::Retrieve(char const *filename) {
-  void *ptr = 0;
+  void *ptr = nullptr;
   Offset(filename, &ptr);
   return (ptr);
 };
@@ -278,7 +278,7 @@ void const *MixFileClass<T>::Retrieve(char const *filename) {
  *                                                                                             *
  *    This routine will scan through all registered mixfiles and return with a
  *pointer to      * the matching mixfile. If no mixfile could be found that
- *matches the name specified,      * then NULL is returned. *
+ *matches the name specified,      * then nullptr is returned. *
  *                                                                                             *
  * INPUT:   filename -- Pointer to the filename to search for. *
  *                                                                                             *
@@ -321,7 +321,7 @@ template <class T>
 bool MixFileClass<T>::Cache(char const *filename, Buffer const *buffer) {
   MixFileClass<T> *mixer = Finder(filename);
 
-  if (mixer != NULL) {
+  if (mixer != nullptr) {
     return (mixer->Cache(buffer));
   }
   return (false);
@@ -348,13 +348,13 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
   /*
   **	If the mixfile is already cached, then no action needs to be performed.
   */
-  if (Data != NULL) return (true);
+  if (Data != nullptr) return (true);
 
   /*
   **	If a buffer was supplied (and it is big enough), then use it as the data
   *block *	pointer. Otherwise, the data block must be allocated.
   */
-  if (buffer != NULL) {
+  if (buffer != nullptr) {
     if (buffer->Get_Size() == 0 || buffer->Get_Size() >= DataSize) {
       Data = buffer->Get_Buffer();
     }
@@ -366,7 +366,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
   /*
   **	If there is a data buffer to fill, then fill it now.
   */
-  if (Data != NULL) {
+  if (Data != nullptr) {
     T file(Filename);
 
     FileStraw fstraw(file);
@@ -400,7 +400,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
     long actual = straw->Get(Data, DataSize);
     if (actual != DataSize) {
       delete[] Data;
-      Data = NULL;
+      Data = nullptr;
       file.Error(EIO);
       return (false);
     }
@@ -417,7 +417,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
       fstraw.Get(digest1, sizeof(digest1));
       if (memcmp(digest1, digest2, sizeof(digest1)) != 0) {
         delete[] Data;
-        Data = NULL;
+        Data = nullptr;
         return (false);
       }
     }
@@ -448,10 +448,10 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
  *=============================================================================================*/
 template <class T>
 void MixFileClass<T>::Free(void) {
-  if (Data != NULL && IsAllocated) {
+  if (Data != nullptr && IsAllocated) {
     delete[] Data;
   }
-  Data = NULL;
+  Data = nullptr;
   IsAllocated = false;
 }
 
@@ -474,10 +474,10 @@ int compfunc(void const *ptr1, void const *ptr2) {
  * INPUT:   filename    -- The filename to search for. *
  *                                                                                             *
  *          realptr     -- Stores a pointer to the start of the file in memory
- *here. If the    * file is not in memory, then NULL is stored here. *
+ *here. If the    * file is not in memory, then nullptr is stored here. *
  *                                                                                             *
  *          mixfile     -- The pointer to the corresponding mixfile is placed
- *here. If no      * mixfile was found that contains the file, then NULL is
+ *here. If no      * mixfile was found that contains the file, then nullptr is
  *stored here. *
  *                                                                                             *
  *          offset      -- The starting offset from the beginning of the parent
@@ -497,8 +497,8 @@ bool MixFileClass<T>::Offset(char const *filename, void **realptr,
                              MixFileClass **mixfile, long *offset, long *size) {
   MixFileClass<T> *ptr;
 
-  if (filename == NULL) {
-    assert(filename != NULL);  // BG
+  if (filename == nullptr) {
+    assert(filename != nullptr);  // BG
     return (false);
   }
 
@@ -526,15 +526,15 @@ bool MixFileClass<T>::Offset(char const *filename, void **realptr,
     */
     block = (SubBlock *)bsearch(&key, ptr->HeaderBuffer, ptr->Count,
                                 sizeof(SubBlock), compfunc);
-    if (block != NULL) {
-      if (mixfile != NULL) *mixfile = ptr;
-      if (size != NULL) *size = block->Size;
-      if (realptr != NULL) *realptr = NULL;
-      if (offset != NULL) *offset = block->Offset;
-      if (realptr != NULL && ptr->Data != NULL) {
+    if (block != nullptr) {
+      if (mixfile != nullptr) *mixfile = ptr;
+      if (size != nullptr) *size = block->Size;
+      if (realptr != nullptr) *realptr = nullptr;
+      if (offset != nullptr) *offset = block->Offset;
+      if (realptr != nullptr && ptr->Data != nullptr) {
         *realptr = (char *)ptr->Data + block->Offset;
       }
-      if (ptr->Data == NULL && offset != NULL) {
+      if (ptr->Data == nullptr && offset != nullptr) {
         *offset += ptr->DataStart;
       }
       return (true);

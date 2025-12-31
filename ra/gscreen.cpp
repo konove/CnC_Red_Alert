@@ -52,9 +52,9 @@
 
 #include "function.h"
 
-GadgetClass* GScreenClass::Buttons = 0;
+GadgetClass* GScreenClass::Buttons = nullptr;
 
-GraphicBufferClass* GScreenClass::ShadowPage = 0;
+GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
 
 /***********************************************************************************************
  * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
@@ -107,7 +107,7 @@ void GScreenClass::One_Time(void) {
   *the *	actual screen memory. It contains a duplicate of what the
   *SEENPAGE is.
   */
-  Buttons = 0;
+  Buttons = nullptr;
 #ifndef WIN32
   ShadowPage = new GraphicBufferClass(320, 200);
   if (ShadowPage) {
@@ -202,7 +202,7 @@ void GScreenClass::Init_IO(void) {
   *need
   ** buttons must attach them after this routine is called!
   */
-  Buttons = 0;
+  Buttons = nullptr;
 }
 
 /***********************************************************************************************
@@ -256,7 +256,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
   x = Keyboard->Mouse_X();
   y = Keyboard->Mouse_Y();
 
-  if (Buttons != NULL) {
+  if (Buttons != nullptr) {
     /*
     ** If any buttons need redrawing, they will do so in the Input routine, and
     ** they should draw themselves to the HidPage.  So, flag ourselves for a

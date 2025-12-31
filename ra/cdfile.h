@@ -66,7 +66,7 @@ class CDFileClass : public BufferIOFileClass {
 
   void Searching(int on) { IsDisabled = !on; };
 
-  static bool Is_There_Search_Drives(void) { return (First != NULL); };
+  static bool Is_There_Search_Drives(void) { return (First != nullptr); };
   static int Set_Search_Drives(char *pathlist);
   static void Add_Search_Drive(char *path);
   static void Clear_Search_Drives(void);

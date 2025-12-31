@@ -270,7 +270,7 @@ void SmudgeTypeClass::Init_Heap(void) {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 SmudgeType SmudgeTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return (index);
@@ -463,7 +463,7 @@ ObjectClass *SmudgeTypeClass::Create_One_Of(HouseClass *) const {
  *=============================================================================================*/
 void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
   void const *ptr = Get_Image_Data();
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
     IsTheaterShape = false;

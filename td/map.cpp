@@ -451,7 +451,7 @@ void MapClass::Alloc_Cells(void) {
   **	Assume that whatever the contents of the VectorClass are is garbage
   **	(it may have been loaded from a save-game file), so zero it out first.
   */
-  Vector = 0;
+  Vector = nullptr;
   VectorMax = 0;
   IsAllocated = 0;
   Resize(Size);
@@ -1111,7 +1111,7 @@ void MapClass::Logic(void) {
           for (FacingType index = FACING_N; index < FACING_COUNT; index++) {
             CellClass *newcell = &(*this)[cell].Adjacent_Cell(index + offset);
 
-            if (newcell && newcell->Cell_Object() == NULL &&
+            if (newcell && newcell->Cell_Object() == nullptr &&
                 newcell->Land_Type() == LAND_CLEAR &&
                 newcell->Overlay == OVERLAY_NONE) {
               bool found = false;
@@ -1353,7 +1353,7 @@ int MapClass::Validate(void) {
  * HISTORY: * 08/20/1995 JLB : Created. *
  *=============================================================================================*/
 ObjectClass *MapClass::Close_Object(COORDINATE coord) const {
-  ObjectClass *object = 0;
+  ObjectClass *object = nullptr;
   int distance = 0;
   CELL cell = Coord_Cell(coord);
 
@@ -1413,7 +1413,7 @@ ObjectClass *MapClass::Close_Object(COORDINATE coord) const {
   *specified *	coordinate.
   */
   if (object && distance > 0xB5) {
-    object = 0;
+    object = nullptr;
   }
   return (object);
 }

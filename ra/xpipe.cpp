@@ -68,7 +68,7 @@
 int BufferPipe::Put(void const *source, int slen) {
   int total = 0;
 
-  if (Is_Valid() && source != NULL && slen > 0) {
+  if (Is_Valid() && source != nullptr && slen > 0) {
     int len = slen;
     if (BufferPtr.Get_Size() != 0) {
       int theoretical_max = BufferPtr.Get_Size() - Index;
@@ -95,7 +95,7 @@ FilePipe::~FilePipe(void) {
   if (Valid_File() && HasOpened) {
     HasOpened = false;
     File->Close();
-    File = NULL;
+    File = nullptr;
   }
 }
 
@@ -145,7 +145,7 @@ int FilePipe::End(void) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int FilePipe::Put(void const *source, int slen) {
-  if (Valid_File() && source != NULL && slen > 0) {
+  if (Valid_File() && source != nullptr && slen > 0) {
     if (!File->Is_Open()) {
       HasOpened = true;
       File->Open(WRITE);

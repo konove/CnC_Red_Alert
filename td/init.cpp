@@ -820,9 +820,9 @@ bool Select_Game(bool fade) {
   PlayerLoses = false;
   MPlayerObiWan = false;
   Debug_Unshroud = false;
-  Map.Set_Cursor_Shape(0);
-  Map.PendingObjectPtr = 0;
-  Map.PendingObject = 0;
+  Map.Set_Cursor_Shape(nullptr);
+  Map.PendingObjectPtr = nullptr;
+  Map.PendingObject = nullptr;
   Map.PendingHouse = HOUSE_NONE;
 
   /*
@@ -1525,7 +1525,7 @@ bool Select_Game(bool fade) {
           Hide_Mouse();
 #endif
           Theme.Fade_Out();
-          Fade_Palette_To(BlackPalette, FADE_PALETTE_SLOW, NULL);
+          Fade_Palette_To(BlackPalette, FADE_PALETTE_SLOW, nullptr);
 #ifdef JAPANESE
           VisiblePage.Clear();
 #endif
@@ -1796,7 +1796,7 @@ static void Play_Intro(bool for_real) {
       "TURTKILL", "VISOR",
 // #endif
 #endif
-      NULL};
+      nullptr};
 
   Keyboard::Clear();
   if (for_real) {
@@ -2205,7 +2205,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           node[i - 4] = (char)x;  // fill NetNode
         }
         i++;
-        p = strtok(NULL, ".");
+        p = strtok(nullptr, ".");
       }
 
       /*

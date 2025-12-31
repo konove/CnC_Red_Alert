@@ -23,7 +23,7 @@ void *IO_Open_File(const char *filename, int mode) {
   else if (mode == (READ | WRITE))
     mode_str = "w+b";
   else
-    return NULL;
+    return nullptr;
 
   return fopen(filename, mode_str);
 }
@@ -163,14 +163,14 @@ static bool Update_Find_Result(FindFileState &state) {
 
 bool Find_First_File(const char *path_glob, FindFileState &state) {
   auto glob_buf = new glob_t;
-  int ret = glob(path_glob, GLOB_MARK, NULL, glob_buf);
+  int ret = glob(path_glob, GLOB_MARK, nullptr, glob_buf);
 
   // also search for lowercase filenames
   if (ret == 0 || ret == GLOB_NOMATCH) {
     auto lower_glob = strdup(path_glob);
     for (auto c = lower_glob; *c; c++) *c = tolower(*c);
 
-    int ret2 = glob(lower_glob, GLOB_MARK | GLOB_APPEND, NULL, glob_buf);
+    int ret2 = glob(lower_glob, GLOB_MARK | GLOB_APPEND, nullptr, glob_buf);
     if (ret2 != GLOB_NOMATCH) ret = ret2;
 
     free(lower_glob);
@@ -203,7 +203,7 @@ bool Find_Next_File(FindFileState &state) {
   if (!Update_Find_Result(state)) {
     globfree(glob_buf);
     delete glob_buf;
-    state.data = NULL;
+    state.data = nullptr;
     return false;
   }
 
@@ -215,7 +215,7 @@ void End_Find_File(FindFileState &state) {
     auto glob_buf = (glob_t *)state.data;
     globfree(glob_buf);
     delete glob_buf;
-    state.data = NULL;
+    state.data = nullptr;
   }
 }
 

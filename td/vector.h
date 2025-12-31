@@ -76,7 +76,7 @@ template <class T>
 class VectorClass {
  public:
   VectorClass(NoInitClass const &){};
-  VectorClass(unsigned size = 0, T const *array = 0);
+  VectorClass(unsigned size = 0, T const *array = nullptr);
   VectorClass(VectorClass<T> const &);  // Copy constructor.
   virtual ~VectorClass(void);
 
@@ -85,7 +85,7 @@ class VectorClass {
   virtual VectorClass<T> &operator=(
       VectorClass<T> const &);                           // Assignment operator.
   virtual int operator==(VectorClass<T> const &) const;  // Equality operator.
-  virtual int Resize(unsigned newsize, T const *array = 0);
+  virtual int Resize(unsigned newsize, T const *array = nullptr);
   virtual void Clear(void);
   unsigned Length(void) const { return VectorMax; };
   virtual int ID(T const *ptr);  // Pointer based identification.
@@ -122,10 +122,10 @@ class VectorClass {
 template <class T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  DynamicVectorClass(unsigned size = 0, T const *array = 0);
+  DynamicVectorClass(unsigned size = 0, T const *array = nullptr);
 
   // Change maximum size of vector.
-  virtual int Resize(unsigned newsize, T const *array = 0);
+  virtual int Resize(unsigned newsize, T const *array = nullptr);
 
   // Resets and frees the vector array.
   virtual void Clear(void) {
@@ -187,7 +187,7 @@ class DynamicVectorClass : public VectorClass<T> {
 */
 class BooleanVectorClass {
  public:
-  BooleanVectorClass(unsigned size = 0, unsigned char *array = 0);
+  BooleanVectorClass(unsigned size = 0, unsigned char *array = nullptr);
   BooleanVectorClass(BooleanVectorClass const &vector);
 
   // Assignment operator.

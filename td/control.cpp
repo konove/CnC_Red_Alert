@@ -75,7 +75,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, int sticky)
     : GadgetClass(x, y, w, h, flags, sticky) {
   ID = id;
-  Peer = 0;
+  Peer = nullptr;
 }
 
 /***********************************************************************************************

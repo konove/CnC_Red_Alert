@@ -267,7 +267,7 @@ void Main_Game(int argc, char *argv[]) {
     if (Session.Type == GAME_INTERNET) {
       Register_Game_Start_Time();
       GameStatisticsPacketSent = false;
-      PacketLater = NULL;
+      PacketLater = nullptr;
       ConnectionLost = false;
     } else {
 #if !defined(WOLAPI_INTEGRATION) && defined(_WIN32)
@@ -632,11 +632,11 @@ void Keyboard_Process(KeyNumType &input) {
   */
   if (key != 0 && key == Options.KeyNext) {
     if (action) {
-      obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : NULL);
+      obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
     } else {
-      obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : NULL);
+      obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
     }
-    if (obj != NULL) {
+    if (obj != nullptr) {
       Unselect_All();
       obj->Select();
       Map.Center_Map();
@@ -646,11 +646,11 @@ void Keyboard_Process(KeyNumType &input) {
   }
   if (key != 0 && key == Options.KeyPrevious) {
     if (action) {
-      obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : NULL);
+      obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
     } else {
-      obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : NULL);
+      obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
     }
-    if (obj != NULL) {
+    if (obj != nullptr) {
       Unselect_All();
       obj->Select();
       Map.Center_Map();
@@ -667,7 +667,7 @@ void Keyboard_Process(KeyNumType &input) {
       for (index = 0; index < CurrentObject.Count(); index++) {
         ObjectClass const *tech = CurrentObject[index];
 
-        if (tech != NULL &&
+        if (tech != nullptr &&
             (tech->Can_Player_Move() ||
              (tech->Can_Player_Fire() && tech->What_Am_I() != RTTI_BUILDING))) {
           OutList.Add(EventClass(EventClass::IDLE, TargetClass(tech)));
@@ -685,7 +685,7 @@ void Keyboard_Process(KeyNumType &input) {
       for (index = 0; index < CurrentObject.Count(); index++) {
         ObjectClass const *tech = CurrentObject[index];
 
-        if (tech != NULL && tech->Can_Player_Move() &&
+        if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
           OutList.Add(EventClass(TargetClass(tech), MISSION_GUARD_AREA));
         }
@@ -702,7 +702,7 @@ void Keyboard_Process(KeyNumType &input) {
       for (index = 0; index < CurrentObject.Count(); index++) {
         ObjectClass const *tech = CurrentObject[index];
 
-        if (tech != NULL && tech->Can_Player_Move()) {
+        if (tech != nullptr && tech->Can_Player_Move()) {
           OutList.Add(EventClass(EventClass::SCATTER, TargetClass(tech)));
         }
       }
@@ -736,7 +736,7 @@ void Keyboard_Process(KeyNumType &input) {
       for (index = 0; index < Buildings.Count(); index++) {
         BuildingClass *building = Buildings.Ptr(index);
 
-        if (building != NULL && !building->IsInLimbo &&
+        if (building != nullptr && !building->IsInLimbo &&
             building->House == PlayerPtr && *building == STRUCT_CONST) {
           Unselect_All();
           building->Select();
@@ -748,7 +748,7 @@ void Keyboard_Process(KeyNumType &input) {
       for (index = 0; index < Units.Count(); index++) {
         UnitClass *unit = Units.Ptr(index);
 
-        if (unit != NULL && !unit->IsInLimbo && unit->House == PlayerPtr &&
+        if (unit != nullptr && !unit->IsInLimbo && unit->House == PlayerPtr &&
             *unit == UNIT_MCV) {
           Unselect_All();
           unit->Select();
@@ -1256,7 +1256,7 @@ static void Message_Input(KeyNumType &input) {
           Keyboard->Clear();
         } else {
           Session.Messages.Add_Message(
-              NULL, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
+              nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               Rule.MessageDelay * TICKS_PER_MINUTE);
           Sound_Effect(VOC_SYS_ERROR);
@@ -1674,7 +1674,7 @@ void Call_Back(void) {
         if (pWolapi->bConnectionDown) {
           //	Connection to server lost.
           Session.Messages.Add_Message(
-              NULL, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
+              nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               Rule.MessageDelay * TICKS_PER_MINUTE);
           Sound_Effect(WOLSOUND_LOGOUT);
@@ -1683,7 +1683,7 @@ void Call_Back(void) {
           //					//	Kill wolapi.
           //					pWolapi->UnsetupCOMStuff();
           //					delete pWolapi;
-          //					pWolapi = NULL;
+          //					pWolapi = nullptr;
         }
       }
     } else {
@@ -1932,7 +1932,7 @@ void MPATH_Call_Back(void) {
 char const *Language_Name(char const *basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
-  if (!basename) return (NULL);
+  if (!basename) return (nullptr);
 
   sprintf(_fullname, "%s.ENG", basename);
   return (_fullname);
@@ -2388,31 +2388,31 @@ bool Main_Loop() {
 
 #ifdef WIN32
   if (Debug_MotionCapture) {
-    static void **_array = 0;
+    static void **_array = nullptr;
     static int _sequence = 0;
     static int _seqsize = Rule.MovieTime * TICKS_PER_MINUTE;
 
-    if (_array == NULL) {
+    if (_array == nullptr) {
       _array = new void *[_seqsize];
       memset(_array, '\0', _seqsize * sizeof(void *));
     }
 
-    if (_array == NULL) {
+    if (_array == nullptr) {
       Debug_MotionCapture = false;
     }
 
     static GraphicBufferClass temp_page(
-        SeenBuff.Get_Width(), SeenBuff.Get_Height(), NULL,
+        SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr,
         SeenBuff.Get_Width() * SeenBuff.Get_Height());
 
     int size = SeenBuff.Get_Width() * SeenBuff.Get_Height();
 
     if (_sequence < _seqsize) {
-      if (_array[_sequence] == NULL) {
+      if (_array[_sequence] == nullptr) {
         _array[_sequence] = new char[size];
       }
 
-      if (_array[_sequence] != NULL) {
+      if (_array[_sequence] != nullptr) {
         SeenBuff.Blit(temp_page);
         memmove(_array[_sequence], temp_page.Get_Buffer(), size);
       }
@@ -2642,7 +2642,7 @@ long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
     case VQACMD_OPEN:
       file = new CCFileClass((char *)buffer);
 
-      if (file != NULL && file->Is_Available()) {
+      if (file != nullptr && file->Is_Available()) {
         error = file->Open((char *)buffer, READ);
 
         if (error != -1) {
@@ -2650,7 +2650,7 @@ long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
           error = 0;
         } else {
           delete file;
-          file = 0;
+          file = nullptr;
           error = 1;
         }
       } else {
@@ -2661,7 +2661,7 @@ long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
     case VQACMD_CLOSE:
       file->Close();
       delete file;
-      file = 0;
+      file = nullptr;
       vqa->VQAio = 0;
       error = 0;
       break;
@@ -2727,7 +2727,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
 
   if (!add) {
     for (i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
-      InterpolatedPalettes[i] = NULL;
+      InterpolatedPalettes[i] = nullptr;
     }
     start_palette = 0;
   } else {
@@ -2770,7 +2770,7 @@ void Free_Interpolated_Palettes(void) {
   for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
       free(InterpolatedPalettes[i]);
-      InterpolatedPalettes[i] = NULL;
+      InterpolatedPalettes[i] = nullptr;
     }
   }
 }
@@ -2875,7 +2875,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
     PreserveVQAScreen = 0;
     Keyboard->Clear();
 
-    VQAHandle *vqa = NULL;
+    VQAHandle *vqa = nullptr;
 
 #ifdef WIN32
 #ifdef MOVIE640
@@ -2897,7 +2897,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if ((vqa = VQA_Alloc()) != NULL) {
+    if ((vqa = VQA_Alloc()) != nullptr) {
       VQA_Init(vqa, MixFileHandler);
 
       if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
@@ -2955,7 +2955,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
 
       VQA_Free(vqa);
     } else {
-      assert(vqa != NULL);
+      assert(vqa != nullptr);
     }
 #ifdef CHEAT_KEYS
 // Mono_Printf("d");
@@ -3020,7 +3020,7 @@ bool PlayMpegMovie(const char *name) {
   VisiblePage.Un_Init();
 
 #ifdef MCIMPEG
-  if (MciMovie && MpgSettings && (MpgSettings->GetDeviceName() != NULL)) {
+  if (MciMovie && MpgSettings && (MpgSettings->GetDeviceName() != nullptr)) {
     DirectDrawObject->SetCooperativeLevel(MainWindow, DDSCL_NORMAL);
 
     if (!MciMovie->Open(filename, MpgSettings->GetDeviceName())) {
@@ -3035,7 +3035,7 @@ bool PlayMpegMovie(const char *name) {
 #endif
   {
     DDSURFACEDESC ddsd;
-    IDirectDrawSurface *primary = NULL;
+    IDirectDrawSurface *primary = nullptr;
     bool modeChange = false;
     RECT rect;
 
@@ -3049,14 +3049,14 @@ bool PlayMpegMovie(const char *name) {
       ddsd.dwFlags = DDSD_CAPS;
       ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
-      if (FAILED(DirectDrawObject->CreateSurface(&ddsd, &primary, NULL))) {
+      if (FAILED(DirectDrawObject->CreateSurface(&ddsd, &primary, nullptr))) {
         WWMessageBox().Process("Couldn't create primary movie surface.\n");
       } else {
         rect.top = rect.left = 0;
         rect.bottom = ScreenHeight;
         rect.right = ScreenWidth;
 
-        MpgSetCallback(MpegCallback, NULL);
+        MpgSetCallback(MpegCallback, nullptr);
         MpgPlay(filename, DirectDrawObject, primary, &rect);
 
         if (primary) primary->Release();
@@ -3067,7 +3067,7 @@ bool PlayMpegMovie(const char *name) {
   }
 
   // Restore surfaces
-  VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0,
+  VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                    (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
   PaletteSurface->SetPalette(PalettePtr);
   AllSurfaces.Set_Surface_Focus(true);
@@ -3076,7 +3076,7 @@ bool PlayMpegMovie(const char *name) {
 }
 
 MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
-  static IDirectDrawPalette *_palette = NULL;
+  static IDirectDrawPalette *_palette = nullptr;
 
   user = user;
 
@@ -3092,10 +3092,10 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
     case MPGCMD_CLEANUP:
       VisiblePage.Clear();
 
-      if (_palette != NULL) {
+      if (_palette != nullptr) {
         PaletteSurface->SetPalette(_palette);
         _palette->Release();
-        _palette = NULL;
+        _palette = nullptr;
       }
       break;
 
@@ -3202,13 +3202,13 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   int lp, framelp;
   char pixel;
 
-  char *retval = NULL;
-  char *buffer = NULL;
+  char *retval = nullptr;
+  char *buffer = nullptr;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
   */
-  if (!shapefile) return (NULL);
+  if (!shapefile) return (nullptr);
 
 #if (0)
   CCPalette.Set();
@@ -3242,7 +3242,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   ** we don't add these icons to the set.
   **/
   buffer = new char[(icon_width * icon_height * 9 * frames) + 2];
-  if (!buffer) return (NULL);
+  if (!buffer) return (nullptr);
 
   /*
   ** Save off the return value so that we can return it to the calling
@@ -3263,10 +3263,10 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
     void *ptr;
 #ifdef LORES
     if ((ptr = (void *)(Build_Frame(shapefile, shapenum + framelp,
-                                    HiddenPage.Get_Buffer()))) != NULL) {
+                                    HiddenPage.Get_Buffer()))) != nullptr) {
 #else
     if ((ptr = (void *)(Build_Frame(shapefile, shapenum + framelp,
-                                    SysMemPage.Get_Buffer()))) != NULL) {
+                                    SysMemPage.Get_Buffer()))) != nullptr) {
 #endif
       ptr = Get_Shape_Header_Data(ptr);
 #else   // WIN#@
@@ -3380,13 +3380,13 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
     fadingdata = DisplayClass::FadingShade;
   }
 
-  static unsigned char *_xbuffer = 0;
+  static unsigned char *_xbuffer = nullptr;
 
   if (!_xbuffer) {
     _xbuffer = new unsigned char[SHAPE_BUFFER_SIZE];
   }
 
-  if (shapefile != NULL && shapenum != -1) {
+  if (shapefile != nullptr && shapenum != -1) {
     int width = Get_Build_Frame_Width(shapefile);
     int height = Get_Build_Frame_Height(shapefile);
 
@@ -3534,7 +3534,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
 Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
   Rect rect;
 
-  if (shapedata == NULL || shapenum < 0 ||
+  if (shapedata == nullptr || shapenum < 0 ||
       shapenum > Get_Build_Frame_Count(shapedata)) {
     return (rect);
   }
@@ -3542,7 +3542,7 @@ Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
   char *shape;
 #ifdef WIN32
   void *sh = (void *)Build_Frame(shapedata, shapenum, _ShapeBuffer);
-  if (sh == NULL) return (rect);
+  if (sh == nullptr) return (rect);
   //	shape = (char *)sh;
   shape = (char *)Get_Shape_Header_Data(sh);
 #else
@@ -3629,14 +3629,14 @@ Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
  *                                                                                             *
  *    This routine will convert the supplied RTTI type number and the ID value
  *into a valid    * TechnoTypeClass pointer. If there is an error in conversion,
- *then NULL is returned.      *
+ *then nullptr is returned.      *
  *                                                                                             *
  * INPUT:   type  -- RTTI type of the techno class object. *
  *                                                                                             *
  *          id    -- Integer representation of the techno sub type number. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the techno type class object specified or
- *NULL if the    * conversion could not occur. *
+ *nullptr if the    * conversion could not occur. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -3667,7 +3667,7 @@ TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
     default:
       break;
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -3706,10 +3706,10 @@ long VQ_Call_Back(unsigned char *, long) {
   if (IsVQ640) {
     VQ640.Blit(SeenBuff);
   } else {
-    Interpolate_2X_Scale(&SysMemPage, &SeenBuff, NULL);
+    Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
   }
 #else
-  Interpolate_2X_Scale(&SysMemPage, &SeenBuff, NULL);
+  Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
 #endif
   // Call_Back();
 
@@ -4145,9 +4145,9 @@ int Get_CD_Index(int cd_drive, int timeout) {
     sprintf(buffer, "%c:\\", 'A' + cd_drive);
 
     if (GetVolumeInformation((char const *)buffer, &volume_name[0],
-                             (unsigned long)sizeof(volume_name), NULL,
+                             (unsigned long)sizeof(volume_name), nullptr,
                              (DWORD *)&filename_length, (DWORD *)&misc_dword,
-                             (char *)NULL, (unsigned long)0)) {
+                             (char *)nullptr, (unsigned long)0)) {
       /*
       ** Try opening 'movies.mix' to verify that the CD is really there and is
       *what
@@ -4155,8 +4155,8 @@ int Get_CD_Index(int cd_drive, int timeout) {
       */
       sprintf(buffer, "%c:\\main.mix", 'A' + cd_drive);
 
-      HANDLE handle = CreateFile(buffer, GENERIC_READ, FILE_SHARE_READ, NULL,
-                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+      HANDLE handle = CreateFile(buffer, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
       if (handle != INVALID_HANDLE_VALUE) {
         CloseHandle(handle);
@@ -4565,13 +4565,13 @@ bool Force_CD_Available(int cd_desired)  //	ajw
     if (MainMix) delete MainMix;
 
     MainMix = new MFCD("MAIN.MIX", &FastKey);
-    assert(MainMix != NULL);
+    assert(MainMix != nullptr);
     //		ConquerMix = new MFCD("CONQUER.MIX", &FastKey);
     if (CCFileClass("MOVIES1.MIX").Is_Available())
       MoviesMix = new MFCD("MOVIES1.MIX", &FastKey);
     else
       MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);
-    assert(MoviesMix != NULL);
+    assert(MoviesMix != nullptr);
     GeneralMix = new MFCD("GENERAL.MIX", &FastKey);
     ScoreMix = new MFCD("SCORES.MIX", &FastKey);
     ThemeClass::Scan();
@@ -4921,7 +4921,7 @@ bool Force_CD_Available(int cd) {
 
     MainMix = new MFCD("MAIN.MIX", &FastKey);
 
-    assert(MainMix != NULL);
+    assert(MainMix != nullptr);
     //		ConquerMix = new MFCD("CONQUER.MIX", &FastKey);
 
     if (CCFileClass("MOVIES1.MIX").Is_Available()) {
@@ -4929,7 +4929,7 @@ bool Force_CD_Available(int cd) {
     } else {
       MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);
     }
-    assert(MoviesMix != NULL);
+    assert(MoviesMix != nullptr);
     GeneralMix = new MFCD("GENERAL.MIX", &FastKey);
     ScoreMix = new MFCD("SCORES.MIX", &FastKey);
     ThemeClass::Scan();
@@ -5123,7 +5123,7 @@ void *Hires_Load(char *name) {
     return (return_ptr);
 
   } else {
-    return (NULL);
+    return (nullptr);
   }
 }
 
@@ -5143,7 +5143,7 @@ void *Hires_Load(char *name) {
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
 CrateType Crate_From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
       if (stricmp(name, CrateNames[crate]) == 0) return (crate);
     }
@@ -5259,7 +5259,7 @@ void Shake_The_Screen(int shakes) {
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 void List_Copy(short const *source, int len, short *dest) {
-  if (dest == NULL || dest == NULL) {
+  if (dest == nullptr || dest == nullptr) {
     return;
   }
 
@@ -5329,7 +5329,7 @@ bool Is_Counterstrike_Installed(void) {
       return false;
     DWORD dwValue;
     DWORD dwBufSize = sizeof(DWORD);
-    if (RegQueryValueEx(hKey, "CStrikeInstalled", 0, NULL, (LPBYTE)&dwValue,
+    if (RegQueryValueEx(hKey, "CStrikeInstalled", 0, nullptr, (LPBYTE)&dwValue,
                         &dwBufSize) != ERROR_SUCCESS)
       bInstalled = false;
     else
@@ -5362,8 +5362,8 @@ bool Is_Aftermath_Installed(void) {
       return false;
     DWORD dwValue;
     DWORD dwBufSize = sizeof(DWORD);
-    if (RegQueryValueEx(hKey, "AftermathInstalled", 0, NULL, (LPBYTE)&dwValue,
-                        &dwBufSize) != ERROR_SUCCESS)
+    if (RegQueryValueEx(hKey, "AftermathInstalled", 0, nullptr,
+                        (LPBYTE)&dwValue, &dwBufSize) != ERROR_SUCCESS)
       bInstalled = false;
     else
       bInstalled = (bool)dwValue;  //	(Presumably true, if it's there...)

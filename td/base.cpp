@@ -139,7 +139,7 @@ void BaseClass::Read_INI(char *buffer) {
     ** Get an INI entry
     */
     sprintf(uname, "%03d", i);
-    WWGetPrivateProfileString(INI_Name(), uname, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), uname, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -150,7 +150,7 @@ void BaseClass::Read_INI(char *buffer) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Coord = atol(strtok(NULL, ","));
+    node.Coord = atol(strtok(nullptr, ","));
 
     /*
     ** Add this node to the Base's list
@@ -181,7 +181,7 @@ void BaseClass::Write_INI(char *buffer) {
   /*
   **	Clear out all existing teamtype data from the INI file.
   */
-  WWWritePrivateProfileString(INI_Name(), NULL, NULL, buffer);
+  WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
 
   /*
   **	Save the # of buildings in the Nodes list.  This is essential because
@@ -315,7 +315,7 @@ bool BaseClass::Save(FileClass &file) {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool BaseClass::Is_Built(int index) {
-  if (Get_Building(index) != NULL) {
+  if (Get_Building(index) != nullptr) {
     return (true);
   } else {
     return (false);
@@ -349,7 +349,7 @@ BuildingClass *BaseClass::Get_Building(int index) {
   obj[2] = Map[cell].Overlapper[1];
   obj[3] = Map[cell].Overlapper[2];
 
-  bldg = NULL;
+  bldg = nullptr;
   for (int i = 0; i < 4; i++) {
     if (obj[i] && obj[i]->Coord == Nodes[index].Coord &&
         obj[i]->What_Am_I() == RTTI_BUILDING &&
@@ -374,7 +374,7 @@ BuildingClass *BaseClass::Get_Building(int index) {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool BaseClass::Is_Node(BuildingClass *obj) {
-  if (Get_Node(obj) != NULL) {
+  if (Get_Node(obj) != nullptr) {
     return (true);
   } else {
     return (false);
@@ -399,7 +399,7 @@ BaseNodeClass *BaseClass::Get_Node(BuildingClass *obj) {
       return (&Nodes[i]);
     }
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -446,5 +446,5 @@ BaseNodeClass *BaseClass::Next_Buildable(StructType type) {
   // placement of the building. Make it static and reuse the next time this
   // routine is called.
 
-  return (NULL);
+  return (nullptr);
 }

@@ -830,8 +830,8 @@ void Decode_All_Pointers(void) {
     Check_Ptr((void *)Map.PendingObject, __FILE__, __LINE__);
     Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
   } else {
-    Map.PendingObject = 0;
-    Map.Set_Cursor_Shape(0);
+    Map.PendingObject = nullptr;
+    Map.Set_Cursor_Shape(nullptr);
   }
 }
 
@@ -1108,7 +1108,7 @@ TechnoTypeClass const *Target_To_TechnoType(TARGET target) {
       return (
           &BuildingTypeClass::As_Reference((StructType)Target_Value(target)));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***************************************************************************

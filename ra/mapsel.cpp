@@ -49,7 +49,7 @@ int Mouse_Over_Spot(int house, int scenario);
 void Set_Mouse(MouseType shape, int &start, int &count, int &delay, int &xspot,
                int &yspot);
 // VG for ant mission progression
-const char *antmission[] = {NULL, "SCA01EA.INI", "SCA02EA.INI", "SCA03EA.INI",
+const char *antmission[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI", "SCA03EA.INI",
                             "SCA04EA.INI"};
 
 struct point {
@@ -146,7 +146,7 @@ char const *Map_Selection(void) {
 
 #if RESFACTOR == 2
   GraphicBufferClass *pseudoseenbuff =
-      new GraphicBufferClass(320, 200, (void *)NULL);
+      new GraphicBufferClass(320, 200, (void *)nullptr);
 #endif
 
   //	fixed oldvolume = Options.ScoreVolume;
@@ -154,7 +154,7 @@ char const *Map_Selection(void) {
   Theme.Queue_Song(THEME_MAP);
 
   void *anim = Open_Animation(
-      _filename, NULL, 0L, (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
+      _filename, nullptr, 0L, (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
       mappalette);
 
   Keyboard->Clear();
@@ -167,7 +167,7 @@ char const *Map_Selection(void) {
   for (int x = 0; x < 256; x++)
     memset(&PaletteInterpolationTable[x][0], x, 256);
   CopyType = 1;
-  Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, 0);
+  Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
 #else
   HidPage.Clear();
   Animate_Frame(anim, HidPage, 1);
@@ -185,7 +185,7 @@ char const *Map_Selection(void) {
 #if RESFACTOR == 2
     CopyType = 1;
     Animate_Frame(anim, *pseudoseenbuff, frame++);
-    Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, NULL);
+    Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
     CopyType = 0;
 #else
     Animate_Frame(anim, SeenPage, frame++);
@@ -241,7 +241,7 @@ char const *Map_Selection(void) {
       AllSurfaces.SurfacesRestored = FALSE;
       CopyType = 1;
 #if RESFACTOR == 2
-      Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, NULL);
+      Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
 #endif
       CopyType = 0;
     }

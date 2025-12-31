@@ -144,11 +144,8 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
   VQAHandleP *vqap;
   VQAHeader *header;
   ChunkHeader chunk;
-  long max_frm_size;
-  long i;
   long done;
   long found;
-  char *ptr;
 
   /* Dereference commonly used data members for quicker access. */
   vqap = (VQAHandleP *)vqa;
@@ -193,7 +190,7 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
    *-----------------------------------------------------------------------*/
 
   /* Use the clients configuration if they provided one. */
-  if (config != NULL) {
+  if (config != nullptr) {
     memcpy(&vqap->Config, config, sizeof(VQAConfig));
   } else {
     VQA_DefaultConfig(&vqap->Config);
@@ -273,7 +270,7 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
         /*-------------------------------------------------------------------
          * ALLOCATE THE BUFFERS THAT WE NEED TO PLAY THE VQA.
          *-----------------------------------------------------------------*/
-        if ((vqap->VQABuf = AllocBuffers(header, config)) == NULL) {
+        if ((vqap->VQABuf = AllocBuffers(header, config)) == nullptr) {
           VQA_Close(vqa);
           return (VQAERR_NOMEM);
         }
@@ -400,13 +397,13 @@ void VQA_Close(VQAHandle *vqa) {
   }
 
   /* Free memory */
-  if (((VQAHandleP *)vqa)->VQABuf != NULL) {
+  if (((VQAHandleP *)vqa)->VQABuf != nullptr) {
     FreeBuffers(((VQAHandleP *)vqa)->VQABuf, &((VQAHandleP *)vqa)->Config,
                 &((VQAHandleP *)vqa)->Header);
   }
 
   /* Close the VQA file */
-  ((VQAHandleP *)vqa)->IOHandler(vqa, VQACMD_CLOSE, NULL, 0);
+  ((VQAHandleP *)vqa)->IOHandler(vqa, VQACMD_CLOSE, nullptr, 0);
 
   /* Reset the VQAHandle */
   iohandler = ((VQAHandleP *)vqa)->IOHandler;
@@ -869,7 +866,7 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
   /* Make sure the requested frame is valid and the frame information
    * array is allocated before continuing.
    */
-  if ((framenum < header->Frames) && (vqabuf->Foff != NULL)) {
+  if ((framenum < header->Frames) && (vqabuf->Foff != nullptr)) {
     /* Find and load the most recent palette. */
     if (!(config->OptionFlags & VQAOPTF_PALOFF)) {
       /* Get the current frame. */
@@ -928,7 +925,8 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
       if (!vqap->IOHandler(vqa, VQACMD_SEEK, (void *)SEEK_SET,
                            VQAFRAME_OFFSET(vqabuf->Foff[group]))) {
         /* Throw away any audio frames that were loaded. */
-        if ((config->OptionFlags & VQAOPTF_AUDIO) && (audio->Buffer != NULL)) {
+        if ((config->OptionFlags & VQAOPTF_AUDIO) &&
+            (audio->Buffer != nullptr)) {
           memset(audio->IsLoaded, 0, audio->NumAudBlocks * sizeof(short));
           memset(audio->Buffer, 0, config->AudioBufSize);
 
@@ -1051,12 +1049,12 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
 
   /* Check the configuration for valid values. */
   if ((config->NumCBBufs == 0) || (config->NumFrameBufs == 0)) {
-    return (NULL);
+    return (nullptr);
   }
 
   /* Allocate the master structure */
-  if ((vqa = (VQAData *)malloc(sizeof(VQAData))) == NULL) {
-    return (NULL);
+  if ((vqa = (VQAData *)malloc(sizeof(VQAData))) == nullptr) {
+    return (nullptr);
   }
 
   /*-------------------------------------------------------------------------
@@ -1100,9 +1098,9 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
     cbnode = (VQACBNode *)malloc((sizeof(VQACBNode) + vqa->Max_CB_Size));
 
     /* If failure then clean up and exit. */
-    if (cbnode == NULL) {
+    if (cbnode == nullptr) {
       FreeBuffers(vqa, config, header);
-      return (NULL);
+      return (nullptr);
     }
 
     /* Lock the buffer to prevent page swapping. */
@@ -1141,9 +1139,9 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
         (sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size));
 
     /* If failure then clean up and exit. */
-    if (framenode == NULL) {
+    if (framenode == nullptr) {
       FreeBuffers(vqa, config, header);
-      return (NULL);
+      return (nullptr);
     }
 
     /* Lock the buffer to prevent page swapping. */
@@ -1183,16 +1181,16 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE THE IMAGE BUFFERS IF ONE IS NOT ALREADY PROVIDED.
    *-----------------------------------------------------------------------*/
-  if (config->ImageBuf == NULL) {
+  if (config->ImageBuf == nullptr) {
     /* Allocate our own buffer. */
     if (config->DrawFlags & VQACFGF_BUFFER != 0) {
       vqa->Drawer.ImageBuf =
           (unsigned char *)malloc((header->ImageWidth * header->ImageHeight));
 
       /* If the allocation failed we must free up and exit. */
-      if (vqa->Drawer.ImageBuf == NULL) {
+      if (vqa->Drawer.ImageBuf == nullptr) {
         FreeBuffers(vqa, config, header);
-        return (NULL);
+        return (nullptr);
       }
 
       /* Lock to prevent page swapping. */
@@ -1260,13 +1258,13 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       /* Allocate an audio buffer if the user did not provide one.
        * Otherwise, use the user supplied buffer.
        */
-      if (config->AudioBuf == NULL) {
+      if (config->AudioBuf == nullptr) {
         audio->Buffer = (unsigned char *)malloc(config->AudioBufSize);
 
         /* If failure then clean up and exit. */
-        if (audio->Buffer == NULL) {
+        if (audio->Buffer == nullptr) {
           FreeBuffers(vqa, config, header);
-          return (NULL);
+          return (nullptr);
         }
 
         DPMI_Lock(audio->Buffer, config->AudioBufSize);
@@ -1282,9 +1280,9 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       audio->IsLoaded = (short *)malloc(audio->NumAudBlocks * sizeof(short));
 
       /* If failure then clean up and exit. */
-      if (audio->IsLoaded == NULL) {
+      if (audio->IsLoaded == nullptr) {
         FreeBuffers(vqa, config, header);
-        return (NULL);
+        return (nullptr);
       }
 
       /* Lock to prevent page swapping. */
@@ -1300,9 +1298,9 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
       audio->TempBufSize = ((audio->BytesPerSec / header->FPS) * 2) + 100;
       audio->TempBuf = (unsigned char *)malloc(audio->TempBufSize);
 
-      if (audio->TempBuf == NULL) {
+      if (audio->TempBuf == nullptr) {
         FreeBuffers(vqa, config, header);
-        return (NULL);
+        return (nullptr);
       }
 
       /* Lock to prevent page swapping. */
@@ -1318,9 +1316,9 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
    *-----------------------------------------------------------------------*/
   vqa->Foff = (long *)malloc(header->Frames * sizeof(long));
 
-  if (vqa->Foff == NULL) {
+  if (vqa->Foff == nullptr) {
     FreeBuffers(vqa, config, header);
-    return (NULL);
+    return (nullptr);
   }
 
   /* Lock to prevent page swapping. */
@@ -1372,7 +1370,7 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config,
    * FREE THE AUDIO BUFFERS.
    *-----------------------------------------------------------------------*/
 
-  if ((config->AudioBuf == NULL) && (vqa->Audio.Buffer)) {
+  if ((config->AudioBuf == nullptr) && (vqa->Audio.Buffer)) {
     DPMI_Unlock(vqa->Audio.Buffer, config->AudioBufSize);
     free(vqa->Audio.Buffer);
   }
@@ -1392,7 +1390,7 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config,
   /*-------------------------------------------------------------------------
    * FREE THE IMAGE BUFFER ONLY IF WE ALLOCATED IT.
    *-----------------------------------------------------------------------*/
-  if ((config->ImageBuf == NULL) && vqa->Drawer.ImageBuf) {
+  if ((config->ImageBuf == nullptr) && vqa->Drawer.ImageBuf) {
     DPMI_Unlock(vqa->Drawer.ImageBuf, header->ImageWidth * header->ImageHeight);
     free(vqa->Drawer.ImageBuf);
   }
@@ -1666,7 +1664,7 @@ static long Load_FINF(VQAHandleP *vqap, unsigned long iffsize) {
   /* Load the frame information table if we need to, otherwise we will
    * skip it.
    */
-  if (vqabuf->Foff != NULL) {
+  if (vqabuf->Foff != nullptr) {
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_READ, vqabuf->Foff,
                         PADSIZE(iffsize))) {
       return (VQAERR_READ);
@@ -2183,7 +2181,8 @@ static long Load_SND0(VQAHandleP *vqap, unsigned long iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk.
    */
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (audio->Buffer == NULL)) {
+  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) ||
+      (audio->Buffer == nullptr)) {
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_SEEK, (void *)SEEK_CUR,
                         padsize)) {
       return (VQAERR_SEEK);
@@ -2264,7 +2263,8 @@ static long Load_SND1(VQAHandleP *vqap, unsigned long iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
    */
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (audio->Buffer == NULL)) {
+  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) ||
+      (audio->Buffer == nullptr)) {
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_SEEK, (void *)SEEK_CUR,
                         padsize)) {
       return (VQAERR_SEEK);
@@ -2380,7 +2380,8 @@ static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize) {
   /* If sound is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, just skip the chunk
    */
-  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) || (audio->Buffer == NULL)) {
+  if (((config->OptionFlags & VQAOPTF_AUDIO) == 0) ||
+      (audio->Buffer == nullptr)) {
     if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_SEEK, (void *)SEEK_CUR,
                         padsize)) {
       return (VQAERR_SEEK);

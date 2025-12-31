@@ -63,12 +63,12 @@ class ColorListClass : public ListClass {
                  void const *up, void const *down);
   virtual ~ColorListClass(void);
 
-  virtual int Add_Item(char const *text, RemapControlType *color = NULL);
-  virtual int Add_Item(int text, RemapControlType *color = NULL);
+  virtual int Add_Item(char const *text, RemapControlType *color = nullptr);
+  virtual int Add_Item(int text, RemapControlType *color = nullptr);
   virtual void Remove_Item(char const *text);
 
   virtual void Set_Selected_Style(SelectStyleType style,
-                                  RemapControlType *color = NULL);
+                                  RemapControlType *color = nullptr);
 
   /*
   **	This is the list of colors for each item.

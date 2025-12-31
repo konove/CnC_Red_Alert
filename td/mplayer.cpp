@@ -146,7 +146,7 @@ GameType Select_MPlayer_Game(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   //
   // If neither IPX or winsock are active then do only the modem serial dialog
@@ -616,7 +616,7 @@ void Read_MultiPlayer_Settings(void) {
   /*------------------------------------------------------------------------
   Read all Base-Scenario names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("InitStrings", NULL, NULL, tbuffer,
+  WWGetPrivateProfileString("InitStrings", nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   /*------------------------------------------------------------------------
@@ -627,7 +627,7 @@ void Read_MultiPlayer_Settings(void) {
 
     entry[0] = 0;
 
-    WWGetPrivateProfileString("InitStrings", tbuffer, NULL, entry,
+    WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry,
                               INITSTRBUF_MAX, buffer);
 
     strupr(entry);
@@ -661,7 +661,7 @@ void Read_MultiPlayer_Settings(void) {
   /*........................................................................
   Read the entry names in
   ........................................................................*/
-  WWGetPrivateProfileString("PhoneBook", NULL, NULL, tbuffer,
+  WWGetPrivateProfileString("PhoneBook", nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   while (*tbuffer != '\0') {
@@ -673,7 +673,7 @@ void Read_MultiPlayer_Settings(void) {
     /*.....................................................................
     Read the entire entry in
     .....................................................................*/
-    WWGetPrivateProfileString("PhoneBook", tbuffer, NULL, buf, 128, buffer);
+    WWGetPrivateProfileString("PhoneBook", tbuffer, nullptr, buf, 128, buffer);
 
     /*.....................................................................
     Extract name, phone # & serial port settings
@@ -686,7 +686,7 @@ void Read_MultiPlayer_Settings(void) {
       phone->Name[0] = 0;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       strcpy(phone->Number, tokenptr);
       strupr(phone->Number);
@@ -694,49 +694,49 @@ void Read_MultiPlayer_Settings(void) {
       phone->Number[0] = 0;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       sscanf(tokenptr, "%x", &phone->Settings.Port);
     } else {
       phone->Settings.Port = 0;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.IRQ = atoi(tokenptr);
     } else {
       phone->Settings.IRQ = -1;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.Baud = atoi(tokenptr);
     } else {
       phone->Settings.Baud = -1;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.Compression = atoi(tokenptr);
     } else {
       phone->Settings.Compression = 0;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.ErrorCorrection = atoi(tokenptr);
     } else {
       phone->Settings.ErrorCorrection = 0;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.HardwareFlowControl = atoi(tokenptr);
     } else {
       phone->Settings.HardwareFlowControl = 1;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       strcpy(buf, tokenptr);
 
@@ -758,21 +758,21 @@ void Read_MultiPlayer_Settings(void) {
       phone->Settings.DialMethod = DIAL_TOUCH_TONE;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.InitStringIndex = atoi(tokenptr);
     } else {
       phone->Settings.InitStringIndex = 0;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       phone->Settings.CallWaitStringIndex = atoi(tokenptr);
     } else {
       phone->Settings.CallWaitStringIndex = CALL_WAIT_CUSTOM;
     }
 
-    tokenptr = strtok(NULL, "|");
+    tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
       strcpy(phone->Settings.CallWaitString, tokenptr);
     } else {
@@ -869,7 +869,7 @@ void Write_MultiPlayer_Settings(void) {
   /*------------------------------------------------------------------------
   Clear all existing SerialDefault entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("SerialDefaults", NULL, NULL, buffer);
+  WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr, buffer);
 
   /*------------------------------------------------------------------------
   Save default serial settings in opposite order you want to see them
@@ -902,7 +902,7 @@ void Write_MultiPlayer_Settings(void) {
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("InitStrings", NULL, NULL, buffer);
+  WWWritePrivateProfileString("InitStrings", nullptr, nullptr, buffer);
 
   /*------------------------------------------------------------------------
   Save all InitString entries.  In descending order so they come out in
@@ -916,7 +916,7 @@ void Write_MultiPlayer_Settings(void) {
   /*------------------------------------------------------------------------
   Clear all existing Phone Book entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("PhoneBook", NULL, NULL, buffer);
+  WWWritePrivateProfileString("PhoneBook", nullptr, nullptr, buffer);
 
   /*------------------------------------------------------------------------
   Save all Phone Book entries.
@@ -1164,7 +1164,7 @@ static void Garble_Message(char *buf) {
   p[0] = 0;
 
   for (i = 0; i < 40; i++) {
-    words[i] = NULL;
+    words[i] = nullptr;
   }
 
   /*------------------------------------------------------------------------
@@ -1180,7 +1180,7 @@ static void Garble_Message(char *buf) {
   while (p) {
     words[numwords] = p;
     numwords++;
-    p = strtok(NULL, " ");
+    p = strtok(nullptr, " ");
   }
 
   /*------------------------------------------------------------------------
@@ -1191,12 +1191,12 @@ static void Garble_Message(char *buf) {
   buf[0] = 0;
   for (i = 0; i < numwords; i++) {
     j = Sim_IRandom(0, numwords);
-    if (words[j] == NULL) {  // this word has been used already
+    if (words[j] == nullptr) {  // this word has been used already
       i--;
       continue;
     }
     strcat(buf, words[j]);
-    words[j] = NULL;
+    words[j] = nullptr;
     if (i < numwords - 1) strcat(buf, " ");
   }
   strcat(buf, punct);
@@ -1271,7 +1271,7 @@ int Surrender_Dialog(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   TextButtonClass okbtn(
       BUTTON_OK, TXT_OK,

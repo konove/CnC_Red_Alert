@@ -192,7 +192,7 @@ class TeamClass : public AbstractClass {
   CCPtr<TriggerClass> Trigger;
 
   //------------------------------------------------------------
-  TeamClass(TeamTypeClass const *team = 0, HouseClass *owner = 0);
+  TeamClass(TeamTypeClass const *team = nullptr, HouseClass *owner = nullptr);
   TeamClass(NoInitClass const &x)
       : AbstractClass(x),
         Class(x),
@@ -217,7 +217,7 @@ class TeamClass : public AbstractClass {
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
-  bool Is_Empty(void) const { return (Member == (void *)NULL); }
+  bool Is_Empty(void) const { return (Member == (void *)nullptr); }
   bool Has_Entered_Map(void) const;
   void Force_Active(void) {
     IsForcedActive = true;

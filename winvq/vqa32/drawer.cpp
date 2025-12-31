@@ -85,7 +85,6 @@ static long Select_Frame(VQAHandleP *vqap);
 static void Prepare_Frame(VQAData *vqabuf);
 
 static long DrawFrame_Buffer(VQAHandle *vqa);
-static long PageFlip_Nop(VQAHandle *vqa);
 
 static void __cdecl UnVQ_Nop(unsigned char *codebook, unsigned char *pointers,
                              unsigned char *buffer, unsigned long blocksperrow,
@@ -109,13 +108,13 @@ static void __cdecl UnVQ_Nop(unsigned char *codebook, unsigned char *pointers,
  *     VQA - Pointer to VQAHandle to get palette for.
  *
  * RESULT
- *     Palette - Pointer to palette or NULL if no palette available.
+ *     Palette - Pointer to palette or nullptr if no palette available.
  *
  ****************************************************************************/
 
 unsigned char *VQA_GetPalette(VQAHandle *vqa) {
   VQADrawer *drawer;
-  unsigned char *palette = NULL;
+  unsigned char *palette = nullptr;
 
   /* Dereference commonly used data members for quick access. */
   drawer = &((VQAHandleP *)vqa)->VQABuf->Drawer;
@@ -495,9 +494,9 @@ static long Select_Frame(VQAHandleP *vqap) {
         drawer->Flags |= VQADRWF_SETPAL;
       }
 
-      /* Invoke callback with NULL screen ptr */
-      if (config->DrawerCallback != NULL) {
-        if ((config->DrawerCallback(NULL, curframe->FrameNum)) != 0) {
+      /* Invoke callback with nullptr screen ptr */
+      if (config->DrawerCallback != nullptr) {
+        if ((config->DrawerCallback(nullptr, curframe->FrameNum)) != 0) {
           return (VQAERR_EOF);
         }
       }
@@ -671,7 +670,7 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
   vqabuf->Flags |= VQADATF_UPDATE;
 
   /* Invoke user's callback routine */
-  if (config->DrawerCallback != NULL) {
+  if (config->DrawerCallback != nullptr) {
     if ((config->DrawerCallback(drawer->ImageBuf, curframe->FrameNum)) != 0) {
       return (VQAERR_EOF);
     }
@@ -708,40 +707,6 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-static void UnVQ_Nop(unsigned char *codebook, unsigned char *pointers,
-                     unsigned char *buffer, unsigned long blocksperrow,
-                     unsigned long numrows, unsigned long bufwidth) {
-  /* Suppress compiler warnings */
-  codebook = codebook;
-  pointers = pointers;
-  buffer = buffer;
-  blocksperrow = blocksperrow;
-  numrows = numrows;
-  bufwidth = bufwidth;
-}
-
-/****************************************************************************
- *
- * NAME
- *     PageFlip_Nop - Do nothing page flip.
- *
- * SYNOPSIS
- *     PageFlip_Nop(VQA)
- *
- *     void PageFlip_Nop(VQAHandle *);
- *
- * FUNCTION
- *
- * INPUTS
- *     VQA - Pointer to VQA handle.
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
-
-static long PageFlip_Nop(VQAHandle *vqa) {
-  vqa = vqa;
-
-  return (0);
-}
+static void UnVQ_Nop(unsigned char * /*codebook*/, unsigned char * /*pointers*/,
+                     unsigned char * /*buffer*/, unsigned long /*blocksperrow*/,
+                     unsigned long /*numrows*/, unsigned long /*bufwidth*/) {}

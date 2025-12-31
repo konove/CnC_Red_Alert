@@ -362,7 +362,7 @@ bool DriveClass::Teleport_To(CELL cell) {
   **	All cargo gets destroyed.
   */
   if (Rule.IsChronoKill) {
-    Kill_Cargo(NULL);
+    Kill_Cargo(nullptr);
   }
 
   Stop_Driver();
@@ -562,7 +562,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   **	If the player clicked on refinery but it is not busy, then assign
   **	it to unload at the refinery.
   */
-  if (b != NULL && *b == STRUCT_REFINERY && What_Am_I() == RTTI_UNIT &&
+  if (b != nullptr && *b == STRUCT_REFINERY && What_Am_I() == RTTI_UNIT &&
       ((UnitTypeClass *)Techno_Type_Class())->IsToHarvest) {
     if (Contact_With_Whom() != b && !b->In_Radio_Contact()) {
       /*
@@ -852,13 +852,13 @@ void DriveClass::Per_Cell_Process(PCPType why) {
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 02/02/1992 JLB : Created. * 10/18/1993 JLB : This should be called
- *repeatedly until HeadTo is not NULL.               * 03/16/1994 JLB : Revamped
- *for track logic.                                                * 04/15/1994
- *JLB : Converted to member function. * 06/19/1995 JLB : Fixed so that it won't
- *fire on ground unnecessarily.                     * 07/13/1995 JLB : Handles
- *bumping into cloaked objects.                                    * 09/22/1995
- *JLB : Breaks out of hopeless hunt mode. * 07/10/1996 JLB : Sets scan limit if
- *necessary.                                            *
+ *repeatedly until HeadTo is not nullptr.               * 03/16/1994 JLB :
+ * Revamped for track logic.                                                *
+ * 04/15/1994 JLB : Converted to member function. * 06/19/1995 JLB : Fixed so
+ * that it won't fire on ground unnecessarily.                     * 07/13/1995
+ * JLB : Handles bumping into cloaked objects.   * 09/22/1995 JLB : Breaks out
+ * of hopeless hunt mode. * 07/10/1996 JLB : Sets scan limit if necessary.
+ *                                      *
  *=============================================================================================*/
 bool DriveClass::Start_Of_Move(void) {
   assert(IsActive);

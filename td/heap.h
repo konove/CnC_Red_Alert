@@ -62,7 +62,7 @@ class FixedHeapClass {
   int Length(void) { return TotalCount; };
   int Avail(void) { return TotalCount - ActiveCount; };
 
-  virtual int Set_Heap(int count, void *buffer = 0);
+  virtual int Set_Heap(int count, void *buffer = nullptr);
   virtual void *Allocate(void);
   virtual void Clear(void);
   virtual int Free(void *pointer);
@@ -142,7 +142,7 @@ class FixedIHeapClass : public FixedHeapClass {
   FixedIHeapClass(int size) : FixedHeapClass(size){};
   virtual ~FixedIHeapClass(void){};
 
-  virtual int Set_Heap(int count, void *buffer = 0);
+  virtual int Set_Heap(int count, void *buffer = nullptr);
   virtual void *Allocate(void);
   virtual void Clear(void);
   virtual int Free(void *pointer);

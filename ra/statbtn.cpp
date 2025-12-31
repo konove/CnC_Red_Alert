@@ -77,14 +77,14 @@
 StaticButtonClass::StaticButtonClass(unsigned, char const* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
-    : GadgetClass(x, y, w, h, FlagEnum(0)), String(NULL), PrintFlags(style) {
+    : GadgetClass(x, y, w, h, FlagEnum(0)), String(nullptr), PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
   Set_Text(text, false);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String);
     }
@@ -108,7 +108,7 @@ StaticButtonClass::StaticButtonClass(unsigned, char const* text,
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass(void)
     : GadgetClass(0, 0, 0, 0, FlagEnum(0)),
-      String(NULL),
+      String(nullptr),
       PrintFlags(TPF_8POINT) {}
 
 /***********************************************************************************************
@@ -171,22 +171,22 @@ int StaticButtonClass::Draw_Me(int forced) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void StaticButtonClass::Set_Text(char const* text, bool resize) {
-  if (String != NULL) {
+  if (String != nullptr) {
     delete[] String;
-    String = NULL;
+    String = nullptr;
   }
 
-  if (text != NULL) {
+  if (text != nullptr) {
     String = new char[strlen(text) + 1];
-    if (String != NULL) {
+    if (String != nullptr) {
       strcpy(String, text);
     }
   }
 
   Flag_To_Redraw();
-  if (resize && String != NULL) {
+  if (resize && String != nullptr) {
     Draw_Background();
-    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
     Width = String_Pixel_Width(String);
     Height = FontHeight + FontYSpacing;
     Background = Buffer();
@@ -215,9 +215,9 @@ void StaticButtonClass::Draw_Background(void) {
   **	If the background hasn't been recorded from the buffer, then
   **	allocate and record the background image now.
   */
-  if (Background.Get_Buffer() == NULL && Width > 0 && Height > 0) {
+  if (Background.Get_Buffer() == nullptr && Width > 0 && Height > 0) {
     new (&Background) Buffer(Width * Height);
-    if (Background.Get_Buffer() != NULL) {
+    if (Background.Get_Buffer() != nullptr) {
       LogicPage->To_Buffer(X, Y, Width, Height, Background,
                            Background.Get_Size());
     }
@@ -227,7 +227,7 @@ void StaticButtonClass::Draw_Background(void) {
   **	If there is a background image present, then restore it to the buffer
   *now.
   */
-  if (Background.Get_Buffer() != NULL && LogicPage->Lock()) {
+  if (Background.Get_Buffer() != nullptr && LogicPage->Lock()) {
     Buffer_To_Page(X, Y, Width, Height, Background, *LogicPage);
     LogicPage->Unlock();
   }
@@ -253,7 +253,7 @@ void StaticButtonClass::Draw_Text(char const* text) {
   /*
   **	Display the text.
   */
-  if (String != NULL) {
+  if (String != nullptr) {
     int x = X;
 
     if (PrintFlags & TPF_CENTER) {

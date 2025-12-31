@@ -111,7 +111,7 @@ bool CellClass::Load(FileClass &file) {
   /*
   -------------------------- Load the object data --------------------------
   */
-  rc = Read_Object(this, sizeof(CellClass), sizeof(CellClass), file, 0);
+  rc = Read_Object(this, sizeof(CellClass), sizeof(CellClass), file, nullptr);
 
   /*
   ------------------------ Load the trigger pointer ------------------------
@@ -183,17 +183,17 @@ void CellClass::Code_Pointers(void) {
   if (Overlapper[0] && Overlapper[0]->IsActive) {
     Overlapper[0] = (ObjectClass *)Overlapper[0]->As_Target();
   } else
-    Overlapper[0] = NULL;
+    Overlapper[0] = nullptr;
 
   if (Overlapper[1] && Overlapper[1]->IsActive) {
     Overlapper[1] = (ObjectClass *)Overlapper[1]->As_Target();
   } else
-    Overlapper[1] = NULL;
+    Overlapper[1] = nullptr;
 
   if (Overlapper[2] && Overlapper[2]->IsActive) {
     Overlapper[2] = (ObjectClass *)Overlapper[2]->As_Target();
   } else
-    Overlapper[2] = NULL;
+    Overlapper[2] = nullptr;
 
   /*
   ------------------------ Convert trigger pointer -------------------------

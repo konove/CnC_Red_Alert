@@ -105,10 +105,10 @@ class CommBufferClass {
   /*
   ......................... Send Queue routines .........................
   */
-  int Queue_Send(void *buf, int buflen, void *extrabuf = NULL,
+  int Queue_Send(void *buf, int buflen, void *extrabuf = nullptr,
                  int extralen = 0);
-  int UnQueue_Send(void *buf, int *buflen, int index, void *extrabuf = NULL,
-                   int *extralen = NULL);
+  int UnQueue_Send(void *buf, int *buflen, int index, void *extrabuf = nullptr,
+                   int *extralen = nullptr);
   int Num_Send(void) { return (SendCount); }  // # entries in queue
   int Max_Send(void) { return (MaxSend); }    // max # send queue entries
   SendQueueType *Get_Send(int index);         // random access to queue
@@ -117,10 +117,10 @@ class CommBufferClass {
   /*
   ....................... Receive Queue routines ........................
   */
-  int Queue_Receive(void *buf, int buflen, void *extrabuf = NULL,
+  int Queue_Receive(void *buf, int buflen, void *extrabuf = nullptr,
                     int extralen = 0);
-  int UnQueue_Receive(void *buf, int *buflen, int index, void *extrabuf = NULL,
-                      int *extralen = NULL);
+  int UnQueue_Receive(void *buf, int *buflen, int index, void *extrabuf = nullptr,
+                      int *extralen = nullptr);
   int Num_Receive(void) { return (ReceiveCount); }  // # entries in queue
   int Max_Receive(void) { return (MaxReceive); }    // max # recv queue entries
   ReceiveQueueType *Get_Receive(int index);         // random access to queue

@@ -90,7 +90,7 @@ Buffer::Buffer(void const *buffer, long size)
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-Buffer::Buffer(long size) : BufferPtr(NULL), Size(size), IsAllocated(false) {
+Buffer::Buffer(long size) : BufferPtr(nullptr), Size(size), IsAllocated(false) {
   if (size > 0) {
     BufferPtr = new char[size];
     IsAllocated = true;
@@ -179,7 +179,7 @@ void Buffer::Reset(void) {
   if (IsAllocated) {
     delete[] (char *)BufferPtr;
   }
-  BufferPtr = NULL;
+  BufferPtr = nullptr;
   Size = 0;
   IsAllocated = false;
 }

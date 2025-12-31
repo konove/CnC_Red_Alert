@@ -47,7 +47,7 @@
 */
 template <class T>
 CCPtr<T>::CCPtr(T* ptr) : ID(-1) {
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ID = ptr->ID;
   }
 }

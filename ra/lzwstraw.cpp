@@ -66,8 +66,8 @@
 LZWStraw::LZWStraw(CompControl control, int blocksize)
     : Control(control),
       Counter(0),
-      Buffer(NULL),
-      Buffer2(NULL),
+      Buffer(nullptr),
+      Buffer2(nullptr),
       BlockSize(blocksize) {
   SafetyMargin = BlockSize;
   //	SafetyMargin = BlockSize/128+1;
@@ -93,10 +93,10 @@ LZWStraw::LZWStraw(CompControl control, int blocksize)
  *=============================================================================================*/
 LZWStraw::~LZWStraw(void) {
   delete[] Buffer;
-  Buffer = NULL;
+  Buffer = nullptr;
 
   delete[] Buffer2;
-  Buffer2 = NULL;
+  Buffer2 = nullptr;
 }
 
 /***********************************************************************************************
@@ -121,14 +121,14 @@ LZWStraw::~LZWStraw(void) {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LZWStraw::Get(void *destbuf, int slen) {
-  assert(Buffer != NULL);
+  assert(Buffer != nullptr);
 
   int total = 0;
 
   /*
   **	Verify parameters for legality.
   */
-  if (destbuf == NULL || slen < 1) {
+  if (destbuf == nullptr || slen < 1) {
     return (0);
   }
 

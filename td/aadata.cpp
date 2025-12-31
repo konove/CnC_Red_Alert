@@ -58,8 +58,8 @@
 #include <filesystem>
 #include <string>
 
-void const *AircraftTypeClass::LRotorData = NULL;
-void const *AircraftTypeClass::RRotorData = NULL;
+void const *AircraftTypeClass::LRotorData = nullptr;
+void const *AircraftTypeClass::RRotorData = nullptr;
 
 // A-10 attack plane
 static AircraftTypeClass const AttackPlane(
@@ -533,7 +533,7 @@ short const *AircraftTypeClass::Overlap_List(void) const {
  *=============================================================================================*/
 BuildingClass *AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
                                                    HousesType house) const {
-  BuildingClass *anybuilding = NULL;
+  BuildingClass *anybuilding = nullptr;
   for (int index = 0; index < Buildings.Count(); index++) {
     BuildingClass *building = Buildings.Ptr(index);
 
@@ -654,7 +654,7 @@ void AircraftTypeClass::Init(TheaterType theater) {
       for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
         AircraftTypeClass const &uclass = As_Reference(index);
 
-        ((void const *&)uclass.CameoData) = NULL;
+        ((void const *&)uclass.CameoData) = nullptr;
 
         const auto filename = std::string(uclass.IniName).substr(0, 4) + "ICNH";
 

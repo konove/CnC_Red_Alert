@@ -158,14 +158,14 @@ extern MixFileClass *TheaterIcons;
  *=============================================================================================*/
 DisplayClass::DisplayClass(void) {
   TacticalCoord = 0;
-  ShadowShapes = 0;
-  TransIconset = 0;
+  ShadowShapes = nullptr;
+  TransIconset = nullptr;
   ZoneCell = 0;
   ZoneOffset = 0;
-  CursorSize = 0;
+  CursorSize = nullptr;
   ProximityCheck = false;
-  PendingObjectPtr = 0;
-  PendingObject = 0;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
   PendingHouse = HOUSE_NONE;
   IsRepairMode = false;
   IsTargettingMode = false;
@@ -265,10 +265,10 @@ void DisplayClass::Init_Clear(void) {
   /*
   ** Clear any object being placed
   */
-  PendingObjectPtr = 0;
-  PendingObject = 0;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
   PendingHouse = HOUSE_NONE;
-  CursorSize = 0;
+  CursorSize = nullptr;
   IsTargettingMode = false;
   IsRepairMode = false;
   IsRubberBand = false;
@@ -700,7 +700,7 @@ void DisplayClass::Set_Cursor_Shape(short const *list) {
     ZoneOffset = -(((h / 2) * MAP_CELL_W) + (w / 2));
     Cursor_Mark(ZoneCell + ZoneOffset, true);
   } else {
-    CursorSize = 0;
+    CursorSize = nullptr;
   }
 }
 
@@ -1001,7 +1001,7 @@ void DisplayClass::AI(KeyNumType &input, int x, int y) {
       (Get_Mouse_X() < TacPixelX || Get_Mouse_Y() < TacPixelY ||
        Get_Mouse_X() >= (TacPixelX + Lepton_To_Pixel(TacLeptonWidth)) ||
        Get_Mouse_Y() >= (TacPixelY + Lepton_To_Pixel(TacLeptonHeight)))) {
-    Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), NULL, ACTION_NONE);
+    Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), nullptr, ACTION_NONE);
   }
 
   MapClass::AI(input, x, y);
@@ -1191,7 +1191,7 @@ void DisplayClass::Read_INI(char *buffer) {
   /*
   **	Read all entry names into 'tbuffer'.
   */
-  WWGetPrivateProfileString(trigsection, NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(trigsection, nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   /*
@@ -1201,7 +1201,7 @@ void DisplayClass::Read_INI(char *buffer) {
     /*
     **	Get a cell trigger assignment.
     */
-    WWGetPrivateProfileString(trigsection, tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(trigsection, tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -1265,7 +1265,7 @@ void DisplayClass::Write_INI(char *buffer) {
   /*
   **	Erase the CellTriggers section.
   */
-  WWWritePrivateProfileString("CellTriggers", NULL, NULL, buffer);
+  WWWritePrivateProfileString("CellTriggers", nullptr, nullptr, buffer);
 
   /*
   **	Save the cell's triggers.
@@ -2188,7 +2188,7 @@ void DisplayClass::Redraw_Shadow(void) {
                 int shadow = Cell_Shadow(cell);
                 if (shadow >= 0) {
                   CC_Draw_Shape(ShadowShapes, shadow, xpixel, ypixel,
-                                WINDOW_TACTICAL, SHAPE_GHOST, NULL,
+                                WINDOW_TACTICAL, SHAPE_GHOST, nullptr,
                                 ShadowTrans);
                 }
               }
@@ -2274,7 +2274,7 @@ void DisplayClass::Redraw_Shadow_Rects(void) {
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass *DisplayClass::Next_Object(ObjectClass *object) {
-  ObjectClass *firstobj = 0;
+  ObjectClass *firstobj = nullptr;
   bool foundmatch = false;
 
   if (!object) {
@@ -2316,7 +2316,7 @@ ObjectClass *DisplayClass::Next_Object(ObjectClass *object) {
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
 ObjectClass *DisplayClass::Prev_Object(ObjectClass *object) {
-  ObjectClass *firstobj = 0;
+  ObjectClass *firstobj = nullptr;
   bool foundmatch = false;
 
   if (!object) {
@@ -2767,7 +2767,7 @@ void DisplayClass::Refresh_Band(void) {
 int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
   int x, y;  // Sub cell pixel coordinates.
   bool shadow;
-  ObjectClass *object = 0;
+  ObjectClass *object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
@@ -2968,10 +2968,10 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
 void DisplayClass::Mouse_Right_Press(void) {
   if (PendingObjectPtr && PendingObjectPtr->Is_Techno()) {
     // PendingObjectPtr->Transmit_Message(RADIO_OVER_OUT);
-    PendingObjectPtr = 0;
-    PendingObject = 0;
+    PendingObjectPtr = nullptr;
+    PendingObject = nullptr;
     PendingHouse = HOUSE_NONE;
-    Set_Cursor_Shape(0);
+    Set_Cursor_Shape(nullptr);
   } else {
     if (IsRepairMode) {
       IsRepairMode = false;

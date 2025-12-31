@@ -243,7 +243,7 @@ HouseClass *HouseClass::As_Pointer(HousesType house) {
       }
     }
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -665,18 +665,18 @@ HouseClass::HouseClass(HousesType house)
       Tiberium(0),
       Credits(0),
       Capacity(0),
-      AircraftTotals(NULL),
-      InfantryTotals(NULL),
-      UnitTotals(NULL),
-      BuildingTotals(NULL),
-      VesselTotals(NULL),
-      DestroyedAircraft(NULL),
-      DestroyedInfantry(NULL),
-      DestroyedUnits(NULL),
-      DestroyedBuildings(NULL),
-      DestroyedVessels(NULL),
-      CapturedBuildings(NULL),
-      TotalCrates(NULL),
+      AircraftTotals(nullptr),
+      InfantryTotals(nullptr),
+      UnitTotals(nullptr),
+      BuildingTotals(nullptr),
+      VesselTotals(nullptr),
+      DestroyedAircraft(nullptr),
+      DestroyedInfantry(nullptr),
+      DestroyedUnits(nullptr),
+      DestroyedBuildings(nullptr),
+      DestroyedVessels(nullptr),
+      CapturedBuildings(nullptr),
+      TotalCrates(nullptr),
       AircraftFactories(0),
       InfantryFactories(0),
       UnitFactories(0),
@@ -805,7 +805,7 @@ HouseClass::HouseClass(HousesType house)
  * HISTORY: * 8/6/96 4:48PM ST : Created *
  *=============================================================================================*/
 HouseClass::~HouseClass(void) {
-  Class = 0;
+  Class = nullptr;
 
   if (Session.Type == GAME_INTERNET) {
     delete AircraftTotals;
@@ -879,7 +879,7 @@ HouseStaticClass::HouseStaticClass(void)
 bool HouseClass::Can_Build(ObjectTypeClass const *type,
                            HousesType house) const {
   assert(Houses.ID(this) == ID);
-  assert(type != NULL);
+  assert(type != nullptr);
 
   /*
   **	An object with a prohibited tech level availability will never be
@@ -1080,7 +1080,7 @@ void HouseClass::AI(void) {
     int maxteams = Random_Pick(2, (int)(((Control.TechLevel - 1) / 3) + 1));
     for (int index = 0; index < maxteams; index++) {
       TeamTypeClass const *ttype = Suggested_New_Team(true);
-      if (ttype != NULL) {
+      if (ttype != nullptr) {
         ScenarioInit++;
         ttype->Create_One_Of();
         ScenarioInit--;
@@ -1100,7 +1100,7 @@ void HouseClass::AI(void) {
   */
   if (FlagHome != 0 && (Frame % TICKS_PER_SECOND) == 0) {
     TechnoClass *techno = Map[FlagHome].Cell_Techno();
-    if (techno != NULL) {
+    if (techno != nullptr) {
       bool moving = false;
       if (techno->Is_Foot()) {
         if (Target_Legal(((FootClass *)techno)->NavCom)) {
@@ -1130,7 +1130,7 @@ void HouseClass::AI(void) {
         int count = 0;
         while (!(techno->IsInLimbo) && count++ < 5) {
           int damage = techno->Strength;
-          techno->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+          techno->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         }
       }
     }
@@ -1167,7 +1167,7 @@ void HouseClass::AI(void) {
           //     land mines from blowing up under low-power conditions
           if (b.Class->Drain) {
             int damage = 1;
-            b.Take_Damage(damage, 0, WARHEAD_AP, 0);
+            b.Take_Damage(damage, 0, WARHEAD_AP, nullptr);
           }
         }
       }
@@ -1212,19 +1212,19 @@ void HouseClass::AI(void) {
             Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay);
         Map.Flash_Power();
 
-        char const *text = NULL;
+        char const *text = nullptr;
         if (BQuantity[STRUCT_AAGUN] > 0) {
           text = Text_String(TXT_POWER_AAGUN);
         }
         if (BQuantity[STRUCT_TESLA] > 0) {
           text = Text_String(TXT_POWER_TESLA);
         }
-        if (text == NULL) {
+        if (text == nullptr) {
           text = Text_String(TXT_LOW_POWER);
         }
-        if (text != NULL) {
+        if (text != nullptr) {
           Session.Messages.Add_Message(
-              NULL, 0, text, PCOLOR_GREEN,
+              nullptr, 0, text, PCOLOR_GREEN,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               Rule.MessageDelay * TICKS_PER_MINUTE);
         }
@@ -1351,7 +1351,7 @@ void HouseClass::AI(void) {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass *building = Buildings.Ptr(index);
 #ifdef FIXIT_RADAR_JAMMED
-        if (building != NULL && !building->IsInLimbo &&
+        if (building != nullptr && !building->IsInLimbo &&
             building->House == PlayerPtr) {
 #else
         if (building && building->House == PlayerPtr) {
@@ -2204,8 +2204,8 @@ void HouseClass::Make_Ally(HousesType house) {
       **	An alliance with another human player will cause the computer
       **	players (if present) to become paranoid.
       */
-      if (hptr != NULL && IsHuman && Rule.IsComputerParanoid) {
-        //			if (hptr != NULL && hptr->IsHuman) {
+      if (hptr != nullptr && IsHuman && Rule.IsComputerParanoid) {
+        //			if (hptr != nullptr && hptr->IsHuman) {
         //				if (!hptr->IsHuman) {
         //					hptr->Make_Ally(Class->House);
         //				}
@@ -2222,10 +2222,10 @@ void HouseClass::Make_Ally(HousesType house) {
       for (int index = 0; index < Logic.Count(); index++) {
         ObjectClass *object = Logic[index];
 
-        if (object != NULL && object->Is_Techno() && !object->IsInLimbo &&
+        if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
             object->Owner() == Class->House) {
           TARGET target = ((TechnoClass *)object)->TarCom;
-          if (Target_Legal(target) && As_Techno(target) != NULL) {
+          if (Target_Legal(target) && As_Techno(target) != nullptr) {
             if (Is_Ally(As_Techno(target))) {
               ((TechnoClass *)object)->Assign_Target(TARGET_NONE);
             }
@@ -2257,7 +2257,7 @@ void HouseClass::Make_Ally(HousesType house) {
         // Session.Players[((HouseClass::As_Pointer(house))->Class->House) -
         // HOUSE_MULTI1]->Name);
         Session.Messages.Add_Message(
-            NULL, 0, buffer, RemapColor,
+            nullptr, 0, buffer, RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TICKS_PER_MINUTE * Rule.MessageDelay);
       }
@@ -2266,7 +2266,7 @@ void HouseClass::Make_Ally(HousesType house) {
       //
       // Notify the TEN server of the new alliance
       //
-      if (this == PlayerPtr && hptr != NULL && Session.Type == GAME_TEN) {
+      if (this == PlayerPtr && hptr != nullptr && Session.Type == GAME_TEN) {
         Send_TEN_Alliance(hptr->IniName, 1);
       }
 #endif  // TEN
@@ -2275,8 +2275,8 @@ void HouseClass::Make_Ally(HousesType house) {
       //
       // Notify the MPATH server of the new alliance
       //
-      // if (this == PlayerPtr && hptr != NULL && Session.Type == GAME_MPATH) {
-      // Send_MPATH_Alliance(hptr->IniName, 1);
+      // if (this == PlayerPtr && hptr != nullptr && Session.Type == GAME_MPATH)
+      // { Send_MPATH_Alliance(hptr->IniName, 1);
       //}
 #endif  // MPATH
 
@@ -2314,7 +2314,7 @@ void HouseClass::Make_Enemy(HousesType house) {
     /*
     **	Breaking an alliance is a bilateral event.
     */
-    if (enemy != NULL && enemy->Is_Ally(this)) {
+    if (enemy != nullptr && enemy->Is_Ally(this)) {
       enemy->Allies &= ~(1L << Class->House);
 
       if (ScenarioInit) {
@@ -2332,7 +2332,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       // Session.Players[Class->House - HOUSE_MULTI1]->Name,
       // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
       Session.Messages.Add_Message(
-          NULL, 0, buffer, RemapColor,
+          nullptr, 0, buffer, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TICKS_PER_MINUTE * Rule.MessageDelay);
       Map.Flag_To_Redraw(false);
@@ -2341,7 +2341,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       //
       // Notify the TEN server of the broken alliance
       //
-      if (this == PlayerPtr && enemy != NULL && Session.Type == GAME_TEN) {
+      if (this == PlayerPtr && enemy != nullptr && Session.Type == GAME_TEN) {
         Send_TEN_Alliance(enemy->IniName, 0);
       }
 #endif  // TEN
@@ -2350,8 +2350,8 @@ void HouseClass::Make_Enemy(HousesType house) {
       //
       // Notify the MPATH server of the broken alliance
       //
-      // if (this == PlayerPtr && enemy != NULL && Session.Type == GAME_MPATH) {
-      // Send_MPATH_Alliance(enemy->IniName, 0);
+      // if (this == PlayerPtr && enemy != nullptr && Session.Type ==
+      // GAME_MPATH) { Send_MPATH_Alliance(enemy->IniName, 0);
       //}
 #endif  // MPATH
     }
@@ -2389,7 +2389,7 @@ unsigned char const *HouseClass::Remap_Table(bool blushing,
 
   if (blushing) return (&Map.FadingLight[0]);
 
-  if (remap == REMAP_NONE) return (0);
+  if (remap == REMAP_NONE) return (nullptr);
 
   return (ColorRemaps[RemapColor].RemapTable);
 }
@@ -2404,7 +2404,7 @@ unsigned char const *HouseClass::Remap_Table(bool blushing,
  * INPUT:   alertcheck  -- Select from the auto-create team list. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the team type that should be created. If
- *no team should  * be created, then NULL is returned. *
+ *no team should  * be created, then nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -2490,7 +2490,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   **	If the house is already busy producing the requested object, then
   **	return with this failure code, unless we are restarting production.
   */
-  if (fptr != NULL) {
+  if (fptr != nullptr) {
     if (fptr->Is_Building()) {
       return (PROD_CANT);
     }
@@ -2544,7 +2544,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   **	If the house is already busy producing the requested object, then
   **	return with this failure code.
   */
-  if (fptr == NULL) return (PROD_CANT);
+  if (fptr == nullptr) return (PROD_CANT);
 
   /*
   **	Actually suspend the production.
@@ -2586,7 +2586,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   /*
   **	If there is no factory to abandon, then return with a failure code.
   */
-  if (fptr == NULL) return (PROD_CANT);
+  if (fptr == nullptr) return (PROD_CANT);
 
   /*
   **	Tell the sidebar that it needs to be redrawn because of this.
@@ -2595,10 +2595,10 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
     Map.Abandon_Production(type, fptr->ID);
 
     if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
-      Map.PendingObjectPtr = 0;
-      Map.PendingObject = 0;
+      Map.PendingObjectPtr = nullptr;
+      Map.PendingObject = nullptr;
       Map.PendingHouse = HOUSE_NONE;
-      Map.Set_Cursor_Shape(0);
+      Map.Set_Cursor_Shape(nullptr);
     }
   }
 
@@ -2606,7 +2606,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   **	Abandon production of the object.
   */
   fptr->Abandon();
-  Set_Factory(type, NULL);
+  Set_Factory(type, nullptr);
   delete fptr;
 
   return (PROD_OK);
@@ -2633,7 +2633,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   ** Loop through all of the building objects on the map
   ** and see which ones are available.
   */
-  BuildingClass *bestptr = NULL;
+  BuildingClass *bestptr = nullptr;
   int best = -1;
 
   for (int index = 0; index < Buildings.Count(); index++) {
@@ -2643,7 +2643,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
     ** If the building is valid, not in limbo, not in the process of
     ** being destroyed and not our ally, then we can consider it.
     */
-    if (b != NULL && !b->IsInLimbo && b->Strength && !Is_Ally(b)) {
+    if (b != nullptr && !b->IsInLimbo && b->Strength && !Is_Ally(b)) {
       if (Percent_Chance(90) && (b->Value() > best || best == -1)) {
         best = b->Value();
         bestptr = b;
@@ -2680,8 +2680,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
 bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   assert(Houses.ID(this) == ID);
 
-  BuildingClass *launchsite = 0;
-  AnimClass *anim = 0;
+  BuildingClass *launchsite = nullptr;
+  AnimClass *anim = nullptr;
   switch (id) {
     case SPC_SONAR_PULSE:
       // Automatically discharge the sonar pulse and uncloak all subs.
@@ -2711,7 +2711,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_Ready()) {
         if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_One_Time()) {
           BulletClass *bullet =
-              new BulletClass(BULLET_NUKE_DOWN, ::As_Target(cell), 0, 200,
+              new BulletClass(BULLET_NUKE_DOWN, ::As_Target(cell), nullptr, 200,
                               WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
             int celly = Cell_Y(cell);
@@ -2755,9 +2755,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
     case SPC_PARA_INFANTRY:
       if (SuperWeapon[SPC_PARA_INFANTRY].Is_Ready()) {
         TeamTypeClass *ttype = TeamTypeClass::As_Pointer("@PINF");
-        if (ttype == NULL) {
+        if (ttype == nullptr) {
           ttype = new TeamTypeClass;
-          if (ttype != NULL) {
+          if (ttype != nullptr) {
             strcpy(ttype->IniName, "@PINF");
             ttype->IsTransient = true;
             ttype->IsPrebuilt = false;
@@ -2778,7 +2778,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           }
         }
 
-        if (ttype != NULL) {
+        if (ttype != nullptr) {
           ttype->House = Class->House;
           Scen.Waypoint[WAYPT_SPECIAL] = Map.Nearby_Location(cell, SPEED_FOOT);
           Do_Reinforcements(ttype);
@@ -2899,10 +2899,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       TechnoClass *tech = (TechnoClass *)::As_Object(UnitToTeleport);
       CELL oldcell = cell;
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-      if (tech != NULL && tech->IsActive && tech->Is_Foot() &&
+      if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
 #else
-      if (tech != NULL && tech->Is_Foot() &&
+      if (tech != nullptr && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
 #endif
         /*
@@ -2914,7 +2914,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           inf->Coord = Cell_Coord(cell);
           inf->Mark(MARK_DOWN);
           int damage = inf->Strength;
-          inf->Take_Damage(damage, 0, WARHEAD_FIRE, 0, true);
+          inf->Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         } else if (tech->What_Am_I() == RTTI_UNIT &&
                    *(UnitClass *)tech == UNIT_DEMOTRUCK) {
@@ -3021,7 +3021,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 bool HouseClass::Place_Object(RTTIType type, CELL cell) {
   assert(Houses.ID(this) == ID);
 
-  TechnoClass *tech = 0;
+  TechnoClass *tech = nullptr;
   FactoryClass *factory = Fetch_Factory(type);
 
   /*
@@ -3037,7 +3037,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
 
     if (cell == -1) {
       TechnoClass *pending = factory->Get_Object();
-      if (pending != NULL) {
+      if (pending != nullptr) {
 #ifdef FIXIT_HELI_LANDING
         /*
         **	Try to find a place for the object to appear from. For
@@ -3045,7 +3045,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
         *helipads are free.
         */
         TechnoClass *builder = pending->Who_Can_Build_Me(false, false);
-        if (builder == NULL && pending->What_Am_I() == RTTI_AIRCRAFT &&
+        if (builder == nullptr && pending->What_Am_I() == RTTI_AIRCRAFT &&
             !((AircraftClass *)pending)->Class->IsFixedWing) {
           builder = pending->Who_Can_Build_Me(true, false);
         }
@@ -3064,7 +3064,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
         TechnoClass *builder = pending->Who_Can_Build_Me(intheory, false);
 #endif
 
-        if (builder != NULL && builder->Exit_Object(pending)) {
+        if (builder != nullptr && builder->Exit_Object(pending)) {
           /*
           **	Since the object has left the factory under its own power,
           *delete *	the production manager tied to this slot in the sidebar.
@@ -3118,9 +3118,9 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
 
             if (PlayerPtr == this) {
               Sound_Effect(VOC_PLACE_BUILDING_DOWN);
-              Map.Set_Cursor_Shape(0);
-              Map.PendingObjectPtr = 0;
-              Map.PendingObject = 0;
+              Map.Set_Cursor_Shape(nullptr);
+              Map.PendingObjectPtr = nullptr;
+              Map.PendingObject = nullptr;
               Map.PendingHouse = HOUSE_NONE;
             }
             return (true);
@@ -3340,7 +3340,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
  *ensure that only  * dogs can be produced from a kennel. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to a techno type for the object type that
- *should be         * created. If no object should be created, then NULL is
+ *should be         * created. If no object should be created, then nullptr is
  *returned.                    *
  *                                                                                             *
  * WARNINGS:   This is a time consuming routine. Only call when necessary. *
@@ -3351,7 +3351,7 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
                                                       bool kennel) const {
   assert(Houses.ID(this) == ID);
 
-  TechnoTypeClass const *techno = NULL;
+  TechnoTypeClass const *techno = nullptr;
 
   switch (objecttype) {
     case RTTI_AIRCRAFT:
@@ -3359,14 +3359,14 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
       if (BuildAircraft != AIRCRAFT_NONE) {
         return (&AircraftTypeClass::As_Reference(BuildAircraft));
       }
-      return (NULL);
+      return (nullptr);
 
     case RTTI_VESSEL:
     case RTTI_VESSELTYPE:
       if (BuildVessel != VESSEL_NONE) {
         return (&VesselTypeClass::As_Reference(BuildVessel));
       }
-      return (NULL);
+      return (nullptr);
 
     /*
     **	Unit construction is based on the rule that up to twice the number
@@ -3377,7 +3377,7 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
       if (BuildUnit != UNIT_NONE) {
         return (&UnitTypeClass::As_Reference(BuildUnit));
       }
-      return (NULL);
+      return (nullptr);
 
     /*
     **	Infantry construction is based on the rule that up to twice the number
@@ -3386,11 +3386,11 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
     case RTTI_INFANTRY:
     case RTTI_INFANTRYTYPE:
       if (BuildInfantry != INFANTRY_NONE) {
-        if (kennel && BuildInfantry != INFANTRY_DOG) return (NULL);
-        if (!kennel && BuildInfantry == INFANTRY_DOG) return (NULL);
+        if (kennel && BuildInfantry != INFANTRY_DOG) return (nullptr);
+        if (!kennel && BuildInfantry == INFANTRY_DOG) return (nullptr);
         return (&InfantryTypeClass::As_Reference(BuildInfantry));
       }
-      return (NULL);
+      return (nullptr);
 
     /*
     **	Building construction is based upon the preconstruction list.
@@ -3400,7 +3400,7 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
       if (BuildStructure != STRUCT_NONE) {
         return (&BuildingTypeClass::As_Reference(BuildStructure));
       }
-      return (NULL);
+      return (nullptr);
   }
   return (techno);
 }
@@ -3698,7 +3698,7 @@ void HouseClass::MPlayer_Defeated(void) {
     */
     sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), IniName);
     Session.Messages.Add_Message(
-        NULL, 0, txt, Session.ColorIdx,
+        nullptr, 0, txt, Session.ColorIdx,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         Rule.MessageDelay * TICKS_PER_MINUTE);
     Map.Flag_To_Redraw(false);
@@ -3711,7 +3711,7 @@ void HouseClass::MPlayer_Defeated(void) {
       sprintf(txt, Text_String(TXT_PLAYER_DEFEATED), IniName);
 
       Session.Messages.Add_Message(
-          NULL, 0, txt, RemapColor,
+          nullptr, 0, txt, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           Rule.MessageDelay * TICKS_PER_MINUTE);
       Map.Flag_To_Redraw(false);
@@ -4016,7 +4016,7 @@ void HouseClass::Blowup_All(void) {
       count = 0;
       while (::Units.Ptr(i) == uptr && uptr->Strength) {
         damage = uptr->Strength;
-        uptr->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+        uptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
         if (count > 5 && uptr->IsActive) {
           delete uptr;
@@ -4035,7 +4035,7 @@ void HouseClass::Blowup_All(void) {
       AircraftClass *aptr = ::Aircraft.Ptr(i);
 
       damage = aptr->Strength;
-      aptr->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+      aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
       if (!aptr->IsActive) {
         i--;
       }
@@ -4050,7 +4050,7 @@ void HouseClass::Blowup_All(void) {
       VesselClass *vptr = ::Vessels.Ptr(i);
 
       damage = vptr->Strength;
-      vptr->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+      vptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
       if (!vptr->IsActive) {
         i--;
       }
@@ -4068,7 +4068,7 @@ void HouseClass::Blowup_All(void) {
       count = 0;
       while (Buildings.Ptr(i) == bptr && bptr->Strength) {
         damage = bptr->Strength;
-        bptr->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+        bptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
         if (count > 5) {
           delete bptr;
@@ -4092,7 +4092,7 @@ void HouseClass::Blowup_All(void) {
       while (Infantry.Ptr(i) == iptr && iptr->Strength) {
         damage = iptr->Strength;
         warhead = Random_Pick(WARHEAD_SA, WARHEAD_FIRE);
-        iptr->Take_Damage(damage, 0, warhead, NULL, true);
+        iptr->Take_Damage(damage, 0, warhead, nullptr, true);
 
         count++;
         if (count > 5) {
@@ -4259,7 +4259,7 @@ void HouseClass::Sell_Wall(CELL cell) {
       OverlayTypeClass const &optr = OverlayTypeClass::As_Reference(overlay);
 
       if (optr.IsWall) {
-        BuildingTypeClass const *btype = NULL;
+        BuildingTypeClass const *btype = nullptr;
         switch (overlay) {
           case OVERLAY_SANDBAG_WALL:
             btype = &BuildingTypeClass::As_Reference(STRUCT_SANDBAG_WALL);
@@ -4288,7 +4288,7 @@ void HouseClass::Sell_Wall(CELL cell) {
           default:
             break;
         }
-        if (btype != NULL && !btype->IsUnsellable) {
+        if (btype != nullptr && !btype->IsUnsellable) {
           if (PlayerPtr == this) {
             Sound_Effect(VOC_CASHTURN);
           }
@@ -4336,7 +4336,7 @@ BuildingTypeClass const *HouseClass::Suggest_New_Building(void) const {
   if (BuildStructure != STRUCT_NONE) {
     return (&BuildingTypeClass::As_Reference(BuildStructure));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -4352,7 +4352,7 @@ BuildingTypeClass const *HouseClass::Suggest_New_Building(void) const {
  *specific search * is desired, then pass ZONE_NONE. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the building type requested. If there is
- *no building     * of the type requested, then NULL is returned. *
+ *no building     * of the type requested, then nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -4379,7 +4379,7 @@ BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
       }
     }
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -4392,7 +4392,7 @@ BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
  * INPUT:   building -- Pointer to the building that needs to be placed down. *
  *                                                                                             *
  * OUTPUT:  Returns with the coordinate to place the building at. If there are
- *no suitable     * locations, then NULL is returned. *
+ *no suitable     * locations, then nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -4541,7 +4541,7 @@ void HouseClass::Recalc_Center(void) {
     for (int index = 0; index < Buildings.Count(); index++) {
       BuildingClass const *b = Buildings.Ptr(index);
 
-      if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this &&
+      if (b != nullptr && !b->IsInLimbo && (HouseClass *)b->House == this &&
           b->Strength > 0) {
         /*
         **	Give more "weight" to buildings that cost more. The presumption
@@ -4596,7 +4596,7 @@ void HouseClass::Recalc_Center(void) {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass const *b = Buildings.Ptr(index);
 
-        if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this &&
+        if (b != nullptr && !b->IsInLimbo && (HouseClass *)b->House == this &&
             b->Strength > 0) {
           radius += Distance(Center, b->Center_Coord());
         }
@@ -4609,7 +4609,7 @@ void HouseClass::Recalc_Center(void) {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass const *b = Buildings.Ptr(index);
 
-        if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this &&
+        if (b != nullptr && !b->IsInLimbo && (HouseClass *)b->House == this &&
             b->Strength > 0) {
           ZoneType z = Which_Zone(b);
 
@@ -4646,7 +4646,7 @@ void HouseClass::Recalc_Center(void) {
 int HouseClass::Expert_AI(void) {
   assert(Houses.ID(this) == ID);
 
-  BuildingClass *b = 0;
+  BuildingClass *b = nullptr;
   bool stop = false;
   int time = TICKS_PER_SECOND * 10;
 
@@ -4658,7 +4658,7 @@ int HouseClass::Expert_AI(void) {
   if (Enemy != HOUSE_NONE) {
     HouseClass *h = HouseClass::As_Pointer(Enemy);
 
-    if (h == NULL || !h->IsActive || h->IsDefeated || Is_Ally(h) ||
+    if (h == nullptr || !h->IsActive || h->IsDefeated || Is_Ally(h) ||
         h->BScan == 0) {
       Enemy = HOUSE_NONE;
     }
@@ -4681,7 +4681,7 @@ int HouseClass::Expert_AI(void) {
 
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       HouseClass *h = HouseClass::As_Pointer(house);
-      if (h != NULL && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
+      if (h != nullptr && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
         /*
         **	Perform a special restriction check to ensure that no enemy is
         *chosen if *	there is even one enemy that has not established a base
@@ -5105,7 +5105,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
   for (index = 0; index < Aircraft.Count(); index++) {
     AircraftClass *a = Aircraft.Ptr(index);
 
-    if (a != NULL && !a->IsInLimbo && a->House == this && a->Strength > 0) {
+    if (a != nullptr && !a->IsInLimbo && a->House == this && a->Strength > 0) {
       if (!shuffle && a->Is_Weapon_Equipped() &&
           (forced || Percent_Chance(75))) {
         a->Assign_Mission(MISSION_HUNT);
@@ -5115,7 +5115,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
   for (index = 0; index < Units.Count(); index++) {
     UnitClass *u = Units.Ptr(index);
 
-    if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+    if (u != nullptr && !u->IsInLimbo && u->House == this && u->Strength > 0) {
       if (!shuffle && u->Is_Weapon_Equipped() &&
           (forced || Percent_Chance(75))) {
         u->Assign_Mission(MISSION_HUNT);
@@ -5134,7 +5134,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
   for (index = 0; index < Infantry.Count(); index++) {
     InfantryClass *i = Infantry.Ptr(index);
 
-    if (i != NULL && !i->IsInLimbo && i->House == this && i->Strength > 0) {
+    if (i != nullptr && !i->IsInLimbo && i->House == this && i->Strength > 0) {
       if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR) &&
           (forced || Percent_Chance(75))) {
         i->Assign_Mission(MISSION_HUNT);
@@ -5223,13 +5223,13 @@ bool HouseClass::AI_Lower_Power(UrgencyType) const {
   assert(Houses.ID(this) == ID);
 
   BuildingClass *b = Find_Building(STRUCT_POWER);
-  if (b != NULL) {
+  if (b != nullptr) {
     b->Sell_Back(1);
     return (true);
   }
 
   b = Find_Building(STRUCT_ADVANCED_POWER);
-  if (b != NULL) {
+  if (b != nullptr) {
     b->Sell_Back(1);
     return (true);
   }
@@ -5280,7 +5280,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
   for (int i = 0; i < ARRAY_SIZE(_types); i++) {
     if (urgency >= _types[i].Urgency) {
       BuildingClass *b = Find_Building(_types[i].Structure);
-      if (b != NULL) {
+      if (b != nullptr) {
         b->Sell_Back(1);
         return (true);
       }
@@ -5330,7 +5330,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
                 //		{STRUCT_BARRACKS,URGENCY_HIGH},
                 //		{STRUCT_TENT,URGENCY_HIGH},
                 {STRUCT_CONST, URGENCY_CRITICAL}};
-  BuildingClass *b = 0;
+  BuildingClass *b = nullptr;
 
   /*
   **	Find a structure to sell and then sell it. Bail from further scanning
@@ -5339,7 +5339,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
   for (int i = 0; i < ARRAY_SIZE(_types); i++) {
     if (urgency >= _types[i].Urgency) {
       b = Find_Building(_types[i].Structure);
-      if (b != NULL) {
+      if (b != nullptr) {
         b->Sell_Back(1);
         return (true);
       }
@@ -5470,7 +5470,7 @@ int HouseClass::AI_Building(void) {
     for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
       HouseClass const *hptr = HouseClass::As_Pointer(h);
 
-      if (hptr != NULL && hptr->IsActive && hptr->IsHuman &&
+      if (hptr != nullptr && hptr->IsActive && hptr->IsHuman &&
           quant < hptr->CurBuildings) {
         quant = hptr->CurBuildings;
       }
@@ -5487,8 +5487,8 @@ int HouseClass::AI_Building(void) {
     int level = Control.TechLevel;
     bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
                       UQuantity[UNIT_HARVESTER] > 0);
-    BuildingTypeClass const *b = NULL;
-    HouseClass const *enemy = NULL;
+    BuildingTypeClass const *b = nullptr;
+    HouseClass const *enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
       enemy = HouseClass::As_Pointer(Enemy);
     }
@@ -5503,7 +5503,7 @@ int HouseClass::AI_Building(void) {
     if (Can_Build(b, ActLike) && Power <= Drain + Rule.PowerSurplus &&
         b->Cost_Of() < money) {
       choiceptr = BuildChoice.Alloc();
-      if (choiceptr != NULL) {
+      if (choiceptr != nullptr) {
         *choiceptr = BuildChoiceClass(
             BQuantity[STRUCT_REFINERY] == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
             b->Type);
@@ -5513,7 +5513,7 @@ int HouseClass::AI_Building(void) {
       if (Can_Build(b, ActLike) && Power <= Drain + Rule.PowerSurplus &&
           b->Cost_Of() < money) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               BQuantity[STRUCT_REFINERY] == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
               b->Type);
@@ -5531,7 +5531,7 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               BQuantity[STRUCT_REFINERY] == 0 ? URGENCY_HIGH : URGENCY_MEDIUM,
               b->Type);
@@ -5549,7 +5549,7 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
         }
@@ -5557,7 +5557,7 @@ int HouseClass::AI_Building(void) {
         b = &BuildingTypeClass::As_Reference(STRUCT_TENT);
         if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
           choiceptr = BuildChoice.Alloc();
-          if (choiceptr != NULL) {
+          if (choiceptr != nullptr) {
             *choiceptr = BuildChoiceClass(
                 current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
           }
@@ -5573,7 +5573,7 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_KENNEL);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
       }
@@ -5587,7 +5587,7 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
       }
@@ -5603,7 +5603,7 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
         }
@@ -5620,7 +5620,7 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
       } else {
@@ -5628,7 +5628,7 @@ int HouseClass::AI_Building(void) {
           b = &BuildingTypeClass::As_Reference(STRUCT_PILLBOX);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
             choiceptr = BuildChoice.Alloc();
-            if (choiceptr != NULL) {
+            if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
             }
           }
@@ -5636,7 +5636,7 @@ int HouseClass::AI_Building(void) {
           b = &BuildingTypeClass::As_Reference(STRUCT_TURRET);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
             choiceptr = BuildChoice.Alloc();
-            if (choiceptr != NULL) {
+            if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
             }
           }
@@ -5656,14 +5656,14 @@ int HouseClass::AI_Building(void) {
       */
       bool airthreat = false;
       int threat_quantity = 0;
-      if (enemy != NULL && enemy->AScan != 0) {
+      if (enemy != nullptr && enemy->AScan != 0) {
         airthreat = true;
         threat_quantity = enemy->CurAircraft;
       }
       if (!airthreat) {
         for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
           HouseClass *h = HouseClass::As_Pointer(house);
-          if (h != NULL && !Is_Ally(house) && h->AScan != 0) {
+          if (h != nullptr && !Is_Ally(house) && h->AScan != 0) {
             airthreat = true;
             break;
           }
@@ -5675,7 +5675,7 @@ int HouseClass::AI_Building(void) {
           b = &BuildingTypeClass::As_Reference(STRUCT_RADAR);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
             choiceptr = BuildChoice.Alloc();
-            if (choiceptr != NULL) {
+            if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
             }
           }
@@ -5684,7 +5684,7 @@ int HouseClass::AI_Building(void) {
         b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
         if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
           choiceptr = BuildChoice.Alloc();
-          if (choiceptr != NULL) {
+          if (choiceptr != nullptr) {
             *choiceptr = BuildChoiceClass(
                 (current < threat_quantity) ? URGENCY_HIGH : URGENCY_MEDIUM,
                 b->Type);
@@ -5693,7 +5693,7 @@ int HouseClass::AI_Building(void) {
           b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
             choiceptr = BuildChoice.Alloc();
-            if (choiceptr != NULL) {
+            if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(
                   (current < threat_quantity) ? URGENCY_HIGH : URGENCY_MEDIUM,
                   b->Type);
@@ -5713,7 +5713,7 @@ int HouseClass::AI_Building(void) {
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
           Power_Fraction() >= 1) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
       }
@@ -5728,7 +5728,7 @@ int HouseClass::AI_Building(void) {
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
           Power_Fraction() >= 1) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
       } else {
@@ -5736,7 +5736,7 @@ int HouseClass::AI_Building(void) {
         if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
             Power_Fraction() >= 1) {
           choiceptr = BuildChoice.Alloc();
-          if (choiceptr != NULL) {
+          if (choiceptr != nullptr) {
             *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
           }
         }
@@ -5752,9 +5752,9 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           int threat_quantity = 0;
-          if (enemy != NULL) {
+          if (enemy != nullptr) {
             threat_quantity = enemy->CurAircraft;
           }
 
@@ -5774,9 +5774,9 @@ int HouseClass::AI_Building(void) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
-        if (choiceptr != NULL) {
+        if (choiceptr != nullptr) {
           int threat_quantity = 0;
-          if (enemy != NULL) {
+          if (enemy != nullptr) {
             threat_quantity = enemy->CurAircraft;
           }
 
@@ -5867,7 +5867,7 @@ int HouseClass::AI_Unit(void) {
     */
     for (int index = 0; index < Teams.Count(); index++) {
       TeamClass *tptr = Teams.Ptr(index);
-      if (tptr != NULL) {
+      if (tptr != nullptr) {
         TeamTypeClass const *team = tptr->Class;
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
@@ -5890,7 +5890,7 @@ int HouseClass::AI_Unit(void) {
     */
     for (int index = 0; index < TeamTypes.Count(); index++) {
       TeamTypeClass const *team = TeamTypes.Ptr(index);
-      if (team != NULL && team->House == Class->House && team->IsPrebuilt &&
+      if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
           (!team->IsAutocreate || IsAlerted)) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
           TechnoTypeClass const *memtype = team->Members[subindex].Class;
@@ -5910,7 +5910,7 @@ int HouseClass::AI_Unit(void) {
     */
     for (int uindex = 0; uindex < Units.Count(); uindex++) {
       UnitClass *unit = Units.Ptr(uindex);
-      if (unit != NULL && unit->Is_Recruitable(this) &&
+      if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter[unit->Class->Type] > 0) {
         counter[unit->Class->Type]--;
       }
@@ -5951,7 +5951,7 @@ int HouseClass::AI_Unit(void) {
     for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
       UnitTypeClass const *utype = &UnitTypeClass::As_Reference(index);
       if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER) {
-        if (utype->PrimaryWeapon != NULL) {
+        if (utype->PrimaryWeapon != nullptr) {
           counter[index] = 20;
         } else {
           counter[index] = 1;
@@ -6052,7 +6052,7 @@ int HouseClass::AI_Vessel(void) {
     */
     for (int vindex = 0; vindex < Vessels.Count(); vindex++) {
       VesselClass *unit = Vessels.Ptr(vindex);
-      if (unit != NULL && unit->Is_Recruitable(this) &&
+      if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter[unit->Class->Type] > 0) {
         counter[unit->Class->Type]--;
       }
@@ -6116,7 +6116,7 @@ int HouseClass::AI_Infantry(void) {
   if (CurInfantry >= Control.MaxInfantry) return (TICKS_PER_SECOND);
 
   if (Session.Type == GAME_NORMAL) {
-    TechnoTypeClass const *techno = 0;
+    TechnoTypeClass const *techno = nullptr;
     int counter[INFANTRY_COUNT];
     memset(counter, 0x00, sizeof(counter));
 
@@ -6126,7 +6126,7 @@ int HouseClass::AI_Infantry(void) {
     */
     for (int index = 0; index < Teams.Count(); index++) {
       TeamClass *tptr = Teams.Ptr(index);
-      if (tptr != NULL) {
+      if (tptr != nullptr) {
         TeamTypeClass const *team = tptr->Class;
 
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
@@ -6153,7 +6153,7 @@ int HouseClass::AI_Infantry(void) {
     */
     for (int index = 0; index < TeamTypes.Count(); index++) {
       TeamTypeClass const *team = TeamTypes.Ptr(index);
-      if (team != NULL) {
+      if (team != nullptr) {
         if (team->House == Class->House && team->IsPrebuilt &&
             (!team->IsAutocreate || IsAlerted)) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
@@ -6179,7 +6179,7 @@ int HouseClass::AI_Infantry(void) {
     */
     for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
       InfantryClass *infantry = Infantry.Ptr(uindex);
-      if (infantry != NULL && infantry->Is_Recruitable(this) &&
+      if (infantry != nullptr && infantry->Is_Recruitable(this) &&
           counter[infantry->Class->Type] > 0) {
         counter[infantry->Class->Type]--;
       }
@@ -6219,7 +6219,7 @@ int HouseClass::AI_Infantry(void) {
   }
 
   if (IsBaseBuilding) {
-    HouseClass const *enemy = NULL;
+    HouseClass const *enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
       enemy = HouseClass::As_Pointer(Enemy);
     }
@@ -6243,12 +6243,12 @@ int HouseClass::AI_Infantry(void) {
                    // It is prob. for save game format compatibility.
         int clipindex = index;
         if (clipindex >= INFANTRY_RA_COUNT) clipindex -= INFANTRY_RA_COUNT;
-        if ((enemy != NULL &&
+        if ((enemy != nullptr &&
              enemy->IQuantity[clipindex] > IQuantity[clipindex]) ||
             Available_Money() > Rule.InfantryReserve ||
             CurInfantry < CurBuildings * Rule.InfantryBaseMult) {
 #else
-        if ((enemy != NULL && enemy->IQuantity[index] > IQuantity[index]) ||
+        if ((enemy != nullptr && enemy->IQuantity[index] > IQuantity[index]) ||
             Available_Money() > Rule.InfantryReserve ||
             CurInfantry < CurBuildings * Rule.InfantryBaseMult) {
 #endif
@@ -6397,7 +6397,7 @@ int HouseClass::AI_Aircraft(void) {
 void HouseClass::Production_Begun(TechnoClass const *product) {
   assert(Houses.ID(this) == ID);
 
-  if (product != NULL) {
+  if (product != nullptr) {
     switch (product->What_Am_I()) {
       case RTTI_UNIT:
         if (*((UnitClass *)product) == BuildUnit) {
@@ -6647,7 +6647,7 @@ int *HouseClass::Factory_Counter(RTTIType rtti) {
     default:
       break;
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -6666,11 +6666,11 @@ int *HouseClass::Factory_Counter(RTTIType rtti) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Active_Remove(TechnoClass const *techno) {
-  if (techno == NULL) return;
+  if (techno == nullptr) return;
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
     int *fptr = Factory_Counter(((BuildingClass *)techno)->Class->ToBuild);
-    if (fptr != NULL) {
+    if (fptr != nullptr) {
       *fptr = *fptr - 1;
     }
   }
@@ -6692,11 +6692,11 @@ void HouseClass::Active_Remove(TechnoClass const *techno) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Active_Add(TechnoClass const *techno) {
-  if (techno == NULL) return;
+  if (techno == nullptr) return;
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
     int *fptr = Factory_Counter(((BuildingClass *)techno)->Class->ToBuild);
-    if (fptr != NULL) {
+    if (fptr != nullptr) {
       *fptr = *fptr + 1;
     }
   }
@@ -6803,7 +6803,7 @@ void HouseClass::Recalc_Attributes(void) {
   for (int index = 0; index < Houses.Count(); index++) {
     HouseClass *house = Houses.Ptr(index);
 
-    if (house != NULL) {
+    if (house != nullptr) {
       house->BScan = 0;
       house->ActiveBScan = 0;
       house->IScan = 0;
@@ -6943,7 +6943,7 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
  *=============================================================================================*/
 CELL HouseClass::Where_To_Go(FootClass const *object) const {
   assert(Houses.ID(this) == ID);
-  assert(object != NULL);
+  assert(object != nullptr);
 
   ZoneType zone;  // The zone that the object should go to.
   if (object->Anti_Air() + object->Anti_Armor() + object->Anti_Infantry() ==
@@ -6979,7 +6979,7 @@ CELL HouseClass::Where_To_Go(FootClass const *object) const {
 TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
   assert(Houses.ID(this) == ID);
 
-  UnitClass *best = 0;
+  UnitClass *best = nullptr;
   int value = 0;
 
   for (int index = 0; index < Units.Count(); index++) {
@@ -7037,8 +7037,8 @@ int HouseClass::Get_Quantity(AircraftType aircraft) {
  * OUTPUT:  Returns with a pointer to the factory (if present) that can
  *manufacture the        * object type specified. *
  *                                                                                             *
- * WARNINGS:   If this returns a non-NULL pointer, then the factory is probably
- *already busy   * producing another unit of that category. *
+ * WARNINGS:   If this returns a non-nullptr pointer, then the factory is
+ * probably already busy   * producing another unit of that category. *
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
@@ -7084,7 +7084,7 @@ FactoryClass *HouseClass::Fetch_Factory(RTTIType rtti) const {
   if (factory_index != -1) {
     return (Factories.Raw_Ptr(factory_index));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -7106,7 +7106,7 @@ FactoryClass *HouseClass::Fetch_Factory(RTTIType rtti) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
-  int *factory_index = 0;
+  int *factory_index = nullptr;
 
   assert(rtti != RTTI_NONE);
 
@@ -7137,13 +7137,13 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
       break;
   }
 
-  assert(factory_index != NULL);
+  assert(factory_index != nullptr);
 
   /*
   **	Assign the factory to the appropriate slot. For the case of clearing
   **	the factory out, then -1 is assigned.
   */
-  if (factory != NULL) {
+  if (factory != nullptr) {
     *factory_index = factory->ID;
   } else {
     *factory_index = -1;
@@ -7169,7 +7169,7 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
  *=============================================================================================*/
 int HouseClass::Factory_Count(RTTIType rtti) const {
   int const *ptr = ((HouseClass *)this)->Factory_Counter(rtti);
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     return (*ptr);
   }
   return (0);
@@ -7273,7 +7273,7 @@ void HouseClass::Write_INI(CCINIClass &ini) {
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
     HouseClass *p = As_Pointer(i);
 
-    if (p != NULL) {
+    if (p != nullptr) {
       char const *name = p->Class->IniName;
 
       ini.Clear(name);
@@ -7350,7 +7350,7 @@ bool HouseClass::Is_No_YakMig(void) const {
   *will *	allow production to resume after being held.
   */
   FactoryClass const *factory = Fetch_Factory(RTTI_AIRCRAFT);
-  if (factory != NULL && factory->Get_Object() != NULL) {
+  if (factory != nullptr && factory->Get_Object() != nullptr) {
     AircraftClass const *air = (AircraftClass const *)factory->Get_Object();
     if (*air == AIRCRAFT_MIG || *air == AIRCRAFT_YAK) {
       quantity -= 1;
@@ -7408,7 +7408,8 @@ bool HouseClass::Fire_Sale(void) {
     for (int index = 0; index < Buildings.Count(); index++) {
       BuildingClass *b = Buildings.Ptr(index);
 
-      if (b != NULL && !b->IsInLimbo && b->House == this && b->Strength > 0) {
+      if (b != nullptr && !b->IsInLimbo && b->House == this &&
+          b->Strength > 0) {
         b->Sell_Back(1);
       }
     }
@@ -7552,7 +7553,7 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   int allycount = 0;
   for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
     HouseClass *hptr = HouseClass::As_Pointer(house2);
-    if (hptr != NULL && hptr->IsActive && !hptr->IsDefeated) {
+    if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated) {
       housecount++;
       if (Is_Ally(hptr)) {
         allycount++;
@@ -7595,7 +7596,8 @@ void HouseClass::Computer_Paranoid(void) {
   */
   for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
     HouseClass *hptr = HouseClass::As_Pointer(house);
-    if (hptr != NULL && hptr->IsActive && !hptr->IsDefeated && !hptr->IsHuman) {
+    if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated &&
+        !hptr->IsHuman) {
       hptr->IsParanoid = true;
 
       /*
@@ -7604,7 +7606,7 @@ void HouseClass::Computer_Paranoid(void) {
       */
       for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
         HouseClass *hptr2 = HouseClass::As_Pointer(house2);
-        if (hptr2 != NULL && hptr2->IsActive && !hptr2->IsDefeated) {
+        if (hptr2 != nullptr && hptr2->IsActive && !hptr2->IsDefeated) {
           if (hptr2->IsHuman) {
             hptr->Make_Enemy(house2);
           } else {
@@ -7709,7 +7711,7 @@ void HouseClass::Update_Spied_Power_Plants(void) {
  *=============================================================================================*/
 CELL HouseClass::Find_Cell_In_Zone(TechnoClass const *techno,
                                    ZoneType zone) const {
-  if (techno == NULL) return (0);
+  if (techno == nullptr) return (0);
 
   int bestval = -1;
   int bestcell = 0;
@@ -7720,7 +7722,7 @@ CELL HouseClass::Find_Cell_In_Zone(TechnoClass const *techno,
   */
   CELL trycell = Random_Cell_In_Zone(zone);
 
-  short const *list = NULL;
+  short const *list = nullptr;
   if (techno->What_Am_I() == RTTI_BUILDING) {
     list = techno->Occupy_List(true);
   }
@@ -7737,7 +7739,7 @@ CELL HouseClass::Find_Cell_In_Zone(TechnoClass const *techno,
       /*
       **	Another (adjacency) check is required for buildings.
       */
-      if (ok && list != NULL &&
+      if (ok && list != nullptr &&
           !Map.Passes_Proximity_Check(ttype, techno->House->Class->House, list,
                                       cell)) {
         ok = false;

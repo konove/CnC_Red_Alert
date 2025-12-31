@@ -89,7 +89,7 @@ bool Expansion_Dialog(void) {
   int option_x = (320 * factor - option_width) / 2;
   int option_y = (200 * factor - option_height) / 2;
 
-  GadgetClass *buttons = NULL;
+  GadgetClass *buttons = nullptr;
 
   void const *up_button;
   void const *down_button;
@@ -264,7 +264,7 @@ bool Bonus_Dialog(void) {
   int option_x = (320 * factor - option_width) / 2;
   int option_y = (200 * factor - option_height) / 2;
 
-  GadgetClass *buttons = NULL;
+  GadgetClass *buttons = nullptr;
 
   void const *up_button;
   void const *down_button;

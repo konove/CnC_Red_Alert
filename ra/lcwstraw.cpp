@@ -66,8 +66,8 @@
 LCWStraw::LCWStraw(CompControl control, int blocksize)
     : Control(control),
       Counter(0),
-      Buffer(NULL),
-      Buffer2(NULL),
+      Buffer(nullptr),
+      Buffer2(nullptr),
       BlockSize(blocksize) {
   SafetyMargin = BlockSize / 128 + 1;
   Buffer = new char[BlockSize + SafetyMargin];
@@ -92,10 +92,10 @@ LCWStraw::LCWStraw(CompControl control, int blocksize)
  *=============================================================================================*/
 LCWStraw::~LCWStraw(void) {
   delete[] Buffer;
-  Buffer = NULL;
+  Buffer = nullptr;
 
   delete[] Buffer2;
-  Buffer2 = NULL;
+  Buffer2 = nullptr;
 }
 
 /***********************************************************************************************
@@ -120,14 +120,14 @@ LCWStraw::~LCWStraw(void) {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LCWStraw::Get(void *destbuf, int slen) {
-  assert(Buffer != NULL);
+  assert(Buffer != nullptr);
 
   int total = 0;
 
   /*
   **	Verify parameters for legality.
   */
-  if (destbuf == NULL || slen < 1) {
+  if (destbuf == nullptr || slen < 1) {
     return (0);
   }
 

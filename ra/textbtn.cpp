@@ -85,7 +85,7 @@ TextButtonClass::TextButtonClass(unsigned id, char const* text,
   IsBlackBorder = blackborder;
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
     }
@@ -108,7 +108,7 @@ TextButtonClass::TextButtonClass(unsigned id, char const* text,
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(void) : ToggleClass(0, 0, 0, 0, 0) {
   IsBlackBorder = false;
-  String = NULL;
+  String = nullptr;
   PrintFlags = TPF_8POINT;
 }
 
@@ -144,13 +144,13 @@ TextButtonClass::TextButtonClass(void) : ToggleClass(0, 0, 0, 0, 0) {
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
                                  int x, int y, int w, int h, int blackborder)
-    : ToggleClass(id, x, y, w, h), String(0) {
+    : ToggleClass(id, x, y, w, h), String(nullptr) {
   PrintFlags = style;
   IsBlackBorder = blackborder;
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
     }
@@ -223,7 +223,7 @@ void TextButtonClass::Set_Text(char const* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, PrintFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, PrintFlags);
     Width = String_Pixel_Width(String) + 8;
     Height = FontHeight + FontYSpacing + 2;
   }

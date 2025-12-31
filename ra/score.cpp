@@ -162,7 +162,7 @@ void ScoreTimeClass::Update(void) {
     if (++Stage >= MaxStage) Stage = 0;
     oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
 #ifdef SEENBUF_COPY
     Set_Logic_Page(*PseudoSeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
@@ -197,7 +197,7 @@ void ScoreCredsClass::Update(void) {
 #else
     Play_Sample(Clock1, 255, Options.Normalize_Volume(50));
 #endif
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
 #ifdef SEENBUF_COPY
     Set_Logic_Page(*PseudoSeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
@@ -230,7 +230,7 @@ void ScorePrintClass::Update(void) {
   if (Stage && (((char *)DataPtr)[Stage - 1] == 0)) {
     for (int i = 0; i < MAXSCOREOBJS; i++) {
       if (ScoreObjs[i] == this) {
-        ScoreObjs[i] = 0;
+        ScoreObjs[i] = nullptr;
       }
     }
     delete this;
@@ -318,7 +318,7 @@ void ScoreScaleClass::Update(void) {
     } else {
       Set_Font_Palette(Palette);
       for (int i = 0; i < MAXSCOREOBJS; i++) {
-        if (ScoreObjs[i] == this) ScoreObjs[i] = 0;
+        if (ScoreObjs[i] == this) ScoreObjs[i] = nullptr;
       }
       HidPage.Print((char *)DataPtr, XPos, YPos, TBLACK, TBLACK);
       HidPage.Blit(SeenPage, XPos, YPos, XPos, YPos, 6 * RESFACTOR,
@@ -874,9 +874,9 @@ void ScoreClass::Presentation(void) {
   for (i = 0; i < MAXSCOREOBJS; i++)
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
-      ScoreObjs[i] = 0;
+      ScoreObjs[i] = nullptr;
     }
-  BlackPalette.Set(FADE_PALETTE_FAST, NULL);
+  BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
 #ifdef WIN32
   VisiblePage.Clear();
 #else
@@ -889,7 +889,7 @@ void ScoreClass::Presentation(void) {
 
   Theme.Queue_Song(THEME_NONE);
 
-  BlackPalette.Set(FADE_PALETTE_FAST, NULL);
+  BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
 #ifdef WIN32
   VisiblePage.Clear();
 #else
@@ -1123,7 +1123,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(HidPage);
   HidPage.Fill_Rect(0, 0, 124 * RESFACTOR, 9 * RESFACTOR, TBLACK);
-  CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+  CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
   Set_Logic_Page(SeenBuff);
 #ifdef WIN32
   Set_Font_Palette(house ? _redpal : _bluepal);
@@ -1140,7 +1140,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
       Set_Logic_Page(SeenBuff);
 #endif
       CC_Draw_Shape(yellowptr, i, xpos * RESFACTOR, ypos * RESFACTOR,
-                    WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+                    WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     } else {
       HidPage.Blit(SeenPage, 0, 0, xpos * RESFACTOR, ypos * RESFACTOR,
                    (3 + gdikilled) * RESFACTOR, 8 * RESFACTOR);
@@ -1161,7 +1161,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
     // BG		}
   }
   CC_Draw_Shape(yellowptr, gdikilled, xpos * RESFACTOR, ypos * RESFACTOR,
-                WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+                WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
 #ifdef SEENBUF_COPY
   Set_Logic_Page(*PseudoSeenBuff);
   CC_Draw_Shape(yellowptr, gdikilled, xpos * RESFACTOR, ypos * RESFACTOR,
@@ -1185,7 +1185,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
       Set_Logic_Page(SeenBuff);
 #endif
       CC_Draw_Shape(redptr, i, xpos * RESFACTOR, (ypos + 12) * RESFACTOR,
-                    WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+                    WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     } else {
       HidPage.Blit(SeenPage, 0, 0, xpos * RESFACTOR, (ypos + 12) * RESFACTOR,
                    (3 + nodkilled) * RESFACTOR, 8 * RESFACTOR);
@@ -1219,7 +1219,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   Set_Logic_Page(SeenBuff);
 #endif
   CC_Draw_Shape(redptr, nodkilled, xpos * RESFACTOR, (ypos + 12) * RESFACTOR,
-                WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+                WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
 }
@@ -1382,7 +1382,7 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   } while (i < PlayerPtr->Available_Money());
 
   delete ScoreObjs[credobj];
-  ScoreObjs[credobj] = 0;
+  ScoreObjs[credobj] = nullptr;
 }
 
 /***************************************************************************
@@ -1869,7 +1869,7 @@ void Multi_Score_Presentation(void) {
   char remap[16];
 #if RESFACTOR == 2
   GraphicBufferClass *pseudoseenbuff =
-      new GraphicBufferClass(320, 200, (void *)NULL);
+      new GraphicBufferClass(320, 200, (void *)nullptr);
 #ifdef SEENBUF_COPY
   PseudoSeenBuff = new GraphicBufferClass(SeenBuff.Get_Width(),
                                           SeenBuff.Get_Height(), (void *)NULL);
@@ -1889,7 +1889,7 @@ void Multi_Score_Presentation(void) {
   HidPage.Clear();
   Hide_Mouse();
   void *anim = Open_Animation(
-      "MLTIPLYR.WSA", NULL, 0L,
+      "MLTIPLYR.WSA", nullptr, 0L,
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), ScorePalette);
   /*
   ** Display the background animation
@@ -1900,7 +1900,7 @@ void Multi_Score_Presentation(void) {
   for (int x = 0; x < 256; x++)
     memset(&PaletteInterpolationTable[x][0], x, 256);
   CopyType = 1;
-  Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, 0);
+  Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
 #else
   Animate_Frame(anim, HidPage, 1);
   HidPage.Blit(SeenPage);
@@ -1912,7 +1912,7 @@ void Multi_Score_Presentation(void) {
 #if RESFACTOR == 2
     Animate_Frame(anim, *pseudoseenbuff, frame++);
     CopyType = 1;
-    Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, NULL);
+    Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
     CopyType = 0;
 #else
     Animate_Frame(anim, SeenPage, frame++);
@@ -2009,12 +2009,12 @@ void Multi_Score_Presentation(void) {
   for (i = 0; i < MAXSCOREOBJS; i++)
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
-      ScoreObjs[i] = 0;
+      ScoreObjs[i] = nullptr;
     }
 
   Theme.Queue_Song(THEME_NONE);
 
-  BlackPalette.Set(FADE_PALETTE_FAST, NULL);
+  BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
   SeenPage.Clear();
   GamePalette.Set();
 #if SEENBUF_COPY
@@ -2039,5 +2039,5 @@ void ScoreClass::Init(void) {
   CHarvested = 0;
   ElapsedTime = 0;
   RealTime = 0;
-  ChangingGun = 0;
+  ChangingGun = nullptr;
 }

@@ -121,15 +121,15 @@ bool CellClass::Save(Pipe &file) const {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void CellClass::Code_Pointers(void) {
-  if (Cell_Occupier() != NULL) {
+  if (Cell_Occupier() != nullptr) {
     OccupierPtr = (ObjectClass *)OccupierPtr->As_Target();
   }
 
   for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-    if (Overlapper[index] != NULL && Overlapper[index]->IsActive) {
+    if (Overlapper[index] != nullptr && Overlapper[index]->IsActive) {
       Overlapper[index] = (ObjectClass *)Overlapper[index]->As_Target();
     } else {
-      Overlapper[index] = NULL;
+      Overlapper[index] = nullptr;
     }
   }
 }
@@ -149,15 +149,15 @@ void CellClass::Code_Pointers(void) {
  * HISTORY: * 01/02/1995 BR : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
 void CellClass::Decode_Pointers(void) {
-  if (OccupierPtr != NULL) {
+  if (OccupierPtr != nullptr) {
     OccupierPtr = As_Object((TARGET)(intptr_t)OccupierPtr);
-    assert(OccupierPtr != NULL);
+    assert(OccupierPtr != nullptr);
   }
 
   for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-    if (Overlapper[index] != NULL) {
+    if (Overlapper[index] != nullptr) {
       Overlapper[index] = As_Object((TARGET)(intptr_t)Overlapper[index]);
-      assert(Overlapper[index] != NULL);
+      assert(Overlapper[index] != nullptr);
     }
   }
 }
@@ -393,7 +393,7 @@ void DisplayClass::Decode_Pointers(void) {
   */
   if (PendingObjectPtr) {
     PendingObjectPtr = As_Object((TARGET)(intptr_t)PendingObjectPtr);
-    assert(PendingObjectPtr != NULL);
+    assert(PendingObjectPtr != nullptr);
   }
 
   /*

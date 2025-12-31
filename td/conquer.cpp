@@ -170,7 +170,7 @@ void Main_Game(int argc, char *argv[]) {
     **	values, and then show the mouse.  This PRESUMES that Select_Game() has
     **	told the map to draw itself.
     */
-    Fade_Palette_To(GamePalette, FADE_PALETTE_MEDIUM, NULL);
+    Fade_Palette_To(GamePalette, FADE_PALETTE_MEDIUM, nullptr);
     Keyboard::Clear();
 
     /*
@@ -187,7 +187,7 @@ void Main_Game(int argc, char *argv[]) {
     if (GameToPlay == GAME_INTERNET) {
       Register_Game_Start_Time();
       GameStatisticsPacketSent = false;
-      PacketLater = NULL;
+      PacketLater = nullptr;
       ConnectionLost = false;
     } else {
 #ifdef _WIN32
@@ -319,7 +319,7 @@ void Main_Game(int argc, char *argv[]) {
     /*
     **	Scenario is done; fade palette to black
     */
-    Fade_Palette_To(BlackPalette, FADE_PALETTE_SLOW, NULL);
+    Fade_Palette_To(BlackPalette, FADE_PALETTE_SLOW, nullptr);
     VisiblePage.Clear();
 
 #ifndef DEMO
@@ -572,9 +572,9 @@ void Keyboard_Process(KeyNumType &input) {
     */
     case VK_N:
       if (action) {
-        obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : NULL);
+        obj = Map.Prev_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
       } else {
-        obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : NULL);
+        obj = Map.Next_Object(CurrentObject.Count() ? CurrentObject[0] : nullptr);
       }
       if (obj) {
         Unselect_All();
@@ -774,7 +774,7 @@ static void Message_Input(KeyNumType &input) {
   **	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
   */
   if (input >= KN_F1 && input < (KN_F1 + MPlayerMax) &&
-      Messages.Get_Edit_Buf() == NULL) {
+      Messages.Get_Edit_Buf() == nullptr) {
     memset(txt, 0, 40);
 
     /*
@@ -800,7 +800,7 @@ static void Message_Input(KeyNumType &input) {
       */
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         if (input == (KN_F1 + MPlayerMax - 1) &&
-            Messages.Get_Edit_Buf() == NULL) {
+            Messages.Get_Edit_Buf() == nullptr) {
           MessageAddress = IPXAddressClass();    // set to broadcast
           strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
@@ -810,7 +810,7 @@ static void Message_Input(KeyNumType &input) {
 
           Map.Flag_To_Redraw(false);
         } else {
-          if (Messages.Get_Edit_Buf() == NULL) {
+          if (Messages.Get_Edit_Buf() == nullptr) {
             if ((input - KN_F1) < Ipx.Num_Connections() && !MPlayerObiWan) {
               id = Ipx.Connection_ID(input - KN_F1);
               MessageAddress = (*(Ipx.Connection_Address(id)));
@@ -1266,7 +1266,7 @@ void Call_Back(void) {
 char const *Language_Name(char const *basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
-  if (!basename) return (NULL);
+  if (!basename) return (nullptr);
 
   sprintf(_fullname, "%s.ENG", basename);
   return (_fullname);
@@ -2135,7 +2135,7 @@ long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
     case VQACMD_OPEN:
       file = new CCFileClass((char *)buffer);
 
-      if (file != NULL && file->Is_Available()) {
+      if (file != nullptr && file->Is_Available()) {
         error = file->Open((char *)buffer, READ);
 
         if (error != -1) {
@@ -2144,7 +2144,7 @@ long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
           // file->Set_Buffer_Size(8*1024); // missing?
         } else {
           delete file;
-          file = 0;
+          file = nullptr;
           error = 1;
         }
       } else {
@@ -2155,7 +2155,7 @@ long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
     case VQACMD_CLOSE:
       file->Close();
       delete file;
-      file = 0;
+      file = nullptr;
       vqa->VQAio = 0;
       error = 0;
       break;
@@ -2207,7 +2207,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
 
   if (!add) {
     for (i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
-      InterpolatedPalettes[i] = NULL;
+      InterpolatedPalettes[i] = nullptr;
     }
     start_palette = 0;
   } else {
@@ -2244,7 +2244,7 @@ void Free_Interpolated_Palettes(void) {
   for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
       free(InterpolatedPalettes[i]);
-      InterpolatedPalettes[i] = NULL;
+      InterpolatedPalettes[i] = nullptr;
     }
   }
 }
@@ -2328,7 +2328,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
     PreserveVQAScreen = 0;
     Keyboard::Clear();
 
-    VQAHandle *vqa = NULL;
+    VQAHandle *vqa = nullptr;
 
     if (!Debug_Quiet && Get_Digi_Handle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
@@ -2336,7 +2336,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if ((vqa = VQA_Alloc()) != NULL) {
+    if ((vqa = VQA_Alloc()) != nullptr) {
       VQA_Init(vqa, MixFileHandler);
       if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
         Brokeout = false;
@@ -2484,14 +2484,14 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   int lp, framelp;
   char pixel;
 
-  char *retval = NULL;
-  char *buffer = NULL;
+  char *retval = nullptr;
+  char *buffer = nullptr;
   void *ptr;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
   */
-  if (!shapefile) return (NULL);
+  if (!shapefile) return (nullptr);
 
   /*
   ** Get the pixel width and height of the frame we built.  This will
@@ -2519,7 +2519,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   ** we dont add these icons to the set.
   **/
   buffer = new char[(icon_width * icon_height * 9 * frames) + 2];
-  if (!buffer) return (NULL);
+  if (!buffer) return (nullptr);
 
   /*
   ** Save off the return value so that we can return it to the calling
@@ -2537,7 +2537,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
     ** next frame.
     */
     if ((ptr = (void *)(Build_Frame(shapefile, shapenum + framelp,
-                                    SysMemPage.Get_Buffer()))) != NULL) {
+                                    SysMemPage.Get_Buffer()))) != nullptr) {
       ptr = Get_Shape_Header_Data(ptr);
       /*
       ** Loop through the icon width and the icon height building icons
@@ -2782,7 +2782,7 @@ TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
     case RTTI_AIRCRAFT:
       return (&AircraftTypeClass::As_Reference((AircraftType)id));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***************************************************************************
@@ -2800,7 +2800,7 @@ TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
 void Trap_Object(void) {
   int i;
 
-  TrapObject.Ptr.All = NULL;
+  TrapObject.Ptr.All = nullptr;
 
   switch (TrapObjType) {
     case RTTI_AIRCRAFT:
@@ -2949,7 +2949,7 @@ long VQ_Call_Back(unsigned char *, long) {
 #ifdef LORES
   HidPage.Blit(SeenBuff);
 #else
-  Interpolate_2X_Scale(&SysMemPage, &SeenBuff, NULL);
+  Interpolate_2X_Scale(&SysMemPage, &SeenBuff, nullptr);
 #endif
 
   // Call_Back();

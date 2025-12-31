@@ -493,7 +493,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	is undergoing construction or not.
   */
   void const *shapefile = Get_Image_Data();
-  if (shapefile == NULL) return;
+  if (shapefile == nullptr) return;
 
   /*
   **	Actually draw the building shape.
@@ -558,7 +558,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     *building itself. For human controlled buildings, the factory *	pointer
     *is part of the house structure and must be retrieved from there.
     */
-    FactoryClass *factory = NULL;
+    FactoryClass *factory = nullptr;
     if (House->IsHuman) {
       factory = House->Fetch_Factory(Class->ToBuild);
     } else {
@@ -570,20 +570,20 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     *attached *	object under production and display its cameo image over the top
     *of this building.
     */
-    if (factory != NULL) {
+    if (factory != nullptr) {
       TechnoClass *obj = factory->Get_Object();
-      if (obj != NULL) {
+      if (obj != nullptr) {
 #ifdef FIXIT_CSII
         CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
                       window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL,
-                      NULL);
+                      nullptr);
 #else
         void const *remapper =
             obj->House->Remap_Table(false, obj->Techno_Type_Class()->Remap);
         CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
                       window,
                       SHAPE_CENTER | SHAPE_WIN_REL |
-                          ((remapper != NULL) ? SHAPE_FADING : SHAPE_NORMAL),
+                          ((remapper != nullptr) ? SHAPE_FADING : SHAPE_NORMAL),
                       remapper);
 #endif
       }
@@ -770,7 +770,7 @@ bool BuildingClass::Mark(MarkType mark) {
         Map.Pick_Up(cell, this);
         if (Class->Bib_And_Offset(bib, cell)) {
           SmudgeClass *smudge = new SmudgeClass(bib);
-          if (smudge != NULL) {
+          if (smudge != nullptr) {
             smudge->Disown(cell);
             delete smudge;
           }
@@ -1054,7 +1054,7 @@ void BuildingClass::AI(void) {
     IsJammed = false;
     for (int index = 0; index < Units.Count(); index++) {
       UnitClass *obj = Units.Ptr(index);
-      if (obj != NULL && !obj->IsInLimbo && !obj->House->Is_Ally(House) &&
+      if (obj != nullptr && !obj->IsInLimbo && !obj->House->Is_Ally(House) &&
           obj->Class->IsJammer && Distance(obj) <= Rule.RadarJamRadius) {
         IsJammed = true;
         break;
@@ -1266,7 +1266,8 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
         *force *	the computer to rebuild this structure if it can.
         */
         if (IsToRebuild && Class->Level != -1 &&
-            Base.House == House->Class->House && Base.Get_Node(this) == 0) {
+            Base.House == House->Class->House &&
+            Base.Get_Node(this) == nullptr) {
           //				if (IsToRebuild && Class->IsBuildable &&
           // Base.House == House->Class->House && Base.Get_Node(this) == 0) {
           Base.Nodes.Add(BaseNodeClass(Class->Type, Coord_Cell(Coord)));
@@ -1395,7 +1396,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
           bullet =
               new BulletClass(BULLET_INVISIBLE,
                               ::As_Target(Adjacent_Cell(cellcenter, FACING_N)),
-                              0, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
           if (bullet) {
             bullet->Unlimbo(center, DIR_N);
           }
@@ -1403,7 +1404,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
           bullet =
               new BulletClass(BULLET_INVISIBLE,
                               ::As_Target(Adjacent_Cell(cellcenter, FACING_E)),
-                              0, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
           if (bullet) {
             bullet->Unlimbo(center, DIR_E);
           }
@@ -1411,7 +1412,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
           bullet =
               new BulletClass(BULLET_INVISIBLE,
                               ::As_Target(Adjacent_Cell(cellcenter, FACING_S)),
-                              0, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
           if (bullet) {
             bullet->Unlimbo(center, DIR_S);
           }
@@ -1419,7 +1420,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
           bullet =
               new BulletClass(BULLET_INVISIBLE,
                               ::As_Target(Adjacent_Cell(cellcenter, FACING_W)),
-                              0, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
+                              nullptr, 200, WARHEAD_FIRE, MPH_MEDIUM_FAST);
           if (bullet) {
             bullet->Unlimbo(center, DIR_W);
           }
@@ -1440,7 +1441,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
         Sound_Effect(VOC_KABOOM1, Coord);
         while (*offset != REFRESH_EOL) {
           CELL cell = Coord_Cell(Coord) + *offset++;
-          AnimClass *anim = NULL;
+          AnimClass *anim = nullptr;
 
           /*
           **	Show pieces of fire to indicate that a significant change in
@@ -1484,7 +1485,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
               ** Building may catch on fire, but only if it wasn't a
               ** renovator that caused the damage.
               */
-              if (source == NULL || source->What_Am_I() != RTTI_INFANTRY ||
+              if (source == nullptr || source->What_Am_I() != RTTI_INFANTRY ||
                   *(InfantryClass *)source != INFANTRY_RENOVATOR) {
                 anim = new AnimClass(ANIM_FIRE_SMALL,
                                      Coord_Scatter(Cell_Coord(cell), 0x0060),
@@ -1529,7 +1530,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
       **	return fire if they are able and allowed.
       */
       if (*this != STRUCT_SAM && *this != STRUCT_AAGUN &&
-          !House->Is_Ally(source) && Class->PrimaryWeapon != NULL &&
+          !House->Is_Ally(source) && Class->PrimaryWeapon != nullptr &&
           (!Target_Legal(TarCom) || !In_Range(TarCom))) {
         if (source->What_Am_I() != RTTI_AIRCRAFT &&
             (!House->IsHuman || Rule.IsSmartDefense)) {
@@ -1558,7 +1559,7 @@ ResultType BuildingClass::Take_Damage(int &damage, int distance,
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocated building. If NULL is *
+ * OUTPUT:  Returns with a pointer to the allocated building. If nullptr is *
  *          returned, then this indicates a failure to allocate. *
  *                                                                                             *
  * WARNINGS:   none *
@@ -1622,7 +1623,7 @@ void BuildingClass::operator delete(void *ptr) {
 BuildingClass::BuildingClass(StructType type, HousesType house)
     : TechnoClass(RTTI_BUILDING, Buildings.ID(this), house),
       Class(BuildingTypes.Ptr((int)type)),
-      Factory(0),
+      Factory(nullptr),
       ActLike(House->ActLike),
       IsToRebuild(false),
       IsToRepair(false),
@@ -1656,7 +1657,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
   **	If the building could never be built, then it can never be sold either.
   *This *	is due to the lack of buildup animation.
   */
-  if (Class->Get_Buildup_Data() != NULL) {
+  if (Class->Get_Buildup_Data() != nullptr) {
     //	if (!Class->IsBuildable) {
     IsAllowedToSell = false;
   }
@@ -1687,10 +1688,10 @@ BuildingClass::~BuildingClass(void) {
     }
     BuildingClass::Limbo();
   }
-  Class = 0;
+  Class = nullptr;
 
   delete (FactoryClass *)Factory;
-  Factory = 0;
+  Factory = nullptr;
   ID = -1;
 }
 
@@ -1736,15 +1737,15 @@ void BuildingClass::Drop_Debris(TARGET source) {
     **	Infantry could run out of a destroyed building.
     */
     if (!House->IsToDie && count > 0) {
-      InfantryClass *i = NULL;
+      InfantryClass *i = nullptr;
 
       if (Random_Pick(0, odds) == 1) {
-        i = NULL;
+        i = nullptr;
         InfantryType typ = Crew_Type();
         if (typ != INFANTRY_NONE)
           i = new InfantryClass(typ, House->Class->House);
-        if (i != NULL) {
-          if (Class->Get_Buildup_Data() != NULL && i->Class->IsNominal)
+        if (i != nullptr) {
+          if (Class->Get_Buildup_Data() != nullptr && i->Class->IsNominal)
             i->IsTechnician = true;
           ScenarioInit++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
@@ -1824,7 +1825,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass *object) {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  if (action == ACTION_ATTACK && object != NULL) {
+  if (action == ACTION_ATTACK && object != nullptr) {
     Player_Assign_Mission(MISSION_ATTACK, object->As_Target());
   }
 
@@ -2045,9 +2046,9 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
                   !bldg->Factory) {
                 FactoryClass *temp = Factory;
                 bldg->Factory = Factory;
-                Factory = 0;
+                Factory = nullptr;
                 int retval = (bldg->Exit_Object(base));
-                bldg->Factory = 0;
+                bldg->Factory = nullptr;
                 Factory = temp;
                 return (retval);
               }
@@ -2391,10 +2392,10 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->PrimaryWeapon != NULL) {
+  if (Class->PrimaryWeapon != nullptr) {
     threat = threat | Class->PrimaryWeapon->Allowed_Threats();
   }
-  if (Class->SecondaryWeapon != NULL) {
+  if (Class->SecondaryWeapon != nullptr) {
     threat = threat | Class->SecondaryWeapon->Allowed_Threats();
   }
   if (House->IsHuman) {
@@ -2402,7 +2403,7 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
   }
   threat = threat | THREAT_RANGE;
 
-  //	if (Class->PrimaryWeapon != NULL) {
+  //	if (Class->PrimaryWeapon != nullptr) {
   //		if (Class->PrimaryWeapon->Bullet->IsAntiAircraft) {
   //			threat = threat | THREAT_AIR;
   //		}
@@ -2455,7 +2456,7 @@ void BuildingClass::Grand_Opening(bool captured) {
       CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S));
 
       UnitClass *unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
-      if (unit != NULL) {
+      if (unit != nullptr) {
         /*
         **	Try to place down the harvesters. If it could not be placed,
         *then try *	to place it in a nearby location.
@@ -2487,7 +2488,7 @@ void BuildingClass::Grand_Opening(bool captured) {
     */
     if (!Rule.IsSeparate && *this == STRUCT_HELIPAD && !captured) {
       ScenarioInit++;
-      AircraftClass *air = 0;
+      AircraftClass *air = nullptr;
       if (House->ActLike == HOUSE_USSR || House->ActLike == HOUSE_BAD ||
           House->ActLike == HOUSE_UKRAINE) {
         air = new AircraftClass(AIRCRAFT_HIND, House->Class->House);
@@ -2744,7 +2745,7 @@ ActionType BuildingClass::What_Action(CELL cell) const {
   **	Don't allow targeting of SAM sites, even if the CTRL key
   **	is held down.
   */
-  if (action == ACTION_ATTACK && Class->PrimaryWeapon != NULL &&
+  if (action == ACTION_ATTACK && Class->PrimaryWeapon != nullptr &&
       !Class->PrimaryWeapon->Bullet->IsAntiGround) {
     //	if (action == ACTION_ATTACK && (*this == STRUCT_SAM || *this ==
     // STRUCT_AAGUN)) {
@@ -2899,7 +2900,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
     /*
     ** If an obelisk can fire, check the state of charge.
     */
-    if (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsElectric &&
+    if (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsElectric &&
         !IsCharged) {
       return (FIRE_BUSY);
     }
@@ -3056,7 +3057,7 @@ bool BuildingClass::Captured(HouseClass *newowner) {
     */
     if (Factory) {
       delete (FactoryClass *)Factory;
-      Factory = 0;
+      Factory = nullptr;
     }
 
     /*
@@ -3483,10 +3484,10 @@ int BuildingClass::Mission_Deconstruction(void) {
             }
             if (typ == INFANTRY_RENOVATOR) engine = true;
 
-            InfantryClass *infantry = 0;
+            InfantryClass *infantry = nullptr;
             if (typ != INFANTRY_NONE)
               infantry = new InfantryClass(typ, House->Class->House);
-            if (infantry != NULL) {
+            if (infantry != nullptr) {
               ScenarioInit++;
               COORDINATE coord = Coord_Add(Center_Coord(), XYP_COORD(0, -12));
               coord = Map[coord].Closest_Free_Spot(coord, false);
@@ -3533,7 +3534,7 @@ int BuildingClass::Mission_Deconstruction(void) {
           ScenarioInit++;
           UnitClass *unit = new UnitClass(UNIT_MCV, House->Class->House);
           ScenarioInit--;
-          if (unit != NULL) {
+          if (unit != nullptr) {
             /*
             **	Unlimbo the MCV onto the map. The MCV should start in the same
             **	health condition that the construction yard was in.
@@ -3583,7 +3584,7 @@ int BuildingClass::Mission_Deconstruction(void) {
           *directly *	attributed to the enemy.
           */
           WhoLastHurtMe = HOUSE_NONE;
-          Record_The_Kill(NULL);
+          Record_The_Kill(nullptr);
 
           /*
           **	The player gets part of the money back for the sell.
@@ -4113,7 +4114,7 @@ int BuildingClass::Mission_Missile(void) {
                   Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
               if (!bullet->Unlimbo(launch, DIR_N)) {
                 delete bullet;
-                bullet = NULL;
+                bullet = nullptr;
               }
             }
 
@@ -4167,7 +4168,7 @@ int BuildingClass::Mission_Missile(void) {
           COORDINATE launch = Coord_Move(Center_Coord(), (DirType)28, 0xA0);
           if (!bullet->Unlimbo(launch, DIR_N)) {
             delete bullet;
-            bullet = NULL;
+            bullet = nullptr;
           }
         }
 
@@ -4388,7 +4389,7 @@ void BuildingClass::Death_Announcement(TechnoClass const *source) const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
-  if (source != NULL && House->IsPlayerControl) {
+  if (source != nullptr && House->IsPlayerControl) {
     Speak(VOX_STRUCTURE_DESTROYED);
   }
 }
@@ -4500,7 +4501,7 @@ int BuildingClass::Mission_Unload(void) {
           */
           for (FacingType f = FACING_FIRST; f < FACING_COUNT; f++) {
             CellClass *cptr = &cellptr->Adjacent_Cell(f);
-            if (cptr->Cell_Building() == NULL) {
+            if (cptr->Cell_Building() == nullptr) {
               cptr->Incoming(coord, true, true);
             }
           }
@@ -4703,7 +4704,7 @@ void BuildingClass::Detach_All(bool all) {
   if (Factory) {
     Factory->Abandon();
     delete (FactoryClass *)Factory;
-    Factory = 0;
+    Factory = nullptr;
   }
 
   /*
@@ -4792,7 +4793,7 @@ CELL BuildingClass::Find_Exit_Cell(TechnoClass const *techno) const {
   CELL origin = Coord_Cell(Coord);
 
   ptr = Class->ExitList;
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     while (*ptr != REFRESH_EOL) {
       CELL cell = origin + *ptr++;
       if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
@@ -4990,7 +4991,7 @@ void BuildingClass::Read_INI(CCINIClass &ini) {
     /*
     **	Get a building entry.
     */
-    ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf));
+    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
     /*
     **	1st token: house name.
@@ -5000,7 +5001,7 @@ void BuildingClass::Read_INI(CCINIClass &ini) {
     /*
     **	2nd token: building name.
     */
-    classid = BuildingTypeClass::From_Name(strtok(NULL, ","));
+    classid = BuildingTypeClass::From_Name(strtok(nullptr, ","));
 
     if (bhouse != HOUSE_NONE && classid != STRUCT_NONE) {
       int strength;
@@ -5009,31 +5010,31 @@ void BuildingClass::Read_INI(CCINIClass &ini) {
       /*
       **	3rd token: strength.
       */
-      strength = atoi(strtok(NULL, ","));
+      strength = atoi(strtok(nullptr, ","));
 
       /*
       **	4th token: cell #.
       */
-      cell = atoi(strtok(NULL, ","));
+      cell = atoi(strtok(nullptr, ","));
 
       /*
       **	5th token: facing.
       */
-      facing = (DirType)atoi(strtok(NULL, ","));
+      facing = (DirType)atoi(strtok(nullptr, ","));
 
       /*
-      **	6th token: triggername (can be NULL).
+      **	6th token: triggername (can be nullptr).
       */
-      trigname = strtok(NULL, ",");
+      trigname = strtok(nullptr, ",");
 
       bool sellable = false;
-      char *token_pointer = strtok(NULL, ",");
+      char *token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
         sellable = atoi(token_pointer);
       }
 
       bool rebuild = false;
-      token_pointer = strtok(NULL, ",");
+      token_pointer = strtok(nullptr, ",");
       if (token_pointer) {
         rebuild = atoi(token_pointer);
       }
@@ -5175,7 +5176,7 @@ void BuildingClass::Factory_AI(void) {
       case 0:
         Factory->Abandon();
         delete (FactoryClass *)Factory;
-        Factory = 0;
+        Factory = nullptr;
         break;
 
       /*
@@ -5224,7 +5225,7 @@ void BuildingClass::Factory_AI(void) {
         Factory->Completed();
         //				delete fact;
         delete (FactoryClass *)Factory;
-        Factory = 0;
+        Factory = nullptr;
         break;
 
       default:
@@ -5250,7 +5251,7 @@ void BuildingClass::Factory_AI(void) {
         if (PlacementDelay == 0 && !Factory->Is_Building()) {
           Factory->Abandon();
           delete (FactoryClass *)Factory;
-          Factory = 0;
+          Factory = nullptr;
         }
 
       } else {
@@ -5268,12 +5269,12 @@ void BuildingClass::Factory_AI(void) {
           **	If a suitable object type was selected for production, then
           *start *	producing it now.
           */
-          if (techno != NULL) {
+          if (techno != nullptr) {
             Factory = new FactoryClass;
             if (Factory.Is_Valid()) {
               if (!Factory->Set(*techno, *House)) {
                 delete (FactoryClass *)Factory;
-                Factory = 0;
+                Factory = nullptr;
               } else {
                 House->Production_Begun(Factory->Get_Object());
                 Factory->Start();
@@ -5334,7 +5335,7 @@ void BuildingClass::Rotation_AI(void) {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Charging_AI(void) {
-  if (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsElectric &&
+  if (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsElectric &&
       BState != BSTATE_CONSTRUCTION) {
     if (Target_Legal(TarCom) && House->Power_Fraction() >= 1) {
       if (!IsCharged) {

@@ -201,7 +201,7 @@ bool BaseClass::Save(Pipe &file) const {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool BaseClass::Is_Built(int index) const {
-  if (Get_Building(index) != NULL) {
+  if (Get_Building(index) != nullptr) {
     return (true);
   } else {
     return (false);
@@ -214,7 +214,7 @@ bool BaseClass::Is_Built(int index) const {
  *                                                                                             *
  * INPUT: * obj      pointer to building to test *
  *                                                                                             *
- * OUTPUT: * ptr to already-built building, NULL if none *
+ * OUTPUT: * ptr to already-built building, nullptr if none *
  *                                                                                             *
  * WARNINGS: * none. *
  *                                                                                             *
@@ -233,12 +233,12 @@ BuildingClass *BaseClass::Get_Building(int index) const {
   obj[0] = Map[cell].Cell_Building();
   int count = 1;
   for (int xindex = 0; xindex < ARRAY_SIZE(Map[cell].Overlapper); xindex++) {
-    if (Map[cell].Overlapper[xindex] != NULL) {
+    if (Map[cell].Overlapper[xindex] != nullptr) {
       obj[count++] = Map[cell].Overlapper[xindex];
     }
   }
 
-  BuildingClass *bldg = NULL;
+  BuildingClass *bldg = nullptr;
   for (int i = 0; i < count; i++) {
     if (obj[i] && Coord_Cell(obj[i]->Coord) == Nodes[index].Cell &&
         obj[i]->What_Am_I() == RTTI_BUILDING &&
@@ -263,7 +263,7 @@ BuildingClass *BaseClass::Get_Building(int index) const {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool BaseClass::Is_Node(BuildingClass const *obj) {
-  if (Get_Node(obj) != NULL) {
+  if (Get_Node(obj) != nullptr) {
     return (true);
   } else {
     return (false);
@@ -289,7 +289,7 @@ BaseNodeClass *BaseClass::Get_Node(BuildingClass const *obj) {
       return (&Nodes[i]);
     }
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -301,7 +301,7 @@ BaseNodeClass *BaseClass::Get_Node(BuildingClass const *obj) {
  * INPUT:   cell  -- The cell to use in finding a match. *
  *                                                                                             *
  * OUTPUT:  Returns a pointer to the matching node if found. If not found, then
- *NULL is        * returned. *
+ *nullptr is        * returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -313,7 +313,7 @@ BaseNodeClass *BaseClass::Get_Node(CELL cell) {
       return (&Nodes[index]);
     }
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -326,7 +326,7 @@ BaseNodeClass *BaseClass::Get_Node(CELL cell) {
  *                                                                                             *
  * INPUT: * type      type of building to check for *
  *                                                                                             *
- * OUTPUT: * ptr to a BaseNodeClass, NULL if none *
+ * OUTPUT: * ptr to a BaseNodeClass, nullptr if none *
  *                                                                                             *
  * WARNINGS: * none. *
  *                                                                                             *
@@ -360,7 +360,7 @@ BaseNodeClass *BaseClass::Next_Buildable(StructType type) {
   // placement of the building. Make it static and reuse the next time this
   // routine is called.
 
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -404,7 +404,7 @@ void BaseClass::Read_INI(CCINIClass &ini) {
     ** Get an INI entry
     */
     sprintf(uname, "%03d", i);
-    ini.Get_String(INI_Name(), uname, NULL, buf, sizeof(buf));
+    ini.Get_String(INI_Name(), uname, nullptr, buf, sizeof(buf));
 
     /*
     ** Set the node's building type
@@ -414,7 +414,7 @@ void BaseClass::Read_INI(CCINIClass &ini) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = atoi(strtok(NULL, ","));
+    node.Cell = atoi(strtok(nullptr, ","));
 
     /*
     ** Add this node to the Base's list

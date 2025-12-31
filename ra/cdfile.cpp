@@ -63,7 +63,7 @@
 /*
 **	Pointer to the first search path record.
 */
-CDFileClass::SearchDriveType *CDFileClass::First = 0;
+CDFileClass::SearchDriveType *CDFileClass::First = nullptr;
 
 int CDFileClass::CurrentCDDrive = 0;
 int CDFileClass::LastCDDrive = 0;
@@ -297,7 +297,7 @@ int CDFileClass::Set_Search_Drives(char * pathlist)
 			**	Attach the path to this structure.
 			*/
 			srch->Path = strdup(path);
-			srch->Next = NULL;
+			srch->Next = nullptr;
 
 			/*
 			**	Attach this path record to the end of the path chain.
@@ -318,7 +318,7 @@ int CDFileClass::Set_Search_Drives(char * pathlist)
 		**	Find the next path string and resubmit.
 		*/
 nextpath:
-		ptr = strtok(NULL, ";");
+		ptr = strtok(nullptr, ";");
 	}
 	if (!found) return(1);
 	if (empty) return(2);
@@ -385,7 +385,7 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
   }
 
   char const *ptr = strtok(pathlist, ";");
-  while (ptr != NULL) {
+  while (ptr != nullptr) {
     if (strlen(ptr) > 0) {
       char path[PATH_MAX];  // Working path buffer.
 
@@ -431,7 +431,7 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
         /*
         **	Find the next path string and resubmit.
         */
-        ptr = strtok(NULL, ";");
+        ptr = strtok(nullptr, ";");
         continue;
       }
 
@@ -442,7 +442,7 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
     /*
     **	Find the next path string and resubmit.
     */
-    ptr = strtok(NULL, ";");
+    ptr = strtok(nullptr, ";");
   }
   if (!found) return (1);
   if (empty) return (2);
@@ -473,7 +473,7 @@ void CDFileClass::Add_Search_Drive(char *path) {
   **	Attach the path to this structure.
   */
   srch->Path = strdup(path);
-  srch->Next = NULL;
+  srch->Next = nullptr;
 
   /*
   **	Attach this path record to the end of the path chain.
@@ -537,7 +537,7 @@ void CDFileClass::Clear_Search_Drives(void) {
 
     chain = next;
   }
-  First = 0;
+  First = nullptr;
 }
 
 /***********************************************************************************************
@@ -669,7 +669,7 @@ int CDFileClass::Open(char const *filename, int rights) {
 #ifdef NEVER
 /*
 ** Get the drive letters if the CD's online */
-* / WORD cdecl GetCDDrive(VOID) {
+*/ WORD cdecl GetCDDrive(VOID) {
   _ES = FP_SEG(&cdDrive[0]);
   _BX = FP_OFF(&cdDrive[0]);
   _AX = 0x150d;

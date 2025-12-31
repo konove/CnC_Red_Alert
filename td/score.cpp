@@ -286,7 +286,7 @@ void ScoreTimeClass::Update(void) {
 #else
     Set_Logic_Page(PseudoSeenBuff);
 #endif
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     Set_Logic_Page(oldpage);
   }
 }
@@ -319,7 +319,7 @@ void ScoreCredsClass::Update(void) {
         Play_Sample(CashTurn, 255, Options.Normalize_Sound(70));
       }
     }
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     Set_Logic_Page(oldpage);
   }
 }
@@ -348,7 +348,7 @@ void ScorePrintClass::Update(void) {
   if (Stage && (((char *)DataPtr)[Stage - 1] == 0)) {
     for (int i = 0; i < MAXSCOREOBJS; i++) {
       if (ScoreObjs[i] == this) {
-        ScoreObjs[i] = 0;
+        ScoreObjs[i] = nullptr;
       }
     }
     BlitList.Add(XPos * RESFACTOR, YPos * RESFACTOR, XPos * RESFACTOR,
@@ -423,7 +423,7 @@ void MultiStagePrintClass::Update(void) {
   if (Stage && (((char *)DataPtr)[Stage - 1] == 0)) {
     for (int i = 0; i < MAXSCOREOBJS; i++) {
       if (ScoreObjs[i] == this) {
-        ScoreObjs[i] = 0;
+        ScoreObjs[i] = nullptr;
       }
     }
     BlitList.Add(XPos * RESFACTOR, YPos * RESFACTOR, XPos * RESFACTOR,
@@ -521,7 +521,7 @@ void ScoreScaleClass::Update(void) {
     } else {
       Set_Font_Palette(Palette);
       for (int i = 0; i < MAXSCOREOBJS; i++) {
-        if (ScoreObjs[i] == this) ScoreObjs[i] = 0;
+        if (ScoreObjs[i] == this) ScoreObjs[i] = nullptr;
       }
       TextPrintBuffer->Print((char *)DataPtr, XPos * RESFACTOR,
                              YPos * RESFACTOR, TBLACK, TBLACK);
@@ -651,9 +651,9 @@ void ScoreClass::Presentation(void) {
 
   if (Special.IsJurassic && AreThingiesEnabled) return;
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)NULL);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
   TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)NULL);
+                                           SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
   Disable_Uncompressed_Shapes();
@@ -679,7 +679,7 @@ void ScoreClass::Presentation(void) {
   /*
   ** Load the background for the score screen
   */
-  anim = Open_Animation(ScreenNames[house], NULL, 0L,
+  anim = Open_Animation(ScreenNames[house], nullptr, 0L,
                         (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
                         Palette);
 
@@ -806,7 +806,7 @@ void ScoreClass::Presentation(void) {
     ** load the logo
     */
     void const *logoptr = MixFileClass::Retrieve("LOGOS.SHP");
-    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
 
     Bit_It_In_Scale(0, 0, 128, 104 - 16, &SysMemPage, PseudoSeenBuff, &SeenBuff,
                     1);
@@ -1054,9 +1054,9 @@ void ScoreClass::Presentation(void) {
   for (i = 0; i < MAXSCOREOBJS; i++)
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
-      ScoreObjs[i] = 0;
+      ScoreObjs[i] = nullptr;
     }
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, NULL);
+  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, nullptr);
   VisiblePage.Clear();
 
   Show_Mouse();
@@ -1064,7 +1064,7 @@ void ScoreClass::Presentation(void) {
 
   Theme.Queue_Song(THEME_NONE);
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, NULL);
+  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, nullptr);
   VisiblePage.Clear();
   Set_Palette(GamePalette);
 
@@ -1076,7 +1076,7 @@ void ScoreClass::Presentation(void) {
 
   delete PseudoSeenBuff;
   delete TextPrintBuffer;
-  TextPrintBuffer = NULL;
+  TextPrintBuffer = nullptr;
   BlitList.Clear();
   Enable_Uncompressed_Shapes();
 }
@@ -1215,7 +1215,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
         CC_Draw_Shape(
             fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
             SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-            ScoreRemapFBall, 0);
+            ScoreRemapFBall, nullptr);
       }
       if (i > 64) {
         shapeindex = (i - 64) >> 1;
@@ -1223,7 +1223,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
           CC_Draw_Shape(
               fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
               SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
-              ScoreRemapFBall, 0);
+              ScoreRemapFBall, nullptr);
         }
       }
     }
@@ -1249,7 +1249,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
 #ifndef LORES
-    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, NULL);
+    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
 #endif
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
@@ -1310,7 +1310,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(SysMemPage);
   SysMemPage.Fill_Rect(0, 0, 124, 9, TBLACK);
-  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
 #ifdef LORES
   Set_Logic_Page(HidPage);
 #else
@@ -1322,7 +1322,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
 
   for (i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
+      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
     } else {
 #ifdef LORES
       SysMemPage.Blit(HidPage, 0, 0, 172, ypos, 3 + gdikilled, 9);
@@ -1337,8 +1337,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
       Call_Back_Delay(2);
     }
   }
-  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, 0,
-                0);
+  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
+                nullptr);
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   if (!Check_Key()) Call_Back_Delay(40);
 
@@ -1346,8 +1346,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
                RESFACTOR * (ypos + 14), 5 * 12, 12);
   for (i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL, 0,
-                    0);
+      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
+                    nullptr);
     } else {
 #ifdef LORES
       SysMemPage.Blit(HidPage, 0, 0, 172, ypos + 12, 3 + nodkilled, 9);
@@ -1369,7 +1369,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   ** Make sure accurate count is printed at end
   */
   CC_Draw_Shape(redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
-                0, 0);
+                nullptr, nullptr);
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   if (!Check_Key()) Call_Back_Delay(40);
 }
@@ -1440,7 +1440,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
 #ifndef LORES
-  Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, NULL);
+  Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
 #endif
   BlitList.Update();
   WWMouse->Draw_Mouse(&HidPage);
@@ -1570,7 +1570,7 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
     Call_Back_Delay(1);
   }
   delete ScoreObjs[credobj];
-  ScoreObjs[credobj] = 0;
+  ScoreObjs[credobj] = nullptr;
 }
 
 /***************************************************************************
@@ -1682,7 +1682,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
 #ifndef LORES
-    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, NULL);
+    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
 #endif
     BlitList.Update();
     HidPage.Blit(SeenBuff);
@@ -2009,7 +2009,7 @@ void Call_Back_Delay(int time) {
     //}else{
     Animate_Score_Objs();
 #ifndef LORES
-    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, NULL);
+    Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
 #endif
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
@@ -2097,9 +2097,9 @@ void Multi_Score_Presentation(void) {
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)NULL);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
   TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)NULL);
+                                           SeenBuff.Get_Height(), (void *)nullptr);
   BlitList.Clear();
 
   SysMemPage.Clear();
@@ -2109,7 +2109,7 @@ void Multi_Score_Presentation(void) {
 
   Set_Palette(BlackPalette);
 
-  anim = Open_Animation("MLTIPLYR.WSA", NULL, 0L,
+  anim = Open_Animation("MLTIPLYR.WSA", nullptr, 0L,
                         (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
                         Palette);
   Hide_Mouse();
@@ -2190,12 +2190,12 @@ void Multi_Score_Presentation(void) {
   for (i = 0; i < MAXSCOREOBJS; i++)
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
-      ScoreObjs[i] = 0;
+      ScoreObjs[i] = nullptr;
     }
 
   Theme.Queue_Song(THEME_NONE);
 
-  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, NULL);
+  Fade_Palette_To(BlackPalette, FADE_PALETTE_FAST, nullptr);
   VisiblePage.Clear();
   Set_Palette(GamePalette);
 

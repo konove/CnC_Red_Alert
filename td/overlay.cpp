@@ -57,7 +57,7 @@ void *OverlayClass::VTable;
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
-OverlayClass::OverlayClass(void) : Class(0) { ToOwn = HOUSE_NONE; };
+OverlayClass::OverlayClass(void) : Class(nullptr) { ToOwn = HOUSE_NONE; };
 
 /***********************************************************************************************
  * OverlayClass::Validate -- validates overlay
@@ -345,14 +345,14 @@ void OverlayClass::Read_INI(char *buffer) {
   len = strlen(buffer) + 2;
   tbuffer = buffer + len;
 
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     CELL cell;
     OverlayType classid;
 
     cell = atoi(tbuffer);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
     classid = OverlayTypeClass::From_Name(strtok(buf, ",\n\r"));
 
@@ -398,10 +398,10 @@ void OverlayClass::Write_INI(char *buffer) {
   **	First, clear out all existing unit data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 

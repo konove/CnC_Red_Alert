@@ -56,7 +56,7 @@ class TriggerClass {
   /*
   **	Constructor/Destructor
   */
-  TriggerClass(TriggerTypeClass* trigtype = NULL);
+  TriggerClass(TriggerTypeClass* trigtype = nullptr);
   TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x){};
   ~TriggerClass(void);
 
@@ -68,7 +68,7 @@ class TriggerClass {
   /*
   **	Processing routines
   */
-  bool Spring(TEventType event = TEVENT_ANY, ObjectClass* object = 0,
+  bool Spring(TEventType event = TEVENT_ANY, ObjectClass* object = nullptr,
               CELL cell = 0, bool forced = false);
   void Detach(TARGET target, bool all = true);
 

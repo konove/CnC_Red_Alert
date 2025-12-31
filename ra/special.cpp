@@ -100,14 +100,14 @@ void SpecialClass::Init(void) {
  *=============================================================================================*/
 void Special_Dialog(bool simple) {
   SpecialClass oldspecial = Special;
-  GadgetClass* buttons = NULL;
+  GadgetClass* buttons = nullptr;
   static struct {
     int Description;
     int Setting;
     CheckBoxClass* Button;
   } _options[] = {
-      {TXT_THREE_POINT, 0, 0},
-      {TXT_SPEED_BUILD, 0, 0},
+      {TXT_THREE_POINT, 0, nullptr},
+      {TXT_SPEED_BUILD, 0, nullptr},
   };
 
   TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 15 * RESFACTOR,
@@ -324,7 +324,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
 
   if (btext == TXT_NONE) btext = TXT_OK;
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -345,7 +345,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
   */
   buffer[BUFFSIZE - 1] = 0;
   strncpy(buffer, Text_String(message), BUFFSIZE - 1);
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   int width;
   int height;
   Format_Window_String(buffer, 255, width, height);
@@ -371,7 +371,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
                       TPF_6PT_GRAD | TPF_NOSHADOW, editx,
                       (y + height) - 35 * RESFACTOR, editwidth, 10 * RESFACTOR);
 
-  TextButtonClass* buttonlist = 0;
+  TextButtonClass* buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -502,7 +502,7 @@ int Fetch_Difficulty(void)
     }
   }
 #endif
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   int width;
   int height;
   Format_Window_String(buffer, w - 60 * RESFACTOR, width, height);

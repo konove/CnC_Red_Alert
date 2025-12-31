@@ -8,7 +8,7 @@ class PaletteClass {
   PaletteClass();
   PaletteClass(const RGBClass &);
 
-  void Set(int fade = 0, void (*callback)() = NULL);
+  void Set(int fade = 0, void (*callback)() = nullptr);
 
   void Adjust(int);
   void Adjust(int, PaletteClass &);

@@ -89,7 +89,7 @@ ChronalVortexClass::ChronalVortexClass(void) {
   Range = 10;
   Damage = 200;
   RenderBuffer =
-      NULL;  // We havn't allocated it yet. It will be allocated as needed.
+      nullptr;  // We havn't allocated it yet. It will be allocated as needed.
 }
 
 /***********************************************************************************************
@@ -300,14 +300,14 @@ void ChronalVortexClass::Load(Straw &file) {
  * HISTORY: * 8/29/96 4:33PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::Save(Pipe &file) {
-  GraphicBufferClass *save_ptr = NULL;
+  GraphicBufferClass *save_ptr = nullptr;
 
   if (RenderBuffer) {
     /*
     ** Save the ptr to the render buffer so we can null it for the save
     */
     save_ptr = RenderBuffer;
-    RenderBuffer = NULL;
+    RenderBuffer = nullptr;
   }
 
   file.Put(this, sizeof(ChronalVortexClass));
@@ -518,10 +518,10 @@ void ChronalVortexClass::Set_Target(ObjectClass *target) {
   if (Active) {
     ZapFrame = 0;
     TargetObject = TARGET_NONE;
-    if (target != NULL) TargetObject = target->As_Target();
+    if (target != nullptr) TargetObject = target->As_Target();
     LastAttackFrame = Frame;
     TargetDistance =
-        (target != NULL) ? Distance(target->Center_Coord(), Position) : 0;
+        (target != nullptr) ? Distance(target->Center_Coord(), Position) : 0;
   }
 }
 
@@ -644,7 +644,7 @@ void ChronalVortexClass::Zap_Target(void) {
     *of the tesla.
     */
     TechnoClass *temptech = new BuildingClass(STRUCT_TESLA, HOUSE_GOOD);
-    if (temptech != NULL) {
+    if (temptech != nullptr) {
       temptech->Coord = here;
       ObjectClass *obj = As_Object(TargetObject);
       TARGET target = As_Target(obj->Center_Coord());
@@ -665,7 +665,7 @@ void ChronalVortexClass::Zap_Target(void) {
       if (ZapFrame == ZAP_COUNT) {
         ZapFrame = 0;
         int damage = Damage;
-        obj->Take_Damage(damage, TargetDistance, WARHEAD_TESLA, NULL, 1);
+        obj->Take_Damage(damage, TargetDistance, WARHEAD_TESLA, nullptr, 1);
         TargetObject = TARGET_NONE;
       }
     }
@@ -803,13 +803,13 @@ void ChronalVortexClass::Render(void) {
       */
       if (!RenderBuffer) {
         RenderBuffer = new GraphicBufferClass(CELL_PIXEL_W * 4,
-                                              CELL_PIXEL_H * 4, (void *)NULL);
+                                              CELL_PIXEL_H * 4, (void *)nullptr);
       }
       CELL xc = Coord_XCell(Position);
       CELL yc = Coord_YCell(Position);
       CellClass *cellptr;
       CELL cell;
-      TemplateTypeClass const *ttype = 0;
+      TemplateTypeClass const *ttype = nullptr;
       int icon;  // The icon number to use from the template set.
 
 #ifdef WIN32
@@ -861,7 +861,8 @@ void ChronalVortexClass::Render(void) {
             */
             if (ttype->Get_Image_Data()) {
               RenderBuffer->Draw_Stamp(ttype->Get_Image_Data(), icon,
-                                       x * CELL_PIXEL_W, y * CELL_PIXEL_H, NULL,
+                                       x * CELL_PIXEL_W, y * CELL_PIXEL_H,
+                                       nullptr,
                                        WINDOW_MAIN);
             }
 
@@ -887,7 +888,7 @@ void ChronalVortexClass::Render(void) {
                             x * CELL_PIXEL_W + (CELL_PIXEL_W >> 1),
                             y * CELL_PIXEL_H + (CELL_PIXEL_H >> 1),
                             WINDOW_TACTICAL,
-                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                             DisplayClass::UnitShadow);
 
               IsTheaterShape = false;
@@ -1149,6 +1150,6 @@ void ChronalVortexClass::Build_Fading_Table(PaletteClass const &palette,
 
 void ChronalVortexClass::Detach(TARGET target) {
   if (Target_Legal(target) && target == TargetObject) {
-    Set_Target(NULL);
+    Set_Target(nullptr);
   }
 }

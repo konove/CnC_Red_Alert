@@ -62,7 +62,7 @@
 
 #include "function.h"
 
-DriveClass::DriveClass(void) : Class(0){};
+DriveClass::DriveClass(void) : Class(nullptr){};
 
 /***********************************************************************************************
  * DriveClass::Do_Turn -- Tries to turn the vehicle to the specified direction.

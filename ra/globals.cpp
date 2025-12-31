@@ -208,11 +208,11 @@ fixed EngineerCaptureLevel =
 
 #ifdef WIN32
 unsigned short Hard_Error_Occured = 0;
-WWMouseClass *WWMouse = NULL;
+WWMouseClass *WWMouse = nullptr;
 #ifndef LORES
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)NULL);
+GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)nullptr);
 #endif
-WinTimerClass *WindowsTimer = NULL;
+WinTimerClass *WindowsTimer = nullptr;
 #ifdef LORES
 int ScreenWidth = 320;
 int ScreenHeight = 200;
@@ -421,12 +421,12 @@ DMonoType MonoPage = DMONO_STRESS;  // The current page.
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MFCD *TheaterData = 0;
-MFCD *MoviesMix = 0;
-MFCD *GeneralMix = 0;
-MFCD *ScoreMix = 0;
-MFCD *MainMix = 0;
-MFCD *ConquerMix = 0;
+MFCD *TheaterData = nullptr;
+MFCD *MoviesMix = nullptr;
+MFCD *GeneralMix = nullptr;
+MFCD *ScoreMix = nullptr;
+MFCD *MainMix = nullptr;
+MFCD *ConquerMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as

@@ -82,7 +82,7 @@ void WWKeyboardClass::Clear(void) { Head = Tail; }
 int WWKeyboardClass::Down(int key) {
   // gadget uses this to poll mouse buttons
   if (Is_Mouse_Key(key)) {
-    auto buttons = SDL_GetMouseState(NULL, NULL);
+    auto buttons = SDL_GetMouseState(nullptr, nullptr);
 
     switch (key) {
       case KN_LMOUSE:
@@ -151,7 +151,7 @@ bool WWKeyboardClass::Event_Handler(SDL_Event *event) {
 
 int WWKeyboardClass::Buff_Get(void) {
   while (!Check()) {
-  }                                      // wait for key in buffer
+  }  // wait for key in buffer
   int temp = Buffer[Head];               // get key out of the buffer
   int newhead = Head;                    // save off head for manipulation
   if (Is_Mouse_Key(temp)) {              // if key is a mouse then

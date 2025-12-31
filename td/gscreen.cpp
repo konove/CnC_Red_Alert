@@ -56,9 +56,9 @@
 
 #include <filepcx.h>
 
-GadgetClass *GScreenClass::Buttons = 0;
+GadgetClass *GScreenClass::Buttons = nullptr;
 
-GraphicBufferClass *GScreenClass::ShadowPage = 0;
+GraphicBufferClass *GScreenClass::ShadowPage = nullptr;
 
 /***********************************************************************************************
  * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
@@ -111,7 +111,7 @@ void GScreenClass::One_Time(void) {
   *the *	actual screen memory. It contains a duplicate of what the
   *SEENPAGE is.
   */
-  Buttons = 0;
+  Buttons = nullptr;
   ShadowPage = new GraphicBufferClass(320, 200);
   if (ShadowPage) {
     ShadowPage->Clear();
@@ -205,7 +205,7 @@ void GScreenClass::Init_IO(void) {
   *need
   ** buttons must attach them after this routine is called!
   */
-  Buttons = 0;
+  Buttons = nullptr;
 }
 
 /***********************************************************************************************

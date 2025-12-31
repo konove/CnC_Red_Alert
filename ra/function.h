@@ -525,7 +525,7 @@ void Play_Movie(VQType name, ThemeType theme = THEME_NONE, bool clrscrn = true);
 bool Main_Loop(void);
 TheaterType Theater_From_Name(char const *name);
 void Main_Game(int argc, char *argv[]);
-long VQ_Call_Back(unsigned char *buffer = NULL, long frame = 0);
+long VQ_Call_Back(unsigned char *buffer = nullptr, long frame = 0);
 long VQ_Event_Handler(unsigned long event, void *buffer, long nbytes);
 void Call_Back(void);
 char const *Language_Name(char const *basename);
@@ -536,7 +536,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
                            int zoomfactor);
 void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata = 0, void const *ghostdata = 0,
+                   void const *fadingdata = nullptr, void const *ghostdata = nullptr,
                    DirType rotation = DIR_N, long scale = 0x0100);
 void Go_Editor(bool flag);
 long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes);
@@ -586,7 +586,7 @@ void Conquer_Clip_Text_Print(char const *, unsigned x, unsigned y,
                              RemapControlType *fore,
                              unsigned back = (unsigned)TBLACK,
                              TextPrintType flag = TPF_8POINT | TPF_DROPSHADOW,
-                             int width = -1, int const *tabs = 0);
+                             int width = -1, int const *tabs = nullptr);
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled);
 int cdecl Dialog_Message(char *errormsg, ...);
 void Window_Box(WindowNumberType window, BoxStyleEnum style);

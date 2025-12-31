@@ -42,7 +42,7 @@
 #include <stdlib.h>
 
 #define GRAPHICS TRUE
-void *ShapeBuffer = NULL;
+void *ShapeBuffer = nullptr;
 
 /***************************************************************************
  * MAIN -- Programs main entry point.                                      *

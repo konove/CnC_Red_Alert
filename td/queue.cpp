@@ -396,15 +396,15 @@ static void Queue_AI_Normal(void) {
   //------------------------------------------------------------------------
   // Execute the DoList
   //------------------------------------------------------------------------
-  if (!Execute_DoList(1, PlayerPtr->Class->House, NULL, NULL, NULL, NULL,
-                      NULL)) {
+  if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, nullptr,
+                      nullptr, nullptr)) {
     GameActive = 0;
     return;
   }
   //------------------------------------------------------------------------
   //	Clean out the DoList
   //------------------------------------------------------------------------
-  Clean_DoList(NULL);
+  Clean_DoList(nullptr);
 
 } /* end of Queue_AI_Normal */
 
@@ -762,7 +762,7 @@ static void Queue_AI_Multiplayer(void) {
   //------------------------------------------------------------------------
   // Execute the DoList; if an error occurs, bail out.
   //------------------------------------------------------------------------
-  if (!Execute_DoList(MPlayerMax, HOUSE_MULTI1, net, NULL, their_frame,
+  if (!Execute_DoList(MPlayerMax, HOUSE_MULTI1, net, nullptr, their_frame,
                       their_sent, their_recv)) {
     Stop_Game();
     return;
@@ -2332,7 +2332,8 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
   EventClass prevevent;             // last event processed
   int datasize;                     // size of element plucked from event union
   int storedsize;                   // actual # bytes stored from event
-  unsigned char *unitsptr = NULL;  // ptr to buffer pos to store mega. rep count
+  unsigned char *unitsptr =
+      nullptr;  // ptr to buffer pos to store mega. rep count
   unsigned char numunits = 0;      // megamission rep count value
   bool missiondup = false;         // flag: is this event a megamission repeat?
 
@@ -2415,7 +2416,7 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
       //..................................................................
       else {
         *unitsptr = numunits;  // save # events in our run
-        unitsptr = NULL;       // init other values
+        unitsptr = nullptr;       // init other values
         numunits = 0;
         missiondup = false;
       }
@@ -3320,7 +3321,8 @@ static void Queue_Playback(void) {
     max_houses = MPlayerMax;
     base_house = HOUSE_MULTI1;
   }
-  if (!Execute_DoList(max_houses, base_house, NULL, NULL, NULL, NULL, NULL)) {
+  if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, nullptr,
+                      nullptr, nullptr)) {
     GameActive = 0;
     return;
   }
@@ -3328,7 +3330,7 @@ static void Queue_Playback(void) {
   //------------------------------------------------------------------------
   //	Clean out the DoList
   //------------------------------------------------------------------------
-  Clean_DoList(NULL);
+  Clean_DoList(nullptr);
 
 } /* end of Queue_Playback */
 
@@ -3486,7 +3488,7 @@ void Print_CRCs(EventClass *ev) {
   sprintf(filename, "CRC%02d.TXT", Frame & 0x1f);
 
   fp = fopen(filename, "wt");  //"OUT.TXT","wt");
-  if (fp == NULL) {
+  if (fp == nullptr) {
     return;
   }
 

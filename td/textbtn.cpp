@@ -103,7 +103,7 @@ TextButtonClass::TextButtonClass(void) : ToggleClass(0, 0, 0, 0, 0) {
   X = Y = 0;
   Width = Height = 0;
   IsBlackBorder = 0;
-  String = 0;
+  String = nullptr;
   PrintFlags = TPF_8POINT;
 }
 
@@ -139,7 +139,7 @@ TextButtonClass::TextButtonClass(void) : ToggleClass(0, 0, 0, 0, 0) {
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
                                  int x, int y, int w, int h, int blackborder)
-    : ToggleClass(id, x, y, w, h), String(0) {
+    : ToggleClass(id, x, y, w, h), String(nullptr) {
   PrintFlags = style;
   IsBlackBorder = blackborder;
   Set_Text(text);

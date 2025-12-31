@@ -196,10 +196,10 @@ void ActionChoiceClass::Draw_It(int, int x, int y, int width, int height,
  *=============================================================================================*/
 void TActionClass::Detach(TARGET target) {
   if (Is_Target_TeamType(target) && Team == As_TeamType(target)) {
-    Team = NULL;
+    Team = nullptr;
   }
   if (Is_Target_TriggerType(target) && Trigger == As_TriggerType(target)) {
-    Trigger = NULL;
+    Trigger = nullptr;
   }
 }
 
@@ -245,17 +245,17 @@ void TActionClass::Build_INI_Entry(char *ptr) const {
 void TActionClass::Read_INI(void) {
   switch (NewINIFormat) {
     default:
-      Action = TActionType(atoi(strtok(NULL, ",")));
-      Team.Set_Raw(atoi(strtok(NULL, ",")));
-      Trigger.Set_Raw(atoi(strtok(NULL, ",")));
-      Data.Value = atoi(strtok(NULL, ","));
+      Action = TActionType(atoi(strtok(nullptr, ",")));
+      Team.Set_Raw(atoi(strtok(nullptr, ",")));
+      Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
+      Data.Value = atoi(strtok(nullptr, ","));
       break;
 
     case 1:
     case 0:
-      Action = TActionType(atoi(strtok(NULL, ",")));
+      Action = TActionType(atoi(strtok(nullptr, ",")));
 
-      char const *ptr = strtok(NULL, ",");
+      char const *ptr = strtok(nullptr, ",");
       Team = TeamTypeClass::From_Name(ptr);
       assert(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
 
@@ -263,9 +263,9 @@ void TActionClass::Read_INI(void) {
       **	Since triggers refer to other triggers, only record a copy of
       *the trigger text *	name. This will be fixed up later.
       */
-      Trigger.Set_Raw((long)strdup(strtok(NULL, ",")));
+      Trigger.Set_Raw((long)strdup(strtok(nullptr, ",")));
 
-      Data.Value = atoi(strtok(NULL, ","));
+      Data.Value = atoi(strtok(nullptr, ","));
       break;
   }
 }
@@ -340,7 +340,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
   **	Otherwise, take an appropriate action.
   */
   HouseClass *hptr = HouseClass::As_Pointer(house);
-  TriggerClass *trig = NULL;
+  TriggerClass *trig = nullptr;
   if (id != -1) {
     trig = Triggers.Raw_Ptr(id);
   }
@@ -353,7 +353,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
   *trigger that *	had the first event kill the object.
   */
   if (object && !object->IsActive) {
-    object = 0;
+    object = nullptr;
   }
 
   switch (Action) {
@@ -363,10 +363,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     case TACTION_TEXT_TRIGGER: {
       char const *message =
           TutorialTextOffsets[Data.Value] == 0xFFFF
-              ? NULL
+              ? nullptr
               : TutorialTextData + TutorialTextOffsets[Data.Value];
       Session.Messages.Add_Message(
-          NULL, 0, message, PCOLOR_GREEN,
+          nullptr, 0, message, PCOLOR_GREEN,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           Rule.MessageDelay * TICKS_PER_MINUTE);
       break;
@@ -589,7 +589,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     */
     case TACTION_FORCE_TRIGGER:
       if (Trigger.Is_Valid()) {
-        Find_Or_Make(Trigger)->Spring(TEVENT_ANY, 0, 0, true);
+        Find_Or_Make(Trigger)->Spring(TEVENT_ANY, nullptr, 0, true);
       }
       break;
 
@@ -693,7 +693,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     case TACTION_DESTROY_OBJECT:
       if (object) {
         int damage = object->Strength;
-        object->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+        object->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       } else {
         success = false;
       }
@@ -716,9 +716,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
           UnitClass *unit = Units.Ptr(u_index);
 
           if (unit && unit->Trigger == trig) {
-            unit->Trigger = NULL;
+            unit->Trigger = nullptr;
             int damage = unit->Strength;
-            unit->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+            unit->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
 
@@ -726,9 +726,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
           InfantryClass *infantry = Infantry.Ptr(i_index);
 
           if (infantry && infantry->Trigger == trig) {
-            infantry->Trigger = NULL;
+            infantry->Trigger = nullptr;
             int damage = infantry->Strength;
-            infantry->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+            infantry->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
 
@@ -736,9 +736,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
           AircraftClass *aircraft = Aircraft.Ptr(a_index);
 
           if (aircraft && aircraft->Trigger == trig) {
-            aircraft->Trigger = NULL;
+            aircraft->Trigger = nullptr;
             int damage = aircraft->Strength;
-            aircraft->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+            aircraft->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
 
@@ -746,9 +746,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
           BuildingClass *building = Buildings.Ptr(b_index);
 
           if (building && building->Trigger == trig) {
-            building->Trigger = NULL;
+            building->Trigger = nullptr;
             int damage = building->Strength;
-            building->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+            building->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
       }
@@ -776,7 +776,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
 TActionType Action_From_Name(char const *name) {
-  if (name == NULL) {
+  if (name == nullptr) {
     return (TACTION_NONE);
   }
 

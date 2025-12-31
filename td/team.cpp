@@ -175,7 +175,7 @@ TeamClass::TeamClass(TeamTypeClass const *type, HouseClass *owner)
   Target = TARGET_NONE;
   ObjectiveCenter = 0;
   MissionTarget = TARGET_NONE;
-  Member = 0;
+  Member = nullptr;
   Total = 0;
   Risk = 0;
   CurrentMission = -1;
@@ -706,7 +706,7 @@ bool TeamClass::Add(FootClass *obj, int typeindex) {
   **	Actually add the object to the team.
   */
   Quantity[typeindex]++;
-  obj->IsInitiated = (Member == NULL);
+  obj->IsInitiated = (Member == nullptr);
   obj->Member = Member;
   Member = obj;
   obj->Team = this;
@@ -785,7 +785,7 @@ bool TeamClass::Remove(FootClass *obj, int typeindex) {
   *then *	a new team captain must be chosen.
   */
   bool initiated = false;
-  FootClass *prev = 0;
+  FootClass *prev = nullptr;
   FootClass *curr = Member;
   bool found = false;
   while (curr && (!found || !initiated)) {
@@ -796,8 +796,8 @@ bool TeamClass::Remove(FootClass *obj, int typeindex) {
         Member = curr->Member;
       }
       FootClass *temp = curr->Member;
-      curr->Member = 0;
-      curr->Team = 0;
+      curr->Member = nullptr;
+      curr->Team = nullptr;
       curr = temp;
       Total--;
       found = true;

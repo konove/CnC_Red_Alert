@@ -54,7 +54,7 @@
 #include "modemreg.h"
 #include "tcpip.h"
 
-ModemRegistryEntryClass *ModemRegistry = NULL;  // Ptr to modem registry data
+ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 
 //
 // how much time (ticks) to go by before thinking other system
@@ -2123,7 +2123,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     }
     delete ModemRegistry;
   }
-  ModemRegistry = NULL;
+  ModemRegistry = nullptr;
 
   portlist.Add_Item(custom_port);
 
@@ -3949,7 +3949,7 @@ int Com_Scenario_Dialog(void) {
       ------------------------------------------------------------------*/
       case (KN_ESC):
         if (!ready_to_go) {
-          if (Messages.Get_Edit_Buf() != NULL) {
+          if (Messages.Get_Edit_Buf() != nullptr) {
             Messages.Input(input);
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
             break;
@@ -3971,7 +3971,7 @@ int Com_Scenario_Dialog(void) {
         /*...............................................................
         F4/SEND/'M' = send a message
         ...............................................................*/
-        if (Messages.Get_Edit_Buf() == NULL) {
+        if (Messages.Get_Edit_Buf() == nullptr) {
           if (input == KN_M || input == (BUTTON_SEND | KN_BUTTON) ||
               input == KN_F4) {
             memset(txt, 0, 80);
@@ -5140,7 +5140,7 @@ int Com_Show_Scenario_Dialog(void) {
       ------------------------------------------------------------------*/
       case (KN_ESC):
         if (!ready_to_go) {
-          if (Messages.Get_Edit_Buf() != NULL) {
+          if (Messages.Get_Edit_Buf() != nullptr) {
             Messages.Input(input);
             display = REDRAW_MESSAGE;
             break;
@@ -5161,7 +5161,7 @@ int Com_Show_Scenario_Dialog(void) {
           /*...............................................................
           F4/SEND/'M' = send a message
           ...............................................................*/
-          if (Messages.Get_Edit_Buf() == NULL) {
+          if (Messages.Get_Edit_Buf() == nullptr) {
             if (input == KN_M || input == (BUTTON_SEND | KN_BUTTON) ||
                 input == KN_F4) {
               memset(txt, 0, 80);

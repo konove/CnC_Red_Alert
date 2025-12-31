@@ -53,7 +53,7 @@ VQAHandle* Open_Movie(char* name) {
 
     if (VQA_Open(vqa, name, &AnimControl) != 0) {
       VQA_Free(vqa);
-      vqa = 0;
+      vqa = nullptr;
     }
   }
   return (vqa);

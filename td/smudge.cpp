@@ -284,20 +284,20 @@ void SmudgeClass::Read_INI(char *buffer) {
   int len = strlen(buffer) + 2;
   char *tbuffer = buffer + len;
 
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     SmudgeType smudge;  // Smudge type.
 
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
-      char *ptr = strtok(NULL, ",");
+      char *ptr = strtok(nullptr, ",");
       if (ptr) {
         int data = 0;
         CELL cell = atoi(ptr);
-        ptr = strtok(NULL, ",");
+        ptr = strtok(nullptr, ",");
         if (ptr) data = atoi(ptr);
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map[cell].Smudge == smudge && data) {
@@ -333,10 +333,10 @@ void SmudgeClass::Write_INI(char *buffer) {
   **	First, clear out all existing template data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 

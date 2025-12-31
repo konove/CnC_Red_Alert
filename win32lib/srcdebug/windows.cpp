@@ -409,7 +409,7 @@ void Window_Print(char const string[], ...) {
   Line[0] = '\0';
   Char[0] = Char[1] = 0;
   MainSource = (char *)&string[0];
-  AltSource = NULL;
+  AltSource = nullptr;
   old_c = WinC;
   old_b = WinB;
 
@@ -878,7 +878,7 @@ PRIVATE void In_Char(char *str) {
   */
   if (AltSource) {
     if (*AltSource == '\0') {
-      AltSource = NULL;
+      AltSource = nullptr;
       c = Stack;
     } else {
       c = *AltSource++;
@@ -887,7 +887,7 @@ PRIVATE void In_Char(char *str) {
 
   if (!c && MainSource) {
     if (*MainSource == '\0') {
-      MainSource = NULL;
+      MainSource = nullptr;
     } else {
       c = *MainSource++;
     }

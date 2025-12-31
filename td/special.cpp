@@ -47,25 +47,25 @@
 
 void Special_Dialog(void) {
   SpecialClass oldspecial = Special;
-  GadgetClass* buttons = NULL;
+  GadgetClass* buttons = nullptr;
   static struct {
     int Description;
     int Setting;
     CheckBoxClass* Button;
   } _options[] = {
       //		{TXT_DEFENDER_ADVANTAGE, 0, 0},
-      {TXT_SEPARATE_HELIPAD, 0, 0},
-      {TXT_VISIBLE_TARGET, 0, 0},
-      {TXT_TREE_TARGET, 0, 0},
-      {TXT_MCV_DEPLOY, 0, 0},
-      {TXT_SMART_DEFENCE, 0, 0},
-      {TXT_THREE_POINT, 0, 0},
+      {TXT_SEPARATE_HELIPAD, 0, nullptr},
+      {TXT_VISIBLE_TARGET, 0, nullptr},
+      {TXT_TREE_TARGET, 0, nullptr},
+      {TXT_MCV_DEPLOY, 0, nullptr},
+      {TXT_SMART_DEFENCE, 0, nullptr},
+      {TXT_THREE_POINT, 0, nullptr},
       //		{TXT_TIBERIUM_GROWTH, 0, 0},
       //		{TXT_TIBERIUM_SPREAD, 0, 0},
-      {TXT_TIBERIUM_FAST, 0, 0},
-      {TXT_ROAD_PIECES, 0, 0},
-      {TXT_SCATTER, 0, 0},
-      {TXT_SHOW_NAMES, 0, 0},
+      {TXT_TIBERIUM_FAST, 0, nullptr},
+      {TXT_ROAD_PIECES, 0, nullptr},
+      {TXT_SCATTER, 0, nullptr},
+      {TXT_SHOW_NAMES, 0, nullptr},
   };
 
   TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW, OPTION_X + 5,

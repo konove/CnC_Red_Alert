@@ -1162,7 +1162,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the newly allocated template type object.
- *If no object   * could be allocated, then NULL is returned. *
+ *If no object   * could be allocated, then nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -1639,9 +1639,9 @@ void TemplateTypeClass::Init_Heap(void) {
 LandType TemplateTypeClass::Land_Type(int icon) const {
   IconsetClass const *icontrol = (IconsetClass const *)Get_Image_Data();
 
-  if (icontrol != NULL) {
+  if (icontrol != nullptr) {
     unsigned char const *map = icontrol->Control_Map();
-    if (map != NULL) {
+    if (map != nullptr) {
       static LandType _land[16] = {
           LAND_CLEAR, LAND_CLEAR, LAND_CLEAR,
           LAND_CLEAR,  // Clear
@@ -1681,7 +1681,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 TemplateType TemplateTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return (index);
@@ -1811,12 +1811,12 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
 
   for (index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
-      HidPage.Draw_Stamp(iconset, index, 0, 0, NULL, WINDOW_MAIN);
+      HidPage.Draw_Stamp(iconset, index, 0, 0, nullptr, WINDOW_MAIN);
       if (scale) {
         HidPage.Scale(
             (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
             y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
-            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, (char *)NULL);
+            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, (char *)nullptr);
 
       } else {
         HidPage.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),

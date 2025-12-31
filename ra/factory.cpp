@@ -80,9 +80,9 @@ FactoryClass::FactoryClass(void)
       IsDifferent(false),
       Balance(0),
       OriginalBalance(0),
-      Object(0),
+      Object(nullptr),
       SpecialItem(SPC_NONE),
-      House(0) {
+      House(nullptr) {
   Set_Rate(0);
   Set_Stage(0);
 }
@@ -130,7 +130,7 @@ void FactoryClass::Init(void) { Factories.Free_All(); }
  *factory pool.        *
  *                                                                                             *
  *    This routine allocates a factory from the free factory pool. If there is
- *no more room    * to allocate a factory, then NULL is returned. *
+ *no more room    * to allocate a factory, then nullptr is returned. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -191,7 +191,7 @@ void FactoryClass::operator delete(void *ptr) {
 void FactoryClass::AI(void) {
   assert(Factories.ID(this) == ID);
 
-  if (!IsSuspended && (Object != NULL || SpecialItem)) {
+  if (!IsSuspended && (Object != nullptr || SpecialItem)) {
     for (int index = 0; index < 1; index++) {
       if (!Has_Completed() && Graphic_Logic()) {
         IsDifferent = true;
@@ -302,7 +302,7 @@ bool FactoryClass::Set(TechnoTypeClass const &object, HouseClass &house) {
   **	Buildings that are constructed, will default to rebuilding on so that
   **	repair can commence and base rebuilding can occur.
   */
-  if (!house.IsHuman && Object != NULL &&
+  if (!house.IsHuman && Object != nullptr &&
       Object->What_Am_I() == RTTI_BUILDING) {
     ((BuildingClass *)Object)->IsToRebuild = true;
   }
@@ -316,7 +316,7 @@ bool FactoryClass::Set(TechnoTypeClass const &object, HouseClass &house) {
   /*
   **	If all was set up successfully, then return true.
   */
-  return (Object != NULL);
+  return (Object != nullptr);
 }
 
 /***********************************************************************************************
@@ -466,7 +466,7 @@ bool FactoryClass::Abandon(void) {
       */
       ScenarioInit++;
       delete Object;
-      Object = NULL;
+      Object = nullptr;
       ScenarioInit--;
     }
     if (SpecialItem) {
@@ -622,7 +622,7 @@ bool FactoryClass::Completed(void) {
   assert(Factories.ID(this) == ID);
 
   if (Object && Fetch_Stage() == STEP_COUNT) {
-    Object = NULL;
+    Object = nullptr;
     IsSuspended = true;
     IsDifferent = true;
     Set_Stage(0);

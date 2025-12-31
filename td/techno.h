@@ -221,7 +221,7 @@ class TechnoClass : public RadioClass,
   TechnoTypeClass const *Techno_Type_Class(void) const {
     return ((TechnoTypeClass const *)&Class_Of());
   };
-  CELL Nearby_Location(TechnoClass const *from = NULL) const;
+  CELL Nearby_Location(TechnoClass const *from = nullptr) const;
   virtual unsigned char Get_Ownable(void) const;
   virtual bool Can_Player_Fire(void) const;
   virtual bool Can_Player_Move(void) const;
@@ -262,7 +262,7 @@ class TechnoClass : public RadioClass,
   virtual bool In_Range(COORDINATE coord, int which = 0) const;
   virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(ObjectClass const *target, int which = 0) const;
-  virtual void Death_Announcement(TechnoClass const *source = 0) const = 0;
+  virtual void Death_Announcement(TechnoClass const *source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);

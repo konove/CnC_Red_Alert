@@ -58,7 +58,7 @@ VQAHandle *Open_Movie(char *name) {
 
     if (VQA_Open(vqa, name, &AnimControl) != 0) {
       VQA_Free(vqa);
-      vqa = 0;
+      vqa = nullptr;
     }
   }
   return (vqa);
@@ -99,7 +99,7 @@ void Choose_Side(void) {
 #endif
 
   void *anim;
-  VQAHandle *gdibrief = 0, *nodbrief = 0;
+  VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
   void const *staticaud, *oldfont;
   void const *speechg, *speechn, *speech;
   int statichandle, speechhandle, speechplaying = 0;
@@ -114,11 +114,11 @@ void Choose_Side(void) {
 #endif
 
   TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)NULL);
+                                           SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
 #ifndef LORES
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)NULL);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
 #endif
   int frame = 0, endframe = 255, selection = 0, lettersdone = 0;
 
@@ -153,7 +153,7 @@ void Choose_Side(void) {
 
   // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WSAOpenType)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
-  anim = Open_Animation("CHOOSE.WSA", NULL, 0L,
+  anim = Open_Animation("CHOOSE.WSA", nullptr, 0L,
                         (WSAOpenType)(WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE),
                         Palette);
   Call_Back();
@@ -299,12 +299,12 @@ void Choose_Side(void) {
     if (nodbrief) {
       VQA_Close(nodbrief);
       VQA_Free(nodbrief);
-      nodbrief = NULL;
+      nodbrief = nullptr;
     }
     if (gdibrief) {
       VQA_Close(gdibrief);
       VQA_Free(gdibrief);
-      gdibrief = NULL;
+      gdibrief = nullptr;
     }
   }
 
@@ -340,7 +340,7 @@ void Choose_Side(void) {
   for (int i = 0; i < MAXSCOREOBJS; i++)
     if (ScoreObjs[i]) {
       delete ScoreObjs[i];
-      ScoreObjs[i] = 0;
+      ScoreObjs[i] = nullptr;
     }
 
   if (Whom == HOUSE_GOOD) {
@@ -366,7 +366,7 @@ void Choose_Side(void) {
   delete PseudoSeenBuff;
 #endif
   delete TextPrintBuffer;
-  TextPrintBuffer = NULL;
+  TextPrintBuffer = nullptr;
   BlitList.Clear();
 }
 #endif

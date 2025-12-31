@@ -89,12 +89,12 @@ Token tokens[] = {
     "Y",        TOKEN_YPOS,   "YPOS",  TOKEN_YPOS,  "ABS",   TOKEN_ABS,
     "ABSOLUTE", TOKEN_ABS,    "LEFT",  TOKEN_LEFT,  "RIGHT", TOKEN_RIGHT,
     "CENTER",   TOKEN_CENTER, "FLASH", TOKEN_FLASH, "CPF",   TOKEN_CPF,
-    "END",      TOKEN_END,    NULL,    TOKEN_NULL,
+    "END",      TOKEN_END,    nullptr,    TOKEN_NULL,
 };
 
 Token colors[] = {
     "BLACK", 0,        "WHITE", 251,     "RED", 252,  "GREEN",
-    253,     "SHADOW", 254,     "CYCLE", 255,   NULL, -1,
+    253,     "SHADOW", 254,     "CYCLE", 255,   nullptr, -1,
 };
 
 /* Prototypes. */
@@ -141,11 +141,11 @@ long BuildCaptions(char *name, char *buffer) {
   /* Open the captions script file. */
   fp = fopen(name, "r");
 
-  if (fp != NULL) {
+  if (fp != nullptr) {
     error = 0;
 
     while (!error) {
-      if (fgets(string, STRING_LENGTH, fp) == NULL) {
+      if (fgets(string, STRING_LENGTH, fp) == nullptr) {
         if (errno == 0) {
           error = 1;
         }
@@ -161,11 +161,11 @@ long BuildCaptions(char *name, char *buffer) {
 
       ptr = strtok(string, "=");
 
-      if (ptr != NULL) {
+      if (ptr != nullptr) {
         /* Check for a comma */
         ptr1 = strchr(ptr, ',');
 
-        if (ptr1 != NULL) {
+        if (ptr1 != nullptr) {
           *ptr1++ = 0;
         }
 
@@ -180,9 +180,9 @@ long BuildCaptions(char *name, char *buffer) {
             caption.Size = sizeof(CaptionText);
 
             /* Get caption text. */
-            ptr = strtok(NULL, "");
+            ptr = strtok(nullptr, "");
 
-            if (ptr != NULL) {
+            if (ptr != nullptr) {
               FormatString(ptr);
               i = strlen(ptr) + 1;
               caption.Size += PADSIZE(i);
@@ -210,7 +210,7 @@ long BuildCaptions(char *name, char *buffer) {
           tag = TOKEN_NULL;
           i = 0;
 
-          while (tokens[i].name != NULL) {
+          while (tokens[i].name != nullptr) {
             if (strcmpi(tokens[i].name, ptr) == 0) {
               tag = tokens[i].tag;
               break;
@@ -220,7 +220,7 @@ long BuildCaptions(char *name, char *buffer) {
           }
 
           /* Get the data element. */
-          ptr = strtok(NULL, "");
+          ptr = strtok(nullptr, "");
 
           switch (tag) {
             case TOKEN_BGCOL:
@@ -321,7 +321,7 @@ static long GetColorNum(char *name) {
   i = 0;
 
   /* Scan for a matching name and return the corresponding color number. */
-  while (colors[i].name != NULL) {
+  while (colors[i].name != nullptr) {
     if (strcmpi(colors[i].name, name) == 0) {
       color = colors[i].tag;
     }
@@ -403,11 +403,11 @@ static void FormatString(char *string) {
   char *ptr;
 
   /* NULL strings are invalid. */
-  if (string != NULL) {
+  if (string != nullptr) {
     ptr = string;
 
     /* Scan the string for embedded format commands. */
-    while ((ptr = strchr(ptr, '/')) != NULL) {
+    while ((ptr = strchr(ptr, '/')) != nullptr) {
       switch (*(ptr + 1)) {
         /* Carriage return. */
         case 'n':

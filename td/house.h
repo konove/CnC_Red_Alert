@@ -383,7 +383,7 @@ class HouseClass {
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
-  HouseClass(void) : Class(0){};
+  HouseClass(void) : Class(nullptr){};
   HouseClass(HousesType house);
   HouseClass(NoInitClass const &x)
       : Class(Class),

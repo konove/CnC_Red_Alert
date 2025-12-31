@@ -66,8 +66,8 @@
 //		"out	dx,al"
 
 int MonoClass::Enabled = 0;
-MonoClass *MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES] = {0, 0, 0, 0,
-                                                              0, 0, 0, 0};
+MonoClass *MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES] = {nullptr, nullptr, nullptr, nullptr,
+                                                              nullptr, nullptr, nullptr, nullptr};
 // DOSSegmentClass MonoClass::MonoSegment(MonoClass::SEGMENT);
 void *MonoClass::MonoSegment = (void *)0x000b0000;
 
@@ -131,7 +131,7 @@ MonoClass::MonoClass(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::~MonoClass(void) { PageUsage[Page] = 0; }
+MonoClass::~MonoClass(void) { PageUsage[Page] = nullptr; }
 
 /***********************************************************************************************
  * MonoClass::Draw_Box -- Draws a box using the IBM linedraw characters. *

@@ -89,7 +89,7 @@ PKey::PKey(void const *exponent, void const *modulus) {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 int PKey::Encode_Modulus(void *buffer) const {
-  if (buffer == NULL) {
+  if (buffer == nullptr) {
     return (0);
   }
   return (Modulus.DEREncode((unsigned char *)buffer));
@@ -115,7 +115,7 @@ int PKey::Encode_Modulus(void *buffer) const {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 int PKey::Encode_Exponent(void *buffer) const {
-  if (buffer == NULL) {
+  if (buffer == nullptr) {
     return (0);
   }
   return (Exponent.DEREncode((unsigned char *)buffer));

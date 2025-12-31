@@ -42,11 +42,11 @@
 
 #include "function.h"
 
-static char *WriteBinBuffer = NULL;
+static char *WriteBinBuffer = nullptr;
 static int WriteBinBufferLen = 0;
 static int WriteBinBufferPos = 0;
 static int WriteBinBufferMax = 0;
-static char *ReadBinBuffer = NULL;
+static char *ReadBinBuffer = nullptr;
 static int ReadBinBufferLen = 0;
 static int ReadBinBufferPos = 0;
 static int ReadBinBufferMax = 0;
@@ -72,7 +72,7 @@ bool Read_Private_Config_Struct(FileClass &file, NewConfigType *config) {
   config->Channels = ini.Get_Int("Sound", "Channels", 0);
   config->Reverse = ini.Get_Int("Sound", "Reverse", 0);
   config->Speed = ini.Get_Int("Sound", "Speed", 0);
-  ini.Get_String("Language", "Language", NULL, config->Language,
+  ini.Get_String("Language", "Language", nullptr, config->Language,
                  sizeof(config->Language));
 
   //	config->DigitCard 	= WWGetPrivateProfileHex("Sound", "Card",
@@ -282,7 +282,7 @@ char *WWGetPrivateProfileString(char const *section, char const *entry,
     **	then abort with a failure flag.
     */
     if (!workptr) {
-      return (NULL);
+      return (nullptr);
     }
 
     /*
@@ -368,7 +368,7 @@ char *WWGetPrivateProfileString(char const *section, char const *entry,
           **	into the next section, then abort
           */
           if (!workptr || workptr >= next) {
-            return (NULL);
+            return (nullptr);
           }
 
           /*
@@ -399,7 +399,7 @@ char *WWGetPrivateProfileString(char const *section, char const *entry,
             **	Return if there was no '=', or if the newline is before
             **	the next '='
             */
-            if (workptr == NULL || altworkptr < workptr) {
+            if (workptr == nullptr || altworkptr < workptr) {
               return ((char *)retval);
             }
 
@@ -543,7 +543,7 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   **	buffer length. 'offset' will point to 1st entry in the section, NULL if
   **	section not found.
   */
-  offset = WWGetPrivateProfileString(section, NULL, NULL, NULL, 0, profile);
+  offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
 
   /*
   **	If the section could not be found, then add it to the end. Don't add
@@ -604,7 +604,7 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   **	with 0 length will just return the offset of the found entry, NULL if
   **	entry not found.
   */
-  offset = WWGetPrivateProfileString(section, entry, NULL, NULL, 0, profile);
+  offset = WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
 
   /*
   **	Remove any existing entry
@@ -629,7 +629,7 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     **	Entry doesn't exist, so point 'offset' to the 1st entry position in
     **	the section.
     */
-    offset = WWGetPrivateProfileString(section, NULL, NULL, NULL, 0, profile);
+    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
   }
 
   /*

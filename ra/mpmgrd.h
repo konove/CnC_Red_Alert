@@ -44,7 +44,7 @@ class MPlayerManClass : public ConnManClass {
 
   int Send_Global_Message(void *buf, int buflen, int ack_req = 0,
                           int address = 0);
-  int Get_Global_Message(void *buf, int *buflen, int *address = 0);
+  int Get_Global_Message(void *buf, int *buflen, int *address = nullptr);
 
   // manage connections
   int Num_Connections(void);

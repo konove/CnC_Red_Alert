@@ -279,7 +279,7 @@ void RandomStraw::Scramble_Seed(void) {
  *cryptographically secure.                               *
  *=============================================================================================*/
 int RandomStraw::Get(void *source, int slen) {
-  if (source == NULL || slen < 1) {
+  if (source == nullptr || slen < 1) {
     return (Straw::Get(source, slen));
   }
 

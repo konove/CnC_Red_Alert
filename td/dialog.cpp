@@ -307,7 +307,7 @@ void Simple_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
                        unsigned back, TextPrintType flag) {
   static int yspace = 0;  // Y spacing adjustment for font.
   static int xspace = 0;  // Spacing adjustment for font.
-  void const *font = 0;   // Font to use.
+  void const *font = nullptr;   // Font to use.
 
   ////////////////#if (0)
   static unsigned char _textfontpal[16][16] = {
@@ -356,7 +356,7 @@ void Simple_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
     fontpalette[15] = 205;
   }
 
-  char *tempstr = NULL;
+  char *tempstr = nullptr;
 
   if (text) {
     /*
@@ -604,7 +604,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
     */
-    Simple_Text_Print((char const *)0, x, y, fore, back, flag);
+    Simple_Text_Print((char const *)nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -659,7 +659,7 @@ void Fancy_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
     **	Just the flags are desired to be changed, so call the simple print
     *routine with *	a NULL text pointer.
     */
-    Simple_Text_Print((char const *)0, x, y, fore, back, flag);
+    Simple_Text_Print((char const *)nullptr, x, y, fore, back, flag);
   }
 }
 

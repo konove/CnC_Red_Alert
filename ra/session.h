@@ -441,8 +441,8 @@ typedef struct {
 */
 class MultiMission {
  public:
-  MultiMission(char const *filename = NULL, char const *description = NULL,
-               char const *digest = NULL, bool official = true,
+  MultiMission(char const *filename = nullptr, char const *description = nullptr,
+               char const *digest = nullptr, bool official = true,
                bool expansion = false);
 
   void Set_Description(char const *description);

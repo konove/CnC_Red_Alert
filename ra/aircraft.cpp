@@ -130,7 +130,7 @@ static bool _Counts_As_Civ_Evac(ObjectClass const *candidate) {
   /*
   **	If the candidate pointer is missing, then return with failure code.
   */
-  if (candidate == NULL) return (false);
+  if (candidate == nullptr) return (false);
 
   /*
   **	Only infantry objects can be considered for civilian evacuation action.
@@ -290,7 +290,7 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
 
   if (FootClass::Unlimbo(coord, dir)) {
     if (*this == AIRCRAFT_BADGER ||
-        (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsCamera)) {
+        (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsCamera)) {
       IsALoaner = true;
     }
 
@@ -450,7 +450,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (Visual_Character() <= VISUAL_DARKEN) {
     CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  DisplayClass::FadingShade, NULL);
+                  DisplayClass::FadingShade, nullptr);
   }
 
   /*
@@ -514,18 +514,18 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     FacingType face = Dir_Facing(SecondaryFacing);
     Move_Point(xx, yy, SecondaryFacing.Current(), _stretch[face]);
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
-                  flags, NULL, DisplayClass::UnitShadow);
+                  flags, nullptr, DisplayClass::UnitShadow);
 
     Move_Point(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
     CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
-                  flags, NULL, DisplayClass::UnitShadow);
+                  flags, nullptr, DisplayClass::UnitShadow);
 
   } else {
     /*
     **	Single rotor centered about shape.
     */
     CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
-                  ((y - Lepton_To_Pixel(Height)) - 2), window, flags, NULL,
+                  ((y - Lepton_To_Pixel(Height)) - 2), window, flags, nullptr,
                   DisplayClass::UnitShadow);
   }
 }
@@ -555,10 +555,10 @@ void AircraftClass::Read_INI(CCINIClass &ini) {
   for (int index = 0; index < counter; index++) {
     char const *entry = ini.Get_Entry(INI_Name(), index);
 
-    ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf) - 1);
+    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf) - 1);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
     if (inhouse != HOUSE_NONE) {
-      classid = AircraftTypeClass::From_Name(strtok(NULL, ","));
+      classid = AircraftTypeClass::From_Name(strtok(nullptr, ","));
 
       if (classid != AIRCRAFT_NONE) {
         air = new AircraftClass(classid, inhouse);
@@ -570,21 +570,21 @@ void AircraftClass::Read_INI(CCINIClass &ini) {
           /*
           **	Read the raw data.
           */
-          char *token = strtok(NULL, ",");
+          char *token = strtok(nullptr, ",");
           if (token) {
             strength = atoi(token);
           } else {
             strength = 0;
           }
 
-          token = strtok(NULL, ",");
+          token = strtok(nullptr, ",");
           if (token) {
             coord = Cell_Coord((CELL)atoi(token));
           } else {
             coord = 0xFFFFFFFFL;
           }
 
-          token = strtok(NULL, ",");
+          token = strtok(nullptr, ",");
           if (token) {
             dir = (DirType)atoi(token);
           } else {
@@ -597,7 +597,7 @@ void AircraftClass::Read_INI(CCINIClass &ini) {
             air->Strength = air->Class->MaxStrength * fixed(strength, 256);
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(
-                  AircraftClass::Mission_From_Name(strtok(NULL, ",\n\r")));
+                  AircraftClass::Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {
               delete air;
             }
@@ -738,7 +738,7 @@ int AircraftClass::Mission_Hunt(void) {
           case FIRE_OK:
             targ = ::As_Target(Coord_Move(Center_Coord(), SecondaryFacing,
                                           Weapon_Range(0) - 0x0200));
-            if (Class->PrimaryWeapon != NULL) {
+            if (Class->PrimaryWeapon != nullptr) {
               if (Class->PrimaryWeapon->IsCamera) {
                 Status = REGROUP;
               } else {
@@ -749,7 +749,7 @@ int AircraftClass::Mission_Hunt(void) {
               **	Force the target to be the actual target if this
               *aircraft is *	equipped with homing projectile.
               */
-              if (Class->PrimaryWeapon->Bullet != NULL &&
+              if (Class->PrimaryWeapon->Bullet != nullptr &&
                   Class->PrimaryWeapon->Bullet->ROT > 0) {
                 targ = TarCom;
               }
@@ -798,7 +798,8 @@ int AircraftClass::Mission_Hunt(void) {
         }
 
         if (Mission == MISSION_ATTACK ||
-            (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsCamera) ||
+            (Class->PrimaryWeapon != nullptr &&
+             Class->PrimaryWeapon->IsCamera) ||
             (!AttacksRemaining && !Is_Something_Attached())) {
           if (IsALoaner) {
             if (Team) Team->Remove(this);
@@ -1013,7 +1014,7 @@ short const *AircraftClass::Overlap_List(bool redraw) const {
   if (redraw || Height != 0) {
 #ifdef PARTIAL
     Rect rect;
-    if (!IsSelected && Class->DimensionData != NULL && Class->IsFixedWing) {
+    if (!IsSelected && Class->DimensionData != nullptr && Class->IsFixedWing) {
       int shapenum = std::min(
           Shape_Number(), Get_Build_Frame_Count(Class->Get_Image_Data()) - 1);
       if (!Class->DimensionData[shapenum].Is_Valid()) {
@@ -1103,7 +1104,8 @@ int AircraftClass::Mission_Unload(void) {
         } else {
           if (!Is_LZ_Clear(NavCom)) {
             FootClass *foot = Attached_Object();
-            if (foot != NULL && foot->Team && foot->Team->Class->Origin != -1) {
+            if (foot != nullptr && foot->Team &&
+                foot->Team->Class->Origin != -1) {
               Assign_Destination(
                   ::As_Target(Scen.Waypoint[foot->Team->Class->Origin]));
             } else {
@@ -1497,20 +1499,20 @@ BulletClass *AircraftClass::Fire_At(TARGET target, int which) {
   */
   if (Is_Something_Attached()) {
     Paradrop_Cargo();
-    return (0);
+    return nullptr;
   }
 
   /*
   **	If the weapon is actually a camera, then perform the "snapshot" of the
   **	ground instead of normal weapon fire.
   */
-  if (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsCamera) {
+  if (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsCamera) {
     if (House->Is_Ally(PlayerPtr)) {
       Map.Sight_From(Coord_Cell(Center_Coord()), 9, House, false);
     }
     Ammo = 0;
     Arm = Rearm_Delay(IsSecondShot);
-    return (0);
+    return nullptr;
   }
 
   BulletClass *bullet = FootClass::Fire_At(target, which);
@@ -1587,7 +1589,7 @@ ResultType AircraftClass::Take_Damage(int &damage, int distance,
           Map[Center_Coord()].Is_Clear_To_Move(SPEED_FOOT, true, false)) {
         InfantryClass *infantry =
             new InfantryClass(INFANTRY_E1, House->Class->House);
-        if (infantry != NULL) {
+        if (infantry != nullptr) {
           if (!infantry->Paradrop(Center_Coord())) {
             delete infantry;
           }
@@ -1670,7 +1672,7 @@ int AircraftClass::Mission_Move(void) {
               if (building) dist = Distance(building);
               for (int index = 0; index < Vessels.Count(); index++) {
                 VesselClass *ship = Vessels.Ptr(index);
-                if (ship != NULL && *ship == VESSEL_CARRIER &&
+                if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House &&
                     ship->How_Many() < ship->Class->Max_Passengers()) {
@@ -1709,7 +1711,7 @@ int AircraftClass::Mission_Move(void) {
                 if (Process_Landing()) {
                   Strength = 1;
                   int damage = Strength;
-                  Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+                  Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
                   return (1);
                 }
                 return (500);
@@ -1885,7 +1887,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
       **	brought in as reinforcements will leave the map.
       */
       if (Mission != MISSION_ATTACK && IsALoaner && Ammo == 0 &&
-          Class->PrimaryWeapon != NULL) {
+          Class->PrimaryWeapon != nullptr) {
         mission = MISSION_HUNT;
       } else {
         if (!IsALoaner) {
@@ -1894,7 +1896,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           */
           BuildingClass *building = Find_Docking_Bay(Class->Building, false);
           Assign_Destination(TARGET_NONE);
-          if (building != NULL &&
+          if (building != nullptr &&
               Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
             if (Class->IsFixedWing) {
               Status = 0;  // BG - reset the mission status to avoid landing on
@@ -1959,7 +1961,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           }
         }
 
-        if (Class->PrimaryWeapon != NULL) {
+        if (Class->PrimaryWeapon != nullptr) {
           /*
           **	Weapon equipped helicopters that run out of ammo and were
           **	brought in as reinforcements will leave the map.
@@ -1989,7 +1991,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
               if (building) dist = Distance(building);
               for (int index = 0; index < Vessels.Count(); index++) {
                 VesselClass *ship = Vessels.Ptr(index);
-                if (ship != NULL && *ship == VESSEL_CARRIER &&
+                if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House && ship->How_Many() < ship->Class->Max_Passengers() /* && !ship->In_Radio_Contact()*/) {
                   if (Distance(ship) < dist || !building) {
@@ -2247,7 +2249,7 @@ ActionType AircraftClass::What_Action(ObjectClass const *target) const {
     action = ACTION_NONE;
   }
 
-  if (action == ACTION_ATTACK && Class->PrimaryWeapon == NULL) {
+  if (action == ACTION_ATTACK && Class->PrimaryWeapon == nullptr) {
     action = ACTION_NONE;
   }
 
@@ -2319,7 +2321,7 @@ ActionType AircraftClass::What_Action(CELL cell) const {
     action = ACTION_NOMOVE;
   }
 
-  if (action == ACTION_ATTACK && Class->PrimaryWeapon == NULL) {
+  if (action == ACTION_ATTACK && Class->PrimaryWeapon == nullptr) {
     action = ACTION_NONE;
   }
 
@@ -2806,7 +2808,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass *from,
     **	Asks if the passenger can load on this transport.
     */
     case RADIO_CAN_LOAD:
-      if (Class->Max_Passengers() == 0 || from == NULL ||
+      if (Class->Max_Passengers() == 0 || from == nullptr ||
           !House->Is_Ally(from->Owner()))
         return (RADIO_STATIC);
       if (/*!In_Radio_Contact() &&*/ How_Many() < Class->Max_Passengers()) {
@@ -3021,7 +3023,7 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   ObjectClass const *occupier = cellptr->Cell_Occupier();
 
-  if (occupier == NULL || !occupier->Is_Techno() ||
+  if (occupier == nullptr || !occupier->Is_Techno() ||
       ((TechnoClass *)occupier)->House->Is_Ally(House) ||
       (((TechnoClass *)occupier)->Cloak != CLOAKED &&
        (ScenarioInit == 0 &&
@@ -3581,7 +3583,7 @@ AircraftClass::~AircraftClass(void) {
     */
     if (Team) {
       Team->Remove(this);
-      Team = NULL;
+      Team = nullptr;
     }
 
     House->Tracking_Remove(this);
@@ -3594,7 +3596,7 @@ AircraftClass::~AircraftClass(void) {
     }
 
     AircraftClass::Limbo();
-    Class = 0;
+    Class = nullptr;
   }
   ID = -1;
 }
@@ -3671,7 +3673,7 @@ int AircraftClass::Mission_Guard(void) {
       return (MissionControl[Mission].Normal_Delay());
     }
 
-    if (Class->PrimaryWeapon == NULL) {
+    if (Class->PrimaryWeapon == nullptr) {
       Assign_Destination(::As_Target(Coord_Cell(Coord)));
       Assign_Mission(MISSION_MOVE);
     } else {
@@ -3692,7 +3694,7 @@ int AircraftClass::Mission_Guard(void) {
          (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
           *((BuildingClass *)Contact_With_Whom()) != STRUCT_REPAIR))) {
       BuildingClass *building = Find_Docking_Bay(STRUCT_REPAIR, true);
-      if (building != NULL) {
+      if (building != nullptr) {
         Assign_Destination(building->As_Target());
         Assign_Target(TARGET_NONE);
         Assign_Mission(MISSION_ENTER);
@@ -3715,7 +3717,7 @@ int AircraftClass::Mission_Guard(void) {
         if (building) dist = Distance(building);
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass *ship = Vessels.Ptr(index);
-          if (ship != NULL && *ship == VESSEL_CARRIER && !ship->IsInLimbo &&
+          if (ship != nullptr && *ship == VESSEL_CARRIER && !ship->IsInLimbo &&
               ship->IsActive && ship->House == House &&
               ship->How_Many() < ship->Class->Max_Passengers()) {
             if (Distance(ship) < dist || !building) {
@@ -3727,7 +3729,7 @@ int AircraftClass::Mission_Guard(void) {
         }
       }
 #endif
-      if (building != NULL) {
+      if (building != nullptr) {
         Assign_Destination(building->As_Target());
         Assign_Target(TARGET_NONE);
         Assign_Mission(MISSION_ENTER);
@@ -3913,9 +3915,9 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
   }
 
   bool camera =
-      (Class->PrimaryWeapon != NULL && Class->PrimaryWeapon->IsCamera);
-  bool fudge = (Passenger || (Class->PrimaryWeapon != NULL &&
-                              Class->PrimaryWeapon->Bullet != NULL &&
+      (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsCamera);
+  bool fudge = (Passenger || (Class->PrimaryWeapon != nullptr &&
+                              Class->PrimaryWeapon->Bullet != nullptr &&
                               Class->PrimaryWeapon->Bullet->IsParachuted));
 
   if (fudge && !camera && !Ammo && !Passenger) {
@@ -4009,7 +4011,7 @@ bool AircraftClass::Landing_Takeoff_AI(void) {
 
           int damage = Strength;
           Map.Remove(this, layer);
-          Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+          Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           return (true);
         }
 

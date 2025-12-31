@@ -379,7 +379,7 @@ int main(int argc, char *argv[])
       CCDebugString("C&C95 - Creating main window.\n");
 
 #ifdef PORTABLE
-      Create_Main_Window(NULL, 0, ScreenWidth, ScreenHeight);
+      Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
 #else
       Create_Main_Window(instance, command_show, ScreenWidth, ScreenHeight);
 #endif
@@ -430,10 +430,10 @@ int main(int argc, char *argv[])
       } else
 #endif
       {
-        VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0,
+        VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
                          (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
 #ifdef PORTABLE
-        HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
+        HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, (GBC_Enum)0);
 #else
         /*
         ** Check that we really got a video memory page. Failure is fatal.
@@ -652,12 +652,12 @@ int main(int argc, char *argv[])
     //		Remove_Keyboard_Interrupt();
     if (WindowsTimer) {
       delete WindowsTimer;
-      WindowsTimer = NULL;
+      WindowsTimer = nullptr;
     }
 
     if (Palette) {
       delete[] Palette;
-      Palette = NULL;
+      Palette = nullptr;
     }
   }
 
@@ -699,18 +699,18 @@ void __cdecl Prog_End(void) {
   if (WWMouse) {
     CCDebugString("C&C95 - Deleting mouse object.\n");
     delete WWMouse;
-    WWMouse = NULL;
+    WWMouse = nullptr;
   }
   if (WindowsTimer) {
     CCDebugString("C&C95 - Deleting windows timer.\n");
     delete WindowsTimer;
-    WindowsTimer = NULL;
+    WindowsTimer = nullptr;
   }
 
   if (Palette) {
     CCDebugString("C&C95 - Deleting palette object.\n");
     delete[] Palette;
-    Palette = NULL;
+    Palette = nullptr;
   }
 }
 
@@ -803,7 +803,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
     */
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
-    char *netptr = WWGetPrivateProfileString("Options", "DestNet", NULL, netbuf,
+    char *netptr = WWGetPrivateProfileString("Options", "DestNet", nullptr, netbuf,
                                              sizeof(netbuf), buffer);
 
     if (netptr && strlen(netbuf)) {
@@ -824,7 +824,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
           node[i - 4] = (char)x;  // fill NetNode
         }
         i++;
-        p = strtok(NULL, ".");
+        p = strtok(nullptr, ".");
       }
 
       /*

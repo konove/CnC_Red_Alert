@@ -306,7 +306,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   HouseClass* hptr = HouseClass::As_Pointer(house);
   int index;
-  if (hptr != NULL) {
+  if (hptr != nullptr) {
     switch (Event) {
       /*
       **	Check to see if a team of the appropriate type has left the map.
@@ -509,18 +509,18 @@ void TEventClass::Read_INI(void) {
   char const* token;
   switch (NewINIFormat) {
     default:
-      Event = TEventType(atoi(strtok(NULL, ",")));
-      Team.Set_Raw(atoi(strtok(NULL, ",")));
-      Data.Value = atoi(strtok(NULL, ","));
+      Event = TEventType(atoi(strtok(nullptr, ",")));
+      Team.Set_Raw(atoi(strtok(nullptr, ",")));
+      Data.Value = atoi(strtok(nullptr, ","));
       break;
 
     case 1:
-      token = strtok(NULL, ",");
+      token = strtok(nullptr, ",");
       Event = TEVENT_NONE;
       if (token) Event = TEventType(atoi(token));
 
-      token = strtok(NULL, ",");
-      Team = NULL;
+      token = strtok(nullptr, ",");
+      Team = nullptr;
       Data.Value = -1;
       if (token) {
         if (Event_Needs(Event) == NEED_TEAM) {
@@ -532,14 +532,14 @@ void TEventClass::Read_INI(void) {
       break;
 
     case 0:
-      Event = TEventType(atoi(strtok(NULL, ",")));
+      Event = TEventType(atoi(strtok(nullptr, ",")));
 
-      strtok(NULL, ",");
-      strtok(NULL, ",");
+      strtok(nullptr, ",");
+      strtok(nullptr, ",");
 
-      Team = TeamTypeClass::From_Name(strtok(NULL, ","));
-      Data.Value = atoi(strtok(NULL, ","));
-      strtok(NULL, ",");
+      Team = TeamTypeClass::From_Name(strtok(nullptr, ","));
+      Data.Value = atoi(strtok(nullptr, ","));
+      strtok(nullptr, ",");
       break;
   }
 }

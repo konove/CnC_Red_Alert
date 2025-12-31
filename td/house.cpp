@@ -185,7 +185,7 @@ HouseClass *HouseClass::As_Pointer(HousesType house) {
       return (Houses.Ptr(index));
     }
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -872,7 +872,7 @@ void HouseClass::AI(void) {
             count = 0;
             while (!(techno->IsInLimbo) && count++ < 5) {
               damage = 0x7fff;
-              Explosion_Damage(techno->Center_Coord(), damage, NULL,
+              Explosion_Damage(techno->Center_Coord(), damage, nullptr,
                                WARHEAD_HE);
             }
           }
@@ -895,7 +895,7 @@ void HouseClass::AI(void) {
       }
 
       if (IRandom(0, rlimit) == 0) {
-        UnitClass *obj = NULL;
+        UnitClass *obj = nullptr;
         CELL cell;
 
         if (Special.IsJurassic && AreThingiesEnabled) {
@@ -950,7 +950,7 @@ void HouseClass::AI(void) {
       IsFreeHarvester = false;
       Create_Special_Reinforcement(
           this, (TechnoTypeClass *)&UnitTypeClass::As_Reference(UNIT_HARVESTER),
-          NULL);
+          nullptr);
     }
 
     /*
@@ -963,7 +963,7 @@ void HouseClass::AI(void) {
 
         if (b.House == this && b.Health_Ratio() > 0x080) {
           int damage = 1;
-          b.Take_Damage(damage, 0, WARHEAD_AP, 0);
+          b.Take_Damage(damage, 0, WARHEAD_AP, nullptr);
         }
       }
     }
@@ -1629,7 +1629,7 @@ void HouseClass::Read_INI(char *buffer) {
         while (tok) {
           HousesType h = HouseTypeClass::From_Name(tok);
           p->Make_Ally(h);
-          tok = strtok(NULL, ", \t");
+          tok = strtok(nullptr, ", \t");
         }
 
       } else {
@@ -1987,7 +1987,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
  *=============================================================================================*/
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   Validate();
-  int *factory = 0;
+  int *factory = nullptr;
   int result = true;
   bool initial_start = false;
   FactoryClass *fptr;
@@ -2073,7 +2073,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
  *=============================================================================================*/
 ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   Validate();
-  int *factory = 0;
+  int *factory = nullptr;
 
   switch (type) {
     case RTTI_AIRCRAFT:
@@ -2155,7 +2155,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
  *=============================================================================================*/
 ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   Validate();
-  int *factory = 0;
+  int *factory = nullptr;
 
   switch (type) {
     case RTTI_AIRCRAFT:
@@ -2206,10 +2206,10 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
     Map.Abandon_Production(type, *factory);
 
     if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
-      Map.PendingObjectPtr = 0;
-      Map.PendingObject = 0;
+      Map.PendingObjectPtr = nullptr;
+      Map.PendingObject = nullptr;
       Map.PendingHouse = HOUSE_NONE;
-      Map.Set_Cursor_Shape(0);
+      Map.Set_Cursor_Shape(nullptr);
     }
   }
 
@@ -2243,7 +2243,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   ** Loop through all of the building objects on the map
   ** and see which ones are available.
   */
-  BuildingClass *bestptr = NULL;
+  BuildingClass *bestptr = nullptr;
   int best = -1;
 
   for (int index = 0; index < Buildings.Count(); index++) {
@@ -2289,8 +2289,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *=============================================================================================*/
 bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   Validate();
-  BuildingClass *launchsite = 0;
-  AnimClass *anim = 0;
+  BuildingClass *launchsite = nullptr;
+  AnimClass *anim = nullptr;
   int index;
   switch (id) {
     case SPC_ION_CANNON:
@@ -2357,7 +2357,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           if (bullet) {
             COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
             bullet->Assign_Target(::As_Target(cell));
-            bullet->Payback = NULL;
+            bullet->Payback = nullptr;
             bullet->Strength = 1;
             if (!bullet->Unlimbo(start, DIR_S)) {
               delete bullet;
@@ -2419,8 +2419,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
  *=============================================================================================*/
 bool HouseClass::Place_Object(RTTIType type, CELL cell) {
   Validate();
-  TechnoClass *tech = 0;
-  FactoryClass *factory = 0;
+  TechnoClass *tech = nullptr;
+  FactoryClass *factory = nullptr;
 
   switch (type) {
     case RTTI_AIRCRAFT:
@@ -2502,9 +2502,9 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
 
               if (PlayerPtr == this) {
                 Sound_Effect(VOC_SLAM);
-                Map.Set_Cursor_Shape(0);
-                Map.PendingObjectPtr = 0;
-                Map.PendingObject = 0;
+                Map.Set_Cursor_Shape(nullptr);
+                Map.PendingObjectPtr = nullptr;
+                Map.PendingObject = nullptr;
                 Map.PendingHouse = HOUSE_NONE;
               }
               return (true);
@@ -3056,7 +3056,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
 TechnoTypeClass const *HouseClass::Suggest_New_Object(
     RTTIType objecttype) const {
   Validate();
-  TechnoTypeClass const *techno = NULL;
+  TechnoTypeClass const *techno = nullptr;
 
   switch (objecttype) {
     /*
@@ -3075,7 +3075,7 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(
             !(UScan & UNITF_HARVESTER)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
           if (techno->Scenario <= BuildLevel) break;
-          techno = 0;
+          techno = nullptr;
         }
 
         int counter[UNIT_COUNT];
@@ -3885,7 +3885,7 @@ void HouseClass::Blowup_All(void) {
       count = 0;
       while (::Units.Ptr(i) == uptr && uptr->Strength) {
         damage = 0x7fff;
-        Explosion_Damage(uptr->Center_Coord(), damage, NULL, WARHEAD_HE);
+        Explosion_Damage(uptr->Center_Coord(), damage, nullptr, WARHEAD_HE);
         count++;
         if (count > 5) {
           delete uptr;
@@ -3904,7 +3904,7 @@ void HouseClass::Blowup_All(void) {
       AircraftClass *aptr = ::Aircraft.Ptr(i);
 
       damage = 0x7fff;
-      aptr->Take_Damage(damage, 0, WARHEAD_HE, NULL);
+      aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr);
       if (!aptr->IsActive) {
         i--;
       }
@@ -3923,7 +3923,7 @@ void HouseClass::Blowup_All(void) {
       bptr->IsSurvivorless = true;
       while (Buildings.Ptr(i) == bptr && bptr->Strength) {
         damage = 0x7fff;
-        Explosion_Damage(bptr->Center_Coord(), damage, NULL, WARHEAD_HE);
+        Explosion_Damage(bptr->Center_Coord(), damage, nullptr, WARHEAD_HE);
         count++;
         if (count > 5) {
           delete bptr;
@@ -3947,7 +3947,7 @@ void HouseClass::Blowup_All(void) {
       while (Infantry.Ptr(i) == iptr && iptr->Strength) {
         damage = 0x7fff;
         warhead = (WarheadType)IRandom(WARHEAD_SA, WARHEAD_FIRE);
-        Explosion_Damage(iptr->Center_Coord(), damage, NULL, warhead);
+        Explosion_Damage(iptr->Center_Coord(), damage, nullptr, warhead);
         if (iptr->IsActive) {
           damage = 0x7fff;
           iptr->Take_Damage(damage, 0, warhead);

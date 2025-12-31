@@ -82,12 +82,12 @@ typedef enum {
 
 void *Open_Animation(char const *file_name, char *user_buffer,
                      long user_buffer_size, WSAOpenType user_flags,
-                     unsigned char *palette = NULL);
+                     unsigned char *palette = nullptr);
 void Close_Animation(void *handle);
 bool Animate_Frame(void *handle, GraphicViewPortClass &view, int frame_number,
                    int x_pixel = 0, int y_pixel = 0,
-                   WSAType flags_and_prio = WSA_NORMAL, void *magic_cols = NULL,
-                   void *magic = NULL);
+                   WSAType flags_and_prio = WSA_NORMAL, void *magic_cols = nullptr,
+                   void *magic = nullptr);
 int Get_Animation_Frame_Count(void *handle);
 
 /*=========================================================================*/

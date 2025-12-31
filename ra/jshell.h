@@ -411,7 +411,7 @@ class UserTimerClass {
 
 template <class T>
 void Bubble_Sort(T *array, int count) {
-  if (array != NULL && count > 1) {
+  if (array != nullptr && count > 1) {
     bool swapflag;
 
     do {
@@ -430,7 +430,7 @@ void Bubble_Sort(T *array, int count) {
 
 template <class T>
 void PBubble_Sort(T *array, int count) {
-  if (array != NULL && count > 1) {
+  if (array != nullptr && count > 1) {
     bool swapflag;
 
     do {
@@ -449,7 +449,7 @@ void PBubble_Sort(T *array, int count) {
 
 template <class T>
 void PNBubble_Sort(T *array, int count) {
-  if (array != NULL && count > 1) {
+  if (array != nullptr && count > 1) {
     bool swapflag;
 
     do {
@@ -470,7 +470,7 @@ template <class T>
 class SmartPtr {
  public:
   SmartPtr(NoInitClass const &) {}
-  SmartPtr(T *realptr = 0) : Pointer(realptr) {}
+  SmartPtr(T *realptr = nullptr) : Pointer(realptr) {}
   SmartPtr(SmartPtr const &rvalue) : Pointer(rvalue.Pointer) {}
   ~SmartPtr(void) { Pointer = 0; }
 
@@ -479,24 +479,24 @@ class SmartPtr {
   operator long(void) const { return ((long)Pointer); }
 
   SmartPtr<T> operator++(int) {
-    assert(Pointer != 0);
+    assert(Pointer != nullptr);
     SmartPtr<T> temp = *this;
     ++Pointer;
     return (temp);
   }
   SmartPtr<T> &operator++(void) {
-    assert(Pointer != 0);
+    assert(Pointer != nullptr);
     ++Pointer;
     return (*this);
   }
   SmartPtr<T> operator--(int) {
-    assert(Pointer != 0);
+    assert(Pointer != nullptr);
     SmartPtr<T> temp = *this;
     --Pointer;
     return (temp);
   }
   SmartPtr<T> &operator--(void) {
-    assert(Pointer != 0);
+    assert(Pointer != nullptr);
     --Pointer;
     return (*this);
   }
@@ -506,11 +506,11 @@ class SmartPtr {
     return (*this);
   }
   T *operator->(void) const {
-    assert(Pointer != 0);
+    assert(Pointer != nullptr);
     return (Pointer);
   }
   T &operator*(void) const {
-    assert(Pointer != 0);
+    assert(Pointer != nullptr);
     return (*Pointer);
   }
 

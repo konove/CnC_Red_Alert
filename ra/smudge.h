@@ -68,7 +68,7 @@ class SmudgeClass : public ObjectClass {
   operator SmudgeType(void) const { return Class->Type; };
   virtual ~SmudgeClass(void) {
     if (GameActive) SmudgeClass::Limbo();
-    Class = 0;
+    Class = nullptr;
   };
 
   static void Init(void);

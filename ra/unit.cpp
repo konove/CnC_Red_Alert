@@ -169,7 +169,7 @@ void Recoil_Adjust(DirType dir, int &x, int &y) {
  *=============================================================================================*/
 void *UnitClass::operator new(size_t) throw() {
   void *ptr = Units.Alloc();
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((UnitClass *)ptr)->IsActive = true;
   }
   return (ptr);
@@ -191,7 +191,7 @@ void *UnitClass::operator new(size_t) throw() {
  * HISTORY: * 04/21/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::operator delete(void *ptr) {
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((UnitClass *)ptr)->IsActive = false;
   }
   Units.Free((UnitClass *)ptr);
@@ -221,7 +221,7 @@ UnitClass::~UnitClass(void) {
     */
     if (Team.Is_Valid()) {
       Team->Remove(this);
-      Team = NULL;
+      Team = nullptr;
     }
 
     House->Tracking_Remove(this);
@@ -609,7 +609,7 @@ void UnitClass::Reload_AI(void) {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Firing_AI(void) {
-  if (Target_Legal(TarCom) && Class->PrimaryWeapon != NULL) {
+  if (Target_Legal(TarCom) && Class->PrimaryWeapon != nullptr) {
     /*
     **	Determine which weapon can fire. First check for the primary weapon. If
     *that weapon *	cannot fire, then check any secondary weapon. If neither
@@ -696,7 +696,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass *from,
     **	Asks if the passenger can load on this transport.
     */
     case RADIO_CAN_LOAD:
-      if (Class->Max_Passengers() == 0 || from == NULL ||
+      if (Class->Max_Passengers() == 0 || from == nullptr ||
           !House->Is_Ally(from->Owner()))
         return (RADIO_STATIC);
       if (How_Many() < Class->Max_Passengers()) {
@@ -715,7 +715,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass *from,
       } else {
         if (!IsDriving) {
           TechnoClass *whom = Contact_With_Whom();
-          if (IsTethered && whom != NULL) {
+          if (IsTethered && whom != nullptr) {
             if (whom->What_Am_I() == RTTI_BUILDING &&
                 Mission == MISSION_ENTER) {
               if (Transmit_Message(RADIO_IM_IN, whom) == RADIO_ROGER) {
@@ -1015,15 +1015,15 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
 
     if (Class->IsCrew && Class->Max_Passengers() == 0) {
       if (Percent_Chance(50)) {
-        InfantryClass *i = 0;
+        InfantryClass *i = nullptr;
 
-        if (Class->PrimaryWeapon == NULL) {
+        if (Class->PrimaryWeapon == nullptr) {
           i = new InfantryClass(INFANTRY_C1, House->Class->House);
-          if (i != NULL) i->IsTechnician = true;
+          if (i != nullptr) i->IsTechnician = true;
         } else {
           i = new InfantryClass(INFANTRY_E1, House->Class->House);
         }
-        if (i != NULL) {
+        if (i != nullptr) {
           if (i->Unlimbo(Coord, DIR_N)) {
             i->Strength = Random_Pick(5, (int)i->Class->MaxStrength / 2);
             i->Scatter(0, true);
@@ -1042,7 +1042,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
       while (Is_Something_Attached()) {
         FootClass *object = Detach_Object();
 
-        if (object == NULL) break;  // How can this happen?
+        if (object == nullptr) break;  // How can this happen?
 
         /*
         **	Only infantry can run from a destroyed vehicle. Even then, it is
@@ -1095,7 +1095,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     **	Try to crush anyone that fires on this unit if possible. The harvester
     **	typically is the only one that will qualify here.
     */
-    if (!Team.Is_Valid() && source != NULL && !IsTethered &&
+    if (!Team.Is_Valid() && source != nullptr && !IsTethered &&
         !House->Is_Ally(source) && (!House->IsHuman || Rule.IsAutoCrush)) {
       /*
       **	Try to crush the attacker if it can be crushed by this unit and
@@ -1122,7 +1122,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
           **	Since the refinery said it was ok to load, establish radio
           **	contact with the refinery and then await docking orders.
           */
-          if (building != NULL &&
+          if (building != nullptr &&
               Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
             Assign_Mission(MISSION_ENTER);
           }
@@ -1473,7 +1473,7 @@ bool UnitClass::Try_To_Deploy(void) {
       Mark(MARK_UP);
       BuildingClass *building =
           new BuildingClass(STRUCT_CONST, House->Class->House);
-      if (building != NULL) {
+      if (building != nullptr) {
         if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
           /*
           **	Play the buildup sound for the player if this is the players
@@ -1586,7 +1586,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     *enter *	the building as the final step.
     */
     TechnoClass *whom = Contact_With_Whom();
-    if (IsTethered && whom != NULL) {
+    if (IsTethered && whom != nullptr) {
       if (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) {
         if (whom == Map[CELL(cell - MAP_CELL_W)].Cell_Building()) {
           switch (Transmit_Message(RADIO_IM_IN, whom)) {
@@ -1626,7 +1626,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     */
     if (IsTethered &&
         (Mission != MISSION_ENTER ||
-         (As_Techno(NavCom) != NULL &&
+         (As_Techno(NavCom) != nullptr &&
           Contact_With_Whom() != As_Techno(NavCom))) &&
         Mission != MISSION_UNLOAD) {
       /*
@@ -1634,7 +1634,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
       *one *	cell, if it is still on the building (e.g., service depot), have
       **	it scatter again.
       */
-      if (Map[Coord].Cell_Building() != NULL && !Target_Legal(NavCom)) {
+      if (Map[Coord].Cell_Building() != nullptr && !Target_Legal(NavCom)) {
         Scatter(0, true, true);
       } else {
         if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
@@ -1647,7 +1647,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
             **	so indicates.
             */
             TechnoClass *techno = As_Techno(NavCom);
-            if (techno != NULL) {
+            if (techno != nullptr) {
               Transmit_Message(RADIO_DOCKING, techno);
             }
           }
@@ -1757,7 +1757,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     ** If entering a cell with a land mine in it, blow up the mine.
     */
     BuildingClass *bldng = Map[cell].Cell_Building();
-    if (bldng != NULL && (*bldng == STRUCT_AVMINE || *bldng == STRUCT_APMINE) &&
+    if (bldng != nullptr && (*bldng == STRUCT_AVMINE || *bldng == STRUCT_APMINE) &&
         !bldng->House->Is_Ally(this)) {
       /*
       ** Special case: if it's a land mine deployer, and it ran over the
@@ -1803,7 +1803,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       new AnimClass(Combat_Anim(Strength, WARHEAD_AP, land), Coord);
       int damage = Strength;
-      Take_Damage(damage, 0, WARHEAD_AP, NULL, true);
+      Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       return;
     }
   }
@@ -2002,7 +2002,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	Verify the legality of the unit class.
   */
   shapefile = Get_Image_Data();
-  if (shapefile == NULL) return;
+  if (shapefile == nullptr) return;
 
   /*
   **	If drawing of this unit is not explicitly prohibited, then proceed
@@ -2355,7 +2355,7 @@ int UnitClass::Mission_Unload(void) {
     case UNIT_TRUCK:
       switch (Status) {
         case INITIAL_CHECK:
-          dir = Desired_Load_Dir(NULL, cell);
+          dir = Desired_Load_Dir(nullptr, cell);
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
@@ -2376,7 +2376,7 @@ int UnitClass::Mission_Unload(void) {
           if (How_Many()) {
             FootClass *passenger = Detach_Object();
 
-            if (passenger != NULL) {
+            if (passenger != nullptr) {
               DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
@@ -2425,7 +2425,7 @@ int UnitClass::Mission_Unload(void) {
 #endif
       switch (Status) {
         case INITIAL_CHECK:
-          dir = Desired_Load_Dir(NULL, cell);
+          dir = Desired_Load_Dir(nullptr, cell);
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
@@ -2460,7 +2460,7 @@ int UnitClass::Mission_Unload(void) {
           if (How_Many()) {
             FootClass *passenger = Detach_Object();
 
-            if (passenger != NULL) {
+            if (passenger != nullptr) {
               DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
@@ -2585,7 +2585,7 @@ int UnitClass::Mission_Unload(void) {
                                         ? STRUCT_APMINE
                                         : STRUCT_AVMINE,
                                     House->Class->House);
-              if (building != NULL) {
+              if (building != nullptr) {
                 ScenarioInit = true;
                 if (building->Unlimbo(Coord)) {
                   Sound_Effect(VOC_MINELAY1, Coord);
@@ -2637,9 +2637,9 @@ int UnitClass::Mission_Unload(void) {
 #if 1
         InfantryClass *crew =
             new InfantryClass(INFANTRY_C1, House->Class->House);
-        if (crew != NULL) crew->IsTechnician = true;
+        if (crew != nullptr) crew->IsTechnician = true;
 
-        if (crew != NULL) {
+        if (crew != nullptr) {
           DirType toface = DIR_S + PrimaryFacing;
 
           for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
@@ -2848,7 +2848,7 @@ int UnitClass::Mission_Harvest(void) {
         **	Since the refinery said it was ok to load, establish radio
         **	contact with the refinery and then await docking orders.
         */
-        if (nearest != NULL &&
+        if (nearest != nullptr &&
             Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
           Status = HEADINGHOME;
           if (nearest->House == PlayerPtr &&
@@ -2861,7 +2861,7 @@ int UnitClass::Mission_Harvest(void) {
           ScenarioInit++;
           nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
           ScenarioInit--;
-          if (nearest != NULL) {
+          if (nearest != nullptr) {
             Assign_Destination(::As_Target(Nearby_Location(nearest)));
           }
         }
@@ -2970,7 +2970,7 @@ short const *UnitClass::Overlap_List(bool redraw) const {
   assert(IsActive);
 
 #ifdef PARTIAL
-  if (Height == 0 && redraw && Class->DimensionData != NULL) {
+  if (Height == 0 && redraw && Class->DimensionData != nullptr) {
     Rect rect;
     int shapenum = Shape_Number();
     if (Class->DimensionData[shapenum].Is_Valid()) {
@@ -3099,7 +3099,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   bool crushable = false;
   ObjectClass *obj = cellptr->Cell_Occupier();
-  while (obj != NULL) {
+  while (obj != nullptr) {
     if (obj != this) {
       /*
       ** If object is a land mine, allow movement if possible.
@@ -3188,7 +3188,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
             **	Any non-allied blockage is considered impassable if the unit
             **	is not equipped with a weapon.
             */
-            if (Class->PrimaryWeapon == NULL) return (MOVE_NO);
+            if (Class->PrimaryWeapon == nullptr) return (MOVE_NO);
 
             /*
             **	Some kinds of terrain are considered destroyable if the unit is
@@ -3260,7 +3260,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         *then *	this vehicle should avoid the cell altogether.
         */
         if (!Class->IsCrusher) {
-          if (Class->PrimaryWeapon != NULL &&
+          if (Class->PrimaryWeapon != nullptr &&
               Class->PrimaryWeapon->Bullet->IsAntiGround) {
             retval = MOVE_DESTROYABLE;
           } else {
@@ -3689,7 +3689,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass *passenger,
   *transport facing if it is going to unload.
   */
   DirType faceto;
-  if (passenger != NULL) {
+  if (passenger != nullptr) {
     faceto = Direction(passenger);
   } else {
     faceto = PrimaryFacing.Current() + DIR_S;
@@ -3710,7 +3710,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass *passenger,
     *negative value to the *	cell so that it is prevented from ever choosing
     *that cell for load/unload.
     */
-    if (passenger != NULL) {
+    if (passenger != nullptr) {
       value = (passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
                Coord_Cell(passenger->Coord) == cellnum)
                   ? 128
@@ -3930,7 +3930,7 @@ InfantryType UnitClass::Crew_Type(void) const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  if (Class->PrimaryWeapon == NULL) {
+  if (Class->PrimaryWeapon == nullptr) {
     if (Percent_Chance(50)) {
       return (INFANTRY_C1);
     } else {
@@ -3971,7 +3971,7 @@ int UnitClass::Mission_Repair(void) {
   **	are any repair facilities at all. If not, then enter this unit
   **	into idle state.
   */
-  if (nearest == NULL) {
+  if (nearest == nullptr) {
     if (!(House->ActiveBScan & STRUCTF_REFINERY)) {
       Enter_Idle_Mode();
     }
@@ -4162,15 +4162,15 @@ BulletClass *UnitClass::Fire_At(TARGET target, int which) {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-  BulletClass *bullet = NULL;
+  BulletClass *bullet = nullptr;
   WeaponTypeClass const *weap =
       (which == 0) ? Class->PrimaryWeapon : Class->SecondaryWeapon;
-  if (weap == NULL) return (NULL);
+  if (weap == nullptr) return (nullptr);
 
   if (Can_Fire(target, which) == FIRE_OK) {
     bullet = DriveClass::Fire_At(target, which);
 
-    if (bullet != NULL) {
+    if (bullet != nullptr) {
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (Class->Type == UNIT_DEMOTRUCK && IsActive) delete this;
 #endif
@@ -4351,7 +4351,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
     } else {
       ObjectClass *object = cellptr->Cell_Occupier();
       int crushed = false;
-      while (object != NULL) {
+      while (object != nullptr) {
         if (object->Class_Of().IsCrushable && !House->Is_Ally(object) &&
             Distance(object->Center_Coord()) < CELL_LEPTON_W / 2) {
 #ifdef OBSOLETE
@@ -4444,7 +4444,7 @@ void UnitClass::Assign_Destination(TARGET target) {
     **	wait until radio contact can be established.
     */
     if (!In_Radio_Contact()) {
-      if (b != NULL) {
+      if (b != nullptr) {
         /*
         **	Determine if the transport is already in radio contact. If so,
         *then just move *	toward the transport and try to establish
@@ -4477,7 +4477,7 @@ void UnitClass::Assign_Destination(TARGET target) {
         }
       } else {
         TechnoClass *techno = As_Techno(target);
-        if (techno != NULL) {
+        if (techno != nullptr) {
           /*
           **	Determine if the transport is already in radio contact. If so,
           *then just move *	toward the transport and try to establish
@@ -4512,7 +4512,7 @@ void UnitClass::Assign_Destination(TARGET target) {
   **	facility is currently not involved with some other unit (radio or
   *unloading).
   */
-  if (b != NULL && *b == STRUCT_REPAIR) {
+  if (b != nullptr && *b == STRUCT_REPAIR) {
     if (b->In_Radio_Contact() && (b->Contact_With_Whom() != this)) {
       //			if (target != NULL) {
       ArchiveTarget = target;
@@ -4569,10 +4569,10 @@ void UnitClass::Assign_Destination(TARGET target) {
 TARGET UnitClass::Greatest_Threat(ThreatType threat)  // const
 {
   assert(IsActive);
-  if (Class->PrimaryWeapon != NULL) {
+  if (Class->PrimaryWeapon != nullptr) {
     threat = threat | Class->PrimaryWeapon->Allowed_Threats();
   }
-  if (Class->SecondaryWeapon != NULL) {
+  if (Class->SecondaryWeapon != nullptr) {
     threat = threat | Class->SecondaryWeapon->Allowed_Threats();
   }
 
@@ -4614,34 +4614,34 @@ void UnitClass::Read_INI(CCINIClass &ini) {
   for (int index = 0; index < len; index++) {
     char const *entry = ini.Get_Entry(INI_Name(), index);
 
-    ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf));
+    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
     if (inhouse != HOUSE_NONE) {
-      classid = UnitTypeClass::From_Name(strtok(NULL, ","));
+      classid = UnitTypeClass::From_Name(strtok(nullptr, ","));
 
       if (classid != UNIT_NONE) {
         unit = new UnitClass(classid, inhouse);
-        if (unit != NULL) {
+        if (unit != nullptr) {
           /*
           **	Read the raw data.
           */
-          int strength = atoi(strtok(NULL, ",\r\n"));
+          int strength = atoi(strtok(nullptr, ",\r\n"));
 
-          CELL cell = atoi(strtok(NULL, ",\r\n"));
+          CELL cell = atoi(strtok(nullptr, ",\r\n"));
 
           COORDINATE coord = Cell_Coord(cell);
 
-          DirType dir = (DirType)atoi(strtok(NULL, ",\r\n"));
+          DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(NULL, ",\n\r"));
+              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
 
-          unit->Trigger = NULL;
+          unit->Trigger = nullptr;
           TriggerTypeClass *tp =
-              TriggerTypeClass::From_Name(strtok(NULL, ",\r\n"));
-          if (tp != NULL) {
+              TriggerTypeClass::From_Name(strtok(nullptr, ",\r\n"));
+          if (tp != nullptr) {
             TriggerClass *tt = Find_Or_Make(tp);
-            if (tt != NULL) {
+            if (tt != nullptr) {
               tt->AttachCount++;
               unit->Trigger = tt;
             }
@@ -4695,7 +4695,7 @@ void UnitClass::Write_INI(CCINIClass &ini) {
   */
   for (int index = 0; index < Units.Count(); index++) {
     UnitClass *unit = Units.Ptr(index);
-    if (unit != NULL && !unit->IsInLimbo && unit->IsActive) {
+    if (unit != nullptr && !unit->IsInLimbo && unit->IsActive) {
       char uname[10];
       char buf[128];
 
@@ -4757,7 +4757,7 @@ bool UnitClass::Should_Crush_It(TechnoClass const *it) const {
   *crushed, *	then it obviously should not try to crush it -- return negative
   *answer.
   */
-  if (!Class->IsCrusher || it == NULL || !it->Techno_Type_Class()->IsCrushable)
+  if (!Class->IsCrusher || it == nullptr || !it->Techno_Type_Class()->IsCrushable)
     return (false);
 
   /*
@@ -4777,7 +4777,7 @@ bool UnitClass::Should_Crush_It(TechnoClass const *it) const {
   *objects then *	fire the weapon instead. It is presumed that a wood
   *destroying weapon is good against *	most crushable object types (infantry).
   */
-  if (Class->PrimaryWeapon != NULL &&
+  if (Class->PrimaryWeapon != nullptr &&
       Class->PrimaryWeapon->WarheadPtr->IsWoodDestroyer)
     return (false);
 
@@ -4966,7 +4966,7 @@ int UnitClass::Mission_Guard_Area(void) {
 
       InfantryClass *infantry = Infantry.Ptr(index);
 
-      if (infantry != NULL && infantry->IsActive && !infantry->IsInLimbo &&
+      if (infantry != nullptr && infantry->IsActive && !infantry->IsInLimbo &&
           infantry->Strength > 0 && infantry->House == House &&
           !Target_Legal(infantry->TarCom) && !Target_Legal(infantry->NavCom) &&
           Distance(infantry) < 7 * CELL_LEPTON_W &&

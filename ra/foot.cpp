@@ -127,9 +127,9 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       YFormOffset(0x80000000),
       NavCom(TARGET_NONE),
       SuspendedNavCom(TARGET_NONE),
-      Team(0),
+      Team(nullptr),
       Group(255),
-      Member(0),
+      Member(nullptr),
       PathThreshhold(MOVE_CLOAK),
       PathDelay(0),
       TryTryAgain(PATH_RETRY),
@@ -268,7 +268,7 @@ void FootClass::Set_Speed(int speed) {
  *Performs low level check before processing.                              *
  *=============================================================================================*/
 bool FootClass::Mark(MarkType mark) {
-  assert(this != 0);
+  assert(this != nullptr);
   assert(IsActive);
 
   if (TechnoClass::Mark(mark)) {
@@ -1136,14 +1136,14 @@ ResultType FootClass::Take_Damage(int &damage, int distance,
       //			bool tweap = false;
       //			if (As_Techno(TarCom)) {
       //				tweap =
-      //(As_Techno(TarCom)->Techno_Type_Class()->PrimaryWeapon != NULL);
+      //(As_Techno(TarCom)->Techno_Type_Class()->PrimaryWeapon != nullptr);
       //			}
 
       /*
       **	This ensures that if a unit is in sticky mode, then it will snap
       *out of *	it when it takes damage.
       */
-      if (source != NULL && MissionControl[Mission].IsNoThreat &&
+      if (source != nullptr && MissionControl[Mission].IsNoThreat &&
           !MissionControl[Mission].IsZombie) {
         Enter_Idle_Mode();
       }
@@ -1206,7 +1206,7 @@ ResultType FootClass::Take_Damage(int &damage, int distance,
  *=============================================================================================*/
 void FootClass::Active_Click_With(ActionType action, ObjectClass *object) {
   assert(IsActive);
-  assert(object != NULL);
+  assert(object != nullptr);
 
   switch (action) {
     case ACTION_GUARD_AREA:
@@ -1435,7 +1435,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
       int primary = What_Weapon_Should_I_Use(TarCom);
       bool inrange = In_Range(TarCom, primary);
       TechnoClass const *techno = As_Techno(TarCom);
-      if (techno != NULL && techno->Is_Foot()) {
+      if (techno != nullptr && techno->Is_Foot()) {
         inrange =
             In_Range(((FootClass const *)techno)->Likely_Coord(), primary);
       }
@@ -1453,7 +1453,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
     */
     if (Cloak != CLOAKED) {
       TriggerClass *trigger = Map[Coord].Trigger;
-      if (trigger != NULL) {
+      if (trigger != nullptr) {
         trigger->Spring(TEVENT_PLAYER_ENTERED, this, Coord_Cell(Coord));
         if (!IsActive) return;
       }
@@ -1465,7 +1465,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
       int y = Cell_Y(Coord_Cell(Coord));
       for (int index = 0; index < Map.MapCellWidth; index++) {
         trigger = Map[XY_Cell(index + Map.MapCellX, y)].Trigger;
-        if (trigger != NULL) {
+        if (trigger != nullptr) {
           if (trigger->Class->Event1.Event == TEVENT_CROSS_HORIZONTAL ||
               (trigger->Class->EventControl != MULTI_ONLY &&
                trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL)) {
@@ -1480,7 +1480,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
       */
       for (int index = 0; index < Map.MapCellHeight; index++) {
         trigger = Map[XY_Cell(x, index + Map.MapCellY)].Trigger;
-        if (trigger != NULL) {
+        if (trigger != nullptr) {
           if (trigger->Class->Event1.Event == TEVENT_CROSS_VERTICAL ||
               (trigger->Class->EventControl != MULTI_ONLY &&
                trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL)) {
@@ -1617,7 +1617,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass *from,
     **	Answers if this object is located on top of a service depot.
     */
     case RADIO_ON_DEPOT:
-      if (Map[Center_Coord()].Cell_Building() != NULL) {
+      if (Map[Center_Coord()].Cell_Building() != nullptr) {
         BuildingClass const *building = Map[Center_Coord()].Cell_Building();
         if (*building == STRUCT_REPAIR) {
           return (RADIO_ROGER);
@@ -1726,7 +1726,7 @@ int FootClass::Mission_Enter(void) {
   *target value to see if that *	is suitable.
   */
   TechnoClass *contact = Contact_With_Whom();
-  if (contact == NULL) {
+  if (contact == nullptr) {
     contact = As_Techno(ArchiveTarget);
   }
 
@@ -1734,7 +1734,7 @@ int FootClass::Mission_Enter(void) {
   **	If in contact, then let the transporter handle the movement
   *coordination.
   */
-  if (contact != NULL) {
+  if (contact != nullptr) {
     /*
     **	If the transport says to "bug off", then abort the enter mission. The
     *transport may *	likely say all is 'ok' with the "RADIO ROGER", then try
@@ -1804,7 +1804,7 @@ void FootClass::Detach_All(bool all) {
 
   if (Team && !ScenarioInit) {
     Team->Remove(this);
-    Team = NULL;
+    Team = nullptr;
   }
 
   TechnoClass::Detach_All(all);
@@ -1853,7 +1853,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   */
   if (Target_Legal(TarCom)) {
     TechnoClass *techno = As_Techno(TarCom);
-    if (techno != NULL && techno->Is_Weapon_Equipped()) {
+    if (techno != nullptr && techno->Is_Weapon_Equipped()) {
       return (0);
     }
   }
@@ -2417,7 +2417,7 @@ bool FootClass::Is_Recruitable(HouseClass const *house) const {
   /*
   **	If not of the correct house presuasion, then recruitment is not allowed.
   */
-  if (house != NULL && house != House) {
+  if (house != nullptr && house != House) {
     return (false);
   }
 

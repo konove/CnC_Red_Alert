@@ -49,7 +49,7 @@
 class Buffer {
  public:
   Buffer(char *ptr, long size = 0);
-  Buffer(void *ptr = 0, long size = 0);
+  Buffer(void *ptr = nullptr, long size = 0);
   Buffer(void const *ptr, long size = 0);
   Buffer(long size);
   Buffer(Buffer const &buffer);
@@ -62,7 +62,7 @@ class Buffer {
   void Reset(void);
   void *Get_Buffer(void) const { return (BufferPtr); }
   long Get_Size(void) const { return (Size); }
-  bool Is_Valid(void) const { return (BufferPtr != 0); }
+  bool Is_Valid(void) const { return (BufferPtr != nullptr); }
 
  protected:
   /*

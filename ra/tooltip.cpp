@@ -79,7 +79,7 @@ ToolTipClass* ToolTipClass::GetToolTipHit() {
   else if (next)
     return next->GetToolTipHit();
   else
-    return NULL;
+    return nullptr;
 }
 
 //***********************************************************************************************

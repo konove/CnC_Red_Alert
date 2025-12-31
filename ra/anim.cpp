@@ -77,7 +77,7 @@
  *=============================================================================================*/
 AnimType Anim_From_Name(char const *name) {
 #ifdef VIC
-  if (name == NULL) return (ANIM_NONE);
+  if (name == nullptr) return (ANIM_NONE);
 
   for (AnimType anim = ANIM_FIRST; anim < ANIM_COUNT; anim++) {
     if (stricmp(AnimTypeClass::As_Reference(anim).IniName, name) == 0) {
@@ -109,7 +109,7 @@ AnimType Anim_From_Name(char const *name) {
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
 void Shorten_Attached_Anims(ObjectClass *obj) {
-  if (obj != NULL) {
+  if (obj != nullptr) {
     for (int index = 0; index < Anims.Count(); index++) {
       AnimClass &anim = *Anims.Ptr(index);
 
@@ -241,18 +241,18 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
     IsTheaterShape = Class->IsTheater;
 
     void const *shapefile = Get_Image_Data();
-    if (shapefile != NULL) {
-      void const *transtable = NULL;
+    if (shapefile != nullptr) {
+      void const *transtable = nullptr;
       int shapenum = Class->Start + Fetch_Stage();
-      void const *remap = NULL;
+      void const *remap = nullptr;
 
       /*
       **	If the translucent table hasn't been determined yet, then check
       *to see if it *	should use the white or normal translucent tables.
       */
-      if (transtable == NULL && Class->IsWhiteTrans)
+      if (transtable == nullptr && Class->IsWhiteTrans)
         transtable = DisplayClass::WhiteTranslucentTable;
-      if (transtable == NULL && Class->IsTranslucent)
+      if (transtable == nullptr && Class->IsTranslucent)
         transtable = DisplayClass::TranslucentTable;
       if (Class->Type == ANIM_ATOM_BLAST) transtable = Map.UnitShadow;
 
@@ -261,7 +261,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
       *ghosting *	table necessary.
       */
       ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
-      if (transtable != NULL) flags = flags | SHAPE_GHOST;
+      if (transtable != nullptr) flags = flags | SHAPE_GHOST;
 
       /*
       **	Draw the animation shape.
@@ -343,15 +343,15 @@ short const *AnimClass::Overlap_List(void) const {
 
 #ifdef PARTIAL
   IsTheaterShape = Class->IsTheater;
-  if (Class->Get_Image_Data() != NULL) {
+  if (Class->Get_Image_Data() != nullptr) {
     int shapenum = Class->Start + Fetch_Stage();
     int count = Get_Build_Frame_Count(Class->Get_Image_Data());
     shapenum = std::min(shapenum, count - 1);
 
-    if (Class->DimensionData == NULL) {
+    if (Class->DimensionData == nullptr) {
       Class->DimensionData = new Rect[count];
     }
-    if (Class->DimensionData != NULL &&
+    if (Class->DimensionData != nullptr &&
         !Class->DimensionData[shapenum].Is_Valid()) {
       Class->DimensionData[shapenum] =
           Shape_Dimensions(Class->Get_Image_Data(), shapenum);
@@ -414,7 +414,7 @@ void AnimClass::Init(void) { Anims.Free_All(); }
  *                                                                                             *
  *    This routine is used to allocate a free anim class object from the
  *preallocated pool     * in the near heap. If there are no free animation
- *objects, then null is returned.         *
+ *objects, then nullptr is returned.         *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -426,7 +426,7 @@ void AnimClass::Init(void) { Anims.Free_All(); }
  *=============================================================================================*/
 void *AnimClass::operator new(size_t) throw() {
   void *ptr = Anims.Allocate();
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((AnimClass *)ptr)->IsActive = true;
   }
   return (ptr);
@@ -448,7 +448,7 @@ void *AnimClass::operator new(size_t) throw() {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::operator delete(void *ptr) {
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((AnimClass *)ptr)->IsActive = false;
   }
   Anims.Free((AnimClass *)ptr);
@@ -557,7 +557,7 @@ AnimClass::~AnimClass(void) {
     **	is the case, then inform the object that it is no longer attached to
     **	an animation.
     */
-    if (Target_Legal(xObject) && As_Object(xObject) != NULL) {
+    if (Target_Legal(xObject) && As_Object(xObject) != nullptr) {
       ObjectClass *to = As_Object(xObject);
 
       /*
@@ -593,7 +593,7 @@ AnimClass::~AnimClass(void) {
   }
 
   xObject = TARGET_NONE;
-  Class = 0;
+  Class = nullptr;
   ID = -1;
 
 #endif
@@ -805,7 +805,7 @@ void AnimClass::Attach_To(ObjectClass *obj) {
   assert(Anims.ID(this) == ID);
   assert(IsActive);
 
-  if (obj == NULL) return;
+  if (obj == nullptr) return;
   assert(obj->IsActive);
 
   obj->Mark(MARK_OVERLAP_UP);
@@ -976,7 +976,7 @@ void AnimClass::Middle(void) {
     case ANIM_FIRE_MED2:
       newanim =
           new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0, Random_Pick(1, 2));
-      if (newanim != NULL && xObject != TARGET_NONE) {
+      if (newanim != nullptr && xObject != TARGET_NONE) {
         newanim->Attach_To(As_Object(xObject));
       }
       break;
@@ -1045,13 +1045,13 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   **	order to properly enact retribution and record the kill for
   **	score purposes.
   */
-  BuildingClass *building = NULL;
-  TechnoClass *backup = NULL;
+  BuildingClass *building = nullptr;
+  TechnoClass *backup = nullptr;
   if (ownerhouse != HOUSE_NONE) {
     for (int index = 0; index < Logic.Count(); index++) {
       ObjectClass *obj = Logic[index];
 
-      if (obj != NULL && obj->Is_Techno() && obj->Owner() == ownerhouse) {
+      if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
         backup = (TechnoClass *)obj;
         if (obj->What_Am_I() == RTTI_BUILDING &&
             *((BuildingClass *)obj) == STRUCT_MSLO) {
@@ -1061,7 +1061,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
       }
     }
 
-    if (building == NULL) building = (BuildingClass *)backup;
+    if (building == nullptr) building = (BuildingClass *)backup;
   }
 
   int radius;

@@ -164,7 +164,7 @@ char const *ThemeClass::Full_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
     return (Text_String(_themes[theme].Fullname));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -504,7 +504,7 @@ ThemeType ThemeClass::From_Name(char const *name) {
     **	yeild a match, but is not guaranteed to be unique.
     */
     for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
-      if (strstr(Text_String(_themes[theme].Fullname), name) != NULL) {
+      if (strstr(Text_String(_themes[theme].Fullname), name) != nullptr) {
         return (theme);
       }
     }

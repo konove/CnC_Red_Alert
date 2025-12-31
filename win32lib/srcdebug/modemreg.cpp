@@ -179,14 +179,14 @@ ModemRegistryEntryClass::ModemRegistryEntryClass(int modem_number) {
   ** Initialise all the info we expect from the registry to NULL.
   ** Any entries we cant find will just stay NULL.
   */
-  ModemName = NULL;
-  ModemDeviceName = NULL;
-  ErrorCorrectionEnable = NULL;
-  ErrorCorrectionDisable = NULL;
-  CompressionEnable = NULL;
-  CompressionDisable = NULL;
-  HardwareFlowControl = NULL;
-  NoFlowControl = NULL;
+  ModemName = nullptr;
+  ModemDeviceName = nullptr;
+  ErrorCorrectionEnable = nullptr;
+  ErrorCorrectionDisable = nullptr;
+  CompressionEnable = nullptr;
+  CompressionDisable = nullptr;
+  HardwareFlowControl = nullptr;
+  NoFlowControl = nullptr;
 
   /*
   ** Modem info is stored under

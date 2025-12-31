@@ -91,7 +91,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
   Color = GadgetClass::Get_Color_Scheme();
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TextFlags);
+    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
 
     if (h == -1) {
       Height = FontHeight + 1;

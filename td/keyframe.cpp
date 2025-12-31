@@ -65,17 +65,17 @@ typedef struct {
 unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
 unsigned TheaterShapeBufferLength = THEATER_BIG_SHAPE_BUFFER_SIZE;
 extern "C" {
-char *BigShapeBufferStart = NULL;
-char *TheaterShapeBufferStart = NULL;
+char *BigShapeBufferStart = nullptr;
+char *TheaterShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = FALSE;
 bool IsTheaterShape = false;
 }
-char *BigShapeBufferPtr = NULL;
+char *BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
 bool ReallocShapeBufferFlag = FALSE;
 bool OriginalUseBigShapeBuffer = false;
 
-char *TheaterShapeBufferPtr = NULL;
+char *TheaterShapeBufferPtr = nullptr;
 int TotalTheaterShapes = 0;
 
 #define MAX_SLOTS 1500
@@ -125,7 +125,7 @@ void Reallocate_Big_Shape_Buffer(void) {
     BigShapeBufferLength +=
         200 * 1024;  // Extra 2 Mb of uncompressed shape space
     BigShapeBufferPtr -= (uintptr_t)BigShapeBufferStart;
-    Memory_Error = NULL;
+    Memory_Error = nullptr;
     BigShapeBufferStart =
         (char *)Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength);
     Memory_Error = &Memory_Error_Handler;
@@ -209,7 +209,7 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
   //
   Length = 0;
   if (!dataptr || !buffptr) {
-    return (0);
+    return (nullptr);
   }
 
   //
@@ -219,7 +219,7 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
   keyfr = (KeyFrameHeaderType *)dataptr;
 
   if (framenumber >= keyfr->frames) {
-    return (0);
+    return (nullptr);
   }
 
   if (UseBigShapeBuffer) {
@@ -355,7 +355,7 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
-      return (0);
+      return (nullptr);
     }
 
     if (((offset[2] & 0x00FFFFFFL) - offcurr) >= (0x00010000L - off16)) {

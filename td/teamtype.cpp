@@ -137,7 +137,7 @@ TeamTypeClass::TeamTypeClass(void) {
   IniName[0] = '\0';
   ClassCount = 0;
   for (int i = 0; i < MAX_TEAM_CLASSCOUNT; i++) {
-    Class[i] = NULL;
+    Class[i] = nullptr;
     DesiredNum[i] = 0;
   }
 }
@@ -201,7 +201,7 @@ void TeamTypeClass::Read_INI(char *buffer) {
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   /*
@@ -216,7 +216,7 @@ void TeamTypeClass::Read_INI(char *buffer) {
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -287,61 +287,61 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
   /*
   -------------------------- 2nd token: RoundAbout -------------------------
   */
-  IsRoundAbout = atoi(strtok(NULL, ","));
+  IsRoundAbout = atoi(strtok(nullptr, ","));
 
   /*
   --------------------------- 3rd token: Learning --------------------------
   */
-  IsLearning = atoi(strtok(NULL, ","));
+  IsLearning = atoi(strtok(nullptr, ","));
 
   /*
   --------------------------- 4th token: Suicide ---------------------------
   */
-  IsSuicide = atoi(strtok(NULL, ","));
+  IsSuicide = atoi(strtok(nullptr, ","));
 
   /*
   ----------------------------- 5th token: Spy -----------------------------
   */
-  IsAutocreate = atoi(strtok(NULL, ","));
+  IsAutocreate = atoi(strtok(nullptr, ","));
 
   /*
   -------------------------- 6th token: Mercenary --------------------------
   */
-  IsMercenary = atoi(strtok(NULL, ","));
+  IsMercenary = atoi(strtok(nullptr, ","));
 
   /*
   ----------------------- 7th token: RecruitPriority -----------------------
   */
-  RecruitPriority = atoi(strtok(NULL, ","));
+  RecruitPriority = atoi(strtok(nullptr, ","));
 
   /*
   -------------------------- 8th token: MaxAllowed -------------------------
   */
-  MaxAllowed = atoi(strtok(NULL, ","));
+  MaxAllowed = atoi(strtok(nullptr, ","));
 
   /*
   --------------------------- 9th token: InitNum ---------------------------
   */
-  InitNum = atoi(strtok(NULL, ","));
+  InitNum = atoi(strtok(nullptr, ","));
 
   /*
   ------------------------- 10th token: Fear level -------------------------
   */
-  Fear = atoi(strtok(NULL, ","));
+  Fear = atoi(strtok(nullptr, ","));
 
   /*
   ------------------------ 11th token: Class count -------------------------
   */
-  num_classes = atoi(strtok(NULL, ","));
+  num_classes = atoi(strtok(nullptr, ","));
 
   /*
   -------------- Loop through entries, setting class ptr & num -------------
   */
   ClassCount = 0;
   for (i = 0; i < num_classes; i++) {
-    p1 = strtok(NULL, ",:");
-    p2 = strtok(NULL, ",:");
-    otype = NULL;
+    p1 = strtok(nullptr, ",:");
+    p2 = strtok(nullptr, ",:");
+    otype = nullptr;
 
     /*
     ------------------- See if this is an infantry name -------------------
@@ -380,21 +380,21 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
   /*
   ----------------------- next token: Mission count ------------------------
   */
-  MissionCount = atoi(strtok(NULL, ","));
+  MissionCount = atoi(strtok(nullptr, ","));
 
   for (i = 0; i < MissionCount; i++) {
-    p1 = strtok(NULL, ",:");
-    p2 = strtok(NULL, ",:");
+    p1 = strtok(nullptr, ",:");
+    p2 = strtok(nullptr, ",:");
     mission.Mission = Mission_From_Name(p1);
     mission.Argument = atoi(p2);
     MissionList[i] = mission;
   }
 
-  char *ptr = strtok(NULL, ",");
+  char *ptr = strtok(nullptr, ",");
   if (ptr) {
     IsReinforcable = atoi(ptr);
   }
-  ptr = strtok(NULL, ",");
+  ptr = strtok(nullptr, ",");
   if (ptr) {
     IsPrebuilt = atoi(ptr);
   }
@@ -431,13 +431,13 @@ void TeamTypeClass::Write_INI(char *buffer, bool refresh) {
   /*------------------------------------------------------------------------
   First, clear out all existing teamtypes in the old-style format.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("Teams", NULL, NULL, buffer);
+  WWWritePrivateProfileString("Teams", nullptr, nullptr, buffer);
 
   /*------------------------------------------------------------------------
   Clear out all existing teamtype data from the INI file.
   ------------------------------------------------------------------------*/
   if (refresh) {
-    WWWritePrivateProfileString(INI_Name(), NULL, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
   }
 
   /*------------------------------------------------------------------------
@@ -542,7 +542,7 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Teams", NULL, NULL, tbuffer, ShapeBufferSize - len,
+  WWGetPrivateProfileString("Teams", nullptr, nullptr, tbuffer, ShapeBufferSize - len,
                             buffer);
 
   /*
@@ -562,7 +562,7 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString("Teams", tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString("Teams", tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -573,56 +573,56 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
     /*
     ........................ 2nd token: RoundAbout ........................
     */
-    team->IsRoundAbout = atoi(strtok(NULL, ","));
+    team->IsRoundAbout = atoi(strtok(nullptr, ","));
 
     /*
     ......................... 3rd token: Learning .........................
     */
-    team->IsLearning = atoi(strtok(NULL, ","));
+    team->IsLearning = atoi(strtok(nullptr, ","));
 
     /*
     ......................... 4th token: Suicide ..........................
     */
-    team->IsSuicide = atoi(strtok(NULL, ","));
+    team->IsSuicide = atoi(strtok(nullptr, ","));
 
     /*
     ........................... 5th token: Spy ............................
     */
-    team->IsAutocreate = atoi(strtok(NULL, ","));
+    team->IsAutocreate = atoi(strtok(nullptr, ","));
 
     /*
     ........................ 6th token: Mercenary .........................
     */
-    team->IsMercenary = atoi(strtok(NULL, ","));
+    team->IsMercenary = atoi(strtok(nullptr, ","));
 
     /*
     ..................... 7th token: RecruitPriority ......................
     */
-    team->RecruitPriority = atoi(strtok(NULL, ","));
+    team->RecruitPriority = atoi(strtok(nullptr, ","));
 
     /*
     ........................ 8th token: MaxAllowed ........................
     */
-    team->MaxAllowed = atoi(strtok(NULL, ","));
+    team->MaxAllowed = atoi(strtok(nullptr, ","));
 
     /*
     ......................... 9th token: InitNum ..........................
     */
-    team->InitNum = atoi(strtok(NULL, ","));
+    team->InitNum = atoi(strtok(nullptr, ","));
 
     /*
     ....................... 10th token: Mission name ......................
     */
-    strtok(NULL, ",");  // just throw it away
+    strtok(nullptr, ",");  // just throw it away
 
     /*
     ............ Loop through entries, setting class ptr & num ............
     */
     index = 0;
-    p1 = strtok(NULL, ",:");
-    p2 = strtok(NULL, ",:");
+    p1 = strtok(nullptr, ",:");
+    p2 = strtok(nullptr, ",:");
     while (p1 && p2) {
-      otype = NULL;
+      otype = nullptr;
 
       /*
       ................. See if this is an infantry name ..................
@@ -661,8 +661,8 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
       /*
       ................. Go to the next entry on the line .................
       */
-      p1 = strtok(NULL, ",:");
-      p2 = strtok(NULL, ",:");
+      p1 = strtok(nullptr, ",:");
+      p2 = strtok(nullptr, ",:");
     }
 
     team->Fear = 0;
@@ -692,8 +692,8 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
 TeamTypeClass *TeamTypeClass::As_Pointer(char *name) {
   int i;
 
-  if (name == NULL) {
-    return (NULL);
+  if (name == nullptr) {
+    return (nullptr);
   }
 
   for (i = 0; i < TeamTypes.Count(); i++) {
@@ -702,7 +702,7 @@ TeamTypeClass *TeamTypeClass::As_Pointer(char *name) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 }
 
 /***************************************************************************
@@ -731,7 +731,7 @@ void TeamTypeClass::Remove(void) {
   for (i = 0; i < Triggers.Count(); i++) {
     trigger = Triggers.Ptr(i);
     if (trigger->Team == this) {
-      trigger->Team = NULL;
+      trigger->Team = nullptr;
     }
   }
 
@@ -842,7 +842,7 @@ TeamClass *TeamTypeClass::Create_One_Of(void) const {
   if (ScenarioInit || TeamClass::Number[TeamTypes.ID(this)] < MaxAllowed) {
     return (new TeamClass(this, HouseClass::As_Pointer(House)));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 TARGET TeamTypeClass::As_Target(void) const {
@@ -889,7 +889,7 @@ void TeamTypeClass::Destroy_All_Of(void) const {
 TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house,
                                                        long utypes, long itypes,
                                                        bool alerted) {
-  TeamTypeClass const *best = NULL;
+  TeamTypeClass const *best = nullptr;
   int bestvalue = 0;
 
   for (int index = 0; index < TeamTypes.Count(); index++) {

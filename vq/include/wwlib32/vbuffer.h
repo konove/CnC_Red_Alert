@@ -317,20 +317,20 @@ class VideoViewPortClass {
   BOOL Blit(VideoViewPortClass &dest, BOOL trans = FALSE);
   BOOL Scale(GraphicViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             BOOL trans = FALSE, char *remap = NULL);
+             BOOL trans = FALSE, char *remap = nullptr);
   BOOL Scale(GraphicViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
              char *remap);
   BOOL Scale(GraphicViewPortClass &dest, BOOL trans = FALSE,
-             char *remap = NULL);
+             char *remap = nullptr);
   BOOL Scale(GraphicViewPortClass &dest, char *remap);
   BOOL Scale(VideoViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             BOOL trans = FALSE, char *remap = NULL);
+             BOOL trans = FALSE, char *remap = nullptr);
   BOOL Scale(VideoViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
              char *remap);
-  BOOL Scale(VideoViewPortClass &dest, BOOL trans = FALSE, char *remap = NULL);
+  BOOL Scale(VideoViewPortClass &dest, BOOL trans = FALSE, char *remap = nullptr);
   BOOL Scale(VideoViewPortClass &dest, char *remap);
   unsigned long Print(char const *string, int x, int y, int fcolor, int bcolor);
   unsigned long Print(int num, int x, int y, int fcol, int bcol);

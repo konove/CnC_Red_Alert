@@ -87,7 +87,7 @@ void CargoClass::Attach(FootClass *object) {
   /*
   **	If there is no object, then no action is necessary.
   */
-  if (object == NULL) return;
+  if (object == nullptr) return;
 
   object->Limbo();
 
@@ -99,11 +99,11 @@ void CargoClass::Attach(FootClass *object) {
   *routine. Either case must be handled properly.
   */
   ObjectClass *o = object->Next;
-  while (o != NULL) {
-    if (o->Next == (void *)NULL) break;
+  while (o != nullptr) {
+    if (o->Next == (void *)nullptr) break;
     o = o->Next;
   }
-  if (o != NULL) {
+  if (o != nullptr) {
     o->Next = CargoHold;
   } else {
     object->Next = CargoHold;
@@ -116,7 +116,7 @@ void CargoClass::Attach(FootClass *object) {
   CargoHold = object;
   Quantity = 0;
   object = CargoHold;
-  while (object != NULL) {
+  while (object != nullptr) {
     Quantity++;
     object = (FootClass *)(ObjectClass *)object->Next;
   }
@@ -127,8 +127,7 @@ void CargoClass::Attach(FootClass *object) {
  *                                                                                             *
  *    This routine will take a unit from the cargo hold and extract it. * The
  *unit extracted is the last unit added to the hold. If there * is no unit in
- *the hold or the occupant is not a unit, then NULL is                       *
- *    returned. *
+ *the hold or the occupant is not a unit, then nullptr is  * returned. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -142,9 +141,9 @@ void CargoClass::Attach(FootClass *object) {
 FootClass *CargoClass::Detach_Object(void) {
   TechnoClass *unit = Attached_Object();
 
-  if (unit != NULL) {
+  if (unit != nullptr) {
     CargoHold = (FootClass *)(ObjectClass *)unit->Next;
-    unit->Next = 0;
+    unit->Next = nullptr;
     Quantity--;
   }
   return ((FootClass *)unit);
@@ -160,7 +159,7 @@ FootClass *CargoClass::Detach_Object(void) {
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns a pointer to the attached unit. If there is no * attached
- *unit, then return NULL.                                                   *
+ *unit, then return nullptr.                                                   *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -171,5 +170,5 @@ FootClass *CargoClass::Attached_Object(void) const {
   if (Is_Something_Attached()) {
     return (CargoHold);
   }
-  return (NULL);
+  return (nullptr);
 }

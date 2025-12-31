@@ -320,7 +320,7 @@ extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
 #endif
 
 void Just_Path(char *path, char *destpath) {
-  char *terminator = NULL;  // He'll be back.
+  char *terminator = nullptr;  // He'll be back.
 
   strcpy(destpath, path);
   terminator = strrchr(destpath, '\\');

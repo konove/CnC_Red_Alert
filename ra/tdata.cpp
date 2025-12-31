@@ -97,92 +97,92 @@ static TerrainTypeClass const Mine(
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "MINE", TXT_ORE_MINE, (short const *)_List10, NULL);
+    "MINE", TXT_ORE_MINE, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes01(
     TERRAIN_BOXES01, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES01", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES01", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes02(
     TERRAIN_BOXES02, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES02", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES02", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes03(
     TERRAIN_BOXES03, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES03", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES03", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes04(
     TERRAIN_BOXES04, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES04", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES04", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes05(
     TERRAIN_BOXES05, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES05", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES05", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes06(
     TERRAIN_BOXES06, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES06", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES06", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes07(
     TERRAIN_BOXES07, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES07", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES07", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes08(
     TERRAIN_BOXES08, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES08", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES08", TXT_CRATES, (short const *)_List10, nullptr);
 static TerrainTypeClass const Boxes09(
     TERRAIN_BOXES09, THEATERF_INTERIOR,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     false,              // Is based on the water?
-    "BOXES09", TXT_CRATES, (short const *)_List10, NULL);
+    "BOXES09", TXT_CRATES, (short const *)_List10, nullptr);
 
 static TerrainTypeClass const Ice01(
     TERRAIN_ICE01, THEATERF_SNOW,
     XYP_COORD(24, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE01", TXT_ICE, (short const *)_List1111, NULL);
+    "ICE01", TXT_ICE, (short const *)_List1111, nullptr);
 static TerrainTypeClass const Ice02(
     TERRAIN_ICE02, THEATERF_SNOW,
     XYP_COORD(12, 24),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE02", TXT_ICE, (short const *)_List1010, NULL);
+    "ICE02", TXT_ICE, (short const *)_List1010, nullptr);
 static TerrainTypeClass const Ice03(
     TERRAIN_ICE03, THEATERF_SNOW,
     XYP_COORD(24, 12),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE03", TXT_ICE, (short const *)_List11, NULL);
+    "ICE03", TXT_ICE, (short const *)_List11, nullptr);
 static TerrainTypeClass const Ice04(
     TERRAIN_ICE04, THEATERF_SNOW,
     XYP_COORD(12, 12),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE04", TXT_ICE, (short const *)_List10, NULL);
+    "ICE04", TXT_ICE, (short const *)_List10, nullptr);
 static TerrainTypeClass const Ice05(
     TERRAIN_ICE05, THEATERF_SNOW,
     XYP_COORD(12, 12),  // Center base coordinate offset.
     true,               // Is it immune to normal combat damage?
     true,               // Is based on the water?
-    "ICE05", TXT_ICE, (short const *)_List10, NULL);
+    "ICE05", TXT_ICE, (short const *)_List10, nullptr);
 
 static TerrainTypeClass const Tree1Class(
     TERRAIN_TREE1, THEATERF_TEMPERATE | THEATERF_SNOW,
@@ -499,7 +499,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      ((void const *&)terrain.ImageData) = NULL;
+      ((void const *&)terrain.ImageData) = nullptr;
 
       if (terrain.Theater & (1 << theater)) {
         /*
@@ -512,7 +512,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape
-        if (terrain.RadarIcon != NULL) delete[] (char *)terrain.RadarIcon;
+        if (terrain.RadarIcon != nullptr) delete[] (char *)terrain.RadarIcon;
         ((void const *&)terrain.RadarIcon) =
             Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
         IsTheaterShape = false;
@@ -539,7 +539,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
 TerrainType TerrainTypeClass::From_Name(char const *name) {
   TerrainType index;
 
-  if (name != NULL) {
+  if (name != nullptr) {
     for (index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
       if (stricmp(name, As_Reference(index).IniName) == 0) {
         return (index);
@@ -658,7 +658,7 @@ ObjectClass *TerrainTypeClass::Create_One_Of(HouseClass *) const {
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 short const *TerrainTypeClass::Occupy_List(bool) const {
-  if (Occupy != NULL) return (Occupy);
+  if (Occupy != nullptr) return (Occupy);
 
   static short const _simple[1] = {REFRESH_EOL};
   return (&_simple[0]);
@@ -684,7 +684,7 @@ short const *TerrainTypeClass::Occupy_List(bool) const {
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 short const *TerrainTypeClass::Overlap_List(void) const {
-  if (Overlap != NULL) return (Overlap);
+  if (Overlap != nullptr) return (Overlap);
 
   static short const _simple[1] = {REFRESH_EOL};
   return (&_simple[0]);

@@ -163,7 +163,7 @@ GameType Select_MPlayer_Game(void) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   //------------------------------------------------------------------------
   // If IPX not active then do only the modem serial dialog
@@ -721,7 +721,7 @@ int Surrender_Dialog(int text)
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_BUTTON, D_OK_X, D_OK_Y, D_OK_W,
                         D_OK_H);
@@ -918,7 +918,7 @@ int Abort_Dialog(void) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   TextButtonClass yesbtn(BUTTON_YES, TXT_YES, TPF_BUTTON, D_YES_X, D_YES_Y,
                          D_YES_W, D_YES_H);

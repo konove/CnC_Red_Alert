@@ -202,7 +202,7 @@ class IndexClass {
  *=============================================================================================*/
 template <class T>
 IndexClass<T>::IndexClass(void)
-    : IndexTable(0), IndexCount(0), IndexSize(0), IsSorted(false), Archive(0) {
+    : IndexTable(nullptr), IndexCount(0), IndexSize(0), IsSorted(false), Archive(nullptr) {
   Invalidate_Archive();
 }
 
@@ -275,7 +275,7 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
   if (amount < 0) return (false);
 
   NodeElement *table = new NodeElement[IndexSize + amount];
-  if (table != NULL) {
+  if (table != nullptr) {
     /*
     **	Copy all valid nodes into the new table.
     */
@@ -367,7 +367,7 @@ bool IndexClass<T>::Is_Present(int id) const {
   **	If a matching index was found, then record it for future reference and
   *return success.
   */
-  if (nodeptr != 0) {
+  if (nodeptr != nullptr) {
     ((IndexClass<T> *)this)->Set_Archive(nodeptr);
     return (true);
   }
@@ -424,7 +424,7 @@ T IndexClass<T>::Fetch_Index(int id) const {
  *=============================================================================================*/
 template <class T>
 bool IndexClass<T>::Is_Archive_Same(int id) const {
-  if (Archive != 0 && Archive->ID == id) {
+  if (Archive != nullptr && Archive->ID == id) {
     return (true);
   }
   return (false);
@@ -624,7 +624,7 @@ typename IndexClass<T>::NodeElement const *IndexClass<T>::Search_For_Node(
   *matches.
   */
   if (IndexCount == 0) {
-    return (0);
+    return (nullptr);
   }
 
   /*

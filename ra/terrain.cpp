@@ -655,7 +655,7 @@ unsigned char *TerrainClass::Radar_Icon(CELL cell) {
     int iconnum = (ydiff * width) + xdiff;
     return (icon + (iconnum * 9));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -740,7 +740,7 @@ void TerrainClass::Write_INI(CCINIClass &ini) {
     TerrainClass *terrain;
 
     terrain = Terrains.Ptr(index);
-    if (terrain != NULL && !terrain->IsInLimbo && terrain->IsActive) {
+    if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {
       char uname[10];
       sprintf(uname, "%d", Coord_Cell(terrain->Coord));
       ini.Put_TerrainType(INI_Name(), uname, *terrain);

@@ -81,7 +81,7 @@
  *=============================================================================================*/
 template <class T>
 VectorClass<T>::VectorClass(unsigned size, T const *array) {
-  Vector = 0;
+  Vector = nullptr;
   VectorMax = size;
   IsAllocated = false;
 
@@ -136,7 +136,7 @@ template <class T>
 VectorClass<T>::VectorClass(VectorClass<T> const &vector) {
   VectorMax = 0;
   IsAllocated = false;
-  Vector = 0;
+  Vector = nullptr;
   *this = vector;
 }
 
@@ -167,7 +167,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
       }
     }
   } else {
-    Vector = 0;
+    Vector = nullptr;
     IsAllocated = false;
   }
   return (*this);
@@ -275,7 +275,7 @@ template <class T>
 void VectorClass<T>::Clear(void) {
   if (Vector && IsAllocated) {
     delete[] Vector;
-    Vector = 0;
+    Vector = nullptr;
   }
   IsAllocated = false;
   VectorMax = 0;
@@ -341,7 +341,7 @@ int VectorClass<T>::Resize(unsigned newsize, T const *array) {
       */
       if (IsAllocated) {
         delete[] Vector;
-        Vector = 0;
+        Vector = nullptr;
       }
     }
 

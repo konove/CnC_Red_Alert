@@ -171,7 +171,7 @@ EZERO,                 // Non-error.
   virtual unsigned long Get_Date_Time(void);
   virtual bool Set_Date_Time(unsigned long datetime);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = NULL);
+                     char const *filename = nullptr);
 
   void Bias(int start, int length = -1);
 
@@ -271,11 +271,11 @@ inline RawFileClass::RawFileClass(void)
       BiasStart(0),
       BiasLength(-1),
 #ifdef WIN32
-      Handle(NULL_HANDLE),
+      Handle(nullptr),
 #else
       Handle(-1),
 #endif
-      Filename(0),
+      Filename(nullptr),
       Date(0),
       Time(0),
       Allocated(false) {
@@ -300,7 +300,7 @@ inline RawFileClass::~RawFileClass(void) {
   Close();
   if (Allocated && Filename) {
     free((char *)Filename);
-    ((char *&)Filename) = 0;
+    ((char *&)Filename) = nullptr;
     Allocated = false;
   }
 }
@@ -322,7 +322,7 @@ inline RawFileClass::~RawFileClass(void) {
  *=============================================================================================*/
 inline int RawFileClass::Is_Open(void) const {
 #ifdef WIN32
-  return (Handle != NULL_HANDLE);
+  return (Handle != nullptr);
 #else
   return (Handle >= 0);
 #endif

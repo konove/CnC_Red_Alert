@@ -295,7 +295,7 @@ int CommQueueClass::UnQueue_Send(void *buf, int *buflen) {
   /*
   **	Copy the data from the entry
   */
-  if (buf != NULL) {
+  if (buf != nullptr) {
     memcpy(buf, SendQueue[SendNext].Buffer, SendQueue[SendNext].BufLen);
     (*buflen) = SendQueue[SendNext].BufLen;
   }
@@ -338,7 +338,7 @@ int CommQueueClass::UnQueue_Send(void *buf, int *buflen) {
  *=========================================================================*/
 SendQueueType *CommQueueClass::Next_Send(void) {
   if (SendCount == 0) {
-    return (NULL);
+    return (nullptr);
   } else {
     return (&SendQueue[SendNext]);
   }
@@ -375,7 +375,7 @@ SendQueueType *CommQueueClass::Get_Send(int index) {
   }
 
   if (SendQueue[i].IsActive == 0) {
-    return (NULL);
+    return (nullptr);
   } else {
     return (&SendQueue[i]);
   }
@@ -467,7 +467,7 @@ int CommQueueClass::UnQueue_Receive(void *buf, int *buflen) {
   /*
   **	Copy the data from the entry
   */
-  if (buf != NULL) {
+  if (buf != nullptr) {
     memcpy(buf, ReceiveQueue[ReceiveNext].Buffer,
            ReceiveQueue[ReceiveNext].BufLen);
     (*buflen) = ReceiveQueue[ReceiveNext].BufLen;
@@ -509,7 +509,7 @@ int CommQueueClass::UnQueue_Receive(void *buf, int *buflen) {
  *=========================================================================*/
 ReceiveQueueType *CommQueueClass::Next_Receive(void) {
   if (ReceiveCount == 0) {
-    return (NULL);
+    return (nullptr);
   } else {
     return (&ReceiveQueue[ReceiveNext]);
   }
@@ -546,7 +546,7 @@ ReceiveQueueType *CommQueueClass::Get_Receive(int index) {
   }
 
   if (ReceiveQueue[i].IsActive == 0) {
-    return (NULL);
+    return (nullptr);
   } else {
     return (&ReceiveQueue[i]);
   }
@@ -753,80 +753,80 @@ void CommQueueClass::Mono_Debug_Print(int refresh) {
   if (refresh) {
     Mono_Clear_Screen();
     Mono_Printf(
-        "ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"
-        "ÄÄÄÄÄÄÄÄ¿\n");
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿\n");
     Mono_Printf(
-        "³                                                                     "
-        "        ³\n");
+        "ï¿½                                                                     "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                                                     "
-        "        ³\n");
+        "ï¿½                                                                     "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                                                     "
-        "        ³\n");
+        "ï¿½                                                                     "
+        "        ï¿½\n");
     Mono_Printf(
-        "ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"
-        "ÄÄÄÄÄÄÄÄ´\n");
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´\n");
     Mono_Printf(
-        "³              Send Queue              ³             Receive Queue    "
-        "        ³\n");
+        "ï¿½              Send Queue              ï¿½             Receive Queue    "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³ ID  Ct ACK   ID  Ct ACK    ID  Ct ACK³ ID  Rd ACK    ID  Rd ACK   "
-        "ID  Rd ACK³\n");
+        "ï¿½ ID  Ct ACK   ID  Ct ACK    ID  Ct ACKï¿½ ID  Rd ACK    ID  Rd ACK   "
+        "ID  Rd ACKï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"
-        "ÄÄÄÄÄÄÄÄÙ");
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
   }
 
   /*
@@ -931,80 +931,80 @@ void CommQueueClass::Mono_Debug_Print2(int refresh) {
   if (refresh) {
     Mono_Clear_Screen();
     Mono_Printf(
-        "ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"
-        "ÄÄÄÄÄÄÄÄ¿\n");
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿\n");
     Mono_Printf(
-        "³                                                                     "
-        "        ³\n");
+        "ï¿½                                                                     "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                                                     "
-        "        ³\n");
+        "ï¿½                                                                     "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                                                     "
-        "        ³\n");
+        "ï¿½                                                                     "
+        "        ï¿½\n");
     Mono_Printf(
-        "ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"
-        "ÄÄÄÄÄÄÄÄ´\n");
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´\n");
     Mono_Printf(
-        "³              Send Queue              ³             Receive Queue    "
-        "        ³\n");
+        "ï¿½              Send Queue              ï¿½             Receive Queue    "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³ ID  Ct Type   Data  Name         ACK ³ ID  Rd Type   Data  Name     "
-        "    ACK ³\n");
+        "ï¿½ ID  Ct Type   Data  Name         ACK ï¿½ ID  Rd Type   Data  Name     "
+        "    ACK ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "³                                      ³                              "
-        "        ³\n");
+        "ï¿½                                      ï¿½                              "
+        "        ï¿½\n");
     Mono_Printf(
-        "ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ"
-        "ÄÄÄÄÄÄÄÄÙ");
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+        "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
   }
 
   /*

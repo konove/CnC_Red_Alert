@@ -61,7 +61,7 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
   SmudgeClass(NoInitClass const &x) : ObjectClass(x), Class(Class){};
-  SmudgeClass(void) : Class(0){};
+  SmudgeClass(void) : Class(nullptr){};
   operator SmudgeType(void) const { return Class->Type; };
   virtual ~SmudgeClass(void) {
     if (GameActive) SmudgeClass::Limbo();

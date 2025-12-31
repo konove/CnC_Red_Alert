@@ -105,7 +105,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   */
   TextFlags = flags;
   IsScrollActive = false;
-  Tabs = 0;
+  Tabs = nullptr;
   SelectedIndex = 0;
   CurrentTopIndex = 0;
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TextFlags);
@@ -386,7 +386,7 @@ void ListClass::Step(int up) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 char const *ListClass::Get_Item(int index) const {
-  if (List.Count() == 0) return (NULL);
+  if (List.Count() == 0) return (nullptr);
 
   index = MIN(index, List.Count() - 1);
   return (List[index]);

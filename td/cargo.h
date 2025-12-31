@@ -53,7 +53,7 @@ class CargoClass {
   */
   CargoClass(void) {
     Quantity = 0;
-    CargoHold = 0;
+    CargoHold = nullptr;
   };
   CargoClass(NoInitClass const &){};
 
@@ -67,7 +67,7 @@ class CargoClass {
   void AI(void) {};
 
   int How_Many(void) const { return Quantity; };
-  bool Is_Something_Attached(void) const { return (CargoHold != 0); };
+  bool Is_Something_Attached(void) const { return (CargoHold != nullptr); };
   FootClass *Attached_Object(void) const;
   FootClass *Detach_Object(void);
   void Attach(FootClass *object);

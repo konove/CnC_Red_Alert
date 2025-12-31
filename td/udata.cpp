@@ -56,7 +56,7 @@
 #include <filesystem>
 #include <string>
 
-void const *UnitTypeClass::WakeShapes = 0;
+void const *UnitTypeClass::WakeShapes = nullptr;
 
 // Visceroid
 static UnitTypeClass const UnitVisceroid(
@@ -1448,7 +1448,7 @@ void UnitTypeClass::One_Time(void) {
                           .string();
       ptr = MixFileClass::Retrieve(fullname.c_str());
     } else {
-      ptr = NULL;
+      ptr = nullptr;
     }
 
     ((void const *&)uclass.ImageData) = ptr;
@@ -1494,7 +1494,7 @@ void UnitTypeClass::Init(TheaterType theater) {
       for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
         UnitTypeClass const &uclass = As_Reference(index);
 
-        ((void const *&)uclass.CameoData) = NULL;
+        ((void const *&)uclass.CameoData) = nullptr;
 
         if (uclass.IsBuildable) {
           auto fullname =
@@ -1582,7 +1582,7 @@ ObjectClass *UnitTypeClass::Create_One_Of(HouseClass *house) const {
  *=============================================================================================*/
 BuildingClass *UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                HousesType house) const {
-  BuildingClass *anybuilding = NULL;
+  BuildingClass *anybuilding = nullptr;
 
   for (int index = 0; index < Buildings.Count(); index++) {
     BuildingClass *building = Buildings.Ptr(index);

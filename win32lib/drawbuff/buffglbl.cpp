@@ -92,4 +92,4 @@ BOOL IconCacheAllowed = TRUE;
 /*
 ** Pointer to a function we will call if we detect loss of focus
 */
-void (*Gbuffer_Focus_Loss_Function)(void) = NULL;
+void (*Gbuffer_Focus_Loss_Function)(void) = nullptr;

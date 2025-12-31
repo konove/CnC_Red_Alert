@@ -67,7 +67,7 @@
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::LinkClass(LinkClass const &link) : Next(0), Prev(0) {
+LinkClass::LinkClass(LinkClass const &link) : Next(nullptr), Prev(nullptr) {
   /*
   **	Add this object to the same list that the copy object
   **	resides in.
@@ -109,8 +109,8 @@ LinkClass::~LinkClass(void) { Remove(); }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void LinkClass::Zap(void) {
-  Next = 0;
-  Prev = 0;
+  Next = nullptr;
+  Prev = nullptr;
 }
 
 /***********************************************************************************************
@@ -292,7 +292,7 @@ LinkClass &LinkClass::Add_Head(LinkClass &list) {
   */
   ptr->Prev = this;
   Next = ptr;
-  Prev = NULL;
+  Prev = nullptr;
 
   return (*this);
 }
@@ -322,7 +322,7 @@ LinkClass &LinkClass::Add_Tail(LinkClass &list) {
   */
   ptr->Next = this;
   Prev = ptr;
-  Next = NULL;
+  Next = nullptr;
 
   return (Head_Of_List());
 }
@@ -353,12 +353,12 @@ LinkClass *LinkClass::Remove(void) {
   if (Next) {
     Next->Prev = Prev;
   }
-  Prev = 0;
-  Next = 0;
+  Prev = nullptr;
+  Next = nullptr;
 
   if (head == this) {
     if (tail == this) {
-      return (0);
+      return (nullptr);
     }
     return (&tail->Head_Of_List());
   }

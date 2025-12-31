@@ -555,7 +555,7 @@ void Fill_In_Data(void) {
   for (int index = 0; index < TriggerTypes.Count(); index++) {
     TriggerTypeClass *tp = TriggerTypes.Ptr(index);
 
-    assert(tp != NULL);
+    assert(tp != nullptr);
 
     if (tp->Attaches_To() & ATTACH_MAP) {
       MapTriggers.Add(Find_Or_Make(tp));
@@ -597,7 +597,7 @@ void Fill_In_Data(void) {
   */
   if (Scen.IsToInherit) {
     CarryoverClass *cptr = Carryover;
-    while (cptr != NULL) {
+    while (cptr != nullptr) {
       cptr->Create();
       cptr = (CarryoverClass *)cptr->Get_Next();
     }
@@ -622,7 +622,7 @@ void Fill_In_Data(void) {
   if (Scen.IsMoneyTiberium) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       HouseClass *hptr = HouseClass::As_Pointer(house);
-      if (hptr != NULL) {
+      if (hptr != nullptr) {
         int tomove = hptr->Capacity - hptr->Tiberium;
         hptr->Credits -= tomove;
         hptr->Tiberium += tomove;
@@ -1352,7 +1352,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
 
 #if defined(WIN32) && !defined(PORTABLE)
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void *)NULL);
+                                    VisiblePage.Get_Height(), (void *)nullptr);
 #endif
 
   /*
@@ -1362,7 +1362,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
     b1txt = b2txt;
     b2txt = "";
     if (*b1txt == '\0') {
-      b1txt = 0;
+      b1txt = nullptr;
     }
   }
 
@@ -1373,7 +1373,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
   ** button 3.
   */
   if (*b2txt == '\0') {
-    b2txt = 0;
+    b2txt = nullptr;
     if (*b3txt != '\0') {
       b2txt = b3txt;
       b3txt = "";
@@ -1384,7 +1384,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
   /*
   ** If there's no text for button three, zero it out.
   */
-  if (*b3txt == '\0') b3txt = 0;
+  if (*b3txt == '\0') b3txt = nullptr;
 
   Fancy_Text_Print(TXT_NONE, 0, 0, &ColorRemaps[PCOLOR_TYPE], TBLACK,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -1470,7 +1470,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
                           y + height - (bheight + 5));
   button3.X = x + ((width - button3.Width) >> 1);
 
-  TextButtonClass *buttonlist = 0;
+  TextButtonClass *buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -1700,12 +1700,12 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
               toupper(Keyboard->To_ASCII((KeyNumType)(input & 0xFF)))) {
             selection = BUTTON_1;
             pressed = true;
-          } else if (b2txt != NULL &&
+          } else if (b2txt != nullptr &&
                      b2char == toupper(Keyboard->To_ASCII(
                                    (KeyNumType)(input & 0xFF)))) {
             selection = BUTTON_2;
             pressed = true;
-          } else if (b3txt != NULL &&
+          } else if (b3txt != nullptr &&
                      b3char == toupper(Keyboard->To_ASCII(
                                    (KeyNumType)(input & 0xFF)))) {
             selection = BUTTON_3;
@@ -1923,7 +1923,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
 }
 
 void ScenarioClass::Set_Scenario_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     strncpy(ScenarioName, name, sizeof(ScenarioName));
     ScenarioName[ARRAY_SIZE(ScenarioName) - 1] = '\0';
 
@@ -2147,8 +2147,8 @@ bool Read_Scenario_INI(char *fname, bool) {
   */
 #ifdef FIXIT_NAME_OVERRIDE
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
-    if (NameOverride[index] != NULL) free((void *)NameOverride[index]);
-    NameOverride[index] = NULL;
+    if (NameOverride[index] != nullptr) free((void *)NameOverride[index]);
+    NameOverride[index] = nullptr;
     NameIDOverride[index] = 0;
   }
   if (Session.Type == GAME_NORMAL) {
@@ -2158,23 +2158,23 @@ bool Read_Scenario_INI(char *fname, bool) {
 
 #ifdef FIXIT_ANTS
   Session.Messages.Reset();
-  //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(NULL, 0, NULL, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   WeaponTypeClass::As_Pointer(WEAPON_FLAMER)->Sound = VOC_NONE;
   InfantryTypeClass::As_Reference(INFANTRY_THIEF).IsDoubleOwned = false;
   InfantryTypeClass::As_Reference(INFANTRY_E4).IsDoubleOwned = false;
-  InfantryTypeClass::As_Reference(INFANTRY_SPY).PrimaryWeapon = NULL;
-  InfantryTypeClass::As_Reference(INFANTRY_SPY).SecondaryWeapon = NULL;
+  InfantryTypeClass::As_Reference(INFANTRY_SPY).PrimaryWeapon = nullptr;
+  InfantryTypeClass::As_Reference(INFANTRY_SPY).SecondaryWeapon = nullptr;
   InfantryTypeClass::As_Reference(INFANTRY_GENERAL).IsBomber = false;
   UnitTypeClass::As_Reference(UNIT_HARVESTER).IsExploding = false;
   UnitTypeClass::As_Reference(UNIT_ANT1).Level = -1;
@@ -2694,7 +2694,7 @@ void Assign_Houses(void) {
        i < Rule.MaxPlayers; i++) {
     house = (HousesType)(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
-    if (housep != NULL) {
+    if (housep != nullptr) {
       housep->IsDefeated = true;
     }
   }
@@ -2922,7 +2922,7 @@ static void Create_Units(bool official) {
     **	Get a pointer to this house; if there is none, go to the next house
     */
     HouseClass *hptr = HouseClass::As_Pointer(house);
-    if (hptr == NULL) {
+    if (hptr == nullptr) {
       continue;
     }
 
@@ -3005,10 +3005,10 @@ static void Create_Units(bool official) {
       if (!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) {
         if (!Scan_Place_Object(obj, centroid)) {
           delete obj;
-          obj = NULL;
+          obj = nullptr;
         }
       }
-      if (obj != NULL) {
+      if (obj != nullptr) {
         hptr->FlagHome = 0;
         hptr->FlagLocation = 0;
         if (Special.IsCaptureTheFlag) {
@@ -3394,7 +3394,7 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
 void Disect_Scenario_Name(char const *name, int &scenario,
                           ScenarioPlayerType &player, ScenarioDirType &dir,
                           ScenarioVarType &var) {
-  if (name == NULL) return;
+  if (name == nullptr) return;
 
   /*
   **	Fetch the scenario number.

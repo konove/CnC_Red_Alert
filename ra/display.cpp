@@ -168,10 +168,10 @@ DisplayClass::DisplayClass(void)
       TacLeptonHeight(0),
       ZoneCell(0),
       ZoneOffset(0),
-      CursorSize(0),
+      CursorSize(nullptr),
       ProximityCheck(false),
-      PendingObjectPtr(0),
-      PendingObject(0),
+      PendingObjectPtr(nullptr),
+      PendingObject(nullptr),
       PendingHouse(HOUSE_NONE),
       TacPixelX(0),
       TacPixelY(0),
@@ -187,8 +187,8 @@ DisplayClass::DisplayClass(void)
       BandY(0),
       NewX(0),
       NewY(0) {
-  ShadowShapes = 0;
-  TransIconset = 0;
+  ShadowShapes = nullptr;
+  TransIconset = nullptr;
 
   Set_View_Dimensions(0, 8, 320 / CELL_PIXEL_W, 200 / CELL_PIXEL_H);
 }
@@ -260,10 +260,10 @@ void DisplayClass::Init_Clear(void) {
   /*
   ** Clear any object being placed
   */
-  PendingObjectPtr = 0;
-  PendingObject = 0;
+  PendingObjectPtr = nullptr;
+  PendingObject = nullptr;
   PendingHouse = HOUSE_NONE;
-  CursorSize = 0;
+  CursorSize = nullptr;
   IsTargettingMode = SPC_NONE;
   IsRepairMode = false;
   IsRubberBand = false;
@@ -358,11 +358,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 #endif
 
   if (Scen.Theater != LastTheater) {
-    if (TheaterData != NULL) {
+    if (TheaterData != nullptr) {
       delete TheaterData;
     }
     TheaterData = new MFCD(fullname, &FastKey);
-    assert(TheaterData != NULL);
+    assert(TheaterData != nullptr);
 
     bool theaterload = TheaterData->Cache(TheaterBuffer);
     assert(theaterload);
@@ -462,7 +462,7 @@ short const *DisplayClass::Text_Overlap_List(char const *text, int x,
   static short _list[60];
   int count = ARRAY_SIZE(_list);
 
-  if (text != NULL) {
+  if (text != nullptr) {
     short *ptr = &_list[0];
     int len = String_Pixel_Width(text) + CELL_PIXEL_W;
     int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
@@ -613,7 +613,7 @@ void DisplayClass::Set_Cursor_Shape(short const *list) {
     ZoneOffset = -(((h / 2) * MAP_CELL_W) + (w / 2));
     Cursor_Mark(ZoneCell + ZoneOffset, true);
   } else {
-    CursorSize = 0;
+    CursorSize = nullptr;
   }
 }
 
@@ -669,11 +669,11 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
     return (true);
   }
 
-  if (list == NULL || trycell == 0) {
+  if (list == nullptr || trycell == 0) {
     return (true);
   }
 
-  if (object == NULL || object->What_Am_I() != RTTI_BUILDINGTYPE) {
+  if (object == nullptr || object->What_Am_I() != RTTI_BUILDINGTYPE) {
     return (true);
   }
 
@@ -727,7 +727,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
         }
 
         // we've found a building...
-        if (base != NULL && base->What_Am_I() == RTTI_BUILDING &&
+        if (base != nullptr && base->What_Am_I() == RTTI_BUILDING &&
             base->House->Class->House == house &&
             ((BuildingClass *)base)->Class->IsBase) {
           retval = true;
@@ -761,7 +761,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
           TechnoClass *newbase = (*this)[newercell].Cell_Techno();
 
           // we've found a building...
-          if (newbase != NULL && newbase->What_Am_I() == RTTI_BUILDING &&
+          if (newbase != nullptr && newbase->What_Am_I() == RTTI_BUILDING &&
               newbase->House->Class->House == house &&
               ((BuildingClass const *)newbase)->Class->IsBase) {
             retval = true;
@@ -790,7 +790,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
     if (building->Adjacent > 1) {
       for (int index = 0; index < Buildings.Count(); index++) {
         BuildingClass *obj = Buildings.Ptr(index);
-        if (obj != NULL && !obj->IsInLimbo &&
+        if (obj != nullptr && !obj->IsInLimbo &&
             obj->House->Class->House == house && obj->Class->IsBase) {
           int centdist = ::Distance(obj->Center_Coord(), Cell_Coord(cell));
           centdist /= CELL_LEPTON_W;
@@ -838,7 +838,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
     pos = Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y());
   }
 
-  if (CursorSize == NULL) {
+  if (CursorSize == nullptr) {
     prevpos = ZoneCell;
     ZoneCell = pos;
     return (prevpos);
@@ -874,7 +874,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	If the cursor is visible, then handle the graphic update.
   **	Otherwise, just update the global position of the cursor.
   */
-  if (CursorSize != NULL) {
+  if (CursorSize != nullptr) {
     /*
     ** Erase the old cursor (if it exists) AND the cursor is moving.
     */
@@ -1031,7 +1031,7 @@ void DisplayClass::AI(KeyNumType &input, int x, int y) {
       (Get_Mouse_X() < TacPixelX || Get_Mouse_Y() < TacPixelY ||
        Get_Mouse_X() >= (TacPixelX + Lepton_To_Pixel(TacLeptonWidth)) ||
        Get_Mouse_Y() >= (TacPixelY + Lepton_To_Pixel(TacLeptonHeight)))) {
-    Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), NULL, ACTION_NONE);
+    Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), nullptr, ACTION_NONE);
   }
 
   MapClass::AI(input, x, y);
@@ -1084,7 +1084,7 @@ void DisplayClass::Submit(ObjectClass const *object, LayerType layer) {
  *system.                                                   *
  *=============================================================================================*/
 void DisplayClass::Remove(ObjectClass const *object, LayerType layer) {
-  assert(object != 0);
+  assert(object != nullptr);
   assert(object->IsActive);
 
   if (object) {
@@ -2070,12 +2070,12 @@ void DisplayClass::Draw_It(bool forced) {
 
 #ifdef SCENARIO_EDITOR
     /*
-    **	If we're placing an object (PendingObject is non-NULL), and that object
-    **	is NOT an icon, smudge, or overlay, draw it here.
-    **	Terrain, Buildings & Aircraft aren't drawn at the cell's center coord;
-    **	they're drawn at the upper left coord, so I have to AND the coord value
-    **	with 0xFF00FF00 to strip off the lepton coordinates, but leave the
-    **	cell coordinates.
+    **	If we're placing an object (PendingObject is non-nullptr), and that
+    * object *	is NOT an icon, smudge, or overlay, draw it here. *	Terrain,
+    * Buildings & Aircraft aren't drawn at the cell's center coord; *	they're
+    * drawn at the upper left coord, so I have to AND the coord value *	with
+    * 0xFF00FF00 to strip off the lepton coordinates, but leave the *	cell
+    * coordinates.
     */
     if (Debug_Map && PendingObjectPtr) {
       PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
@@ -2223,7 +2223,7 @@ void DisplayClass::Redraw_Shadow(void) {
             }
             if (shadow >= 0) {
               CC_Draw_Shape(ShadowShapes, shadow, xpixel, ypixel,
-                            WINDOW_TACTICAL, SHAPE_GHOST, NULL, ShadowTrans);
+                            WINDOW_TACTICAL, SHAPE_GHOST, nullptr, ShadowTrans);
             } else {
               if (shadow != -1) {
                 int ww = CELL_PIXEL_W;
@@ -2256,17 +2256,17 @@ void DisplayClass::Redraw_Shadow(void) {
  *of.              *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the next object. If there is no objects
- *available,       * then NULL is returned. *
+ *available,       * then nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass *DisplayClass::Next_Object(ObjectClass *object) const {
-  ObjectClass *firstobj = NULL;
+  ObjectClass *firstobj = nullptr;
   bool foundmatch = false;
 
-  if (object == NULL) {
+  if (object == nullptr) {
     foundmatch = true;
   }
   for (unsigned uindex = 0; uindex < Layer[LAYER_GROUND].Count(); uindex++) {
@@ -2275,8 +2275,8 @@ ObjectClass *DisplayClass::Next_Object(ObjectClass *object) const {
     /*
     **	Verify that the object can be selected by and is owned by the player.
     */
-    if (obj != NULL && obj->Is_Players_Army()) {
-      if (firstobj == NULL) firstobj = obj;
+    if (obj != nullptr && obj->Is_Players_Army()) {
+      if (firstobj == nullptr) firstobj = obj;
       if (foundmatch) return (obj);
       if (object == obj) foundmatch = true;
     }
@@ -2303,10 +2303,10 @@ ObjectClass *DisplayClass::Next_Object(ObjectClass *object) const {
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
 ObjectClass *DisplayClass::Prev_Object(ObjectClass *object) const {
-  ObjectClass *firstobj = NULL;
+  ObjectClass *firstobj = nullptr;
   bool foundmatch = false;
 
-  if (object == NULL) {
+  if (object == nullptr) {
     foundmatch = true;
   }
   for (int uindex = Layer[LAYER_GROUND].Count() - 1; uindex >= 0; uindex--) {
@@ -2315,8 +2315,8 @@ ObjectClass *DisplayClass::Prev_Object(ObjectClass *object) const {
     /*
     **	Verify that the object can be selected by and is owned by the player.
     */
-    if (obj != NULL && obj->Is_Players_Army()) {
-      if (firstobj == NULL) firstobj = obj;
+    if (obj != nullptr && obj->Is_Players_Army()) {
+      if (firstobj == nullptr) firstobj = obj;
       if (foundmatch) return (obj);
       if (object == obj) foundmatch = true;
     }
@@ -2350,7 +2350,7 @@ COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
 
   /*
   **	If pixel coordinate is over the tactical map, then translate it into a
-  *coordinate *	value. If not, then just return with NULL.
+  *coordinate *	value. If not, then just return with nullptr.
   */
   if ((unsigned)x < TacLeptonWidth && (unsigned)y < TacLeptonHeight) {
     return (Coord_Add(TacticalCoord, XY_Coord(x, y)));
@@ -2584,10 +2584,10 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
   **	If the reinforcement cell is already occupied, then return a failure
   *code.
   */
-  if ((*this)[outcell].Cell_Techno() != NULL) {
+  if ((*this)[outcell].Cell_Techno() != nullptr) {
     return (false);
   }
-  if ((*this)[incell].Cell_Techno() != NULL) return (false);
+  if ((*this)[incell].Cell_Techno() != nullptr) return (false);
 
   /*
   **	All tests have passed, return with success code.
@@ -2658,7 +2658,7 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
     *be *	selected, and are within the bounding box.
     */
     HouseClass *hptr = HouseClass::As_Pointer(obj->Owner());
-    if ((hptr != NULL && hptr->IsPlayerControl) &&
+    if ((hptr != nullptr && hptr->IsPlayerControl) &&
         obj->Class_Of().IsSelectable && obj->What_Am_I() != RTTI_BUILDING &&
         x >= x1 && x <= x2 && y >= y1 && y <= y2) {
       if (obj->Select()) {
@@ -2786,7 +2786,7 @@ void DisplayClass::Refresh_Band(void) {
 int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
   int x, y;  // Sub cell pixel coordinates.
   bool shadow;
-  ObjectClass *object = 0;
+  ObjectClass *object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
@@ -2828,11 +2828,11 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
       **	Special case check to ignore cloaked object if not owned by the
       *player.
       */
-      if (object != NULL && object->Is_Techno() &&
+      if (object != nullptr && object->Is_Techno() &&
           !((TechnoClass *)object)->IsOwnedByPlayer &&
           (((TechnoClass *)object)->Cloak == CLOAKED ||
            ((TechnoClass *)object)->Techno_Type_Class()->IsInvisible)) {
-        object = NULL;
+        object = nullptr;
       }
     }
 
@@ -2841,7 +2841,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
     **	the left mouse button were clicked must be determined.
     */
     if (CurrentObject.Count()) {
-      if (object != NULL) {
+      if (object != nullptr) {
         action = CurrentObject[0]->What_Action(object);
       } else {
         action = CurrentObject[0]->What_Action(cell);
@@ -2916,7 +2916,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
         **	Determine if the object can be teleported to the destination
         *cell.
         */
-        if (tobject != NULL && tobject->Is_Techno()) {
+        if (tobject != nullptr && tobject->Is_Techno()) {
           TechnoClass const *uobject = (TechnoClass const *)tobject;
           if (!uobject->Can_Teleport_Here(cell)) {
             //					if (((UnitClass
@@ -3024,10 +3024,10 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
 void DisplayClass::Mouse_Right_Press(void) {
   if (PendingObjectPtr && PendingObjectPtr->Is_Techno()) {
     // PendingObjectPtr->Transmit_Message(RADIO_OVER_OUT);
-    PendingObjectPtr = 0;
-    PendingObject = 0;
+    PendingObjectPtr = nullptr;
+    PendingObject = nullptr;
     PendingHouse = HOUSE_NONE;
-    Set_Cursor_Shape(0);
+    Set_Cursor_Shape(nullptr);
   } else {
     if (IsRepairMode) {
       IsRepairMode = false;
@@ -3059,7 +3059,7 @@ void DisplayClass::Mouse_Right_Press(void) {
  * INPUT:   shadow   -- Is the mouse hovering over shadowed terrain? *
  *                                                                                             *
  *          object   -- Pointer to the object that the mouse is currently over
- *(may be NULL).  *
+ *(may be nullptr).  *
  *                                                                                             *
  *          action   -- This is the action that the currently selected object
  *(if any) will    * perform if the left mouse button were clicked at this
@@ -3077,7 +3077,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass *object,
   IsTentative = false;
 
   TARGET target = TARGET_NONE;
-  if (object != NULL) {
+  if (object != nullptr) {
     target = object->As_Target();
   } else {
     if (cell != -1) {
@@ -3308,7 +3308,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass *object,
     **	pop up that tells what the object is. This call informs the help
     **	system of the text name for the object under the mouse.
     */
-    if (object != NULL) {
+    if (object != nullptr) {
       int text;
       int color = LTGREY;
 
@@ -3558,7 +3558,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         for (int index = 0; index < CurrentObject.Count(); index++) {
           ObjectClass *tobject = CurrentObject[index];
 
-          if (object != NULL) {
+          if (object != nullptr) {
             tobject->Active_Click_With(tobject->What_Action(object), object);
           } else {
             /*
@@ -4324,7 +4324,7 @@ void DisplayClass::Read_INI(CCINIClass &ini) {
     TriggerTypeClass *tp = ini.Get_TriggerType("CellTriggers", cellentry);
     CELL cell = atoi(cellentry);
 
-    if (tp != NULL && !(*this)[cell].Trigger.Is_Valid()) {
+    if (tp != nullptr && !(*this)[cell].Trigger.Is_Valid()) {
       TriggerClass *tt = Find_Or_Make(tp);
       if (tt) {
         tt->AttachCount++;
@@ -4394,7 +4394,7 @@ void DisplayClass::Write_INI(CCINIClass &ini) {
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if ((*this)[cell].Trigger.Is_Valid()) {
       TriggerClass *tp = (*this)[cell].Trigger;
-      if (tp != NULL) {
+      if (tp != nullptr) {
         /*
         **	Generate entry name.
         */
@@ -4439,7 +4439,7 @@ void DisplayClass::Write_INI(CCINIClass &ini) {
 void DisplayClass::All_To_Look(bool units_only) {
   for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
     ObjectClass *object = Layer[LAYER_GROUND][index];
-    if (object != NULL && object->Is_Techno()) {
+    if (object != nullptr && object->Is_Techno()) {
       TechnoClass *tech = ((TechnoClass *)object);
 
       if (tech->What_Am_I() == RTTI_BUILDING && units_only) continue;
@@ -4461,7 +4461,7 @@ void DisplayClass::All_To_Look(bool units_only) {
 void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
   for (int index = 0; index < Layer[LAYER_GROUND].Count(); index++) {
     ObjectClass *object = Layer[LAYER_GROUND][index];
-    if (object != NULL && object->Is_Techno()) {
+    if (object != nullptr && object->Is_Techno()) {
       TechnoClass *tech = ((TechnoClass *)object);
 
       //			if (tech->What_Am_I() == RTTI_BUILDING &&

@@ -118,7 +118,7 @@ CellClass::CellClass(void)
       IsFlagged(false),
       IsToShroud(false),
       Jammed(0),
-      Trigger(NULL),
+      Trigger(nullptr),
       TType(TEMPLATE_NONE),
       TIcon(0),
       Overlay(OVERLAY_NONE),
@@ -127,14 +127,14 @@ CellClass::CellClass(void)
       SmudgeData(0),
       Owner(HOUSE_NONE),
       InfType(HOUSE_NONE),
-      OccupierPtr(0),
+      OccupierPtr(nullptr),
       Land(LAND_CLEAR) {
   for (int zone = MZONE_FIRST; zone < MZONE_COUNT; zone++) {
     Zones[zone] = 0;
   }
   Flag.Composite = 0;
   for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-    Overlapper[index] = 0;
+    Overlapper[index] = nullptr;
   }
 }
 
@@ -179,13 +179,13 @@ int CellClass::Cell_Color(bool override) const {
  *    Returns an object located in the cell. If there is a * building present,
  *it returns a pointer to that, otherwise it returns                     * a
  *pointer to one of the units there. If nothing is present in the * specified
- *cell, then it returns NULL. *
+ *cell, then it returns nullptr. *
  *                                                                                             *
  * INPUT:   x,y   -- Coordinate offset (from upper left corner) to use as an aid
  *in selecting  * the desired object within the cell. *
  *                                                                                             *
  * OUTPUT:  Returns a pointer to a building or unit located in cell. If *
- *          nothing present, just returns NULL. *
+ *          nothing present, just returns nullptr. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -197,7 +197,7 @@ TechnoClass *CellClass::Cell_Techno(int x, int y) const {
 
   ObjectClass *object;
   COORDINATE click;  // Coordinate of click relative to cell corner.
-  TechnoClass *close = NULL;
+  TechnoClass *close = nullptr;
   long distance = 0;  // Recorded closest distance.
 
   /*
@@ -243,13 +243,13 @@ ObjectClass *CellClass::Cell_Find_Object(RTTIType rtti) const {
 
   ObjectClass *object = Cell_Occupier();
 
-  while (object != NULL) {
+  while (object != nullptr) {
     if (object->What_Am_I() == rtti) {
       return (object);
     }
     object = object->Next;
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -261,8 +261,7 @@ ObjectClass *CellClass::Cell_Find_Object(RTTIType rtti) const {
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the building associated with the * cell.
- *If there is no building associated, then NULL is                             *
- *          returned. *
+ *If there is no building associated, then nullptr is   * returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -284,7 +283,7 @@ BuildingClass *CellClass::Cell_Building(void) const {
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the terrain object that overlaps * this
- *cell. If there is no terrain object present, then NULL * is returned. *
+ *cell. If there is no terrain object present, then nullptr * is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -309,9 +308,8 @@ TerrainClass *CellClass::Cell_Terrain(void) const {
  *those cases    * where several objects (such as infantry) exist within the
  *same cell.      *
  *                                                                                             *
- * OUTPUT:  Returns with pointer to the object clickable within the * cell. NULL
- *is returned if there is no clickable object                             *
- *          present. *
+ * OUTPUT:  Returns with pointer to the object clickable within the * cell.
+ * nullptr is returned if there is no clickable object    * present. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -372,9 +370,9 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag the main object in the cell to be redrawn.
     */
-    if (Cell_Occupier() != NULL) {
+    if (Cell_Occupier() != nullptr) {
       ObjectClass *optr = Cell_Occupier();
-      while (optr != NULL && optr->IsActive) {
+      while (optr != nullptr && optr->IsActive) {
 #ifdef SORTDRAW
         if (optr->Is_Techno() &&
             ((TechnoClass *)optr)->Visual_Character() != VISUAL_NORMAL) {
@@ -383,8 +381,8 @@ void CellClass::Redraw_Objects(bool forced) {
 #else
         optr->Mark(MARK_CHANGE);
 #endif
-        if (optr->Next != NULL && !optr->Next->IsActive) {
-          optr->Next = NULL;
+        if (optr->Next != nullptr && !optr->Next->IsActive) {
+          optr->Next = nullptr;
         }
         optr = optr->Next;
       }
@@ -409,9 +407,9 @@ void CellClass::Redraw_Objects(bool forced) {
     **	Flag any overlapping object in this cell to be redrawn.
     */
     for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-      if (Overlapper[index] != NULL) {
+      if (Overlapper[index] != nullptr) {
         if (!Overlapper[index]->IsActive) {
-          Overlapper[index] = NULL;
+          Overlapper[index] = nullptr;
         } else {
           Overlapper[index]->Mark(MARK_CHANGE);
         }
@@ -450,7 +448,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   /*
   **	If there is an object there, then don't allow building.
   */
-  if (Cell_Object() != NULL) {
+  if (Cell_Object() != nullptr) {
     return (false);
   }
 
@@ -573,11 +571,11 @@ void CellClass::Recalc_Attributes(void) {
  *=============================================================================================*/
 void CellClass::Occupy_Down(ObjectClass *object) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
-  assert(object != NULL && object->IsActive);
+  assert(object != nullptr && object->IsActive);
 
   ObjectClass *optr;
 
-  if (object == NULL) return;
+  if (object == nullptr) return;
 
   /*
   **	Always add buildings to the end of the occupation chain. This is
@@ -587,13 +585,13 @@ void CellClass::Occupy_Down(ObjectClass *object) {
   */
   if (object->What_Am_I() == RTTI_BUILDING && Cell_Occupier()) {
     optr = Cell_Occupier();
-    while (optr->Next != NULL) {
+    while (optr->Next != nullptr) {
       assert(optr != object);
       assert(optr->What_Am_I() != RTTI_BUILDING);
       optr = optr->Next;
     }
     optr->Next = object;
-    object->Next = 0;
+    object->Next = nullptr;
   } else {
     object->Next = Cell_Occupier();
     OccupierPtr = object;
@@ -650,22 +648,22 @@ void CellClass::Occupy_Down(ObjectClass *object) {
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass *object) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
-  assert(object != NULL && object->IsActive);
+  assert(object != nullptr && object->IsActive);
 
-  if (object == NULL) return;
+  if (object == nullptr) return;
 
   ObjectClass *optr =
       Cell_Occupier();  // Working pointer to the objects in the chain.
 
   if (optr == object) {
     OccupierPtr = object->Next;
-    object->Next = 0;
+    object->Next = nullptr;
   } else {
     bool found = false;
-    while (optr != NULL) {
+    while (optr != nullptr) {
       if (optr->Next == object) {
         optr->Next = object->Next;
-        object->Next = 0;
+        object->Next = nullptr;
         found = true;
         break;
       }
@@ -718,9 +716,9 @@ void CellClass::Occupy_Up(ObjectClass *object) {
  *=============================================================================================*/
 void CellClass::Overlap_Down(ObjectClass *object) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
-  assert(object != NULL && object->IsActive);
+  assert(object != nullptr && object->IsActive);
 
-  ObjectClass **ptr = 0;
+  ObjectClass **ptr = nullptr;
 
   if (!object) return;
 
@@ -775,11 +773,11 @@ void CellClass::Overlap_Down(ObjectClass *object) {
  *=============================================================================================*/
 void CellClass::Overlap_Up(ObjectClass *object) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
-  assert(object != NULL && object->IsActive);
+  assert(object != nullptr && object->IsActive);
 
   for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
     if (Overlapper[index] == object) {
-      Overlapper[index] = 0;
+      Overlapper[index] = nullptr;
       break;
     }
   }
@@ -789,12 +787,12 @@ void CellClass::Overlap_Up(ObjectClass *object) {
  * CellClass::Cell_Unit -- Returns with pointer to unit occupying cell. *
  *                                                                                             *
  *    This routine will determine if a unit is occupying the cell and if so,
- *return a pointer  * to it. If there is no unit occupying the cell, then NULL
- *is returned.                    *
+ *return a pointer  * to it. If there is no unit occupying the cell, then
+ * nullptr is returned.                    *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with pointer to unit occupying cell, else NULL. *
+ * OUTPUT:  Returns with pointer to unit occupying cell, else nullptr. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -812,7 +810,7 @@ UnitClass *CellClass::Cell_Unit(void) const {
  *                                                                                             *
  *    Call this routine to query and return a pointer to a vessel located in the
  *cell. If      * there is no vessel present, then this routine will return
- *NULL.                          *
+ *nullptr.                          *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -835,12 +833,12 @@ VesselClass *CellClass::Cell_Vessel(void) const {
  *                                                                                             *
  *    This routine examines the cell and returns a pointer to the first infantry
  *unit          * that occupies it. If there is no infantry unit in the cell,
- *then NULL is returned.       *
+ *then nullptr is returned.       *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with pointer to infantry unit occupying the cell or NULL if
- *none are       * present. *
+ * OUTPUT:  Returns with pointer to infantry unit occupying the cell or nullptr
+ * if none are       * present. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -933,10 +931,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
   if (!objects) {
     BStart(BENCH_CELL);
 
-    TemplateTypeClass const *ttype = 0;
+    TemplateTypeClass const *ttype = nullptr;
     int icon;  // The icon number to use from the template set.
     CELL cell = Cell_Number();
-    void *remap = NULL;
+    void *remap = nullptr;
 #ifdef SCENARIO_EDITOR
     TemplateTypeClass *tptr;
     //		TriggerClass * trig;
@@ -986,7 +984,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       if (Debug_Map && Debug_Passable) {
         if (::Ground[Land].Cost[0] == 0 ||
-            (Cell_Occupier() != NULL &&
+            (Cell_Occupier() != nullptr &&
              Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
           remap = DisplayClass::FadingRed;
         } else {
@@ -1003,7 +1001,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	This is the underlying terrain icon.
       */
       if (ttype->Get_Image_Data()) {
-        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, NULL,
+        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, nullptr,
                               WINDOW_TACTICAL);
         if (remap) {
           LogicPage->Remap(x + Map.TacPixelX, y + Map.TacPixelY, ICON_PIXEL_W,
@@ -1042,7 +1040,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
                       (x + (CELL_PIXEL_W >> 1)), (y + (CELL_PIXEL_H >> 1)),
                       WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                       DisplayClass::UnitShadow);
         IsTheaterShape = false;
       }
@@ -1119,10 +1117,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Draw the hash-mark cursor:
         */
         if (Map.ProximityCheck && Is_Clear_To_Build(loco)) {
-          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, NULL,
+          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, nullptr,
                                 WINDOW_TACTICAL);
         } else {
-          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, NULL,
+          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, nullptr,
                                 WINDOW_TACTICAL);
         }
 
@@ -1141,8 +1139,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 icon = (Cell_X(cell) - Cell_X(Map.ZoneCell + Map.ZoneOffset)) +
                        (Cell_Y(cell) - Cell_Y(Map.ZoneCell + Map.ZoneOffset)) *
                            tptr->Width;
-                LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y, NULL,
-                                      WINDOW_TACTICAL);
+                LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y,
+                                      nullptr, WINDOW_TACTICAL);
               }
               break;
 
@@ -1207,7 +1205,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     ObjectClass *optr[20 + ARRAY_SIZE(Overlapper)];
     int count = 0;
     ObjectClass *object = Cell_Occupier();
-    while (object != NULL) {
+    while (object != nullptr) {
       if (!object->IsActive) break;
       optr[count] = object;
       object->IsToDisplay = true;
@@ -1216,7 +1214,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     }
     for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
       object = Overlapper[index];
-      if (object != NULL && object->IsActive) {
+      if (object != nullptr && object->IsActive) {
         object->IsToDisplay = true;
         optr[count] = object;
         count++;
@@ -1764,16 +1762,16 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *                                                                                             *
  * Similar to the CellClass::Free_Spot; this routine finds the spot in * the
  *cell closest to the given coordinate, and returns the COORDINATE of * that
- *spot if it's available, NULL if it's not. *
+ *spot if it's available, nullptr if it's not. *
  *                                                                                             *
  * INPUT: * coord   coordinate to check (only sub cell position examined) *
  *                                                                                             *
  *          any   -- If only the closest spot is desired regardless of whether
  *it is free or   * not, then this parameter will be true. *
  *                                                                                             *
- * OUTPUT: * COORDINATE of free spot, NULL if none. The coordinate return value
- *does not alter the cell * coordinate data portions of the coordinate passed
- *in. Only the lower sub-cell   * data is altered. *
+ * OUTPUT: * COORDINATE of free spot, nullptr if none. The coordinate return
+ * value does not alter the cell * coordinate data portions of the coordinate
+ * passed in. Only the lower sub-cell   * data is altered. *
  *                                                                                             *
  * WARNINGS: * none. *
  *                                                                                             *
@@ -1843,7 +1841,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   }
 
   /*
-  **	No free spot could be found so return a NULL coordinate.
+  **	No free spot could be found so return a nullptr coordinate.
   */
   return (0x00000000L);
 }
@@ -1900,10 +1898,10 @@ int CellClass::Clear_Icon(void) const {
 void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  ObjectClass *object = NULL;
+  ObjectClass *object = nullptr;
 
   object = Cell_Occupier();
-  while (object != NULL) {
+  while (object != nullptr) {
     /*
     **	Special check to make sure that friendly units never scatter.
     */
@@ -2080,7 +2078,7 @@ long CellClass::Tiberium_Adjust(bool pregame) {
 bool CellClass::Goodie_Check(FootClass *object) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
-  if (object != NULL && Overlay != OVERLAY_NONE &&
+  if (object != nullptr && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
     bool force_mcv = false;
     int force_money = 0;
@@ -2206,7 +2204,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
                    i++) {
                 ucount = 0;
                 HouseClass *hptr = Houses.Ptr(i + HOUSE_MULTI1);
-                if (hptr != NULL && !hptr->IsDefeated) {
+                if (hptr != nullptr && !hptr->IsDefeated) {
                   int j;
                   for (j = 0; j < UNIT_COUNT; j++) {
                     ucount += hptr->QuantityU(j);
@@ -2357,7 +2355,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
       **	Try to create a unit where the crate was.
       */
       case CRATE_UNIT: {
-        UnitTypeClass const *utp = NULL;
+        UnitTypeClass const *utp = nullptr;
 
         /*
         **	Give the player an MCV if he has no base left but does have more
@@ -2372,7 +2370,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
         **	If the player has a base and a refinery, but no harvester, then
         *give him *	a free one.
         */
-        if (utp == NULL && (object->House->BScan & STRUCTF_REFINERY) &&
+        if (utp == nullptr && (object->House->BScan & STRUCTF_REFINERY) &&
             !(object->House->UScan & UNITF_HARVESTER)) {
           utp = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
         }
@@ -2387,7 +2385,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
         /*
         **	If no unit type has been determined, then pick one at random.
         */
-        while (utp == NULL) {
+        while (utp == nullptr) {
 #ifdef FIXIT_ANTS
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
           UnitType utype =
@@ -2406,14 +2404,14 @@ bool CellClass::Goodie_Check(FootClass *object) {
                  (1 << HouseClass::As_Pointer(object->Owner())->ActLike))) {
               break;
             }
-            utp = NULL;
+            utp = nullptr;
           }
         }
 
-        if (utp != NULL) {
+        if (utp != nullptr) {
           UnitClass *goodie_unit =
               (UnitClass *)utp->Create_One_Of(object->House);
-          if (goodie_unit != NULL) {
+          if (goodie_unit != nullptr) {
             if (goodie_unit->Unlimbo(Cell_Coord())) {
               return (false);
             }
@@ -2480,16 +2478,16 @@ bool CellClass::Goodie_Check(FootClass *object) {
       **	A group of explosions are triggered around the crate.
       */
       case CRATE_EXPLOSION:
-        if (object != NULL) {
+        if (object != nullptr) {
           int d = CrateData[powerup];
-          object->Take_Damage(d, 0, WARHEAD_HE, 0, true);
+          object->Take_Damage(d, 0, WARHEAD_HE, nullptr, true);
         }
         for (int index = 0; index < 5; index++) {
           COORDINATE frag_coord =
               Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
           new AnimClass(ANIM_FBALL1, frag_coord);
           damage = CrateData[powerup];
-          Explosion_Damage(frag_coord, damage, NULL, WARHEAD_HE);
+          Explosion_Damage(frag_coord, damage, nullptr, WARHEAD_HE);
         }
         break;
 
@@ -2499,12 +2497,12 @@ bool CellClass::Goodie_Check(FootClass *object) {
       case CRATE_NAPALM:
         coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
         new AnimClass(ANIM_NAPALM3, coord);
-        if (object != NULL) {
+        if (object != nullptr) {
           int d = CrateData[powerup];
-          object->Take_Damage(d, 0, WARHEAD_FIRE, 0, true);
+          object->Take_Damage(d, 0, WARHEAD_FIRE, nullptr, true);
         }
         damage = CrateData[powerup];
-        Explosion_Damage(coord, damage, NULL, WARHEAD_FIRE);
+        Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);
         break;
 
       /*
@@ -2554,7 +2552,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
              index++) {
           ObjectClass *obj = DisplayClass::Layer[LAYER_GROUND][index];
 
-          if (obj != NULL && obj->Is_Techno() &&
+          if (obj != nullptr && obj->Is_Techno() &&
               Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
               ((TechnoClass *)obj)->ArmorBias == 1) {
             fixed val = ((TechnoClass *)obj)->ArmorBias *
@@ -2792,11 +2790,11 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	purposes unless this is a wall crushing check or if the checking object
   **	can destroy walls.
   */
-  OverlayTypeClass const *overlay = NULL;
+  OverlayTypeClass const *overlay = nullptr;
   if (Overlay != OVERLAY_NONE) {
     overlay = &OverlayTypeClass::As_Reference(Overlay);
   }
-  if (overlay != NULL && overlay->IsWall) {
+  if (overlay != nullptr && overlay->IsWall) {
     if (check != MZONE_DESTROYER &&
         (check != MZONE_CRUSHER || !overlay->IsCrushable)) {
       return (false);
@@ -2976,7 +2974,7 @@ bool CellClass::Spread_Tiberium(bool forced) {
   for (FacingType index = FACING_N; index < FACING_COUNT; index++) {
     CellClass *newcell = &Adjacent_Cell(index + offset);
 
-    if (newcell != NULL && newcell->Can_Tiberium_Germinate()) {
+    if (newcell != nullptr && newcell->Can_Tiberium_Germinate()) {
       new OverlayClass(Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4),
                        newcell->Cell_Number());
       newcell->OverlayData = 0;
@@ -3012,7 +3010,7 @@ bool CellClass::Can_Tiberium_Germinate(void) const {
   *else the location of the *	building will be revealed.
   */
   BuildingClass const *building = Cell_Building();
-  if (building != NULL && !building->Class->IsInvisible) return (false);
+  if (building != nullptr && !building->Class->IsInvisible) return (false);
 
   if (!Ground[Land_Type()].Build) return (false);
 

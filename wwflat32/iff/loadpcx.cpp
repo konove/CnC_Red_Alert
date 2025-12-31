@@ -93,11 +93,11 @@ GraphicBufferClass* Read_PCX_File(char* name, BYTE* Palette, void* Buff,
 
   // Open file name
   file_handle = Open_File(name, READ);
-  if (file_handle == ERROR) return NULL;
+  if (file_handle == ERROR) return nullptr;
 
   Read_File(file_handle, &header, sizeof(PCX_HEADER));
   if (header.id != 10 && header.version != 5 && header.pixelsize != 8)
-    return NULL;
+    return nullptr;
 
   width = header.width - header.x + 1;
   height = header.height - header.y + 1;
@@ -107,10 +107,10 @@ GraphicBufferClass* Read_PCX_File(char* name, BYTE* Palette, void* Buff,
     i = Size / width;
     height = MIN(i - 1, height);
     pic = new GraphicBufferClass(Size, width, height, buffer);
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    if (!(pic && pic->Get_Buffer())) return nullptr;
   } else {
     pic = new GraphicBufferClass(width * (height + 4), width, height);
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    if (!(pic && pic->Get_Buffer())) return nullptr;
   }
 
   buffer = (char*)pic->Get_Buffer();

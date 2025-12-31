@@ -165,9 +165,9 @@ class TeamClass : public AbstractClass {
   TCountDownTimerClass SuspendTimer;
 
   //------------------------------------------------------------
-  TeamClass(void) : Class(0), House(0) {
+  TeamClass(void) : Class(nullptr), House(nullptr) {
     IsActive = false;
-    Member = 0;
+    Member = nullptr;
     IsAltered = true;
   };
   TeamClass(TeamTypeClass const *team, HouseClass *owner);

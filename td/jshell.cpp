@@ -279,7 +279,7 @@ int Load_Picture(char const *filename, BufferClass &scratchbuf,
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void *Load_Alloc_Data(FileClass &file) {
-  void *ptr = 0;
+  void *ptr = nullptr;
   long size = file.Size();
 
   ptr = new char[size + 1];

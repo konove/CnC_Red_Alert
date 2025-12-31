@@ -650,7 +650,7 @@ void OverlayTypeClass::One_Time(void) {}
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
 OverlayType OverlayTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
         return (index);
@@ -699,7 +699,7 @@ short const *OverlayTypeClass::Occupy_List(bool) const {
 unsigned char *OverlayTypeClass::Radar_Icon(int data) const {
   unsigned char *icon =
       (unsigned char *)Get_Radar_Data();     // Get pointer to radar icons
-  if (icon != NULL) icon += (data * 9) + 2;  // move icon ptr to correct icon
+  if (icon != nullptr) icon += (data * 9) + 2;  // move icon ptr to correct icon
   return (icon);                             // Return the correct icon
 }
 
@@ -833,7 +833,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   IsTheaterShape = IsTheater;
   CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
                 Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                 Map.UnitShadow);
   IsTheaterShape = false;
 }
@@ -872,7 +872,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
 
       IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
                                            // theater specific shape
-      if (overlay.RadarIcon != NULL) delete[] (char *)overlay.RadarIcon;
+      if (overlay.RadarIcon != nullptr) delete[] (char *)overlay.RadarIcon;
       overlay.RadarIcon = Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;
     }

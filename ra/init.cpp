@@ -278,7 +278,7 @@ bool Init_Game(int, char *[]) {
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   //  Aftermath runtime change 9/29/98
   //	This is safe to do, as only rules for aftermath units are included in
-  //this ini.
+  // this ini.
   if (Is_Aftermath_Installed() == true) {
     CCFileClass fc("AFTRMATH.INI");
     if (AftermathINI.Load(fc, false)) {
@@ -313,7 +313,7 @@ bool Init_Game(int, char *[]) {
 #ifdef MCIMPEG
     MciMovie = new MCIMovie(MainWindow);
 #endif
-    MpgSettings = new MPGSettings(NULL);  // RawFileClass(CONFIG_FILE_NAME));
+    MpgSettings = new MPGSettings(nullptr);  // RawFileClass(CONFIG_FILE_NAME));
   }
 #endif
 
@@ -475,7 +475,7 @@ bool Select_Game(bool fade) {
 #endif
 
   //	#ifndef DVD // Denzil - We want the menu screen			ajw No
-  //we don't 	if (Special.IsFromInstall) { 		display = false;
+  // we don't 	if (Special.IsFromInstall) { 		display = false;
   //	}
   //	#endif
 
@@ -514,9 +514,9 @@ bool Select_Game(bool fade) {
   PlayerLoses = false;
   Session.ObiWan = false;
   Debug_Unshroud = false;
-  Map.Set_Cursor_Shape(0);
-  Map.PendingObjectPtr = 0;
-  Map.PendingObject = 0;
+  Map.Set_Cursor_Shape(nullptr);
+  Map.PendingObjectPtr = nullptr;
+  Map.PendingObject = nullptr;
   Map.PendingHouse = HOUSE_NONE;
 
   Session.ProcessTicks = 0;
@@ -627,7 +627,8 @@ bool Select_Game(bool fade) {
         //				if (fade) {
         //					WhitePalette.Set();
         //					CCPalette.Set(FADE_PALETTE_SLOW,
-        //Call_Back); 					fade = false; 				} else {
+        // Call_Back); 					fade = false;
+        // } else {
         CCPalette.Set();
         //				}
 
@@ -648,7 +649,7 @@ bool Select_Game(bool fade) {
       **  packet has already arrived
       */
       if (Special.IsFromWChat && DDEServer.Get_MPlayer_Game_Info()) {
-        Check_From_WChat(NULL);
+        Check_From_WChat(nullptr);
         selection = SEL_MULTIPLAYER_GAME;
         Theme.Queue_Song(THEME_QUIET);
         Session.Type = GAME_INTERNET;
@@ -657,7 +658,7 @@ bool Select_Game(bool fade) {
         ** We werent spawned but we could still receive a DDE packet from wchat
         */
         if (DDEServer.Get_MPlayer_Game_Info()) {
-          Check_From_WChat(NULL);
+          Check_From_WChat(nullptr);
           /*
           ** Make sure top and bottom of screen are clear in 640x480 mode
           */
@@ -887,7 +888,7 @@ bool Select_Game(bool fade) {
           if (!DDEServer.Get_MPlayer_Game_Info()) {
             if (Do_The_Internet_Menu_Thang() &&
                 DDEServer.Get_MPlayer_Game_Info()) {
-              Check_From_WChat(NULL);
+              Check_From_WChat(nullptr);
               selection = SEL_MULTIPLAYER_GAME;
               display = false;
               Session.Type = GAME_INTERNET;
@@ -896,7 +897,7 @@ bool Select_Game(bool fade) {
               display = true;
             }
           } else {
-            Check_From_WChat(NULL);
+            Check_From_WChat(nullptr);
             display = false;
             Session.Type = GAME_INTERNET;
             selection = SEL_MULTIPLAYER_GAME;
@@ -928,8 +929,8 @@ bool Select_Game(bool fade) {
           break;
 
         /*
-        **	SEL_MULTIPLAYER_GAME: set 'Session.Type' to NULL-modem, modem,
-        *or *	network play.
+        **	SEL_MULTIPLAYER_GAME: set 'Session.Type' to nullptr-modem,
+        * modem, or *	network play.
         */
         case SEL_MULTIPLAYER_GAME:
 #ifdef WOLAPI_INTEGRATION
@@ -958,10 +959,10 @@ bool Select_Game(bool fade) {
                   }
                 } else {
                   //	Ever hits? Session.Type set to GAME_SKIRMISH without
-                  //user selecting in Select_MPlayer_Game()?
+                  // user selecting in Select_MPlayer_Game()?
 #ifdef FIXIT_VERSION_3
                   //	If mission is Counterstrike, CS CD will be required. But
-                  //aftermath units require AM CD.
+                  // aftermath units require AM CD.
                   bAftermathMultiplayer =
                       Is_Aftermath_Installed() &&
                       !Is_Mission_Counterstrike(Scen.ScenarioName);
@@ -1027,7 +1028,7 @@ bool Select_Game(bool fade) {
 
                   if (PacketTransport) delete PacketTransport;
                   PacketTransport = new UDPInterfaceClass;
-                  assert(PacketTransport != NULL);
+                  assert(PacketTransport != nullptr);
 
                   if (PacketTransport->Init()) {
                     WWDebugString(
@@ -1046,7 +1047,7 @@ bool Select_Game(bool fade) {
 
                   } else {
                     delete PacketTransport;
-                    PacketTransport = NULL;
+                    PacketTransport = nullptr;
                     WWDebugString("RA95 - Winsock failed to initialise.\n");
                     Session.Type = GAME_NORMAL;
                     selection = SEL_EXIT;
@@ -1113,7 +1114,7 @@ bool Select_Game(bool fade) {
 #ifdef _WIN32
                   if (DDEServer.Get_MPlayer_Game_Info()) {
                     WWDebugString("RA95 - About to call Read_Game_Options.\n");
-                    Read_Game_Options(NULL);
+                    Read_Game_Options(nullptr);
                   } else
 #endif
                     Read_Game_Options("C&CSPAWN.INI");
@@ -1136,7 +1137,7 @@ bool Select_Game(bool fade) {
                       */
 #ifdef WINSOCK_IPX
                       delete PacketTransport;
-                      PacketTransport = NULL;
+                      PacketTransport = nullptr;
 #else   // WINSOCK_IPX
                       Winsock.Close();
 #endif  // WINSOCK_IPX
@@ -1162,7 +1163,7 @@ bool Select_Game(bool fade) {
                       */
 #ifdef WINSOCK_IPX
                       delete PacketTransport;
-                      PacketTransport = NULL;
+                      PacketTransport = nullptr;
 #else   // WINSOCK_IPX
                       Winsock.Close();
 #endif  // WINSOCK_IPX
@@ -1218,7 +1219,7 @@ bool Select_Game(bool fade) {
             case GAME_INTERNET:
               if (PacketTransport) delete PacketTransport;
               PacketTransport = new UDPInterfaceClass;
-              assert(PacketTransport != NULL);
+              assert(PacketTransport != nullptr);
               if (PacketTransport->Init()) {
                 switch (WOL_Main()) {
                   case 1:
@@ -1237,7 +1238,7 @@ bool Select_Game(bool fade) {
                     display = true;
                     selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
                     delete PacketTransport;
-                    PacketTransport = NULL;
+                    PacketTransport = nullptr;
                     break;
                   case -1:
                     //	Patch was downloaded. Exit app.
@@ -1250,7 +1251,7 @@ bool Select_Game(bool fade) {
                 display = true;
                 selection = SEL_MULTIPLAYER_GAME;  // SEL_NONE;
                 delete PacketTransport;
-                PacketTransport = NULL;
+                PacketTransport = nullptr;
               }
               break;
 #endif
@@ -1272,15 +1273,20 @@ bool Select_Game(bool fade) {
 #else
               //							if
               //(WWMessageBox().Process("Select a protocol to use for network
-              //play.", "UDP", "IPX")) {
+              // play.", "UDP", "IPX")) {
               PacketTransport = new IPXInterfaceClass;
-              assert(PacketTransport != NULL);
+              assert(PacketTransport != nullptr);
 //							}else{
 //								PacketTransport
-//= new UDPInterfaceClass;	//IPXInterfaceClass; 								assert ( PacketTransport !=
-//NULL); 								if (!Get_Broadcast_Addresses()) { 									Session.Type = GAME_NORMAL; 									display =
-//true; 									selection = SEL_NONE; 									delete PacketTransport; 									PacketTransport = NULL;
-//									break;
+//= new UDPInterfaceClass;	//IPXInterfaceClass;
+// assert ( PacketTransport != nullptr);
+// if (!Get_Broadcast_Addresses()) {
+// Session.Type = GAME_NORMAL;
+// display = true;
+// selection = SEL_NONE;
+// delete PacketTransport;
+// PacketTransport = nullptr;
+// break;
 //								}
 //							}
 #endif
@@ -1301,7 +1307,7 @@ bool Select_Game(bool fade) {
                 selection = SEL_NONE;
 #ifdef WINSOCK_IPX
                 delete PacketTransport;
-                PacketTransport = NULL;
+                PacketTransport = nullptr;
 #endif  // WINSOCK_IPX
               }
               break;
@@ -1367,8 +1373,8 @@ bool Select_Game(bool fade) {
             Play_Movie(VQ_SIZZLE, THEME_NONE, true);
             Play_Movie(VQ_SIZZLE2, THEME_NONE, true);
             //						Play_Movie(VQ_INTRO_MOVIE,
-            //THEME_NONE, false);		// has transitino picture to
-            //briefing
+            // THEME_NONE, false);		// has transitino picture to
+            // briefing
           }
           Theme.Queue_Song(THEME_CRUS);
           display = true;
@@ -1461,7 +1467,7 @@ bool Select_Game(bool fade) {
 #endif
       {
         //				debugprint( "pWolapi is null on internet
-        //game!" );
+        // game!" );
         Fatal("pWolapi is null on internet game!");
       }
       // if( pWolapi->bEnableNewAftermathUnits )
@@ -1484,9 +1490,9 @@ bool Select_Game(bool fade) {
   if (!gameloaded && !Session.LoadGame) {
     //		if (Debug_Map) {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
-    //Scen.ScenPlayer, Scen.ScenDir, SCEN_VAR_A); 		}  else {
+    // Scen.ScenPlayer, Scen.ScenDir, SCEN_VAR_A); 		}  else {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
-    //Scen.ScenPlayer, Scen.ScenDir);
+    // Scen.ScenPlayer, Scen.ScenDir);
     //		}
 
     /*
@@ -1526,9 +1532,9 @@ bool Select_Game(bool fade) {
       7 * RESFACTOR,                 // font height in pixels
       -1, -1,                        // x,y for edit line (appears above msgs)
       0,                             // BG		1,
-          // // enable edit overflow
-      20,                       // min,
-      MAX_MESSAGE_LENGTH - 14,  //    max for trimming overflow
+                                     // // enable edit overflow
+      20,                            // min,
+      MAX_MESSAGE_LENGTH - 14,       //    max for trimming overflow
 #ifdef WIN32
       Lepton_To_Pixel(Map.TacLeptonWidth));  // Width in pixels of buffer
 #else
@@ -1594,8 +1600,8 @@ bool Select_Game(bool fade) {
 
   // ajw debugging only
   //						debugprint( "Debugging
-  //Session...\n" ); 						debugprint( "Session.Players count is %i.\n",
-  //Session.Players.Count() );
+  // Session...\n" ); 						debugprint(
+  // "Session.Players count is %i.\n", Session.Players.Count() );
   for (i = 0; i < Session.Players.Count(); i++) {
     NetNumType net;
     NetNodeType node;
@@ -1603,7 +1609,7 @@ bool Select_Game(bool fade) {
     //							debugprint( "Player %i,
     //%s, color %i, ip %i.%i.%i.%i.%i.%i\n", i, Session.Players[i]->Name,
     //								Session.Players[i]->Player.Color,
-    //node[0], node[1], node[2], node[3], node[4], node[5] );
+    // node[0], node[1], node[2], node[3], node[4], node[5] );
   }
   //						debugprint(
   //"PlanetWestwoodPortNumber is %i\n", PlanetWestwoodPortNumber );
@@ -1671,7 +1677,7 @@ static void Play_Intro(bool sequenced) {
  *=============================================================================================*/
 #ifdef WIN32
 #ifdef MOVIE640
-GraphicBufferClass VQ640(640, 400, (void *)NULL);
+GraphicBufferClass VQ640(640, 400, (void *)nullptr);
 #endif
 #endif
 void Anim_Init(void) {
@@ -1932,7 +1938,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           node[i - 4] = (char)x;  // fill NetNode
         }
         i++;
-        p = strtok(NULL, ".");
+        p = strtok(nullptr, ".");
       }
 
       /*
@@ -2463,13 +2469,13 @@ void Init_Random(void) {
   CryptRandom.Seed_Bit(t.wYear);
 #else
 
-          /*
-          **	Gather some "random" bits from the DOS mode timer.
-          */
-          struct timeb t;
-          ftime(&t);
-          CryptRandom.Seed_Byte(t.millitm);
-          CryptRandom.Seed_Byte(t.time);
+    /*
+    **	Gather some "random" bits from the DOS mode timer.
+    */
+    struct timeb t;
+    ftime(&t);
+    CryptRandom.Seed_Byte(t.millitm);
+    CryptRandom.Seed_Byte(t.time);
 #endif
 
 #ifdef FIXIT_MULTI_SAVE
@@ -2518,7 +2524,7 @@ void Init_Random(void) {
     if (CustomSeed != 0) {
       Seed = CustomSeed;
     } else {
-      srand(time(NULL));
+      srand(time(nullptr));
       Seed = rand();
     }
   }
@@ -2587,13 +2593,13 @@ static void Init_Color_Remaps(void) {
 #ifdef WIN32
 #if RESFACTOR == 2
   SysMemPage.Clear();
-  Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, NULL, BM_DEFAULT);
+  Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, nullptr, BM_DEFAULT);
   SysMemPage.Blit(HidPage);
 #else
-  Load_Picture("PALETTE.CPS", HiddenPage, HiddenPage, NULL, BM_DEFAULT);
+  Load_Picture("PALETTE.CPS", HiddenPage, HiddenPage, nullptr, BM_DEFAULT);
 #endif
 #else
-  Load_Picture("PALETTE.CPS", HidPage, HidPage, NULL, BM_DEFAULT);
+  Load_Picture("PALETTE.CPS", HidPage, HidPage, nullptr, BM_DEFAULT);
 #endif
   for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
     unsigned char *ptr = ColorRemaps[pcolor].RemapTable;
@@ -2747,14 +2753,14 @@ static void Init_Heaps(void) {
   for (int index = 0; index < ARRAY_SIZE(SpeechBuffer); index++) {
     SpeechBuffer[index] = new char[SPEECH_BUFFER_SIZE];
     SpeechRecord[index] = VOX_NONE;
-    assert(SpeechBuffer[index] != NULL);
+    assert(SpeechBuffer[index] != nullptr);
   }
 
   /*
   **	Allocate the theater buffer block.
   */
   TheaterBuffer = new Buffer(THEATER_BUFFER_SIZE);
-  assert(TheaterBuffer != NULL);
+  assert(TheaterBuffer != nullptr);
 }
 
 /***********************************************************************************************
@@ -2893,11 +2899,11 @@ static void Init_CDROM_Access(void) {
 #ifdef FIXIT_VERSION_3
   //	Determine if we're going to be running from a DVD.
   //	The entire session will either require a DVD, or the regular CDs. Never
-  //both. 	Call Using_DVD() to determine which case it is. 	Here we set the value
-  //that Using_DVD() returns.
+  // both. 	Call Using_DVD() to determine which case it is. 	Here we
+  // set the value that Using_DVD() returns.
   Determine_If_Using_DVD();
   //	Force_CD_Available() is modified when Using_DVD() is true so that all
-  //requests become requests for the DVD.
+  // requests become requests for the DVD.
 #endif
 
   /*
@@ -3093,7 +3099,7 @@ static void Init_Secondary_Mixfiles(void) {
   } else {
     // assume regular/TFD files
     MainMix = new MFCD("MAIN.MIX", &FastKey);
-    assert(MainMix != NULL);
+    assert(MainMix != nullptr);
   }
 
 // Denzil extract mixfile
@@ -3133,7 +3139,7 @@ static void Init_Secondary_Mixfiles(void) {
   ConquerMix = new MFCD("CONQUER.MIX", &FastKey);  // Cached.
   //	new MFCD("TRANSIT.MIX", &FastKey);
 
-  if (GeneralMix == NULL)
+  if (GeneralMix == nullptr)
     GeneralMix = new MFCD("GENERAL.MIX", &FastKey);  // Never cached.
 
   if (CCFileClass("MOVIES1.MIX").Is_Available()) {
@@ -3143,7 +3149,7 @@ static void Init_Secondary_Mixfiles(void) {
   if (CCFileClass("MOVIES2.MIX").Is_Available()) {
     MoviesMix = new MFCD("MOVIES2.MIX", &FastKey);  // Never cached.
   }
-  assert(MoviesMix != NULL);
+  assert(MoviesMix != nullptr);
 
   /*
   **	Register the score mixfile.
@@ -3539,7 +3545,8 @@ static void Init_Keys(void) {
  * Save_Recording_Values -- Saves multiplayer-specific values              *
  *                                                                         *
  * This routine saves multiplayer values that need to be restored for a * save
- *game.  In addition to saving the random # seed for this scenario, 	* it saves the contents of the actual random number generator; this 		*
+ *game.  In addition to saving the random # seed for this scenario, 	* it
+ * saves the contents of the actual random number generator; this 	*
  * ensures that the random # sequencer will pick up where it left off when
  ** the game was saved.
  ** This routine also saves the header for a Recording file, so it must
@@ -3651,7 +3658,7 @@ bool Is_DVD_Installed() {
     return false;
   DWORD dwValue;
   DWORD dwBufSize = sizeof(DWORD);
-  if (RegQueryValueEx(hKey, "DVD", 0, NULL, (LPBYTE)&dwValue, &dwBufSize) !=
+  if (RegQueryValueEx(hKey, "DVD", 0, nullptr, (LPBYTE)&dwValue, &dwBufSize) !=
       ERROR_SUCCESS)
     bInstalled = false;
   else
@@ -3668,14 +3675,14 @@ bool Is_DVD_Installed() {
 //***********************************************************************************************
 bool Determine_If_Using_DVD() {
   //	Determines if the user has a DVD currently available. If they do, we'll
-  //use it throughout the 	session. Else we won't check for it again and will
-  //always ask for CDs.
+  // use it throughout the 	session. Else we won't check for it again and
+  // will always ask for CDs.
   if (Is_DVD_Installed()) {
     if (Force_CD_Available(5)) {
       bUsingDVD = true;
     } else {
       //	User hit cancel. Allow things to progress normally. They will be
-      //prompted for 	a Red Alert disk as usual.
+      // prompted for 	a Red Alert disk as usual.
       bUsingDVD = false;
     }
   } else

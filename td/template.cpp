@@ -113,13 +113,13 @@ void TemplateClass::Read_INI(char *buffer) {
   len = strlen(buffer) + 2;
   tbuffer = buffer + len;
 
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     TemplateType temp;  // Terrain type.
 
     cell = atoi(tbuffer);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
     temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));
     if (temp != TEMPLATE_NONE) {
@@ -152,10 +152,10 @@ void TemplateClass::Write_INI(char *buffer) {
   **	First, clear out all existing template data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 
@@ -191,7 +191,7 @@ void TemplateClass::Write_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-TemplateClass::TemplateClass(void) : Class(0) {}
+TemplateClass::TemplateClass(void) : Class(nullptr) {}
 
 /***********************************************************************************************
  * TemplateClass::As_Target -- Converts a template object into a target number.

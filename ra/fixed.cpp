@@ -90,7 +90,7 @@ fixed::fixed(char const* ascii) {
   *care of any *	compiler confusion that would call this routine when the
   *programmer wanted the *	integer parameter constructor to be called.
   */
-  if (ascii == NULL) {
+  if (ascii == nullptr) {
     Data.Raw = 0;
     return;
   }
@@ -167,7 +167,7 @@ fixed::fixed(char const* ascii) {
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 int fixed::To_ASCII(char* buffer, int maxlen) const {
-  if (buffer == NULL) return (0);
+  if (buffer == nullptr) return (0);
 
   /*
   **	Determine the whole and fractional parts of the number. The fractional

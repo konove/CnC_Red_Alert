@@ -48,7 +48,7 @@ FieldClass::FieldClass(char const *id, char data) {
   Size = sizeof(data);
   Data = new char[Size];
   memcpy(Data, &data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, unsigned char data) {
@@ -57,7 +57,7 @@ FieldClass::FieldClass(char const *id, unsigned char data) {
   Size = sizeof(data);
   Data = new char[Size];
   memcpy(Data, &data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, short data) {
@@ -66,7 +66,7 @@ FieldClass::FieldClass(char const *id, short data) {
   Size = sizeof(data);
   Data = new char[Size];
   memcpy(Data, &data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, unsigned short data) {
@@ -75,7 +75,7 @@ FieldClass::FieldClass(char const *id, unsigned short data) {
   Size = sizeof(data);
   Data = new char[Size];
   memcpy(Data, &data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, long data) {
@@ -84,7 +84,7 @@ FieldClass::FieldClass(char const *id, long data) {
   Size = sizeof(data);
   Data = new char[Size];
   memcpy(Data, &data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, unsigned long data) {
@@ -93,7 +93,7 @@ FieldClass::FieldClass(char const *id, unsigned long data) {
   Size = sizeof(data);
   Data = new char[Size];
   memcpy(Data, &data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, const char *data) {
@@ -102,7 +102,7 @@ FieldClass::FieldClass(char const *id, const char *data) {
   Size = (unsigned short)(strlen(data) + 1);
   Data = new char[Size];
   memcpy(Data, data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 FieldClass::FieldClass(char const *id, void *data, int length) {
@@ -111,7 +111,7 @@ FieldClass::FieldClass(char const *id, void *data, int length) {
   Size = (unsigned short)length;
   Data = new char[Size];
   memcpy(Data, data, Size);
-  Next = NULL;
+  Next = nullptr;
 }
 
 /**************************************************************************

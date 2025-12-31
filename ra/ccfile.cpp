@@ -189,7 +189,7 @@ long CCFileClass::Read(void *buffer, long size) {
     if (size) {
       memmove(buffer, (char *)Data + Position, size);
       //			Mem_Copy((char *)Pointer + Position, buffer,
-      //size);
+      // size);
       Position += size;
     }
     if (opened) Close();
@@ -286,7 +286,7 @@ long CCFileClass::Size(void) {
   */
   if (!CDFileClass::Is_Available()) {
     long length = 0;
-    MFCD::Offset(File_Name(), NULL, NULL, NULL, &length);
+    MFCD::Offset(File_Name(), nullptr, nullptr, nullptr, &length);
     return (length);
   }
 
@@ -410,18 +410,18 @@ int CCFileClass::Open(int rights) {
   **	Check to see if file is part of a mixfile and that mixfile is currently
   *loaded *	into RAM.
   */
-  MFCD *mixfile = NULL;
-  void *pointer = NULL;
+  MFCD *mixfile = nullptr;
+  void *pointer = nullptr;
   long length = 0;
   long start = 0;
   if (MFCD::Offset(File_Name(), &pointer, &mixfile, &start, &length)) {
-    assert(mixfile != NULL);
+    assert(mixfile != nullptr);
 
     /*
     **	If the mixfile is located on disk, then fake out the file system to read
     *from *	the mixfile, but think it is reading from a solitary file.
     */
-    if (pointer == NULL && mixfile != NULL) {
+    if (pointer == nullptr && mixfile != nullptr) {
       /*
       **	This is a legitimate open to the file. All access to the file
       *through this *	file object will be appropriately adjusted for mixfile
@@ -474,7 +474,7 @@ unsigned long CCFileClass::Get_Date_Time(void) {
   datetime = CDFileClass::Get_Date_Time();
 
   if (!datetime) {
-    if (MFCD::Offset(File_Name(), NULL, &mixfile, NULL, NULL)) {
+    if (MFCD::Offset(File_Name(), nullptr, &mixfile, nullptr, nullptr)) {
       //
       // check for nested MIX files
       //
@@ -507,7 +507,7 @@ bool CCFileClass::Set_Date_Time(unsigned long datetime) {
   status = CDFileClass::Set_Date_Time(datetime);
 
   if (!status) {
-    if (MFCD::Offset(File_Name(), NULL, &mixfile, NULL, NULL)) {
+    if (MFCD::Offset(File_Name(), nullptr, &mixfile, nullptr, nullptr)) {
       //
       // check for nested MIX files
       //
@@ -622,8 +622,8 @@ int __cdecl Find_Disk_Number(char const *) { return (0); }
 // uncomp_buff, BuffType dest_buff, void * reserved_data)
 //{
 //	return(Load_Uncompress(CCFileClass(file), uncomp_buff, dest_buff,
-//reserved_data)); 	return(CCFileClass(file).Load_Uncompress(uncomp_buff,
-//dest_buff, reserved_data));
+// reserved_data)); 	return(CCFileClass(file).Load_Uncompress(uncomp_buff,
+// dest_buff, reserved_data));
 // }
 
 #ifdef WIN32

@@ -473,7 +473,7 @@ ObjectClass *VesselTypeClass::Create_One_Of(HouseClass *house) const {
  *=============================================================================================*/
 bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   VesselClass *unit = new VesselClass(Type, house);
-  if (unit != NULL) {
+  if (unit != nullptr) {
     return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
   }
   delete unit;
@@ -652,7 +652,7 @@ short const *VesselTypeClass::Overlap_List(void) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselType VesselTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (VesselType classid = VESSEL_FIRST; classid < VESSEL_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
         return (classid);

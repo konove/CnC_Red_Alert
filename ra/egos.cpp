@@ -677,13 +677,13 @@ void Show_Who_Was_Responsible(void) {
   for (int index = 0; index < NUM_SLIDES; index++) {
 #ifdef WIN32
     SlideBuffers[index] = new GraphicBufferClass;
-    SlideBuffers[index]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), NULL,
-                              0, (GBC_Enum)0);
+    SlideBuffers[index]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
+                              nullptr, 0, (GBC_Enum)0);
     Load_Title_Screen(&SlideNames[index][0], SlideBuffers[index],
                       (unsigned char *)&SlidePals[index][0]);
 #else   // WIN32
     SlideBuffers[index] = new GraphicBufferClass(
-        SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)NULL);
+        SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
     Load_Picture(&LoresSlideNames[index][0], *SlideBuffers[index],
                  *SlideBuffers[index], (unsigned char *)&SlidePals[index][0],
                  BM_DEFAULT);
@@ -697,11 +697,11 @@ void Show_Who_Was_Responsible(void) {
   */
 #ifdef WIN32
   BackgroundPage = new GraphicBufferClass;
-  BackgroundPage->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), NULL, 0,
+  BackgroundPage->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
                        (GBC_Enum)(GBC_VIDEOMEM));
 #else   // WIN32
-  BackgroundPage = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                          SeenBuff.Get_Height(), (void *)NULL);
+  BackgroundPage = new GraphicBufferClass(
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
 #endif  // WIN32
 
   SeenBuff.Blit(*BackgroundPage);

@@ -178,7 +178,7 @@ inline unsigned char const *Get_IconSet_ControlMap(void const *data) {
     return ((unsigned char const *)((char *)data +
                                     ((IControl_Type *)data)->ColorMap));
   }
-  return (0);
+  return (nullptr);
 }
 
 class IconsetClass : protected IControl_Type {

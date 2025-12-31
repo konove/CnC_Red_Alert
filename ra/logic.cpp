@@ -298,7 +298,7 @@ void LogicClass::AI(void) {
     obj->AI();
     BEnd(BENCH_AI);
 
-    if (TimeQuake && obj != NULL && obj->IsActive && !obj->IsInLimbo &&
+    if (TimeQuake && obj != nullptr && obj->IsActive && !obj->IsInLimbo &&
         obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
@@ -320,10 +320,10 @@ void LogicClass::AI(void) {
             obj->Clicked_As_Target();
             new AnimClass(ANIM_MINE_EXP1, obj->Center_Coord());
           }
-          obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+          obj->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
         }
       } else {
-        obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+        obj->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       }
 #else
       obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);

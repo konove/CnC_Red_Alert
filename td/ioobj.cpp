@@ -324,7 +324,7 @@ void TeamClass::Decode_Pointers(void) {
         break;
 
       default:
-        Member = 0;
+        Member = nullptr;
         break;
     }
 
@@ -344,7 +344,7 @@ void TeamClass::Decode_Pointers(void) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool TriggerClass::Load(FileClass &file) {
-  int rc = Read_Object(this, sizeof(*this), sizeof(*this), file, 0);
+  int rc = Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
 
   /*
   -------------------------- Add to HouseTriggers --------------------------
@@ -1331,7 +1331,7 @@ void UnitClass::Decode_Pointers(void) { TarComClass::Decode_Pointers(); }
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Load(FileClass &file) {
-  return (Read_Object(this, sizeof(StageClass), sizeof(*this), file, 0));
+  return (Read_Object(this, sizeof(StageClass), sizeof(*this), file, nullptr));
 }
 
 /***********************************************************************************************
@@ -1537,7 +1537,7 @@ void LayerClass::Decode_Pointers(void) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Load(FileClass &file) {
-  return (Read_Object(this, sizeof(*this), sizeof(*this), file, 0));
+  return (Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr));
 }
 
 /***********************************************************************************************
@@ -1613,7 +1613,7 @@ void HouseClass::Decode_Pointers(void) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 bool ScoreClass::Load(FileClass &file) {
-  return (Read_Object(this, sizeof(*this), sizeof(*this), file, 0));
+  return (Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr));
 }
 
 /***********************************************************************************************

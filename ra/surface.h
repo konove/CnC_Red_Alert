@@ -55,7 +55,7 @@
 class Surface {
  public:
   Surface(void) : Width(0), Height(0), Pitch(0) {}
-  Surface(int w, int h, Buffer const* buffer = NULL, int pitch = 0);
+  Surface(int w, int h, Buffer const* buffer = nullptr, int pitch = 0);
   Surface(Surface const& surface, int x, int y, int w, int h);
   virtual ~Surface(void) {}
 

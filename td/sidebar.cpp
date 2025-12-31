@@ -1703,7 +1703,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
 #ifndef LORES
     if (BuildableCount < MAX_VISIBLE) {
       CC_Draw_Shape(LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
-                    SHAPE_WIN_REL | SHAPE_NORMAL, 0);
+                    SHAPE_WIN_REL | SHAPE_NORMAL, nullptr);
     }
 #endif
 
@@ -1723,10 +1723,10 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed;
       int stage;
       bool darken = false;
-      void const *shapefile = 0;
+      void const *shapefile = nullptr;
       int shapenum = 0;
-      void const *remapper = 0;
-      FactoryClass *factory = 0;
+      void const *remapper = nullptr;
+      FactoryClass *factory = nullptr;
       int index = i + TopIndex;
       int x = X;
       int y = Y + i * ObjectHeight;
@@ -1746,7 +1746,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *underlying graphic there.
       */
       if ((unsigned)index < BuildableCount) {
-        ObjectTypeClass const *obj = NULL;
+        ObjectTypeClass const *obj = nullptr;
         int spc = 0;
 
         if (Buildables[index].BuildableType != RTTI_SPECIAL) {
@@ -1856,7 +1856,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         production = false;
       }
 
-      remapper = 0;
+      remapper = nullptr;
 
       /*
       **	Now that the shape of the object at the current working slot has
@@ -1885,7 +1885,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               ClockShapes, 0,
               x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
               y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
               ClockTranslucentTable);
         }
       }
@@ -1915,7 +1915,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               ClockShapes, stage + 1,
               x - (WindowList[WINDOW_SIDEBAR][WINDOWX] * 8) + LeftEdgeOffset,
               y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+              SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
               ClockTranslucentTable);
           /*
           **	Display text showing that the construction is temporarily on
@@ -1976,7 +1976,8 @@ bool SidebarClass::StripClass::Recalc(void) {
     TechnoTypeClass const *tech = Fetch_Techno_Type(
         Buildables[index].BuildableType, Buildables[index].BuildableID);
     if (tech) {
-      ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) != NULL;
+      ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
+           nullptr;
     } else {
       switch (Buildables[index].BuildableID) {
         case SPC_ION_CANNON:
@@ -2093,7 +2094,7 @@ SidebarClass::StripClass::SelectClass::SelectClass(void)
     : ControlClass(0, 0, 0, 0, 0, LEFTPRESS | RIGHTPRESS | LEFTUP) {
   int factor = Get_Resolution_Factor();
 
-  Strip = 0;
+  Strip = nullptr;
   Index = 0;
   Width = StripClass::OBJECT_WIDTH << factor;
   Height = StripClass::OBJECT_HEIGHT << factor;
@@ -2152,8 +2153,8 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   int oid = Strip->Buildables[index].BuildableID;
   int fnumber = Strip->Buildables[index].Factory;
 
-  FactoryClass *factory = NULL;
-  ObjectTypeClass const *choice = NULL;
+  FactoryClass *factory = nullptr;
+  ObjectTypeClass const *choice = nullptr;
   int spc = 0;
 
   /*
@@ -2296,10 +2297,10 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           **	suspended.
           */
           if (Map.PendingObjectPtr && Map.PendingObjectPtr->Is_Techno()) {
-            Map.PendingObjectPtr = 0;
-            Map.PendingObject = 0;
+            Map.PendingObjectPtr = nullptr;
+            Map.PendingObject = nullptr;
             Map.PendingHouse = HOUSE_NONE;
-            Map.Set_Cursor_Shape(0);
+            Map.Set_Cursor_Shape(nullptr);
           }
 
           if (!factory->Is_Building()) {

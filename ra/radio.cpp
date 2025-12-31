@@ -174,7 +174,7 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
   **	return with "negative". If all is well, return with "roger".
   */
   if (message == RADIO_HELLO && Strength) {
-    if (Radio == from || Radio == NULL) {
+    if (Radio == from || Radio == nullptr) {
       Radio = from;
       return (RADIO_ROGER);
     }
@@ -210,21 +210,21 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               long& param, RadioClass* to) {
   assert(IsActive);
 
-  if (to == NULL) {
+  if (to == nullptr) {
     to = Contact_With_Whom();
   }
 
   /*
   **	If there is no target for the radio message, then always return static.
   */
-  if (to == NULL) return (RADIO_STATIC);
+  if (to == nullptr) return (RADIO_STATIC);
 
   /*
   **	Handle some special case processing that occurs when certain messages
   **	are transmitted.
   */
   if (to == Radio && message == RADIO_OVER_OUT) {
-    Radio = 0;
+    Radio = nullptr;
   }
 
   /*

@@ -68,7 +68,7 @@ ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
                                void const* down)
     : ListClass(id, x, y, w, h, flags, up, down),
       Style(SELECT_HIGHLIGHT),
-      SelectColor(NULL) {}
+      SelectColor(nullptr) {}
 
 /***************************************************************************
  * ColorListClass::~ColorListClass -- Class destructor                     *
@@ -87,7 +87,7 @@ ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
  *=========================================================================*/
 ColorListClass::~ColorListClass(void) {
   Colors.Clear();
-  SelectColor = 0;
+  SelectColor = nullptr;
 }
 
 /***************************************************************************
@@ -210,7 +210,7 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
   /*
   ** For selected items, choose the right color & style:
   */
-  if (SelectColor == NULL) {
+  if (SelectColor == nullptr) {
     color = Colors[index];
   } else {
     color = SelectColor;

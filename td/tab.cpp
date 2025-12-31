@@ -43,7 +43,7 @@
 
 #include "function.h"
 
-void const *TabClass::TabShape = NULL;
+void const *TabClass::TabShape = nullptr;
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *

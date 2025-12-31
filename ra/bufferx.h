@@ -49,7 +49,7 @@
 */
 class Transmuter {
  public:
-  Transmuter(void) : Output(0) {}
+  Transmuter(void) : Output(nullptr) {}
   virtual ~Transmuter(void) {}
 
   /*
@@ -76,7 +76,7 @@ class Transmuter {
 
 class FileTransmuter {
  public:
-  FileTransmuter(FileClass *file = NULL) : OutputFile(file) {}
+  FileTransmuter(FileClass *file = nullptr) : OutputFile(file) {}
 
   virtual void Attach(FileClass *file) { OutputFile = file; }
   virtual void Flush(void) {}
@@ -90,7 +90,7 @@ class FileTransmuter {
 
 class BufferTransmuter {
  public:
-  BufferTransmuter(void *buffer = NULL) : BufferPtr(buffer) {}
+  BufferTransmuter(void *buffer = nullptr) : BufferPtr(buffer) {}
 
   virtual void Attach(void *buffer) { BufferPtr = buffer; }
   virtual void Flush(void) {}

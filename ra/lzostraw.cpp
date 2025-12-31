@@ -66,8 +66,8 @@
 LZOStraw::LZOStraw(CompControl control, int blocksize)
     : Control(control),
       Counter(0),
-      Buffer(NULL),
-      Buffer2(NULL),
+      Buffer(nullptr),
+      Buffer2(nullptr),
       BlockSize(blocksize) {
   SafetyMargin = BlockSize;
   Buffer = new char[BlockSize + SafetyMargin];
@@ -92,10 +92,10 @@ LZOStraw::LZOStraw(CompControl control, int blocksize)
  *=============================================================================================*/
 LZOStraw::~LZOStraw(void) {
   delete[] Buffer;
-  Buffer = NULL;
+  Buffer = nullptr;
 
   delete[] Buffer2;
-  Buffer2 = NULL;
+  Buffer2 = nullptr;
 }
 
 /***********************************************************************************************
@@ -120,14 +120,14 @@ LZOStraw::~LZOStraw(void) {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LZOStraw::Get(void *destbuf, int slen) {
-  assert(Buffer != NULL);
+  assert(Buffer != nullptr);
 
   int total = 0;
 
   /*
   **	Verify parameters for legality.
   */
-  if (destbuf == NULL || slen < 1) {
+  if (destbuf == nullptr || slen < 1) {
     return (0);
   }
 
@@ -162,7 +162,7 @@ int LZOStraw::Get(void *destbuf, int slen) {
       if (incount != BlockHeader.CompCount) break;
       unsigned int length = sizeof(Buffer);
       lzo1x_decompress((unsigned char *)staging_buffer, BlockHeader.CompCount,
-                       (unsigned char *)Buffer, &length, NULL);
+                       (unsigned char *)Buffer, &length, nullptr);
       delete[] staging_buffer;
       Counter = BlockHeader.UncompCount;
     } else {

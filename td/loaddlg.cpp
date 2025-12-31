@@ -231,7 +231,7 @@ int LoadOptionsClass::Process(void) {
   /*
   **	Buttons
   */
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   if (Style == LOAD) {
     btn_txt = TXT_LOAD_BUTTON;

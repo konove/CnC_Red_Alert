@@ -141,7 +141,7 @@ WarheadTypeClass *WarheadTypeClass::As_Pointer(WarheadType warhead) {
   if (warhead != WARHEAD_NONE) {
     return (Warheads.Ptr(warhead));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -175,7 +175,7 @@ bool WarheadTypeClass::Read_INI(CCINIClass &ini) {
       char *aval = strtok(buffer, ",");
       for (ArmorType armor = ARMOR_FIRST; armor < ARMOR_COUNT; armor++) {
         Modifier[armor] = fixed(aval);
-        aval = strtok(NULL, ",");
+        aval = strtok(nullptr, ",");
       }
     }
 

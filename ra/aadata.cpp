@@ -59,8 +59,8 @@
 #include <format>
 #include "function.h"
 
-void const *AircraftTypeClass::LRotorData = NULL;
-void const *AircraftTypeClass::RRotorData = NULL;
+void const *AircraftTypeClass::LRotorData = nullptr;
+void const *AircraftTypeClass::RRotorData = nullptr;
 
 // Badger bomber
 static AircraftTypeClass const BadgerPlane(
@@ -273,8 +273,8 @@ AircraftTypeClass::AircraftTypeClass(
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the newly allocated aircraft type class
- *object. If there * was insufficient memory to fulfill the request, then NULL
- *is returned.             *
+ *object. If there * was insufficient memory to fulfill the request, then
+ * nullptr is returned.             *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -353,7 +353,7 @@ void AircraftTypeClass::Init_Heap(void) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftType AircraftTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
          classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
@@ -397,7 +397,7 @@ void AircraftTypeClass::One_Time() {
  * INPUT:   house -- The house owner of the aircraft that is to be created. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the aircraft created. If the aircraft
- *could not be       * created, then a NULL is returned. *
+ *could not be       * created, then a nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -456,7 +456,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType) const {
   int shape = 0;
   void const *ptr = Get_Cameo_Data();
-  if (ptr == NULL) {
+  if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = 5;
   }
@@ -522,7 +522,7 @@ short const *AircraftTypeClass::Overlap_List(void) const {
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
 int AircraftTypeClass::Max_Pips(void) const {
-  if (PrimaryWeapon != NULL) {
+  if (PrimaryWeapon != nullptr) {
     return (5);
   }
   return (Max_Passengers());

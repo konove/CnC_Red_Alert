@@ -1855,7 +1855,7 @@ void TriggerTypeClass::Read_INI(CCINIClass &ini) {
     /*
     **	Get the trigger entry.
     */
-    ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf));
+    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
     /*
     **	Fill in the trigger.
@@ -1915,9 +1915,9 @@ void TriggerTypeClass::Fill_In(char *name, char *entry) {
   Set_Name(name);
 
   IsPersistant = PersistantType(atoi(strtok(entry, ",")));
-  House = HousesType(atoi(strtok(NULL, ",")));
-  EventControl = MultiStyleType(atoi(strtok(NULL, ",")));
-  ActionControl = MultiStyleType(atoi(strtok(NULL, ",")));
+  House = HousesType(atoi(strtok(nullptr, ",")));
+  EventControl = MultiStyleType(atoi(strtok(nullptr, ",")));
+  ActionControl = MultiStyleType(atoi(strtok(nullptr, ",")));
 
   Event1.Read_INI();
   Event2.Read_INI();
@@ -2092,12 +2092,12 @@ void TriggerTypeClass::Init(void) { TriggerTypes.Free_All(); }
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 TriggerTypeClass *TriggerTypeClass::From_Name(char const *name) {
-  if (name != NULL) {
+  if (name != nullptr) {
     for (int index = 0; index < TriggerTypes.Count(); index++) {
       if (stricmp(TriggerTypes.Ptr(index)->Name(), name) == 0) {
         return (TriggerTypes.Ptr(index));
       }
     }
   }
-  return (NULL);
+  return (nullptr);
 }

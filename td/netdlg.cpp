@@ -277,7 +277,7 @@ void Shutdown_Network(void) {
   Delete our "meta-packet"
   ------------------------------------------------------------------------*/
   delete[] MetaPacket;
-  MetaPacket = 0;
+  MetaPacket = nullptr;
 
   /*------------------------------------------------------------------------
   If I was in a game, I'm not now, so clear the game name
@@ -1369,7 +1369,7 @@ static int Net_Join_Dialog(void) {
       - If we're part of a game, stay in this dialog; otherwise, exit
       ------------------------------------------------------------------*/
       case (KN_ESC):
-        if (Messages.Get_Edit_Buf() != NULL) {
+        if (Messages.Get_Edit_Buf() != nullptr) {
           Messages.Input(input);
           display = REDRAW_MESSAGE;
           break;
@@ -1416,8 +1416,8 @@ static int Net_Join_Dialog(void) {
         Now broadcast my SIGN_OFF so other players looking at this game
         know I'm leaving.
         ...............................................................*/
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
         if (IsBridge) {
           Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
@@ -1483,7 +1483,7 @@ static int Net_Join_Dialog(void) {
         /*...............................................................
         F4/SEND/'M' = edit a message
         ...............................................................*/
-        if (Messages.Get_Edit_Buf() == NULL) {
+        if (Messages.Get_Edit_Buf() == nullptr) {
           if ((input == KN_M && joinstate == JOIN_CONFIRMED) ||
               input == (BUTTON_SEND | KN_BUTTON) || input == KN_F4) {
             memset(txt, 0, 80);
@@ -1821,8 +1821,8 @@ static int Net_Join_Dialog(void) {
         Ipx.Service();
       }
 
-      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
       if (IsBridge) {
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
@@ -2174,7 +2174,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
 
     GPacket.Command = NET_QUERY_GAME;
 
-    Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+    Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
     /*.....................................................................
     If the user specified a remote server address, broadcast over that
@@ -2199,7 +2199,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
     GPacket.Command = NET_QUERY_PLAYER;
     strcpy(GPacket.Name, Games[curgame]->Name);
 
-    Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+    Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
     /*.....................................................................
     If the user specified a remote server address, broadcast over that
@@ -2447,8 +2447,8 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       GPacket.Command = NET_SIGN_OFF;
       strcpy(GPacket.Name, MPlayerName);
 
-      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
       if (IsBridge) {
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
@@ -3411,7 +3411,7 @@ static int Net_New_Dialog(void) {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case (KN_ESC):
-        if (Messages.Get_Edit_Buf() != NULL) {
+        if (Messages.Get_Edit_Buf() != nullptr) {
           Messages.Input(input);
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
           break;
@@ -3425,8 +3425,8 @@ static int Net_New_Dialog(void) {
         /*...............................................................
         Broadcast my sign-off over my network
         ...............................................................*/
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
 
         /*...............................................................
@@ -3466,7 +3466,7 @@ static int Net_New_Dialog(void) {
         /*...............................................................
         F4/SEND/'M' = send a message
         ...............................................................*/
-        if (Messages.Get_Edit_Buf() == NULL) {
+        if (Messages.Get_Edit_Buf() == nullptr) {
           if (input == KN_M || input == (BUTTON_SEND | KN_BUTTON) ||
               input == KN_F4) {
             memset(txt, 0, 80);
@@ -4449,8 +4449,8 @@ static int Net_Fake_New_Dialog(void) {
         /*...............................................................
         Broadcast my sign-off over my network
         ...............................................................*/
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
         while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
 
         /*...............................................................
@@ -5041,8 +5041,8 @@ static int Net_Fake_Join_Dialog(void) {
         Now broadcast my SIGN_OFF so other players looking at this game
         know I'm leaving.
         ...............................................................*/
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+        Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
         if (IsBridge) {
           Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,
@@ -5292,8 +5292,8 @@ static int Net_Fake_Join_Dialog(void) {
         Ipx.Service();
       }
 
-      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
-      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
+      Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
       if (IsBridge) {
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0,

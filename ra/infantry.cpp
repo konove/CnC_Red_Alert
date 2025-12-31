@@ -247,7 +247,7 @@ InfantryClass::~InfantryClass(void) {
     */
     if (Team.Is_Valid()) {
       Team->Remove(this);
-      Team = NULL;
+      Team = nullptr;
     }
 
     House->Tracking_Remove(this);
@@ -261,12 +261,12 @@ InfantryClass::~InfantryClass(void) {
  *pool.             *
  *                                                                                             *
  *    This will allocate an infantry object from the infantry object free pool.
- *If there is    * no available slot, then NULL is returned. *
+ *If there is    * no available slot, then nullptr is returned. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocated infantry object or NULL if
- *none could be   * allocated. *
+ * OUTPUT:  Returns with a pointer to the allocated infantry object or nullptr
+ * if none could be   * allocated. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -274,7 +274,7 @@ InfantryClass::~InfantryClass(void) {
  *=============================================================================================*/
 void *InfantryClass::operator new(size_t) throw() {
   void *ptr = Infantry.Allocate();
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((InfantryClass *)ptr)->IsActive = true;
   }
   return (ptr);
@@ -295,7 +295,7 @@ void *InfantryClass::operator new(size_t) throw() {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::operator delete(void *ptr) {
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((InfantryClass *)ptr)->IsActive = false;
   }
   Infantry.Free((InfantryClass *)ptr);
@@ -348,7 +348,7 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
   ** else, so if we're the target of a valid dog, take full damage, but if
   ** we're not the target, or the dog doesn't exist, then take no damage.
   */
-  if (source != NULL && source->What_Am_I() == RTTI_INFANTRY &&
+  if (source != nullptr && source->What_Am_I() == RTTI_INFANTRY &&
       ((InfantryClass *)source)->Class->IsDog) {
     if (source->TarCom == As_Target()) {
       damage = Strength;
@@ -449,11 +449,11 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
       Assign_Mission(MISSION_HUNT);
     }
 
-    if (source != NULL) {
+    if (source != nullptr) {
       Scatter(source_coord);
     }
 
-    if (source != NULL && Fear < FEAR_SCARED) {
+    if (source != nullptr && Fear < FEAR_SCARED) {
       if (Class->IsFraidyCat) {
         Fear = FEAR_PANIC;
       } else {
@@ -557,7 +557,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   void const *shapefile = Get_Image_Data();
 
-  if (shapefile == NULL) return;
+  if (shapefile == nullptr) return;
 
   y += 4;
   x -= 2;
@@ -604,8 +604,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     if (Mission == MISSION_CAPTURE) {
       TechnoClass *tech = cellptr->Cell_Building();
 
-      if (tech == NULL) tech = cellptr->Cell_Techno();
-      if (tech != NULL &&
+      if (tech == nullptr) tech = cellptr->Cell_Techno();
+      if (tech != nullptr &&
           (tech->As_Target() == NavCom || tech->As_Target() == TarCom)) {
         if (*this == INFANTRY_RENOVATOR) {
           /*
@@ -834,7 +834,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     **	at attach itself to the transporter.
     */
     TechnoClass *techno = Contact_With_Whom();
-    if (Mission == MISSION_ENTER && techno != NULL &&
+    if (Mission == MISSION_ENTER && techno != nullptr &&
         Coord_Cell(Coord) == Coord_Cell(techno->Coord) &&
         techno == As_Techno(NavCom)) {
       if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
@@ -851,7 +851,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     */
     if (Mission == MISSION_SABOTAGE) {
       BuildingClass *building = cellptr->Cell_Building();
-      if (building != NULL && building->As_Target() == NavCom) {
+      if (building != nullptr && building->As_Target() == NavCom) {
         if (!building->IronCurtainCountDown &&
             building->Mission != MISSION_DECONSTRUCTION) {
           building->IsGoingToBlow = true;
@@ -880,8 +880,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
                               // the explosion.
           }
-          Explosion_Damage(Coord, Rule.BridgeStrength, NULL, WARHEAD_HE);
-          Explosion_Damage(Coord, Rule.BridgeStrength, NULL, WARHEAD_HE);
+          Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
+          Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
           if (!IsActive) {
             BEnd(BENCH_PCP);
             return;
@@ -936,7 +936,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     ** If entering a cell with a land mine in it, blow up the mine.
     */
     BuildingClass *bldng = cellptr->Cell_Building();
-    if (bldng != NULL && *bldng == STRUCT_APMINE) {
+    if (bldng != nullptr && *bldng == STRUCT_APMINE) {
       /*
       ** Show the animation and get rid of the land mine
       */
@@ -948,7 +948,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       int damage;
       for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass *obj = Infantry.Ptr(index);
-        if (obj != NULL && !obj->IsInLimbo) {
+        if (obj != nullptr && !obj->IsInLimbo) {
           int dist = ::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
             damage = Rule.APMineDamage;
@@ -975,7 +975,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     if (!IsDriving && !Class->IsBomber &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       int damage = Strength;
-      Take_Damage(damage, 0, WARHEAD_AP, NULL, true);
+      Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       return;
     }
 #endif
@@ -1091,7 +1091,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
     */
     if (!In_Radio_Contact()) {
       TechnoClass *techno = As_Techno(target);
-      if (techno != NULL) {
+      if (techno != nullptr) {
         /*
         **	Determine if the transport is already in radio contact. If so,
         *then just move *	toward the transport and try to establish
@@ -1158,7 +1158,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   */
   if (!Target_Legal(NavCom) && Class->IsCapture && !Is_Weapon_Equipped()) {
     BuildingClass const *building = As_Building(target);
-    if (building != NULL && building->Class->IsCaptureable) {
+    if (building != nullptr && building->Class->IsCaptureable) {
       Assign_Destination(target);
     }
   }
@@ -1334,7 +1334,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   */
   MoveType retval = MOVE_OK;
   ObjectClass *obj = cellptr->Cell_Occupier();
-  while (obj != NULL) {
+  while (obj != nullptr) {
     if (obj != this) {
       /*
       **	Always allow movement if the cell is the object to be captured
@@ -1602,7 +1602,8 @@ short const *InfantryClass::Overlap_List(bool) const
     *have already *	been calculated then use them, otherwise, use the
     *default large rectangle *	previously created.
     */
-    if (Height == 0 && !IsSelected && redraw && Class->DimensionData != NULL) {
+    if (Height == 0 && !IsSelected && redraw &&
+        Class->DimensionData != nullptr) {
       int shapenum = Shape_Number();
       if (!Class->DimensionData[shapenum].Is_Valid()) {
         Class->DimensionData[shapenum] =
@@ -1659,7 +1660,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
 #else
     InfantryClass *targ = As_Infantry(target);
 #endif
-    if (targ == NULL || targ->Health_Ratio() >= Rule.ConditionGreen) {
+    if (targ == nullptr || targ->Health_Ratio() >= Rule.ConditionGreen) {
       return (FIRE_ILLEGAL);
     }
   }
@@ -1862,7 +1863,7 @@ bool InfantryClass::Random_Animate(void) {
  *                                                                                             *
  * INPUT:   threat   -- The coordinate source of the threat that is causing the
  *infantry to    * scatter. If the threat isn't from a particular direction,
- *then this    * parameter will be NULL. *
+ *then this    * parameter will be nullptr. *
  *                                                                                             *
  *          forced   -- The threat is real and a serious effort to scatter
  *should be made.     *
@@ -2183,7 +2184,7 @@ bool InfantryClass::Limbo(void) {
  **
  *                                                                                             *
  * OUTPUT:  Returns with pointer to the projectile launched. If none could be
- *launched, then   * NULL is returned. If there is already the maximum bullet
+ *launched, then   * nullptr is returned. If there is already the maximum bullet
  *objects in play, then     * this could happen. *
  *                                                                                             *
  * WARNINGS:   none *
@@ -2199,7 +2200,7 @@ BulletClass *InfantryClass::Fire_At(TARGET target, int which) {
   Mark(MARK_OVERLAP_DOWN);
 
   BulletClass *bullet = FootClass::Fire_At(target, which);
-  if (bullet != NULL && !IsInLimbo) {
+  if (bullet != nullptr && !IsInLimbo) {
     /*
     **	For fraidycat infantry that run out of ammo, always go into
     **	a maximum fear state at that time.
@@ -2321,10 +2322,10 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
     return (TARGET_NONE);
   }
 
-  if (Class->PrimaryWeapon != NULL) {
+  if (Class->PrimaryWeapon != nullptr) {
     threat = threat | Class->PrimaryWeapon->Allowed_Threats();
   }
-  if (Class->SecondaryWeapon != NULL) {
+  if (Class->SecondaryWeapon != nullptr) {
     threat = threat | Class->SecondaryWeapon->Allowed_Threats();
   }
 
@@ -2416,7 +2417,7 @@ void InfantryClass::Response_Select(void) {
 #endif
 
     int size = 0;
-    VocType *response = NULL;
+    VocType *response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2485,7 +2486,7 @@ void InfantryClass::Response_Select(void) {
         size = ARRAY_SIZE(_default_response);
         break;
     }
-    if (response != NULL) {
+    if (response != nullptr) {
       Sound_Effect(response[Sim_Random_Pick(0, size - 1)], fixed(1), ID + 1, 0,
                    house);
     }
@@ -2546,7 +2547,7 @@ void InfantryClass::Response_Move(void) {
 #endif
 
     int size = 0;
-    VocType *response = NULL;
+    VocType *response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2618,7 +2619,7 @@ void InfantryClass::Response_Move(void) {
         size = ARRAY_SIZE(_default_response);
         break;
     }
-    if (response != NULL) {
+    if (response != nullptr) {
       Sound_Effect(response[Sim_Random_Pick(0, size - 1)], fixed(1), ID + 1, 0,
                    house);
     }
@@ -2683,7 +2684,7 @@ void InfantryClass::Response_Attack(void) {
 #endif
 
     int size = 0;
-    VocType *response = NULL;
+    VocType *response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2753,7 +2754,7 @@ void InfantryClass::Response_Attack(void) {
         size = ARRAY_SIZE(_default_response);
         break;
     }
-    if (response != NULL) {
+    if (response != nullptr) {
       Sound_Effect(response[Sim_Random_Pick(0, size - 1)], fixed(1), ID + 1, 0,
                    house);
     }
@@ -2780,7 +2781,7 @@ void InfantryClass::Response_Attack(void) {
 ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
-  assert(object != NULL);
+  assert(object != nullptr);
 
   ActionType action = FootClass::What_Action(object);
 
@@ -3173,7 +3174,7 @@ int InfantryClass::Mission_Attack(void) {
     return (1);
   }
 
-  if (Class->IsCapture && As_Building(TarCom) != NULL) {
+  if (Class->IsCapture && As_Building(TarCom) != nullptr) {
     Assign_Destination(TarCom);
     Assign_Mission(MISSION_CAPTURE);
     return (1);
@@ -3352,7 +3353,7 @@ void InfantryClass::Read_INI(CCINIClass &ini) {
     /*
     **	Get an infantry entry
     */
-    ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf));
+    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
     /*
     **	1st token: house name.
@@ -3362,51 +3363,51 @@ void InfantryClass::Read_INI(CCINIClass &ini) {
       /*
       **	2nd token: infantry type name.
       */
-      classid = InfantryTypeClass::From_Name(strtok(NULL, ",\n\r"));
+      classid = InfantryTypeClass::From_Name(strtok(nullptr, ",\n\r"));
 
       if (classid != INFANTRY_NONE) {
         infantry = new InfantryClass(classid, inhouse);
-        if (infantry != NULL) {
+        if (infantry != nullptr) {
           /*
           **	3rd token: strength.
           */
-          int strength = atoi(strtok(NULL, ",\n\r"));
+          int strength = atoi(strtok(nullptr, ",\n\r"));
 
           /*
           **	4th token: cell #.
           */
-          CELL cell = atoi(strtok(NULL, ",\n\r"));
+          CELL cell = atoi(strtok(nullptr, ",\n\r"));
           COORDINATE coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
-          int sub = atoi(strtok(NULL, ","));
+          int sub = atoi(strtok(nullptr, ","));
           coord = Coord_Add(Coord_Whole(coord), StoppingCoordAbs[sub]);
 
           /*
           **	Fetch the mission and facing.
           */
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(NULL, ",\n\r"));
-          validation = strtok(NULL, ",\n\r");
+              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+          validation = strtok(nullptr, ",\n\r");
           if (validation) {
             dir = (DirType)atoi(validation);
-            validation = strtok(NULL, ",\n\r");
+            validation = strtok(nullptr, ",\n\r");
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);
             } else {
-              tp = NULL;
+              tp = nullptr;
             }
           } else {
             dir = (DirType)0;
-            tp = NULL;
+            tp = nullptr;
           }
 
-          infantry->Trigger = NULL;
-          if (tp != NULL) {
+          infantry->Trigger = nullptr;
+          if (tp != nullptr) {
             TriggerClass *tt = Find_Or_Make(tp);
-            if (tt != NULL) {
+            if (tt != nullptr) {
               tt->AttachCount++;
               infantry->Trigger = tt;
             }

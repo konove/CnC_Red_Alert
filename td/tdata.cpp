@@ -152,7 +152,7 @@ static TerrainTypeClass const Tree4Class(
     false,            // Can it be the target of a move or attack order?
     true,             // Don't make a big deal about it if it gets destroyed?
     false,            // Is it immune to normal combat damage?
-    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, (short const *)_List1, NULL);
+    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, (short const *)_List1, nullptr);
 
 static TerrainTypeClass const Tree5Class(
     TERRAIN_TREE5, THEATERF_WINTER | THEATERF_TEMPERATE,
@@ -671,7 +671,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      ((void const *&)terrain.ImageData) = NULL;
+      ((void const *&)terrain.ImageData) = nullptr;
 
       if (terrain.Theater & (1 << theater)) {
         /*

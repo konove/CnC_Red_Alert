@@ -82,9 +82,9 @@
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
 
-void const *RadarClass::RadarAnim = NULL;
-void const *RadarClass::RadarPulse = NULL;
-void const *RadarClass::RadarFrame = NULL;
+void const *RadarClass::RadarAnim = nullptr;
+void const *RadarClass::RadarPulse = nullptr;
+void const *RadarClass::RadarFrame = nullptr;
 
 static bool FullRedraw = false;
 
@@ -627,7 +627,7 @@ void RadarClass::Draw_It(bool forced) {
  *   04/12/1995 PWG : Created.                                             *
  *=========================================================================*/
 void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
-  TerrainClass *list[4] = {0, 0, 0, 0};
+  TerrainClass *list[4] = {nullptr, nullptr, nullptr, nullptr};
   int listidx = 0;
   int lp, lp2;
 
@@ -1059,7 +1059,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     if (color == TBLACK) {
       if (ZoomFactor > 1) {
-        void const *ptr = NULL;
+        void const *ptr = nullptr;
         int icon;
 
         /*
@@ -1076,7 +1076,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         **	If the template pointer is still NULL, then this means either a
         *clear *	template or an illegal one. Setup for a clear template.
         */
-        if (ptr == NULL) {
+        if (ptr == nullptr) {
           ptr =
               TemplateTypeClass::As_Reference(TEMPLATE_CLEAR1).Get_Image_Data();
           icon = cellptr->Clear_Icon();
@@ -1692,7 +1692,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType &key) {
   int x, y;                 // Sub cell pixel coordinates.
   int cellx, celly;         // Sub cell pixel coordinates.
   bool shadow;              // is the cell in shadow or not
-  ObjectClass *object = 0;  // what object is in the cell
+  ObjectClass *object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
@@ -1789,7 +1789,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType &key) {
 
           default:
             action = ACTION_NONE;
-            object = NULL;
+            object = nullptr;
             break;
         }
 
@@ -1800,7 +1800,7 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType &key) {
         **/
         if (action == ACTION_NONE) {
           if (object && object->IsSelected) {
-            object = NULL;
+            object = nullptr;
           } else {
             action = ACTION_NOMOVE;
           }
@@ -1986,7 +1986,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           GraphicBufferClass temp_surface;
           temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
-                            (RadarHeight + 16) & 0xfffffff0, NULL, 0,
+                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
                             (GBC_Enum)GBC_VIDEOMEM);
 
           /*

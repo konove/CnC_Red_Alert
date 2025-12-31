@@ -305,7 +305,7 @@ static char InternetTxt[22][40] = {"Internet H2H",
 char *Extract_String(void const *data, int string) {
   unsigned short int const *ptr;
 
-  if (!data || string < 0) return (NULL);
+  if (!data || string < 0) return (nullptr);
 
   if (string >= 4567) return (InternetTxt[string - 4567]);
 

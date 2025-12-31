@@ -70,14 +70,14 @@ char MessageListClass::BufferAvail[MAX_NUM_MESSAGES];
 MessageListClass::MessageListClass(void) {
   int i;
 
-  MessageList = 0;
+  MessageList = nullptr;
   MessageX = 0;
   MessageY = 0;
   MaxMessages = 0;
   MaxChars = 0;
   Height = 0;
-  EditLabel = 0;
-  EditBuf = 0;
+  EditLabel = nullptr;
+  EditBuf = nullptr;
   EditCurPos = 0;
   EditInitPos = 0;
 
@@ -146,7 +146,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   /*------------------------------------------------------------------------
   Init variables
   ------------------------------------------------------------------------*/
-  MessageList = 0;
+  MessageList = nullptr;
   MessageX = x;
   MessageY = y;
 
@@ -157,8 +157,8 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   if (MaxChars > MAX_MESSAGE_LENGTH) MaxChars = MAX_MESSAGE_LENGTH;
 
   Height = height;
-  EditLabel = 0;
-  EditBuf = 0;
+  EditLabel = nullptr;
+  EditBuf = nullptr;
   EditCurPos = 0;
   EditInitPos = 0;
 }
@@ -315,7 +315,7 @@ TextLabelClass *MessageListClass::Add_Message(char *txt, int color,
     .....................................................................*/
     if (txtlabel == EditLabel)
       txtlabel = (TextLabelClass *)txtlabel->Get_Next();
-    if (txtlabel == NULL) return (NULL);
+    if (txtlabel == nullptr) return (nullptr);
 
     /*.....................................................................
     Remove this message from the list; mark its buffer as being available.
@@ -418,7 +418,7 @@ TextLabelClass *MessageListClass::Add_Message(char *txt, int color,
   }
   if (!found) {
     delete txtlabel;
-    return (NULL);
+    return (nullptr);
   }
 
   /*------------------------------------------------------------------------
@@ -456,7 +456,7 @@ TextLabelClass *MessageListClass::Add_Edit(int color, TextPrintType style,
   /*------------------------------------------------------------------------
   Do nothing if we're already in "edit" mode
   ------------------------------------------------------------------------*/
-  if (EditLabel) return (NULL);
+  if (EditLabel) return (nullptr);
 
   /*------------------------------------------------------------------------
   Initialize the buffer positions; add a new label to the label list.
@@ -471,7 +471,7 @@ TextLabelClass *MessageListClass::Add_Edit(int color, TextPrintType style,
   if (EditLabel)
     EditBuf = EditLabel->Text;
   else
-    EditBuf = NULL;
+    EditBuf = nullptr;
 
   return (EditLabel);
 }
@@ -492,7 +492,7 @@ TextLabelClass *MessageListClass::Add_Edit(int color, TextPrintType style,
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 char *MessageListClass::Get_Edit_Buf(void) {
-  if (!EditBuf) return (NULL);
+  if (!EditBuf) return (nullptr);
 
   return (EditBuf + EditInitPos);
 }
@@ -536,8 +536,8 @@ int MessageListClass::Manage(void) {
       values.
       ..................................................................*/
       if (txtlabel == EditLabel) {
-        EditLabel = 0;
-        EditBuf = 0;
+        EditLabel = nullptr;
+        EditBuf = nullptr;
       }
       /*..................................................................
       Save the next ptr in the list; remove this entry

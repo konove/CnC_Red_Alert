@@ -61,12 +61,12 @@ static VQAConfig _defaultconfig = {
     /* DrawerCallback: This is a function that is called for every frame
      * in the movie.
      */
-    NULL,
+    nullptr,
 
     /* EventHandler: This is a function that is called for every event that
      * the client requested to be notified about.
      */
-    NULL,
+    nullptr,
 
     /* NotifyFlags: Flags representing the events the client wishes to be
      * notified about during playback.
@@ -80,7 +80,7 @@ static VQAConfig _defaultconfig = {
     -1,
 
     /* ImageBuf: Pointer to image buffer to draw into. */
-    NULL,
+    nullptr,
 
     /* ImageWidth, ImageHeight: Width and height dimensions of image buffer.
      * A width and height value of -1 tells the player to consider the image
@@ -121,19 +121,19 @@ static VQAConfig _defaultconfig = {
     /* NumCBBufs: The number of codebook buffers to allocate/use. */
     3,
 
-    0,     // AudioDeviceID
-    NULL,  // AudioCallback
-    NULL,  // AudioSpec
+    0,        // AudioDeviceID
+    nullptr,  // AudioCallback
+    nullptr,  // AudioSpec
 
     /* VocFile: Filename of audio track override. A value of 0 tells the
      * player not to override the movies audio track.
      */
-    NULL,
+    nullptr,
 
     /* AudioBuf: Audio buffer to use. A value of 0 tells the player that
      * it has to allocate a buffer itself.
      */
-    NULL,
+    nullptr,
 
     /* AudioBufSize: Size of audio buffer to use/allocate. A value of -1
      * tells the player to compute the buffer size from the audio
@@ -182,10 +182,10 @@ static VQAConfig _defaultconfig = {
     0,
 
     /* CaptionFont: Caption text font. */
-    NULL,
+    nullptr,
 
     /* EVAFont: EVA text font. */
-    NULL,
+    nullptr,
 
 };
 

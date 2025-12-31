@@ -166,10 +166,10 @@ void VisualControlsClass::Process(void) {
   background.Add_Tail(optionsbtn);
 
   curbutton = 0;
-  buttons[0] = NULL;
-  buttons[1] = NULL;
-  buttons[2] = NULL;
-  buttons[3] = NULL;
+  buttons[0] = nullptr;
+  buttons[1] = nullptr;
+  buttons[2] = nullptr;
+  buttons[3] = nullptr;
   buttons[4] = &resetbtn;
   buttons[5] = &optionsbtn;
 
@@ -177,8 +177,8 @@ void VisualControlsClass::Process(void) {
   buttonsliders[1] = &color;
   buttonsliders[2] = &contrast;
   buttonsliders[3] = &tint;
-  buttonsliders[4] = NULL;
-  buttonsliders[5] = NULL;
+  buttonsliders[4] = nullptr;
+  buttonsliders[5] = nullptr;
 
   /*
   **	Main Processing Loop.

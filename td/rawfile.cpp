@@ -315,7 +315,7 @@ void RawFileClass::Error(int error, int canretry, char const *filename) {
 RawFileClass::RawFileClass(char const *filename)
     :
 #ifdef PORTABLE
-      Handle(NULL),
+      Handle(nullptr),
 #else
       Handle(-1),
 #endif
@@ -328,7 +328,7 @@ RawFileClass::~RawFileClass(void) {
     free((char *)Filename);
   }
   Allocated = false;
-  Filename = 0;
+  Filename = nullptr;
 }
 
 /***********************************************************************************************
@@ -353,11 +353,11 @@ RawFileClass::~RawFileClass(void) {
 char const *RawFileClass::Set_Name(char const *filename) {
   if (Filename && Allocated) {
     free((char *)Filename);
-    Filename = 0;
+    Filename = nullptr;
     Allocated = false;
   }
 
-  if (!filename) return (NULL);
+  if (!filename) return (nullptr);
 
   Filename = strdup(filename);
   if (!Filename) {
@@ -676,7 +676,7 @@ void RawFileClass::Close(void) {
     *return.
     */
 #ifdef PORTABLE
-    Handle = NULL;
+    Handle = nullptr;
 #else
     Handle = -1;
 #endif

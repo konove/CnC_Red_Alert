@@ -57,7 +57,7 @@ bool EnumMCI(MCIDevice* desc, void* context);
  *
  ****************************************************************************/
 
-MPGSettings::MPGSettings(const char* deviceName) : mDeviceName(NULL) {
+MPGSettings::MPGSettings(const char* deviceName) : mDeviceName(nullptr) {
   SetDeviceName(deviceName);
 
 #ifdef MCIMPEG
@@ -76,10 +76,10 @@ MPGSettings::MPGSettings(const char* deviceName) : mDeviceName(NULL) {
 #endif
 }
 
-MPGSettings::MPGSettings(FileClass& file) : mDeviceName(NULL) {
+MPGSettings::MPGSettings(FileClass& file) : mDeviceName(nullptr) {
   INIClass ini;
   char buffer[256];
-  char* device = NULL;
+  char* device = nullptr;
 
 #ifdef MCIMPEG
   int count = mMCI.GetDeviceCount();
@@ -165,7 +165,7 @@ MPGSettings::~MPGSettings(void) {
 void MPGSettings::SetDeviceName(const char* deviceName) {
   if (mDeviceName) free(mDeviceName);
 
-  mDeviceName = NULL;
+  mDeviceName = nullptr;
 
   if (deviceName) mDeviceName = strdup(deviceName);
 }
@@ -264,10 +264,10 @@ void MPGSettings::Dialog(void) {
   int curbutton;
   TextButtonClass* buttons[NUM_OF_BUTTONS];
   int i;
-  char* origDevice = NULL;
+  char* origDevice = nullptr;
 
   //	Buttons
-  ControlClass* commands = NULL;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass okaybtn(BUTTON_OKAY, TXT_OK, TPF_BUTTON, d_okay_x, d_okay_y,
                           d_okay_w, d_okay_h);
@@ -442,7 +442,7 @@ void MPGSettings::Dialog(void) {
           buttons[curbutton]->IsPressed = false;
 
           if (method.Current_Index() == 0) {
-            SetDeviceName(NULL);
+            SetDeviceName(nullptr);
           } else {
             i = method.Current_Index();
 #ifdef MCIMPEG
@@ -471,7 +471,7 @@ void MPGSettings::Dialog(void) {
           process = false;
 
           if (method.Current_Index() == 0) {
-            SetDeviceName(NULL);
+            SetDeviceName(nullptr);
           } else {
             i = method.Current_Index();
 #ifdef MCIMPEG

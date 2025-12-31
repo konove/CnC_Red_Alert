@@ -135,7 +135,7 @@ class ObjectClass : public AbstractClass {
   */
   ObjectClass(RTTIType rtti, int id);
   ObjectClass(NoInitClass const &x) : AbstractClass(x), Next(x), Trigger(x){};
-  virtual ~ObjectClass(void) { Next = 0; };
+  virtual ~ObjectClass(void) { Next = nullptr; };
   int operator<(ObjectClass const &object) const {
     return Sort_Y() < object.Sort_Y();
   };
@@ -232,7 +232,7 @@ class ObjectClass : public AbstractClass {
   virtual bool In_Range(COORDINATE, int = 0) const;
   virtual int Weapon_Range(int = 0) const;
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = 0, bool forced = false);
+                                 TechnoClass *source = nullptr, bool forced = false);
   virtual void Scatter(COORDINATE, bool forced = false, bool nokidding = false);
   virtual bool Catch_Fire(void);
   virtual void Fire_Out(void);

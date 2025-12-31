@@ -260,7 +260,7 @@ int NonSequencedConnClass::Receive_Packet(void *buf, int buflen) {
       /*
       ............... If ptr is valid, get ptr to its data ...............
       */
-      if (send_entry != NULL) {
+      if (send_entry != nullptr) {
         entry_data = (CommHeaderType *)send_entry->Buffer;
         /*
         .............. If ACK is for this entry, mark it ................
@@ -550,7 +550,7 @@ int NonSequencedConnClass::Service_Send_Queue(void) {
       /*
       ....................... unqueue the packet .........................
       */
-      Queue->UnQueue_Send(NULL, NULL, i);
+      Queue->UnQueue_Send(nullptr, nullptr, i);
       i--;
     }
   }
@@ -692,11 +692,11 @@ int NonSequencedConnClass::Service_Receive_Queue(void) {
       packet_hdr = (CommHeaderType *)(rec_entry->Buffer);
 
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
-        Queue->UnQueue_Receive(NULL, NULL, i);
+        Queue->UnQueue_Receive(nullptr, nullptr, i);
         i--;
       } else {
         if (packet_hdr->PacketID < LastSeqID) {
-          Queue->UnQueue_Receive(NULL, NULL, i);
+          Queue->UnQueue_Receive(nullptr, nullptr, i);
           i--;
         }
       }

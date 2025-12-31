@@ -102,7 +102,7 @@ static void Socket_Event_Handler(int socket, SocketEvent event, void *data) {
  *=============================================================================================*/
 WinsockInterfaceClass::WinsockInterfaceClass(void) {
   WinsockInitialised = false;
-  ASync = INVALID_HANDLE_VALUE;
+  ASync = nullptr;
   Socket = INVALID_SOCKET;
 }
 
@@ -321,7 +321,7 @@ bool WinsockInterfaceClass::Init(void) {
   ** Initialise socket and event handle to null
   */
   Socket = INVALID_SOCKET;
-  ASync = INVALID_HANDLE_VALUE;
+  ASync = nullptr;
   Discard_In_Buffers();
   Discard_Out_Buffers();
 

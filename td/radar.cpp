@@ -82,7 +82,7 @@
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
 
-void const *RadarClass::RadarAnim = NULL;
+void const *RadarClass::RadarAnim = nullptr;
 
 static bool FullRedraw = false;
 
@@ -1335,7 +1335,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
   int x, y;                 // Sub cell pixel coordinates.
   int cellx, celly;         // Sub cell pixel coordinates.
   bool shadow;              // is the cell in shadow or not
-  ObjectClass *object = 0;  // what object is in the cell
+  ObjectClass *object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
@@ -1417,7 +1417,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
 
           default:
             action = ACTION_NONE;
-            object = NULL;
+            object = nullptr;
             break;
         }
 
@@ -1428,7 +1428,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
         **/
         if (action == ACTION_NONE) {
           if (object && object->IsSelected) {
-            object = NULL;
+            object = nullptr;
           } else {
             action = ACTION_NOMOVE;
           }
@@ -1606,7 +1606,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           GraphicBufferClass temp_surface;
           temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
-                            (RadarHeight + 16) & 0xfffffff0, NULL, 0,
+                            (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
                             (GBC_Enum)GBC_VIDEOMEM);
 
           HidPage.Blit(

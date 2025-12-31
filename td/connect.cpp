@@ -247,6 +247,6 @@ char *ConnectionClass::Command_Name(int command) {
   if (command >= 0 && command < PACKET_COUNT) {
     return (Commands[command]);
   } else {
-    return (NULL);
+    return (nullptr);
   }
 }

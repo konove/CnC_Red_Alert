@@ -74,9 +74,9 @@ class WWMouseClass {
     CONDHIDDEN = 2,
   };
 
-  uint8_t *MouseCursor = NULL;  // pointer to the mouse cursor in memory
-  void *SDLCursor = NULL;
-  void *SDLSurface = NULL;
+  uint8_t *MouseCursor = nullptr;  // pointer to the mouse cursor in memory
+  void *SDLCursor = nullptr;
+  void *SDLSurface = nullptr;
   int MouseXHot;  // X hot spot of the current mouse cursor
   int MouseYHot;  // Y hot spot of the current mouse cursor
 

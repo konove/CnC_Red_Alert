@@ -75,7 +75,7 @@
  *                                                                                             *
  *    This constructor for the vector class is passed the initial size of the
  *vector and an    * optional pointer to a preallocated block of memory that the
- *vector will be placed in.    * If this optional pointer is NULL (or not
+ *vector will be placed in.    * If this optional pointer is nullptr (or not
  *provided), then the vector is allocated out     * of free store (with the
  *"new" operator).                                                 *
  *                                                                                             *
@@ -92,7 +92,7 @@
  *=============================================================================================*/
 template <class T>
 VectorClass<T>::VectorClass(unsigned size, T const *array)
-    : Vector(0), VectorMax(size), IsAllocated(false) {
+    : Vector(nullptr), VectorMax(size), IsAllocated(false) {
   /*
   **	Allocate the vector. The default constructor will be called for every
   **	object in this vector.
@@ -142,7 +142,7 @@ VectorClass<T>::~VectorClass(void) {
  *=============================================================================================*/
 template <class T>
 VectorClass<T>::VectorClass(VectorClass<T> const &vector)
-    : Vector(0), VectorMax(0), IsAllocated(false) {
+    : Vector(nullptr), VectorMax(0), IsAllocated(false) {
   *this = vector;
 }
 
@@ -174,7 +174,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
         }
       }
     } else {
-      Vector = 0;
+      Vector = nullptr;
       IsAllocated = false;
     }
   }
@@ -283,7 +283,7 @@ template <class T>
 void VectorClass<T>::Clear(void) {
   if (Vector && IsAllocated) {
     delete[] Vector;
-    Vector = 0;
+    Vector = nullptr;
   }
   IsAllocated = false;
   VectorMax = 0;
@@ -349,7 +349,7 @@ int VectorClass<T>::Resize(unsigned newsize, T const *array) {
       */
       if (IsAllocated) {
         delete[] Vector;
-        Vector = 0;
+        Vector = nullptr;
       }
     }
 

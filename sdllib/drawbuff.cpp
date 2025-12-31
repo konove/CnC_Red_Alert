@@ -13,7 +13,7 @@ GraphicViewPortClass *LogicPage;
 bool AllowHardwareBlitFills = true;
 bool OverlappedVideoBlits = true;
 
-GraphicBufferClass *WindowBuffer = NULL;
+GraphicBufferClass *WindowBuffer = nullptr;
 
 inline int Make_Code(int x, int y, int w, int h) {
   return (x < 0 ? 0b1000 : 0) | (x >= w ? 0b0100 : 0) | (y < 0 ? 0b0010 : 0) |
@@ -896,7 +896,7 @@ GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass &ptr) {
 
 GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *graphic_buff,
                                            int x, int y, int w, int h)
-    : GraphicBuff(NULL) {
+    : GraphicBuff(nullptr) {
   Attach(graphic_buff, x, y, w, h);
 }
 

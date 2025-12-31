@@ -402,7 +402,7 @@ long CCINIClass::Get_Owners(char const *section, char const *entry,
 
     while (name) {
       ownable |= Owner_From_Name(name);
-      name = strtok(NULL, ",");
+      name = strtok(nullptr, ",");
     }
   }
   return (ownable);
@@ -1074,7 +1074,7 @@ bool CCINIClass::Put_TheaterType(char const *section, char const *entry,
  *          entry    -- Identifier of the entry to search for. *
  *                                                                                             *
  * OUTPUT:  Returns with the trigger type pointer if a match was found. No match
- *found will    * return a NULL. *
+ *found will    * return a nullptr. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -1087,7 +1087,7 @@ TriggerTypeClass *CCINIClass::Get_TriggerType(char const *section,
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     return (TriggerTypeClass::From_Name(buffer));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -1363,12 +1363,12 @@ long CCINIClass::Get_Buildings(char const *section, char const *entry,
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     pre = 0;
     char *token = strtok(buffer, ",");
-    while (token != NULL && *token != '\0') {
+    while (token != nullptr && *token != '\0') {
       StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
         pre |= (1L << building);
       }
-      token = strtok(NULL, ",");
+      token = strtok(nullptr, ",");
     }
   } else {
     pre = defvalue;

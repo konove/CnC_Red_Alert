@@ -59,7 +59,7 @@
 #ifdef WIN32
 #include "wincomm.h"
 #include "modemreg.h"
-ModemRegistryEntryClass *ModemRegistry = NULL;  // Ptr to modem registry data
+ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 #endif                                          // WIN32
 
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
@@ -286,7 +286,7 @@ int Test_Null_Modem(void) {
   **	These dimensions will control how the dialog box looks.
   */
   strcpy(buffer, Text_String(TXT_WAITING_CONNECT));
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   width = std::max(width, 50 * RESFACTOR);
@@ -626,7 +626,7 @@ static int Reconnect_Null_Modem(void) {
   **	These dimensions will control how the dialog box looks.
   */
   strcpy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   width = std::max(width, 50 * RESFACTOR);
@@ -825,7 +825,7 @@ void Destroy_Null_Connection(int id, int error) {
 
   if (strlen(txt)) {
     Session.Messages.Add_Message(
-        NULL, 0, txt,
+        nullptr, 0, txt,
         (housep->RemapColor == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
                                                    : housep->RemapColor,
         TPF_TEXT, Rule.MessageDelay * TICKS_PER_MINUTE);
@@ -859,7 +859,7 @@ void Destroy_Null_Connection(int id, int error) {
   if (Session.NumPlayers == 1) {
     sprintf(txt, "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Session.Messages.Add_Message(
-        NULL, 0, txt,
+        nullptr, 0, txt,
         (housep->RemapColor == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
                                                    : housep->RemapColor,
         TPF_TEXT, Rule.MessageDelay * TICKS_PER_MINUTE);
@@ -2041,7 +2041,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     }
     delete ModemRegistry;
   }
-  ModemRegistry = NULL;
+  ModemRegistry = nullptr;
 
 #endif  // WIN32
 
@@ -2250,7 +2250,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_CENTER | TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_CENTER | TPF_TEXT);
 
         /*
         ** Dialog & Field labels
@@ -3180,7 +3180,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                          d_nod_w, d_nod_h);
 #else
   char housetext[25] = "";
-  Fancy_Text_Print("", 0, 0, 0, 0, TPF_TEXT);
+  Fancy_Text_Print("", 0, 0, nullptr, 0, TPF_TEXT);
   DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), TPF_TEXT,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MFCD::Retrieve("BTN-UP.SHP"),
@@ -3403,7 +3403,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   for (i = 0; i < Session.Scenarios.Count(); i++) {
     int j;
-    for (j = 0; EngMisStr[j] != NULL; j++) {
+    for (j = 0; EngMisStr[j] != nullptr; j++) {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
 #ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
                    // assumed). 	Add mission if it's available to us.
@@ -3422,7 +3422,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         break;
       }
     }
-    if (EngMisStr[j] == NULL) {
+    if (EngMisStr[j] == nullptr) {
 #ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
                    // assumed). Added officialness check. 	Add mission if
                    // it's available to us.
@@ -3445,7 +3445,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   numbers from here on out
   ........................................................................*/
 #ifdef FIXIT_RANDOM_GAME
-  srand(time(NULL));
+  srand(time(nullptr));
   Seed = rand();
 #else
 //	randomize();
@@ -3462,7 +3462,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
                                   ? PCOLOR_REALLY_BLUE
                                   : Session.ColorIdx,
-                              TPF_TEXT, NULL, '_', d_message_w);
+                              TPF_TEXT, nullptr, '_', d_message_w);
   }
 
   /*........................................................................
@@ -3477,7 +3477,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)
-    Session.Messages.Add_Message(NULL, 0, ModemRXString, PCOLOR_BROWN, TPF_TEXT,
+    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN, TPF_TEXT,
                                  -1);
 
   ModemRXString[0] = '\0';
@@ -3590,7 +3590,7 @@ oh_dear_its_a_label:
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_CENTER | TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_CENTER | TPF_TEXT);
 
         /*...............................................................
         Dialog & Field labels
@@ -4144,7 +4144,7 @@ oh_dear_its_a_label:
             Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
                                           ? PCOLOR_REALLY_BLUE
                                           : Session.ColorIdx,
-                                      TPF_TEXT, NULL, '_', d_message_w);
+                                      TPF_TEXT, nullptr, '_', d_message_w);
 
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
           } /* end of send message */
@@ -5143,7 +5143,7 @@ int Com_Show_Scenario_Dialog(void) {
                          d_nod_w, d_nod_h);
 #else   // OLDWAY
   char housetext[25] = "";
-  Fancy_Text_Print("", 0, 0, 0, 0, TPF_TEXT);
+  Fancy_Text_Print("", 0, 0, nullptr, 0, TPF_TEXT);
   DropListClass housebtn(BUTTON_HOUSE, housetext, sizeof(housetext), TPF_TEXT,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MFCD::Retrieve("BTN-UP.SHP"),
@@ -5305,7 +5305,7 @@ int Com_Show_Scenario_Dialog(void) {
   Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
                                 ? PCOLOR_REALLY_BLUE
                                 : Session.ColorIdx,
-                            TPF_TEXT, NULL, '_', d_message_w);
+                            TPF_TEXT, nullptr, '_', d_message_w);
   Session.WWChat = 0;
 
   /*........................................................................
@@ -5320,7 +5320,7 @@ int Com_Show_Scenario_Dialog(void) {
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)
-    Session.Messages.Add_Message(NULL, 0, ModemRXString, PCOLOR_BROWN, TPF_TEXT,
+    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN, TPF_TEXT,
                                  -1);
 
   ModemRXString[0] = '\0';
@@ -5488,7 +5488,7 @@ int Com_Show_Scenario_Dialog(void) {
               // TBLACK, TPF_TEXT | TPF_CENTER);
 
               // EW - Scenario language translation goes here!!!!!!!! VG
-              for (i = 0; EngMisStr[i] != NULL; i++) {
+              for (i = 0; EngMisStr[i] != nullptr; i++) {
                 if (!strcmp(Session.Options.ScenarioDescription,
                             EngMisStr[i])) {
 #if defined(GERMAN) || defined(FRENCH)
@@ -5499,7 +5499,7 @@ int Com_Show_Scenario_Dialog(void) {
                   break;
                 }
               }
-              if (EngMisStr[i] == NULL) {
+              if (EngMisStr[i] == nullptr) {
                 sprintf(txt, "%s %s", p, Session.Options.ScenarioDescription);
               }
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK,
@@ -5631,7 +5631,7 @@ int Com_Show_Scenario_Dialog(void) {
                     Get_Mouse_Y() >= d_options_y &&
                     Get_Mouse_Y() <= d_options_y + d_options_h)) {
           Session.Messages.Add_Message(
-              NULL, 0, (char *)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+              nullptr, 0, (char *)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
               PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
@@ -5758,7 +5758,7 @@ int Com_Show_Scenario_Dialog(void) {
           Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
                                         ? PCOLOR_REALLY_BLUE
                                         : Session.ColorIdx,
-                                    TPF_TEXT, NULL, '_', d_message_w);
+                                    TPF_TEXT, nullptr, '_', d_message_w);
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
         }
         break;
@@ -6749,7 +6749,7 @@ static int Phone_Dialog(void) {
 
         // init font variables
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_CENTER | TPF_TEXT);
+        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_CENTER | TPF_TEXT);
 
         /*...............................................................
         Dialog & Field labels

@@ -163,13 +163,13 @@ TeamTypeClass::TeamTypeClass(void)
       MaxAllowed(0),
       Fear(0),
       House(HOUSE_NONE),
-      Trigger(0),
+      Trigger(nullptr),
       Origin(-1),
       Number(0),
       MissionCount(0),
       ClassCount(0) {
   for (int i = 0; i < MAX_TEAM_CLASSCOUNT; i++) {
-    Members[i].Class = NULL;
+    Members[i].Class = nullptr;
     Members[i].Quantity = 0;
   }
 }
@@ -211,7 +211,7 @@ TeamTypeClass *TeamTypeClass::As_Pointer(char const *name) {
       }
     }
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***************************************************************************
@@ -316,7 +316,7 @@ void TeamTypeClass::operator delete(void *ptr) {
  * INPUT:   none *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the newly created team object. If one
- *could not be       * created, then NULL is returned. *
+ *could not be       * created, then nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -327,7 +327,7 @@ TeamClass *TeamTypeClass::Create_One_Of(void) const {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return (new TeamClass(this, HouseClass::As_Pointer(House)));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -379,7 +379,7 @@ void TeamTypeClass::Destroy_All_Of(void) const {
  *teams will be      * considered in the selection process. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the team type that should be created. If
- *no team should  * be created, then it returns NULL. *
+ *no team should  * be created, then it returns nullptr. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -392,7 +392,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
 // TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
 // long atypes, long utypes, long itypes, long vtypes, bool alerted)
 {
-  //	TeamTypeClass const * best = NULL;
+  //	TeamTypeClass const * best = nullptr;
   //	int bestvalue = 0;
 
   TeamTypeClass const *choices[20];
@@ -401,7 +401,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
   for (int index = 0; index < TeamTypes.Count(); index++) {
     TeamTypeClass const *ttype = TeamTypes.Ptr(index);
 
-    assert(ttype != NULL);
+    assert(ttype != nullptr);
 
     int maxnum = ttype->MaxAllowed;
     if ((alerted && !ttype->IsAutocreate) ||
@@ -411,7 +411,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
 
     if (choicecount >= ARRAY_SIZE(choices)) break;
 
-    if (ttype != NULL && ttype->House == house->Class->House &&
+    if (ttype != nullptr && ttype->House == house->Class->House &&
         ttype->Number < maxnum) {
       choices[choicecount++] = ttype;
 
@@ -459,7 +459,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
         value = ttype->RecruitPriority / 2;
       }
 
-      if (best == NULL || bestvalue < value) {
+      if (best == nullptr || bestvalue < value) {
         bestvalue = value;
         best = ttype;
       }
@@ -470,7 +470,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
   if (choicecount > 0) {
     return (choices[Random_Pick(0, choicecount - 1)]);
   }
-  return (NULL);
+  return (nullptr);
 
   //	return(best);
 }
@@ -484,7 +484,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
  * INPUT:   name  -- Pointer to the ASCII name of the team type. *
  *                                                                                             *
  * OUTPUT:  Returns with a pointer to the team type that this ASCII name
- *represents. If there  * is no match, the NULL is returned. *
+ *represents. If there  * is no match, the nullptr is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -498,7 +498,7 @@ TeamTypeClass *TeamTypeClass::From_Name(char const *name) {
       }
     }
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -1343,7 +1343,7 @@ bool TeamTypeClass::Edit(void) {
         InitNum = atoi(initnum_edt.Get_Text());
         MaxAllowed = atoi(maxnum_edt.Get_Text());
         House = HousesType(housebtn.Current_Index());
-        Trigger = NULL;
+        Trigger = nullptr;
         if (triggerbtn.Current_Index() > 0) {
           Trigger = TriggerTypes.Ptr(triggerbtn.Current_Index() - 1);
         }
@@ -1591,7 +1591,7 @@ char const *TeamMissionClass::Description(int index) const {
 void TeamTypeClass::Detach(TARGET target, bool) {
   if (Is_Target_TriggerType(target) && Trigger.Is_Valid() &&
       Trigger == As_TriggerType(target)) {
-    Trigger = NULL;
+    Trigger = nullptr;
   }
 }
 
@@ -1628,9 +1628,9 @@ void TeamTypeClass::Read_INI(CCINIClass &ini) {
   */
   for (int index = 0; index < len; index++) {
     team = new TeamTypeClass();
-    if (team != NULL) {
+    if (team != nullptr) {
       char const *entry = ini.Get_Entry(INI_Name(), index);
-      ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf));
+      ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
       team->Fill_In((char *)entry, buf);
     }
   }
@@ -1674,7 +1674,7 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
   int code;
   switch (NewINIFormat) {
     default:
-      code = atoi(strtok(NULL, ","));
+      code = atoi(strtok(nullptr, ","));
       IsRoundAbout = ((code & 0x0001) != 0);
       IsSuicide = ((code & 0x0002) != 0);
       IsAutocreate = ((code & 0x0004) != 0);
@@ -1684,39 +1684,39 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
 
     case 0:
     case 1:
-      IsRoundAbout = atoi(strtok(NULL, ","));
-      IsSuicide = atoi(strtok(NULL, ","));
-      IsAutocreate = atoi(strtok(NULL, ","));
-      IsPrebuilt = atoi(strtok(NULL, ","));
-      IsReinforcable = atoi(strtok(NULL, ","));
+      IsRoundAbout = atoi(strtok(nullptr, ","));
+      IsSuicide = atoi(strtok(nullptr, ","));
+      IsAutocreate = atoi(strtok(nullptr, ","));
+      IsPrebuilt = atoi(strtok(nullptr, ","));
+      IsReinforcable = atoi(strtok(nullptr, ","));
       break;
   }
 
-  RecruitPriority = atoi(strtok(NULL, ","));
-  InitNum = atoi(strtok(NULL, ","));
-  MaxAllowed = atoi(strtok(NULL, ","));
-  Origin = atoi(strtok(NULL, ","));
+  RecruitPriority = atoi(strtok(nullptr, ","));
+  InitNum = atoi(strtok(nullptr, ","));
+  MaxAllowed = atoi(strtok(nullptr, ","));
+  Origin = atoi(strtok(nullptr, ","));
 
   switch (NewINIFormat) {
     default:
-      Trigger.Set_Raw(atoi(strtok(NULL, ",")));
+      Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
       break;
 
     case 0:
     case 1:
       // Throw this token away -- it isn't used.
-      strtok(NULL, ",");
+      strtok(nullptr, ",");
       break;
   }
 
   /*
   **	Fetch the team member types and quantity values.
   */
-  ClassCount = atoi(strtok(NULL, ","));
+  ClassCount = atoi(strtok(nullptr, ","));
   for (int index = 0; index < ClassCount; index++) {
-    char *p1 = strtok(NULL, ",:");
-    char *p2 = strtok(NULL, ",:");
-    TechnoTypeClass const *otype = NULL;
+    char *p1 = strtok(nullptr, ",:");
+    char *p2 = strtok(nullptr, ",:");
+    TechnoTypeClass const *otype = nullptr;
 
     /*
     **	See if this is an infantry name
@@ -1766,17 +1766,17 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
   /*
   **	Fetch the missions assigned to this team type.
   */
-  MissionCount = atoi(strtok(NULL, ","));
+  MissionCount = atoi(strtok(nullptr, ","));
   for (int index = 0; index < MissionCount; index++) {
-    MissionList[index].Mission = TeamMissionType(atoi(strtok(NULL, ",:")));
-    MissionList[index].Data.Value = atoi(strtok(NULL, ",:"));
+    MissionList[index].Mission = TeamMissionType(atoi(strtok(nullptr, ",:")));
+    MissionList[index].Data.Value = atoi(strtok(nullptr, ",:"));
   }
 
   if (NewINIFormat < 2) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger.Set_Raw(atoi(strtok(NULL, ",")));
+    Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
   }
 }
 

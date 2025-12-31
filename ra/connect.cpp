@@ -245,7 +245,8 @@ int ConnectionClass::Send_Packet(void *buf, int buflen, int ack_req) {
   /*------------------------------------------------------------------------
   Add it to the queue; don't add any extra data with it.
   ------------------------------------------------------------------------*/
-  if (Queue->Queue_Send(PacketBuf, buflen + sizeof(CommHeaderType), NULL, 0)) {
+  if (Queue->Queue_Send(PacketBuf, buflen + sizeof(CommHeaderType), nullptr,
+                        0)) {
     if (ack_req) {
       NumSendAck++;
     } else {
@@ -310,7 +311,7 @@ int ConnectionClass::Receive_Packet(void *buf, int buflen) {
       /*..................................................................
       If ptr is valid, get ptr to its data
       ..................................................................*/
-      if (send_entry != NULL) {
+      if (send_entry != nullptr) {
         entry_data = (CommHeaderType *)send_entry->Buffer;
 
         /*...............................................................
@@ -341,7 +342,7 @@ int ConnectionClass::Receive_Packet(void *buf, int buflen) {
     /*.....................................................................
     Error if we can't queue the packet
     .....................................................................*/
-    if (!Queue->Queue_Receive(buf, buflen, NULL, 0)) {
+    if (!Queue->Queue_Receive(buf, buflen, nullptr, 0)) {
       return (0);
     }
 
@@ -404,7 +405,7 @@ int ConnectionClass::Receive_Packet(void *buf, int buflen) {
       /*..................................................................
       If we can't queue the packet, return; don't send an ACK.
       ..................................................................*/
-      if (!Queue->Queue_Receive(buf, buflen, NULL, 0)) {
+      if (!Queue->Queue_Receive(buf, buflen, nullptr, 0)) {
         return (0);
       }
 
@@ -451,7 +452,7 @@ int ConnectionClass::Receive_Packet(void *buf, int buflen) {
     ackpacket.MagicNumber = Magic_Num();
     ackpacket.Code = PACKET_ACK;
     ackpacket.PacketID = packet->PacketID;
-    Send((char *)&ackpacket, sizeof(CommHeaderType), NULL, 0);
+    Send((char *)&ackpacket, sizeof(CommHeaderType), nullptr, 0);
 
     return (1);
   }
@@ -623,7 +624,7 @@ int ConnectionClass::Service_Send_Queue(void) {
       /*..................................................................
       Unqueue the packet
       ..................................................................*/
-      Queue->UnQueue_Send(NULL, NULL, i, NULL, NULL);
+      Queue->UnQueue_Send(nullptr, nullptr, i, nullptr, nullptr);
       i--;
     }
   }
@@ -739,11 +740,11 @@ int ConnectionClass::Service_Receive_Queue(void) {
       packet_hdr = (CommHeaderType *)(rec_entry->Buffer);
 
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
-        Queue->UnQueue_Receive(NULL, NULL, i, NULL, NULL);
+        Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);
         i--;
 
       } else if (packet_hdr->PacketID < LastSeqID) {
-        Queue->UnQueue_Receive(NULL, NULL, i, NULL, NULL);
+        Queue->UnQueue_Receive(nullptr, nullptr, i, nullptr, nullptr);
         i--;
       }
     }
@@ -812,7 +813,7 @@ unsigned long ConnectionClass::Time(void) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		ptr to command name, NULL if invalid
+ *		ptr to command name, nullptr if invalid
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -826,7 +827,7 @@ char *ConnectionClass::Command_Name(int command) {
   if (command >= 0 && command < PACKET_COUNT) {
     return (Commands[command]);
   } else {
-    return (NULL);
+    return (nullptr);
   }
 
 } /* end of Command_Name */

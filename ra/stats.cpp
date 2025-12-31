@@ -165,7 +165,7 @@ extern "C" char CPUType;
 bool GameTimerInUse = false;
 TimerClass GameTimer;
 long GameEndTime;
-void *PacketLater = NULL;
+void *PacketLater = nullptr;
 
 #include "woldebug.h"
 
@@ -375,8 +375,8 @@ void Send_Statistics_Packet(void) {
       **
       **	Game was a draw
       */
-      HouseClass *player1 = NULL;
-      HouseClass *player2 = NULL;
+      HouseClass *player1 = nullptr;
+      HouseClass *player2 = nullptr;
       for (int h = 0; h < Session.Players.Count(); h++) {
         HouseClass *ptr =
             HouseClass::As_Pointer((HousesType)(h + HOUSE_MULTI1));
@@ -878,7 +878,7 @@ void Send_Statistics_Packet(void) {
     ** Send the packet we calculated earlier when the disconnect occurred
     */
     packet = PacketLater;
-    PacketLater = NULL;
+    PacketLater = nullptr;
   }
 
 #ifdef WOLAPI_INTEGRATION

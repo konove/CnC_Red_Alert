@@ -145,7 +145,7 @@ FootClass *CargoClass::Detach_Object(void) {
 
   if (unit) {
     CargoHold = (FootClass *)unit->Next;
-    unit->Next = 0;
+    unit->Next = nullptr;
     Quantity--;
   }
   return (unit);
@@ -172,5 +172,5 @@ FootClass *CargoClass::Attached_Object(void) const {
   if (Is_Something_Attached()) {
     return (CargoHold);
   }
-  return (NULL);
+  return (nullptr);
 }

@@ -63,10 +63,10 @@ typedef struct {
 
 unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
 extern "C" {
-char *BigShapeBufferStart = NULL;
+char *BigShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = FALSE;
 }
-char *BigShapeBufferPtr = NULL;
+char *BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
 bool ReallocShapeBufferFlag = FALSE;
 
@@ -132,7 +132,7 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
   // valid pointer??
   //
   if (!dataptr || !buffptr) {
-    return (0);
+    return (nullptr);
   }
 
   //
@@ -142,7 +142,7 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
   keyfr = (KeyFrameHeaderType *)dataptr;
 
   if (framenumber >= keyfr->frames) {
-    return (0);
+    return (nullptr);
   }
 
   // calc buff size
@@ -192,7 +192,7 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
-      return (0);
+      return (nullptr);
     }
 
 #ifndef FIXIT_SCORE_CRASH

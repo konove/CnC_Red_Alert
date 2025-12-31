@@ -272,7 +272,7 @@ class TechnoClass : public RadioClass,
         PrimaryFacing(x),
         Arm(x){};
 #endif
-  virtual ~TechnoClass(void) { House = 0; };
+  virtual ~TechnoClass(void) { House = nullptr; };
 
   /*
   **	Query functions.
@@ -287,7 +287,7 @@ class TechnoClass : public RadioClass,
   virtual DirType Turret_Facing(void) const {
     return (PrimaryFacing.Current());
   }
-  CELL Nearby_Location(TechnoClass const *from = NULL) const;
+  CELL Nearby_Location(TechnoClass const *from = nullptr) const;
   TechnoTypeClass *Techno_Type_Class(void) const {
     return ((TechnoTypeClass *)&Class_Of());
   };
@@ -345,7 +345,7 @@ class TechnoClass : public RadioClass,
   virtual bool In_Range(COORDINATE coord, int which = 0) const;
   virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(ObjectClass const *target, int which = 0) const;
-  virtual void Death_Announcement(TechnoClass const *source = 0) const = 0;
+  virtual void Death_Announcement(TechnoClass const *source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual void Assign_Target(TARGET target);
@@ -356,7 +356,7 @@ class TechnoClass : public RadioClass,
   virtual int Weapon_Range(int which) const;
   virtual bool Captured(HouseClass *newowner);
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = 0, bool forced = false);
+                                 TechnoClass *source = nullptr, bool forced = false);
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
                      TechnoClass const **object, int &value,
                      int zone = 0) const;
@@ -366,7 +366,7 @@ class TechnoClass : public RadioClass,
   int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
                             COORDINATE target_coord = 0L,
-                            unsigned char *remap = NULL);
+                            unsigned char *remap = nullptr);
 
   /*
   **	AI.

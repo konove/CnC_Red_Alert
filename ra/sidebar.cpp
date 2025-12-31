@@ -93,9 +93,9 @@
 #include <filesystem>
 #include <format>
 
-void *SidebarClass::SidebarShape = NULL;
-void *SidebarClass::SidebarMiddleShape = NULL;
-void *SidebarClass::SidebarBottomShape = NULL;
+void *SidebarClass::SidebarShape = nullptr;
+void *SidebarClass::SidebarMiddleShape = nullptr;
+void *SidebarClass::SidebarBottomShape = nullptr;
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock
@@ -133,7 +133,7 @@ SidebarClass::StripClass::SelectClass
 /*
 ** Shape data pointers
 */
-void *SidebarClass::StripClass::LogoShapes = NULL;
+void *SidebarClass::StripClass::LogoShapes = nullptr;
 void const *SidebarClass::StripClass::ClockShapes;
 void const *SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
 
@@ -262,7 +262,7 @@ void SidebarClass::One_Time(void) {
   **	Load the sidebar shape in at this time. (Hi-Res sidebar is theater
   *dependant)
   */
-  if (SidebarShape == NULL) {
+  if (SidebarShape == nullptr) {
     SidebarShape = (void *)MFCD::Retrieve("SIDEBAR.SHP");
   }
 }
@@ -1094,7 +1094,7 @@ void const *SidebarClass::StripClass::Get_Special_Cameo(
   if ((unsigned)type < SPC_COUNT) {
     return (SpecialShapes[type]);
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -1527,7 +1527,7 @@ bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
             *leave the factory under their own *	power.
             */
             TechnoClass *pending = factory->Get_Object();
-            if (pending != NULL) {
+            if (pending != nullptr) {
               switch (pending->What_Am_I()) {
                 case RTTI_VESSEL:
                 case RTTI_UNIT:
@@ -1597,7 +1597,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     */
     if (BuildableCount < MAX_VISIBLE) {
       CC_Draw_Shape(LogoShapes, ID, X + (2 * RESFACTOR), Y, WINDOW_MAIN,
-                    SHAPE_WIN_REL | SHAPE_NORMAL, 0);
+                    SHAPE_WIN_REL | SHAPE_NORMAL, nullptr);
     }
 
     /*
@@ -1616,10 +1616,10 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed;
       int stage;
       bool darken = false;
-      void const *shapefile = 0;
+      void const *shapefile = nullptr;
       int shapenum = 0;
-      void const *remapper = 0;
-      FactoryClass *factory = 0;
+      void const *remapper = nullptr;
+      FactoryClass *factory = nullptr;
       int index = i + TopIndex;
       int x = X;
       int y = Y + (i * OBJECT_HEIGHT * RESFACTOR);
@@ -1639,13 +1639,13 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *underlying graphic there.
       */
       if ((unsigned)index < BuildableCount) {
-        ObjectTypeClass const *obj = NULL;
+        ObjectTypeClass const *obj = nullptr;
         SpecialWeaponType spc = SPC_NONE;
 
         if (Buildables[index].BuildableType != RTTI_SPECIAL) {
           obj = Fetch_Techno_Type(Buildables[index].BuildableType,
                                   Buildables[index].BuildableID);
-          if (obj != NULL) {
+          if (obj != nullptr) {
             /*
             **	Fetch the remap table that is appropriate for this object
             **	type.
@@ -1658,7 +1658,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             *then all *	objects of this type are displays in a disabled state.
             */
             bool isbusy = (PlayerPtr->Fetch_Factory(
-                               Buildables[index].BuildableType) != NULL);
+                               Buildables[index].BuildableType) != nullptr);
             if (!isbusy &&
                 PlayerPtr->Is_Hack_Prevented(Buildables[index].BuildableType,
                                              Buildables[index].BuildableID)) {
@@ -1669,7 +1669,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             **	Infantry don't get remapped in the sidebar (special case).
             */
             if (Buildables[index].BuildableType == RTTI_INFANTRYTYPE) {
-              remapper = 0;
+              remapper = nullptr;
             }
 
             shapefile = obj->Get_Cameo_Data();
@@ -1707,7 +1707,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           darken = false;
         }
 
-        if (obj != NULL || spc != SPC_NONE) {
+        if (obj != nullptr || spc != SPC_NONE) {
           /*
           ** If this item is flashing then take care of it.
           **
@@ -1728,7 +1728,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         production = false;
       }
 
-      remapper = 0;
+      remapper = nullptr;
       /*
       **	Now that the shape of the object at the current working slot has
       *been found, *	draw it and any graphic overlays as necessary.
@@ -1754,7 +1754,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                         x - (WindowList[WINDOW_SIDEBAR][WINDOWX]) +
                             (LEFT_EDGE_OFFSET * RESFACTOR),
                         y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-                        SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+                        SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                         ClockTranslucentTable);
         }
       }
@@ -1780,7 +1780,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
                         x - (WindowList[WINDOW_SIDEBAR][WINDOWX]) +
                             (LEFT_EDGE_OFFSET * RESFACTOR),
                         y - WindowList[WINDOW_SIDEBAR][WINDOWY], WINDOW_SIDEBAR,
-                        SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, NULL,
+                        SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
                         ClockTranslucentTable);
 
           /*
@@ -1838,8 +1838,9 @@ bool SidebarClass::StripClass::Recalc(void) {
   for (int index = 0; index < BuildableCount; index++) {
     TechnoTypeClass const *tech = Fetch_Techno_Type(
         Buildables[index].BuildableType, Buildables[index].BuildableID);
-    if (tech != NULL) {
-      ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) != NULL;
+    if (tech != nullptr) {
+      ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
+           nullptr;
     } else {
       if ((unsigned)Buildables[index].BuildableID < SPC_COUNT) {
         ok = PlayerPtr->SuperWeapon[Buildables[index].BuildableID].Is_Present();
@@ -1894,7 +1895,7 @@ bool SidebarClass::StripClass::Recalc(void) {
 SidebarClass::StripClass::SelectClass::SelectClass(void)
     : ControlClass(0, 0, 0, (OBJECT_WIDTH - 1) * RESFACTOR,
                    OBJECT_HEIGHT * RESFACTOR, LEFTPRESS | RIGHTPRESS | LEFTUP),
-      Strip(0),
+      Strip(nullptr),
       Index(0) {}
 
 /***********************************************************************************************
@@ -1951,7 +1952,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   int fnumber = Strip->Buildables[index].Factory;
   RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
 
-  ObjectTypeClass const *choice = NULL;
+  ObjectTypeClass const *choice = nullptr;
   SpecialWeaponType spc = SPC_NONE;
 
   /*
@@ -2018,7 +2019,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     }
 
   } else {
-    if (choice != NULL) {
+    if (choice != nullptr) {
       /*
       **	Display the help text if the mouse is over the button.
       */
@@ -2038,16 +2039,16 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         *factory *	manager deleted, and the object under construction is
         *returned to *	the free pool.
         */
-        if (factory != NULL) {
+        if (factory != nullptr) {
           /*
           **	Cancels placement mode if the sidebar factory is abandoned or
           **	suspended.
           */
           if (Map.PendingObjectPtr && Map.PendingObjectPtr->Is_Techno()) {
-            Map.PendingObjectPtr = 0;
-            Map.PendingObject = 0;
+            Map.PendingObjectPtr = nullptr;
+            Map.PendingObject = nullptr;
             Map.PendingHouse = HOUSE_NONE;
-            Map.Set_Cursor_Shape(0);
+            Map.Set_Cursor_Shape(nullptr);
           }
 
           if (!factory->Is_Building()) {
@@ -2068,13 +2069,13 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         *player didn't click *	on the icon that has the attached factory, then
         *say that the factory is busy and *	ignore the click.
         */
-        if (fnumber == -1 && factory != NULL) {
+        if (fnumber == -1 && factory != nullptr) {
           Speak(VOX_NO_FACTORY);
           ControlClass::Action(flags, key);
           return (true);
         }
 
-        if (factory != NULL) {
+        if (factory != nullptr) {
           /*
           **	If this object is currently being built, then give a scold sound
           *and text and then *	bail.

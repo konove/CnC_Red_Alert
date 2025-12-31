@@ -154,11 +154,11 @@ long Get_Frame_Pathname(char *inifile, long anim_frame, char *ext,
 
     /* Parse the INI entry */
     prefix = strtok(inibuf, ",");
-    startstr = strtok(NULL, ",");
-    endstr = strtok(NULL, ",");
-    palstr = strtok(NULL, ",");
+    startstr = strtok(nullptr, ",");
+    endstr = strtok(nullptr, ",");
+    palstr = strtok(nullptr, ",");
 
-    if ((prefix == NULL) || (startstr == NULL) || (endstr == NULL)) {
+    if ((prefix == nullptr) || (startstr == nullptr) || (endstr == nullptr)) {
       return (-1);
     }
 
@@ -170,7 +170,7 @@ long Get_Frame_Pathname(char *inifile, long anim_frame, char *ext,
     if (anim_frame < (total_frames + scene_frames)) {
       /* Palette is a special case */
       if (!stricmp(ext, "PAL")) {
-        if (palstr == NULL) {
+        if (palstr == nullptr) {
           return (-1);
         } else {
           sprintf(outbuf, "%s%s%s.PAL", rootdir, extdir, palstr);
@@ -268,7 +268,7 @@ long GetINIString(char const *section, char const *entry, char const *def,
   retval = min(strlen(def), (unsigned)retlen);
 
   /* Open the file */
-  if ((fp = fopen(fname, "rt")) == NULL) {
+  if ((fp = fopen(fname, "rt")) == nullptr) {
     return (retval);
   }
 
@@ -320,7 +320,7 @@ long GetINIString(char const *section, char const *entry, char const *def,
       workptr = strchr(txt, '=');
 
       /* Return if not found */
-      if (workptr == NULL) return (retval);
+      if (workptr == nullptr) return (retval);
 
       /* Skip past '=' */
       workptr++;
@@ -365,7 +365,7 @@ static char *strtrim(char *string) {
   long i;
 
   /* Return if NULL ptr or zero-length string */
-  if ((string == NULL) || (strlen(string) == 0)) {
+  if ((string == nullptr) || (strlen(string) == 0)) {
     return (string);
   }
 

@@ -52,7 +52,7 @@
 */
 class Pipe {
  public:
-  Pipe(void) : ChainTo(0), ChainFrom(0) {}
+  Pipe(void) : ChainTo(nullptr), ChainFrom(nullptr) {}
   virtual ~Pipe(void);
 
   virtual int Flush(void);

@@ -150,10 +150,10 @@ Rect const Rect::Intersect(Rect const& rectangle, int* x, int* y) const {
   **	Adjust Height relative draw position according to Height new rectangle
   **	union.
   */
-  if (x != NULL) {
+  if (x != nullptr) {
     *x -= (r.X - X);
   }
-  if (y != NULL) {
+  if (y != nullptr) {
     *y -= (r.Y - Y);
   }
 

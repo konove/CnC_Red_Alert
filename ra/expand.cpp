@@ -113,60 +113,50 @@ const char* ExpandNames[] = {"SCG20EA", "SCG21EA", "SCG22EA", "SCG23EA",
                              "SCU47EA",  // Deus Ex Machina
                              "SCU48EA",  // Grunyev Revolution
 #endif
-                             NULL};
+                             nullptr};
 
 const char* TestNames2[] = {
     "SCG01EA", "SCG02EA", "SCG03EA", "SCG04EA", "SCG05EA", "SCG06EA",
     "SCG07EA", "SCG08EA", "SCU01EA", "SCU02EA", "SCU03EA", "SCU04EA",
-    "SCU05EA", "SCU06EA", "SCU07EA", "SCU08EA", "SCU09EA", NULL};
+    "SCU05EA", "SCU06EA", "SCU07EA", "SCU08EA", "SCU09EA", nullptr};
 
 #ifdef GERMAN
 const char* XlatNames[] = {
-    "Zusammenstoss",
-    "Unter Tage",
-    "Kontrollierte Verbrennung",
-    "Griechenland 1 - Stavros",
-    "Griechenland 2 - Evakuierung",
-    "Sibirien 1 - Frische Spuren",
-    "Sibirien 2 - In der Falle",
-    "Sibirien 3 - Wildnis",
-    "Das Feld der Ehre",
-    "Belagerung",
-    "Mausefalle",
-    "Teslas Erbe",
-    "Soldat Volkov",
-    "Die Spitze der Welt",
-    "Paradoxe Gleichung",
+    "Zusammenstoss", "Unter Tage", "Kontrollierte Verbrennung",
+    "Griechenland 1 - Stavros", "Griechenland 2 - Evakuierung",
+    "Sibirien 1 - Frische Spuren", "Sibirien 2 - In der Falle",
+    "Sibirien 3 - Wildnis", "Das Feld der Ehre", "Belagerung", "Mausefalle",
+    "Teslas Erbe", "Soldat Volkov", "Die Spitze der Welt", "Paradoxe Gleichung",
     "Nukleare Eskalation",
 #ifdef FIXIT_CSII                     //	checked - ajw 9/28/98
     "Ein sicherer Hafen",             //	"SCG43EA",		// Harbor Reclamation
     "Zeitkritische Routine",          //	"SCG41EA",		// In the nick
-                                      //of time
+                                      // of time
     "Auf frischer Tat ertappt",       //	"SCG40EA",		// Caught in the
-                                      //act
+                                      // act
     "Drastischer Baustopp",           //	"SCG42EA",		// Production Disruption
     "Harte Verhandlungen",            //	"SCG47EA",		// Negotiations
     "Ferngelenktes Kriegsspielzeug",  //	"SCG45EA",		//
-                                      //Monster Tank Madness
+                                      // Monster Tank Madness
     "Licht aus",                      //	"SCG44EA",		// Time Flies
     "Molekulare Kriegsführung",       //	"SCG48EA",		// Absolut
-                                      //MADness
+                                      // MADness
     "Bauernopfer",                    //	"SCG46EA",		// Pawn
 
     "Testgelände",                  //	"SCU43EA",		// Testing Grounds
     "Schocktherapie",               //	"SCU40EA",		// Shock Therapy
     "Der Letzte seiner Art",        //	"SCU42EA",		// Let's Make a
-                                    //Steal
+                                    // Steal
     "Probefahrt",                   //	"SCU41EA",		// Test Drive
     "Schlaftrunk",                  //	"SCU45EA",		// Don't Drink The Water
     "Der jüngste Tag",              //	"SCU44EA",		// Situation Critical
     "Waffenbrüder",                 //	"SCU46EA",		// Brothers in Arms
     "Deus Ex Machina",              //	"SCU47EA",		// Deus Ex Machina
     "Die Replikanten von Grunyev",  //	"SCU48EA",		// Grunyev
-                                    //Revolution
+                                    // Revolution
 
 #endif
-    NULL};
+    nullptr};
 
 #endif
 
@@ -193,7 +183,7 @@ const char* XlatNames[] = {
     "Juste à temps",           //	"SCG41EA",		// In the nick of time
     "La main dans le sac",     //	"SCG40EA",		// Caught in the act
     "Production interrompue",  //	"SCG42EA",		// Production
-                               //Disruption
+                               // Disruption
     "Négociations",            //	"SCG47EA",		// Negotiations
     "Tanks en folie!",         //	"SCG45EA",		// Monster Tank Madness
     "Le temps passe",          //	"SCG44EA",		// Time Flies
@@ -205,16 +195,16 @@ const char* XlatNames[] = {
     "Au voleur!",                //	"SCU42EA",		// Let's Make a Steal
     "Essai de conduite",         //	"SCU41EA",		// Test Drive
     "Ne buvez pas la tasse",     //	"SCU45EA",		// Don't Drink
-                                 //The Water
+                                 // The Water
     "Situation critique",        //	"SCU44EA",		// Situation Critical
     "Frères d'armes",            //	"SCU46EA",		// Brothers in Arms
     "Deus Ex Machina",           //	"SCU47EA",		// Deus Ex Machina
     "La Révolution de Grunyev",  //	"SCU48EA",		// Grunyev
-                                 //Revolution
+                                 // Revolution
 
 #endif
 
-    NULL,
+    nullptr,
 };
 
 #endif
@@ -259,7 +249,7 @@ class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              void const* up, void const* down)
-      : ListClass(id, x, y, w, h, flags, up, down){};
+      : ListClass(id, x, y, w, h, flags, up, down) {};
 
   virtual int Add_Object(EObjectClass* obj) {
     return (ListClass::Add_Item((char const*)obj));
@@ -342,12 +332,12 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
 
 #ifdef FIXIT_VERSION_3
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
-                                            //was called for Aftermath.
+                                            // was called for Aftermath.
 #else
 bool Expansion_Dialog(void)
 #endif
 {
-  GadgetClass* buttons = NULL;
+  GadgetClass* buttons = nullptr;
 
 #if RESFACTOR == 1
   TextButtonClass ok(200, TXT_OK, TPF_BUTTON, OPTION_X + 40,

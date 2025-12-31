@@ -143,7 +143,7 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
                        unsigned char *palette) {
   GraphicBufferClass *load_buffer;
 
-  load_buffer = Read_PCX_File(name, (char *)palette, NULL, 0);
+  load_buffer = Read_PCX_File(name, (char *)palette, nullptr, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -204,14 +204,14 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
 
   CCFileClass file_handle(name);
 
-  if (!file_handle.Is_Available()) return (NULL);
+  if (!file_handle.Is_Available()) return (nullptr);
 
   file_handle.Open(READ);
 
   file_handle.Read(&header, sizeof(PCX_HEADER));
 
   if (header.id != 10 && header.version != 5 && header.pixelsize != 8)
-    return NULL;
+    return nullptr;
 
   width = header.width - header.x + 1;
   height = header.height - header.y + 1;
@@ -221,10 +221,10 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
     i = Size / width;
     height = MIN(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    if (!(pic && pic->Get_Buffer())) return nullptr;
   } else {
-    pic = new GraphicBufferClass(width, height, NULL, width * (height + 4));
-    if (!(pic && pic->Get_Buffer())) return NULL;
+    pic = new GraphicBufferClass(width, height, nullptr, width * (height + 4));
+    if (!(pic && pic->Get_Buffer())) return nullptr;
   }
 
   buffer = (char *)pic->Get_Buffer();

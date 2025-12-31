@@ -64,7 +64,7 @@ typedef struct {
 
 inline void *Get_Icon_Set_Map(void const *iconset) {
   if (iconset) return (char *)iconset + ((IControl_Type *)iconset)->Map;
-  return NULL;
+  return nullptr;
 }
 
 #endif  // TILE_H

@@ -76,7 +76,7 @@ class FileClass {
   virtual unsigned long Get_Date_Time(void) { return (0); }
   virtual bool Set_Date_Time(unsigned long) { return (false); }
   virtual void Error(int error, int canretry = false,
-                     char const *filename = NULL) = 0;
+                     char const *filename = nullptr) = 0;
 
   operator char const *() { return File_Name(); };
 };

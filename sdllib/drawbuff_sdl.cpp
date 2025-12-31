@@ -34,7 +34,7 @@ bool GraphicBufferClass::Unlock(void) {
 
   if (!LockCount) {
     SDL_UnlockSurface((SDL_Surface *)PaletteSurface);
-    Offset = NULL;
+    Offset = nullptr;
     Update_Window_Surface(false);
   }
 
@@ -46,7 +46,7 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
 
   if (!end_frame) {
     if (!RedrawTimer)
-      RedrawTimer = SDL_AddTimer(1000 / 30, Force_Redraw_Timer, NULL);
+      RedrawTimer = SDL_AddTimer(1000 / 30, Force_Redraw_Timer, nullptr);
     return;
   }
 
@@ -57,13 +57,13 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
 
   // blit from paletted surface
   SDL_Surface *tmp_surf;
-  SDL_LockTextureToSurface(window_tex, NULL, &tmp_surf);
-  SDL_BlitSurface((SDL_Surface *)PaletteSurface, NULL, tmp_surf, NULL);
+  SDL_LockTextureToSurface(window_tex, nullptr, &tmp_surf);
+  SDL_BlitSurface((SDL_Surface *)PaletteSurface, nullptr, tmp_surf, nullptr);
   SDL_UnlockTexture(window_tex);
 
   // copy to screen
   SDL_RenderClear(SDLRenderer);
-  SDL_RenderCopy(SDLRenderer, window_tex, NULL, NULL);
+  SDL_RenderCopy(SDLRenderer, window_tex, nullptr, nullptr);
   SDL_RenderPresent(SDLRenderer);
 
   // update the event loop here too for now

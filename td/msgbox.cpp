@@ -89,13 +89,13 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   int realval[5];
 
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void *)NULL);
+                                    VisiblePage.Get_Height(), (void *)nullptr);
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
-  if (b1txt && *b1txt == '\0') b1txt = 0;
-  if (b2txt && *b2txt == '\0') b2txt = 0;
-  if (b3txt && *b3txt == '\0') b3txt = 0;
+  if (b1txt && *b1txt == '\0') b1txt = nullptr;
+  if (b2txt && *b2txt == '\0') b2txt = nullptr;
+  if (b3txt && *b3txt == '\0') b3txt = nullptr;
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -185,7 +185,7 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
                           y + height - (bheight + (5 * factor)));
   button3.X = x + ((width - button3.Width) >> 1);
 
-  TextButtonClass *buttonlist = 0;
+  TextButtonClass *buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -430,7 +430,7 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
     }
     SeenBuff.Unlock();
     delete[] back;
-    back = NULL;
+    back = nullptr;
     Show_Mouse();
   }
   return (retval);

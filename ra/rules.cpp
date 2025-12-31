@@ -807,7 +807,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         /*
         **	Animation to use.
         */
-        token = strtok(NULL, ",");
+        token = strtok(nullptr, ",");
         if (token) {
           strtrim(token);
           CrateAnims[crate] = Anim_From_Name(token);
@@ -816,9 +816,9 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         /*
         **	Optional data number.
         */
-        token = strtok(NULL, ",");
-        if (token != NULL) {
-          if (strpbrk(token, ".%") != NULL) {
+        token = strtok(nullptr, ",");
+        if (token != nullptr) {
+          if (strpbrk(token, ".%") != nullptr) {
             CrateData[crate] = fixed(token) * 256;
           } else {
             strtrim(token);
@@ -902,12 +902,12 @@ bool RulesClass::Themes(CCINIClass& ini) {
         ini.Get_String(THEMECONTROL, Theme.Base_Name(theme), "", buffer,
                        sizeof(buffer));
         char const* token = strtok(buffer, ",");
-        if (token != NULL) {
+        if (token != nullptr) {
           scen = atoi(token);
         }
 
-        token = strtok(NULL, ",");
-        if (token != NULL) {
+        token = strtok(nullptr, ",");
+        if (token != nullptr) {
           owners = Owner_From_Name(token);
         }
 

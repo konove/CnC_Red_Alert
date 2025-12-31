@@ -483,7 +483,7 @@ int Do_Menu(char const **strings, bool) {
   UnknownKey = 0;
   while (selection == -1) {
     Call_Back();
-    selection = Check_Menu(0, strings, NULL, 0xFFL, 0);
+    selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
     if (UnknownKey != 0 || UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
         UnknownKey == KN_RMOUSE)
       break;
@@ -640,7 +640,7 @@ int Main_Menu(unsigned long) {
   /*
   **	Buttons
   */
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
 #ifdef FIXIT_VERSION_3
   int ystep = 14 * RESFACTOR;

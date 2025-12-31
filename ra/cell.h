@@ -207,7 +207,7 @@ class CellClass {
   //----------------------------------------------------------------
   CellClass(void);
   CellClass(NoInitClass const &x) : Trigger(x) {}
-  ~CellClass(void) { OccupierPtr = 0; }
+  ~CellClass(void) { OccupierPtr = nullptr; }
 
   int operator==(CellClass const &cell) const { return &cell == this; }
 

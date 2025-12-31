@@ -123,7 +123,7 @@ RawFileClass::RawFileClass(char const *filename)
     : Rights(0),
       BiasStart(0),
       BiasLength(-1),
-      Handle(NULL_HANDLE),
+      Handle(nullptr),
       Filename(filename),
       Date(0),
       Time(0),
@@ -149,18 +149,18 @@ RawFileClass::RawFileClass(char const *filename)
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 char const *RawFileClass::Set_Name(char const *filename) {
-  if (Filename != NULL && Allocated) {
+  if (Filename != nullptr && Allocated) {
     free((char *)Filename);
-    ((char *&)Filename) = 0;
+    ((char *&)Filename) = nullptr;
     Allocated = false;
   }
 
-  if (filename == NULL) return (NULL);
+  if (filename == nullptr) return (nullptr);
 
   Bias(0);
 
   ((char *&)Filename) = strdup(filename);
-  if (Filename == NULL) {
+  if (Filename == nullptr) {
     Error(ENOMEM, false, filename);
   }
   Allocated = true;
@@ -218,7 +218,7 @@ int RawFileClass::Open(int rights) {
   **	Verify that there is a filename associated with this file object. If
   *not, then this is a *	big error condition.
   */
-  if (Filename == NULL) {
+  if (Filename == nullptr) {
     Error(ENOENT, false);
   }
 
@@ -254,8 +254,8 @@ int RawFileClass::Open(int rights) {
 
       case READ:
 #ifdef WIN32
-        Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, NULL,
-                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 #else
         _dos_open(Filename, O_RDONLY | SH_DENYNO, &Handle);
 #endif
@@ -263,8 +263,8 @@ int RawFileClass::Open(int rights) {
 
       case WRITE:
 #ifdef WIN32
-        Handle = CreateFile(Filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, NULL);
+        Handle = CreateFile(Filename, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                            FILE_ATTRIBUTE_NORMAL, nullptr);
 #else
         _dos_creat(Filename, 0, &Handle);
 #endif
@@ -272,8 +272,8 @@ int RawFileClass::Open(int rights) {
 
       case READ | WRITE:
 #ifdef WIN32
-        Handle = CreateFile(Filename, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        Handle = CreateFile(Filename, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 #else
         _dos_open(Filename, O_RDWR | O_CREAT | SH_DENYWR, &Handle);
 #endif
@@ -292,7 +292,7 @@ int RawFileClass::Open(int rights) {
     *condition. *	For the case of the file cannot be found, then allow a
     *retry. All other cases *	are fatal.
     */
-    if (Handle == NULL_HANDLE) {
+    if (Handle == nullptr) {
 #ifdef PORTABLE
       // Error doesn't do anything...
 #elif defined(WIN32)
@@ -346,7 +346,7 @@ int RawFileClass::Is_Available(int forced) {
   bool open_failed;
 #endif
 
-  if (Filename == NULL) return (false);
+  if (Filename == nullptr) return (false);
 
   /*
   **	If the file is already open, then is must have already passed the
@@ -393,8 +393,8 @@ int RawFileClass::Is_Available(int forced) {
     if (!Handle) return false;
     break;
 #elif defined(WIN32)
-    Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, NULL,
-                        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (Handle == NULL_HANDLE) {
       return (false);
     }
@@ -457,7 +457,7 @@ int RawFileClass::Is_Available(int forced) {
     Error(errno, false, Filename);
   }
 #endif
-  Handle = NULL_HANDLE;
+  Handle = nullptr;
 
   return (true);
 }
@@ -526,7 +526,7 @@ void RawFileClass::Close(void) {
     **	At this point the file must have been closed. Mark the file as empty and
     *return.
     */
-    Handle = NULL_HANDLE;
+    Handle = nullptr;
   }
 }
 
@@ -540,11 +540,11 @@ void RawFileClass::Close(void) {
  *bytes being read than requested. Determine  * this by examining the return
  *value.                                                      *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the buffer to read data into. If NULL is
+ * INPUT:   buffer   -- Pointer to the buffer to read data into. If nullptr is
  *passed, no read    * is performed. *
  *                                                                                             *
- *          size     -- The number of bytes to read. If NULL is passed, then no
- *read is        * performed. *
+ *          size     -- The number of bytes to read. If nullptr is passed, then
+ * no read is        * performed. *
  *                                                                                             *
  * OUTPUT:  Returns with the number of bytes read into the buffer. If this
  *number is less      * than requested, it indicates that the file has been
@@ -595,7 +595,7 @@ long RawFileClass::Read(void *buffer, long size) {
     bytesread = 0;
 
     SetErrorMode(SEM_FAILCRITICALERRORS);
-    if (!ReadFile(Handle, buffer, size, &(DWORD &)bytesread, NULL)) {
+    if (!ReadFile(Handle, buffer, size, &(DWORD &)bytesread, nullptr)) {
       size -= bytesread;
       total += bytesread;
       Error(GetLastError(), true, Filename);
@@ -710,7 +710,7 @@ long RawFileClass::Write(void const *buffer, long size) {
   IO_Write_File(Handle, buffer, size, write_tmp);
   bytesread = write_tmp;
 #elif defined(WIN32)
-  if (!WriteFile(Handle, buffer, size, &(DWORD &)bytesread, NULL)) {
+  if (!WriteFile(Handle, buffer, size, &(DWORD &)bytesread, nullptr)) {
     Error(GetLastError(), false, Filename);
   }
 
@@ -835,8 +835,8 @@ long RawFileClass::Seek(long pos, int dir) {
         dir = SEEK_SET;
         pos += BiasStart + BiasLength;
         //				pos = (pos <= BiasStart+BiasLength) ?
-        //pos : BiasStart+BiasLength; 				pos = (pos >= BiasStart) ? pos :
-        //BiasStart;
+        // pos : BiasStart+BiasLength; 				pos = (pos >=
+        // BiasStart) ? pos : BiasStart;
         break;
     }
 
@@ -897,7 +897,7 @@ long RawFileClass::Size(void) {
 #ifdef PORTABLE
     size = IO_Get_File_Size(Handle);
 #elif defined(WIN32)
-    size = GetFileSize(Handle, NULL);
+    size = GetFileSize(Handle, nullptr);
 
     /*
     **	If there was in internal error, then call the error function.
@@ -1327,7 +1327,7 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
       break;
   }
 
-  pos = SetFilePointer(Handle, pos, NULL, dir);
+  pos = SetFilePointer(Handle, pos, nullptr, dir);
 
   /*
   **	If there was an error in the seek, then bail with an error condition.

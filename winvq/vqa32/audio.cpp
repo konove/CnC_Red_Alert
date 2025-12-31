@@ -84,7 +84,6 @@ extern unsigned long Get_Game_Time(void);
 
 static VQAHandleP *VQAP = nullptr;
 static long AudioFlags = 0;
-static long TimerSysCount = 0;
 static long TimerIntCount = 0;
 static uint16_t VQATimer = 0;
 static long TimerMethod;
@@ -722,14 +721,9 @@ void VQA_SetTimer(VQAHandleP *vqap, long time, long method) {
 int64_t VQA_GetTime(VQAHandleP *vqap) {
   VQAAudio *audio;
   VQAConfig *config;
-  unsigned long fillcount;
-  unsigned long lastfill;
-  unsigned long dma_diff;
   unsigned long totalbytes;
   unsigned long samples;
-  uint32_t play_cursor;   // Position that direct sound is reading from
-  uint32_t write_cursor;  // Position in buffer that we can write to
-  unsigned temp;
+  uint32_t play_cursor;  // Position that direct sound is reading from
 
   // MEG 09.25.95 - changed from long to unsigned long
   unsigned long ticks;

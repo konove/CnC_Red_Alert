@@ -118,7 +118,7 @@ BulletClass::~BulletClass(void) {
     *is *	destroyed, the dog must come back out of limbo at the closest
     *location possible to *	the bullet.
     */
-    if (Payback != NULL && Payback->What_Am_I() == RTTI_INFANTRY &&
+    if (Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
         ((InfantryClass *)Payback)->Class->IsDog) {
       InfantryClass *dog = (InfantryClass *)Payback;
       if (dog) {
@@ -160,7 +160,7 @@ BulletClass::~BulletClass(void) {
           ScenarioInit--;
         }
 
-        Payback = 0;
+        Payback = nullptr;
 
         if (!unlimbo) {
           delete dog;
@@ -170,8 +170,8 @@ BulletClass::~BulletClass(void) {
     BulletClass::Limbo();
   }
 
-  Class = 0;
-  Payback = 0;
+  Class = nullptr;
+  Payback = nullptr;
 }
 
 /***********************************************************************************************
@@ -395,7 +395,7 @@ void BulletClass::AI(void) {
     */
     case IMPACT_EDGE:
       Mark();
-      if (Payback != NULL && Class->Type == BULLET_GPS_SATELLITE) {
+      if (Payback != nullptr && Class->Type == BULLET_GPS_SATELLITE) {
         if (Payback->House == PlayerPtr) {
           if (!Map.Is_Radar_Active()) {
             Map.Radar_Activate(1);
@@ -416,7 +416,7 @@ void BulletClass::AI(void) {
       *until
       ** tech level 15 or so.
       */
-      if (Payback != NULL && Class->Type == BULLET_NUKE_UP &&
+      if (Payback != nullptr && Class->Type == BULLET_NUKE_UP &&
           Payback->House->Control.TechLevel <= 10) {
         BulletClass *bullet = new BulletClass(
             BULLET_NUKE_DOWN, ::As_Target(Payback->House->NukeDest), Payback,
@@ -449,7 +449,7 @@ void BulletClass::AI(void) {
       //				Render(true);
       //			}
       if (Class->Type == BULLET_NUKE_UP) {
-        if (Payback != NULL) {
+        if (Payback != nullptr) {
           if (Distance(Payback->As_Target()) > 0x0C00) {
             delete this;
             return;
@@ -551,7 +551,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	it obviously can't be rendered -- just bail.
   */
   void const *shapeptr = Get_Image_Data();
-  if (shapeptr == NULL) return;
+  if (shapeptr == nullptr) return;
 
   /*
   **	Get the basic shape number for this projectile.
@@ -567,12 +567,12 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
       CC_Draw_Shape(
           AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
           x + Lepton_To_Pixel(Height / 2), y + 10, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, NULL,
+          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, nullptr,
           DisplayClass::UnitShadow);
     } else {
       CC_Draw_Shape(
           shapeptr, shapenum, x, y, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, NULL,
+          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, nullptr,
           DisplayClass::UnitShadow);
     }
     y -= Lepton_To_Pixel(Height);
@@ -589,10 +589,10 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
     CC_Draw_Shape(
         shapeptr, shapenum, x, y, window,
         flags | SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-        NULL, DisplayClass::FadingShade);
+        nullptr, DisplayClass::FadingShade);
   } else {
     CC_Draw_Shape(shapeptr, shapenum, x, y, window,
-                  flags | SHAPE_CENTER | SHAPE_WIN_REL, NULL,
+                  flags | SHAPE_CENTER | SHAPE_WIN_REL, nullptr,
                   DisplayClass::UnitShadow);
   }
 }
@@ -639,14 +639,14 @@ void BulletClass::Detach(TARGET target, bool all) {
   assert(IsActive);
 
   ObjectClass *obj = As_Object(target);
-  if (Payback != NULL && obj == Payback) {
+  if (Payback != nullptr && obj == Payback) {
     /*
     ** If we're being called as a result of the dog that fired us being put
     ** in limbo, then don't detach.  If for any other reason, detach.
     */
     if (Payback->What_Am_I() != RTTI_INFANTRY ||
         !((InfantryClass *)Payback)->Class->IsDog) {
-      Payback = 0;
+      Payback = nullptr;
     }
   }
 
@@ -770,7 +770,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     **	Arm the fuse.
     */
     Arm_Fuse(Coord, tcoord, range,
-             ((As_Aircraft(TarCom) != 0) ? 0 : Class->Arming));
+             ((As_Aircraft(TarCom) != nullptr) ? 0 : Class->Arming));
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine
@@ -851,7 +851,7 @@ COORDINATE BulletClass::Target_Coord(void) const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BulletClass::Sort_Y(void) const {
-  assert(this != 0);
+  assert(this != nullptr);
   assert(IsActive);
 
   return (Coord_Move(Coord, DIR_S, CELL_LEPTON_H / 2));
@@ -919,13 +919,13 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE &coord) const {
     int d = ::Distance(Coord_Fraction(coord),
                        XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
     if (cellptr->Land_Type() != LAND_WATER ||
-        (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != NULL &&
+        (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != nullptr &&
          cellptr->Cell_Techno() != Payback)) {
       /*
       **	Force explosion to be at center of techno object if one is
       *present.
       */
-      if (cellptr->Cell_Techno() != NULL) {
+      if (cellptr->Cell_Techno() != nullptr) {
         coord = cellptr->Cell_Techno()->Target_Coord();
       }
 
@@ -978,7 +978,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	that they hit the target. This compensates for the error in line of
   **	flight logic.
   */
-  if ((Payback != NULL && Payback->What_Am_I() == RTTI_INFANTRY &&
+  if ((Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
        ((InfantryClass *)Payback)->Class->IsDog) ||
       (!forced && !Class->IsArcing && Class->ROT == 0 && Fuse_Target())) {
     Coord = Fuse_Target();

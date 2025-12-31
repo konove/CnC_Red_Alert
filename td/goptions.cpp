@@ -101,7 +101,7 @@ void GameOptionsClass::Process(void) {
   /*
   **	Variables.
   */
-  TextButtonClass *buttons = 0;
+  TextButtonClass *buttons = nullptr;
   int selection;
   bool pressed;
   int curbutton = 6;
@@ -119,10 +119,10 @@ void GameOptionsClass::Process(void) {
   for (int index = 0; index < sizeof(_constants) / sizeof(_constants[0]);
        index++) {
     int text = _constants[index].Text;
-    buttonsel[index] = NULL;
+    buttonsel[index] = nullptr;
 
     if (GameToPlay != GAME_NORMAL && !_constants[index].Multiplay) {
-      buttonsel[index] = 0;
+      buttonsel[index] = nullptr;
       continue;
     }
 

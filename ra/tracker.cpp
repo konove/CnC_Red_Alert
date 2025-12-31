@@ -104,7 +104,7 @@ void Detach_This_From_All(TARGET target, bool all) {
     **	Removing a trigger type must also remove all triggers that are dependant
     **	upon that type.
     */
-    if (As_TriggerType(target) != NULL) {
+    if (As_TriggerType(target) != nullptr) {
       for (int index = 0; index < Triggers.Count(); index++) {
         TriggerClass* tp = Triggers.Ptr(index);
 

@@ -444,8 +444,8 @@ EventClass::EventClass(EventType type, void *ptr, unsigned long size) {
  *=============================================================================================*/
 void EventClass::Execute(void) {
   TechnoClass *techno;
-  AnimClass *anim = 0;
-  HouseClass *house = 0;
+  AnimClass *anim = nullptr;
+  HouseClass *house = nullptr;
   //	CELL cell = 0;
   char txt[80];
   bool formation = false;
@@ -499,7 +499,7 @@ void EventClass::Execute(void) {
 
       sprintf(txt, Text_String(TXT_SPECIAL_WARNING), house->Name());
       Session.Messages.Add_Message(
-          NULL, 0, txt, house->RemapColor,
+          nullptr, 0, txt, house->RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
       Map.Flag_To_Redraw(false);
     } break;
@@ -524,7 +524,7 @@ void EventClass::Execute(void) {
       if (techno && techno->IsActive && techno->House == Houses.Raw_Ptr(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
             (techno->What_Am_I() == RTTI_UNIT &&
-             Map[techno->Center_Coord()].Cell_Building() != 0)) {
+             Map[techno->Center_Coord()].Cell_Building() != nullptr)) {
           techno->Sell_Back(-1);
         }
       } else {
@@ -628,19 +628,20 @@ void EventClass::Execute(void) {
                Data.MegaMission.Destination.As_TARGET());
       }
       techno = Data.MegaMission.Whom.As_Techno();
-      if (techno != NULL && techno->IsActive && techno->Strength > 0 &&
+      if (techno != nullptr && techno->IsActive && techno->Strength > 0 &&
           !techno->IsInLimbo) {
         /*
         **	Fetch a pointer to the object of the mission. If there is an
         *error with *	this object, such as it is dead, then bail.
         */
-        ObjectClass *object = NULL;
+        ObjectClass *object = nullptr;
         if (Data.MegaMission.Target.Is_Valid()) {
           object = Data.MegaMission.Target.As_Object();
-          if (object != NULL && (!object->IsActive || object->Strength == 0 ||
-                                 object->IsInLimbo)) {
+          if (object != nullptr &&
+              (!object->IsActive || object->Strength == 0 ||
+               object->IsInLimbo)) {
             break;
-            //						object = NULL;
+            //						object = nullptr;
             //						Data.MegaMission.Target.Invalidate();
           }
         }
@@ -651,10 +652,11 @@ void EventClass::Execute(void) {
         */
         if (Data.MegaMission.Destination.Is_Valid()) {
           object = Data.MegaMission.Destination.As_Object();
-          if (object != NULL && (!object->IsActive || object->Strength == 0 ||
-                                 object->IsInLimbo)) {
+          if (object != nullptr &&
+              (!object->IsActive || object->Strength == 0 ||
+               object->IsInLimbo)) {
             break;
-            //						object = NULL;
+            //						object = nullptr;
             //						Data.MegaMission.Destination.Invalidate();
           }
         }
@@ -673,7 +675,7 @@ void EventClass::Execute(void) {
           }
         }
 
-        if (object != NULL) {
+        if (object != nullptr) {
           if (PlayerPtr->Is_Ally(techno)) {
             object->Clicked_As_Target();
           }
@@ -728,11 +730,11 @@ void EventClass::Execute(void) {
         //
         RTTIType rt = techno->What_Am_I();
         //				rt = Data.MegaMission.Whom;
-        if (rt == RTTI_VESSEL && techno != NULL &&
+        if (rt == RTTI_VESSEL && techno != nullptr &&
             techno->What_Am_I() == RTTI_VESSEL &&
             Data.MegaMission.Mission == MISSION_MOVE) {
           VesselClass *ship = (VesselClass *)techno;
-          if (object != NULL) {
+          if (object != nullptr) {
             if (object->What_Am_I() == RTTI_BUILDING &&
                 //						if
                 //((RTTIType)Data.MegaMission.Destination == RTTI_BUILDING &&
@@ -764,7 +766,7 @@ void EventClass::Execute(void) {
     */
     case IDLE:
       techno = Data.Target.Whom.As_Techno();
-      if (techno != NULL && techno->IsActive && !techno->IsInLimbo &&
+      if (techno != nullptr && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
         techno->Transmit_Message(RADIO_OVER_OUT);
         techno->Assign_Destination(TARGET_NONE);
@@ -782,7 +784,7 @@ void EventClass::Execute(void) {
     */
     case SCATTER:
       techno = Data.Target.Whom.As_Techno();
-      if (techno != NULL && techno->Is_Foot() && techno->IsActive &&
+      if (techno != nullptr && techno->Is_Foot() && techno->IsActive &&
           !techno->IsInLimbo && !techno->IsTethered) {
         ((FootClass *)techno)->IsScattering = true;
         techno->Scatter(0, true, false);
@@ -949,7 +951,7 @@ void EventClass::Execute(void) {
         }
         Scen.bLocalProposesDraw = true;
         Session.Messages.Add_Message(
-            NULL, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
+            nullptr, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             Rule.MessageDelay * TICKS_PER_MINUTE);
       } else {
@@ -968,7 +970,7 @@ void EventClass::Execute(void) {
         }
         Scen.bOtherProposesDraw = true;
         Session.Messages.Add_Message(
-            NULL, 0, szMessage, PCOLOR_GOLD,
+            nullptr, 0, szMessage, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             Rule.MessageDelay * TICKS_PER_MINUTE);
       }
@@ -979,7 +981,7 @@ void EventClass::Execute(void) {
       if (ID == PlayerPtr->ID) {
         Scen.bLocalProposesDraw = false;
         Session.Messages.Add_Message(
-            NULL, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
+            nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             Rule.MessageDelay * TICKS_PER_MINUTE);
       } else {
@@ -993,7 +995,7 @@ void EventClass::Execute(void) {
         }
         Scen.bOtherProposesDraw = false;
         Session.Messages.Add_Message(
-            NULL, 0, szMessage, PCOLOR_GOLD,
+            nullptr, 0, szMessage, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             Rule.MessageDelay * TICKS_PER_MINUTE);
       }

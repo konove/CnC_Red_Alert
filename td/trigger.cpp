@@ -263,7 +263,7 @@ TriggerClass::TriggerClass(void) {
   House = HOUSE_NONE;
   DataCopy = Data = 0L;
   Name[0] = '\0';
-  Team = NULL;
+  Team = nullptr;
 }
 
 /***********************************************************************************************
@@ -345,7 +345,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass *obj) {
     /*
     ** Detach ourselves from the object
     */
-    obj->Trigger = NULL;
+    obj->Trigger = nullptr;
 
     /*
     ** Decrement our attachment counter
@@ -368,7 +368,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass *obj) {
   **	Otherwise, take an appropriate action.
   */
   bool success = true;
-  TriggerClass *trig = NULL;
+  TriggerClass *trig = nullptr;
   switch (Action) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
@@ -560,7 +560,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
   **	Otherwise, take an appropriate action.
   */
   bool success = true;
-  TriggerClass *trig = NULL;
+  TriggerClass *trig = nullptr;
   int index;
   switch (Action) {
     case ACTION_NUKE:
@@ -746,7 +746,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
   **	The trigger has gone off; take appropriate action
   */
   bool success = true;
-  TriggerClass *trig = NULL;
+  TriggerClass *trig = nullptr;
   switch (Action) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
@@ -888,7 +888,7 @@ bool TriggerClass::Remove(void) {
     if (Map[cell].IsTrigger) {
       if (CellTriggers[cell] == this) {
         Map[cell].IsTrigger = 0;
-        CellTriggers[cell] = NULL;
+        CellTriggers[cell] = nullptr;
       }
     }
   }
@@ -898,22 +898,22 @@ bool TriggerClass::Remove(void) {
   */
   for (index = 0; index < Infantry.Count(); index++) {
     if (Infantry.Ptr(index)->Trigger == this) {
-      Infantry.Ptr(index)->Trigger = NULL;
+      Infantry.Ptr(index)->Trigger = nullptr;
     }
   }
   for (index = 0; index < Buildings.Count(); index++) {
     if (Buildings.Ptr(index)->Trigger == this) {
-      Buildings.Ptr(index)->Trigger = NULL;
+      Buildings.Ptr(index)->Trigger = nullptr;
     }
   }
   for (index = 0; index < Units.Count(); index++) {
     if (Units.Ptr(index)->Trigger == this) {
-      Units.Ptr(index)->Trigger = NULL;
+      Units.Ptr(index)->Trigger = nullptr;
     }
   }
   for (index = 0; index < Terrains.Count(); index++) {
     if (Terrains.Ptr(index)->Trigger == this) {
-      Terrains.Ptr(index)->Trigger = NULL;
+      Terrains.Ptr(index)->Trigger = nullptr;
     }
   }
 
@@ -978,7 +978,7 @@ void TriggerClass::Read_INI(char *buffer) {
   /*
   **	Read all TRIGGER entry names into 'tbuffer'
   */
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
 
   /*
@@ -998,7 +998,7 @@ void TriggerClass::Read_INI(char *buffer) {
     /*
     **	Get the trigger entry.
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
 
     /*
@@ -1064,17 +1064,17 @@ void TriggerClass::Fill_In(char *name, char *entry) {
   /*
   **	2nd token: Action.
   */
-  Action = Action_From_Name(strtok(NULL, ","));
+  Action = Action_From_Name(strtok(nullptr, ","));
 
   /*
   **	3rd token: Data.
   */
-  DataCopy = Data = atol(strtok(NULL, ","));
+  DataCopy = Data = atol(strtok(nullptr, ","));
 
   /*
   **	4th token: House.
   */
-  House = HouseTypeClass::From_Name(strtok(NULL, ","));
+  House = HouseTypeClass::From_Name(strtok(nullptr, ","));
   if (House == HOUSE_NONE && Event == EVENT_PLAYER_ENTERED) {
     House = PlayerPtr->Class->House;
   }
@@ -1082,13 +1082,13 @@ void TriggerClass::Fill_In(char *name, char *entry) {
   /*
   **	5th token: Team.
   */
-  Team = TeamTypeClass::As_Pointer(strtok(NULL, ","));
+  Team = TeamTypeClass::As_Pointer(strtok(nullptr, ","));
 
   /*
   ** 6th token: IsPersistant.  This token was added later, so we must check
   ** for its existence.
   */
-  p = strtok(NULL, ",");
+  p = strtok(nullptr, ",");
   if (p) {
     IsPersistant = (PersistantType)atoi(p);
   } else {
@@ -1121,7 +1121,7 @@ void TriggerClass::Write_INI(char *buffer, bool refresh) {
   **	First, clear out all existing trigger data from the INI file.
   */
   if (refresh) {
-    WWWritePrivateProfileString(INI_Name(), NULL, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
   }
 
   /*
@@ -1142,7 +1142,7 @@ void TriggerClass::Write_INI(char *buffer, bool refresh) {
       hname = HouseClass::As_Pointer(trigger->House)->Class->IniName;
     }
 
-    if (trigger->Team == NULL) {
+    if (trigger->Team == nullptr) {
       tname = "None";
     } else {
       tname = trigger->Team->IniName;
@@ -1172,8 +1172,8 @@ void TriggerClass::Write_INI(char *buffer, bool refresh) {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 TriggerClass *TriggerClass::As_Pointer(char const *name) {
-  if (name == NULL) {
-    return (NULL);
+  if (name == nullptr) {
+    return (nullptr);
   }
 
   for (int i = 0; i < Triggers.Count(); i++) {
@@ -1184,7 +1184,7 @@ TriggerClass *TriggerClass::As_Pointer(char const *name) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -1238,7 +1238,7 @@ void TriggerClass::operator delete(void *ptr) {
 EventType TriggerClass::Event_From_Name(char const *name) {
   int i;
 
-  if (name == NULL) {
+  if (name == nullptr) {
     return (EVENT_NONE);
   }
 
@@ -1280,7 +1280,7 @@ char const *TriggerClass::Name_From_Event(EventType event) {
 TriggerClass::ActionType TriggerClass::Action_From_Name(char const *name) {
   int i;
 
-  if (name == NULL) {
+  if (name == nullptr) {
     return (ACTION_NONE);
   }
 

@@ -114,8 +114,8 @@ FootClass::FootClass(void) : Speed(0) {
   SuspendedNavCom = TARGET_NONE;
   Path[0] = FACING_NONE;
   HeadToCoord = 0;
-  Member = 0;
-  Team = 0;
+  Member = nullptr;
+  Team = nullptr;
   PathDelay = 0;
   TryTryAgain = PATH_RETRY;
   if (House) {
@@ -160,8 +160,8 @@ FootClass::~FootClass(void) {
  *=============================================================================================*/
 FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
   ArchiveTarget = TARGET_NONE;
-  Member = 0;
-  Team = 0;
+  Member = nullptr;
+  Team = nullptr;
   Path[0] = FACING_NONE;
   NavCom = TARGET_NONE;
   SuspendedNavCom = TARGET_NONE;
@@ -620,7 +620,7 @@ int FootClass::Mission_Guard(void) {
     Random_Animate();
   }
   return (TICKS_PER_SECOND +
-          Random_Picky((int)0, (int)4, (char *)NULL, (int)0));
+          Random_Picky((int)0, (int)4, (char *)nullptr, (int)0));
 }
 
 /***********************************************************************************************
@@ -988,7 +988,7 @@ int FootClass::Mission_Guard_Area(void) {
     Approach_Target();
   }
   return (TICKS_PER_SECOND +
-          Random_Picky((int)0, (int)4, (char *)NULL, (int)0));
+          Random_Picky((int)0, (int)4, (char *)nullptr, (int)0));
 }
 
 /***********************************************************************************************
@@ -1606,7 +1606,7 @@ void FootClass::Assign_Destination(TARGET target) { NavCom = target; }
  *=============================================================================================*/
 void FootClass::Detach_All(bool all) {
   if (Team) Team->Remove(this);
-  Team = NULL;
+  Team = nullptr;
 
   TechnoClass::Detach_All(all);
 }

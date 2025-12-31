@@ -1627,7 +1627,7 @@ int MapClass::Validate(void) {
  * HISTORY: * 08/20/1995 JLB : Created. *
  *=============================================================================================*/
 ObjectClass *MapClass::Close_Object(COORDINATE coord) const {
-  ObjectClass *object = 0;
+  ObjectClass *object = nullptr;
   int distance = 0;
   CELL cell = Coord_Cell(coord);
 
@@ -1658,7 +1658,7 @@ ObjectClass *MapClass::Close_Object(COORDINATE coord) const {
       *object *	to ensure that it is actually closer.
       */
       ObjectClass *o = Array[newcell].Cell_Occupier();
-      while (o != NULL) {
+      while (o != nullptr) {
         /*
         **	Special case check to ignore cloaked object if not owned by the
         *player.
@@ -1687,7 +1687,7 @@ ObjectClass *MapClass::Close_Object(COORDINATE coord) const {
   *specified *	coordinate.
   */
   if (object && distance > 0xB5) {
-    object = 0;
+    object = nullptr;
   }
   return (object);
 }
@@ -2108,11 +2108,11 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
             Detach_This_From_All(As_Target(cell), true);
 
             ObjectClass *obj = bridge_cell->Cell_Occupier();
-            while (obj != NULL) {
+            while (obj != nullptr) {
               ObjectClass *next = obj->Next;
               if (obj->Is_Techno()) {
                 int damage = obj->Strength;
-                obj->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+                obj->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
               }
               obj = next;
             }
@@ -2226,11 +2226,11 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
                 Detach_This_From_All(As_Target((CELL)(cell + tdata)), true);
 
                 ObjectClass *obj = ptr->Cell_Occupier();
-                while (obj != NULL) {
+                while (obj != nullptr) {
                   ObjectClass *next = obj->Next;
                   if (obj->Is_Techno()) {
                     int damage = obj->Strength;
-                    obj->Take_Damage(damage, 0, WARHEAD_HE, NULL, true);
+                    obj->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
                   }
                   obj = next;
                 }
@@ -2282,7 +2282,7 @@ void MapClass::Detach(TARGET target, bool) {
     */
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
       if ((*this)[cell].Trigger == As_Trigger(target)) {
-        (*this)[cell].Trigger = NULL;
+        (*this)[cell].Trigger = nullptr;
       }
     }
   }

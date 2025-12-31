@@ -93,11 +93,11 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
                                     VisiblePage.Get_Height(), (void *)NULL);
 #endif
 
-  if (b1txt != NULL && *b1txt == '\0') b1txt = NULL;
-  if (b2txt != NULL && *b2txt == '\0') b2txt = NULL;
-  if (b3txt != NULL && *b3txt == '\0') b3txt = NULL;
+  if (b1txt != nullptr && *b1txt == '\0') b1txt = nullptr;
+  if (b2txt != nullptr && *b2txt == '\0') b2txt = nullptr;
+  if (b3txt != nullptr && *b3txt == '\0') b3txt = nullptr;
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -105,7 +105,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   */
   int bwidth = 0, bheight = 0;  // button width and height
   int numbuttons = 0;
-  if (b1txt != NULL) {
+  if (b1txt != nullptr) {
     /*
     **	Build the button list.
     */
@@ -113,12 +113,12 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
     bwidth = std::max((String_Pixel_Width(b1txt) + (8 * RESFACTOR)),
                       (30u * RESFACTOR));
 
-    if (b2txt != NULL) {
+    if (b2txt != nullptr) {
       numbuttons = 2;
       bwidth = std::max((String_Pixel_Width(b2txt) + (8 * RESFACTOR)),
                         unsigned(bwidth));
 
-      if (b3txt != NULL) {
+      if (b3txt != nullptr) {
         numbuttons = 3;
       }
 
@@ -133,7 +133,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   strncpy(buffer, msg, BUFFSIZE - 1);
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TPF_TEXT);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
   int width;
   int height;
   int lines = Format_Window_String(buffer, 255 * RESFACTOR, width, height);
@@ -191,7 +191,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
                           y + height - (bheight + (15 * RESFACTOR)));
   button3.X = x + ((width - button3.Width) >> 1);
 
-  TextButtonClass *buttonlist = 0;
+  TextButtonClass *buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -396,17 +396,17 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
         **	Turn all the buttons off.
         */
         toggle = (TextButtonClass *)buttonlist->Extract_Gadget(BUTTON_1);
-        if (toggle != NULL) {
+        if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
         toggle = (TextButtonClass *)buttonlist->Extract_Gadget(BUTTON_2);
-        if (toggle != NULL) {
+        if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
         toggle = (TextButtonClass *)buttonlist->Extract_Gadget(BUTTON_3);
-        if (toggle != NULL) {
+        if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
@@ -418,7 +418,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
             selection == BUTTON_3) {
           TextButtonClass *toggle =
               (TextButtonClass *)buttonlist->Extract_Gadget(selection);
-          if (toggle != NULL) {
+          if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -469,7 +469,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
     SeenBuff.Unlock();
 
     delete[] back;
-    back = NULL;
+    back = nullptr;
     Show_Mouse();
   }
   return (retval);

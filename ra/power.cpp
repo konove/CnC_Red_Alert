@@ -165,7 +165,7 @@ void PowerClass::Draw_It(bool complete) {
       if (Map.IsSidebarActive) {
         IsToRedraw = false;
         ShapeFlags_Type flags = SHAPE_NORMAL;
-        void const *remap = NULL;
+        void const *remap = nullptr;
 
         if (FlashTimer > 1 && ((FlashTimer % 3) & 0x01) != 0) {
           flags = flags | SHAPE_FADING;

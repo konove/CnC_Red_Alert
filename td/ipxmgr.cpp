@@ -154,8 +154,8 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
   ........................................................................*/
   NumConnections = 0;
   CurConnection = 0;
-  for (i = 0; i < CONNECT_MAX; i++) Connection[i] = 0;
-  GlobalChannel = 0;
+  for (i = 0; i < CONNECT_MAX; i++) Connection[i] = nullptr;
+  GlobalChannel = nullptr;
 
   SendOverflows = 0;
   ReceiveOverflows = 0;
@@ -204,11 +204,11 @@ IPXManagerClass::~IPXManagerClass() {
   ------------------------------------------------------------------------*/
   if (GlobalChannel) {
     delete GlobalChannel;
-    GlobalChannel = 0;
+    GlobalChannel = nullptr;
   }
   for (i = 0; i < NumConnections; i++) {
     delete Connection[i];
-    Connection[i] = 0;
+    Connection[i] = nullptr;
   }
   NumConnections = 0;
 
@@ -281,11 +281,11 @@ int IPXManagerClass::Init() {
   ------------------------------------------------------------------------*/
   if (GlobalChannel) {
     delete GlobalChannel;
-    GlobalChannel = 0;
+    GlobalChannel = nullptr;
   }
   for (i = 0; i < NumConnections; i++) {
     delete Connection[i];
-    Connection[i] = 0;
+    Connection[i] = nullptr;
   }
   NumConnections = 0;
 
@@ -619,7 +619,7 @@ char *IPXManagerClass::Connection_Name(int id) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 
 } /* end of Connection_Name */
 
@@ -651,7 +651,7 @@ IPXAddressClass *IPXManagerClass::Connection_Address(int id) {
     }
   }
 
-  return (NULL);
+  return (nullptr);
 
 } /* end of Connection_Address */
 
@@ -1008,7 +1008,7 @@ int IPXManagerClass::Service(void) {
       .....................................................................*/
       packetlen = recv_length - 2;
 #else  // VIRTUAL_SUBNET_SERVER
-      CurHeaderBuf = NULL;
+      CurHeaderBuf = nullptr;
       CurDataBuf = (char *)&temp_receive_buffer[0];
 
       /*.....................................................................
@@ -1200,7 +1200,7 @@ int IPXManagerClass::Service(void) {
   ------------------------------------------------------------------------*/
   if (GlobalChannel) {
     if (!GlobalChannel->Service()) {
-      GlobalChannel->Queue->UnQueue_Send(NULL, NULL, 0);
+      GlobalChannel->Queue->UnQueue_Send(nullptr, nullptr, 0);
       rc = 0;
     }
   }
@@ -1554,10 +1554,10 @@ void *IPXManagerClass::Oldest_Send(void) {
   unsigned long mintime = 0xffffffff;
   SendQueueType *send_entry;  // ptr to send entry header
   CommHeaderType *packet;
-  void *buf = NULL;
+  void *buf = nullptr;
 
   for (i = 0; i < NumConnections; i++) {
-    send_entry = NULL;
+    send_entry = nullptr;
 
     for (j = 0; j < Connection[i]->Queue->Num_Send(); j++) {
       send_entry = Connection[i]->Queue->Get_Send(j);
@@ -1567,12 +1567,12 @@ void *IPXManagerClass::Oldest_Send(void) {
             send_entry->IsACK == 0) {
           break;
         } else {
-          send_entry = NULL;
+          send_entry = nullptr;
         }
       }
     }
 
-    if (send_entry != NULL) {
+    if (send_entry != nullptr) {
       time = send_entry->FirstTime;
 
       if (time < mintime) {

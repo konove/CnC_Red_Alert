@@ -212,7 +212,7 @@ static void Put_All(Pipe &pipe, int save_net) {
   */
   int carry_count = 0;
   CarryoverClass const *cptr = Carryover;
-  while (cptr != NULL) {
+  while (cptr != nullptr) {
     carry_count++;
     cptr = (CarryoverClass const *)cptr->Get_Next();
   }
@@ -229,7 +229,7 @@ static void Put_All(Pipe &pipe, int save_net) {
   **	Now write out the objects themselves.
   */
   CarryoverClass const *object_to_write = Carryover;
-  while (object_to_write != NULL) {
+  while (object_to_write != nullptr) {
     pipe.Put(object_to_write, sizeof(*object_to_write));
     object_to_write = (CarryoverClass const *)object_to_write->Get_Next();
   }
@@ -335,7 +335,7 @@ bool Save_Game(int id, char const *descr, bool) {
   char descr_buf[DESCRIP_MAX];
   memset(descr_buf, '\0', sizeof(descr_buf));
   sprintf(descr_buf, "%s\r\n", descr);    // put CR-LF after text
-  descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after NULL
+  descr_buf[strlen(descr_buf) + 1] = 26;  // put CTRL-Z after nullptr
   fpipe.Put(descr_buf, DESCRIP_MAX);
 
   fpipe.Put(&scenario, sizeof(scenario));
@@ -520,7 +520,7 @@ bool Load_Game(int id) {
   }
   char actual[20];
   sha.Result(actual);
-  sha.Get_From(NULL);
+  sha.Get_From(nullptr);
 
   Call_Back();
 
@@ -693,7 +693,7 @@ bool Load_Game(int id) {
   /*
   **	Delete any carryover pseudo-saved game list.
   */
-  while (Carryover != NULL) {
+  while (Carryover != nullptr) {
     CarryoverClass *cptr = (CarryoverClass *)Carryover->Get_Next();
     Carryover->Remove();
     delete Carryover;
@@ -707,7 +707,7 @@ bool Load_Game(int id) {
   straw.Get(&carry_count, sizeof(carry_count));
   while (carry_count) {
     CarryoverClass *cptr = new CarryoverClass;
-    assert(cptr != NULL);
+    assert(cptr != nullptr);
 
     straw.Get(cptr, sizeof(CarryoverClass));
     new (cptr) CarryoverClass(NoInitClass());
@@ -886,7 +886,7 @@ bool Load_Game(int id) {
   Rule.Objects(ini);
   Rule.Difficulty(ini);
 #ifdef FIXIT_CSII  //	ajw - Added runtime check for Aftermath to skirmish
-                   //mode.
+                   // mode.
   if (load_net) {
     bool readini = false;
     switch (Session.Type) {
@@ -1071,7 +1071,8 @@ bool Load_Misc_Values(Straw &file) {
  * Save_MPlayer_Values -- Saves multiplayer-specific values                *
  *                                                                         *
  * This routine saves multiplayer values that need to be restored for a * save
- *game.  In addition to saving the random # seed for this scenario, 	* it saves the contents of the actual random number generator; this 		*
+ *game.  In addition to saving the random # seed for this scenario, 	* it
+ * saves the contents of the actual random number generator; this 	*
  * ensures that the random # sequencer will pick up where it left off when
  ** the game was saved.
  ** This routine also saves the header for a Recording file, so it must
@@ -1277,14 +1278,14 @@ void Decode_All_Pointers(void) {
   */
   //	PlayerPtr = HouseClass::As_Pointer((HousesType)PlayerPtr);
   Whom = PlayerPtr->Class->House;
-  assert(PlayerPtr != NULL);
+  assert(PlayerPtr != nullptr);
 
   /*
   **	Currently-selected objects.
   */
   for (int index = 0; index < CurrentObject.Count(); index++) {
     CurrentObject[index] = As_Object((TARGET)(intptr_t)CurrentObject[index]);
-    assert(CurrentObject[index] != NULL);
+    assert(CurrentObject[index] != nullptr);
   }
 
   /*
@@ -1293,14 +1294,14 @@ void Decode_All_Pointers(void) {
   */
   if (Map.PendingObjectPtr) {
     Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    assert(Map.PendingObject != NULL);
+    assert(Map.PendingObject != nullptr);
     Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
 #ifdef BG
     Map.Set_Placement_List(Map.PendingObject->Placement_List(true));
 #endif
   } else {
-    Map.PendingObject = 0;
-    Map.Set_Cursor_Shape(0);
+    Map.PendingObject = nullptr;
+    Map.Set_Cursor_Shape(nullptr);
   }
 }
 

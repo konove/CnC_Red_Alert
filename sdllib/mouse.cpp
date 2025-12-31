@@ -6,7 +6,7 @@
 
 extern void *MainWindow;
 
-static WWMouseClass *_Mouse = NULL;
+static WWMouseClass *_Mouse = nullptr;
 
 WWMouseClass::WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
                            int mouse_max_height)
@@ -191,7 +191,7 @@ int Get_Mouse_State(void) {
 
 void *Set_Mouse_Cursor(int hotx, int hoty, void *cursor) {
   if (_Mouse) return _Mouse->Set_Cursor(hotx, hoty, cursor);
-  return 0;
+  return nullptr;
 }
 
 int Get_Mouse_X(void) {

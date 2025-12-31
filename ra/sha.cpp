@@ -73,7 +73,7 @@
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 void SHAEngine::Process_Partial(void const *&data, long &length) {
-  if (length == 0 || data == NULL) return;
+  if (length == 0 || data == nullptr) return;
 
   /*
   **	If there is no partial buffer and the source is greater than
@@ -247,7 +247,7 @@ T _rotl(T X, int n) {
 // unsigned long _RTLENTRY _rotl(unsigned long X, int n)
 //{
 //	return(unsigned long)( (unsigned long)( (unsigned long)( (unsigned
-//long)X ) << (int)n ) | (unsigned long)( ((unsigned long) X ) >> (
+// long)X ) << (int)n ) | (unsigned long)( ((unsigned long) X ) >> (
 //(int)((int)(sizeof(long)*(long)8) - (long)n) ) ) );
 // }
 void memrev(char *buffer, size_t length);
@@ -290,7 +290,7 @@ void SHAEngine::Process_Block(void const *source, SHADigest &acc) const {
   for (index = SRC_BLOCK_SIZE / sizeof(uint32_t);
        index < PROC_BLOCK_SIZE / sizeof(uint32_t); index++) {
     //		block[index] = _rotl(block[(index-3)&15] ^ block[(index-8)&15] ^
-    //block[(index-14)&15] ^ block[(index-16)&15], 1);
+    // block[(index-14)&15] ^ block[(index-16)&15], 1);
     block[index] = _rotl(block[index - 3] ^ block[index - 8] ^
                              block[index - 14] ^ block[index - 16],
                          1);

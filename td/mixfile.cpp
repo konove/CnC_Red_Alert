@@ -64,7 +64,7 @@ int Compare(T const *obj1, T const *obj2) {
 **	This is the pointer to the first mixfile in the list of mixfiles
 *registered *	with the mixfile system.
 */
-MixFileClass *MixFileClass::First = 0;
+MixFileClass *MixFileClass::First = nullptr;
 
 /***********************************************************************************************
  * MixFileClass::Free -- Uncaches a cached mixfile. *
@@ -161,9 +161,9 @@ MixFileClass::MixFileClass(char const *filename) {
   /*
   **	Load in the control block. It always remains resident.
   */
-  Data = 0;
+  Data = nullptr;
   Count = 0;
-  Buffer = 0;
+  Buffer = nullptr;
   file.Set_Name(filename);
   Filename = strdup(file.File_Name());
 
@@ -197,7 +197,7 @@ MixFileClass::MixFileClass(char const *filename) {
   /*
   **	Raw data block starts uncached.
   */
-  Data = 0;
+  Data = nullptr;
 
   /*
   **	Attach to list of mixfiles.
@@ -229,7 +229,7 @@ MixFileClass::MixFileClass(char const *filename) {
  * HISTORY: * 08/23/1994 JLB : Created. *
  *=============================================================================================*/
 void const *MixFileClass::Retrieve(char const *filename) {
-  void *ptr = 0;
+  void *ptr = nullptr;
   Offset(filename, &ptr);
   //	if (!ptr) {
   //		errno = ENOENT;
@@ -270,7 +270,7 @@ MixFileClass *MixFileClass::Finder(char const *filename) {
     }
     ptr = (MixFileClass *)ptr->Get_Next();
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -374,7 +374,7 @@ bool MixFileClass::Cache(void) {
 void MixFileClass::Free(void) {
   if (Data) {
     delete[] Data;
-    Data = 0;
+    Data = nullptr;
   }
 }
 
@@ -487,7 +487,7 @@ bool MixFileClass::Offset(char const *filename, void **realptr,
     if (block) {
       if (mixfile) *mixfile = ptr;
       if (size) *size = block->Size;
-      if (realptr) *realptr = 0;
+      if (realptr) *realptr = nullptr;
       if (offset) *offset = block->Offset;
       if (realptr && ptr->Data) {
         *realptr = Add_Long_To_Pointer(ptr->Data, block->Offset);

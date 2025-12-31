@@ -379,7 +379,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Visual_Character() <= VISUAL_DARKEN) {
     CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  Map.FadingShade, NULL);
+                  Map.FadingShade, nullptr);
   }
 
   /*
@@ -421,18 +421,18 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       FacingType face = Dir_Facing(SecondaryFacing);
       Move_Point(xx, yy, SecondaryFacing.Current(), _stretch[face]);
       CC_Draw_Shape(Class->RRotorData, shapenum, xx, yy - 2, window, flags,
-                    NULL, Map.UnitShadow);
+                    nullptr, Map.UnitShadow);
 
       Move_Point(xx, yy, SecondaryFacing.Current() + DIR_S, _stretch[face] * 2);
       CC_Draw_Shape(Class->LRotorData, shapenum, xx, yy - 2, window, flags,
-                    NULL, Map.UnitShadow);
+                    nullptr, Map.UnitShadow);
 
     } else {
       /*
       **	Single rotor centered about shape.
       */
       CC_Draw_Shape(Class->RRotorData, shapenum, x, (y - Altitude) - 2, window,
-                    flags, NULL, Map.UnitShadow);
+                    flags, nullptr, Map.UnitShadow);
     }
   }
 
@@ -465,14 +465,14 @@ void AircraftClass::Read_INI(char *buffer) {
   len = strlen(buffer) + 2;
   tbuffer = buffer + len;
 
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
     if (inhouse != HOUSE_NONE) {
-      classid = AircraftTypeClass::From_Name(strtok(NULL, ","));
+      classid = AircraftTypeClass::From_Name(strtok(nullptr, ","));
 
       if (classid != AIRCRAFT_NONE) {
         air = new AircraftClass(classid, inhouse);
@@ -484,9 +484,9 @@ void AircraftClass::Read_INI(char *buffer) {
           /*
           **	Read the raw data.
           */
-          strength = atoi(strtok(NULL, ","));
-          coord = Cell_Coord((CELL)atoi(strtok(NULL, ",")));
-          dir = (DirType)atoi(strtok(NULL, ","));
+          strength = atoi(strtok(nullptr, ","));
+          coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",")));
+          dir = (DirType)atoi(strtok(nullptr, ","));
 
           if (!Map.In_Radar(Coord_Cell(coord))) {
             delete air;
@@ -495,7 +495,7 @@ void AircraftClass::Read_INI(char *buffer) {
                 Fixed_To_Cardinal(air->Class->MaxStrength, strength);
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(
-                  AircraftClass::Mission_From_Name(strtok(NULL, ",\n\r")));
+                  AircraftClass::Mission_From_Name(strtok(nullptr, ",\n\r")));
             } else {
               delete air;
             }
@@ -533,10 +533,10 @@ void AircraftClass::Write_INI(char *buffer) {
   **	First, clear out all existing unit data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 

@@ -377,7 +377,7 @@ static struct {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 VocType Voc_From_Name(char const* name) {
-  if (name == NULL) return (VOC_NONE);
+  if (name == nullptr) return (VOC_NONE);
 
   for (VocType voc = VOC_FIRST; voc < VOC_COUNT; voc++) {
     if (stricmp(name, SoundEffectName[voc].Name) == 0) {
@@ -567,9 +567,9 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
   void const* ptr = MFCD::Retrieve(name.c_str());
 
   /*
-  **	If the sound data pointer is not null, then presume that it is valid.
+  **	If the sound data pointer is not nullptr, then presume that it is valid.
   */
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     volume.Sub_Saturate(1);
     return (Play_Sample(ptr, SoundEffectName[voc].Priority * volume,
                         volume * 256, pan_value));
@@ -820,7 +820,7 @@ void Speak_AI(void) {
       **	Try to find a previously loaded copy of the EVA speech in one of
       *the *	speech buffers.
       */
-      void const* speech = NULL;
+      void const* speech = nullptr;
       for (int index = 0; index < ARRAY_SIZE(SpeechRecord); index++) {
         if (SpeechRecord[index] == SpeakQueue) break;
       }
@@ -829,7 +829,7 @@ void Speak_AI(void) {
       **	If a previous copy could not be located, then load the requested
       **	voice into the oldest buffer available.
       */
-      if (speech == NULL) {
+      if (speech == nullptr) {
         _index = (_index + 1) % ARRAY_SIZE(SpeechRecord);
 
         auto name = std::filesystem::path(Speech[SpeakQueue])
@@ -847,7 +847,7 @@ void Speak_AI(void) {
       /*
       **	Since the speech file was loaded, play it.
       */
-      if (speech != NULL) {
+      if (speech != nullptr) {
         Play_Sample(speech, 254, Options.Volume * 256);
         CurrentVoice = SpeakQueue;
       }

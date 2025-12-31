@@ -136,7 +136,7 @@ extern "C" char CPUType;
 bool GameTimerInUse = false;
 TimerClass GameTimer;
 long GameEndTime;
-void *PacketLater = NULL;
+void *PacketLater = nullptr;
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
@@ -633,7 +633,7 @@ void Send_Statistics_Packet(void) {
     ** Send the packet we calculated earlier when the disconnect occurred
     */
     packet = PacketLater;
-    PacketLater = NULL;
+    PacketLater = nullptr;
   }
 
   /*

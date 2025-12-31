@@ -272,12 +272,12 @@ class GraphicViewPortClass {
 
   bool Scale(GraphicViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             bool trans = FALSE, char *remap = NULL);
+             bool trans = FALSE, char *remap = nullptr);
   bool Scale(GraphicViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
              char *remap);
   bool Scale(GraphicViewPortClass &dest, bool trans = FALSE,
-             char *remap = NULL);
+             char *remap = nullptr);
   bool Scale(GraphicViewPortClass &dest, char *remap);
 
   unsigned long Print(char const *string, int x_pixel, int y_pixel, int fcolor,
@@ -357,7 +357,7 @@ class GraphicViewPortClass {
 class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
  public:
   GraphicBufferClass(int w, int h, void *buffer, long size);
-  GraphicBufferClass(int w, int h, void *buffer = 0);
+  GraphicBufferClass(int w, int h, void *buffer = nullptr);
   GraphicBufferClass(void);
   ~GraphicBufferClass();
 
@@ -370,15 +370,15 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void Scale_Rotate(BitmapClass &bmp, TPoint2D const &pt, long scale,
                     unsigned char angle);
 
-  bool Is_Window_Surface() const { return WindowTexture != NULL; }
+  bool Is_Window_Surface() const { return WindowTexture != nullptr; }
   void Update_Window_Surface(bool end_frame);
   void Update_Palette(uint8_t *palette);
   const void *Get_Palette() const;
 
  protected:
   void Init_Display_Surface();
-  void *WindowTexture = NULL;
-  void *PaletteSurface = NULL;
+  void *WindowTexture = nullptr;
+  void *PaletteSurface = nullptr;
   int RedrawTimer = 0;
 };
 

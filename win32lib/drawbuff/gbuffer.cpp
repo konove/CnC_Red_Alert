@@ -81,7 +81,7 @@ BOOL AllowHardwareBlitFills = TRUE;
  *=========================================================================*/
 GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *gbuffer, int x,
                                            int y, int w, int h)
-    : LockCount(0), GraphicBuff(NULL) {
+    : LockCount(0), GraphicBuff(nullptr) {
   Attach(gbuffer, x, y, w, h);
 }
 
@@ -117,7 +117,7 @@ GraphicViewPortClass::~GraphicViewPortClass(void) {
   Pitch = 0;   // Record width of Buffer
   IsDirectDraw = FALSE;
   LockCount = 0;
-  GraphicBuff = NULL;
+  GraphicBuff = nullptr;
 }
 
 /***************************************************************************
@@ -441,7 +441,7 @@ GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer) {
  * HISTORY: * 09-21-95 04:19pm ST : Created *
  *====================================================================================*/
 GraphicBufferClass::GraphicBufferClass(int w, int h, GBC_Enum flags) {
-  Init(w, h, NULL, w * h, flags);
+  Init(w, h, nullptr, w * h, flags);
 }
 
 /*=========================================================================*

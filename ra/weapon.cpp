@@ -79,10 +79,10 @@ WeaponTypeClass::WeaponTypeClass(char const *name)
       IsCamera(false),
       IsElectric(false),
       Burst(1),
-      Bullet(NULL),
+      Bullet(nullptr),
       Attack(0),
       MaxSpeed(MPH_IMMOBILE),
-      WarheadPtr(NULL),
+      WarheadPtr(nullptr),
       ROF(0),
       Range(0),
       Sound(VOC_NONE),
@@ -104,9 +104,9 @@ WeaponTypeClass::WeaponTypeClass(char const *name)
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 WeaponTypeClass::~WeaponTypeClass(void) {
-  IniName = NULL;
-  Bullet = NULL;
-  WarheadPtr = NULL;
+  IniName = nullptr;
+  Bullet = nullptr;
+  WarheadPtr = nullptr;
 }
 
 /***********************************************************************************************
@@ -177,7 +177,7 @@ WeaponTypeClass *WeaponTypeClass::As_Pointer(WeaponType weapon) {
     //			}
     //		}
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -211,21 +211,21 @@ bool WeaponTypeClass::Read_INI(CCINIClass &ini) {
     IsTurboBoosted = ini.Get_Bool(Name(), "TurboBoost", IsTurboBoosted);
 
     WarheadType wtype =
-        (WarheadPtr != NULL) ? WarheadType(WarheadPtr->ID) : WARHEAD_NONE;
+        (WarheadPtr != nullptr) ? WarheadType(WarheadPtr->ID) : WARHEAD_NONE;
     wtype = ini.Get_WarheadType(Name(), "Warhead", wtype);
     if (wtype != WARHEAD_NONE) {
       WarheadPtr = WarheadTypeClass::As_Pointer(wtype);
       //			WarheadPtr = &Warheads[wtype];
     } else {
-      WarheadPtr = NULL;
+      WarheadPtr = nullptr;
     }
 
-    BulletType btype = (Bullet != NULL) ? BulletType(Bullet->ID) : BULLET_NONE;
+    BulletType btype = (Bullet != nullptr) ? BulletType(Bullet->ID) : BULLET_NONE;
     btype = ini.Get_BulletType(Name(), "Projectile", btype);
     if (btype != BULLET_NONE) {
       Bullet = &BulletTypeClass::As_Reference(btype);
     } else {
-      Bullet = NULL;
+      Bullet = nullptr;
     }
 
     return (true);
@@ -315,7 +315,7 @@ ThreatType WeaponTypeClass::Allowed_Threats(void) const {
 }
 
 bool WeaponTypeClass::Is_Wall_Destroyer(void) const {
-  if (WarheadPtr != NULL && WarheadPtr->IsWallDestroyer) {
+  if (WarheadPtr != nullptr && WarheadPtr->IsWallDestroyer) {
     return (true);
   }
   return (false);

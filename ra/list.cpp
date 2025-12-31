@@ -106,10 +106,10 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   */
   TextFlags = flags;
   IsScrollActive = false;
-  Tabs = 0;
+  Tabs = nullptr;
   SelectedIndex = 0;
   CurrentTopIndex = 0;
-  Fancy_Text_Print(TXT_NONE, 0, 0, NULL, TBLACK, TextFlags);
+  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TextFlags);
   LineHeight = FontHeight + FontYSpacing - (RESFACTOR - 1);
   LineCount = (h - 1) / LineHeight;
 }
@@ -430,7 +430,7 @@ void ListClass::Step(int up) {
  *=============================================================================================*/
 char const *ListClass::Get_Item(int index) const {
   if (List.Count() == 0) {
-    return NULL;
+    return nullptr;
   }
   index = std::min(index, List.Count() - 1);
   return (List[index]);
@@ -451,7 +451,7 @@ char const *ListClass::Get_Item(int index) const {
  *=============================================================================================*/
 char const *ListClass::Current_Item(void) const {
   if (List.Count() <= SelectedIndex) {
-    return (0);
+    return (nullptr);
   }
   return (List[SelectedIndex]);
 }

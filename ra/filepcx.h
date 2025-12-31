@@ -70,10 +70,10 @@ typedef struct {
   char filler[58];
 } PCX_HEADER;
 
-GraphicBufferClass* Read_PCX_File(char const* name, char* palette = NULL,
-                                  void* buff = NULL, long size = 0);
+GraphicBufferClass* Read_PCX_File(char const* name, char* palette = nullptr,
+                                  void* buff = nullptr, long size = 0);
 GraphicBufferClass* Read_PCX_File(char const* name, BufferClass& Buff,
-                                  char* palette = NULL);
+                                  char* palette = nullptr);
 
 #ifndef TD
 int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,

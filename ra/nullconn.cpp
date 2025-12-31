@@ -80,7 +80,7 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  PortHandle = NULL;
+  PortHandle = nullptr;
 #else   // WIN32
   Port = NULL;
 #endif  // WIN32
@@ -175,7 +175,7 @@ int NullModemConnClass::Send(char *buf, int buflen, void *, int) {
   Error if we haven't been properly initialized
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  if (PortHandle == NULL) return (false);
+  if (PortHandle == nullptr) return (false);
 
 #else   // WIN32
   int status;

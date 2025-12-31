@@ -137,7 +137,7 @@ long Simple_Copy(void **source, long *ssize, void **alternate, long *altsize,
   if (!(*ssize)) {
     *source = *alternate;
     *ssize = *altsize;
-    *alternate = NULL;
+    *alternate = nullptr;
     *altsize = 0;
   }
 
@@ -164,7 +164,7 @@ long Simple_Copy(void **source, long *ssize, void **alternate, long *altsize,
     if (size) {
       *source = *alternate;
       *ssize = *altsize;
-      *alternate = 0;
+      *alternate = nullptr;
       *altsize = 0;
       out += Simple_Copy(source, ssize, alternate, altsize, dest, size);
     }

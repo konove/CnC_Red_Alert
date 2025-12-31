@@ -833,7 +833,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     Mark(MARK_UP);
     if (Class->IsCrew && !Class->IsTransporter) {
       if (Random_Pick(0, 1) == 0) {
-        InfantryClass *i = 0;
+        InfantryClass *i = nullptr;
         if (Class->Primary == WEAPON_NONE) {
           i = new InfantryClass(INFANTRY_C1, House->Class->House);
           i->IsTechnician = true;
@@ -1287,7 +1287,7 @@ bool UnitClass::Unload_Hovercraft_Process(void) {
           */
           int count = 0;
           bool first = true;
-          FootClass *secondary = 0;
+          FootClass *secondary = nullptr;
           while (Attached_Object()) {
             FootClass *u = (FootClass *)Detach_Object();
 
@@ -2172,7 +2172,7 @@ int UnitClass::Mission_Unload(void) {
     case UNIT_APC:
       switch (Status) {
         case INITIAL_CHECK:
-          dir = Desired_Load_Dir(NULL, cell);
+          dir = Desired_Load_Dir(nullptr, cell);
           if (How_Many() && cell != 0) {
             Do_Turn(dir);
             Status = MANEUVERING;
@@ -3335,14 +3335,14 @@ void UnitClass::Read_INI(char *buffer) {
   len = strlen(buffer) + 2;
   tbuffer = buffer + len;
 
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
     if (inhouse != HOUSE_NONE) {
-      classid = UnitTypeClass::From_Name(strtok(NULL, ","));
+      classid = UnitTypeClass::From_Name(strtok(nullptr, ","));
 
       if (classid != UNIT_NONE) {
         unit = new UnitClass(classid, inhouse);
@@ -3350,12 +3350,12 @@ void UnitClass::Read_INI(char *buffer) {
           /*
           **	Read the raw data.
           */
-          int strength = atoi(strtok(NULL, ",\r\n"));
-          COORDINATE coord = Cell_Coord((CELL)atoi(strtok(NULL, ",\r\n")));
-          DirType dir = (DirType)atoi(strtok(NULL, ",\r\n"));
+          int strength = atoi(strtok(nullptr, ",\r\n"));
+          COORDINATE coord = Cell_Coord((CELL)atoi(strtok(nullptr, ",\r\n")));
+          DirType dir = (DirType)atoi(strtok(nullptr, ",\r\n"));
           MissionType mission =
-              MissionClass::Mission_From_Name(strtok(NULL, ",\n\r"));
-          unit->Trigger = TriggerClass::As_Pointer(strtok(NULL, ",\r\n"));
+              MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
+          unit->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\r\n"));
           if (unit->Trigger) {
             unit->Trigger->AttachCount++;
           }
@@ -3425,10 +3425,10 @@ void UnitClass::Write_INI(char *buffer) {
   **	First, clear out all existing unit data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 

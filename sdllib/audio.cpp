@@ -47,11 +47,11 @@ static int ScoreVolume = 255;
 static SDL_AudioDeviceID AudioDevice;
 static SDL_AudioSpec ObtainedSpec;
 static uint8_t *MixBuffer;  // temp buffer for mixing
-static AudioCallback ExtraCallback = NULL;
+static AudioCallback ExtraCallback = nullptr;
 
 struct ChannelState {
-  const void *sample = NULL;
-  SDL_AudioStream *stream = NULL;
+  const void *sample = nullptr;
+  SDL_AudioStream *stream = nullptr;
   bool playing = false;
   int priority = 0;
   int16_t volume = 32767;
@@ -65,7 +65,7 @@ struct ChannelState {
 
   uint32_t offset = 0;
   uint32_t length = 0;
-  uint8_t *in_ptr = NULL;
+  uint8_t *in_ptr = nullptr;
 
   int file_handle = -1;  // if this is a file stream
 
@@ -343,7 +343,7 @@ int File_Stream_Sample_Vol(char const *filename, int volume,
   SDL_LockAudioDevice(AudioDevice);
   auto &chan = Channels[id];
 
-  chan.sample = NULL;
+  chan.sample = nullptr;
   chan.playing = true;
   chan.priority = 0xFF;
   chan.raw_volume = volume * ScoreVolume;
@@ -358,7 +358,7 @@ int File_Stream_Sample_Vol(char const *filename, int volume,
 
   chan.offset = 0;
   chan.length = header.UncompSize / channels / (bits / 8);
-  chan.in_ptr = NULL;
+  chan.in_ptr = nullptr;
 
   chan.file_handle = handle;
 
@@ -436,7 +436,7 @@ bool Audio_Init(void *window, int bits_per_sample, bool stereo, int rate,
                 SDL_AUDIO_ALLOW_CHANNELS_CHANGE |
                 SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
   AudioDevice =
-      SDL_OpenAudioDevice(NULL, false, &desired, &ObtainedSpec, changes);
+      SDL_OpenAudioDevice(nullptr, false, &desired, &ObtainedSpec, changes);
 
   if (!AudioDevice) {
     printf("Audio_Init: %s\n", SDL_GetError());
@@ -648,11 +648,11 @@ static long Sample_Read(int fh, void *buffer, long size) {
 }
 
 void *Load_Sample(char const *filename) {
-  void *buffer = NULL;
+  void *buffer = nullptr;
   long size;
   int fh;
 
-  if (!filename || !Find_File(filename)) return NULL;
+  if (!filename || !Find_File(filename)) return nullptr;
 
   fh = Open_File(filename, READ);
   if (fh != WW_ERROR) {

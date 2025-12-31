@@ -215,7 +215,7 @@ VOID *cdecl Extract_Shape(VOID const *buffer, int shape) {
   /*
   ----------------------- Return if invalid argument -----------------------
   */
-  if (!buffer || shape < 0 || shape >= block->NumShapes) return (NULL);
+  if (!buffer || shape < 0 || shape >= block->NumShapes) return (nullptr);
 
   offset = block->Offsets[shape];
 

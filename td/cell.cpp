@@ -192,7 +192,7 @@ TechnoClass *CellClass::Cell_Techno(int x, int y) const {
   Validate();
   ObjectClass *object;
   COORDINATE click;  // Coordinate of click relative to cell corner.
-  TechnoClass *close = NULL;
+  TechnoClass *close = nullptr;
   long distance = 0;  // Recorded closest distance.
 
   /*
@@ -245,7 +245,7 @@ ObjectClass *CellClass::Cell_Find_Object(RTTIType rtti) const {
     }
     object = object->Next;
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -368,8 +368,8 @@ void CellClass::Redraw_Objects(bool forced) {
       ObjectClass *optr = Cell_Occupier();
       while (optr && optr->IsActive) {
         optr->Mark(MARK_CHANGE);
-        if (optr->Next != NULL && !optr->Next->IsActive) {
-          optr->Next = NULL;
+        if (optr->Next != nullptr && !optr->Next->IsActive) {
+          optr->Next = nullptr;
         }
         optr = optr->Next;
       }
@@ -382,7 +382,7 @@ void CellClass::Redraw_Objects(bool forced) {
          index++) {
       if (Overlapper[index]) {
         if (!Overlapper[index]->IsActive) {
-          Overlapper[index] = NULL;
+          Overlapper[index] = nullptr;
         } else {
           Overlapper[index]->Mark(MARK_CHANGE);
         }
@@ -599,19 +599,19 @@ void CellClass::Occupy_Down(ObjectClass *object) {
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass *object) {
   Validate();
-  ObjectClass *optr = NULL;  // Working pointer to the objects in the chain.
+  ObjectClass *optr = nullptr;  // Working pointer to the objects in the chain.
 
   if (Cell_Occupier()) {
     optr = Cell_Occupier();
   }
   if (optr == object) {
     OccupierPtr = object->Next;
-    object->Next = 0;
+    object->Next = nullptr;
   } else {
     while (optr) {
       if (optr->Next == object) {
         optr->Next = object->Next;
-        object->Next = 0;
+        object->Next = nullptr;
         break;
       }
       if (!optr->Next) break;
@@ -668,7 +668,7 @@ void CellClass::Occupy_Up(ObjectClass *object) {
  *=============================================================================================*/
 void CellClass::Overlap_Down(ObjectClass *object) {
   Validate();
-  ObjectClass **ptr = 0;
+  ObjectClass **ptr = nullptr;
 
   if (!object) return;
   for (int index = 0; index < sizeof(Overlapper) / sizeof(Overlapper[0]);
@@ -726,7 +726,7 @@ void CellClass::Overlap_Up(ObjectClass *object) {
   for (int index = 0; index < sizeof(Overlapper) / sizeof(Overlapper[0]);
        index++) {
     if (Overlapper[index] == object) {
-      Overlapper[index] = 0;
+      Overlapper[index] = nullptr;
       break;
     }
   }
@@ -798,10 +798,10 @@ InfantryClass *CellClass::Cell_Infantry(void) const {
  *=============================================================================================*/
 void CellClass::Draw_It(int x, int y, int draw_type) const {
   Validate();
-  TemplateTypeClass const *ttype = 0;
+  TemplateTypeClass const *ttype = nullptr;
   int icon;  // The icon number to use from the template set.
   CELL cell = Cell_Number();
-  void *remap = NULL;
+  void *remap = nullptr;
 #ifdef SCENARIO_EDITOR
   TemplateTypeClass *tptr;
   TriggerClass *trig;
@@ -863,7 +863,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       **	This is the underlying terrain icon.
       */
       if (ttype->Get_Image_Data()) {
-        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, NULL,
+        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, nullptr,
                               WINDOW_TACTICAL);
         if (remap) {
           LogicPage->Remap(x + Map.TacPixelX, y + Map.TacPixelY, ICON_PIXEL_W,
@@ -932,7 +932,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         CC_Draw_Shape(
             otype.Get_Image_Data(), OverlayData, (x + (CELL_PIXEL_W >> 1)),
             (y + (CELL_PIXEL_H >> 1)), WINDOW_TACTICAL,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, NULL, Map.UnitShadow);
+            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr, Map.UnitShadow);
         IsTheaterShape = false;
       }
 
@@ -990,10 +990,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         **	Draw the hash-mark cursor:
         */
         if (Map.ProximityCheck && Is_Generally_Clear()) {
-          LogicPage->Draw_Stamp(Map.TransIconset, 0, x, y, NULL,
+          LogicPage->Draw_Stamp(Map.TransIconset, 0, x, y, nullptr,
                                 WINDOW_TACTICAL);
         } else {
-          LogicPage->Draw_Stamp(Map.TransIconset, 2, x, y, NULL,
+          LogicPage->Draw_Stamp(Map.TransIconset, 2, x, y, nullptr,
                                 WINDOW_TACTICAL);
         }
 
@@ -1480,7 +1480,7 @@ TriggerClass *CellClass::Get_Trigger(void) const {
   if (IsTrigger) {
     return (CellTriggers[Cell_Number()]);
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -1651,7 +1651,7 @@ int CellClass::Clear_Icon(void) const {
  *=============================================================================================*/
 void CellClass::Incoming(COORDINATE threat, bool forced) {
   Validate();
-  ObjectClass *object = NULL;
+  ObjectClass *object = nullptr;
 
   object = Cell_Occupier();
   while (object) {
@@ -1860,7 +1860,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
 
     } else {
       int index;
-      UnitClass *unit = 0;
+      UnitClass *unit = nullptr;
       unsigned damage = 0;
       int what = MONEY;
 
@@ -1986,7 +1986,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
         **	Try to create a unit where the crate was.
         */
         case UNIT: {
-          UnitTypeClass const *utp = NULL;
+          UnitTypeClass const *utp = nullptr;
 
           /*
           **	Give the player an MCV if he has no base left but does have more
@@ -2019,7 +2019,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
                   (utp->Ownable & (1 << object->Owner())) &&
                   utp->Level <= BuildLevel + 2)
                 break;
-              utp = NULL;
+              utp = nullptr;
             }
           }
 
@@ -2111,7 +2111,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
             new AnimClass(ANIM_FBALL1, coord);
             damage = 400;
-            Explosion_Damage(coord, damage, NULL, WARHEAD_HE);
+            Explosion_Damage(coord, damage, nullptr, WARHEAD_HE);
           }
           break;
 
@@ -2122,7 +2122,7 @@ bool CellClass::Goodie_Check(FootClass *object) {
           coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
           new AnimClass(ANIM_NAPALM3, coord);
           damage = 600;
-          Explosion_Damage(coord, damage, NULL, WARHEAD_FIRE);
+          Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);
           break;
 
         /*
@@ -2269,7 +2269,7 @@ ObjectClass *CellClass::Cell_Occupier(void) const {
 
   while (ptr && !ptr->IsActive) {
     ptr = ptr->Next;
-    ((ObjectClass *&)OccupierPtr) = 0;
+    ((ObjectClass *&)OccupierPtr) = nullptr;
   }
 
   return (ptr);

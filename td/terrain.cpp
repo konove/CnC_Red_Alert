@@ -552,7 +552,7 @@ void TerrainClass::AI(void) {
         if (IsSporing) {
           if (Fetch_Stage() >=
               Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
-            Explosion_Damage(Sort_Y(), 5, NULL, WARHEAD_SPORE);
+            Explosion_Damage(Sort_Y(), 5, nullptr, WARHEAD_SPORE);
             Set_Stage(FIRST_SPORE_STAGE);
             if (Random() & 1) {
               IsSporing = false;
@@ -568,7 +568,7 @@ void TerrainClass::AI(void) {
       }
     } else {
       // If it hasn't tried to blossom yet, can it do so now?
-      if (Random_Picky((int)1, (int)5000, (char *)NULL, (int)0) == 1) {
+      if (Random_Picky((int)1, (int)5000, (char *)nullptr, (int)0) == 1) {
         IsBlossoming = true;
         StageClass::Set_Stage(1);
         StageClass::Set_Rate(Options.Normalize_Delay(1));
@@ -708,7 +708,7 @@ COORDINATE TerrainClass::Center_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::TerrainClass(void) : Class(0) {
+TerrainClass::TerrainClass(void) : Class(nullptr) {
   IsOnFire = false;
   IsCrumbling = false;
   IsBlossoming = false;
@@ -753,7 +753,7 @@ unsigned char *TerrainClass::Radar_Icon(CELL cell) {
     int iconnum = (ydiff * width) + xdiff;
     return (icon + (iconnum * 9));
   }
-  return (NULL);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -781,19 +781,19 @@ void TerrainClass::Read_INI(char *buffer) {
   len = strlen(buffer) + 2;
   tbuffer = buffer + len;
 
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
     TerrainType terrain;  // Terrain type.
     CELL cell;
 
     cell = atoi(tbuffer);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, NULL, buf, sizeof(buf) - 1,
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
                               buffer);
     terrain = TerrainTypeClass::From_Name(strtok(buf, ","));
     if (terrain != TERRAIN_NONE) {
       tptr = new TerrainClass(terrain, cell);
-      tptr->Trigger = TriggerClass::As_Pointer(strtok(NULL, ","));
+      tptr->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ","));
       if (tptr->Trigger) tptr->Trigger->AttachCount++;
     }
     tbuffer += strlen(tbuffer) + 1;
@@ -827,10 +827,10 @@ void TerrainClass::Write_INI(char *buffer) {
   **	First, clear out all existing terrain data from the ini file.
   */
   tbuffer = buffer + strlen(buffer) + 2;
-  WWGetPrivateProfileString(INI_Name(), NULL, NULL, tbuffer,
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - strlen(buffer), buffer);
   while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, NULL, buffer);
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
     tbuffer += strlen(tbuffer) + 1;
   }
 

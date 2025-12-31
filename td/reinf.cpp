@@ -71,7 +71,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
   **	under this team control. If there are no missions for this team
   **	then don't actually create the team -- it won't serve a purpose.
   */
-  TeamClass *team = NULL;
+  TeamClass *team = nullptr;
   if (teamtype->MissionCount) {
     team = new TeamClass(teamtype, HouseClass::As_Pointer(teamtype->House));
     if (!team) return (false);
@@ -143,8 +143,8 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
   **	Now that the official source for the reinforcement has been determined,
   *the *	objects themselves must be created.
   */
-  TechnoClass *transport = NULL;
-  TechnoClass *object = NULL;
+  TechnoClass *transport = nullptr;
+  TechnoClass *object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
     TechnoTypeClass const *tclass = teamtype->Class[index];
 
@@ -271,7 +271,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
       CELL newcell = cell;
 
       FootClass *o = (FootClass *)object->Next;
-      object->Next = 0;
+      object->Next = nullptr;
       bool ok = true;
       while (newcell > 0 && object) {
         DirType desiredfacing = Facing_Dir(eface);
@@ -321,7 +321,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
         object = o;
         if (object) {
           o = (FootClass *)object->Next;
-          object->Next = 0;
+          object->Next = nullptr;
         }
       }
 
@@ -333,7 +333,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
         while (o) {
           FootClass *old = o;
           o = (FootClass *)o->Next;
-          old->Next = 0;
+          old->Next = nullptr;
 
           delete old;
         }
@@ -366,7 +366,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
                               Coord_YCell(building->Docking_Coord() + 2));
           }
         }
-        thisone->Next = 0;
+        thisone->Next = nullptr;
 
         ScenarioInit++;
         placed = thisone->Unlimbo(Cell_Coord(newcell), DIR_W);

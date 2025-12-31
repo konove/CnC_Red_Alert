@@ -274,7 +274,7 @@ class FootClass : public TechnoClass {
                                            RadioMessageType message,
                                            long &param);
   virtual bool Can_Demolish(void) const;
-  bool Is_Recruitable(HouseClass const *house = NULL) const;
+  bool Is_Recruitable(HouseClass const *house = nullptr) const;
   bool Is_On_Priority_Mission(void) const;
 
   /*
@@ -312,8 +312,8 @@ class FootClass : public TechnoClass {
   */
   virtual void Stun(void);
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = 0, bool forced = false);
-  virtual void Death_Announcement(TechnoClass const *source = 0) const;
+                                 TechnoClass *source = nullptr, bool forced = false);
+  virtual void Death_Announcement(TechnoClass const *source = nullptr) const;
 
   /*
   **	AI.

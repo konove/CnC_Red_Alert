@@ -71,7 +71,7 @@ PKStraw::PKStraw(CryptControl control, RandomStraw &rnd)
       Rand(rnd),
       BF((control == ENCRYPT) ? BlowStraw::ENCRYPT : BlowStraw::DECRYPT),
       Control(control),
-      CipherKey(NULL),
+      CipherKey(nullptr),
       Counter(0),
       BytesLeft(0) {
   Straw::Get_From(BF);
@@ -95,19 +95,19 @@ PKStraw::PKStraw(CryptControl control, RandomStraw &rnd)
  *=============================================================================================*/
 void PKStraw::Get_From(Straw *straw) {
   if (BF.ChainTo != straw) {
-    if (straw != NULL && straw->ChainFrom != NULL) {
-      straw->ChainFrom->Get_From(NULL);
-      straw->ChainFrom = NULL;
+    if (straw != nullptr && straw->ChainFrom != nullptr) {
+      straw->ChainFrom->Get_From(nullptr);
+      straw->ChainFrom = nullptr;
     }
 
-    if (BF.ChainTo != NULL) {
-      BF.ChainTo->ChainFrom = NULL;
+    if (BF.ChainTo != nullptr) {
+      BF.ChainTo->ChainFrom = nullptr;
     }
 
     BF.ChainTo = straw;
     BF.ChainFrom = this;
     ChainTo = &BF;
-    if (BF.ChainTo != NULL) {
+    if (BF.ChainTo != nullptr) {
       BF.ChainTo->ChainFrom = this;
     }
   }
@@ -134,7 +134,7 @@ void PKStraw::Get_From(Straw *straw) {
  *=============================================================================================*/
 void PKStraw::Key(PKey const *key) {
   CipherKey = key;
-  if (key != NULL) {
+  if (key != nullptr) {
     IsGettingKey = true;
   }
   Counter = 0;
@@ -166,7 +166,7 @@ int PKStraw::Get(void *source, int length) {
   **	If the parameters seem invalid, then pass the request on so that someone
   **	else can deal with it.
   */
-  if (source == NULL || length < 1 || CipherKey == NULL) {
+  if (source == nullptr || length < 1 || CipherKey == nullptr) {
     return (Straw::Get(source, length));
   }
 
@@ -267,7 +267,7 @@ int PKStraw::Get(void *source, int length) {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKStraw::Encrypted_Key_Length(void) const {
-  if (CipherKey == NULL) return (0);
+  if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Crypt_Block_Size());
 }
@@ -292,7 +292,7 @@ int PKStraw::Encrypted_Key_Length(void) const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 int PKStraw::Plain_Key_Length(void) const {
-  if (CipherKey == NULL) return (0);
+  if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Plain_Block_Size());
 }

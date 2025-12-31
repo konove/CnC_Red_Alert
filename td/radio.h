@@ -80,7 +80,7 @@ class RadioClass : public MissionClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   RadioClass(void) {
-    Radio = 0;
+    Radio = nullptr;
     LastMessage = RADIO_STATIC;
   };
   RadioClass(NoInitClass const &x) : MissionClass(x){};
@@ -89,8 +89,8 @@ class RadioClass : public MissionClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool In_Radio_Contact(void) const { return (Radio != 0); };
-  void Radio_Off(void) { Radio = 0; };
+  bool In_Radio_Contact(void) const { return (Radio != nullptr); };
+  void Radio_Off(void) { Radio = nullptr; };
   TechnoClass *Contact_With_Whom(void) const { return (TechnoClass *)Radio; };
 
   // Inherited from base class(es).
@@ -99,7 +99,7 @@ class RadioClass : public MissionClass {
                                            long &param);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             long &param = LParam,
-                                            RadioClass *to = NULL);
+                                            RadioClass *to = nullptr);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             RadioClass *to);
 #ifdef CHEAT_KEYS

@@ -69,7 +69,7 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 void *SmudgeClass::operator new(size_t) throw() {
   void *ptr = Smudges.Allocate();
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((SmudgeClass *)ptr)->IsActive = true;
   }
   return (ptr);
@@ -90,7 +90,7 @@ void *SmudgeClass::operator new(size_t) throw() {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeClass::operator delete(void *ptr) {
-  if (ptr != NULL) {
+  if (ptr != nullptr) {
     ((SmudgeClass *)ptr)->IsActive = false;
   }
   Smudges.Free((SmudgeClass *)ptr);
@@ -291,15 +291,15 @@ void SmudgeClass::Read_INI(CCINIClass &ini) {
     char const *entry = ini.Get_Entry(INI_Name(), index);
     SmudgeType smudge;  // Smudge type.
 
-    ini.Get_String(INI_Name(), entry, NULL, buf, sizeof(buf));
+    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
-      char *ptr = strtok(NULL, ",");
-      if (ptr != NULL) {
+      char *ptr = strtok(nullptr, ",");
+      if (ptr != nullptr) {
         int data = 0;
         CELL cell = atoi(ptr);
-        ptr = strtok(NULL, ",");
-        if (ptr != NULL) data = atoi(ptr);
+        ptr = strtok(nullptr, ",");
+        if (ptr != nullptr) data = atoi(ptr);
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map[cell].Smudge == smudge && data != 0) {
           Map[cell].SmudgeData = data;

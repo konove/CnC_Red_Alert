@@ -84,7 +84,7 @@ FixedHeapClass::FixedHeapClass(int size)
       Size(size),
       TotalCount(0),
       ActiveCount(0),
-      Buffer(0) {}
+      Buffer(nullptr) {}
 
 /***********************************************************************************************
  * FixedHeapClass::~FixedHeapClass -- Destructor for the heap manager class. *
@@ -186,7 +186,7 @@ void *FixedHeapClass::Allocate(void) {
       return ((*this)[index]);
     }
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -266,7 +266,7 @@ void FixedHeapClass::Clear(void) {
   if (Buffer && IsAllocated) {
     delete[] (char *)Buffer;
   }
-  Buffer = 0;
+  Buffer = nullptr;
   IsAllocated = false;
   ActiveCount = 0;
   TotalCount = 0;
@@ -357,10 +357,10 @@ void FixedIHeapClass::Clear(void) {
 int FixedIHeapClass::Set_Heap(int count, void *buffer) {
   // avoid reallocating if possible
   // this is a workaround to prevent use-after-free errors in rule loading
-  void *reuse_buf = NULL;
+  void *reuse_buf = nullptr;
   if (count == TotalCount && !buffer && IsAllocated) {
     reuse_buf = buffer = Buffer;
-    Buffer = NULL;
+    Buffer = nullptr;
   }
 
   Clear();
@@ -440,7 +440,7 @@ int FixedIHeapClass::Free(void *pointer) {
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
 int FixedIHeapClass::Logical_ID(void const *pointer) const {
-  if (pointer != NULL) {
+  if (pointer != nullptr) {
     for (int index = 0; index < Count(); index++) {
       if (Active_Ptr(index) == pointer) {
         return (index);

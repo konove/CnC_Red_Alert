@@ -139,7 +139,7 @@ void Dictionary<K, V>::clear() {
   // free all the data
   for (i = 0; i < size; i++) {
     temp = table[i];
-    while (temp != NULL) {
+    while (temp != nullptr) {
       del = temp;
       temp = temp->hashNext;
       delete (del);
@@ -171,7 +171,7 @@ void Dictionary<K, V>::print(IN FILE *out) const {
     fprintf(out, " |\n");
     fprintf(out, "[ ]");
 
-    while (temp != NULL) {
+    while (temp != nullptr) {
       fprintf(out, "--[ ]");
       temp = temp->hashNext;
     }
@@ -193,21 +193,21 @@ bit8 Dictionary<K, V>::iterate(INOUT int &index, INOUT int &offset,
   if ((index < 0) || (index >= getSize())) return (FALSE);
 
   temp = table[index];
-  while ((temp == NULL) && ((++index) < getSize())) {
+  while ((temp == nullptr) && ((++index) < getSize())) {
     temp = table[index];
     offset = 0;
   }
 
-  if (temp == NULL)  // no more slots with data
+  if (temp == nullptr)  // no more slots with data
     return (FALSE);
 
   uint32 i = 0;
-  while ((temp != NULL) && (i < offset)) {
+  while ((temp != nullptr) && (i < offset)) {
     temp = temp->hashNext;
     i++;
   }
 
-  if (temp == NULL)  // should never happen
+  if (temp == nullptr)  // should never happen
     return (FALSE);
 
   value = temp->value;
@@ -242,11 +242,11 @@ bit8 Dictionary<K, V>::contains(IN K &key) {
 
   node = table[offset];
 
-  if (node == NULL) {
+  if (node == nullptr) {
     return (FALSE);
   }  // can't find it
 
-  while (node != NULL) {
+  while (node != nullptr) {
     if ((node->key) == key) {
       return (TRUE);
     }
@@ -298,7 +298,7 @@ bit8 Dictionary<K, V>::add(IN K &key, IN V &value) {
 
   node = table[offset];
 
-  if (node == NULL) {
+  if (node == nullptr) {
     table[offset] = item;
   } else {
     temp = table[offset];
@@ -330,7 +330,7 @@ bit8 Dictionary<K, V>::remove(IN K &key, OUT V &value) {
   node = table[offset];
 
   last = node;
-  if (node == NULL) return (FALSE);
+  if (node == nullptr) return (FALSE);
 
     // special case table points to thing to delete
 
@@ -355,7 +355,7 @@ bit8 Dictionary<K, V>::remove(IN K &key, OUT V &value) {
   node = node->hashNext;
 
   // Now the case if the thing to delete is not the first
-  while (node != NULL) {
+  while (node != nullptr) {
 #ifdef KEY_MEM_OPS
     if (0 == memcmp(&(node->key), &key, sizeof(K)))
 #else
@@ -440,18 +440,18 @@ bit8 Dictionary<K, V>::getValue(IN K &key, OUT V &value) {
 
   node = table[offset];
 
-  if (node == NULL) return (FALSE);
+  if (node == nullptr) return (FALSE);
 
 #ifdef KEY_MEM_OPS
   while ((node != NULL) && (memcmp(&(node->key), &key, sizeof(K))))
 #else
-  while ((node != NULL) && (!((node->key) == key)))  // odd syntax so you don't
+  while ((node != nullptr) && (!((node->key) == key)))  // odd syntax so you don't
 #endif  // have to do oper !=
   {
     node = node->hashNext;
   }
 
-  if (node == NULL) {
+  if (node == nullptr) {
     return (FALSE);
   }
 
@@ -490,7 +490,7 @@ void Dictionary<K, V>::shrink(void) {
 
   for (i = 0; i < oldsize; i++) {
     temp = oldtable[i];
-    while (temp != NULL) {
+    while (temp != nullptr) {
       offset = keyHash(temp->key);
       first = table[offset];
       table[offset] = temp;
@@ -524,7 +524,7 @@ void Dictionary<K, V>::expand(void) {
 
   for (i = 0; i < oldsize; i++) {
     temp = oldtable[i];
-    while (temp != NULL) {
+    while (temp != nullptr) {
       offset = keyHash(temp->key);
       first = table[offset];
       table[offset] = temp;

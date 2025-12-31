@@ -201,7 +201,7 @@ class IPXManagerClass : public ConnManClass {
   This is how the application sends & receives messages.
   .....................................................................*/
   int Send_Global_Message(void *buf, int buflen, int ack_req = 0,
-                          IPXAddressClass *address = NULL);
+                          IPXAddressClass *address = nullptr);
   int Get_Global_Message(void *buf, int *buflen, IPXAddressClass *address,
                          unsigned short *product_id);
 

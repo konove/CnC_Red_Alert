@@ -79,7 +79,7 @@
  *=============================================================================================*/
 FixedHeapClass::FixedHeapClass(int size) {
   Size = size;
-  Buffer = 0;
+  Buffer = nullptr;
   IsAllocated = false;
   TotalCount = 0;
   ActiveCount = 0;
@@ -185,7 +185,7 @@ void *FixedHeapClass::Allocate(void) {
       return ((*this)[index]);
     }
   }
-  return (0);
+  return (nullptr);
 }
 
 /***********************************************************************************************
@@ -265,7 +265,7 @@ void FixedHeapClass::Clear(void) {
   if (Buffer && IsAllocated) {
     delete[] (char *)Buffer;
   }
-  Buffer = 0;
+  Buffer = nullptr;
   IsAllocated = false;
   ActiveCount = 0;
   TotalCount = 0;

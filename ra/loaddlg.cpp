@@ -183,7 +183,7 @@ int LoadOptionsClass::Process(void) {
   /*
   **	Buttons
   */
-  ControlClass *commands = NULL;  // the button list
+  ControlClass *commands = nullptr;  // the button list
 
   switch (Style) {
     case LOAD:
@@ -330,14 +330,14 @@ int LoadOptionsClass::Process(void) {
     **	action button according to the style of this dialog box.
     */
     if (input == KN_RETURN || input == (BUTTON_EDIT | KN_BUTTON)) {
-      ToggleClass *toggle = NULL;
+      ToggleClass *toggle = nullptr;
       switch (Style) {
         case SAVE:
           input = (KeyNumType)(BUTTON_SAVE | KN_BUTTON);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
           toggle = (ToggleClass *)commands->Extract_Gadget(BUTTON_SAVE);
-          if (toggle != NULL) {
+          if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -349,7 +349,7 @@ int LoadOptionsClass::Process(void) {
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle = (ToggleClass *)commands->Extract_Gadget(BUTTON_LOAD);
-          if (toggle != NULL) {
+          if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
           }
@@ -360,7 +360,7 @@ int LoadOptionsClass::Process(void) {
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle = (ToggleClass *)commands->Extract_Gadget(BUTTON_DELETE);
-          if (toggle != NULL) {
+          if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
           }
@@ -484,7 +484,7 @@ int LoadOptionsClass::Process(void) {
           } else {
             ToggleClass *toggle =
                 (ToggleClass *)commands->Extract_Gadget(BUTTON_DELETE);
-            if (toggle != NULL) {
+            if (toggle != nullptr) {
               //							toggle->IsOn
               //= false;
               toggle->Turn_Off();
@@ -521,7 +521,7 @@ int LoadOptionsClass::Process(void) {
             */
             if (game_descr[0] == '(') {
               char *ptr = strchr(game_descr, ')');
-              if (ptr != NULL) {
+              if (ptr != nullptr) {
                 memmove(game_descr, ptr + 1, strlen(ptr + 1) + 1);
                 strtrim(game_descr);
               }

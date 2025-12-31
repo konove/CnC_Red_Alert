@@ -73,7 +73,7 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
     : IPXConnClass(numsend, numreceive,
                    maxlen + sizeof(GlobalHeaderType) - sizeof(CommHeaderType),
                    GLOBAL_MAGICNUM,  // magic number for this connection
-                   NULL,             // IPX Address (none)
+                   nullptr,             // IPX Address (none)
                    0,                // Connection ID
                    "")               // Connection Name
 {
@@ -119,7 +119,7 @@ int IPXGlobalConnClass::Send_Packet(void *buf, int buflen,
   If this is a ACK-required packet, sent to a specific system, mark it as
   ACK-required; otherwise, mark as no-ACK-required.
   ------------------------------------------------------------------------*/
-  if (ack_req && address != NULL) {
+  if (ack_req && address != nullptr) {
     ((GlobalHeaderType *)PacketBuf)->Header.Code = PACKET_DATA_ACK;
   } else {
     ((GlobalHeaderType *)PacketBuf)->Header.Code = PACKET_DATA_NOACK;
@@ -141,7 +141,7 @@ int IPXGlobalConnClass::Send_Packet(void *buf, int buflen,
   Set this packet's destination address.  If no address is specified, use
   a Broadcast address (which IPXAddressClass's default constructor creates).
   ------------------------------------------------------------------------*/
-  if (address != NULL) {
+  if (address != nullptr) {
     ((GlobalHeaderType *)PacketBuf)->Address = (*address);
   } else {
     ((GlobalHeaderType *)PacketBuf)->Address = IPXAddressClass();
@@ -296,7 +296,7 @@ int IPXGlobalConnClass::Get_Packet(void *buf, int *buflen,
   /*
   ------------------------ Read it if it's un-read -------------------------
   */
-  if (rec_entry != NULL && rec_entry->IsRead == 0) {
+  if (rec_entry != nullptr && rec_entry->IsRead == 0) {
     /*
     ........................... Mark as read ..............................
     */
@@ -366,7 +366,7 @@ int IPXGlobalConnClass::Send(char *buf, int buflen) {
       rc = Send_To(buf, buflen, &(((GlobalHeaderType *)buf)->Address),
                    BridgeNode);
     } else {
-      rc = Send_To(buf, buflen, &(((GlobalHeaderType *)buf)->Address), NULL);
+      rc = Send_To(buf, buflen, &(((GlobalHeaderType *)buf)->Address), nullptr);
     }
     return (rc);
   }
@@ -408,7 +408,7 @@ int IPXGlobalConnClass::Service_Receive_Queue(void) {
   Get a pointer to the next received entry
   ------------------------------------------------------------------------*/
   rec_entry = Queue->Get_Receive(0);
-  if (rec_entry == NULL) return (1);
+  if (rec_entry == nullptr) return (1);
 
   /*------------------------------------------------------------------------
   If this packet doesn't require an ACK, mark it as ACK'd.
@@ -440,9 +440,9 @@ int IPXGlobalConnClass::Service_Receive_Queue(void) {
   system got the ACK we sent for this packet; remove this packet from the
   queue.
   ------------------------------------------------------------------------*/
-  if (rec_entry != NULL && rec_entry->IsRead && rec_entry->IsACK &&
+  if (rec_entry != nullptr && rec_entry->IsRead && rec_entry->IsACK &&
       Queue->Num_Receive() > 1)
-    Queue->UnQueue_Receive(NULL, NULL, 0);
+    Queue->UnQueue_Receive(nullptr, nullptr, 0);
 
   return (1);
 
