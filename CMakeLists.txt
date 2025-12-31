@@ -15,7 +15,8 @@ if (MSVC)
             /wd4661 # missing template definitions, 10000s of these
     )
 else ()
-    add_compile_options(-Wno-write-strings -Wall -Wextra -Wpedantic)
+    #    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options(-Wall -Wextra -Wpedantic -Wshadow=compatible-local -Wformat=2 -Wconversion -Wsign-conversion -Wcast-align -Wcast-qual -Wundef -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wswitch-enum -Wswitch-default -Wnull-dereference -Woverloaded-virtual -Wnon-virtual-dtor -Wsuggest-override -Wold-style-cast -Wuseless-cast -Wdouble-promotion -Wimplicit-fallthrough=5 -Wzero-as-null-pointer-constant -Wnoexcept -Wnoexcept-type -Wmissing-declarations -Wredundant-decls)
     # workarounds
     add_compile_definitions(__cdecl= __far= __stdcall= cdecl= far=)
 endif ()

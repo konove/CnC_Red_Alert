@@ -49,7 +49,7 @@ class CCPtr {
  public:
   CCPtr() : ID(-1) {};
   CCPtr(NoInitClass const&) {};
-  explicit CCPtr(T* ptr);
+  CCPtr(T* ptr);
 
   operator T*() const {
     if (ID == -1) return nullptr;
@@ -80,7 +80,7 @@ class CCPtr {
   }
 
   long Raw() const { return ID; }
-  void Set_Raw(long value) { ID = value; }
+  void Set_Raw(const long value) { ID = value; }
 
  private:
   static FixedIHeapClass* Heap;

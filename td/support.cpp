@@ -5,6 +5,8 @@
 #include "function.h"
 #include "gbuffer.h"
 
+#include <string>
+
 void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
                                  int frac) {
   unsigned matchvalue;
@@ -107,28 +109,24 @@ void Fat_Put_Pixel(int x, int y, int color, int size,
 
 // from RA readline.cpp
 void strtrim(char *buffer) {
-  if (buffer) {
-    /*
-    **	Strip leading white space from the string.
-    */
-    char *source = buffer;
-    while (isspace(*source)) {
-      source++;
-    }
-    if (source != buffer) {
-      int len = strlen(source);
-      memmove(buffer, source, len + 1);
-    }
+  if (!buffer || *buffer == '\0') {
+    return;
+  }
 
-    /*
-    **	Clip trailing white space from the string.
-    */
-    for (int index = strlen(buffer) - 1; index >= 0; index--) {
-      if (isspace(buffer[index])) {
-        buffer[index] = '\0';
-      } else {
-        break;
-      }
-    }
+  // Strip leading whitespace
+  const auto *source = buffer;
+  while (std::isspace(static_cast<unsigned char>(*source))) {
+    ++source;
+  }
+
+  if (source != buffer) {
+    const auto len = std::strlen(source);
+    std::memmove(buffer, source, len + 1);
+  }
+
+  // Strip trailing whitespace
+  auto len = std::strlen(buffer);
+  while (len > 0 && std::isspace(static_cast<unsigned char>(buffer[len - 1]))) {
+    buffer[--len] = '\0';
   }
 }
