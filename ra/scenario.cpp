@@ -2874,8 +2874,8 @@ static void Create_Units(bool official) {
   *waypoints are used *	if there are 4 or fewer players. Unofficial maps will
   *pick from all the *	available waypoints.
   */
-  int look_for =
-      std::max(4, Session.Players.Count() + Session.Options.AIPlayers);
+  int look_for = std::max(
+      4, static_cast<int>(Session.Players.Count()) + Session.Options.AIPlayers);
   if (!official) {
     look_for = 8;
   }

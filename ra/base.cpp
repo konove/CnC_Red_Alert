@@ -458,17 +458,16 @@ void BaseClass::Write_INI(CCINIClass &ini) {
     */
     ini.Put_Int(INI_Name(), "Count", Nodes.Count());
 
-    /*
-    **	Write each entry into the INI
-    */
-    for (int i = 0; i < Nodes.Count(); i++) {
+    // Write each entry into the INI
+    for (size_t i = 0; i < Nodes.Count(); i++) {
       char buf[128];
       char uname[10];
 
-      sprintf(uname, "%03d", i);
-      sprintf(buf, "%s,%d",
-              BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
-              Nodes[i].Cell);
+      snprintf(uname, sizeof(uname), "%03lu", i);
+
+      snprintf(buf, sizeof(buf), "%s,%d",
+               BuildingTypeClass::As_Reference(Nodes[i].Type).IniName,
+               Nodes[i].Cell);
 
       ini.Put_String(INI_Name(), uname, buf);
     }

@@ -40,6 +40,8 @@
 
 #ifndef ABSTRACT_H
 #define ABSTRACT_H
+#include "defines.h"
+#include "function.h"
 
 DirType Direction(CELL cell1, CELL cell2);
 DirType Direction(COORDINATE coord1, COORDINATE coord2);
@@ -69,7 +71,7 @@ class AbstractClass {
   */
   AbstractClass(void) { Coord = 0L; };
   AbstractClass(NoInitClass const& x) { x(); };
-  virtual ~AbstractClass(void){};
+  virtual ~AbstractClass(void) {};
 
   /*
   **	Query functions.

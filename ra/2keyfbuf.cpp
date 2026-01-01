@@ -149,22 +149,20 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
   int FadingNum = 0;
 
   ShapeHeaderType *header_pointer;
-  bool use_old_draw = true;
 
-  char *shape_buffer_start;
+  bool use_new_draw = !UseOldShapeDraw && UseBigShapeBuffer;
 
-  // Save the line attributes pointers and
-  // Modify the src pointer to point to the actual image
-  if (!UseOldShapeDraw && UseBigShapeBuffer) {
+  // Save the line attributes pointers and modify the src pointer to point to
+  // the actual image.
+  if (use_new_draw) {
     header_pointer = (ShapeHeaderType *)src;
 
-    shape_buffer_start = BigShapeBufferStart;
-    if (header_pointer->shape_buffer)
-      shape_buffer_start = TheaterShapeBufferStart;
+    auto *shape_buffer_start = header_pointer->shape_buffer
+                                   ? TheaterShapeBufferStart
+                                   : BigShapeBufferStart;
 
     src = shape_buffer_start +
           (uintptr_t)header_pointer->shape_data;  // these are both ptrs...
-    use_old_draw = false;
   }
   // else just use the old shape drawing system
 
@@ -194,13 +192,10 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
 
   bool use_all_flags = false;
 
-  if (!UseBigShapeBuffer || UseOldShapeDraw)
-    use_old_draw = true;  // no big shape buffer so use old system
-  // Redo the shape headers if this shape was initially set up with different
-  // flags
-  else if (header_pointer->draw_flags == -1 ||
-           header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
-                                          SHAPE_PREDATOR | SHAPE_GHOST)) {
+  if (use_new_draw &&
+      (header_pointer->draw_flags == -1 ||
+       header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
+                                      SHAPE_PREDATOR | SHAPE_GHOST))) {
     Setup_Shape_Header(w, h, (char *)src, header_pointer, flags, Translucent,
                        IsTranslucent);
     // ShapeJumpTableAddress = AllFlagsJumpTable;
@@ -216,11 +211,12 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
     // ShapeJumpTableAddress = NewShapeJumpTable + eax
   }
 
-  if (flags & SHAPE_FADING)  // are we fading this shape
-  {
-    FadingTable = va_arg(args, uint8_t *);  // save address of fading tbl
-    FadingNum =
-        va_arg(args, int) & 0x3F;  // get fade num, no need for more than 63
+  // are we fading this shape
+  if (flags & SHAPE_FADING) {
+    // save address of fading tbl
+    FadingTable = va_arg(args, uint8_t *);
+    // get fade num, no need for more than 63
+    FadingNum = va_arg(args, int) & 0x3F;
     jflags |= BLIT_FADING;
 
     if (!FadingNum) flags &= ~SHAPE_FADING;  // don't fade
@@ -256,8 +252,10 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
                                 dest.Get_XAdd() + dest.Get_Pitch();
   }
 
-  if (flags & SHAPE_PARTIAL)  // is this a partial pred?
+  // is this a partial pred?
+  if (flags & SHAPE_PARTIAL) {
     BFPartialPred = va_arg(args, int) & 0xFF;
+  }
 
   va_end(args);
 
@@ -275,24 +273,30 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
       Make_Code(dst_x1, dst_y1, dest.Get_Width() + 1, dest.Get_Height() + 1);
 
   // outside
-  if (code0 & code1) return 0;
+  if (code0 & code1) {
+    return 0;
+  }
 
   if (code0 | code1) {
     // If the shape needs to be clipped then we cant handle it with the new
-    // header systen so draw it with the old shape drawer
-    use_old_draw = 1;
+    // header system so draw it with the old shape drawer.
+    use_new_draw = false;
 
     // apply clip
     if (code0 & 0b1000) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (code1 & 0b0100) dst_x1 = dest.Get_Width();
+    if (code1 & 0b0100) {
+      dst_x1 = dest.Get_Width();
+    }
     if (code0 & 0b0010) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
-    if (code1 & 0b0001) dst_y1 = dest.Get_Height();
+    if (code1 & 0b0001) {
+      dst_y1 = dest.Get_Height();
+    }
   }
 
   // do blit
@@ -303,7 +307,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
   auto dst_offset = dest.Get_Offset() + dst_x0 + dst_y0 * dst_area;
   int dst_adjust_width = dst_area - (dst_x1 - dst_x0);
 
-  if (use_old_draw) {
+  if (!use_new_draw) {
     if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return 0;
 
     int pixel_count = dst_x1 - dst_x0;

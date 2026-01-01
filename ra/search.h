@@ -242,7 +242,7 @@ IndexClass<T>::~IndexClass(void) {
 template <class T>
 void IndexClass<T>::Clear(void) {
   delete[] IndexTable;
-  IndexTable = 0;
+  IndexTable = nullptr;
   IndexCount = 0;
   IndexSize = 0;
   IsSorted = false;
@@ -447,7 +447,7 @@ bool IndexClass<T>::Is_Archive_Same(int id) const {
  *=============================================================================================*/
 template <class T>
 void IndexClass<T>::Invalidate_Archive(void) {
-  Archive = 0;
+  Archive = nullptr;
 }
 
 /***********************************************************************************************

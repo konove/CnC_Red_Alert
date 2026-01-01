@@ -177,7 +177,7 @@ extern VoxType SpeakQueue;
 extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;
-extern long Frame;
+extern std::uint64_t Frame;
 extern VoxType SpeechRecord[2];
 extern void *SpeechBuffer[2];
 extern int PreserveVQAScreen;

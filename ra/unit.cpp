@@ -1757,7 +1757,8 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     ** If entering a cell with a land mine in it, blow up the mine.
     */
     BuildingClass *bldng = Map[cell].Cell_Building();
-    if (bldng != nullptr && (*bldng == STRUCT_AVMINE || *bldng == STRUCT_APMINE) &&
+    if (bldng != nullptr &&
+        (*bldng == STRUCT_AVMINE || *bldng == STRUCT_APMINE) &&
         !bldng->House->Is_Ally(this)) {
       /*
       ** Special case: if it's a land mine deployer, and it ran over the
@@ -3057,7 +3058,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
     OverlayTypeClass const *optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
-    if (optr->IsCrate &&
+    if (optr->IsCrate && House &&
         !((Session.Type == GAME_NORMAL) ? House->IsPlayerControl
                                         : House->IsHuman) &&
         Session.Type == GAME_NORMAL) {
@@ -4161,6 +4162,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
 BulletClass *UnitClass::Fire_At(TARGET target, int which) {
   assert(Units.ID(this) == ID);
   assert(IsActive);
+  assert(Class);
 
   BulletClass *bullet = nullptr;
   WeaponTypeClass const *weap =
@@ -4757,7 +4759,8 @@ bool UnitClass::Should_Crush_It(TechnoClass const *it) const {
   *crushed, *	then it obviously should not try to crush it -- return negative
   *answer.
   */
-  if (!Class->IsCrusher || it == nullptr || !it->Techno_Type_Class()->IsCrushable)
+  if (!Class->IsCrusher || it == nullptr ||
+      !it->Techno_Type_Class()->IsCrushable)
     return (false);
 
   /*

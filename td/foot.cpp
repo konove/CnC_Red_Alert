@@ -436,7 +436,7 @@ bool FootClass::Basic_Path(void) {
 
         /*
         **	Scan for the best path possible. If this succeeds, then do a
-        *simple *	comparison with the most agressive path. If they are
+        *simple *	comparison with the most aggressive path. If they are
         *very close, then *	go with the best (easiest) path method.
         */
         path = Find_Path(cell, &workpath2[0], sizeof(workpath2), MOVE_CLOAK);
@@ -489,7 +489,7 @@ bool FootClass::Basic_Path(void) {
       */
       if (found1) {
         Fixup_Path(&path1);
-        memcpy(&Path[0], &workpath1[0], MIN(path->Length, (int)sizeof(Path)));
+        memcpy(&Path[0], &workpath1[0], MIN(path1.Length, (int)sizeof(Path)));
       }
 
       Mark(MARK_DOWN);
@@ -861,7 +861,7 @@ void FootClass::Approach_Target(void) {
 
     if (!Target_Legal(NavCom) && (!In_Range(TarCom) || !IsLocked)) {
       //		if (!Target_Legal(NavCom) && (Distance(TarCom) >
-      //maxrange || !IsLocked)) {
+      // maxrange || !IsLocked)) {
 
       /*
       ** If the object that we are attacking is a building adjust the units

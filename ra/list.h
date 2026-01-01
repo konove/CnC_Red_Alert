@@ -63,7 +63,7 @@ class ListClass : public ControlClass {
   virtual int Current_Index(void) const;
   virtual char const *Current_Item(void) const;
   virtual int Draw_Me(int forced);
-  virtual char const *Get_Item(int index) const;
+  virtual char const *Get_Item(size_t index) const;
   virtual int Step_Selected_Index(int forward);
   virtual void Flag_To_Redraw(void);
 

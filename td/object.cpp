@@ -274,8 +274,8 @@ void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
  *=============================================================================================*/
 ObjectClass::ObjectClass(void) {
   Coord = 0xFFFFFFFFL;  // Some bogus illegal value.
-  Next = nullptr;             // Not part of any object list.
-  Trigger = nullptr;          // No associated trigger.
+  Next = nullptr;       // Not part of any object list.
+  Trigger = nullptr;    // No associated trigger.
   IsToDamage = false;
   IsToDisplay = false;     // Redraw is presumed unnecessary.
   IsInLimbo = true;        // Always presumed to start in limbo state.
@@ -294,7 +294,7 @@ ObjectClass::ObjectClass(void) {
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  Returns with the RTTI value that coresponds to the object's type. *
+ * OUTPUT:  Returns with the RTTI value that corresponds to the object's type. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -303,7 +303,7 @@ ObjectClass::ObjectClass(void) {
 RTTIType ObjectClass::What_Am_I(void) const { return (RTTI_OBJECT); }
 
 /***********************************************************************************************
- * ObjectClass::What_Action -- Deteremines what action to perform on specified
+ * ObjectClass::What_Action -- Determines what action to perform on specified
  *object.         *
  *                                                                                             *
  *    This routine will return that action that this object could perform if the

@@ -65,6 +65,9 @@ class GenericNode {
 
   void Unlink(void) {
     if (Is_Valid()) {
+      assert(PrevNode != nullptr);
+      assert(NextNode != nullptr);
+
       PrevNode->NextNode = NextNode;
       NextNode->PrevNode = PrevNode;
       PrevNode = nullptr;
@@ -80,7 +83,7 @@ class GenericNode {
     return ((GenericList *)this);
   }
   void Link(GenericNode *node) {
-    assert(node != NULL);
+    assert(node != nullptr);
     node->Unlink();
     node->NextNode = NextNode;
     node->PrevNode = this;
@@ -90,9 +93,7 @@ class GenericNode {
 
   GenericNode *Next(void) const { return (NextNode); }
   GenericNode *Prev(void) const { return (PrevNode); }
-  bool Is_Valid(void) const {
-    return (this != nullptr && NextNode != nullptr && PrevNode != nullptr);
-  }
+  bool Is_Valid() const { return NextNode != nullptr && PrevNode != nullptr; }
 
  protected:
   GenericNode *NextNode;
@@ -143,7 +144,6 @@ class Node : public GenericNode {
   }
   T *Next(void) const { return ((T *)GenericNode::Next()); }
   T *Prev(void) const { return ((T *)GenericNode::Prev()); }
-  bool Is_Valid(void) const { return (GenericNode::Is_Valid()); }
 };
 
 /*

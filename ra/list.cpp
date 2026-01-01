@@ -62,6 +62,7 @@
 #include "function.h"
 
 #include <algorithm>
+#include <vector>
 
 /***************************************************************************
  * ListClass::ListClass -- class constructor                               *
@@ -305,7 +306,8 @@ int ListClass::Action(unsigned flags, KeyNumType &key) {
       int index = Get_Mouse_Y() - (Y + 1);
       index = index / LineHeight;
       SelectedIndex = CurrentTopIndex + index;
-      SelectedIndex = std::min(SelectedIndex, List.Count() - 1);
+      SelectedIndex =
+          std::min(SelectedIndex, static_cast<int>(List.Count()) - 1);
       if (SelectedIndex == -1) SelectedIndex = 0;
     }
   }
@@ -428,7 +430,7 @@ void ListClass::Step(int up) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const *ListClass::Get_Item(int index) const {
+char const *ListClass::Get_Item(size_t index) const {
   if (List.Count() == 0) {
     return nullptr;
   }
@@ -527,7 +529,8 @@ void ListClass::Peer_To_Peer(unsigned flags, KeyNumType &, ControlClass &whom) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ListClass::Set_View_Index(int index) {
-  index = Bound(index, 0, std::max(0, List.Count() - LineCount));
+  index =
+      Bound(index, 0, std::max(0, static_cast<int>(List.Count()) - LineCount));
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
     Flag_To_Redraw();

@@ -594,8 +594,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
               level = (House->Tiberium * 5) / House->Capacity;
             }
             //						int level =
-            //Fixed_To_Cardinal(4, Cardinal_To_Fixed(House->Capacity,
-            //House->Tiberium));
+            // Fixed_To_Cardinal(4, Cardinal_To_Fixed(House->Capacity,
+            // House->Tiberium));
 
             shapenum += Bound(level, 0, 4);
             if (Health_Ratio() < 0x0080) {
@@ -2252,7 +2252,7 @@ void BuildingClass::Update_Buildables(void) {
           if (PlayerPtr->Can_Build(i, ActLike)) {
             //						if
             //(BuildingTypeClass::As_Reference(i).Who_Can_Build_Me(true, true,
-            //ActLike)) {
+            // ActLike)) {
             Map.Add(RTTI_BUILDINGTYPE, i);
             //						}
           }
@@ -2264,7 +2264,7 @@ void BuildingClass::Update_Buildables(void) {
           if (PlayerPtr->Can_Build(u, ActLike)) {
             //						if
             //(UnitTypeClass::As_Reference(u).Who_Can_Build_Me(true, true,
-            //ActLike)) {
+            // ActLike)) {
             Map.Add(RTTI_UNITTYPE, u);
             //						}
           }
@@ -2276,7 +2276,7 @@ void BuildingClass::Update_Buildables(void) {
           if (PlayerPtr->Can_Build(f, ActLike)) {
             //						if
             //(InfantryTypeClass::As_Reference(f).Who_Can_Build_Me(true, true,
-            //ActLike)) {
+            // ActLike)) {
             Map.Add(RTTI_INFANTRYTYPE, f);
             //						}
           }
@@ -2288,7 +2288,7 @@ void BuildingClass::Update_Buildables(void) {
           if (PlayerPtr->Can_Build(a, ActLike)) {
             //						if
             //(AircraftTypeClass::As_Reference(a).Who_Can_Build_Me(true, true,
-            //ActLike)) {
+            // ActLike)) {
             Map.Add(RTTI_AIRCRAFTTYPE, a);
             //						}
           }
@@ -2342,9 +2342,8 @@ bool BuildingClass::Limbo(void) {
   //	RTTIType bld_type;
 
   if (!IsInLimbo) {
-    /*
-    **	Update the total factory type, assuming this building has a factory.
-    */
+    assert(House);
+    // Update the total factory type, assuming this building has a factory.
     switch (Class->ToBuild) {
       case RTTI_AIRCRAFTTYPE:
         House->AircraftFactories--;
@@ -2931,8 +2930,8 @@ void BuildingClass::Read_INI(char *buffer) {
     /*
     **	Get a building entry.
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
 
     /*
     **	1st token: house name.

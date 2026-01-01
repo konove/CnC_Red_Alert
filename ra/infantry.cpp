@@ -1307,8 +1307,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
     OverlayTypeClass const &otype =
         OverlayTypeClass::As_Reference(cellptr->Overlay);
 
-    if (otype.IsCrate &&
-        !((Session.Type == GAME_NORMAL) ? House->IsPlayerControl
+    if (otype.IsCrate && House &&
+        !(Session.Type == GAME_NORMAL ? House->IsPlayerControl
                                         : House->IsHuman) &&
         Session.Type == GAME_NORMAL) {
       return (MOVE_NO);

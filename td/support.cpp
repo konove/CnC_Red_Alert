@@ -63,7 +63,7 @@ void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
     matchcolor = color;  // Default color (self).
     matchvalue = -1;     // Ridiculous match value init.
 
-    auto palptr = pal8 + ALLOWED_START * 3;
+    auto palptr = pal8 + (ALLOWED_START * 3);
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;
@@ -102,7 +102,7 @@ void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
   return dest;
 }
 
-void Fat_Put_Pixel(int x, int y, int color, int size,
+void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
                    GraphicViewPortClass &gpage) {
   gpage.Fill_Rect(x, y, x + size - 1, y + size - 1, color);
 }

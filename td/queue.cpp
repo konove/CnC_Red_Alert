@@ -220,7 +220,9 @@ extern void Send_Statistics_Packet(void);
  * Queue_Mission -- Queue a mega mission event.                            *
  *                                                                         *
  * This routine is called when the player causes a change to a game unit. * The
- *event that initiates the change is queued to as a result of a call 	* to this routine.                 													*
+ *event that initiates the change is queued to as a result of a call 	* to
+ * this routine.
+ *							*
  *                                                                         *
  * INPUT:                                                                  *
  *		whom		Whom this mission request applies to (a friendly
@@ -352,7 +354,9 @@ void Queue_AI(void) {
  **
  * - Transfers items in the OutList to the DoList
  **
- * - Executes any commands in the DoList that are supposed to be done on * this frame #			  																	*
+ * - Executes any commands in the DoList that are supposed to be done on * this
+ * frame #
+ *											*
  * - Cleans out the DoList
  **
  *                                                                         *
@@ -443,7 +447,8 @@ static void Queue_AI_Normal(void) {
  *FRAMEINFO packet to not get lost; the other system may then 		*
  * advance past the frame # the command is to execute on!  So, to prevent *
  * this, all FRAMEINFO packets include a CommandCount field.  This value * tells
- *the other system how many events it should have received by this 	* time.  This system can therefore keep track of how many commands it's	*
+ *the other system how many events it should have received by this 	* time.
+ * This system can therefore keep track of how many commands it's	*
  * actually received, and compare it to the CommandCount field, to see if * it's
  *missed an event packet.  The # of events we've received from each 	* system
  *is stored in 'their_recv[]', and the # events they say they've 	* sent
@@ -481,12 +486,13 @@ static void Queue_AI_Normal(void) {
  *following properites:
  **
  * - It compresses packets, so that the minimum number of bytes are
- ** transmitted.  Packets are compressed by extracting all info common to * the events into the packet header, and then sending only the bytes 	* relevant
- *to each type of event.  For instance, if 100 infantry guys 	* are told to
- *move to the same location, the command itself & the 		* location will
- *be included in the 1st movement command only; after 		* that, there
- *will be a rep count then 99 infantry TARGET numbers, 		* identifying
- *all the infantry told to move.
+ ** transmitted.  Packets are compressed by extracting all info common to * the
+ * events into the packet header, and then sending only the bytes 	*
+ * relevant to each type of event.  For instance, if 100 infantry guys 	* are
+ * told to move to the same location, the command itself & the 		*
+ * location will be included in the 1st movement command only; after
+ *	* that, there will be a rep count then 99 infantry TARGET numbers,
+ *	* identifying all the infantry told to move.
  **
  * - The protocol also only sends packets out every 'n' frames.  This cuts *
  *   the data rate dramatically.  It means that 'MaxAhead' must be
@@ -2333,9 +2339,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
   int datasize;                     // size of element plucked from event union
   int storedsize;                   // actual # bytes stored from event
   unsigned char *unitsptr =
-      nullptr;  // ptr to buffer pos to store mega. rep count
-  unsigned char numunits = 0;      // megamission rep count value
-  bool missiondup = false;         // flag: is this event a megamission repeat?
+      nullptr;                 // ptr to buffer pos to store mega. rep count
+  unsigned char numunits = 0;  // megamission rep count value
+  bool missiondup = false;     // flag: is this event a megamission repeat?
 
   //------------------------------------------------------------------------
   // clear previous event
@@ -2400,7 +2406,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
         // - clear the MegaMission rep flag
         //...............................................................
         else {
-          *unitsptr = numunits;
+          if (unitsptr != nullptr) {
+            *unitsptr = numunits;
+          }
           unitsptr =
               ((unsigned char *)buf) + size + sizeof(EventClass::EventType);
           storedsize += sizeof(numunits);
@@ -2415,8 +2423,11 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
       // - Clear variables
       //..................................................................
       else {
-        *unitsptr = numunits;  // save # events in our run
-        unitsptr = nullptr;       // init other values
+        // save # events in our run
+        if (unitsptr != nullptr) {
+          *unitsptr = numunits;
+        }
+        unitsptr = nullptr;  // init other values
         numunits = 0;
         missiondup = false;
       }
@@ -2497,7 +2508,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
         //   - Copy the Whom field only
         //...............................................................
         if (missiondup) {
-          *unitsptr = numunits;
+          if (unitsptr != nullptr) {
+            *unitsptr = numunits;
+          }
 
           memcpy(((char *)buf) + size, &OutList.First().Data.MegaMission.Whom,
                  datasize);
@@ -2511,7 +2524,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
         //   - Copy the MegaMission structure, leaving room for 'numunits'
         //...............................................................
         else {
-          *unitsptr = numunits;
+          if (unitsptr != nullptr) {
+            *unitsptr = numunits;
+          }
 
           *(EventClass::EventType *)(((char *)buf) + size) = eventtype;
 
@@ -2961,7 +2976,7 @@ static int Execute_DoList(int, HousesType, ConnManClass *net,
 
       //..................................................................
       //	If this event was from the currently-executing player ID, and
-      //it's 	time to execute it, execute it.
+      // it's 	time to execute it, execute it.
       //..................................................................
       if (DoList[j].MPlayerID == MPlayerID[i] && Frame >= DoList[j].Frame &&
           !DoList[j].IsExecuted) {
@@ -4001,7 +4016,8 @@ void Print_CRCs(EventClass *ev) {
 /***************************************************************************
  * Init_Queue_Mono -- inits mono display                                   *
  *                                                                         *
- * This routine steals control of the mono screen away from the rest of * the engine, by setting the global IsMono; if IsMono is set, the other	*
+ * This routine steals control of the mono screen away from the rest of * the
+ * engine, by setting the global IsMono; if IsMono is set, the other	*
  * routines in this module turn off the Mono display when they're done * with
  *it, so the rest of the engine won't over-write what we're writing.	*
  *                                                                         *

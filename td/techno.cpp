@@ -650,11 +650,11 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass *from,
       if (/*param > 0 &&*/ Health_Ratio() < 0x0100) {
         int cost = Techno_Type_Class()->Repair_Cost();
         //				int cost =
-        //Fixed_To_Cardinal(Techno_Type_Class()->Repair_Cost(), param);
+        // Fixed_To_Cardinal(Techno_Type_Class()->Repair_Cost(), param);
         cost = MAX(cost, 1);
         int step = Techno_Type_Class()->Repair_Step();
         //				int step =
-        //Fixed_To_Cardinal(Techno_Type_Class()->Repair_Step(), param);
+        // Fixed_To_Cardinal(Techno_Type_Class()->Repair_Step(), param);
         step = MAX(step, 1);
         if (House->Available_Money() >= cost) {
 #ifdef OBSOLETE
@@ -1315,7 +1315,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     //		int range = MAX(Weapon_Range(0), Weapon_Range(1));
     //		if (!(method & THREAT_RANGE)) range *= 2;
     //		range = Bound(range, 0x0100, 0x1400);			// Limit
-    //maximum scan distance.
+    // maximum scan distance.
     int crange = range / ICON_LEPTON_W;
     if (range == 0) {
       crange = MAX(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
@@ -1725,8 +1725,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   // Mono_Printf("object=%p, Strength=%d, IsActive=%d, IsInLimbo=%d.\n", object,
   // (long)object->Strength, object->IsActive, object->IsInLimbo);Get_Key();
   if (object && /*(object->IsActive || GameToPlay != GAME_NORMAL) &&*/
-                object->Is_Techno() &&
-      ((TechnoClass *)object)->Cloak == CLOAKED) {
+      object->Is_Techno() && ((TechnoClass *)object)->Cloak == CLOAKED) {
     return (FIRE_CANT);
   }
 
@@ -2468,7 +2467,9 @@ bool TechnoClass::Captured(HouseClass *newowner) {
       default:
         break;
     }
-    House->WhoLastHurtMe = newowner->Class->House;
+    if (newowner != nullptr) {
+      House->WhoLastHurtMe = newowner->Class->House;
+    }
 
     /*
     **	Remove from targeting computers.
@@ -2907,8 +2908,7 @@ void TechnoClass::Techno_Draw_Object(void const *shapefile, int shapenum, int x,
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR,
-            nullptr,
-            Map.FadingShade);
+            nullptr, Map.FadingShade);
       } else {
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,

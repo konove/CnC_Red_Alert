@@ -69,7 +69,7 @@ long CountDownTimerClass::Time(void) {
   return ticks;
 }
 
-WinTimerClass::WinTimerClass(unsigned freq, bool partial)
+WinTimerClass::WinTimerClass(std::uint32_t freq, bool partial)
     : SysTicks(0), UserTicks(0) {
   SDL_Init(SDL_INIT_TIMER);
   TimerHandle = SDL_AddTimer(1000 / freq, TimerCallback, this);
@@ -87,11 +87,13 @@ WinTimerClass::~WinTimerClass() {
   TimerSystemOn = false;
 }
 
-void WinTimerClass::Update_Tick_Count(void) {
+void WinTimerClass::Update_Tick_Count() {
   SysTicks++;
   UserTicks++;
 }
 
-unsigned WinTimerClass::Get_System_Tick_Count(void) { return SysTicks; }
+std::uint64_t WinTimerClass::Get_System_Tick_Count() { return SysTicks; }
+
+std::uint64_t WinTimerClass::Get_User_Tick_Count() { return UserTicks; }
 
 uint32_t Get_Time_Ms() { return SDL_GetTicks(); }

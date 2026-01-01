@@ -177,6 +177,7 @@ inline void swap(T &value1, T &value2) {
 int swap(int, int);
 long swap(long, long);
 
+// TODO(konove): Replace with std::clamp
 template <class T>
 inline T Bound(T original, T minval, T maxval) {
   if (original < minval) return (minval);
@@ -353,18 +354,18 @@ extern void outport(int port, unsigned short data);
 **	Timer objects that fetch the appropriate timer value according to
 **	the type of timer they are.
 */
-extern long Frame;
+extern std::uint64_t Frame;
 class FrameTimerClass {
  public:
-  long operator()(void) const { return (Frame); };
-  operator long(void) const { return (Frame); };
+  std::uint64_t operator()(void) const { return (Frame); };
+  operator std::uint64_t(void) const { return (Frame); };
 };
 
 #ifndef WIN32
 extern bool TimerSystemOn;
 extern "C" {
-long Get_System_Tick_Count(void);
-long Get_User_Tick_Count(void);
+std::uint64_t Get_System_Tick_Count(void);
+std::uint64_t Get_User_Tick_Count(void);
 }
 // bool Init_Timer_System(unsigned int freq, int partial=false);
 bool Remove_Timer_System(void);
@@ -377,17 +378,17 @@ extern WinTimerClass *WindowsTimer;
 class SystemTimerClass {
  public:
 #ifdef WIN32
-  long operator()(void) const {
+  std::uint64_t operator()(void) const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_System_Tick_Count());
   };
-  operator long(void) const {
+  operator std::uint64_t(void) const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_System_Tick_Count());
   };
 #else
-  long operator()(void) const { return (Get_System_Tick_Count()); };
-  operator long(void) const { return (Get_System_Tick_Count()); };
+  std::uint64_t operator()(void) const { return (Get_System_Tick_Count()); };
+  operator std::uint64_t(void) const { return (Get_System_Tick_Count()); };
 #endif
 };
 #endif
@@ -395,17 +396,17 @@ class SystemTimerClass {
 class UserTimerClass {
  public:
 #ifdef WIN32
-  long operator()(void) const {
+  std::uint64_t operator()(void) const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_User_Tick_Count());
   };
-  operator long(void) const {
+  operator std::uint64_t(void) const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_User_Tick_Count());
   };
 #else
-  long operator()(void) const { return (Get_User_Tick_Count()); };
-  operator long(void) const { return (Get_User_Tick_Count()); };
+  std::uint64_t operator()(void) const { return (Get_User_Tick_Count()); };
+  operator std::uint64_t(void) const { return (Get_User_Tick_Count()); };
 #endif
 };
 
@@ -472,7 +473,7 @@ class SmartPtr {
   SmartPtr(NoInitClass const &) {}
   SmartPtr(T *realptr = nullptr) : Pointer(realptr) {}
   SmartPtr(SmartPtr const &rvalue) : Pointer(rvalue.Pointer) {}
-  ~SmartPtr(void) { Pointer = 0; }
+  ~SmartPtr(void) { Pointer = nullptr; }
 
   operator T *(void) const { return (Pointer); }
 

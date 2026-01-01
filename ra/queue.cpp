@@ -2658,9 +2658,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
   int datasize;                     // size of element plucked from event union
   int storedsize;                   // actual # bytes stored from event
   unsigned char *unitsptr =
-      nullptr;  // ptr to buffer pos to store mega. rep count
-  unsigned char numunits = 0;      // megamission rep count value
-  bool missiondup = false;         // flag: is this event a megamission repeat?
+      nullptr;                 // ptr to buffer pos to store mega. rep count
+  unsigned char numunits = 0;  // megamission rep count value
+  bool missiondup = false;     // flag: is this event a megamission repeat?
 
   //------------------------------------------------------------------------
   // clear previous event
@@ -2756,7 +2756,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
             printf("  New MEGAMISSION run:\n");
           }
 
-          *unitsptr = numunits;
+          if (unitsptr != nullptr) {
+            *unitsptr = numunits;
+          }
           unitsptr =
               ((unsigned char *)buf) + size + sizeof(EventClass::EventType);
           storedsize += sizeof(numunits);
@@ -2771,8 +2773,10 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
       // - Clear variables
       //..................................................................
       else {
-        *unitsptr = numunits;  // save # events in our run
-        unitsptr = nullptr;       // init other values
+        if (unitsptr != nullptr) {
+          *unitsptr = numunits;  // save # events in our run
+        }
+        unitsptr = nullptr;  // init other values
         numunits = 0;
         missiondup = false;
       }
@@ -2860,7 +2864,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
         //   - Copy the Whom field only
         //...............................................................
         if (missiondup) {
-          *unitsptr = numunits;
+          if (unitsptr != nullptr) {
+            *unitsptr = numunits;
+          }
 
           memcpy(((char *)buf) + size, &OutList.First().Data.MegaMission.Whom,
                  datasize);
@@ -2874,7 +2880,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
         //   - Copy the MegaMission structure, leaving room for 'numunits'
         //...............................................................
         else {
-          *unitsptr = numunits;
+          if (unitsptr != nullptr) {
+            *unitsptr = numunits;
+          }
 
           *(EventClass::EventType *)(((char *)buf) + size) = eventtype;
 

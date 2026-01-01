@@ -598,6 +598,7 @@ void CellClass::Occupy_Down(ObjectClass *object) {
  *pointer in previous object.                         *
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass *object) {
+  assert(object);
   Validate();
   ObjectClass *optr = nullptr;  // Working pointer to the objects in the chain.
 
@@ -929,10 +930,11 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (Overlay != OVERLAY_NONE) {
         OverlayTypeClass const &otype = OverlayTypeClass::As_Reference(Overlay);
         IsTheaterShape = (bool)otype.IsTheater;
-        CC_Draw_Shape(
-            otype.Get_Image_Data(), OverlayData, (x + (CELL_PIXEL_W >> 1)),
-            (y + (CELL_PIXEL_H >> 1)), WINDOW_TACTICAL,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr, Map.UnitShadow);
+        CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
+                      (x + (CELL_PIXEL_W >> 1)), (y + (CELL_PIXEL_H >> 1)),
+                      WINDOW_TACTICAL,
+                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, nullptr,
+                      Map.UnitShadow);
         IsTheaterShape = false;
       }
 

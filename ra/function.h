@@ -282,7 +282,7 @@ extern long LParam;
 #include <fast.h>
 #endif
 
-extern long Frame;
+extern std::uint64_t Frame;
 CELL Coord_Cell(COORDINATE coord);
 
 #include "utracker.h"

@@ -206,10 +206,10 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
-  virtual T *Ptr(int index) const {
+  virtual T *Ptr(std::size_t index) const {
     return (T *)FixedIHeapClass::ActivePointers[index];
   };
-  virtual T *Raw_Ptr(int index) { return (T *)((*this)[index]); };
+  virtual T *Raw_Ptr(std::size_t index) { return (T *)((*this)[index]); };
 };
 
 #endif

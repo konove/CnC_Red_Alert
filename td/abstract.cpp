@@ -16,95 +16,40 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\abstract.cpv   2.20   16 Oct 1995
- * 16:49:04   JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : ABSTRACT.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 01/26/95 *
- *                                                                                             *
- *                  Last Update : May 22, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * AbstractClass::Distance -- Determines distance to target. *
- *   AbstractTypeClass::AbstractTypeClass -- Constructor for abstract type
- *objects.            *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+#include "abstract.h"
 
-#include "function.h"
+#include <algorithm>
 
-/***********************************************************************************************
- * AbstractClass::Distance -- Determines distance to target. *
- *                                                                                             *
- *    This will determine the distance (direct line) to the target. The distance
- *is in         * 'leptons'. This routine is typically used for weapon range
- *checks.                       *
- *                                                                                             *
- * INPUT:   target   -- The target to determine range to. *
- *                                                                                             *
- * OUTPUT:  Returns with the range to the specified target (in leptons). *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/17/1994 JLB : Created. *
- *=============================================================================================*/
-int AbstractClass::Distance(TARGET target) const {
-  /*
-  **	Should subtract a fudge-factor distance for building targets.
-  */
-  BuildingClass *obj = As_Building(target);
+#include "defines.h"
+
+// Determines the direct line distance to the target in leptons.
+// For building targets, adjusts the distance by subtracting the building's
+// average radius to get the distance to the building edge rather than center.
+// Typically used for weapon range checks.
+int AbstractClass::Distance(const TARGET target) const {
+  const BuildingClass *obj = As_Building(target);
   int dist = Distance(As_Coord(target));
 
-  /*
-  ** If the object is a building the adjust it by the average radius
-  ** of the object.
-  */
+  // For buildings, adjust by average radius to get distance to edge.
   if (obj) {
-    dist -= ((obj->Class->Width() + obj->Class->Height()) * (0x100 / 4));
-    if (dist < 0) dist = 0;
+    dist -= (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
+    dist = std::max(dist, 0);
   }
 
-  /*
-  ** Return the distance to the target
-  */
-  return (dist);
+  return dist;
 }
 
-/***********************************************************************************************
- * AbstractTypeClass::AbstractTypeClass -- Constructor for abstract type
- *objects.              *
- *                                                                                             *
- *    This is the constructor for AbstractTypeClass objects. It initializes the
- *INI name and   * the text name for this object type. *
- *                                                                                             *
- * INPUT:   name  -- Text number for the full name of the object. *
- *                                                                                             *
- *          ini   -- The ini name for this object type. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/22/1995 JLB : Created. *
- *=============================================================================================*/
-AbstractTypeClass::AbstractTypeClass(int name, char const *ini) {
+// Constructor for AbstractTypeClass.
+// Initializes the display name and INI identifier for this object type.
+AbstractTypeClass::AbstractTypeClass(const int name, char const *ini) {
   Name = name;
-  strncpy((char *)IniName, ini, sizeof(IniName));
-  ((char &)IniName[sizeof(IniName) - 1]) = '\0';
+  strncpy(IniName, ini, sizeof(IniName));
+  static_cast<char &>(IniName[sizeof(IniName) - 1]) = '\0';
 }
 
-RTTIType AbstractTypeClass::What_Am_I(void) const { return RTTI_ABSTRACTTYPE; };
-COORDINATE AbstractTypeClass::Coord_Fixup(COORDINATE coord) const {
+RTTIType AbstractTypeClass::What_Am_I() const { return RTTI_ABSTRACTTYPE; }
+COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {
   return coord;
 }
-int AbstractTypeClass::Full_Name(void) const { return Name; };
-unsigned short AbstractTypeClass::Get_Ownable(void) const { return 0xffff; };
+int AbstractTypeClass::Full_Name() const { return Name; }
+unsigned short AbstractTypeClass::Get_Ownable() const { return 0xffff; }

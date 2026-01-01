@@ -116,19 +116,20 @@ inline long CountDownTimerClass::Start(void) {
 inline long CountDownTimerClass::Reset(bool start) {
   return (TimerClass::Reset(start));
 }
+
 class WinTimerClass {
  public:
-  WinTimerClass(unsigned freq = 60, bool partial = false);
+  WinTimerClass(std::uint32_t freq = 60, bool partial = false);
   ~WinTimerClass();
 
-  void Update_Tick_Count(void);
-  unsigned Get_System_Tick_Count(void);
-  unsigned Get_User_Tick_Count(void);
+  void Update_Tick_Count();
+  std::uint64_t Get_System_Tick_Count();
+  std::uint64_t Get_User_Tick_Count();
 
  private:
-  unsigned TimerHandle;  // Handle for windows timer event
-  unsigned SysTicks;     // Tick count of timer.
-  unsigned UserTicks;    // Tick count of timer.
+  std::int32_t TimerHandle;  // Handle for windows timer event
+  std::uint64_t SysTicks;     // Tick count of timer.
+  std::uint64_t UserTicks;    // Tick count of timer.
 };
 
 uint32_t Get_Time_Ms();
