@@ -53,9 +53,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "terrain.h"
-#include "type.h"
+#include "ra/function.h"
+#include "ra/terrain.h"
+#include "ra/type.h"
 
 #include <filesystem>
 

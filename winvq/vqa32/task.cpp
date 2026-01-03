@@ -59,10 +59,10 @@
  ****************************************************************************/
 
 #include <cstdint>
-#include "vqa32/vqafile.h"
-#include "vqa32/vqaplay.h"
-#include "vqa32/vqaplayp.h"
-#include "vqm32/font.h"
+#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqm32/font.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

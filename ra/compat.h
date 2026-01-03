@@ -64,7 +64,7 @@
 */
 #define READ 1   // Read access.
 #define WRITE 2  // Write access.
-#include "tile.h"
+#include "sdllib/include/tile.h"
 
 #ifndef SEEK_SET
 #define SEEK_SET 0  // Seek from start of file.

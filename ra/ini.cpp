@@ -74,15 +74,15 @@
 #include <cstddef>
 #include <cstdio>
 #include <cctype>
-#include "ini.h"
-#include "readline.h"
-#include "xpipe.h"
-#include "b64pipe.h"
-#include "xstraw.h"
-#include "b64straw.h"
+#include "ra/ini.h"
+#include "ra/readline.h"
+#include "ra/xpipe.h"
+#include "ra/b64pipe.h"
+#include "ra/xstraw.h"
+#include "ra/b64straw.h"
 
 #ifdef FIXIT_FAST_LOAD
-#include "cstraw.h"
+#include "ra/cstraw.h"
 #endif
 
 // Disable the "temporary object used to initialize a non-constant reference"

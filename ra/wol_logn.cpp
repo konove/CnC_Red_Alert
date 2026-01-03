@@ -21,7 +21,7 @@
 //	Wol_Logn.cpp - WW online name/password dialog.
 //	ajw 07/16/98
 
-#include "function.h"
+#include "ra/function.h"
 
 #include "IconList.h"
 #include "WolapiOb.h"

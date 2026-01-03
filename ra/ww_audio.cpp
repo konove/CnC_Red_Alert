@@ -44,9 +44,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 
-#include "function.h"
+#include "ra/function.h"
 #include <filesystem>
 
 /***************************************************************************

@@ -54,7 +54,7 @@
  *   CommQueueClass::~CommQueueClass -- class destructor                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 /***************************************************************************
  * CommQueueClass::CommQueueClass -- class constructor *

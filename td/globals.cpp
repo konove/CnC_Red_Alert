@@ -37,7 +37,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
 #ifdef JAPANESE
 bool ForceEnglish = false;

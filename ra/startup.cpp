@@ -38,15 +38,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "file.h"
+#include "sdllib/include/file.h"
 
 #include <filesystem>
 
-#include "function.h"
-#include "memflag.h"
-#include "misc.h"
+#include "ra/function.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_audio.h"
 
-#include <audio.h>
 #ifdef WIN32
 #ifndef PORTABLE
 #include <windows.h>
@@ -63,12 +63,12 @@
 #endif
 
 #ifdef _WIN32
-#include "ccdde.h"
-#include "ipx95.h"
+#include "ra/ccdde.h"
+#include "ra/ipx95.h"
 #endif  // WIN32
 
 #ifdef MCIMPEG  // Denzil 6/15/98
-#include "mcimovie.h"
+#include "ra/mcimovie.h"
 #endif
 
 #ifdef WOLAPI_INTEGRATION

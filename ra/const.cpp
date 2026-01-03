@@ -37,7 +37,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 /***************************************************************************
 **	These are the access passwords used to activate cheat mode, editor mode,

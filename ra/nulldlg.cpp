@@ -49,19 +49,19 @@
  *   Test_Null_Modem -- Null-Modem test routine                            *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "font.h"
-#include "function.h"
-#include "misc.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #include <algorithm>
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 
 #ifdef FIXIT_RANDOM_GAME
 #include <ctime>
 #endif
 #ifdef WIN32
-#include "wincomm.h"
-#include "modemreg.h"
+#include "sdllib/include/wincomm.h"
+#include "sdllib/include/modemreg.h"
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 #endif                                             // WIN32
 

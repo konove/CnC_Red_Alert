@@ -44,9 +44,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "interpal.h"
-#include "function.h"
-#include "misc.h"
+#include "ra/interpal.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #ifndef LORES
 

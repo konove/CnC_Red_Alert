@@ -40,7 +40,7 @@
 #ifndef DRIVE_H
 #define DRIVE_H
 
-#include "foot.h"
+#include "ra/foot.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects

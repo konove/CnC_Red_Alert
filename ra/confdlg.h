@@ -39,7 +39,7 @@
 #ifndef CONFDLG_H
 #define CONFDLG_H
 
-#include "gadget.h"
+#include "ra/gadget.h"
 
 class ConfirmationClass {
  private:

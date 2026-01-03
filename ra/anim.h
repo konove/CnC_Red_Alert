@@ -40,7 +40,7 @@
 #ifndef ANIM_H
 #define ANIM_H
 
-#include "type.h"
+#include "ra/type.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape

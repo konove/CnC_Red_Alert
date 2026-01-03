@@ -39,7 +39,7 @@
 #ifndef WSPIPX_H
 #define WSPIPX_H
 
-#include "wsproto.h"
+#include "ra/wsproto.h"
 
 #ifdef _WIN32
 /*

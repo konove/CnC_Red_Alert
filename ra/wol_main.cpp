@@ -21,9 +21,9 @@
 //	Wol_Main.cpp - Bottom level wolapi-stuff function.
 //	ajw 07/16/98
 
-#include "function.h"
+#include "ra/function.h"
 #include "WolapiOb.h"
-#include "wol_gsup.h"
+#include "ra/wol_gsup.h"
 #include "WolStrng.h"
 
 int WOL_Login_Dialog(WolapiObject* pWolapi);

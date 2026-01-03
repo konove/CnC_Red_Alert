@@ -40,7 +40,7 @@
 #ifndef LZOPIPE_H
 #define LZOPIPE_H
 
-#include "pipe.h"
+#include "ra/pipe.h"
 
 /*
 **	Performs LZO compression/decompression on the data stream that is piped

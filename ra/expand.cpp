@@ -37,11 +37,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "misc.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #ifdef FIXIT_VERSION_3
-#include "wolstrng.h"
+#include "ra/wolstrng.h"
 #endif
 
 // #define CS_DEBUG

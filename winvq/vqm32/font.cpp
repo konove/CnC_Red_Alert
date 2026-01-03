@@ -48,7 +48,7 @@
 #include <io.h>
 #include <cstring>
 #include <malloc.h>
-#include "font.h"
+#include "winvq/vqm32/font.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

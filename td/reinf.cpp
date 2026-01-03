@@ -40,7 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
 /***********************************************************************************************
  * Do_Reinforcements -- Create and place a reinforcement team. *

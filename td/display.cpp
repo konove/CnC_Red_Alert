@@ -89,9 +89,9 @@
  *object on the map.                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "font.h"
-#include "function.h"
-#include "memflag.h"
+#include "sdllib/include/font.h"
+#include "td/function.h"
+#include "sdllib/include/memflag.h"
 
 /*
 **	These layer control elements are used to group the displayable objects

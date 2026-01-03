@@ -24,7 +24,7 @@
 #include <cstdio>
 #include <cstdarg>
 #include <process.h>
-#include "w95trace.h"
+#include "ra/w95trace.h"
 
 void OutputDebugStringW95(LPCTSTR /*lpOutputString*/, ...) {
 #if 0

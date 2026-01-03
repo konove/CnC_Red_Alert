@@ -40,7 +40,7 @@
 #ifndef RULES_H
 #define RULES_H
 
-#include "ccini.h"
+#include "ra/ccini.h"
 
 class DifficultyClass {
  public:

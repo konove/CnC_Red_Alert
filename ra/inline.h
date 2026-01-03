@@ -82,7 +82,7 @@
 #ifndef INLINE_H
 #define INLINE_H
 
-#include "dipthong.h"
+#include "sdllib/include/dipthong.h"
 
 /***********************************************************************************************
  * Lepton_To_Pixel -- Convert a lepton value into pixel value. *

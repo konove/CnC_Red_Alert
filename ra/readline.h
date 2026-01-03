@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "wwfile.h"
-#include "straw.h"
+#include "ra/wwfile.h"
+#include "ra/straw.h"
 
 void strtrim(char* buffer);
 int Read_Line(FileClass& file, char* buffer, int len, bool& eof);

@@ -16,16 +16,16 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "function.h"
+#include "ra/function.h"
 
 #ifdef WOLAPI_INTEGRATION  //	Now implies also WINSOCK_IPX, WIN32, and
                            // FIXIT_CSII must be true
 
-#include "wol_gsup.h"
+#include "ra/wol_gsup.h"
 #include "IconList.h"
 #include <ctime>
 #include "WolStrng.h"
-#include "wsproto.h"
+#include "ra/wsproto.h"
 #include "BigCheck.h"
 #include "ToolTip.h"
 

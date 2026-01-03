@@ -40,7 +40,7 @@
 #ifndef _LZW_H
 #define _LZW_H
 
-#include "buff.h"
+#include "ra/buff.h"
 
 class LZWEngine {
  public:

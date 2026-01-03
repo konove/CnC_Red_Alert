@@ -181,7 +181,6 @@ target_compile_definitions(tdsdl PRIVATE
         PORTABLE=1 # to indicate not windows or dos sometimes
         TD=1
 )
-target_include_directories(tdsdl PRIVATE ../ra) # should probably structure this better
 target_link_libraries(tdsdl PRIVATE port sdllib vqa32)
 
 install(TARGETS tdsdl)

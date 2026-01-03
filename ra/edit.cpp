@@ -44,8 +44,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
 
 /***********************************************************************************************
  * EditClass::EditClass -- Normal constructor for edit class object. *

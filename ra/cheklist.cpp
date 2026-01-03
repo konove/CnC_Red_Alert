@@ -47,7 +47,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 /***************************************************************************
  * CheckListClass::CheckListClass -- constructor                           *

@@ -40,7 +40,7 @@
 #ifndef CHECKBOX_H
 #define CHECKBOX_H
 
-#include "toggle.h"
+#include "ra/toggle.h"
 
 class CheckBoxClass : public ToggleClass {
  public:

@@ -39,7 +39,7 @@
 #ifndef WSPUDP_H
 #define WSPUDP_H
 
-#include "wsproto.h"
+#include "ra/wsproto.h"
 
 /*
 ** Class to allow access to UDP specific portions of the Winsock interface.

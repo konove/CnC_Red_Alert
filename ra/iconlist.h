@@ -33,8 +33,8 @@
 #ifndef ICONLIST_H
 #define ICONLIST_H
 
-#include "function.h"
-#include "vector.h"
+#include "ra/function.h"
+#include "ra/vector.h"
 
 enum ICONKIND {
   ICON_SHAPE = 0,  //	pIcon points to a shape.

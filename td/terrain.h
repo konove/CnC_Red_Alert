@@ -41,8 +41,8 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "object.h"
-#include "type.h"
+#include "td/object.h"
+#include "td/type.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated

@@ -61,13 +61,13 @@
  *   Let_IPX_Breath -- gives IPX some CPU time                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 #include <cstdio>
-#include "ipx.h"
+#include "ra/ipx.h"
 
 #ifdef WIN32
 #ifndef PORTABLE
-#include "ipx95.h"
+#include "ra/ipx95.h"
 #endif
 #else
 #include <i86.h>

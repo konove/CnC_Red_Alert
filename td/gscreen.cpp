@@ -52,9 +52,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
-#include <filepcx.h>
+#include "ra/filepcx.h"
 
 GadgetClass *GScreenClass::Buttons = nullptr;
 

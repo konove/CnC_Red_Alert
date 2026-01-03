@@ -45,11 +45,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "cdfile.h"
+#include "ra/cdfile.h"
 #include <cstdio>
 #include <cstring>
-#include "file.h"
-#include "ex_string.h"
+#include "sdllib/include/file.h"
+#include "port/ex_string.h"
 
 #ifndef WIN32
 #include <wwstd.h>

@@ -67,8 +67,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "memflag.h"
+#include "ra/function.h"
+#include "sdllib/include/memflag.h"
 
 #include <algorithm>
 

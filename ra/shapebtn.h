@@ -40,7 +40,7 @@
 #ifndef SHAPEBTN_H
 #define SHAPEBTN_H
 
-#include "toggle.h"
+#include "ra/toggle.h"
 
 class ShapeButtonClass : public ToggleClass {
  public:

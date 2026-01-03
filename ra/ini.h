@@ -41,13 +41,13 @@
 #define INI_H
 
 #include <cstdlib>
-#include "listnode.h"
-#include "pipe.h"
-#include "wwfile.h"
-#include "pk.h"
-#include "fixed.h"
-#include "crc.h"
-#include "search.h"
+#include "ra/listnode.h"
+#include "ra/pipe.h"
+#include "ra/wwfile.h"
+#include "ra/pk.h"
+#include "ra/fixed.h"
+#include "ra/crc.h"
+#include "ra/search.h"
 
 /*
 **	This is an INI database handler class. It handles a database with a disk

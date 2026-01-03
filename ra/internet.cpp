@@ -52,10 +52,10 @@
 
 #ifdef WIN32
 
-#include "function.h"
-#include "tcpip.h"
-#include "ccdde.h"
-#include "misc.h"
+#include "ra/function.h"
+#include "ra/tcpip.h"
+#include "ra/ccdde.h"
+#include "sdllib/include/misc.h"
 
 extern bool SpawnedFromWChat;
 

@@ -123,10 +123,10 @@
 #include <cstdint>
 #include <cstdio>
 
-#include "buffer.h"
-#include "drawbuff.h"
-#include "ww_win.h"
-#include "wwstd.h"
+#include "sdllib/include/buffer.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
 
 #if !defined(FUNCTION_H) || defined(TD)
 

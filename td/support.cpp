@@ -2,8 +2,8 @@
 #include <cctype>
 #include <cstring>
 
-#include "function.h"
-#include "gbuffer.h"
+#include "td/function.h"
+#include "sdllib/include/gbuffer.h"
 
 #include <string>
 

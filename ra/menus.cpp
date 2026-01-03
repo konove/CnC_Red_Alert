@@ -37,14 +37,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
-#include "misc.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #include <algorithm>
 
 #ifdef WIN32
-#include "ccdde.h"
+#include "ra/ccdde.h"
 #else  // WIN32
 #include <sys\timeb.h>
 #endif
@@ -65,7 +65,7 @@ PRIVATE int MenuUpdate = 1;
 PRIVATE int MenuSkip;
 
 #ifdef FIXIT_VERSION_3
-#include "wolstrng.h"
+#include "ra/wolstrng.h"
 #endif
 
 /*=========================================================================*/

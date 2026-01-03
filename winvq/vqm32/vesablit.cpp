@@ -45,9 +45,9 @@
 #include <cstdio>
 #include <mem.h>
 #include <dos.h>
-#include "video.h"
-#include "vesavid.h"
-#include "vesablit.h"
+#include "winvq/vqm32/video.h"
+#include "winvq/vqm32/vesavid.h"
+#include "winvq/vqm32/vesablit.h"
 
 /****************************************************************************
  *

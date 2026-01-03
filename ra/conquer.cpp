@@ -69,9 +69,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/ww_audio.h"
 
-#include <audio.h>
 #include <filesystem>
 #include <format>
 #ifdef TESTCODE
@@ -89,15 +89,15 @@ class B {
 B<A> test;
 #endif
 
-#include "function.h"
+#include "ra/function.h"
 #ifdef WIN32
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
+#include "ra/wsproto.h"
 #else  // WINSOCK_IPX
-#include "tcpip.h"
+#include "ra/tcpip.h"
 #endif  // WINSOCK_IPX
 #else
-#include "fakesock.h"
+#include "ra/fakesock.h"
 TcpipManagerClass Winsock;
 #endif
 #include <cstdlib>
@@ -110,8 +110,8 @@ TcpipManagerClass Winsock;
 #include <share.h>
 #include <dos.h>
 #endif
-#include "ccdde.h"
-#include "vortex.h"
+#include "ra/ccdde.h"
+#include "ra/vortex.h"
 
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"
@@ -123,9 +123,9 @@ extern WolapiObject *pWolapi;
 
 #ifdef MPEGMOVIE
 #ifdef MCIMPEG
-#include "mcimovie.h"
+#include "ra/mcimovie.h"
 #endif
-#include "movie.h"
+#include "ra/movie.h"
 MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 #endif
 

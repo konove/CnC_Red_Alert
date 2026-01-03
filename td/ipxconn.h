@@ -50,11 +50,11 @@
 ********************************* Includes **********************************
 */
 #ifdef SEQ_NET
-#include "seqconn.h"
+#include "ra/seqconn.h"
 #else
-#include "noseqcon.h"
+#include "td/noseqcon.h"
 #endif
-#include "ipxaddr.h"
+#include "td/ipxaddr.h"
 
 /*
 ***************************** Class Declaration *****************************

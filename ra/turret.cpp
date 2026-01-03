@@ -49,8 +49,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "turret.h"
+#include "ra/function.h"
+#include "ra/turret.h"
 
 /***********************************************************************************************
  * TurretClass::~TurretClass -- Default destructor for turret class objects. *

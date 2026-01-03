@@ -122,27 +122,27 @@
  *- - - - - - - */
 //	Warning - Most disgusting cpp file of all time. ajw
 
-#include "font.h"
-#include "function.h"
-#include "misc.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #include <algorithm>
 
 #ifdef WIN32
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
+#include "ra/wsproto.h"
 #else  // WINSOCK_IPX
-#include "tcpip.h"
+#include "ra/tcpip.h"
 #endif  // WINSOCK_IPX
-#include "ccdde.h"
+#include "ra/ccdde.h"
 #else  // WIN32
-#include "fakesock.h"
+#include "ra/fakesock.h"
 #include <dos.h>
 #endif  // WIN32
 
 #include <ctime>
 
-#include "woldebug.h"
+#include "ra/woldebug.h"
 
 #define SHOW_MONO 0
 // #define OLDWAY			1

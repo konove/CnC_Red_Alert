@@ -41,10 +41,10 @@
    markus.oberhumer@jk.uni-linz.ac.at
  */
 
-#include "lzo1x.h"
+#include "ra/lzo1x.h"
 #define NDEBUG
 #include <cassert>
-#include "lzo_conf.h"
+#include "ra/lzo_conf.h"
 
 #if !defined(LZO1X) && !defined(LZO1Y)
 #define LZO1X

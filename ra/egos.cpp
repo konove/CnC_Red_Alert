@@ -41,10 +41,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
-#include "font.h"
-#include "function.h"
-#include "graphics_loader.h"
-#include "memflag.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
+#include "ra/graphics_loader.h"
+#include "sdllib/include/memflag.h"
 
 /*
 ** List of Ego Class instances

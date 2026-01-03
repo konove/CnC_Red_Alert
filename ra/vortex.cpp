@@ -61,8 +61,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
-#include "function.h"
-#include "vortex.h"
+#include "ra/function.h"
+#include "ra/vortex.h"
 
 /*
 ** Instance of chronal vortex class. This must be the only instance.

@@ -16,10 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "function.h"
+#include "ra/function.h"
 // #include "_WSProto.h"
-#include "misc.h"
-#include "wspudp.h"
+#include "sdllib/include/misc.h"
+#include "ra/wspudp.h"
 
 bool Get_Broadcast_Addresses(void) {
   int d_dialog_w = 320 * RESFACTOR;                       // dialog width

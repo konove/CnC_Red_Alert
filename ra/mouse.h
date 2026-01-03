@@ -40,8 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_MOUSE_H_
 #define CNC_RED_ALERT_RA_MOUSE_H_
 
-#include "stage.h"
-#include "scroll.h"
+#include "ra/stage.h"
+#include "ra/scroll.h"
 
 class MouseClass : public ScrollClass {
  public:

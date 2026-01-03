@@ -66,8 +66,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "terrain.h"
+#include "td/function.h"
+#include "td/terrain.h"
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30

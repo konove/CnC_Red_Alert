@@ -37,10 +37,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "drop.h"
+#include "ra/function.h"
+#include "ra/drop.h"
 
-#include "font.h"
+#include "sdllib/include/font.h"
 
 DropListClass::DropListClass(int id, char *text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,

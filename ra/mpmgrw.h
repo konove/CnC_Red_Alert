@@ -19,7 +19,7 @@
 #ifndef mpmgr_h
 #define mpmgr_h
 
-#include "connmgr.h"
+#include "ra/connmgr.h"
 #include "mplayer.h"
 #include <windows.h>
 

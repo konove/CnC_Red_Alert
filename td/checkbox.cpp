@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "checkbox.h"
+#include "td/function.h"
+#include "td/checkbox.h"
 
 /***********************************************************************************************
  * CheckBoxClass::Draw_Me -- Draws the checkbox imagery. *

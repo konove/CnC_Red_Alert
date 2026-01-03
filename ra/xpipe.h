@@ -40,9 +40,9 @@
 #ifndef XPIPE_H
 #define XPIPE_H
 
-#include "pipe.h"
-#include "wwfile.h"
-#include "buff.h"
+#include "ra/pipe.h"
+#include "ra/wwfile.h"
+#include "ra/buff.h"
 
 /*
 **	This is a simple store-into-buffer pipe terminator. Use it as the final

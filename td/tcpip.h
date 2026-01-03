@@ -46,7 +46,7 @@
 #ifdef _WIN32
 #include <winsock.h>
 #else
-#include "compat.h"
+#include "td/compat.h"
 #include <netinet/in.h>
 typedef int SOCKET;
 typedef void *HANDLE;

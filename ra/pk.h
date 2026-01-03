@@ -40,7 +40,7 @@
 #ifndef PK_H
 #define PK_H
 
-#include "int.h"
+#include "ra/int.h"
 
 /*
 **	This class holds a public or private key used in Public Key

@@ -85,7 +85,7 @@
 #ifndef GADGET_H
 #define GADGET_H
 
-#include "link.h"
+#include "td/link.h"
 
 class ControlClass;
 

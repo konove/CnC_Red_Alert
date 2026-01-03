@@ -52,10 +52,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "template.h"
+#include "td/function.h"
+#include "td/template.h"
 
-#include "tile.h"
+#include "sdllib/include/tile.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

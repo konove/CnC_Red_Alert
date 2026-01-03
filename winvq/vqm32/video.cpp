@@ -51,10 +51,10 @@
 #include <pharlap.h>
 #include <pldos32.h>
 #else
-#include "realmode.h"
+#include "winvq/vqm32/realmode.h"
 #endif
 
-#include "video.h"
+#include "winvq/vqm32/video.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

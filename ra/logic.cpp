@@ -39,9 +39,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "logic.h"
-#include "vortex.h"
+#include "ra/function.h"
+#include "ra/logic.h"
+#include "ra/vortex.h"
 
 static unsigned FramesPerSecond = 0;
 

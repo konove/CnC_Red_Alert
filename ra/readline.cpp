@@ -18,9 +18,9 @@
 
 #include <cctype>
 #include <cstring>
-#include "wwfile.h"
-#include "xstraw.h"
-#include "readline.h"
+#include "ra/wwfile.h"
+#include "ra/xstraw.h"
+#include "ra/readline.h"
 
 // Disable the "temporary object used to initialize a non-constant reference"
 // warning.

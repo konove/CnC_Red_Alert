@@ -48,10 +48,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
-#include "defines.h"  //VG 10/17/96
-#include "font.h"
+#include "ra/defines.h"  //VG 10/17/96
+#include "sdllib/include/font.h"
 
 unsigned char *Font_Palette(int color);
 

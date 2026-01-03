@@ -46,10 +46,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "memflag.h"
-#include "tile.h"
-#include "wwfile.h"
+#include "td/function.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/tile.h"
+#include "td/wwfile.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

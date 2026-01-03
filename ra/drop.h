@@ -40,8 +40,8 @@
 #ifndef DROP_H
 #define DROP_H
 
-#include "list.h"
-#include "edit.h"
+#include "ra/list.h"
+#include "ra/edit.h"
 
 class DropListClass : public EditClass {
  public:

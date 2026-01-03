@@ -1,7 +1,7 @@
 #include <cstdio>
 
-#include "palette.h"
-#include "function.h"
+#include "ra/palette.h"
+#include "ra/function.h"
 
 PaletteClass PaletteClass::CurrentPalette;
 

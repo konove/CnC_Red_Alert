@@ -22,12 +22,12 @@
 #include <cstring>
 #include <string_view>
 
-#include "graphics_loader.h"
-#include "function.h"
-#include "iconcach.h"
-#include "interpal.h"
+#include "ra/graphics_loader.h"
+#include "ra/function.h"
+#include "sdllib/include/iconcach.h"
+#include "ra/interpal.h"
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 
 void output(short, short) {}
 
@@ -116,7 +116,7 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass *video_page,
   }
 }
 
-#include "filepcx.h"
+#include "ra/filepcx.h"
 
 /***************************************************************************
  * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *

@@ -38,21 +38,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 #include <algorithm>
 
-#include "goptions.h"
-#include "loaddlg.h"
-#include "sounddlg.h"
-#include "visudlg.h"
-#include "gamedlg.h"
-#include "textbtn.h"
-#include "descdlg.h"
-#include "misc.h"
+#include "ra/goptions.h"
+#include "ra/loaddlg.h"
+#include "ra/sounddlg.h"
+#include "ra/visudlg.h"
+#include "ra/gamedlg.h"
+#include "ra/textbtn.h"
+#include "ra/descdlg.h"
+#include "sdllib/include/misc.h"
 
 #ifdef FIXIT_VERSION_3  //	Stalemate games.
-#include "wolstrng.h"
+#include "ra/wolstrng.h"
 #endif
 
 bool RedrawOptionsMenu;

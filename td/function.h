@@ -40,10 +40,10 @@
 
 #ifndef FUNCTION_H
 #define FUNCTION_H
-#include "dipthong.h"
-#include "iff.h"
-#include "shape.h"
-#include "misc.h"
+#include "sdllib/include/dipthong.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/misc.h"
 
 /*
 Map (screen) class heirarchy.
@@ -148,17 +148,17 @@ struct NoInitClass {
 #endif
 
 #ifdef PORTABLE
-#include "keyboard.h"
+#include "sdllib/include/keyboard.h"
 #endif
 
 #define WWMEM_H
-#include "compat.h"
-#include "font.h"
-#include "wsa.h"
-#include "ww_audio.h"
-#include "memflag.h"
-#include "file.h"
-#include "jshell.h"
+#include "td/compat.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/wsa.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/file.h"
+#include "td/jshell.h"
 
 // Should be part of WWLIB.H. This is used in JSHELL.CPP.
 typedef struct {
@@ -174,7 +174,7 @@ typedef struct {
 #include <cstdio>
 #include <cstddef>
 #ifdef PORTABLE
-#include "ex_string.h"
+#include "port/ex_string.h"
 #else
 #include <mem.h>
 #include <dos.h>
@@ -189,19 +189,19 @@ typedef struct {
 /*
 **	VQ player specific includes.
 */
-#include <vqa32/vqaplay.h>
-#include <vqa32/vqafile.h>
+#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqafile.h"
 
 extern bool GameActive;
 extern long LParam;
 
-#include "vector.h"
-#include "heap.h"
-#include "ccfile.h"
-#include "monoc.h"
-#include "conquer.h"
-#include "special.h"
-#include "defines.h"
+#include "td/vector.h"
+#include "td/heap.h"
+#include "td/ccfile.h"
+#include "td/monoc.h"
+#include "td/conquer.h"
+#include "td/special.h"
+#include "td/defines.h"
 
 #ifndef PORTABLE
 // Greenleaf specific includes.
@@ -231,79 +231,79 @@ CELL Coord_Cell(COORDINATE coord);
                                                        "or	al,bh"
 #endif
 
-#include "utracker.h"
-#include "palette.h"
-#include "facing.h"
-#include "ftimer.h"
-#include "theme.h"
-#include "link.h"
-#include "gadget.h"
-#include "control.h"
-#include "toggle.h"
-#include "checkbox.h"
-#include "shapebtn.h"
-#include "textbtn.h"
-#include "slider.h"
-#include "list.h"
-#include "cheklist.h"
-#include "colrlist.h"
-#include "edit.h"
-#include "gauge.h"
-#include "msgbox.h"
-#include "dial8.h"
-#include "txtlabel.h"
-#include "super.h"
-#include "house.h"
-#include "gscreen.h"
-#include "map.h"
-#include "display.h"
-#include "radar.h"
-#include "power.h"
-#include "sidebar.h"
-#include "tab.h"
-#include "help.h"
-#include "mouse.h"
+#include "td/utracker.h"
+#include "td/palette.h"
+#include "td/facing.h"
+#include "td/ftimer.h"
+#include "td/theme.h"
+#include "td/link.h"
+#include "td/gadget.h"
+#include "td/control.h"
+#include "td/toggle.h"
+#include "td/checkbox.h"
+#include "td/shapebtn.h"
+#include "td/textbtn.h"
+#include "td/slider.h"
+#include "td/list.h"
+#include "td/cheklist.h"
+#include "td/colrlist.h"
+#include "td/edit.h"
+#include "td/gauge.h"
+#include "td/msgbox.h"
+#include "td/dial8.h"
+#include "td/txtlabel.h"
+#include "td/super.h"
+#include "td/house.h"
+#include "td/gscreen.h"
+#include "td/map.h"
+#include "td/display.h"
+#include "td/radar.h"
+#include "td/power.h"
+#include "td/sidebar.h"
+#include "td/tab.h"
+#include "td/help.h"
+#include "td/mouse.h"
 // #include	"mapedit.h"
-#include "help.h"
-#include "target.h"
-#include "theme.h"
-#include "team.h"      // Team objects.
-#include "teamtype.h"  // Team type objects.
-#include "trigger.h"   // Trigger event objects.
-#include "mapedit.h"   // ???
-#include "abstract.h"
-#include "object.h"
-#include "mission.h"
-#include "door.h"
-#include "bullet.h"    // Bullet objects.
-#include "terrain.h"   // Terrain objects.
-#include "anim.h"      // Animation objects.
-#include "template.h"  // Icon template objects.
-#include "overlay.h"   // Overlay objects.
-#include "smudge.h"    // Stains on the terrain objects.
-#include "aircraft.h"  // Aircraft objects.
-#include "unit.h"      // Ground unit objects.
-#include "infantry.h"  // Infantry objects.
-#include "credits.h"   // Credit counter class.
-#include "score.h"     // Scoring system class.
-#include "factory.h"   // Production manager class.
-#include "intro.h"
-#include "ending.h"
-#include "logic.h"
-#include "queue.h"
-#include "event.h"
-#include "base.h"  // defines the AI's pre-built base
-#include "ipxmgr.h"
-#include "combuf.h"
-#include "connect.h"
-#include "connmgr.h"
-#include "noseqcon.h"
-#include "msglist.h"
-#include "nullconn.h"
-#include "nullmgr.h"
-#include "phone.h"
-#include "loaddlg.h"
-#include "ipxaddr.h"
+#include "td/help.h"
+#include "td/target.h"
+#include "td/theme.h"
+#include "td/team.h"      // Team objects.
+#include "td/teamtype.h"  // Team type objects.
+#include "td/trigger.h"   // Trigger event objects.
+#include "td/mapedit.h"   // ???
+#include "td/abstract.h"
+#include "td/object.h"
+#include "td/mission.h"
+#include "td/door.h"
+#include "td/bullet.h"    // Bullet objects.
+#include "td/terrain.h"   // Terrain objects.
+#include "td/anim.h"      // Animation objects.
+#include "td/template.h"  // Icon template objects.
+#include "td/overlay.h"   // Overlay objects.
+#include "td/smudge.h"    // Stains on the terrain objects.
+#include "td/aircraft.h"  // Aircraft objects.
+#include "td/unit.h"      // Ground unit objects.
+#include "td/infantry.h"  // Infantry objects.
+#include "td/credits.h"   // Credit counter class.
+#include "td/score.h"     // Scoring system class.
+#include "td/factory.h"   // Production manager class.
+#include "td/intro.h"
+#include "td/ending.h"
+#include "td/logic.h"
+#include "td/queue.h"
+#include "td/event.h"
+#include "td/base.h"  // defines the AI's pre-built base
+#include "td/ipxmgr.h"
+#include "td/combuf.h"
+#include "td/connect.h"
+#include "td/connmgr.h"
+#include "td/noseqcon.h"
+#include "td/msglist.h"
+#include "td/nullconn.h"
+#include "td/nullmgr.h"
+#include "td/phone.h"
+#include "td/loaddlg.h"
+#include "td/ipxaddr.h"
 /****************************************************************************
 **	This is a "node", used for the lists of available games & players.  The
 **	'Game' structure is used for games; the 'Player' structure for players.
@@ -324,7 +324,7 @@ typedef struct NodeNameTag {
   };
 } NodeNameType;
 
-#include "externs.h"
+#include "td/externs.h"
 
 extern int Get_CD_Drive(void);
 extern void Fatal(char const *message, ...);
@@ -1071,7 +1071,7 @@ inline CELL CellClass::Cell_Number(void) const { return (Map.ID(this)); }
 #if (0)
 #ifndef NOMEMCHECK
 #define NO_INTERCEPT
-#include "memcheck.h"
+#include "td/memcheck.h"
 #endif
 #endif
 

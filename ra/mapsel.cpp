@@ -39,12 +39,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "interpal.h"
-#include "misc.h"
-#include "wsa.h"
-
-#include <audio.h>
+#include "ra/function.h"
+#include "ra/interpal.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/wsa.h"
+#include "sdllib/include/ww_audio.h"
 
 void Cycle_Call_Back_Delay(int time, PaletteClass &pal);
 extern int ControlQ;

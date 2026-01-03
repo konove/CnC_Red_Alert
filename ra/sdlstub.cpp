@@ -1,11 +1,11 @@
 // more portable replacements for winstub
 
-#include "function.h"
+#include "ra/function.h"
 
-#include "ww_win.h"
+#include "sdllib/include/ww_win.h"
 
 #undef WIN32
-#include "misc.h"
+#include "sdllib/include/misc.h"
 
 #include <SDL.h>  // sdl includes leaking into the rest of the code is bad
 

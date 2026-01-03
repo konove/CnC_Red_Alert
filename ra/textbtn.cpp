@@ -44,10 +44,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "textbtn.h"
+#include "ra/function.h"
+#include "ra/textbtn.h"
 
-#include "font.h"
+#include "sdllib/include/font.h"
 
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *

@@ -67,24 +67,24 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 #include <cstdio>
-#include "ipxmgr.h"
-#include "wwlib32.h"  // to enable mono output
+#include "ra/ipxmgr.h"
+#include "sdllib/include/wwlib32.h"  // to enable mono output
 
 #ifdef WINSOCK_IPX
 
-#include "wsproto.h"
-#include "wspipx.h"
+#include "ra/wsproto.h"
+#include "ra/wspipx.h"
 
 #else  // WINSOCK_IPX
 
-#include "ipx95.h"
+#include "ra/ipx95.h"
 #ifdef WIN32
-#include "tcpip.h"
+#include "ra/tcpip.h"
 #else
 #include <i86.h>
-#include "fakesock.h"
+#include "ra/fakesock.h"
 #endif  // WIN32
 
 #endif  // WINSOCK_IPX
@@ -92,7 +92,7 @@
 // Turn off "expression is not meaningful".
 #pragma warning 628 9
 
-#include "woldebug.h"
+#include "ra/woldebug.h"
 
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *

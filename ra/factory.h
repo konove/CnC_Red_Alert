@@ -40,7 +40,7 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
-#include "stage.h"
+#include "ra/stage.h"
 
 class FactoryClass : private StageClass {
  public:

@@ -43,7 +43,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "sha.h"
+#include "ra/sha.h"
 
 #if !defined(__BORLANDC__) && !defined(min)
 #define min(a, b) ((a) < (b)) ? (a) : (b)

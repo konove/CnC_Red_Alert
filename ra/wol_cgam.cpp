@@ -21,7 +21,7 @@
 //	Wol_CGam.cpp - Create game dialog.
 //	ajw 09/9/98
 
-#include "function.h"
+#include "ra/function.h"
 
 #ifndef FIXIT_CSII
 #error FIXIT_CSII must be defined.

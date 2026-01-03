@@ -45,8 +45,8 @@
 /*
 ********************************* Includes **********************************
 */
-#include "nullconn.h"
-#include "connmgr.h"
+#include "td/nullconn.h"
+#include "td/connmgr.h"
 #ifndef PORTABLE
 #include "commlib.h"
 #endif

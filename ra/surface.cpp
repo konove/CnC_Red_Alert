@@ -37,7 +37,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "surface.h"
+#include "ra/surface.h"
 
 Surface::Surface(int w, int h, Buffer const* buffer, int pitch)
     : Width(w), Height(h), Pitch(pitch) {

@@ -43,8 +43,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "overlay.h"
+#include "ra/function.h"
+#include "ra/overlay.h"
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 

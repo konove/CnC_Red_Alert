@@ -46,8 +46,8 @@
  *   IPXAddressClass::operator!= -- overloaded comparison operator         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "tcpip.h"
+#include "td/function.h"
+#include "td/tcpip.h"
 
 /***************************************************************************
  * IPXAddressClass::IPXAddressClass -- class constructor                   *

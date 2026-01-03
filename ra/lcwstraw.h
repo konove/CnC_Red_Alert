@@ -40,7 +40,7 @@
 #ifndef LCWSTRAW_H
 #define LCWSTRAW_H
 
-#include "straw.h"
+#include "ra/straw.h"
 
 /*
 **	This class handles LCW compression/decompression to the data stream that

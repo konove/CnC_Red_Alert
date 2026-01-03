@@ -6,9 +6,9 @@
 
 #include <cstdio>
 
-#include "gbuffer.h"
-#include "net_select.h"
-#include "ww_win.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/net_select.h"
+#include "sdllib/include/ww_win.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>

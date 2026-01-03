@@ -41,9 +41,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
-#include "misc.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #include <algorithm>
 

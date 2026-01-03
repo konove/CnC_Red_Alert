@@ -52,7 +52,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 /***********************************************************************************************
  * MissionClass::MissionClass -- Default constructor for the mission object

@@ -49,8 +49,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
+#include "sdllib/include/font.h"
+#include "td/function.h"
 
 /*
 **	This is the holding buffer for the text overlap list. This buffer must

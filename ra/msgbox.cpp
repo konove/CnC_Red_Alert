@@ -38,11 +38,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "msgbox.h"
+#include "ra/function.h"
+#include "ra/msgbox.h"
 
-#include "font.h"
-#include "gadget.h"
+#include "sdllib/include/font.h"
+#include "ra/gadget.h"
 #include <algorithm>
 
 #ifdef FIXIT_VERSION_3

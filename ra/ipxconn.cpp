@@ -46,21 +46,21 @@
  ** IPXConnClass::Broadcast -- broadcasts the given packet
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "function.h"
+#include "ra/function.h"
 #include <cstdio>
 #include <cstring>
-#include "ipxconn.h"
+#include "ra/ipxconn.h"
 
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
+#include "ra/wsproto.h"
 
 #else
 
-#include "ipx95.h"
+#include "ra/ipx95.h"
 #ifdef WIN32
-#include "tcpip.h"
+#include "ra/tcpip.h"
 #else  // WIN32
-#include "fakesock.h"
+#include "ra/fakesock.h"
 #endif  // WIN32
 #endif  // WINSOCK_IPX
 

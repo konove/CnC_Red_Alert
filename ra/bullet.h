@@ -40,9 +40,9 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "object.h"
-#include "fly.h"
-#include "fuse.h"
+#include "ra/object.h"
+#include "ra/fly.h"
+#include "ra/fuse.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:

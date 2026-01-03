@@ -43,7 +43,7 @@
 #endif
 
 // #include	"function.h"
-#include "dpmi.h"
+#include "ra/dpmi.h"
 
 #ifndef __FLAT__
 

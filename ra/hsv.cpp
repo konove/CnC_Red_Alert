@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "watcom.h"
-#include "hsv.h"
-#include "rgb.h"
+#include "ra/watcom.h"
+#include "ra/hsv.h"
+#include "ra/rgb.h"
 
 HSVClass const HSVClass::BlackColor(0, 0, 0);
 

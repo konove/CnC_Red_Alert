@@ -20,7 +20,7 @@
 #define MP_LOAD_DLL_DYNAMICALLY
 #endif
 
-#include "mpmgrw.h"
+#include "ra/mpmgrw.h"
 
 extern "C" {
 #include <cstdio>

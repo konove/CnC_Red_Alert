@@ -40,8 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "lcwpipe.h"
-#include "lcw.h"
+#include "ra/lcwpipe.h"
+#include "ra/lcw.h"
 #include <cstring>
 #include <cassert>
 

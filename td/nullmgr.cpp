@@ -51,16 +51,16 @@
  *   NullModemClass::Hangup_Modem -- hangs up the modem                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 #ifdef _WIN32
 #include <windows.h>
 #else
 #define INVALID_HANDLE_VALUE NULL
 #endif
-#include "wincomm.h"
-#include "modemreg.h"
+#include "sdllib/include/wincomm.h"
+#include "sdllib/include/modemreg.h"
 // #include "i86.h"
-#include "tcpip.h"
+#include "td/tcpip.h"
 
 extern ModemRegistryEntryClass *ModemRegistry;
 

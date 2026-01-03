@@ -16,10 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "function.h"
+#include "ra/function.h"
 
 extern "C" {
-#include "soscomp.h"
+#include "winvq/vqm32/soscomp.h"
 #include "itable.cpp"
 #include "dtable.cpp"
 

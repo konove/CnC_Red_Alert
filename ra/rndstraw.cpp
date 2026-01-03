@@ -48,8 +48,8 @@
 
 #include <climits>
 #include <cstring>
-#include "rndstraw.h"
-#include "sha.h"
+#include "ra/rndstraw.h"
+#include "ra/sha.h"
 
 /***********************************************************************************************
  * RandomStraw::RandomStraw -- Constructor for the random straw class. *

@@ -55,8 +55,8 @@
  * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "tcpip.h"
+#include "td/function.h"
+#include "td/tcpip.h"
 
 #ifdef _WIN32
 typedef int socklen_t;

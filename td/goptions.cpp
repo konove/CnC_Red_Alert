@@ -40,17 +40,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
-#include "goptions.h"
-#include "loaddlg.h"
-#include "sounddlg.h"
-#include "visudlg.h"
-#include "gamedlg.h"
-#include "textbtn.h"
-#include "confdlg.h"
-#include "descdlg.h"
-#include "font.h"
+#include "td/goptions.h"
+#include "td/loaddlg.h"
+#include "td/sounddlg.h"
+#include "td/visudlg.h"
+#include "td/gamedlg.h"
+#include "td/textbtn.h"
+#include "td/confdlg.h"
+#include "ra/descdlg.h"
+#include "sdllib/include/font.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution(void) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;

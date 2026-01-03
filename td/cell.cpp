@@ -82,8 +82,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
+#include "sdllib/include/font.h"
+#include "td/function.h"
 
 #define FIXUP 0
 

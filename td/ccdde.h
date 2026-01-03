@@ -42,7 +42,7 @@
 
 #ifdef _WIN32
 
-#include "dde.h"
+#include "td/dde.h"
 
 class DDEServerClass {
  public:

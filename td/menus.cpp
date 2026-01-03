@@ -38,8 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "ccdde.h"
+#include "td/function.h"
+#include "td/ccdde.h"
 
 /*****************************
 **	Function prototypes

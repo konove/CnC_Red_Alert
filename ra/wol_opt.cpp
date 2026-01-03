@@ -21,7 +21,7 @@
 //	Wol_Opt.cpp - WW online options dialog.
 //	ajw 09/1/98
 
-#include "function.h"
+#include "ra/function.h"
 
 #include "IconList.h"
 #include "WolapiOb.h"

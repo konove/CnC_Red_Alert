@@ -37,9 +37,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 
 VQAHandle* Open_Movie(char* name);
 VQAHandle* Open_Movie(char* name) {

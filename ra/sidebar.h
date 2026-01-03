@@ -40,9 +40,9 @@
 #ifndef SIDEBAR_H
 #define SIDEBAR_H
 
-#include "function.h"
-#include "power.h"
-#include "factory.h"
+#include "ra/function.h"
+#include "ra/power.h"
+#include "ra/factory.h"
 
 class InitClass {};
 

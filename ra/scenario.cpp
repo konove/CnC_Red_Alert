@@ -64,18 +64,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
 
 #include <algorithm>
 
-#include "graphics_loader.h"
+#include "ra/graphics_loader.h"
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 
 #ifdef WIN32
-#include "tcpip.h"
-#include "ccdde.h"
+#include "ra/tcpip.h"
+#include "ra/ccdde.h"
 
 extern bool SpawnedFromWChat;
 #endif
@@ -84,7 +84,7 @@ extern int PreserveVQAScreen;
 // #include "WolDebug.h"
 
 #ifdef FIXIT_VERSION_3  //	Stalemate games.
-#include "wolstrng.h"
+#include "ra/wolstrng.h"
 #endif
 
 static void Remove_AI_Players(void);

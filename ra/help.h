@@ -40,7 +40,7 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "tab.h"
+#include "ra/tab.h"
 
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 

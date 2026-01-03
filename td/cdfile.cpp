@@ -44,8 +44,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "file.h"
-#include "function.h"
+#include "sdllib/include/file.h"
+#include "td/function.h"
 #include <cerrno>
 
 #ifndef PATH_MAX

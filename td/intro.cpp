@@ -38,13 +38,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
-#include "textblit.h"
-#include "interpal.h"
-#include "memflag.h"
-#include "wsa.h"
-#include "ww_audio.h"
+#include "sdllib/include/font.h"
+#include "td/function.h"
+#include "td/textblit.h"
+#include "td/interpal.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/wsa.h"
+#include "sdllib/include/ww_audio.h"
 
 #ifndef DEMO
 

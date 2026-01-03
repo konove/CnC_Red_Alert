@@ -42,7 +42,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "pkpipe.h"
+#include "ra/pkpipe.h"
 
 /***********************************************************************************************
  * PKPipe::PKPipe -- Constructor for the public key pipe object. *

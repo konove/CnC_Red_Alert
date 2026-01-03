@@ -40,15 +40,15 @@
 #ifndef JSHELL_H
 #define JSHELL_H
 
-#include "timer.h"
+#include "sdllib/include/timer.h"
 
 #include <cassert>
-#include <ww_mouse.h>
+#include "sdllib/include/ww_mouse.h"
 
 #ifdef WIN32
 // #define getch	Get_Key_Num
 // #define kbhit	Check_Key_Num
-#include "key.h"
+#include "ra/key.h"
 #else
 #include <conio.h>
 #endif

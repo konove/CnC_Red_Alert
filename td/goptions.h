@@ -41,8 +41,8 @@
 #ifndef GOPTIONS_H
 #define GOPTIONS_H
 
-#include "options.h"
-#include "gadget.h"
+#include "td/options.h"
+#include "td/gadget.h"
 
 class GameOptionsClass : public OptionsClass {
   enum GameOptionsButtonEnum {

@@ -48,11 +48,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "vortex.h"
+#include "ra/function.h"
+#include "ra/vortex.h"
 #ifdef WIN32
-#include "tcpip.h"
-#include "ccdde.h"
+#include "ra/tcpip.h"
+#include "ra/ccdde.h"
 
 // #include "WolDebug.h"
 

@@ -1,11 +1,11 @@
 // re-implemented from assembly in 2keyfbuf.asm
-#include "gbuffer.h"
+#include "sdllib/include/gbuffer.h"
 
 #include <cstdarg>
 #include <cstdint>
 #include <cstring>
 
-#include "shape.h"
+#include "sdllib/include/shape.h"
 
 #include <cstdio>
 

@@ -70,14 +70,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "vqa32/vqafile.h"
-#include "vqa32/vqaplay.h"
-#include "vqa32/vqaplayp.h"
-#include "vqm32/compress.h"
-#include "vqm32/iff.h"
-#include "vqm32/mem.h"
-#include "vqm32/palette.h"
-#include "vqm32/soscomp.h"
+#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqm32/compress.h"
+#include "winvq/vqm32/iff.h"
+#include "winvq/vqm32/mem.h"
+#include "winvq/vqm32/palette.h"
+#include "winvq/vqm32/soscomp.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

@@ -46,12 +46,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 // #include	<direct.h>
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
-#include "memflag.h"
+#include "sdllib/include/memflag.h"
 
 #include <cerrno>
 // #include	<share.h>

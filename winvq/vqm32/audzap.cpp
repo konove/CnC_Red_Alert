@@ -43,7 +43,7 @@
 
 #include <cstdio>
 #include <mem.h>
-#include "compress.h"
+#include "winvq/vqm32/compress.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

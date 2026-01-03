@@ -1,14 +1,14 @@
-#include "wsa.h"
+#include "sdllib/include/wsa.h"
 
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 
-#include "file.h"
-#include "gbuffer.h"
-#include "iff.h"
-#include "memflag.h"
-#include "wwstd.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/wwstd.h"
 
 //
 // WSA animation header allocation type.

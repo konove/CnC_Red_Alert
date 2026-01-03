@@ -40,8 +40,8 @@
 #ifndef TRIGTYPE_H
 #define TRIGTYPE_H
 
-#include "tevent.h"
-#include "taction.h"
+#include "ra/tevent.h"
+#include "ra/taction.h"
 
 class TriggerClass;
 

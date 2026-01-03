@@ -2,8 +2,8 @@
 #include <cstdio>
 #include <cstdint>
 
-#include "vqm32/compress.h"
-#include "vqm32/soscomp.h"
+#include "winvq/vqm32/compress.h"
+#include "winvq/vqm32/soscomp.h"
 
 static constexpr std::array<int8_t, 16> ima_adpcm_index_table = {
     -1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8};

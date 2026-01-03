@@ -38,7 +38,7 @@
 
 #include <cstdint>
 
-#include "gbuffer.h"
+#include "sdllib/include/gbuffer.h"
 
 class WWMouseClass {
  public:

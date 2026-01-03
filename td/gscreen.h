@@ -41,8 +41,8 @@
 #ifndef GSCREEN_H
 #define GSCREEN_H
 
-#include "function.h"
-#include "cell.h"
+#include "td/function.h"
+#include "td/cell.h"
 
 class GScreenClass : public VectorClass<CellClass> {
  public:

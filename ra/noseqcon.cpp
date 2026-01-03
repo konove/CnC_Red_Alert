@@ -45,7 +45,7 @@
  *queue*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 /***************************************************************************
  * NonSequencedConnClass::NonSequencedConnClass -- class constructor       *

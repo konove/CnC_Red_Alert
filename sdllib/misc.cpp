@@ -1,11 +1,11 @@
-#include "misc.h"
+#include "sdllib/include/misc.h"
 
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 
-#include "timer.h"
-#include "ww_win.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_win.h"
 
 SurfaceMonitorClass AllSurfaces;
 

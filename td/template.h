@@ -41,8 +41,8 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
-#include "object.h"
-#include "type.h"
+#include "td/object.h"
+#include "td/type.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function

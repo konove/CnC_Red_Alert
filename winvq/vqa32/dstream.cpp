@@ -49,8 +49,8 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-#include "vqaplay.h"
-#include "vqaplayp.h"
+#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqaplayp.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

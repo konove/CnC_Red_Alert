@@ -41,8 +41,8 @@
 #ifndef SMUDGE_H
 #define SMUDGE_H
 
-#include "object.h"
-#include "type.h"
+#include "td/object.h"
+#include "td/type.h"
 
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent

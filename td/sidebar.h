@@ -41,9 +41,9 @@
 #ifndef SIDEBAR_H
 #define SIDEBAR_H
 
-#include "function.h"
-#include "power.h"
-#include "factory.h"
+#include "td/function.h"
+#include "td/power.h"
+#include "td/factory.h"
 
 class InitClass {};
 

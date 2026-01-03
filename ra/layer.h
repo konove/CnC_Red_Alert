@@ -40,7 +40,7 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "vector.h"
+#include "ra/vector.h"
 
 class ObjectClass;
 

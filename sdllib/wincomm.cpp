@@ -1,9 +1,9 @@
-#include "wincomm.h"
+#include "sdllib/include/wincomm.h"
 
 #include <cstdio>
 #include <cstdlib>
 
-#include "modemreg.h"
+#include "sdllib/include/modemreg.h"
 
 #ifdef LIBSERIALPORT
 #include <libserialport.h>

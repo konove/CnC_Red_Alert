@@ -40,8 +40,8 @@
 #ifndef SHASTRAW_H
 #define SHASTRAW_H
 
-#include "straw.h"
-#include "sha.h"
+#include "ra/straw.h"
+#include "ra/sha.h"
 
 /*
 **	This class serves as a straw that generates a Secure Hash from the data

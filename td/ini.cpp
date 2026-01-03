@@ -50,8 +50,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "memflag.h"
+#include "td/function.h"
+#include "sdllib/include/memflag.h"
 
 /************************************* Prototypes
  * *********************************************/

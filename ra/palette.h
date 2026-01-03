@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdlib>
 
-#include "rgb.h"
+#include "ra/rgb.h"
 
 class PaletteClass {
  public:

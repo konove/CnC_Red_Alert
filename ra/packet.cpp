@@ -39,7 +39,7 @@
 #include <cstring>
 #include <algorithm>
 
-#include "packet.h"
+#include "ra/packet.h"
 
 // htons/ntohs
 #ifdef _WIN32

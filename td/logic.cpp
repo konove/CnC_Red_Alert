@@ -39,8 +39,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "logic.h"
+#include "td/function.h"
+#include "td/logic.h"
 
 static unsigned FramesPerSecond = 0;
 
@@ -78,20 +78,20 @@ void LogicClass::Debug_Dump(MonoClass *mono) const {
 
   mono->Set_Cursor(21, 9);
   mono->Print(
-      "ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿\r"
-      "³Units.....³   ³Frame Rate:      Avg:      Frame:        ³\r"
-      "³Infantry..³   ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´\r"
-      "³Aircraft..³   ³                                         ³\r"
-      "³Buildings.³   ³                                         ³\r"
-      "³Terrain...³   Ã                                         ´\r"
-      "³Bullets...³   ³                                         ³\r"
-      "³Anims.....³   ³                                         ³\r"
-      "³Teams.....³   Ã                                        Ä´\r"
-      "³Triggers..³   ³                                         ³\r"
-      "³Factories.³   ³                                         ³\r"
-      "³          ³   Ã                                         ´\r"
-      "³          ³   ³                                         ³\r"
-      "ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄ´Spare CPU TimeÃÄÄÄÄÄÄÄÄÄÄÄÄÙ\r");
+      "Ä¿\r"
+      "Units.....   Frame Rate:      Avg:      Frame:        \r"
+      "Infantry..   Ä´\r"
+      "Aircraft..                                            \r"
+      "Buildings.                                            \r"
+      "Terrain...                                            \r"
+      "Bullets...                                            \r"
+      "Anims.....                                            \r"
+      "Teams.....                                           Ä´\r"
+      "Triggers..                                            \r"
+      "Factories.                                            \r"
+      "                                                      \r"
+      "                                                      \r"
+      "Ä´Spare CPU Time\r");
 
   _framecounter++;
   mono->Set_Cursor(70, 10);

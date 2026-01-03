@@ -41,8 +41,8 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include "object.h"
-#include "type.h"
+#include "td/object.h"
+#include "td/type.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function

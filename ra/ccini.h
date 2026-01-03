@@ -40,9 +40,9 @@
 #ifndef CCINI_H
 #define CCINI_H
 
-#include "ini.h"
-#include "fixed.h"
-#include "pk.h"
+#include "ra/ini.h"
+#include "ra/fixed.h"
+#include "ra/pk.h"
 
 class TriggerTypeClass;
 

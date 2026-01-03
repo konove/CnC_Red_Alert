@@ -27,6 +27,8 @@ endif ()
 
 add_compile_definitions(WIN32) # hopefully easier than DOS
 
+# Use Chromium-style includes: all paths relative to project root
+include_directories(${CMAKE_SOURCE_DIR})
 
 add_subdirectory(port)
 add_subdirectory(sdllib)

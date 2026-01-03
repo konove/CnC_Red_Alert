@@ -42,20 +42,20 @@
 
 #include <cstddef>
 
-#include "ccini.h"
-#include "ccptr.h"
-#include "defines.h"
-#include "face.h"
-#include "factory.h"
-#include "ftimer.h"
-#include "house.h"
-#include "jshell.h"
-#include "object.h"
-#include "pipe.h"
-#include "radio.h"
-#include "straw.h"
-#include "techno.h"
-#include "type.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/factory.h"
+#include "ra/ftimer.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/radio.h"
+#include "ra/straw.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open

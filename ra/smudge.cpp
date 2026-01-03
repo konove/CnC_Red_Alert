@@ -45,8 +45,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "smudge.h"
+#include "ra/function.h"
+#include "ra/smudge.h"
 
 #include <algorithm>
 

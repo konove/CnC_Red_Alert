@@ -38,14 +38,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "gamedlg.h"
+#include "ra/function.h"
+#include "ra/gamedlg.h"
 
-#include "misc.h"
-#include "sounddlg.h"
-#include "visudlg.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_audio.h"
+#include "ra/sounddlg.h"
+#include "ra/visudlg.h"
 
-#include <audio.h>
 #define GERMAN_OFFSET_Y 4  // VG
 
 #ifdef WOLAPI_INTEGRATION

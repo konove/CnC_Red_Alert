@@ -52,8 +52,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "iconcach.h"
+#include "ra/function.h"
+#include "sdllib/include/iconcach.h"
 
 #include <filesystem>
 

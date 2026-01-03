@@ -44,7 +44,7 @@
 #include <array>
 #include <cstdint>
 
-#include "vqm32/iff.h"
+#include "winvq/vqm32/iff.h"
 
 /*---------------------------------------------------------------------------
  * STRUCTURE DEFINITIONS AND RELATED DEFINES.

@@ -90,7 +90,7 @@
 #include <cctype>
 #include <cassert>
 #include <climits>
-#include "mp.h"
+#include "ra/mp.h"
 
 #ifndef __BORLANDC__
 #define min(a, b) (((a) < (b)) ? (a) : (b))

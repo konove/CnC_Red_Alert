@@ -43,8 +43,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "ipx95.h"
+#include "td/function.h"
+#include "td/ipx95.h"
 
 int IPX_Open_Socket(unsigned short socket) {
   return (IPX_Open_Socket95((int)socket));

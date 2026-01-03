@@ -57,9 +57,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "memflag.h"
-#include "tile.h"
+#include "td/function.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/tile.h"
 
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {

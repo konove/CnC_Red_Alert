@@ -40,8 +40,8 @@
 #ifndef BLOWPIPE_H
 #define BLOWPIPE_H
 
-#include "pipe.h"
-#include "blowfish.h"
+#include "ra/pipe.h"
+#include "ra/blowfish.h"
 
 /*
 **	Performs Blowfish encryption/decryption on the data stream that is piped

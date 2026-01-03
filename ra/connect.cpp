@@ -45,12 +45,12 @@
  ** ConnectionClass::Command_Name -- returns name for a packet command *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 #include <cstdio>
 #include <sys/timeb.h>
-#include "connect.h"
+#include "ra/connect.h"
 
-#include "woldebug.h"
+#include "ra/woldebug.h"
 
 /*
 ********************************* Globals ***********************************

@@ -39,8 +39,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "sounddlg.h"
+#include "td/function.h"
+#include "td/sounddlg.h"
 
 class MusicListClass : public ListClass {
  public:

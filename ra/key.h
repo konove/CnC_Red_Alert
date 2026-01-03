@@ -35,7 +35,7 @@
  *- - - - - - - */
 
 #ifdef PORTABLE
-#include "keyboard.h"
+#include "sdllib/include/keyboard.h"
 #elif !defined(WIN32)
 #include "..\wwflat32\include\keyboard.h"
 #else

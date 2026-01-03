@@ -39,7 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "shastraw.h"
+#include "ra/shastraw.h"
 
 /***********************************************************************************************
  * SHAStraw::Get -- Fetch data from the straw and process the SHA with the data.

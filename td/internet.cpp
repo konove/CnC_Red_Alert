@@ -49,9 +49,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
-#include "function.h"
-#include "tcpip.h"
-#include "ccdde.h"
+#include "td/function.h"
+#include "td/tcpip.h"
+#include "td/ccdde.h"
 
 /***************************************************************************
 ** Internet specific globals

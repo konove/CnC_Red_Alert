@@ -40,7 +40,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include "gadget.h"
+#include "ra/gadget.h"
 
 /***************************************************************************
  * ControlClass -- Region tracking class

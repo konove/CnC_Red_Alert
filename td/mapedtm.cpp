@@ -43,7 +43,7 @@
  *   MapEditClass::Team_Members -- Team members dialog                     *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
 #ifdef SCENARIO_EDITOR
 
@@ -141,22 +141,22 @@ void MapEditClass::Handle_Teams(char const *caption) {
 /***************************************************************************
  * MapEditClass::Select_Team -- user selects a team from a list            *
  *                                                                         *
- *    здддддддддддддддддддддддддддддддддддддддддддддддддддддддд©           *
- *    Ё                         Teams                          Ё           *
- *    Ё    зддддддддддддддддддддддддддддддддддддддддддддбд©    Ё           *
- *    Ё    Ё Name     House    Class:Count,Class:Count  ЁЁ    Ё           *
- *    Ё    Ё Name     House    Class:Count,Class:Count  цд╢    Ё           *
- *    Ё    Ё Name     House    Class:Count,Class:Count  Ё Ё    Ё           *
- *    Ё    Ё Name     House    Class:Count,Class:Count  Ё Ё    Ё           *
- *    Ё    Ё                                            Ё Ё    Ё           *
- *    Ё    Ё                                            Ё Ё    Ё           *
- *    Ё    Ё                                            цд╢    Ё           *
- *    Ё    Ё                                            ЁЁ    Ё           *
- *    Ё    юддддддддддддддддддддддддддддддддддддддддддддады    Ё           *
- *    Ё                                                        Ё           *
- *    Ё      [Edit]        [New]        [Delete]      [OK]     Ё           *
- *    Ё                                                        Ё           *
- *    юдддддддддддддддддддддддддддддддддддддддддддддддддддддддды           *
+ *    д©           *
+ *                             Teams                                     *
+ *        д©               *
+ *         Name     House    Class:Count,Class:Count                 *
+ *         Name     House    Class:Count,Class:Count  д╢               *
+ *         Name     House    Class:Count,Class:Count                  *
+ *         Name     House    Class:Count,Class:Count                  *
+ *                                                                    *
+ *                                                                    *
+ *                                                    д╢               *
+ *                                                                   *
+ *                       *
+ *                                                                       *
+ *          [Edit]        [New]        [Delete]      [OK]                *
+ *                                                                       *
+ *               *
  *                                                                         *
  * INPUT:                                                                  *
  *      none.                                                              *
@@ -473,29 +473,29 @@ int MapEditClass::Select_Team(char const *caption) {
 /***************************************************************************
  * MapEditClass::Edit_Team -- user edits a team's options                  *
  *                                                                         *
- *  зддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©      *
- *  Ё                         Team Editor                           Ё      *
- *  Ё                                                               Ё      *
- *  Ё            Name ______               [Roundabout]             Ё      *
- *  Ё        Priority ______  [   GDI   ]  [Learning  ]             Ё      *
- *  Ё         Max Num ______  [   NOD   ]  [Suicide   ]             Ё      *
- *  Ё        Init Num ______               [Autocreate]             Ё      *
- *  Ё            Fear ______               [Mercenary ]             Ё      *
- *  Ё                                      [Prebuild  ]             Ё      *
- *  Ё                                      [Reinforce ]             Ё      *
- *  Ё                                                               Ё      *
- *  Ё  здддддддддддддддддддбд©             здддддддддддддддддддбд©  Ё      *
- *  Ё  Ё                   Ё^Ё             Ё                   Ё^Ё  Ё      *
- *  Ё  Ё                   цд╢  [Add >>]   Ё                   цд╢  Ё      *
- *  Ё  Ё                   Ё Ё  [Insert]   Ё                   Ё Ё  Ё      *
- *  Ё  Ё                   Ё Ё  [Delete]   Ё                   Ё Ё  Ё      *
- *  Ё  Ё                   цд╢    ____     Ё                   цд╢  Ё      *
- *  Ё  Ё                   ЁvЁ             Ё                   ЁvЁ  Ё      *
- *  Ё  юдддддддддддддддддддады             юдддддддддддддддддддады  Ё      *
- *  Ё                                                               Ё      *
- *  Ё        [Members]          [Cancel]           [OK]             Ё      *
- *  Ё                                                               Ё      *
- *  юддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды      *
+ *  д©      *
+ *                           Team Editor                                 *
+ *                                                                       *
+ *              Name ______               [Roundabout]                   *
+ *          Priority ______  [   GDI   ]  [Learning  ]                   *
+ *           Max Num ______  [   NOD   ]  [Suicide   ]                   *
+ *          Init Num ______               [Autocreate]                   *
+ *              Fear ______               [Mercenary ]                   *
+ *                                        [Prebuild  ]                   *
+ *                                        [Reinforce ]                   *
+ *                                                                       *
+ *    д©             д©        *
+ *                       ^                                ^        *
+ *                       д╢  [Add >>]                      д╢        *
+ *                          [Insert]                               *
+ *                          [Delete]                               *
+ *                       д╢    ____                        д╢        *
+ *                       v                                v        *
+ *                         *
+ *                                                                       *
+ *          [Members]          [Cancel]           [OK]                   *
+ *                                                                       *
+ *        *
  *                                                                         *
  * INPUT:                                                                  *
  *      none.                                                              *
@@ -1405,24 +1405,24 @@ int MapEditClass::Edit_Team(void) {
  * 10 pixels are left between rows of objects, so the # of that type of    *
  * object can be displayed underneath the object.                          *
  *                                                                         *
- *  зддддддддддддддддддддддддддддддддддддддддддддддддд©                    *
- *  Ё                 Team Members                    Ё                    *
- *  Ё                                                 Ё                    *
- *  Ё  здддбдддбдддбдддбдддбдддбдддбдддбдддбдддбддд©  Ё                    *
- *  Ё  Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё  Ё                    *
- *  Ё  цдддедддедддедддедддедддедддедддедддедддеддд╢  Ё                    *
- *  Ё  Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё  Ё                    *
- *  Ё  цдддедддедддедддедддедддедддедддедддедддеддд╢  Ё                    *
- *  Ё  Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё  Ё                    *
- *  Ё  цдддедддедддедддедддедддедддедддедддедддеддд╢  Ё                    *
- *  Ё  Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё  Ё                    *
- *  Ё  цдддедддедддедддедддедддедддедддедддедддеддд╢  Ё                    *
- *  Ё  Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё  Ё                    *
- *  Ё  цдддедддедддедддедддедддедддедддедддедддеддд╢  Ё                    *
- *  Ё  Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё   Ё  Ё                    *
- *  Ё  юдддадддадддадддадддадддадддадддадддадддаддды  Ё                    *
- *  Ё               [OK]      [Cancel]                Ё                    *
- *  юддддддддддддддддддддддддддддддддддддддддддддддддды                    *
+ *  д©                    *
+ *                   Team Members                                        *
+ *                                                                       *
+ *    д©                      *
+ *                                                           *
+ *    д╢                      *
+ *                                                           *
+ *    д╢                      *
+ *                                                           *
+ *    д╢                      *
+ *                                                           *
+ *    д╢                      *
+ *                                                           *
+ *    д╢                      *
+ *                                                           *
+ *                          *
+ *                 [OK]      [Cancel]                                    *
+ *                      *
  *                                                                         *
  * INPUT:                                                                  *
  *      house      house to display objects for                            *

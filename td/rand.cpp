@@ -36,8 +36,8 @@
  *   Sim_IRandom -- Returns minval to maxval, inclusive                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "jshell.h"
+#include "td/function.h"
+#include "td/jshell.h"
 
 int SimRandIndex = 0;
 

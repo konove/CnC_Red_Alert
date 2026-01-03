@@ -36,9 +36,9 @@
 #ifndef SESSION_H
 #define SESSION_H
 
-#include "ipxaddr.h"
-#include "msglist.h"
-#include "connect.h"
+#include "td/ipxaddr.h"
+#include "td/msglist.h"
+#include "td/connect.h"
 
 //---------------------------------------------------------------------------
 // Forward declarations

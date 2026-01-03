@@ -43,7 +43,7 @@
 #ifndef ICONCACH_H
 #define ICONCACH_H
 
-#include "tile.h"
+#include "sdllib/include/tile.h"
 
 #define ICON_WIDTH 24         // Icons must be this width to be cached
 #define ICON_HEIGHT 24        // Icons must be this height to be cached

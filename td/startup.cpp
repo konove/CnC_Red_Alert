@@ -42,7 +42,7 @@
 
 #include <filesystem>
 
-#include "function.h"
+#include "td/function.h"
 #ifdef WIN32
 #ifndef PORTABLE
 #include <windows.h>
@@ -57,7 +57,7 @@
 #else
 #include <unistd.h>
 #endif
-#include "ccdde.h"
+#include "td/ccdde.h"
 
 bool Read_Private_Config_Struct(char *profile, NewConfigType *config);
 void Delete_Swap_Files(void);

@@ -52,9 +52,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
-#include "theme.h"
+#include "td/theme.h"
 
 #include <filesystem>
 

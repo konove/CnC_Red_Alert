@@ -41,7 +41,7 @@
 #ifndef MSGBOX_H
 #define MSGBOX_H
 
-#include "jshell.h"
+#include "td/jshell.h"
 
 class CCMessageBox {
   int Caption;

@@ -38,9 +38,9 @@ size);
 Buff);
 ;* int Write_PCX_File (char* name, GraphicViewPortClass& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-#include <gbuffer.h>
+#include "sdllib/include/gbuffer.h"
 #include <cstring>
-#include <buffer.h>
+#include "sdllib/include/buffer.h"
 
 #ifndef PCX_H
 #define PCX_H

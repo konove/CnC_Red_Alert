@@ -40,8 +40,8 @@
 #ifndef MISSION_H
 #define MISSION_H
 
-#include "object.h"
-#include "monoc.h"
+#include "ra/object.h"
+#include "ra/monoc.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide

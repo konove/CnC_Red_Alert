@@ -55,7 +55,7 @@
  *   MapEditClass::Build_Base_To -- builds the AI base to the given percent*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
 #ifdef SCENARIO_EDITOR
 
@@ -67,24 +67,24 @@
  * placement mode.                                                         *
  *   This routine does not modify PendingObject or PendingHouse.           *
  *                                                                         *
- *  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿                   *
- *  ³   [GDI]  [NOD]  [Neutral]                        ³                   *
- *  ³                                                  ³                   *
- *  ³   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿              ³                   *
- *  ³   ³                               ³ [Template]   ³                   *
- *  ³   ³                               ³ [Overlay ]   ³                   *
- *  ³   ³                               ³ [Smudge  ]   ³                   *
- *  ³   ³                               ³ [Terrain ]   ³                   *
- *  ³   ³      (Object picture)         ³ [Unit    ]   ³                   *
- *  ³   ³                               ³ [Infantry]   ³                   *
- *  ³   ³                               ³ [Aircraft]   ³                   *
- *  ³   ³                               ³ [Building]   ³                   *
- *  ³   ³                               ³              ³                   *
- *  ³   ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ     ÚÄÄÄÄÄÄ¿ ³                   *
- *  ³             [<-]  [->]                  ³(Grid)³ ³                   *
- *  ³                                         ³      ³ ³                   *
- *  ³         [OK]        [Cancel]            ÀÄÄÄÄÄÄÙ ³                   *
- *  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ                   *
+ *  Ä¿                   *
+ *     [GDI]  [NOD]  [Neutral]                                           *
+ *                                                                       *
+ *     Ä¿                                 *
+ *                                     [Template]                      *
+ *                                     [Overlay ]                      *
+ *                                     [Smudge  ]                      *
+ *                                     [Terrain ]                      *
+ *           (Object picture)          [Unit    ]                      *
+ *                                     [Infantry]                      *
+ *                                     [Aircraft]                      *
+ *                                     [Building]                      *
+ *                                                                     *
+ *          Ä¿                    *
+ *               [<-]  [->]                  (Grid)                    *
+ *                                                                     *
+ *           [OK]        [Cancel]                                *
+ *                     *
  *                                                                         *
  * INPUT:                                                                  *
  *      none.                                                              *

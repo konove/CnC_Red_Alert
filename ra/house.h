@@ -40,9 +40,9 @@
 #ifndef HOUSE_H
 #define HOUSE_H
 
-#include "type.h"
-#include "region.h"
-#include "vector.h"
+#include "ra/type.h"
+#include "ra/region.h"
+#include "ra/vector.h"
 
 class TriggerClass;
 class FootClass;

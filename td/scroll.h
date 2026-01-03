@@ -41,8 +41,8 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#include "help.h"
-#include "timer.h"
+#include "td/help.h"
+#include "sdllib/include/timer.h"
 
 class ScrollClass : public HelpClass {
   /*

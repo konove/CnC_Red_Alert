@@ -40,7 +40,7 @@
 #ifndef RADIO_H
 #define RADIO_H
 
-#include "mission.h"
+#include "ra/mission.h"
 
 class ObjectClass;
 class TechnoClass;

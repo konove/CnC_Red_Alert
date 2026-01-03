@@ -53,7 +53,7 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
-#include "function.h"
+#include "ra/function.h"
 
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.

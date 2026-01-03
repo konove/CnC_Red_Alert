@@ -40,7 +40,7 @@
 #ifndef B64STRAW_H
 #define B64STRAW_H
 
-#include "straw.h"
+#include "ra/straw.h"
 
 /*
 **	Performs Base 64 encoding/decoding on the data that is drawn through the

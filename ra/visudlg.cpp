@@ -38,10 +38,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "visudlg.h"
+#include "ra/function.h"
+#include "ra/visudlg.h"
 
-#include "misc.h"
+#include "sdllib/include/misc.h"
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *

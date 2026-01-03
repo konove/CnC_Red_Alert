@@ -55,7 +55,7 @@
 #ifdef WIN32
 
 #include <WINDOWS.H>
-#include "ccdde.h"
+#include "ra/ccdde.h"
 #include <cstdio>
 #include <timer.h>
 

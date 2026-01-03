@@ -46,8 +46,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "timer.h"
+#include "td/function.h"
+#include "sdllib/include/timer.h"
 
 /*
 **	This points to the loaded mouse shapes.

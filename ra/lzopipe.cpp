@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "lzopipe.h"
-#include "lzo.h"
-#include "buff.h"
+#include "ra/lzopipe.h"
+#include "ra/lzo.h"
+#include "ra/buff.h"
 #include <cstring>
 #include <cassert>
 

@@ -46,7 +46,7 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include "dde.h"
+#include "ra/dde.h"
 
 /***************************************************************************
  * These are static members of Instance_Class

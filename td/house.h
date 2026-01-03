@@ -41,9 +41,9 @@
 #ifndef HOUSE_H
 #define HOUSE_H
 
-#include "type.h"
-#include "region.h"
-#include "vector.h"
+#include "td/type.h"
+#include "td/region.h"
+#include "td/vector.h"
 
 // extern "C" {
 // unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);

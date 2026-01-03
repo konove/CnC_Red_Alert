@@ -53,10 +53,10 @@
 #include <pldos32.h>
 #include <pharlap.h>
 #else
-#include "realmode.h"
+#include "winvq/vqm32/realmode.h"
 #endif
 
-#include "vesavid.h"
+#include "winvq/vqm32/vesavid.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

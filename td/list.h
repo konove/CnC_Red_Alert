@@ -41,9 +41,9 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "control.h"
-#include "shapebtn.h"
-#include "slider.h"
+#include "td/control.h"
+#include "td/shapebtn.h"
+#include "td/slider.h"
 
 /***************************************************************************
  * ListClass -- Like a Windows ListBox structure

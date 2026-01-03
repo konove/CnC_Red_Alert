@@ -47,8 +47,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "overlay.h"
+#include "td/function.h"
+#include "td/overlay.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

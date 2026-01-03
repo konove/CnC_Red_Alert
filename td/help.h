@@ -41,8 +41,8 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "tab.h"
-#include "timer.h"
+#include "td/tab.h"
+#include "sdllib/include/timer.h"
 
 class HelpClass : public TabClass {
  public:

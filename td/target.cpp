@@ -53,8 +53,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "target.h"
+#include "td/function.h"
+#include "td/target.h"
 
 /***********************************************************************************************
  * As_Trigger -- Converts specified target into a trigger pointer. *

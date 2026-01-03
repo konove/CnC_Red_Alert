@@ -61,9 +61,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "key.h"
+#include "ra/key.h"
 
-#include "monoc.h"
+#include "ra/monoc.h"
 
 // void Message_Loop(void);
 

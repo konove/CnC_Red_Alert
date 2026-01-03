@@ -39,7 +39,7 @@
 #ifndef WSPROTO_H
 #define WSPROTO_H
 
-#include "_wsproto.h"
+#include "ra/_wsproto.h"
 
 #ifdef _WIN32
 /*
@@ -53,7 +53,7 @@ typedef void *HANDLE;
 #endif
 
 #ifdef PORTABLE
-#include "net_select.h"
+#include "sdllib/include/net_select.h"
 #endif
 
 /*

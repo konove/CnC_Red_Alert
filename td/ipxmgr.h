@@ -132,10 +132,10 @@
 /*
 ********************************* Includes **********************************
 */
-#include "ipxconn.h"
-#include "ipxgconn.h"
-#include "ipxaddr.h"
-#include "connmgr.h"
+#include "td/ipxconn.h"
+#include "td/ipxgconn.h"
+#include "td/ipxaddr.h"
+#include "td/connmgr.h"
 
 /*
 ********************************** Defines **********************************

@@ -43,7 +43,7 @@
 #ifndef CHEKLIST_H
 #define CHEKLIST_H
 
-#include "list.h"
+#include "ra/list.h"
 
 class CheckObject {
  public:

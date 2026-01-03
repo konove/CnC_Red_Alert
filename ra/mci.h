@@ -33,13 +33,13 @@
  *
  ****************************************************************************/
 
-#include "function.h"
+#include "ra/function.h"
 
 #ifdef MCIMPEG
 #include <windows.h>
 #include <mmsystem.h>
 #include <digitalv.h>
-#include "watcom.h"
+#include "ra/watcom.h"
 
 /* MCIDevice - MCI device capabilities and description
  *

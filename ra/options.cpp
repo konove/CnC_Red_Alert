@@ -67,10 +67,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "options.h"
+#include "ra/function.h"
+#include "ra/options.h"
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 
 #ifdef WIN32
 char const* const OptionsClass::HotkeyName = "WinHotkeys";

@@ -40,11 +40,11 @@
 #ifndef VESSEL_H
 #define VESSEL_H
 
-#include "drive.h"
-#include "radio.h"
-#include "cargo.h"
-#include "mission.h"
-#include "target.h"
+#include "ra/drive.h"
+#include "ra/radio.h"
+#include "ra/cargo.h"
+#include "ra/mission.h"
+#include "ra/target.h"
 
 class VesselClass : public DriveClass {
  public:

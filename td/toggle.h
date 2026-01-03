@@ -41,7 +41,7 @@
 #ifndef TOGGLE_H
 #define TOGGLE_H
 
-#include "control.h"
+#include "td/control.h"
 
 /*
 **	This class handles gadgets that behave like the Windows buttons. That

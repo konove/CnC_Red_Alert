@@ -60,7 +60,7 @@
  *   MapEditClass::Fatal -- exits with error message                       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
 #ifdef SCENARIO_EDITOR
 

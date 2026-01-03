@@ -67,9 +67,9 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "ipx95.h"
-#include "tcpip.h"
+#include "td/function.h"
+#include "td/ipx95.h"
+#include "td/tcpip.h"
 
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *

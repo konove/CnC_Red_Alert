@@ -40,8 +40,8 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include "gauge.h"
-#include "shapebtn.h"
+#include "ra/gauge.h"
+#include "ra/shapebtn.h"
 
 /***************************************************************************
  * SliderClass -- Like a Windows ListBox structure

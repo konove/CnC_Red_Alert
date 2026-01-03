@@ -42,8 +42,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "facing.h"
+#include "td/function.h"
+#include "td/facing.h"
 
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *

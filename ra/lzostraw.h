@@ -40,7 +40,7 @@
 #ifndef LZOSTRAW_H
 #define LZOSTRAW_H
 
-#include "straw.h"
+#include "ra/straw.h"
 
 /*
 **	This class handles LZO compression/decompression to the data stream that

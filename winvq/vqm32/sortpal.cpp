@@ -47,7 +47,7 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include "palette.h"
+#include "winvq/vqm32/palette.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

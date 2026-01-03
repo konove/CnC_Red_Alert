@@ -148,8 +148,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "vortex.h"
+#include "ra/function.h"
+#include "ra/vortex.h"
 
 #include <algorithm>
 // #include "WolDebug.h"

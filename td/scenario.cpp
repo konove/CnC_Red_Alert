@@ -48,8 +48,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "interpal.h"
+#include "td/function.h"
+#include "td/interpal.h"
 
 extern int PreserveVQAScreen;
 

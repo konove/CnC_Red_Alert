@@ -43,12 +43,12 @@
  *   LoadOptionsClass::~LoadOptionsClass -- class destructor *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "file.h"
+#include "sdllib/include/file.h"
 
 #include <filesystem>
 #include <charconv>
 
-#include "function.h"
+#include "td/function.h"
 #ifdef _WIN32
 #include <io.h>  // for unlink
 #else

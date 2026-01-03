@@ -72,11 +72,11 @@
 
 #include <cstdio>
 #include <cstring>
-#include "vqa32/unvq.h"
-#include "vqa32/vqafile.h"
-#include "vqa32/vqaplay.h"
-#include "vqa32/vqaplayp.h"
-#include "vqm32/compress.h"
+#include "winvq/vqa32/unvq.h"
+#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqm32/compress.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

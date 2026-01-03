@@ -1,10 +1,10 @@
-#include "palette.h"
+#include "td/palette.h"
 
 #include <cstring>
 
-#include "gbuffer.h"
-#include "timer.h"
-#include "ww_win.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_win.h"
 
 unsigned char CurrentPalette[3 * 256];
 

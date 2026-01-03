@@ -47,8 +47,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "slider.h"
+#include "ra/function.h"
+#include "ra/slider.h"
 
 #include <algorithm>
 

@@ -7,8 +7,8 @@
 
 #include <cstdint>
 
-#include "gbuffer.h"
-#include "ww_win.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_win.h"
 
 extern SDL_Renderer *SDLRenderer;
 

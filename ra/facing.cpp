@@ -41,8 +41,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "facing.h"
+#include "ra/function.h"
+#include "ra/facing.h"
 #include <algorithm>
 
 /***********************************************************************************************

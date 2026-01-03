@@ -42,9 +42,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 
-#include "ww_audio.h"
+#include "sdllib/include/ww_audio.h"
 
 #include <filesystem>
 

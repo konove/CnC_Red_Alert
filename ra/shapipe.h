@@ -40,8 +40,8 @@
 #ifndef SHAPIPE_H
 #define SHAPIPE_H
 
-#include "pipe.h"
-#include "sha.h"
+#include "ra/pipe.h"
+#include "ra/sha.h"
 
 /*
 **	This class serves as a pipe that generates a Secure Hash from the data

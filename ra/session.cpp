@@ -50,8 +50,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "file.h"
-#include "function.h"
+#include "sdllib/include/file.h"
+#include "ra/function.h"
 
 #include <algorithm>
 
@@ -60,7 +60,7 @@
 #endif
 #include <ctime>  // for station ID computation
 
-#include "ex_string.h"
+#include "port/ex_string.h"
 
 // #include "WolDebug.h"
 

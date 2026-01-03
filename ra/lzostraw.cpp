@@ -39,8 +39,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "lzostraw.h"
-#include "lzo.h"
+#include "ra/lzostraw.h"
+#include "ra/lzo.h"
 #include <cstring>
 #include <cassert>
 

@@ -40,10 +40,10 @@
 #ifndef PKSTRAW_H
 #define PKSTRAW_H
 
-#include "pk.h"
-#include "pkstraw.h"
-#include "rndstraw.h"
-#include "blwstraw.h"
+#include "ra/pk.h"
+#include "ra/pkstraw.h"
+#include "ra/rndstraw.h"
+#include "ra/blwstraw.h"
 
 class PKStraw : public Straw {
  public:

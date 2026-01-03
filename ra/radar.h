@@ -40,7 +40,7 @@
 #ifndef RADAR_H
 #define RADAR_H
 
-#include "display.h"
+#include "ra/display.h"
 
 class RadarClass : public DisplayClass {
  public:

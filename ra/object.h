@@ -40,7 +40,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "abstract.h"
+#include "ra/abstract.h"
 
 class ObjectClass;
 class TechnoClass;

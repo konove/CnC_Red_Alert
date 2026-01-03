@@ -54,7 +54,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <sys\stat.h>
-#include "targa.h"
+#include "winvq/vqm32/targa.h"
 
 /* Private data declerations. */
 static long DecodeImageData(TGAHandle *, char *);

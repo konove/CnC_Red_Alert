@@ -58,8 +58,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include <filepcx.h>
+#include "td/function.h"
+#include "ra/filepcx.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".

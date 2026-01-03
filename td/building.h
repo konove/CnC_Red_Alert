@@ -41,13 +41,13 @@
 #ifndef BUILDING_H
 #define BUILDING_H
 
-#include "tarcom.h"
-#include "radio.h"
-#include "cargo.h"
-#include "mission.h"
-#include "bullet.h"
-#include "target.h"
-#include "factory.h"
+#include "td/tarcom.h"
+#include "td/radio.h"
+#include "td/cargo.h"
+#include "td/mission.h"
+#include "td/bullet.h"
+#include "td/target.h"
+#include "td/factory.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open

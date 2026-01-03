@@ -58,8 +58,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "mission.h"
+#include "td/function.h"
+#include "td/mission.h"
 
 /*
 **	This array records the number of teams in existance of each type.

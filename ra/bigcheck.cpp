@@ -21,8 +21,8 @@
 
 #ifdef WOLAPI_INTEGRATION
 
-#include "function.h"
-#include "bigcheck.h"
+#include "ra/function.h"
+#include "ra/bigcheck.h"
 
 //***********************************************************************************************
 int BigCheckBoxClass::Draw_Me(int forced) {

@@ -43,10 +43,10 @@
  ****************************************************************************/
 #include <cstdint>
 
-#include "vqm32/video.h"
-#include "vqm32/soscomp.h"
-#include "vqa32/vqafile.h"
-#include "vqa32/vqaplay.h"
+#include "winvq/vqm32/video.h"
+#include "winvq/vqm32/soscomp.h"
+#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqaplay.h"
 
 extern void *MainWindow;
 

@@ -61,22 +61,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "file.h"
-#include "font.h"
-#include "function.h"
-#include "graphics_loader.h"
-#include "loaddlg.h"
-#include "misc.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
+#include "ra/graphics_loader.h"
+#include "ra/loaddlg.h"
+#include "sdllib/include/misc.h"
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 #ifdef WIN32
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
-#include "wspudp.h"
-#include "wspipx.h"
-#include "internet.h"
+#include "ra/wsproto.h"
+#include "ra/wspudp.h"
+#include "ra/wspipx.h"
+#include "ra/internet.h"
 #else  // WINSOCK_IPX
-#include "tcpip.h"
+#include "ra/tcpip.h"
 #endif  // WINSOCK_IPX
 
 #endif
@@ -84,7 +84,7 @@
 #include <conio.h>
 #include <sys\timeb.h>
 #endif
-#include "ccdde.h"
+#include "ra/ccdde.h"
 
 #include <ctime>
 
@@ -93,12 +93,12 @@
 #endif
 
 #ifdef MPEGMOVIE  // Denzil 6/25/98
-#include "mpgset.h"
+#include "ra/mpgset.h"
 #endif
 
 RemapControlType SidebarScheme;
 
-#include "woldebug.h"
+#include "ra/woldebug.h"
 
 #ifdef CHEAT_KEYS
 extern bool bNoMovies;
@@ -195,7 +195,7 @@ static void Load_Prolog_Page(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-#include "sha.h"
+#include "ra/sha.h"
 // #include    <locale.h>
 bool Init_Game(int, char *[]) {
 /*

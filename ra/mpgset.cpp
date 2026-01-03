@@ -32,12 +32,12 @@
  *
  ****************************************************************************/
 
-#include "function.h"
+#include "ra/function.h"
 
 #ifdef DVD
-#include "mpgset.h"
+#include "ra/mpgset.h"
 
-#include "misc.h"
+#include "sdllib/include/misc.h"
 
 #ifdef MCIMPEG
 bool EnumMCI(MCIDevice* desc, void* context);

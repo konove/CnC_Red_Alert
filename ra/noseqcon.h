@@ -56,8 +56,8 @@
 /*
 ********************************* Includes **********************************
 */
-#include "connect.h"
-#include "combuf.h"
+#include "ra/connect.h"
+#include "ra/combuf.h"
 
 /*
 ***************************** Class Declaration *****************************

@@ -49,13 +49,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 #ifdef _WIN32
-#include "ccdde.h"
+#include "ra/ccdde.h"
 #endif  // WIN32
 
 #ifdef FIXIT_VERSION_3  //	Stalemate games.
-#include "wolstrng.h"
+#include "ra/wolstrng.h"
 #endif
 
 /***************************************************************************

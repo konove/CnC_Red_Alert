@@ -59,8 +59,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
+#include "sdllib/include/font.h"
+#include "ra/function.h"
 
 #include <algorithm>
 #include <vector>

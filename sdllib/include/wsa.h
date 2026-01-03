@@ -46,7 +46,7 @@
 #ifndef WSA_H
 #define WSA_H
 
-#include "gbuffer.h"
+#include "sdllib/include/gbuffer.h"
 
 typedef enum {
   WSA_NORMAL,              // Normal WSA animation

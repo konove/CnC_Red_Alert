@@ -41,10 +41,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "tcpip.h"
-#include "packet.h"
-#include "ccdde.h"
+#include "td/function.h"
+#include "td/tcpip.h"
+#include "ra/packet.h"
+#include "td/ccdde.h"
 
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"

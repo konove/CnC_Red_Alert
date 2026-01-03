@@ -62,8 +62,8 @@
  *   Let_IPX_Breath -- gives IPX some CPU time                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "ipx95.h"
+#include "td/function.h"
+#include "td/ipx95.h"
 
 /***************************************************************************
  * IPX_SPX_Installed -- checks for installation of IPX/SPX                 *

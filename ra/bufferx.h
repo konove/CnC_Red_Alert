@@ -40,7 +40,7 @@
 #ifndef BUFFERx_H
 #define BUFFERx_H
 
-#include "wwfile.h"
+#include "ra/wwfile.h"
 
 /*
 **	This is a transmuter interface designed to aid implementation of

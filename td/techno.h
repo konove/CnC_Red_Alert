@@ -41,15 +41,15 @@
 #ifndef TECHNO_H
 #define TECHNO_H
 
-#include "radio.h"
-#include "stage.h"
-#include "cargo.h"
-#include "flasher.h"
-#include "house.h"
-#include "target.h"
-#include "bullet.h"
-#include "door.h"
-#include "crew.h"
+#include "td/radio.h"
+#include "td/stage.h"
+#include "td/cargo.h"
+#include "td/flasher.h"
+#include "td/house.h"
+#include "td/target.h"
+#include "td/bullet.h"
+#include "td/door.h"
+#include "td/crew.h"
 
 /****************************************************************************
 **	This is the common data between building and units.

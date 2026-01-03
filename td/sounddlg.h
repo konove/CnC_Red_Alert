@@ -41,7 +41,7 @@
 #ifndef SOUNDDLG_H
 #define SOUNDDLG_H
 
-#include "gadget.h"
+#include "td/gadget.h"
 
 class SoundControlsClass {
   enum SoundControlsClassEnums {

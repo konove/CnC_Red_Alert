@@ -41,7 +41,7 @@
    markus.oberhumer@jk.uni-linz.ac.at
  */
 
-#include "lzo1x.h"
+#include "ra/lzo1x.h"
 #define NDEBUG
 #include <cassert>
 

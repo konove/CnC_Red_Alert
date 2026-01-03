@@ -31,7 +31,7 @@
 #define WOLAPI_H
 
 #include "RAWolapi.h"
-#include "dibapi.h"
+#include "ra/dibapi.h"
 #include "IconList.h"
 
 //***********************************************************************************************

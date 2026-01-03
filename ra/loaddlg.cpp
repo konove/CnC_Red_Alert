@@ -43,9 +43,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "file.h"
-#include "function.h"
-#include "misc.h"
+#include "sdllib/include/file.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #include <filesystem>
 #include <charconv>

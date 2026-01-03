@@ -44,10 +44,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "memflag.h"
-#include "misc.h"
-#include "wwfile.h"
+#include "ra/function.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "ra/wwfile.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

@@ -40,8 +40,8 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include "mission.h"
-#include "target.h"
+#include "ra/mission.h"
+#include "ra/target.h"
 
 class MapEditClass;
 class HouseClass;

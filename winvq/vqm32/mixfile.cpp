@@ -68,8 +68,8 @@
 #include <io.h>
 #include <mem.h>
 #include <cstring>
-#include "mixfile.h"
-#include "crc.h"
+#include "winvq/vqm32/mixfile.h"
+#include "winvq/vqm32/crc.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

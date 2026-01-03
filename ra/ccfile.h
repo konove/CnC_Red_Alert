@@ -42,9 +42,9 @@
 
 // #include	<wwlib32.h>
 #include <climits>
-#include "mixfile.h"
-#include "cdfile.h"
-#include "buff.h"
+#include "ra/mixfile.h"
+#include "ra/cdfile.h"
+#include "ra/buff.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).

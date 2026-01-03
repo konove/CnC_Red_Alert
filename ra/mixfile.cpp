@@ -48,14 +48,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "buff.h"
-#include "function.h"
+#include "ra/buff.h"
+#include "ra/function.h"
 #include <cerrno>
-#include "mixfile.h"
+#include "ra/mixfile.h"
 #include <filesystem>
 
-#include "cdfile.h"
-#include "misc.h"
+#include "ra/cdfile.h"
+#include "sdllib/include/misc.h"
 
 extern MFCD temp;
 

@@ -61,8 +61,8 @@
 /* header files */
 #include <windows.h>
 #include <cassert>
-#include "dibapi.h"
-#include "dibutil.h"
+#include "ra/dibapi.h"
+#include "ra/dibutil.h"
 #include <cstdio>
 
 /*************************************************************************

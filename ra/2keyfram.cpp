@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "memflag.h"
-#include "wsa.h"
+#include "ra/function.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/wsa.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 

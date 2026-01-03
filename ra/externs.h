@@ -40,19 +40,19 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#include "cell.h"
-#include "techno.h"
-#include "type.h"
-#include "building.h"
-#include "unit.h"
-#include "credits.h"
-#include "goptions.h"
-#include "options.h"
-#include "infantry.h"
-#include "playcd.h"
+#include "ra/cell.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/building.h"
+#include "ra/unit.h"
+#include "ra/credits.h"
+#include "ra/goptions.h"
+#include "ra/options.h"
+#include "ra/infantry.h"
+#include "sdllib/include/playcd.h"
 
 #ifdef SCENARIO_EDITOR
-#include "mapedit.h"
+#include "ra/mapedit.h"
 #endif
 
 extern char _staging_buffer[32000];
@@ -500,11 +500,11 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
 
 #ifdef MPEGMOVIE  // Denzil 6/15/98
 #ifdef MCIMPEG
-#include "mcimovie.h"
+#include "ra/mcimovie.h"
 extern MCIMovie *MciMovie;
 #endif
 
-#include "mpgset.h"
+#include "ra/mpgset.h"
 extern MPGSettings *MpgSettings;
 #endif
 

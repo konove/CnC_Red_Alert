@@ -41,7 +41,7 @@
 #ifndef CDFILE_H
 #define CDFILE_H
 
-#include "rawfile.h"
+#include "td/rawfile.h"
 
 /*
 **	This class is derived from the raw file class. This class adds the

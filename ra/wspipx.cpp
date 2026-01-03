@@ -42,9 +42,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "wspipx.h"
-#include "ipxaddr.h"
+#include "ra/function.h"
+#include "ra/wspipx.h"
+#include "ra/ipxaddr.h"
 
 #include <cassert>
 #include <cstdio>

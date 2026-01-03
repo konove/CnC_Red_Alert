@@ -43,8 +43,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "interpal.h"
-#include "function.h"
+#include "td/interpal.h"
+#include "td/function.h"
 
 #ifndef LORES
 

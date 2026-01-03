@@ -40,8 +40,8 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-#include "unit.h"
-#include "building.h"
+#include "ra/unit.h"
+#include "ra/building.h"
 
 class ScoreClass {
  public:

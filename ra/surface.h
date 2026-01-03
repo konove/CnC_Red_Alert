@@ -40,8 +40,8 @@
 #ifndef SURFACE_H
 #define SURFACE_H
 
-#include "buff.h"
-#include "rect.h"
+#include "ra/buff.h"
+#include "ra/rect.h"
 
 /*
 **	This class is used to represent an arbitrary rectangle in a graphic

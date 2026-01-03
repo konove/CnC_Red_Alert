@@ -40,9 +40,9 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "building.h"
-#include "unit.h"
-#include "template.h"
+#include "ra/building.h"
+#include "ra/unit.h"
+#include "ra/template.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.

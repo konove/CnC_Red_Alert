@@ -1,4 +1,4 @@
-#include "ww_audio.h"
+#include "sdllib/include/ww_audio.h"
 
 #include <SDL_audio.h>
 #include <SDL_error.h>
@@ -8,9 +8,9 @@
 #include <cstdio>
 #include <cstring>
 
-#include "file.h"
-#include "memflag.h"
-#include "wwstd.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/wwstd.h"
 
 // original code has 5 for windows, 4 for dos
 // effectively one less as one is used to track streaming from disk

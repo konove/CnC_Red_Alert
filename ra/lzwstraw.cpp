@@ -39,8 +39,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "lzwstraw.h"
-#include "lzw.h"
+#include "ra/lzwstraw.h"
+#include "ra/lzw.h"
 #include <cstring>
 #include <cassert>
 

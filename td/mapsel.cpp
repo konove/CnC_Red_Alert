@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "textblit.h"
-#include "interpal.h"
+#include "td/function.h"
+#include "td/textblit.h"
+#include "td/interpal.h"
 
 #ifndef DEMO
 

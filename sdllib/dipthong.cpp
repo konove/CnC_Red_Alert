@@ -1,4 +1,4 @@
-#include "dipthong.h"
+#include "sdllib/include/dipthong.h"
 
 char *Extract_String(void const *data, int string) {
   unsigned short int const *ptr;

@@ -40,8 +40,8 @@
 #ifndef TAB_H
 #define TAB_H
 
-#include "sidebar.h"
-#include "credits.h"
+#include "ra/sidebar.h"
+#include "ra/credits.h"
 
 class TabClass : public SidebarClass {
  public:

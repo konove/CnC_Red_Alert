@@ -52,10 +52,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "theme.h"
+#include "ra/function.h"
+#include "ra/theme.h"
 
-#include <audio.h>
+#include "sdllib/include/ww_audio.h"
 #include <filesystem>
 
 #ifndef WIN32

@@ -41,8 +41,8 @@
 #ifndef CCFILE_H
 #define CCFILE_H
 
-#include "mixfile.h"
-#include "cdfile.h"
+#include "td/mixfile.h"
+#include "td/cdfile.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).

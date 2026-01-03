@@ -58,7 +58,7 @@
  *   MapEditClass::Verify_House -- sees if given house can own given obj   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 #ifdef SCENARIO_EDITOR
 

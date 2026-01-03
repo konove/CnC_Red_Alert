@@ -42,7 +42,7 @@
 #ifndef __PACKET_H
 #define __PACKET_H
 
-#include "field.h"
+#include "ra/field.h"
 
 #include <cstdint>
 

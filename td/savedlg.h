@@ -41,7 +41,7 @@
 #ifndef SAVEDLG_H
 #define SAVEDLG_H
 
-#include "gadget.h"
+#include "td/gadget.h"
 
 class SaveOptionsClass {
  private:

@@ -41,9 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_MOUSE_H_
 #define CNC_RED_ALERT_TD_MOUSE_H_
 
-#include "stage.h"
-#include "scroll.h"
-#include "timer.h"
+#include "td/stage.h"
+#include "td/scroll.h"
+#include "sdllib/include/timer.h"
 
 class MouseClass : public ScrollClass {
  public:

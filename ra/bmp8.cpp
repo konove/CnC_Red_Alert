@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "bmp8.h"
+#include "ra/bmp8.h"
 
 //***********************************************************************************************
 BMP8::~BMP8() {

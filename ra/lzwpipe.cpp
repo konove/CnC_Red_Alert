@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "lzwpipe.h"
-#include "lzw.h"
-#include "buff.h"
+#include "ra/lzwpipe.h"
+#include "ra/lzw.h"
+#include "ra/buff.h"
 #include <cstring>
 #include <cassert>
 

@@ -41,9 +41,9 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "object.h"
-#include "fly.h"
-#include "fuse.h"
+#include "td/object.h"
+#include "td/fly.h"
+#include "td/fuse.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:

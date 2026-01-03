@@ -39,7 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "crcstraw.h"
+#include "ra/crcstraw.h"
 
 /***********************************************************************************************
  * CRCStraw::Get -- Fetch the data requested and calculate CRC on it. *

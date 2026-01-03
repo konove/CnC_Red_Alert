@@ -10,7 +10,7 @@ target_sources(vqa32 PRIVATE
 
 target_sources(vqa32 PUBLIC
         FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_CURRENT_LIST_DIR}/..
+        BASE_DIRS ${CMAKE_SOURCE_DIR}
         FILES ${VQA32_HEADERS}
 )
 

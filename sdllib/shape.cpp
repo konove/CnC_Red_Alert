@@ -1,4 +1,4 @@
-#include "shape.h"
+#include "sdllib/include/shape.h"
 
 char *_ShapeBuffer;
 long _ShapeBufferSize;

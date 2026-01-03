@@ -40,7 +40,7 @@
 #ifndef CDFILE_H
 #define CDFILE_H
 
-#include "bfiofile.h"
+#include "ra/bfiofile.h"
 
 /*
 **	This class is derived from the BufferIOFileClass. This class adds the

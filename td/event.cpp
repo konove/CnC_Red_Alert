@@ -49,8 +49,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "ccdde.h"
+#include "td/function.h"
+#include "td/ccdde.h"
 
 /***************************************************************************
 ** Table of what data is really used in the EventClass struct for different

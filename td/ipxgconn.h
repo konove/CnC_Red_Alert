@@ -52,7 +52,7 @@
 #ifndef IPXGLOBALCONN_H
 #define IPXGLOBALCONN_H
 
-#include "ipxconn.h"
+#include "td/ipxconn.h"
 
 /*
 ********************************** Defines **********************************

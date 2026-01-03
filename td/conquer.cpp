@@ -63,11 +63,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "font.h"
-#include "function.h"
-#include "memflag.h"
-#include "tcpip.h"
-#include "ww_audio.h"
+#include "sdllib/include/font.h"
+#include "td/function.h"
+#include "sdllib/include/memflag.h"
+#include "td/tcpip.h"
+#include "sdllib/include/ww_audio.h"
 
 #include <cstdlib>
 #include <cstdio>
@@ -80,8 +80,8 @@
 #include <share.h>
 #endif
 
-#include "ccdde.h"
-#include "interpal.h"
+#include "td/ccdde.h"
+#include "td/interpal.h"
 
 #define SHAPE_TRANS 0x40
 

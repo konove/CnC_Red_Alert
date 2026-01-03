@@ -55,12 +55,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
-#include "wspudp.h"
+#include "ra/wsproto.h"
+#include "ra/wspudp.h"
 #endif  // WINSOCK_IPX
-#include "vector.h"
+#include "ra/vector.h"
 #include <cstdio>
 
 /*

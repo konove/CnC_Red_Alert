@@ -61,7 +61,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 
 TeamMissionClass TeamMissions[TMISSION_COUNT] = {
     {TMISSION_ATTACK},     {TMISSION_ATT_WAYPT},    {TMISSION_FORMATION},

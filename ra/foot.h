@@ -40,10 +40,10 @@
 #ifndef FOOT_H
 #define FOOT_H
 
-#include "target.h"
-#include "type.h"
-#include "techno.h"
-#include "ftimer.h"
+#include "ra/target.h"
+#include "ra/type.h"
+#include "ra/techno.h"
+#include "ra/ftimer.h"
 
 class UnitClass;
 class BuildingClass;

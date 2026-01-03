@@ -39,9 +39,9 @@
 #ifndef SESSION_H
 #define SESSION_H
 
-#include "ipxaddr.h"
-#include "msglist.h"
-#include "connect.h"
+#include "ra/ipxaddr.h"
+#include "ra/msglist.h"
+#include "ra/connect.h"
 
 //---------------------------------------------------------------------------
 // Forward declarations

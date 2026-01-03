@@ -46,9 +46,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "terrain.h"
-#include "type.h"
+#include "td/function.h"
+#include "td/terrain.h"
+#include "td/type.h"
 
 #include <filesystem>
 

@@ -40,7 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "random.h"
+#include "ra/random.h"
 #ifdef RANDOM_COUNT
 #include <cstdio>
 extern long Frame;

@@ -61,11 +61,11 @@
 #include <cstring>
 #include <cstddef>
 
-#include "rawfile.h"
+#include "ra/rawfile.h"
 
 #ifdef PORTABLE
-#include "file.h"
-#include "ex_string.h"
+#include "sdllib/include/file.h"
+#include "port/ex_string.h"
 #elif defined(WIN32)
 #include <windows.h>
 #else

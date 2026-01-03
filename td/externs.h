@@ -41,20 +41,20 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#include "cell.h"
-#include "playcd.h"
+#include "td/cell.h"
+#include "sdllib/include/playcd.h"
 
 #ifdef SCENARIO_EDITOR
-#include "mapedit.h"
+#include "td/mapedit.h"
 #endif
-#include "techno.h"
-#include "type.h"
-#include "building.h"
-#include "unit.h"
-#include "credits.h"
-#include "goptions.h"
-#include "options.h"
-#include "infantry.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/building.h"
+#include "td/unit.h"
+#include "td/credits.h"
+#include "td/goptions.h"
+#include "td/options.h"
+#include "td/infantry.h"
 
 #ifdef JAPANESE
 extern bool ForceEnglish;

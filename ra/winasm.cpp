@@ -1,5 +1,5 @@
 #include <cstdint>
-#include "gbuffer.h"
+#include "sdllib/include/gbuffer.h"
 
 #ifndef LORES
 

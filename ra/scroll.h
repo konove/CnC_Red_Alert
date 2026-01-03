@@ -40,7 +40,7 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#include "help.h"
+#include "ra/help.h"
 
 class ScrollClass : public HelpClass {
   /*

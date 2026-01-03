@@ -47,8 +47,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "smudge.h"
+#include "td/function.h"
+#include "td/smudge.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

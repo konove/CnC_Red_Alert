@@ -123,9 +123,9 @@ UnitTypeClass      │   BuildingTypeClass      │  VesselTypeClass
            AircraftTypeClass          InfantryTypeClass
 */
 
-#include "iff.h"
-#include "lint.h"
-#include "shape.h"
+#include "sdllib/include/iff.h"
+#include "ra/lint.h"
+#include "sdllib/include/shape.h"
 
 #ifdef WIN32
 #ifdef _WIN32
@@ -187,41 +187,40 @@ struct NoInitClass {
 #endif
 
 #ifdef WIN32
-#include "key.h"
+#include "ra/key.h"
 #endif
 
-#include <wwlib32.h>
-#include "mpu.h"
-#include "bench.h"
-#include "rect.h"
-#include "jshell.h"
-#include "buff.h"
-#include "face.h"
-#include "random.h"
-#include "crc.h"
-#include "compat.h"
-#include "fixed.h"
-#include "base64.h"
-#include "pipe.h"
-#include "xpipe.h"
-#include "ramfile.h"
-#include "lcw.h"
-#include "lzw.h"
-#include "lcwpipe.h"
-#include "lzwpipe.h"
-#include "lzopipe.h"
-#include "crcpipe.h"
-#include "shapipe.h"
-#include "b64pipe.h"
-#include "straw.h"
-#include "xstraw.h"
-#include "b64straw.h"
-#include "lcwstraw.h"
-#include "lzwstraw.h"
-#include "lzostraw.h"
-#include "crcstraw.h"
-#include "shastraw.h"
-#include "rndstraw.h"
+#include "ra/mpu.h"
+#include "ra/bench.h"
+#include "ra/rect.h"
+#include "ra/jshell.h"
+#include "ra/buff.h"
+#include "ra/face.h"
+#include "ra/random.h"
+#include "ra/crc.h"
+#include "ra/compat.h"
+#include "ra/fixed.h"
+#include "ra/base64.h"
+#include "ra/pipe.h"
+#include "ra/xpipe.h"
+#include "ra/ramfile.h"
+#include "ra/lcw.h"
+#include "ra/lzw.h"
+#include "ra/lcwpipe.h"
+#include "ra/lzwpipe.h"
+#include "ra/lzopipe.h"
+#include "ra/crcpipe.h"
+#include "ra/shapipe.h"
+#include "ra/b64pipe.h"
+#include "ra/straw.h"
+#include "ra/xstraw.h"
+#include "ra/b64straw.h"
+#include "ra/lcwstraw.h"
+#include "ra/lzwstraw.h"
+#include "ra/lzostraw.h"
+#include "ra/crcstraw.h"
+#include "ra/shastraw.h"
+#include "ra/rndstraw.h"
 
 // Should be part of WWLIB.H. This is used in JSHELL.CPP.
 typedef struct {
@@ -236,7 +235,7 @@ typedef struct {
 #include <cstdio>
 #include <cstddef>
 #ifdef PORTABLE
-#include "ex_string.h"
+#include "port/ex_string.h"
 #else
 #include <mem.h>
 #include <dos.h>
@@ -256,24 +255,24 @@ typedef struct {
 /*
 **	VQ player specific includes.
 */
-#include <vqa32/vqaplay.h>
-#include <vqa32/vqafile.h>
+#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqafile.h"
 
 extern bool GameActive;
 extern long LParam;
 
 #include <cassert>
-#include "vector.h"
-#include "heap.h"
-#include "ccfile.h"
-#include "monoc.h"
-#include "conquer.h"
-#include "debug.h"
-#include "special.h"
-#include "defines.h"
-#include "ccini.h"
-#include "ccptr.h"
-#include "bar.h"
+#include "ra/vector.h"
+#include "ra/heap.h"
+#include "ra/ccfile.h"
+#include "ra/monoc.h"
+#include "ra/conquer.h"
+#include "ra/debug.h"
+#include "ra/special.h"
+#include "ra/defines.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/bar.h"
 
 #ifndef PORTABLE
 /*
@@ -286,113 +285,113 @@ extern long LParam;
 extern std::uint64_t Frame;
 CELL Coord_Cell(COORDINATE coord);
 
-#include "utracker.h"
-#include "crate.h"
-#include "rules.h"
-#include "ini.h"
-#include "int.h"
-#include "pk.h"
-#include "pkpipe.h"
-#include "pkstraw.h"
-#include "sha.h"
-#include "blowfish.h"
-#include "blowpipe.h"
-#include "blwstraw.h"
-#include "language.h"
-#include "hsv.h"
-#include "rgb.h"
-#include "palette.h"
-#include "version.h"
-#include "facing.h"
-#include "ftimer.h"
-#include "theme.h"
-#include "link.h"
-#include "gadget.h"
-#include "control.h"
-#include "toggle.h"
-#include "checkbox.h"
-#include "shapebtn.h"
-#include "textbtn.h"
-#include "statbtn.h"
-#include "slider.h"
-#include "list.h"
-#include "drop.h"
-#include "cheklist.h"
-#include "colrlist.h"
-#include "edit.h"
-#include "gauge.h"
-#include "msgbox.h"
-#include "dial8.h"
-#include "txtlabel.h"
-#include "loaddlg.h"
-#include "super.h"
-#include "house.h"
-#include "gscreen.h"
-#include "map.h"
-#include "display.h"
-#include "radar.h"
-#include "power.h"
-#include "sidebar.h"
-#include "tab.h"
-#include "help.h"
-#include "mouse.h"
-#include "help.h"
-#include "target.h"
-#include "theme.h"
-#include "team.h"  // Team objects.
-#include "warhead.h"
-#include "weapon.h"
-#include "trigtype.h"
-#include "teamtype.h"  // Team type objects.
-#include "taction.h"
-#include "tevent.h"
-#include "trigger.h"  // Trigger event objects.
-#include "mapedit.h"  // map editor class
-#include "abstract.h"
-#include "object.h"
-#include "mission.h"
-#include "door.h"
-#include "bullet.h"    // Bullet objects.
-#include "terrain.h"   // Terrain objects.
-#include "anim.h"      // Animation objects.
-#include "template.h"  // Icon template objects.
-#include "overlay.h"   // Overlay objects.
-#include "smudge.h"    // Stains on the terrain objects.
-#include "aircraft.h"  // Aircraft objects.
-#include "unit.h"      // Ground unit objects.
-#include "vessel.h"    // Sea unit objects.
-#include "infantry.h"  // Infantry objects.
-#include "credits.h"   // Credit counter class.
-#include "score.h"     // Scoring system class.
-#include "factory.h"   // Production manager class.
-#include "intro.h"
-#include "ending.h"
-#include "logic.h"
-#include "queue.h"
-#include "event.h"
-#include "base.h"  // defines the AI's pre-built base
-#include "carry.h"
-#include "scenario.h"
-#include "msglist.h"  // Multiplayer chat message system
-#include "session.h"  // Multiplayer session class
-#include "ipxmgr.h"   // IPX connection manager
-#include "nullmgr.h"  // Modem connection manager
-#include "readline.h"
-#include "vortex.h"
-#include "egos.h"
+#include "ra/utracker.h"
+#include "ra/crate.h"
+#include "ra/rules.h"
+#include "ra/ini.h"
+#include "ra/int.h"
+#include "ra/pk.h"
+#include "ra/pkpipe.h"
+#include "ra/pkstraw.h"
+#include "ra/sha.h"
+#include "ra/blowfish.h"
+#include "ra/blowpipe.h"
+#include "ra/blwstraw.h"
+#include "ra/language.h"
+#include "ra/hsv.h"
+#include "ra/rgb.h"
+#include "ra/palette.h"
+#include "ra/version.h"
+#include "ra/facing.h"
+#include "ra/ftimer.h"
+#include "ra/theme.h"
+#include "ra/link.h"
+#include "ra/gadget.h"
+#include "ra/control.h"
+#include "ra/toggle.h"
+#include "ra/checkbox.h"
+#include "ra/shapebtn.h"
+#include "ra/textbtn.h"
+#include "ra/statbtn.h"
+#include "ra/slider.h"
+#include "ra/list.h"
+#include "ra/drop.h"
+#include "ra/cheklist.h"
+#include "ra/colrlist.h"
+#include "ra/edit.h"
+#include "ra/gauge.h"
+#include "ra/msgbox.h"
+#include "ra/dial8.h"
+#include "ra/txtlabel.h"
+#include "ra/loaddlg.h"
+#include "ra/super.h"
+#include "ra/house.h"
+#include "ra/gscreen.h"
+#include "ra/map.h"
+#include "ra/display.h"
+#include "ra/radar.h"
+#include "ra/power.h"
+#include "ra/sidebar.h"
+#include "ra/tab.h"
+#include "ra/help.h"
+#include "ra/mouse.h"
+#include "ra/help.h"
+#include "ra/target.h"
+#include "ra/theme.h"
+#include "ra/team.h"  // Team objects.
+#include "ra/warhead.h"
+#include "ra/weapon.h"
+#include "ra/trigtype.h"
+#include "ra/teamtype.h"  // Team type objects.
+#include "ra/taction.h"
+#include "ra/tevent.h"
+#include "ra/trigger.h"  // Trigger event objects.
+#include "ra/mapedit.h"  // map editor class
+#include "ra/abstract.h"
+#include "ra/object.h"
+#include "ra/mission.h"
+#include "ra/door.h"
+#include "ra/bullet.h"    // Bullet objects.
+#include "ra/terrain.h"   // Terrain objects.
+#include "ra/anim.h"      // Animation objects.
+#include "ra/template.h"  // Icon template objects.
+#include "ra/overlay.h"   // Overlay objects.
+#include "ra/smudge.h"    // Stains on the terrain objects.
+#include "ra/aircraft.h"  // Aircraft objects.
+#include "ra/unit.h"      // Ground unit objects.
+#include "ra/vessel.h"    // Sea unit objects.
+#include "ra/infantry.h"  // Infantry objects.
+#include "ra/credits.h"   // Credit counter class.
+#include "ra/score.h"     // Scoring system class.
+#include "ra/factory.h"   // Production manager class.
+#include "ra/intro.h"
+#include "ra/ending.h"
+#include "ra/logic.h"
+#include "ra/queue.h"
+#include "ra/event.h"
+#include "ra/base.h"  // defines the AI's pre-built base
+#include "ra/carry.h"
+#include "ra/scenario.h"
+#include "ra/msglist.h"  // Multiplayer chat message system
+#include "ra/session.h"  // Multiplayer session class
+#include "ra/ipxmgr.h"   // IPX connection manager
+#include "ra/nullmgr.h"  // Modem connection manager
+#include "ra/readline.h"
+#include "ra/vortex.h"
+#include "ra/egos.h"
 #ifdef WIN32
-#include "filepcx.h"
+#include "ra/filepcx.h"
 #endif
 
 #if (TEN)
-#include "tenmgr.h"
+#include "ra/tenmgr.h"
 #endif
 
 #if (MPATH)
 #ifdef WIN32
-#include "mpmgrw.h"
+#include "ra/mpmgrw.h"
 #else
-#include "mpmgrd.h"
+#include "ra/mpmgrd.h"
 #endif
 #endif
 
@@ -402,7 +401,7 @@ bool InitDDraw(void);
 bool PlayMpegMovie(const char *name);
 #endif
 
-#include "externs.h"
+#include "ra/externs.h"
 
 extern int Get_CD_Drive(void);
 extern void Fatal(char const *message, ...);
@@ -1004,6 +1003,6 @@ ArmorType Armor_From_Name(char const *name);
 */
 void Show_Who_Was_Responsible(void);
 
-#include "inline.h"
+#include "ra/inline.h"
 
 #endif

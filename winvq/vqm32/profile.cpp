@@ -47,7 +47,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "profile.h"
+#include "winvq/vqm32/profile.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

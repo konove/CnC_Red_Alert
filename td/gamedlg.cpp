@@ -39,11 +39,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "gamedlg.h"
-#include "sounddlg.h"
-#include "visudlg.h"
-#include "ww_audio.h"
+#include "td/function.h"
+#include "td/gamedlg.h"
+#include "td/sounddlg.h"
+#include "td/visudlg.h"
+#include "sdllib/include/ww_audio.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

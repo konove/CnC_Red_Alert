@@ -43,11 +43,11 @@
 
 #ifdef WIN32
 
-#include "function.h"
-#include "tcpip.h"
-#include "packet.h"
+#include "ra/function.h"
+#include "ra/tcpip.h"
+#include "ra/packet.h"
 #ifndef _WIN32
-#include "ccdde.h"
+#include "ra/ccdde.h"
 #endif
 
 #define FIELD_PACKET_TYPE "TYPE"
@@ -167,7 +167,7 @@ TimerClass GameTimer;
 long GameEndTime;
 void *PacketLater = nullptr;
 
-#include "woldebug.h"
+#include "ra/woldebug.h"
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolapiOb.h"

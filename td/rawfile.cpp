@@ -52,7 +52,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -65,9 +65,9 @@
 #include <share.h>
 #endif
 
-#include "wwlib32.h"
-#include "compat.h"
-#include "rawfile.h"
+#include "sdllib/include/wwlib32.h"
+#include "td/compat.h"
+#include "td/rawfile.h"
 
 #ifndef PORTABLE
 extern GraphicBufferClass SeenBuff;

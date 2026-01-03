@@ -48,10 +48,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "iconcach.h"
-#include "memflag.h"
-#include "tile.h"
+#include "td/function.h"
+#include "sdllib/include/iconcach.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/tile.h"
 
 #include <filesystem>
 

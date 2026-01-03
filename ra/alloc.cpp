@@ -93,7 +93,7 @@ void (*Memory_Error_Exit)(char *string) = NULL;
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-#include "mono.h"
+#include "winvq/vqm32/mono.h"
 void DPMI_Lock(VOID const *ptr, long const size) {
   union REGS regs;
   struct SREGS sregs;

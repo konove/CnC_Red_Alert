@@ -41,10 +41,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "xstraw.h"
-#include "xpipe.h"
-#include "buff.h"
-#include "lzw.h"
+#include "ra/xstraw.h"
+#include "ra/xpipe.h"
+#include "ra/buff.h"
+#include "ra/lzw.h"
 
 LZWEngine::LZWEngine(void) { Reset(); }
 

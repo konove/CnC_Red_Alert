@@ -39,8 +39,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "visudlg.h"
+#include "td/function.h"
+#include "td/visudlg.h"
 int VisualControlsClass::Init(void) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   Option_Width = 216 * factor;

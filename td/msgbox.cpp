@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "msgbox.h"
-#include "gadget.h"
+#include "td/function.h"
+#include "td/msgbox.h"
+#include "td/gadget.h"
 
 #ifdef JAPANESE
 CCMessageBox::CCMessageBox(int caption, bool pict)

@@ -42,8 +42,8 @@
 
 #include <cstdint>
 
-#include "special.h"
-#include "wwstd.h"
+#include "td/special.h"
+#include "sdllib/include/wwstd.h"
 
 /**********************************************************************
 **	If defined, then the advanced balancing features will be enabled

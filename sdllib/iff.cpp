@@ -1,8 +1,8 @@
-#include "iff.h"
+#include "sdllib/include/iff.h"
 
 #include <cstdio>
 
-#include "memflag.h"
+#include "sdllib/include/memflag.h"
 
 unsigned long Uncompress_Data(void const *src, void *dst) {
   unsigned int skip;       // Number of leading data to skip.

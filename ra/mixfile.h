@@ -22,9 +22,9 @@
 #define MIXFILE_H
 
 #include <cstdlib>
-#include "listnode.h"
-#include "pk.h"
-#include "buff.h"
+#include "ra/listnode.h"
+#include "ra/pk.h"
+#include "ra/buff.h"
 
 template <class T>
 class MixFileClass : public Node<MixFileClass<T> > {

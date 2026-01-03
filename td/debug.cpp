@@ -39,9 +39,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "td/function.h"
 #include <cstdarg>
-#include <filepcx.h>
+#include "ra/filepcx.h"
 #include <cstdio>
 #ifdef CHEAT_KEYS
 

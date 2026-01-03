@@ -41,7 +41,7 @@
 #ifndef COLORLIST_H
 #define COLORLIST_H
 
-#include "list.h"
+#include "td/list.h"
 
 /***************************************************************************
 ** This class adds the ability for every list item to have a different color.

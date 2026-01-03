@@ -44,8 +44,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "template.h"
+#include "ra/function.h"
+#include "ra/template.h"
 
 /***********************************************************************************************
  * TemplateClass::Init -- Resets the template object system. *

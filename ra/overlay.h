@@ -40,8 +40,8 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include "object.h"
-#include "type.h"
+#include "ra/object.h"
+#include "ra/type.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function

@@ -40,8 +40,8 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "object.h"
-#include "type.h"
+#include "ra/object.h"
+#include "ra/type.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated

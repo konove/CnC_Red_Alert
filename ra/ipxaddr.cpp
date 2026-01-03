@@ -45,12 +45,12 @@
  *   IPXAddressClass::operator!= -- overloaded comparison operator         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
+#include "ra/function.h"
 #include <cstdio>
-#include "ipxaddr.h"
+#include "ra/ipxaddr.h"
 
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
+#include "ra/wsproto.h"
 #endif  // WINSOCK_IPX
 
 /***************************************************************************

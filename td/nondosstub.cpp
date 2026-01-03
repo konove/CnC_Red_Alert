@@ -17,21 +17,21 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "function.h"
+#include "td/function.h"
 #include <cstdio>
 #include <cstring>
-#include "ccfile.h"
-#include "compat.h"
-#include "defines.h"
-#include "externs.h"
-#include "filepcx.h"
-#include "gbuffer.h"
-#include "iconcach.h"
-#include "interpal.h"
-#include "mouse.h"
-#include "palette.h"
-#include "theme.h"
-#include "wwstd.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "ra/filepcx.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/iconcach.h"
+#include "td/interpal.h"
+#include "td/mouse.h"
+#include "td/palette.h"
+#include "td/theme.h"
+#include "sdllib/include/wwstd.h"
 
 void output(short, short) {}
 

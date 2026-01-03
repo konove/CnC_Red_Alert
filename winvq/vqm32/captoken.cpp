@@ -41,7 +41,7 @@
 #include <cerrno>
 #include <cstring>
 #include <cctype>
-#include "captoken.h"
+#include "winvq/vqm32/captoken.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

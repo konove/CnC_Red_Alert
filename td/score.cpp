@@ -50,9 +50,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "textblit.h"
-#include "interpal.h"
+#include "td/function.h"
+#include "td/textblit.h"
+#include "td/interpal.h"
 #define SCORETEXT_X 184
 #define SCORETEXT_Y 8
 #define CASUALTY_Y 88

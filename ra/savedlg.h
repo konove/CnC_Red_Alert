@@ -40,7 +40,7 @@
 #ifndef SAVEDLG_H
 #define SAVEDLG_H
 
-#include "gadget.h"
+#include "ra/gadget.h"
 
 class SaveOptionsClass {
  private:

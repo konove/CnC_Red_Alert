@@ -46,9 +46,9 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include "mission.h"
-#include "target.h"
-#include "defines.h"
+#include "ra/mission.h"
+#include "ra/target.h"
+#include "ra/defines.h"
 
 #pragma warn - inl
 

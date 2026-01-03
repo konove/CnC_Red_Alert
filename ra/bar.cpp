@@ -43,9 +43,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "bar.h"
-#include "fixed.h"
+#include "ra/function.h"
+#include "ra/bar.h"
+#include "ra/fixed.h"
 
 /***********************************************************************************************
  * ProgressBarClass::ProgressBarClass -- Constructor for the bargraph object. *

@@ -47,9 +47,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "internet.h"
-#include "wspudp.h"
+#include "ra/function.h"
+#include "ra/internet.h"
+#include "ra/wspudp.h"
 
 #include <cassert>
 #include <cstdio>

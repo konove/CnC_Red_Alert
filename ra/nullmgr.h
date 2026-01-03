@@ -44,8 +44,8 @@
 /*
 ********************************* Includes **********************************
 */
-#include "nullconn.h"
-#include "connmgr.h"
+#include "ra/nullconn.h"
+#include "ra/connmgr.h"
 #ifndef WIN32
 #include "commlib.h"
 #endif

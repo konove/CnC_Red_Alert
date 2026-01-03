@@ -41,11 +41,11 @@
  *   DynamicVectorClass<T>::Resize -- Changes size of a dynamic vector.    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
-#include "vector.h"
+#include "ra/function.h"
+#include "ra/vector.h"
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
-#include "wspudp.h"
+#include "ra/wsproto.h"
+#include "ra/wspudp.h"
 #endif  // WINSOCK_IPX
 #include <cstdio>
 

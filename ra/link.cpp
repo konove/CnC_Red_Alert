@@ -48,8 +48,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "link.h"
+#include "ra/function.h"
+#include "ra/link.h"
 
 /***********************************************************************************************
  * LinkClass::LinkClass -- Copy constructor for linked list object. *

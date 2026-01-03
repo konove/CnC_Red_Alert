@@ -42,17 +42,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
-#include "function.h"
-#include "misc.h"
+#include "ra/function.h"
+#include "sdllib/include/misc.h"
 
 #ifdef WINSOCK_IPX
-#include "wsproto.h"
+#include "ra/wsproto.h"
 #else
 
 #ifdef WIN32
-#include "tcpip.h"
+#include "ra/tcpip.h"
 #else
-#include "fakesock.h"
+#include "ra/fakesock.h"
 #endif  // WIN32
 
 #endif  // WINSOCK_IPX

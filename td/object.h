@@ -41,7 +41,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "abstract.h"
+#include "td/abstract.h"
 
 class ObjectClass;
 class TechnoClass;

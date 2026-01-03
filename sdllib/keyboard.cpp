@@ -1,4 +1,4 @@
-#include "keyboard.h"
+#include "sdllib/include/keyboard.h"
 
 #include <SDL_events.h>
 #include <SDL_keyboard.h>
@@ -8,8 +8,8 @@
 
 #include <cstring>
 
-#include "ww_mouse.h"
-#include "ww_win.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 
 WWKeyboardClass::WWKeyboardClass() : MouseQX(0), MouseQY(0), Head(0), Tail(0) {
   // clear buffer

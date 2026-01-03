@@ -82,8 +82,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "mission.h"
+#include "ra/function.h"
+#include "ra/mission.h"
 
 /***********************************************************************************************
  * _Is_It_Breathing -- Checks to see if unit is an active team member. *

@@ -50,8 +50,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "mixfile.h"
+#include "td/function.h"
+#include "td/mixfile.h"
 
 template <class T>
 int Compare(T const *obj1, T const *obj2) {

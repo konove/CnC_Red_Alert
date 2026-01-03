@@ -40,8 +40,8 @@
 #ifndef CRCSTRAW_H
 #define CRCSTRAW_H
 
-#include "straw.h"
-#include "crc.h"
+#include "ra/straw.h"
+#include "ra/crc.h"
 
 /*
 **	This class will build a CRC value from the data stream that is drawn

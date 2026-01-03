@@ -41,8 +41,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "layer.h"
+#include "td/function.h"
+#include "td/layer.h"
 
 /***********************************************************************************************
  * LayerClass::Submit -- Adds an object to a layer list. *

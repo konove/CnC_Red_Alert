@@ -38,10 +38,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "sounddlg.h"
+#include "ra/function.h"
+#include "ra/sounddlg.h"
 
-#include "misc.h"
+#include "sdllib/include/misc.h"
 
 class MusicListClass : public ListClass {
  public:

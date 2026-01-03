@@ -40,12 +40,12 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include "building.h"
-#include "ccini.h"
-#include "defines.h"
-#include "pipe.h"
-#include "straw.h"
-#include "vector.h"
+#include "ra/building.h"
+#include "ra/ccini.h"
+#include "ra/defines.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/vector.h"
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node

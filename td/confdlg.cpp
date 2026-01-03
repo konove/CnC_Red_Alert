@@ -39,10 +39,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
-#include "confdlg.h"
+#include "td/function.h"
+#include "td/confdlg.h"
 
-#include "font.h"
+#include "sdllib/include/font.h"
 
 bool ConfirmationClass::Process(int text) {
   return (Process(Text_String(text)));

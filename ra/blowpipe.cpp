@@ -39,7 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "blowpipe.h"
+#include "ra/blowpipe.h"
 #include <cstring>
 #include <cassert>
 

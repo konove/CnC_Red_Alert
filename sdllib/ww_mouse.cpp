@@ -1,4 +1,4 @@
-#include "ww_mouse.h"
+#include "sdllib/include/ww_mouse.h"
 
 #include <SDL_events.h>
 #include <SDL_mouse.h>
@@ -9,9 +9,9 @@
 
 #include <cstdio>
 
-#include "gbuffer.h"
-#include "iff.h"
-#include "shape.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/shape.h"
 
 extern void *MainWindow;
 

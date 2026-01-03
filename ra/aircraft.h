@@ -40,9 +40,9 @@
 #ifndef AIRCRAFT_H
 #define AIRCRAFT_H
 
-#include "radio.h"
-#include "fly.h"
-#include "target.h"
+#include "ra/radio.h"
+#include "ra/fly.h"
+#include "ra/target.h"
 
 /*
 **	This aircraft class is used for all flying sentient objects. This

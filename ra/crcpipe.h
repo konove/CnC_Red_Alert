@@ -40,8 +40,8 @@
 #ifndef CRCPIPE_H
 #define CRCPIPE_H
 
-#include "pipe.h"
-#include "crc.h"
+#include "ra/pipe.h"
+#include "ra/crc.h"
 
 /*
 **	This class doesn't modify the data being piped through, but it does
