@@ -49,9 +49,12 @@
  *   Test_Null_Modem -- Null-Modem test routine                            *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "font.h"
 #include "function.h"
+#include "misc.h"
 
 #include <algorithm>
+#include <audio.h>
 
 #ifdef FIXIT_RANDOM_GAME
 #include <ctime>

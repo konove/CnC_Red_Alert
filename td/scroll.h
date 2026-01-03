@@ -42,6 +42,7 @@
 #define SCROLL_H
 
 #include "help.h"
+#include "timer.h"
 
 class ScrollClass : public HelpClass {
   /*
@@ -64,7 +65,7 @@ class ScrollClass : public HelpClass {
   */
   //		enum ScrollClassEnums {
   //			INITIAL_DELAY=8,				// Delay
-  //before scrolling can start at all. 			SEQUENCE_DELAY=4
+  // before scrolling can start at all. 			SEQUENCE_DELAY=4
   //// Delay between scroll steps.
   //		};
 
@@ -72,7 +73,7 @@ class ScrollClass : public HelpClass {
 
  public:
   ScrollClass(void);
-  ScrollClass(NoInitClass const &x) : HelpClass(x){};
+  ScrollClass(NoInitClass const &x) : HelpClass(x) {};
 
   bool Set_Autoscroll(int control);
 

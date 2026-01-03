@@ -43,6 +43,8 @@
  *   LoadOptionsClass::~LoadOptionsClass -- class destructor *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "file.h"
+
 #include <filesystem>
 #include <charconv>
 

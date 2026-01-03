@@ -45,9 +45,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "file.h"
+#include "font.h"
 #include "function.h"
 #include "loaddlg.h"
 #include "tcpip.h"
+#include "ww_audio.h"
+#include "memflag.h"
 #ifndef PORTABLE
 #include <conio.h>
 #include <dos.h>
@@ -465,8 +469,9 @@ bool Init_Game(int, char *[]) {
 
   //	if (CCFileClass("MOVIES.MIX").Is_Available()) {
   CCDebugString("C&C95 - About to register MOVIES.MIX\n");
-  if (!MoviesMix) MoviesMix = new MixFileClass("MOVIES.MIX");  // Never cached.
-    //	}
+  if (!MoviesMix)
+    MoviesMix = new MixFileClass("MOVIES.MIX");  // Never cached.
+                                                 //	}
 
 #if (0)
 
@@ -565,8 +570,8 @@ bool Init_Game(int, char *[]) {
   }
   Call_Back();
   //	Window_Dialog_Box(hCCLibrary, "DIALOG_1", MainWindow,
-  //MakeProcInstance((FARPROC)Start_Game_Proc, hInstance)); 	if (hCCLibrary)
-  //FreeLibrary(hCCLibrary);
+  // MakeProcInstance((FARPROC)Start_Game_Proc, hInstance)); 	if (hCCLibrary)
+  // FreeLibrary(hCCLibrary);
 
 #ifdef DEMO
   MixFileClass::Cache("DEMO.MIX");
@@ -942,8 +947,8 @@ bool Select_Game(bool fade) {
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
 //				Fancy_Text_Print("V.%d%s%02d", 319, 190, DKGREY,
-//TBLACK, TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT, Version_Number(), VersionText,
-//FOREIGN_VERSION_NUMBER);
+// TBLACK, TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT, Version_Number(), VersionText,
+// FOREIGN_VERSION_NUMBER);
 #else
 
 #ifdef DEMO
@@ -1956,7 +1961,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           "Command & Conquer (c) 1995,1996 Westwood Studios\r\n"
           "Parameter:\r\n"
           //						"  -CD<Pfad> = Suchpfad
-          //für Daten-Dateien festlegen.\r\n"
+          // für Daten-Dateien festlegen.\r\n"
           "  -DESTNET  = Netzwerkkennung des Zielrechners festlegen\r\n"
           "              (Syntax: DESTNETxx.xx.xx.xx)\r\n"
           "  -SOCKET   = Kennung des Netzwerk-Sockets (0 - 16383)\n"
@@ -1964,7 +1969,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           "(\"Boss-Modus\")\r\n"
           "  -MESSAGES = Mitteilungen von außerhalb des Spiels zulassen\r\n"
           //					"  -ELITE    = Fortgeschrittene
-          //KI und Gefechtstechniken.\r\n"
+          // KI und Gefechtstechniken.\r\n"
           "\r\n");
 #else
 #ifdef FRENCH
@@ -1972,7 +1977,8 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           "Command & Conquer (c) 1995, Westwood Studios\r\n"
           "Paramètres:\r\n"
           //						"  -CD<chemin d'accès> =
-          //Recherche des fichiers dans le\r\n" 						" répertoire indiqué.\r\n"
+          // Recherche des fichiers dans le\r\n"
+          // " répertoire indiqué.\r\n"
           "  -DESTNET  = Spécifier le numéro de réseau du système de "
           "destination\r\n"
           "              (Syntaxe: DESTNETxx.xx.xx.xx)\r\n"
@@ -1990,7 +1996,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           "  -EDITOR    = Enable scenario editor.\r\n"
 #endif
           //						"  -CD<path> = Set
-          //search path for data files.\r\n"
+          // search path for data files.\r\n"
           "  -DESTNET  = Specify Network Number of destination system\r\n"
           "              (Syntax: DESTNETxx.xx.xx.xx)\r\n"
           "  -SOCKET   = Network Socket ID (0 - 16383)\n"
@@ -2001,7 +2007,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
           "  -ENGLISH  = Enable English keyboard compatibility.\r\n"
 #endif
 //					"  -ELITE    = Advanced AI and combat
-//characteristics.\r\n"
+// characteristics.\r\n"
 #ifdef NEVER
           "  -O[options]= Special control options;\r\n"
           "     1 : Tiberium grows.\r\n"
@@ -2654,7 +2660,7 @@ int Version_Number(void) {
   sprintf(VersionText, " 1.0a");  // Demo version.
 #else
   //	sprintf(VersionText, ".%02dp", 13);			// Patch
-  //version.
+  // version.
   sprintf(VersionText, ".%02d", 14);  // Master version.
 #endif
   return (1);

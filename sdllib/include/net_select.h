@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
+#define CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
 
 enum SocketEvent {
   SOCKEV_READ,
@@ -14,3 +15,5 @@ void Socket_Unregister_Select(int socket);
 void Socket_Check_Write(int socket, bool check);
 
 void Socket_Select();
+
+#endif  // CNC_RED_ALERT_SDLLIB_NET_SELECT_H_

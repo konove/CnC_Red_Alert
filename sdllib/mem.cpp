@@ -1,5 +1,6 @@
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
+
 #include "memflag.h"
 
 void (*Memory_Error)(void) = nullptr;

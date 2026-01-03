@@ -122,7 +122,9 @@
  *- - - - - - - */
 //	Warning - Most disgusting cpp file of all time. ajw
 
+#include "font.h"
 #include "function.h"
+#include "misc.h"
 
 #include <algorithm>
 

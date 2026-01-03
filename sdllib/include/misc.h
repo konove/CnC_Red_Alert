@@ -37,6 +37,12 @@
 #ifndef MISC_H
 #define MISC_H
 
+#include <cstdint>
+#include <cstdlib>
+#include <ctime>
+
+#include "ww_win.h"
+
 /*========================= C++ Routines ==================================*/
 
 /*=========================================================================*/
@@ -79,10 +85,9 @@ void Prog_End(void);
 void Delay(int duration);
 
 // extras for TD
-#ifdef TD
-inline void randomize() { srand(time(NULL)); }
+inline void randomize() { std::srand(std::time(nullptr)); }
 int IRandom(int minval, int maxval);
-uint8_t Random();
+std::uint8_t Random();
 
 void Shake_Screen(int shakes);
 inline void Wait_Vert_Blank() { Video_End_Frame(); }
@@ -91,7 +96,6 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int *h, unsigned int *s, unsigned int *v);
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
                         unsigned int *r, unsigned int *g, unsigned int *b);
-#endif
 
 /*========================= Assembly Routines ==============================*/
 

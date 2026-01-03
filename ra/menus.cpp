@@ -37,7 +37,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
+#include "misc.h"
+
 #include <algorithm>
 
 #ifdef WIN32

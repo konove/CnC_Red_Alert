@@ -44,6 +44,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <audio.h>
+
 #include "function.h"
 #include <filesystem>
 

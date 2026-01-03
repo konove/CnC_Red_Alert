@@ -36,16 +36,4 @@
 #ifndef WWLIB32_H
 #define WWLIB32_H
 
-#include "audio.h"
-#include "dipthong.h"
-#include "file.h"
-#include "font.h"
-#include "iff.h"
-#include "misc.h"
-#include "mouse.h"
-#include "playcd.h"
-#include "shape.h"
-#include "timer.h"
-#include "wsa.h"
-
 #endif  // WWLIB32_H

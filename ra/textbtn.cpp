@@ -47,6 +47,8 @@
 #include "function.h"
 #include "textbtn.h"
 
+#include "font.h"
+
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *
  *                                                                                             *

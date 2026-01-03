@@ -46,6 +46,8 @@
 #include "function.h"
 #include "statbtn.h"
 
+#include "font.h"
+
 /***********************************************************************************************
  * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.
  **

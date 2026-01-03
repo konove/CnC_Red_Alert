@@ -43,6 +43,7 @@
 #include "gamedlg.h"
 #include "sounddlg.h"
 #include "visudlg.h"
+#include "ww_audio.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

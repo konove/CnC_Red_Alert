@@ -1,8 +1,12 @@
+#include "iconcach.h"
+
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
-#include "iconcach.h"
+#include "drawbuff.h"
 #include "gbuffer.h"
+#include "tile.h"
 
 static void const *LastIconset = nullptr;
 static uint8_t *StampPtr = nullptr;

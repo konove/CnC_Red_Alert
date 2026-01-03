@@ -58,6 +58,8 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "memflag.h"
+#include "tile.h"
 
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {

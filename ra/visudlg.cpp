@@ -41,6 +41,8 @@
 #include "function.h"
 #include "visudlg.h"
 
+#include "misc.h"
+
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *
  *                                                                                             *
@@ -97,7 +99,7 @@ void VisualControlsClass::Process(void) {
   TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OK, TPF_BUTTON, 0, button_y,
                              60 * RESFACTOR);
   //	TextButtonClass optionsbtn(BUTTON_OPTIONS, TXT_OPTIONS_MENU, TPF_BUTTON,
-  //0, button_y);
+  // 0, button_y);
   TextButtonClass resetbtn(BUTTON_RESET, TXT_RESET_MENU, TPF_BUTTON, 0,
                            button_y, 80 * RESFACTOR);
 

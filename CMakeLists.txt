@@ -8,6 +8,10 @@ set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 # Include What You Use integration
 include(cmake/IWYU.cmake)
 
+if (ENABLE_IWYU AND IWYU_PATH)
+    set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE "${IWYU_COMMAND}")
+endif ()
+
 if (MSVC)
     add_compile_options(
             /wd4996 # yes, this code is old and uses "unsafe" functions

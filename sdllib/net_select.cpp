@@ -1,13 +1,13 @@
-#include <algorithm>
-#include <cstdio>
-#include <forward_list>
-
 #include "net_select.h"
+
+#include <algorithm>
+#include <forward_list>
 
 #ifdef _WIN32
 #include <winsock.h>
 #else
 #include <sys/select.h>
+#include <sys/time.h>
 #endif
 
 struct SocketInfo {

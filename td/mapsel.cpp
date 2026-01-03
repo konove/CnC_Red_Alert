@@ -507,8 +507,8 @@ void Map_Selection(void) {
   /*
   ** Extra graphic buffer to draw text into
   */
-  TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)nullptr);
+  TextPrintBuffer = new GraphicBufferClass(
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
 

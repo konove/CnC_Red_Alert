@@ -156,6 +156,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "misc.h"
 
 #include <algorithm>
 

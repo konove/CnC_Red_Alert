@@ -41,12 +41,15 @@
 #include "function.h"
 #include "sounddlg.h"
 
+#include "misc.h"
+
 class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
       : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
-                  MFCD::Retrieve("BTN-UP.SHP"), MFCD::Retrieve("BTN-DN.SHP")){};
-  virtual ~MusicListClass(void){};
+                  MFCD::Retrieve("BTN-UP.SHP"),
+                  MFCD::Retrieve("BTN-DN.SHP")) {};
+  virtual ~MusicListClass(void) {};
 
  protected:
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
@@ -161,7 +164,7 @@ void SoundControlsClass::Process(void) {
                              option_x + shuffle_x, option_y + shuffle_y,
                              onoff_width);
   //	TextButtonClass shufflebtn(BUTTON_SHUFFLE, TXT_OFF, TPF_BUTTON,
-  //option_x+shuffle_x, option_y+shuffle_y, ONOFF_WIDTH);
+  // option_x+shuffle_x, option_y+shuffle_y, ONOFF_WIDTH);
 
   /*
   **	Repeat control.

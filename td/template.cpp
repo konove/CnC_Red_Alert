@@ -55,6 +55,8 @@
 #include "function.h"
 #include "template.h"
 
+#include "tile.h"
+
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
@@ -119,8 +121,8 @@ void TemplateClass::Read_INI(char *buffer) {
     TemplateType temp;  // Terrain type.
 
     cell = atoi(tbuffer);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
     temp = TemplateTypeClass::From_Name(strtok(buf, ",\r\n"));
     if (temp != TEMPLATE_NONE) {
       new TemplateClass(temp, cell);

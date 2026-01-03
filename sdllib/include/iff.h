@@ -37,8 +37,7 @@
 #ifndef IFF_H
 #define IFF_H
 
-#include "gbuffer.h"
-#include "memflag.h"  // this is needed for random other files to compile
+#include <cstdint>
 
 typedef enum {
   BM_AMIGA,  // Bit plane format (8K per bitplane).

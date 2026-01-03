@@ -1,9 +1,13 @@
-#include <algorithm>
-#include <cstring>
-
 #include "drawbuff.h"
+
+#include <cstdint>
+#include <cstring>
+#include <utility>
+
 #include "font.h"
+#include "gbuffer.h"
 #include "misc.h"
+#include "ww_win.h"
 
 void *MainWindow;
 

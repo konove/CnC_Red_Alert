@@ -16,11 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "abstract.h"
-
-#include <algorithm>
-
-#include "defines.h"
+#include "function.h"
 
 // Determines the direct line distance to the target in leptons.
 // For building targets, adjusts the distance by subtracting the building's

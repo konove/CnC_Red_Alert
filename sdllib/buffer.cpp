@@ -1,6 +1,6 @@
-#include <cstdint>
-
 #include "buffer.h"
+
+#include <cstdint>
 
 BufferClass::BufferClass(long size)
     : Buffer(new uint8_t[size]), Size(size), Allocated(true) {}

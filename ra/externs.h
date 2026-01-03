@@ -41,10 +41,6 @@
 #define EXTERNS_H
 
 #include "cell.h"
-
-#ifdef SCENARIO_EDITOR
-#include "mapedit.h"
-#endif
 #include "techno.h"
 #include "type.h"
 #include "building.h"
@@ -53,6 +49,11 @@
 #include "goptions.h"
 #include "options.h"
 #include "infantry.h"
+#include "playcd.h"
+
+#ifdef SCENARIO_EDITOR
+#include "mapedit.h"
+#endif
 
 extern char _staging_buffer[32000];
 extern "C" {
@@ -331,7 +332,7 @@ extern unsigned long ScenarioCRC;
 
 #ifdef FIXIT_VERSION_3
 extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
-                                    //Aftermath rules?
+                                    // Aftermath rules?
 #else
 extern unsigned long PlayingAgainstVersion;  // Negotiated version number
 extern bool Version107InMix;                 // Is there a v1.07 in the game

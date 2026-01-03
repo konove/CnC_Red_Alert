@@ -117,19 +117,16 @@
  *   GVPC::Print -- stub function to print a long on a graphic view port   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#define WIN32_LEAN_AND_MEAN
-// #include <ddraw.h>
-
 #ifndef GBUFFER_H
 #define GBUFFER_H
 
-#include <cstdlib>
+#include <cstdint>
+#include <cstdio>
 
-#include "wwstd.h"
-#include "drawbuff.h"
 #include "buffer.h"
+#include "drawbuff.h"
 #include "ww_win.h"
-#include "iconcach.h"
+#include "wwstd.h"
 
 #if !defined(FUNCTION_H) || defined(TD)
 
@@ -164,8 +161,6 @@ class TPoint2D {
 //
 extern void *MainWindow;  // handle to programs main window
 
-extern GraphicBufferClass *WindowBuffer;
-
 enum GBC_Enum {
   GBC_NONE = 0,
   GBC_VIDEOMEM = 1,
@@ -189,10 +184,7 @@ enum GBC_Enum {
 /*		keep a pointer to it in a VideoViewPortClass.
  */
 /*=========================================================================*/
-class GraphicViewPortClass;
 class GraphicBufferClass;
-class VideoViewPortClass;
-class VideoBufferClass;
 
 GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass *ptr);
 GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass &ptr);
@@ -236,7 +228,7 @@ class GraphicViewPortClass {
   /* define functions to get at the private data members
    */
   /*===================================================================*/
-  uint8_t *Get_Offset(void);
+  std::uint8_t *Get_Offset(void);
   int Get_Height(void);
   int Get_Width(void);
   int Get_XAdd(void);
@@ -316,7 +308,7 @@ class GraphicViewPortClass {
   /* Define the data used by a GraphicViewPortClass
    */
   /*===================================================================*/
-  uint8_t *Offset;                  // offset to graphic page
+  std::uint8_t *Offset;             // offset to graphic page
   int Width;                        // width of graphic page
   int Height;                       // height of graphic page
   int XAdd;                         // xadd for graphic page (0)
@@ -372,7 +364,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
 
   bool Is_Window_Surface() const { return WindowTexture != nullptr; }
   void Update_Window_Surface(bool end_frame);
-  void Update_Palette(uint8_t *palette);
+  void Update_Palette(std::uint8_t *palette);
   const void *Get_Palette() const;
 
  protected:
@@ -381,6 +373,8 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void *PaletteSurface = nullptr;
   int RedrawTimer = 0;
 };
+
+extern GraphicBufferClass *WindowBuffer;
 
 void Do_Set_Palette(void *palette);
 
@@ -459,7 +453,7 @@ inline bool GraphicViewPortClass::Unlock(void) {
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline uint8_t *GraphicViewPortClass::Get_Offset(void) { return (Offset); }
+inline std::uint8_t *GraphicViewPortClass::Get_Offset(void) { return (Offset); }
 
 /***************************************************************************
  * GVPC::GET_HEIGHT -- Gets the height of a virtual viewport instance      *

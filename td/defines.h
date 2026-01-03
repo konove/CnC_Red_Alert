@@ -40,6 +40,11 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include <cstdint>
+
+#include "special.h"
+#include "wwstd.h"
+
 /**********************************************************************
 **	If defined, then the advanced balancing features will be enabled
 **	for this version.
@@ -2033,12 +2038,13 @@ typedef enum VocType {
   VOC_RIGHT_AWAY,  //	"right away sir"
   VOC_ROGER,       //	"roger"
                    //	VOC_SIR,				//	"sir?"
-                   //	VOC_SQUAD,			//	"squad reporting"
-                   //	VOC_PRACTICE,		//	"target practice"
-  VOC_UGOTIT,      //	"you got it"
-  VOC_UNIT,        //	"unit reporting"
-  VOC_VEHIC,       //	"vehicle reporting"
-  VOC_YESSIR,      //	"yes sir"
+                   //	VOC_SQUAD,			//	"squad
+                   // reporting" 	VOC_PRACTICE,		//	"target
+  // practice"
+  VOC_UGOTIT,  //	"you got it"
+  VOC_UNIT,    //	"unit reporting"
+  VOC_VEHIC,   //	"vehicle reporting"
+  VOC_YESSIR,  //	"yes sir"
 
   VOC_BAZOOKA,        //	Gunfire
   VOC_BLEEP,          //	Clean metal bing
@@ -2112,13 +2118,14 @@ typedef enum VocType {
                    //	VOC_EXCELLENT1,	//	"That is an excellent plan."
                    //	VOC_EXCELLENT2,	//	"Yes, that is an excellent plan."
   VOC_EXCELLENT3,  //	"A wonderful plan."
-                   //	VOC_EXCELLENT4,	//	"Asounding plan of action commander."
-                   //	VOC_EXCELLENT5,	//	"Remarkable contrivance."
+                   //	VOC_EXCELLENT4,	//	"Asounding plan of action
+                   // commander." 	VOC_EXCELLENT5,	//	"Remarkable
+                   // contrivance."
   VOC_OF_COURSE,   //	"Of course."
   VOC_YESYES,      //	"Yes yes yes."
   VOC_QUIP1,       //	"Mind the Tiberium."
-                   //	VOC_QUIP2,			//	"A most remarkable  Metasequoia
-                   //Glyptostroboides."
+                   //	VOC_QUIP2,			//	"A most
+                   // remarkable  Metasequoia Glyptostroboides."
   VOC_THANKS,      //	"Thank you."
 
   VOC_CASHTURN,  // Sound of money being piled up.
@@ -2146,10 +2153,9 @@ typedef enum VoxType : int8_t {
   VOX_DEAD_GDI,       //	GDI unit destroyed
   VOX_DEAD_NOD,       //	Nod unit destroyed
   VOX_DEAD_CIV,       //	civilian killed
-                      //	VOX_AFFIRMATIVE,					//
-  //affirmative 	VOX_NEGATIVE,						//
-  //negative 	VOX_UPGRADE_UNIT,					//	upgrade
-  //complete, new unit available 	VOX_UPGRADE_STRUCT,
+                      //	VOX_AFFIRMATIVE, //
+  // affirmative 	VOX_NEGATIVE, // negative 	VOX_UPGRADE_UNIT,
+  // //	upgrade complete, new unit available 	VOX_UPGRADE_STRUCT,
   ////	upgrade complete, new structure available
   VOX_NO_CASH,            //	insufficient funds
   VOX_CONTROL_EXIT,       //	battle control terminated
@@ -2163,15 +2169,18 @@ typedef enum VoxType : int8_t {
   VOX_INCOMING_MISSILE,   //	incoming missile
   VOX_ENEMY_PLANES,       //	enemy planes approaching
   VOX_INCOMING_NUKE,      //	nuclear warhead approaching
-                          //	VOX_RADIATION_OK,					//
-  //radiation levels are acceptable 	VOX_RADIATION_FATAL,
+                          //	VOX_RADIATION_OK,
+                          ////
+  // radiation levels are acceptable 	VOX_RADIATION_FATAL,
   ////	radiation levels are fatal
   VOX_UNABLE_TO_BUILD,    //	unable to build more
   VOX_PRIMARY_SELECTED,   //	primary building selected
-                          //	VOX_REPAIRS_COMPLETE,			//	repairs completed
+                          //	VOX_REPAIRS_COMPLETE,			//
+                          // repairs completed
   VOX_NOD_CAPTURED,       //	Nod building captured
   VOX_GDI_CAPTURED,       //	GDI building captured
-                          //	VOX_STRUCTURE_SOLD,				//	structure sold
+                          //	VOX_STRUCTURE_SOLD,				//
+                          // structure sold
   VOX_ION_CHARGING,       //	ion cannon charging
   VOX_ION_READY,          //	ion cannon ready
   VOX_NUKE_AVAILABLE,     //	nuclear weapon available
@@ -2192,39 +2201,39 @@ typedef enum VoxType : int8_t {
   VOX_GDI_STRUCTURE,      //	GDI structure destroyed
   VOX_NOD_STRUCTURE,      //	NOD structure destroyed
   VOX_ENEMY_UNIT,         // Enemy unit destroyed.
-                          //	VOX_GOLD_UNIT,						//	gold
-  //unit destroyed 	VOX_GOLD_STRUCTURE,				//	gold
-  //structure destroyed 	VOX_GOLD_ONLINE,
+                          //	VOX_GOLD_UNIT, //	gold
+  // unit destroyed 	VOX_GOLD_STRUCTURE,				//
+  // gold structure destroyed 	VOX_GOLD_ONLINE,
   ////	gold player online 	VOX_GOLD_OFFLINE,
   ////	gold player has departed 	VOX_GOLD_LOST,
   ////	gold player destroyed 	VOX_GOLD_WON,
   ////	gold player is victorious 	VOX_RED_UNIT,
-  ////	red unit destroyed 	VOX_RED_STRUCTURE,				//
-  //red structure destroyed 	VOX_RED_ONLINE,
+  ////	red unit destroyed 	VOX_RED_STRUCTURE, //
+  // red structure destroyed 	VOX_RED_ONLINE,
   ////	red player online 	VOX_RED_OFFLINE,
   ////	red player has departed 	VOX_RED_LOST,
   ////	red player destroyed 	VOX_RED_WON,
   ////	red player is victorious 	VOX_GREY_UNIT,
-  ////	grey unit destroyed 	VOX_GREY_STRUCTURE,				//
-  //grey structure destroyed 	VOX_GREY_ONLINE,
+  ////	grey unit destroyed 	VOX_GREY_STRUCTURE, //
+  // grey structure destroyed 	VOX_GREY_ONLINE,
   ////	grey player online 	VOX_GREY_OFFLINE,
   ////	grey player has departed 	VOX_GREY_LOST,
   ////	grey player destroyed 	VOX_GREY_WON,
   ////	grey player is victorious 	VOX_ORANGE_UNIT,
   ////	orange unit destroyed 	VOX_ORANGE_STRUCTURE,			//
-  //orange structure destroyed 	VOX_ORANGE_ONLINE,
+  // orange structure destroyed 	VOX_ORANGE_ONLINE,
   ////	orange player online 	VOX_ORANGE_OFFLINE,
   ////	orange player has departed 	VOX_ORANGE_LOST,
   ////	orange player destroyed 	VOX_ORANGE_WON,
   ////	orange player is victorious 	VOX_GREEN_UNIT,
   ////	green unit destroyed 	VOX_GREEN_STRUCTURE,
   ////	green structure destroyed 	VOX_GREEN_ONLINE,
-  ////	green player online 	VOX_GREEN_OFFLINE,				//
-  //green player has departed 	VOX_GREEN_LOST,
+  ////	green player online 	VOX_GREEN_OFFLINE, //
+  // green player has departed 	VOX_GREEN_LOST,
   ////	green player destroyed 	VOX_GREEN_WON,
   ////	green player is victorious 	VOX_BLUE_UNIT,
-  ////	blue unit destroyed 	VOX_BLUE_STRUCTURE,				//
-  //blue structure destroyed 	VOX_BLUE_ONLINE,
+  ////	blue unit destroyed 	VOX_BLUE_STRUCTURE, //
+  // blue structure destroyed 	VOX_BLUE_ONLINE,
   ////	blue player online 	VOX_BLUE_OFFLINE,
   ////	blue player has departed 	VOX_BLUE_LOST,
   ////	blue player destroyed 	VOX_BLUE_WON,

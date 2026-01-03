@@ -53,6 +53,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "iconcach.h"
 
 #include <filesystem>
 

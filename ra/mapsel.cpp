@@ -41,6 +41,10 @@
 
 #include "function.h"
 #include "interpal.h"
+#include "misc.h"
+#include "wsa.h"
+
+#include <audio.h>
 
 void Cycle_Call_Back_Delay(int time, PaletteClass &pal);
 extern int ControlQ;
@@ -49,8 +53,8 @@ int Mouse_Over_Spot(int house, int scenario);
 void Set_Mouse(MouseType shape, int &start, int &count, int &delay, int &xspot,
                int &yspot);
 // VG for ant mission progression
-const char *antmission[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI", "SCA03EA.INI",
-                            "SCA04EA.INI"};
+const char *antmission[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
+                            "SCA03EA.INI", "SCA04EA.INI"};
 
 struct point {
   int x;
@@ -154,8 +158,8 @@ char const *Map_Selection(void) {
   Theme.Queue_Song(THEME_MAP);
 
   void *anim = Open_Animation(
-      _filename, nullptr, 0L, (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE),
-      mappalette);
+      _filename, nullptr, 0L,
+      (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), mappalette);
 
   Keyboard->Clear();
   SeenPage.Clear();

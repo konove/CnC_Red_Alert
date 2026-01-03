@@ -38,9 +38,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "file.h"
+
 #include <filesystem>
 
 #include "function.h"
+#include "memflag.h"
+#include "misc.h"
+
+#include <audio.h>
 #ifdef WIN32
 #ifndef PORTABLE
 #include <windows.h>

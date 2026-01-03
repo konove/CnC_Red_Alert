@@ -15,6 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef CNC_RED_ALERT_SDLLIB_MODEMREG_H_
+#define CNC_RED_ALERT_SDLLIB_MODEMREG_H_
 
 class ModemRegistryEntryClass {
  public:
@@ -51,3 +53,5 @@ class ModemRegistryEntryClass {
   char *HardwareFlowControl;
   char *NoFlowControl;
 };
+
+#endif  // CNC_RED_ALERT_SDLLIB_MODEMREG_H_

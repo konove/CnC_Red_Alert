@@ -40,7 +40,10 @@
 #ifndef JSHELL_H
 #define JSHELL_H
 
+#include "timer.h"
+
 #include <cassert>
+#include <ww_mouse.h>
 
 #ifdef WIN32
 // #define getch	Get_Key_Num

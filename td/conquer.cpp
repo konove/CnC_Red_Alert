@@ -63,8 +63,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
+#include "memflag.h"
 #include "tcpip.h"
+#include "ww_audio.h"
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>

@@ -42,6 +42,7 @@
 #define EXTERNS_H
 
 #include "cell.h"
+#include "playcd.h"
 
 #ifdef SCENARIO_EDITOR
 #include "mapedit.h"

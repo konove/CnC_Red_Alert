@@ -69,6 +69,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
+
+#include <audio.h>
 #include <filesystem>
 #include <format>
 #ifdef TESTCODE

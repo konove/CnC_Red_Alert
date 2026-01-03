@@ -41,8 +41,6 @@
 #ifndef CCFILE_H
 #define CCFILE_H
 
-#include <wwlib32.h>
-#include <climits>
 #include "mixfile.h"
 #include "cdfile.h"
 

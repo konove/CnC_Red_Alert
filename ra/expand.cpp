@@ -38,6 +38,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "misc.h"
 
 #ifdef FIXIT_VERSION_3
 #include "wolstrng.h"

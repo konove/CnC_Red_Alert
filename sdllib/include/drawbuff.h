@@ -19,10 +19,8 @@
 #ifndef DRAWBUFF_H
 #define DRAWBUFF_H
 
-#include "wwstd.h"
-
 class GraphicViewPortClass;
-class GraphicBufferClass;
+
 /*=========================================================================*/
 /* Define functions which have not under-gone name mangling
  */

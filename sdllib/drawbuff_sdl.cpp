@@ -1,6 +1,14 @@
-#include "gbuffer.h"
+#include <SDL_events.h>
+#include <SDL_pixels.h>
+#include <SDL_render.h>
+#include <SDL_stdinc.h>
+#include <SDL_surface.h>
+#include <SDL_timer.h>
 
-#include <SDL.h>
+#include <cstdint>
+
+#include "gbuffer.h"
+#include "ww_win.h"
 
 extern SDL_Renderer *SDLRenderer;
 

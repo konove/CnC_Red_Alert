@@ -49,6 +49,9 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "iconcach.h"
+#include "memflag.h"
+#include "tile.h"
 
 #include <filesystem>
 

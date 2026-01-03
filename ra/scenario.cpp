@@ -64,11 +64,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
 
 #include <algorithm>
 
 #include "graphics_loader.h"
+
+#include <audio.h>
 
 #ifdef WIN32
 #include "tcpip.h"

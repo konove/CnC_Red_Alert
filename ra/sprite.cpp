@@ -28,6 +28,8 @@
 
 **********************************************************************/
 
+#include "gbuffer.h"
+
 #ifndef WIN32
 class BitmapClass {
  public:
@@ -48,15 +50,6 @@ class TPoint2D {
   int y;
 };
 #endif
-
-// #include	"function.h"
-#define FILE_H
-#define RAWFILE_H
-#define WWMEM_H
-#define WWFILE_Hx
-#include <wwlib32.h>
-// #include "gbuffer.h"
-// #include "math.h"
 
 long _SineTab[256] = {
     0,    6,    12,   18,   25,   31,   37,   43,   49,   56,   62,   68,

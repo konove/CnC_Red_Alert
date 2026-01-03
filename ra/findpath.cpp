@@ -53,6 +53,8 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "memflag.h"
+
 #include <algorithm>
 // #include	<string.h>
 

@@ -61,9 +61,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "file.h"
+#include "font.h"
 #include "function.h"
 #include "graphics_loader.h"
 #include "loaddlg.h"
+#include "misc.h"
+
+#include <audio.h>
 #ifdef WIN32
 #ifdef WINSOCK_IPX
 #include "wsproto.h"

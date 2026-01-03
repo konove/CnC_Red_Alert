@@ -43,8 +43,7 @@
  *- - */
 
 #include "function.h"
-
-// #include "WolDebug.h"
+#include "misc.h"
 
 #ifdef WINSOCK_IPX
 #include "wsproto.h"
@@ -595,7 +594,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
   if (!send_file.Is_Available()) {
     // WWDebugString ("RA95 - Error - could not find file to send to client\n");
     //		debugprint("RA95 - Error - could not find file to send to
-    //client\n");
+    // client\n");
     return (false);
   }
   file_length = send_file.Size();
@@ -643,13 +642,13 @@ bool Send_Remote_File(char *file_name, int gametype) {
     if (Is_Mission_Aftermath(file_name)) {
       strcpy(&file_info.ScenarioInfo.ShortFileName[0], "DOWNLOAD.TMP");
       //	There was a bug here: s/b net_file_info. This means that players
-      //that don't have Aftermath could have been 	accumulating Aftermath maps
-      //all this time!!! (File wasn't getting renamed to "DOWNLOAD.TMP".)
+      // that don't have Aftermath could have been 	accumulating Aftermath
+      // maps all this time!!! (File wasn't getting renamed to "DOWNLOAD.TMP".)
     }
 #endif
 #endif
     //		debugprint( "ShortFileName is '%s'\n",
-    //net_file_info.ScenarioInfo.ShortFileName );
+    // net_file_info.ScenarioInfo.ShortFileName );
     net_file_info.ScenarioInfo.FileLength = file_length;
 
     for (int i = 0; i < Session.RequestCount; i++) {

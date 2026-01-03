@@ -55,6 +55,7 @@
 #include "function.h"
 #include "theme.h"
 
+#include <audio.h>
 #include <filesystem>
 
 #ifndef WIN32

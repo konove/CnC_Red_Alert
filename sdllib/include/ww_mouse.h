@@ -36,6 +36,8 @@
 #ifndef WW_MOUSE_H
 #define WW_MOUSE_H
 
+#include <cstdint>
+
 #include "gbuffer.h"
 
 class WWMouseClass {

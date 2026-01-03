@@ -82,6 +82,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
 
 #define FIXUP 0

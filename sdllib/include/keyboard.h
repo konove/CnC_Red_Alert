@@ -36,8 +36,6 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include "wwstd.h"
-
 union SDL_Event;
 
 typedef enum {

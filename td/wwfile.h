@@ -38,10 +38,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef WWFILE_H
-#define WWFILE_H
-
-// #include	<stdio.h>
+#ifndef CNC_RED_ALERT_RA_WWFILE_H_
+#define CNC_RED_ALERT_RA_WWFILE_H_
 
 #ifndef READ
 #define READ _READ
@@ -52,7 +50,7 @@
 
 class FileClass {
  public:
-  virtual ~FileClass(void){};
+  virtual ~FileClass(void) {};
   virtual char const *File_Name(void) const = 0;
   virtual char const *Set_Name(char const *filename) = 0;
   virtual int Create(void) = 0;
@@ -70,4 +68,4 @@ class FileClass {
   operator char const *() { return File_Name(); };
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_WWFILE_H_

@@ -1,5 +1,8 @@
-#include <SDL.h>
 #include "timer.h"
+
+#include <SDL.h>
+#include <SDL_stdinc.h>
+#include <SDL_timer.h>
 
 bool TimerSystemOn = false;
 

@@ -1,27 +1,18 @@
-add_library(sdllib STATIC
-    audio.cpp
-    buffer.cpp
-    dipthong.cpp
-    drawbuff.cpp
-    drawbuff_sdl.cpp
-    file.cpp
-    font.cpp
-    iconcach.cpp
-    iff.cpp
-    keyboard.cpp
-    mem.cpp
-    misc.cpp
-    mouse.cpp
-    net_select.cpp
-    palette.cpp
-    playcd.cpp
-    shape.cpp
-    timer.cpp
-    wincomm.cpp
-    window.cpp
-    wsa.cpp
+add_library(sdllib STATIC)
+
+file(GLOB_RECURSE SDLLIB_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+
+file(GLOB_RECURSE SDLLIB_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+
+target_sources(sdllib PRIVATE
+        ${SDLLIB_SOURCES}
 )
-target_include_directories(sdllib PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+
+target_sources(sdllib PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_CURRENT_LIST_DIR}/include
+        FILES ${SDLLIB_HEADERS}
+)
 
 # somewhere in the SDL headers, this ends up enabling __WIN32__ and then it tries to include windows headers
 target_compile_options(sdllib PRIVATE -UWIN32)
@@ -40,7 +31,7 @@ if (LIBSERIALPORT_LIBRARIES AND LIBSERIALPORT_INCLUDE_DIR)
     target_compile_definitions(sdllib PRIVATE LIBSERIALPORT)
     target_include_directories(sdllib PRIVATE ${LIBSERIALPORT_INCLUDE_DIR})
     target_link_libraries(sdllib ${LIBSERIALPORT_LIBRARIES})
-endif()
+endif ()
 
 # Enable IWYU for all targets in this directory
 enable_iwyu_for_all_targets()

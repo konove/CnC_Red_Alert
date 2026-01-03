@@ -68,7 +68,7 @@ add_executable(rasdl WIN32
         adata.cpp
         aircraft.cpp
         anim.cpp
-        audio.cpp
+        ww_audio.cpp
         bar.cpp
         base.cpp
         bbdata.cpp

@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef WINDOWS_H
-#define WINDOWS_H
+#ifndef CNC_RED_ALERT_SDLLIB_WW_WIN_H_
+#define CNC_RED_ALERT_SDLLIB_WW_WIN_H_
 
 union SDL_Event;
 
@@ -86,4 +86,4 @@ extern char *TXT_MoreText;
 
 extern void (*Window_More_Ptr)(char const *, int, int, int);
 
-#endif  // WINDOWS_H
+#endif  // CNC_RED_ALERT_SDLLIB_WW_WIN_H_

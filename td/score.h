@@ -41,8 +41,7 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-#include "unit.h"
-#include "building.h"
+#include "wwstd.h"
 
 class ScoreClass {
  public:
@@ -94,7 +93,7 @@ class ScoreAnimClass {
   CountDownTimerClass Timer;
   void const *DataPtr;
   virtual void Update(void) {};
-  virtual ~ScoreAnimClass(void){};
+  virtual ~ScoreAnimClass(void) {};
 };
 
 class ScoreCredsClass : public ScoreAnimClass {
@@ -107,7 +106,7 @@ class ScoreCredsClass : public ScoreAnimClass {
 
   virtual void Update(void);
   ScoreCredsClass(int xpos, int ypos, void const *data, int max, int timer);
-  virtual ~ScoreCredsClass(void){};
+  virtual ~ScoreCredsClass(void) {};
 };
 
 class ScoreTimeClass : public ScoreAnimClass {
@@ -117,7 +116,7 @@ class ScoreTimeClass : public ScoreAnimClass {
   int TimerReset;
   virtual void Update(void);
   ScoreTimeClass(int xpos, int ypos, void const *data, int max, int timer);
-  virtual ~ScoreTimeClass(void){};
+  virtual ~ScoreTimeClass(void) {};
 };
 
 class ScorePrintClass : public ScoreAnimClass {
@@ -130,7 +129,7 @@ class ScorePrintClass : public ScoreAnimClass {
                   int background = TBLACK);
   ScorePrintClass(int string, int xpos, int ypos, void const *palette,
                   int background = TBLACK);
-  virtual ~ScorePrintClass(void){};
+  virtual ~ScorePrintClass(void) {};
 };
 
 class MultiStagePrintClass : public ScoreAnimClass {
@@ -143,7 +142,7 @@ class MultiStagePrintClass : public ScoreAnimClass {
                        void const *palette, int background = TBLACK);
   MultiStagePrintClass(int string, int xpos, int ypos, void const *palette,
                        int background = TBLACK);
-  virtual ~MultiStagePrintClass(void){};
+  virtual ~MultiStagePrintClass(void) {};
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
@@ -153,7 +152,7 @@ class ScoreScaleClass : public ScoreAnimClass {
   virtual void Update(void);
   ScoreScaleClass(void const *data, int xpos, int ypos,
                   unsigned char const pal[]);
-  virtual ~ScoreScaleClass(void){};
+  virtual ~ScoreScaleClass(void) {};
 };
 
 #define MAXSCOREOBJS 8

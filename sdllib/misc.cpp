@@ -1,8 +1,9 @@
-#include <cstdio>
+#include "misc.h"
+
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 
-#include "misc.h"
 #include "timer.h"
 #include "ww_win.h"
 

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MOUSE_H
-#define MOUSE_H
+#ifndef CNC_RED_ALERT_RA_MOUSE_H_
+#define CNC_RED_ALERT_RA_MOUSE_H_
 
 #include "stage.h"
 #include "scroll.h"
@@ -46,7 +46,7 @@
 class MouseClass : public ScrollClass {
  public:
   MouseClass(void);
-  MouseClass(NoInitClass const &x) : ScrollClass(x){};
+  MouseClass(NoInitClass const &x) : ScrollClass(x) {};
 
   /*
   ** Initialization
@@ -122,4 +122,4 @@ class MouseClass : public ScrollClass {
   int Frame;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_MOUSE_H_

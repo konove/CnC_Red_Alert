@@ -1,6 +1,15 @@
-#include <SDL.h>
+#include "ww_mouse.h"
 
-#include "mouse.h"
+#include <SDL_events.h>
+#include <SDL_mouse.h>
+#include <SDL_pixels.h>
+#include <SDL_stdinc.h>
+#include <SDL_surface.h>
+#include <SDL_video.h>
+
+#include <cstdio>
+
+#include "gbuffer.h"
 #include "iff.h"
 #include "shape.h"
 

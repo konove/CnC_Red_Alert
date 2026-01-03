@@ -123,8 +123,9 @@ UnitTypeClass      │   BuildingTypeClass      │  VesselTypeClass
            AircraftTypeClass          InfantryTypeClass
 */
 
-#include "watcom.h"
+#include "iff.h"
 #include "lint.h"
+#include "shape.h"
 
 #ifdef WIN32
 #ifdef _WIN32

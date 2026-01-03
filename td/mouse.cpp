@@ -47,6 +47,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "timer.h"
 
 /*
 **	This points to the loaded mouse shapes.

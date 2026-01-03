@@ -39,6 +39,8 @@
 
 #include "function.h"
 
+#include <audio.h>
+
 VQAHandle* Open_Movie(char* name);
 VQAHandle* Open_Movie(char* name) {
   if (!Debug_Quiet && Get_Digi_Handle() != -1) {
@@ -71,7 +73,7 @@ VQAHandle* Open_Movie(char* name) {
  * HISTORY: * 5/08/1995 BWG : Created. *
  *=============================================================================================*/
 void Choose_Side(void)  //	ajw - In RA, all this did was play a movie.
-                        //Denzil is using it in its original sense.
+                        // Denzil is using it in its original sense.
 {
   Whom = HOUSE_GOOD;
 

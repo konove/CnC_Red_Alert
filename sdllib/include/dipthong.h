@@ -15,5 +15,9 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
+#define CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
 
 char *Extract_String(void const *data, int string);
+
+#endif  // CNC_RED_ALERT_SDLLIB_DIPTHONG_H_

@@ -24,7 +24,10 @@
 
 #include "graphics_loader.h"
 #include "function.h"
+#include "iconcach.h"
 #include "interpal.h"
+
+#include <audio.h>
 
 void output(short, short) {}
 

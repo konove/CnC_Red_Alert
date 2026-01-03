@@ -54,6 +54,7 @@
  *   MessageListClass::Reset -- Reset so no messages are visible.          *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "font.h"
 #include "function.h"
 
 /**************************** Globals **************************************/
@@ -334,7 +335,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
 
   //------------------------------------------------------------------------
   //	Check that printing this wont overrun the width of the print area on
-  //screen
+  // screen
   //------------------------------------------------------------------------
 
   print_this_pass = 0;
@@ -343,7 +344,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
     //	Bugger. Its too long. Loop through and find out how many chars we can
-    //print
+    // print
     //------------------------------------------------------------------------
     if (name) {
       sprintf(temp, "%s:", name);

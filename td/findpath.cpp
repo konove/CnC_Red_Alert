@@ -54,6 +54,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "memflag.h"
 // #include	<string.h>
 
 /*
@@ -738,7 +739,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
                         threat, threat_stage, sizeof(moves_left), threshhold);
         //				left = Follow_Edge(startcell, next,
         //&pleft, COUNTERCLOCK, direction, threat, threat_stage, follow_len,
-        //threshhold);
+        // threshhold);
 
         if (left) {
           follow_len = MIN(maxlen, pleft.Length + (pleft.Length >> 1));
@@ -769,7 +770,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
                             threat_stage, sizeof(moves_right), threshhold);
         //				right = Follow_Edge(startcell, next,
         //&pright, CLOCK, direction, threat, threat_stage, follow_len,
-        //threshhold);
+        // threshhold);
 
         /*
         ** If we are in debug mode then let us know how well our right path
@@ -1135,7 +1136,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType *path,
         //				DrawPath = true;
         //				Debug_Find_Path = true;
         //				Debug_Draw_Map("Loop failure", start,
-        //target, false); 				Debug_Draw_Path(path);
+        // target, false); 				Debug_Draw_Path(path);
         return (false);
       }
     }

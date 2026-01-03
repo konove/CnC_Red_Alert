@@ -38,16 +38,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MOUSE_H
-#define MOUSE_H
+#ifndef CNC_RED_ALERT_TD_MOUSE_H_
+#define CNC_RED_ALERT_TD_MOUSE_H_
 
 #include "stage.h"
 #include "scroll.h"
+#include "timer.h"
 
 class MouseClass : public ScrollClass {
  public:
   MouseClass(void);
-  MouseClass(NoInitClass const &x) : ScrollClass(x){};
+  MouseClass(NoInitClass const &x) : ScrollClass(x) {};
 
   /*
   ** Initialization
@@ -129,4 +130,4 @@ class MouseClass : public ScrollClass {
   static void *VTable;
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TD_MOUSE_H_

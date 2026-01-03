@@ -40,6 +40,10 @@
 
 #ifndef FUNCTION_H
 #define FUNCTION_H
+#include "dipthong.h"
+#include "iff.h"
+#include "shape.h"
+#include "misc.h"
 
 /*
 Map (screen) class heirarchy.
@@ -126,8 +130,6 @@ UnitTypeClass      │   BuildingTypeClass      │
 */
 #define NOMEMCHECK
 
-#include "watcom.h"
-
 /**********************************************************************
 **	This class is solely used as a parameter to a constructor that does
 **	absolutely no initialization to the object being constructed. By using
@@ -151,7 +153,11 @@ struct NoInitClass {
 
 #define WWMEM_H
 #include "compat.h"
-#include <wwlib32.h>
+#include "font.h"
+#include "wsa.h"
+#include "ww_audio.h"
+#include "memflag.h"
+#include "file.h"
 #include "jshell.h"
 
 // Should be part of WWLIB.H. This is used in JSHELL.CPP.
@@ -194,14 +200,11 @@ extern long LParam;
 #include "ccfile.h"
 #include "monoc.h"
 #include "conquer.h"
-// #include	"debug.h"
 #include "special.h"
 #include "defines.h"
 
 #ifndef PORTABLE
-/*
-**	Greenleaf specific includes.
-*/
+// Greenleaf specific includes.
 #include <modem.h>
 #include <fast.h>
 #endif

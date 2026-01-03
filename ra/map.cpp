@@ -68,6 +68,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "memflag.h"
 
 #include <algorithm>
 

@@ -40,6 +40,8 @@
 
 #include "function.h"
 #include "msgbox.h"
+
+#include "font.h"
 #include "gadget.h"
 #include <algorithm>
 

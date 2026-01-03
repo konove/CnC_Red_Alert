@@ -33,9 +33,10 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#ifndef CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
+#define CNC_RED_ALERT_SDLLIB_WW_AUDIO_H_
 
 #include <cstdint>
-#include "wwstd.h"
 
 /*=========================================================================*/
 /* AUD file header type
@@ -122,3 +123,5 @@ extern SFX_Type SoundType;
 extern Sample_Type SampleType;
 
 extern int StreamLowImpact;
+
+#endif  // CNC_RED_ALERT_SDLLIB_AUDIO_H_

@@ -1,17 +1,19 @@
+#include "file.h"
+
+#include <cctype>
+#include <cstdint>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <cstdlib>
-#include <cstring>
-#include <cctype>
 #include <glob.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <unistd.h>
 #endif
-
-#include "file.h"
 
 void *IO_Open_File(const char *filename, int mode) {
   const char *mode_str;

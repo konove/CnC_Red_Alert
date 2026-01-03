@@ -55,6 +55,7 @@
 #include "function.h"
 #include "tcpip.h"
 #include "ccdde.h"
+#include "misc.h"
 
 extern bool SpawnedFromWChat;
 

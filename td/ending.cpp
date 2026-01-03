@@ -38,9 +38,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
 #include "textblit.h"
 #include "interpal.h"
+#include "ww_audio.h"
 
 void GDI_Ending(void) {
 #ifdef DEMO
@@ -142,8 +144,8 @@ void Nod_Ending(void) {
 #ifndef LORES
   PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
 #endif
-  TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)nullptr);
+  TextPrintBuffer = new GraphicBufferClass(
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
   SeenBuff.Clear();

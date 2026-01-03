@@ -89,7 +89,9 @@
  *object on the map.                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "font.h"
 #include "function.h"
+#include "memflag.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -1201,8 +1203,8 @@ void DisplayClass::Read_INI(char *buffer) {
     /*
     **	Get a cell trigger assignment.
     */
-    WWGetPrivateProfileString(trigsection, tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(trigsection, tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
 
     /*
     **	Get cell # from entry name.

@@ -42,6 +42,8 @@
 #include "function.h"
 #include "confdlg.h"
 
+#include "font.h"
+
 bool ConfirmationClass::Process(int text) {
   return (Process(Text_String(text)));
 }

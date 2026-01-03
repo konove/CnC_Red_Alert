@@ -48,6 +48,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
 
 /***********************************************************************************************
@@ -305,9 +306,9 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  *=============================================================================================*/
 void Simple_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
                        unsigned back, TextPrintType flag) {
-  static int yspace = 0;  // Y spacing adjustment for font.
-  static int xspace = 0;  // Spacing adjustment for font.
-  void const *font = nullptr;   // Font to use.
+  static int yspace = 0;       // Y spacing adjustment for font.
+  static int xspace = 0;       // Spacing adjustment for font.
+  void const *font = nullptr;  // Font to use.
 
   ////////////////#if (0)
   static unsigned char _textfontpal[16][16] = {

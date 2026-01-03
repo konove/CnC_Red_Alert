@@ -1,13 +1,13 @@
+#include "wincomm.h"
+
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
+
+#include "modemreg.h"
 
 #ifdef LIBSERIALPORT
 #include <libserialport.h>
 #endif
-
-#include "wincomm.h"
-#include "modemreg.h"
 
 WinModemClass *SerialPort = nullptr;
 

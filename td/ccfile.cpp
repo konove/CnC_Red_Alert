@@ -51,6 +51,8 @@
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
+#include "memflag.h"
+
 #include <cerrno>
 // #include	<share.h>
 // #include	"ccfile.h"

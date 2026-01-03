@@ -1,6 +1,7 @@
-#include <algorithm>
-
 #include "font.h"
+
+#include <algorithm>
+#include <cstdint>
 
 int FontXSpacing;
 int FontYSpacing;

@@ -1,12 +1,16 @@
+#include "ww_audio.h"
+
+#include <SDL_audio.h>
+#include <SDL_error.h>
+#include <SDL_stdinc.h>
+
 #include <algorithm>
-#include <cassert>
+#include <cstdio>
 #include <cstring>
 
-#include <SDL.h>
-
-#include "audio.h"
 #include "file.h"
 #include "memflag.h"
+#include "wwstd.h"
 
 // original code has 5 for windows, 4 for dos
 // effectively one less as one is used to track streaming from disk

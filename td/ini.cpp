@@ -51,6 +51,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "memflag.h"
 
 /************************************* Prototypes
  * *********************************************/
@@ -353,7 +354,7 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
   **	Must be done before any TechnoClass objects are created.
   */
   //	if (GameToPlay == GAME_NORMAL && (ScenPlayer == SCEN_PLAYER_GDI ||
-  //ScenPlayer == SCEN_PLAYER_NOD)) {
+  // ScenPlayer == SCEN_PLAYER_NOD)) {
   if (GameToPlay == GAME_NORMAL) {
     WWGetPrivateProfileString("Basic", "Player", "GoodGuy", buf, 127, buffer);
     CarryOverPercent =

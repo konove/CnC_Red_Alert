@@ -50,6 +50,7 @@
 #include "textbtn.h"
 #include "confdlg.h"
 #include "descdlg.h"
+#include "font.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution(void) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;

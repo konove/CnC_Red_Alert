@@ -46,6 +46,7 @@
 
 #include "interpal.h"
 #include "function.h"
+#include "misc.h"
 
 #ifndef LORES
 

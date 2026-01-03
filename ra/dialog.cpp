@@ -51,6 +51,7 @@
 #include "function.h"
 
 #include "defines.h"  //VG 10/17/96
+#include "font.h"
 
 unsigned char *Font_Palette(int color);
 

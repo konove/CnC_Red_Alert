@@ -43,7 +43,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "file.h"
 #include "function.h"
+#include "misc.h"
+
 #include <filesystem>
 #include <charconv>
 

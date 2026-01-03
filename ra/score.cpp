@@ -48,6 +48,10 @@
  *   ScoreClass::Pulse_Bar_Graph -- Pulses the bargraph color. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "font.h"
+#include "wsa.h"
+
+#include <audio.h>
 #ifndef WIN32
 extern short StreamLowImpact;
 #endif
@@ -162,7 +166,8 @@ void ScoreTimeClass::Update(void) {
     if (++Stage >= MaxStage) Stage = 0;
     oldpage = LogicPage;
     Set_Logic_Page(SeenBuff);
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
+                  nullptr, nullptr);
 #ifdef SEENBUF_COPY
     Set_Logic_Page(*PseudoSeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
@@ -197,7 +202,8 @@ void ScoreCredsClass::Update(void) {
 #else
     Play_Sample(Clock1, 255, Options.Normalize_Volume(50));
 #endif
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
+                  nullptr, nullptr);
 #ifdef SEENBUF_COPY
     Set_Logic_Page(*PseudoSeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, 0, 0);
@@ -1123,7 +1129,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(HidPage);
   HidPage.Fill_Rect(0, 0, 124 * RESFACTOR, 9 * RESFACTOR, TBLACK);
-  CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+  CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
+                nullptr);
   Set_Logic_Page(SeenBuff);
 #ifdef WIN32
   Set_Font_Palette(house ? _redpal : _bluepal);

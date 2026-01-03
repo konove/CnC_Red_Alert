@@ -76,6 +76,7 @@
  *- - - - - - - */
 
 #include "function.h"
+#include "misc.h"
 
 #include <algorithm>
 
@@ -1688,10 +1689,10 @@ void RadarClass::AI(KeyNumType &input, int x, int y) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType &key) {
-  CELL cell;                // cell num click happened over
-  int x, y;                 // Sub cell pixel coordinates.
-  int cellx, celly;         // Sub cell pixel coordinates.
-  bool shadow;              // is the cell in shadow or not
+  CELL cell;                      // cell num click happened over
+  int x, y;                       // Sub cell pixel coordinates.
+  int cellx, celly;               // Sub cell pixel coordinates.
+  bool shadow;                    // is the cell in shadow or not
   ObjectClass *object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.

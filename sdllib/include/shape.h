@@ -34,7 +34,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "gbuffer.h"
+#include <cstdint>
 
 /*
 *********************************** Types ***********************************

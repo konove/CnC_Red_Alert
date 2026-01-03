@@ -38,9 +38,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
 #include "textblit.h"
 #include "interpal.h"
+#include "memflag.h"
+#include "wsa.h"
+#include "ww_audio.h"
 
 #ifndef DEMO
 
@@ -113,8 +117,8 @@ void Choose_Side(void) {
   GlobalMemoryStatus(&mem_info);
 #endif
 
-  TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)nullptr);
+  TextPrintBuffer = new GraphicBufferClass(
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
 #ifndef LORES

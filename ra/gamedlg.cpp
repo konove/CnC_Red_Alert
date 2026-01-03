@@ -40,8 +40,12 @@
 
 #include "function.h"
 #include "gamedlg.h"
+
+#include "misc.h"
 #include "sounddlg.h"
 #include "visudlg.h"
+
+#include <audio.h>
 #define GERMAN_OFFSET_Y 4  // VG
 
 #ifdef WOLAPI_INTEGRATION

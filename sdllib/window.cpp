@@ -1,10 +1,14 @@
+#include <SDL.h>
+#include <SDL_events.h>
+#include <SDL_render.h>
+#include <SDL_stdinc.h>
+#include <SDL_video.h>
+
 #include <cstdio>
 
-#include <SDL.h>
-
-#include "ww_win.h"
-#include "net_select.h"
 #include "gbuffer.h"
+#include "net_select.h"
+#include "ww_win.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>

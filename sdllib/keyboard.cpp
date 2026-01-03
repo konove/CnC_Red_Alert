@@ -1,8 +1,14 @@
-#include <cstring>
-#include <SDL.h>
-
 #include "keyboard.h"
-#include "mouse.h"
+
+#include <SDL_events.h>
+#include <SDL_keyboard.h>
+#include <SDL_keycode.h>
+#include <SDL_mouse.h>
+#include <SDL_scancode.h>
+
+#include <cstring>
+
+#include "ww_mouse.h"
 #include "ww_win.h"
 
 WWKeyboardClass::WWKeyboardClass() : MouseQX(0), MouseQY(0), Head(0), Tail(0) {

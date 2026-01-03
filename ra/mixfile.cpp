@@ -55,6 +55,8 @@
 #include <filesystem>
 
 #include "cdfile.h"
+#include "misc.h"
+
 extern MFCD temp;
 
 // template<class T> int Compare(T const *obj1, T const *obj2) {

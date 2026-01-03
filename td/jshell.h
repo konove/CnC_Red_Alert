@@ -42,6 +42,7 @@
 #define JSHELL_H
 
 #include <cstdint>
+#include <ww_mouse.h>
 
 /*
 **	Interface class to the keyboard. This insulates the game from library

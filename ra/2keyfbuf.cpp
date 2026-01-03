@@ -1,9 +1,13 @@
 // re-implemented from assembly in 2keyfbuf.asm
+#include "gbuffer.h"
+
 #include <cstdarg>
 #include <cstdint>
 #include <cstring>
 
 #include "shape.h"
+
+#include <cstdio>
 
 // should match 2keyfram.cpp
 struct ShapeHeaderType {

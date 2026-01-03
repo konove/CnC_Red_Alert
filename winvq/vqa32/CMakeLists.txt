@@ -1,15 +1,19 @@
-add_library(vqa32 STATIC
-    audio.cpp
-    config.cpp
-    drawer.cpp
-    dstream.cpp
-    loader.cpp
-    task.cpp
-    unvqbuff.cpp
-    vqmstub.cpp
+add_library(vqa32 STATIC)
+
+file(GLOB_RECURSE VQA32_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+
+file(GLOB_RECURSE VQA32_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+target_sources(vqa32 PRIVATE
+        ${VQA32_SOURCES}
 )
 
-target_include_directories(vqa32 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/..)
+target_sources(vqa32 PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_CURRENT_LIST_DIR}/..
+        FILES ${VQA32_HEADERS}
+)
+
 target_link_libraries(vqa32 PRIVATE port)
 
 find_package(SDL2 REQUIRED)

@@ -43,6 +43,8 @@
  *                                                                                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#ifndef CNC_RED_ALERT_SDLLIB_WINCOMM_H_
+#define CNC_RED_ALERT_SDLLIB_WINCOMM_H_
 
 typedef enum WinCommDialMethodType {
   WC_TOUCH_TONE = 0,
@@ -242,3 +244,5 @@ class WinNullModemClass : public WinModemClass {
 };
 
 extern WinModemClass *SerialPort;
+
+#endif  // CNC_RED_ALERT_SDLLIB_WINCOMM_H_

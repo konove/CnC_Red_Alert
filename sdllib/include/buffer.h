@@ -42,8 +42,6 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#include "wwstd.h"
-
 class GraphicViewPortClass;
 
 /*=========================================================================*/

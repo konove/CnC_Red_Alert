@@ -51,7 +51,9 @@
  *   NullModemClass::Hangup_Modem -- hangs up the modem                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "font.h"
 #include "function.h"
+#include "misc.h"
 
 #include <algorithm>
 

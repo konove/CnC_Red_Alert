@@ -100,7 +100,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "font.h"
 #include "function.h"
+#include "misc.h"
 #include "vortex.h"
 #include <algorithm>
 

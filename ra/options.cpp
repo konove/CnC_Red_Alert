@@ -70,6 +70,8 @@
 #include "function.h"
 #include "options.h"
 
+#include <audio.h>
+
 #ifdef WIN32
 char const* const OptionsClass::HotkeyName = "WinHotkeys";
 #else

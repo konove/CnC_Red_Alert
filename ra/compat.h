@@ -64,6 +64,7 @@
 */
 #define READ 1   // Read access.
 #define WRITE 2  // Write access.
+#include "tile.h"
 
 #ifndef SEEK_SET
 #define SEEK_SET 0  // Seek from start of file.
@@ -155,7 +156,7 @@ typedef struct {
   long ColorMap;   // Offset for color control value table.
   long Map;        // Icon map offset (if present).
   //	unsigned char * Map;				// Icon map offset (if
-  //present).
+  // present).
 } IControl_Type;
 #endif
 

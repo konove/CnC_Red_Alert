@@ -44,6 +44,8 @@
 
 #include "function.h"
 
+#include "ww_audio.h"
+
 #include <filesystem>
 
 /***************************************************************************
