@@ -1,4 +1,5 @@
 #include <cstdint>
+
 #include "sdllib/include/gbuffer.h"
 
 #ifndef LORES
@@ -21,7 +22,6 @@ extern "C" void Asm_Interpolate(unsigned char *src_ptr, unsigned char *dest_ptr,
   auto interp_table_flat = (uint8_t *)PaletteInterpolationTable;
 
   do {
-    int width_counter = 0;
     int pixel_count =
         (src_width - 2) /
         2;  // we copy two at a time, so this isn't actually a pixel count
@@ -65,7 +65,6 @@ extern "C" void Asm_Interpolate_Line_Double(unsigned char *src_ptr,
   auto interp_table_flat = (uint8_t *)PaletteInterpolationTable;
 
   do {
-    int width_counter = 0;
     int pixel_count =
         (src_width - 2) /
         2;  // we copy two at a time, so this isn't actually a pixel count

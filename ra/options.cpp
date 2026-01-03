@@ -488,7 +488,7 @@ void OptionsClass::Adjust_Palette(PaletteClass const& oldpal,
       **	Convert the working palette entry into an HSV format for
       **	manipulation.
       */
-      HSVClass hsv = oldpal[index];
+      HSVClass hsv = oldpal[index].ToHSV();
 
       /*
       **	Adjust contrast by moving the value toward the center according

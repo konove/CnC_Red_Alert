@@ -41,9 +41,11 @@
  *- - - - - - - */
 
 #include "ra/lcwpipe.h"
-#include "ra/lcw.h"
-#include <cstring>
+
 #include <cassert>
+#include <cstring>
+
+#include "ra/lcw.h"
 
 /***********************************************************************************************
  * LCWPipe::LCWPipe -- Constructor for the LCW processor pipe. *

@@ -40,9 +40,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/watcom.h"
 #include "ra/hsv.h"
+
 #include "ra/rgb.h"
+#include "ra/watcom.h"
 
 HSVClass const HSVClass::BlackColor(0, 0, 0);
 
@@ -176,23 +177,4 @@ HSVClass::operator RGBClass(void) const {
   green = values[i];
 
   return (RGBClass(red, green, blue));
-}
-
-/***********************************************************************************************
- * HSVClass::Set -- Set the palette for this color object. *
- *                                                                                             *
- *    The palette will be set for this color object. Use this routine to set an
- *arbitrary      * color index with the HSVClass object. *
- *                                                                                             *
- * INPUT:   color -- The color index to change. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/20/1996 JLB : Created. *
- *=============================================================================================*/
-void HSVClass::Set(int color) const {
-  RGBClass rgb = *this;
-  rgb.Set(color);
 }

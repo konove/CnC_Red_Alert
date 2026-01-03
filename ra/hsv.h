@@ -53,9 +53,9 @@ class HSVClass {
   static HSVClass const BlackColor;
 
  public:
-  HSVClass(void) : Hue(0), Saturation(0), Value(0){};
+  HSVClass(void) : Hue(0), Saturation(0), Value(0) {};
   HSVClass(unsigned char hue, unsigned char saturation, unsigned char value)
-      : Hue(hue), Saturation(saturation), Value(value){};
+      : Hue(hue), Saturation(saturation), Value(value) {};
   operator RGBClass(void) const;
 
   enum { MAX_VALUE = 255 };
@@ -65,7 +65,6 @@ class HSVClass {
   int Hue_Component(void) const { return (Hue); };
   int Saturation_Component(void) const { return (Saturation); };
   int Value_Component(void) const { return (Value); };
-  void Set(int color) const;
 
  private:
   unsigned char Hue;

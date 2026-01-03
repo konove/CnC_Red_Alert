@@ -176,6 +176,9 @@ class CellClass {
   CellClass(void);
   ~CellClass(void){};
 
+  // Resets the cell to its default initial state.
+  void Reset(void);
+
   int operator==(CellClass const &cell) const { return &cell == this; };
 
   /*

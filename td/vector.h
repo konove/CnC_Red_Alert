@@ -80,8 +80,8 @@ class VectorClass {
   VectorClass(VectorClass<T> const &);  // Copy constructor.
   virtual ~VectorClass(void);
 
-  T &operator[](unsigned index) { return (Vector[index]); };
-  T const &operator[](unsigned index) const { return (Vector[index]); };
+  T &operator[](size_t index) { return (Vector[index]); };
+  T const &operator[](size_t index) const { return (Vector[index]); };
   virtual VectorClass<T> &operator=(
       VectorClass<T> const &);                           // Assignment operator.
   virtual int operator==(VectorClass<T> const &) const;  // Equality operator.

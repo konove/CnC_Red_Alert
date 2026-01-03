@@ -1,139 +1,84 @@
-/*
-**	Command & Conquer Red Alert(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Command & Conquer Red Alert(tm)
+// Copyright 2025 Electronic Arts Inc.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/* $Header: /CounterStrike/RGB.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : RGB.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 12/02/95 *
- *                                                                                             *
- *                  Last Update : December 2, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+#ifndef CNC_RED_ALERT_RA_RGB_H_
+#define CNC_RED_ALERT_RA_RGB_H_
 
-#ifndef RGB_H
-#define RGB_H
+#include <cstdint>
 
-class PaletteClass;
+// Forward declaration
 class HSVClass;
 
-#ifndef WIN32
-#ifndef OUTPORTB
-#define OUTPORTB
-extern void outportb(int port, unsigned char data);
-#pragma aux outportb parm[edx][al] = "out	dx,al"
-
-extern void outport(int port, unsigned short data);
-#pragma aux outport parm[edx][ax] =           \
-                                  "out	dx,al" \
-                                  "inc	dx"    \
-                                  "mov	al,ah" \
-                                  "out	dx,al"
-#endif
-
-extern void outrgb(unsigned char red, unsigned char green, unsigned char blue);
-#pragma aux outrgb parm[al][bl][cl] modify[dx al] =           \
-                                               "mov	dx,03C9h" \
-                                               "out	dx,al"    \
-                                               "jmp	e1"       \
-                                               "e1:"          \
-                                               "mov	al,bl"    \
-                                               "out	dx,al"    \
-                                               "jmp	e2"       \
-                                               "e2:"          \
-                                               "mov	al,cl"    \
-                                               "out	dx,al"    \
-                                               "jmp	e3"       \
-                                               "e3:"
-#endif
-
-/*
-**	Each color entry is represented by this class. It holds the values for
-*the color *	guns. The gun values are recorded in device dependant format,
-*but the interface *	uses gun values from 0 to 255.
-*/
+// RGB color class.
+//
+// Provides color representation in RGB color space with 6-bit components
+// (0-63 range) and conversion to HSV color space.
 class RGBClass {
-  //	static RGBClass const BlackColor;
-
  public:
-  RGBClass(void) : Red(0), Green(0), Blue(0) {};
-  RGBClass(unsigned char red, unsigned char green, unsigned char blue)
-      : Red((unsigned char)(red >> 2)),
-        Green((unsigned char)(green >> 2)),
-        Blue((unsigned char)(blue >> 2)) {};
-  operator HSVClass(void) const;
-  RGBClass& operator=(RGBClass const& rgb) {
-    if (this == &rgb) return (*this);
+  // Default constructor (Zero initialization)
+  constexpr RGBClass() = default;
 
-    Red = rgb.Red;
-    Green = rgb.Green;
-    Blue = rgb.Blue;
-    return (*this);
-  };
+  // Handles the bit-shift conversion from 8-bit (0-255) to VGA 6-bit (0-63)
+  constexpr RGBClass(const uint8_t red, const uint8_t green, const uint8_t blue)
+      : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
 
-  enum { MAX_VALUE = 255 };
+  // Converts this RGB color to the HSV color space.
+  //
+  // The conversion uses a hexagonal color wheel model to determine hue.
+  [[nodiscard]] HSVClass ToHSV() const;
 
-  void Adjust(int ratio, RGBClass const& rgb);
-  //		void Adjust(int ratio, RGBClass const & rgb = BlackColor);
-  int Difference(RGBClass const& rgb) const;
-  int Red_Component(void) const { return ((Red << 2) | (Red >> 6)); };
-  int Green_Component(void) const { return ((Green << 2) | (Green >> 6)); };
-  int Blue_Component(void) const { return ((Blue << 2) | (Blue >> 6)); };
-  void Set(int color) const;
+  static constexpr uint8_t kMaxValue = 255;
+
+  // Adjusts the current color proportionately toward the 'target' color.
+  //
+  // This is typically used for fading effects. The 'ratio' argument defines
+  // the interpolation step:
+  //  - 0:   No change (keeps current color).
+  //  - 255: Fully transforms to the 'target' color.
+  //
+  // If 'ratio' is outside the [0, 255] range, it is clamped.
+  void Adjust(int ratio, const RGBClass& target);
+
+  // Returns the squared Euclidean distance between this color and 'other'.
+  //
+  // This is used to find the closest color match without calculating square
+  // roots. A result of 0 indicates the colors are identical.
+  int Difference(const RGBClass& other) const;
+
+  // Logic: Restores 6-bit storage to 8-bit range using original bitwise logic.
+  [[nodiscard]] constexpr int Red_Component() const {
+    return red_ << 2 | red_ >> 6;
+  }
+  [[nodiscard]] constexpr int Green_Component() const {
+    return green_ << 2 | green_ >> 6;
+  }
+  [[nodiscard]] constexpr int Blue_Component() const {
+    return blue_ << 2 | blue_ >> 6;
+  }
 
  private:
-  friend class PaletteClass;
+  // These hold the actual color gun values in machine dependant scale.
+  // Values range from 0 to 63 (VGA standard).
 
-  void Raw_Set(void) const {
-#ifndef WIN32
-    outrgb(Red, Green, Blue);
-//			outportb(0x03C9, Red);
-//			outportb(0x03C9, Green);
-//			outportb(0x03C9, Blue);
-#endif
-  };
-
-  static void Raw_Color_Prep(unsigned char color) {
-#ifndef WIN32
-    outportb(0x03C8, color);
-#endif
-  };
-
-  /*
-  **	These hold the actual color gun values in machine dependant scale. This
-  **	means the values range from 0 to 63.
-  */
-  unsigned char Red;
-  unsigned char Green;
-  unsigned char Blue;
+  uint8_t red_{0};
+  uint8_t green_{0};
+  uint8_t blue_{0};
 };
 
-extern RGBClass const BlackColor;
+// Common color constant - initialized at compile time.
+inline constexpr RGBClass kBlackColor(0, 0, 0);
 
-#endif
+#endif  // CNC_RED_ALERT_RA_RGB_H_

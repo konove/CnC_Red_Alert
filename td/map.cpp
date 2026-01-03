@@ -498,14 +498,9 @@ void MapClass::Init_Cells(void) {
   Free_Cells();
   Alloc_Cells();
 #else
-  memset(&Map[0], 0, sizeof(CellClass) * (MAP_CELL_TOTAL / 2));
-  memset(&Map[MAP_CELL_TOTAL / 2], 0, sizeof(CellClass) * (MAP_CELL_TOTAL / 2));
-  for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    Map[index].Overlay = OVERLAY_NONE;
-    Map[index].Smudge = SMUDGE_NONE;
-    Map[index].TType = TEMPLATE_NONE;
-    Map[index].Owner = HOUSE_NONE;
-    Map[index].InfType = HOUSE_NONE;
+  // Reset all cells to their default initial state.
+  for (size_t index = 0; index < MAP_CELL_TOTAL; index++) {
+    Map[index].Reset();
   }
 #endif
 }

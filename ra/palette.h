@@ -25,9 +25,10 @@ class PaletteClass {
 
   static const int COLOR_COUNT = 256;
 
-  RGBClass data[COLOR_COUNT];
-
   static PaletteClass CurrentPalette;
+
+ private:
+  RGBClass data_[COLOR_COUNT];
 };
 
 void Set_Palette(void *palette);

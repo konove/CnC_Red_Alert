@@ -1,11 +1,40 @@
-add_library(jshell STATIC
+add_library(jshell STATIC)
+
+target_sources(jshell PRIVATE
         rotbmp.cpp
         sprite.cpp
+)
+
+target_sources(jshell PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        FILES rotbmp.h
 )
 
 target_link_libraries(jshell sdllib port)
 
 add_library(tech STATIC
+        b64pipe.cpp
+        b64straw.cpp
+        base64.cpp
+        bench.cpp
+        bfiofile.cpp
+        blowfish.cpp
+        blowpipe.cpp
+        blwstraw.cpp
+        buff.cpp
+        cdfile.cpp
+        crc.cpp
+        crcpipe.cpp
+        crcstraw.cpp
+        fixed.cpp
+        hsv.cpp
+        ini.cpp
+        int.cpp
+        lcw.cpp
+        lcwpipe.cpp
+        lcwstraw.cpp
+        lcwuncmp.cpp
         lzo1x_c.cpp
         lzo1x_d.cpp
         lzopipe.cpp
@@ -13,51 +42,29 @@ add_library(tech STATIC
         lzw.cpp
         lzwpipe.cpp
         lzwstraw.cpp
-        buff.cpp
-        bench.cpp
-        rect.cpp
+        mixfile.cpp
+        monoc.cpp
+        mp.cpp
         mpu.cpp
-        readline.cpp
+        palette.cpp
+        pipe.cpp
+        pk.cpp
         pkpipe.cpp
         pkstraw.cpp
-        xstraw.cpp
-        xpipe.cpp
-        rndstraw.cpp
-        pk.cpp
-        blwstraw.cpp
-        straw.cpp
-        b64straw.cpp
-        lcwstraw.cpp
-        crcstraw.cpp
-        shastraw.cpp
         ramfile.cpp
-        ini.cpp
-        lcwpipe.cpp
-        #lcwcomp.asm
-        lcw.cpp
-        crcpipe.cpp
-        shapipe.cpp
-        pipe.cpp
-        blowpipe.cpp
-        b64pipe.cpp
-        base64.cpp
-        fixed.cpp
-        mixfile.cpp
-        cdfile.cpp
-        bfiofile.cpp
-        rawfile.cpp
-        mp.cpp
-        int.cpp
-        monoc.cpp
         random.cpp
+        rawfile.cpp
+        readline.cpp
+        rect.cpp
         rgb.cpp
-        hsv.cpp
-        palette.cpp
-        blowfish.cpp
-        sha.cpp
-        crc.cpp
+        rndstraw.cpp
         sendfile.cpp
-        lcwuncmp.cpp
+        sha.cpp
+        shapipe.cpp
+        shastraw.cpp
+        straw.cpp
+        xpipe.cpp
+        xstraw.cpp
 )
 target_link_libraries(tech sdllib port vqa32)
 target_compile_definitions(tech PUBLIC WINSOCK_IPX=1)
@@ -242,6 +249,7 @@ add_executable(rasdl WIN32
         bigcheck.cpp
         wol_dnld.cpp
         wolstrng.cpp
+
         # win32
         #2keyfbuf.asm
         #cpuid.asm
@@ -252,8 +260,6 @@ add_executable(rasdl WIN32
         2keyfram.cpp
         tcpip.cpp
         internet.cpp
-        #dde.cpp # DDE
-        #ccdde.cpp # DDE
         stats.cpp
         packet.cpp
         field.cpp

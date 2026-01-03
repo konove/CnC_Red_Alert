@@ -1,13 +1,11 @@
 // re-implemented from assembly in 2keyfbuf.asm
-#include "sdllib/include/gbuffer.h"
-
 #include <cstdarg>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
-
-#include <cstdio>
 
 // should match 2keyfram.cpp
 struct ShapeHeaderType {
@@ -198,7 +196,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
 
   if (use_new_draw &&
       (header_pointer->draw_flags == -1 ||
-       header_pointer->draw_flags != (flags & SHAPE_TRANS | SHAPE_FADING |
+       header_pointer->draw_flags != ((flags & SHAPE_TRANS) | SHAPE_FADING |
                                       SHAPE_PREDATOR | SHAPE_GHOST))) {
     Setup_Shape_Header(w, h, (char *)src, header_pointer, flags, Translucent,
                        IsTranslucent);

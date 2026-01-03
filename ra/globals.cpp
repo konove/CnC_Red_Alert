@@ -546,8 +546,8 @@ PaletteClass CCPalette;
 PaletteClass GamePalette;
 // PaletteClass InGamePalette;
 PaletteClass BlackPalette(RGBClass(0, 0, 0));
-PaletteClass WhitePalette(RGBClass(RGBClass::MAX_VALUE, RGBClass::MAX_VALUE,
-                                   RGBClass::MAX_VALUE));
+PaletteClass WhitePalette(RGBClass(RGBClass::kMaxValue, RGBClass::kMaxValue,
+                                   RGBClass::kMaxValue));
 PaletteClass OriginalPalette;
 PaletteClass ScorePalette;
 
@@ -644,7 +644,7 @@ NullModemClass NullModem(16,  // number of send entries
 //// # entries in Global Queue 	8,
 //// # entries in Private Queues 	VIRGIN_SOCKET,
 //// Socket ID # 	IPXGlobalConnClass::COMMAND_AND_CONQUER0);// Product ID
-///#
+/// #
 
 IPXManagerClass Ipx(
     MAX(sizeof(GlobalPacketType),

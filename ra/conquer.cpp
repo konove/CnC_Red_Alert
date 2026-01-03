@@ -69,11 +69,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "sdllib/include/ww_audio.h"
-
 #include <filesystem>
 #include <format>
+
+#include "sdllib/include/font.h"
+#include "sdllib/include/ww_audio.h"
 #ifdef TESTCODE
 class A {
  public:
@@ -100,15 +100,16 @@ B<A> test;
 #include "ra/fakesock.h"
 TcpipManagerClass Winsock;
 #endif
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <fcntl.h>
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #ifndef WIN32
+#include <dos.h>
 #include <io.h>
 #include <share.h>
-#include <dos.h>
 #endif
 #include "ra/ccdde.h"
 #include "ra/vortex.h"
@@ -1583,13 +1584,13 @@ void Color_Cycle(void) {
       *the *	minimum value for pulsing.
       */
       InGamePalette[CC_PULSE_COLOR] = GamePalette[WHITE];
-      InGamePalette[CC_PULSE_COLOR].Adjust(val, BlackColor);
+      InGamePalette[CC_PULSE_COLOR].Adjust(val, kBlackColor);
 
       /*
       **	Pulse the glowing embers between medium and dark red.
       */
       InGamePalette[CC_EMBER_COLOR] = RGBClass(255, 80, 80);
-      InGamePalette[CC_EMBER_COLOR].Adjust(val, BlackColor);
+      InGamePalette[CC_EMBER_COLOR].Adjust(val, kBlackColor);
 
       changed = true;
     }

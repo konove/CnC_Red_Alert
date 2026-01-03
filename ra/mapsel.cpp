@@ -377,7 +377,7 @@ void Cycle_Call_Back_Delay(int time, PaletteClass &pal) {
       *the *	minimum value for pulsing.
       */
       pal[254] = GamePalette[WHITE];
-      pal[254].Adjust(val, BlackColor);
+      pal[254].Adjust(val, kBlackColor);
 
       pal.Set();
     }

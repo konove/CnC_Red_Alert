@@ -130,14 +130,68 @@ int CellClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 08/09/1994 JLB : Created. *
  *=============================================================================================*/
-CellClass::CellClass(void) {
-  memset(this, 0, sizeof(CellClass));
-  Smudge = SMUDGE_NONE;
-  Overlay = OVERLAY_NONE;
-  Smudge = SMUDGE_NONE;
+CellClass::CellClass(void)
+    : IsPlot(false),
+      IsCursorHere(false),
+      IsMapped(false),
+      IsVisible(false),
+      IsTrigger(false),
+      IsWaypoint(false),
+      IsRadarCursor(false),
+      IsFlagged(false),
+      TType(TEMPLATE_NONE),
+      TIcon(0),
+      Overlay(OVERLAY_NONE),
+      OverlayData(0),
+      Smudge(SMUDGE_NONE),
+      SmudgeData(0),
+      Owner(HOUSE_NONE),
+      InfType(HOUSE_NONE),
+      OccupierPtr(nullptr),
+      Overlapper{nullptr, nullptr, nullptr},
+      Land(LAND_CLEAR) {
+  Flag.Composite = 0;
+}
+
+/***********************************************************************************************
+ * CellClass::Reset -- Resets the cell to its default initial state. *
+ *                                                                                             *
+ *    This method resets all cell properties to their default values, equivalent to a         *
+ *    freshly constructed cell. This is more efficient than destructor + placement new        *
+ *    when re-initializing cells.                                                             *
+ *                                                                                             *
+ * INPUT:   none                                                                               *
+ *                                                                                             *
+ * OUTPUT:  none                                                                               *
+ *                                                                                             *
+ * WARNINGS:   none                                                                            *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   01/02/2026 : Created.                                                                     *
+ *=============================================================================================*/
+void CellClass::Reset() {
+  IsPlot = false;
+  IsCursorHere = false;
+  IsMapped = false;
+  IsVisible = false;
+  IsTrigger = false;
+  IsWaypoint = false;
+  IsRadarCursor = false;
+  IsFlagged = false;
   TType = TEMPLATE_NONE;
+  TIcon = 0;
+  Overlay = OVERLAY_NONE;
+  OverlayData = 0;
+  Smudge = SMUDGE_NONE;
+  SmudgeData = 0;
   Owner = HOUSE_NONE;
   InfType = HOUSE_NONE;
+  OccupierPtr = nullptr;
+  Overlapper[0] = nullptr;
+  Overlapper[1] = nullptr;
+  Overlapper[2] = nullptr;
+  Flag.Composite = 0;
+  Land = LAND_CLEAR;
 }
 
 /***********************************************************************************************

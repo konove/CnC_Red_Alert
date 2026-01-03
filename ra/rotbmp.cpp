@@ -38,7 +38,9 @@
  *- - - - - - - */
 
 #include "ra/rotbmp.h"
+
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
                   int angle);

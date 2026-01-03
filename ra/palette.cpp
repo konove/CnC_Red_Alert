@@ -1,6 +1,7 @@
+#include "ra/palette.h"
+
 #include <cstdio>
 
-#include "ra/palette.h"
 #include "ra/function.h"
 
 PaletteClass PaletteClass::CurrentPalette;
@@ -10,7 +11,7 @@ unsigned char *CurrentPalette = PaletteClass::CurrentPalette;
 PaletteClass::PaletteClass() {}
 
 PaletteClass::PaletteClass(const RGBClass &col) {
-  for (int i = 0; i < COLOR_COUNT; i++) data[i] = col;
+  for (int i = 0; i < COLOR_COUNT; i++) data_[i] = col;
 }
 
 void PaletteClass::Set(int fade, void (*callback)()) {
@@ -70,9 +71,10 @@ int PaletteClass::Closest_Color(const RGBClass &col) const {
   int diff = 256 * 3;
 
   for (int i = 0; i < COLOR_COUNT; i++) {
-    int new_diff = std::abs(col.Red_Component() - data[i].Red_Component()) +
-                   std::abs(col.Green_Component() - data[i].Green_Component()) +
-                   std::abs(col.Blue_Component() - data[i].Blue_Component());
+    int new_diff =
+        std::abs(col.Red_Component() - data_[i].Red_Component()) +
+        std::abs(col.Green_Component() - data_[i].Green_Component()) +
+        std::abs(col.Blue_Component() - data_[i].Blue_Component());
 
     if (new_diff == 0) return i;
 
@@ -85,16 +87,16 @@ int PaletteClass::Closest_Color(const RGBClass &col) const {
   return index;
 }
 
-RGBClass &PaletteClass::operator[](int index) { return data[index]; }
+RGBClass &PaletteClass::operator[](int index) { return data_[index]; }
 
 const RGBClass &PaletteClass::operator[](int index) const {
-  return data[index];
+  return data_[index];
 }
 
-PaletteClass::operator unsigned char *() { return (unsigned char *)data; }
+PaletteClass::operator unsigned char *() { return (unsigned char *)data_; }
 
 PaletteClass::operator const unsigned char *() const {
-  return (const unsigned char *)data;
+  return (const unsigned char *)data_;
 }
 
 void Set_Palette(void *palette) {

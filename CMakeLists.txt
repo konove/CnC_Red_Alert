@@ -11,9 +11,9 @@ option(STRICT_CHECKS "Enable clang-tidy and extra compiler warnings" ON)
 if (STRICT_CHECKS)
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
-else()
+else ()
     message(STATUS "Strict checks disabled (quick build mode)")
-endif()
+endif ()
 
 # Include What You Use integration (automatically enabled/disabled by STRICT_CHECKS)
 include(cmake/IWYU.cmake)
@@ -32,10 +32,10 @@ else ()
     if (STRICT_CHECKS)
         # Full set of warnings for strict mode
         add_compile_options(-Wall -Wextra -Wpedantic -Wshadow=compatible-local -Wformat=2 -Wconversion -Wsign-conversion -Wcast-align -Wcast-qual -Wundef -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wswitch-enum -Wswitch-default -Wnull-dereference -Woverloaded-virtual -Wnon-virtual-dtor -Wsuggest-override -Wold-style-cast -Wuseless-cast -Wdouble-promotion -Wimplicit-fallthrough=5 -Wzero-as-null-pointer-constant -Wnoexcept -Wnoexcept-type -Wmissing-declarations -Wredundant-decls)
-    else()
-        # Minimal warnings for quick build
-        add_compile_options(-Wall)
-    endif()
+    else ()
+        # Disable all warnings for quick build
+        add_compile_options(-w)
+    endif ()
     # workarounds
     add_compile_definitions(__cdecl= __far= __stdcall= cdecl= far=)
 endif ()
