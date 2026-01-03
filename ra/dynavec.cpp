@@ -218,7 +218,9 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
   *vector.
   */
   if (ActiveCount) {
-    memmove(&(*this)[1], &(*this)[0], ActiveCount * sizeof(T));
+    // We explicitly use NOLINT because we intend to move the raw pointers,
+    // so sizeof(T) returning the pointer size is correct behavior.
+    memmove(&(*this)[1], &(*this)[0], ActiveCount * sizeof(T)); // NOLINT(bugprone-sizeof-expression)
   }
   (*this)[0] = object;
   ActiveCount++;

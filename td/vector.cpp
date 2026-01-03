@@ -224,7 +224,7 @@ int VectorClass<T>::operator==(VectorClass<T> const &vector) const {
  *=============================================================================================*/
 template <class T>
 inline int VectorClass<T>::ID(T const *ptr) {
-  return (((unsigned long)ptr - (unsigned long)&(*this)[0]) / sizeof(T));
+  return static_cast<int>(ptr - &(*this)[0]);
 }
 
 /***********************************************************************************************
@@ -530,7 +530,9 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
   *vector.
   */
   if (ActiveCount) {
-    memmove(&(*this)[1], &(*this)[0], ActiveCount * sizeof(T));
+    // We explicitly use NOLINT because we intend to move the raw pointers,
+    // so sizeof(T) returning the pointer size is correct behavior.
+    memmove(&(*this)[1], &(*this)[0], ActiveCount * sizeof(T)); // NOLINT(bugprone-sizeof-expression)
   }
   (*this)[0] = object;
   ActiveCount++;

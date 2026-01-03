@@ -231,8 +231,8 @@ int VectorClass<T>::operator==(VectorClass<T> const &vector) const {
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline int VectorClass<T>::ID(T const *ptr) {
-  return (((unsigned long)ptr - (unsigned long)&(*this)[0]) / sizeof(T));
+int VectorClass<T>::ID(T const *ptr) {
+  return static_cast<int>(ptr - &(*this)[0]);
 }
 
 /***********************************************************************************************
