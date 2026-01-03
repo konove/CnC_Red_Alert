@@ -1,3 +1,5 @@
+#include "sdllib/include/ww_win.h"
+
 #include <SDL.h>
 #include <SDL_events.h>
 #include <SDL_render.h>
@@ -6,9 +8,7 @@
 
 #include <cstdio>
 
-#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/net_select.h"
-#include "sdllib/include/ww_win.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>

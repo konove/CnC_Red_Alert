@@ -70,8 +70,8 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
 #include <cstring>
+
 #include "winvq/vqa32/unvq.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"

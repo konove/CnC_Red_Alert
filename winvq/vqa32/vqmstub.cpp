@@ -1,6 +1,6 @@
 #include <array>
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"

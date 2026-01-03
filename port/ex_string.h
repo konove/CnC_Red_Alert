@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CNC_RED_ALERT_PORT_EX_STRING_H_
+#define CNC_RED_ALERT_PORT_EX_STRING_H_
+
 // paths
 #define _MAX_PATH 260
 #define _MAX_FNAME 256
@@ -14,3 +16,5 @@ int memicmp(const void *buffer1, const void *buffer2, size_t count);
 char *strupr(char *str);
 char *strlwr(char *str);
 char *strrev(char *str);
+
+#endif  // CNC_RED_ALERT_PORT_EX_STRING_H_

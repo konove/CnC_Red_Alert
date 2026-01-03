@@ -49,6 +49,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
 

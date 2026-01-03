@@ -46,8 +46,8 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
 #include <cstring>
+
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqm32/video.h"
 

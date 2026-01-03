@@ -1,7 +1,12 @@
 # IWYU.cmake - Include-What-You-Use integration module
 # This module provides functions to enable IWYU checking for CMake targets
 
-option(ENABLE_IWYU "Enable Include-What-You-Use analysis" ON)
+# ENABLE_IWYU is automatically controlled by STRICT_CHECKS option
+if (DEFINED STRICT_CHECKS)
+    set(ENABLE_IWYU ${STRICT_CHECKS})
+else ()
+    option(ENABLE_IWYU "Enable Include-What-You-Use analysis" ON)
+endif ()
 
 if (ENABLE_IWYU)
     # Find the IWYU executable
@@ -19,7 +24,7 @@ if (ENABLE_IWYU)
             set(IWYU_COMMAND
                     "${IWYU_PATH}"
                     "-Xiwyu" "--mapping_file=${CMAKE_SOURCE_DIR}/.iwyu_mappings"
-                    #                      "-Xiwyu" "--error"
+                    #                    "-Xiwyu" "--error"
                     "-Xiwyu" "--cxx17ns"
                     "-Xiwyu" "--no_fwd_decls"
                     "-Xiwyu" "--max_line_length=120"
@@ -37,23 +42,3 @@ if (ENABLE_IWYU)
 else ()
     message(STATUS "IWYU disabled via ENABLE_IWYU=OFF")
 endif ()
-
-# Function to enable IWYU for a specific target
-function(enable_iwyu TARGET_NAME)
-    if (ENABLE_IWYU AND IWYU_PATH)
-        set_property(TARGET ${TARGET_NAME}
-                PROPERTY CXX_INCLUDE_WHAT_YOU_USE "${IWYU_COMMAND}"
-        )
-        message(STATUS "  IWYU enabled for target: ${TARGET_NAME}")
-    endif ()
-endfunction()
-
-# Function to enable IWYU for all targets in current directory
-function(enable_iwyu_for_all_targets)
-    if (ENABLE_IWYU AND IWYU_PATH)
-        get_property(all_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY BUILDSYSTEM_TARGETS)
-        foreach (target ${all_targets})
-            enable_iwyu(${target})
-        endforeach ()
-    endif ()
-endfunction()

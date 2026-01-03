@@ -43,12 +43,10 @@
  ****************************************************************************/
 #include <cstdint>
 
-#include "winvq/vqm32/video.h"
-#include "winvq/vqm32/soscomp.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
-
-extern void *MainWindow;
+#include "winvq/vqm32/soscomp.h"
+#include "winvq/vqm32/video.h"
 
 /*---------------------------------------------------------------------------
  * GENERAL CONSTANT DEFINITIONS

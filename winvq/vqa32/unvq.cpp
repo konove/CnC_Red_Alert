@@ -1,6 +1,6 @@
-#include <cstdint>
-
 #include "winvq/vqa32/unvq.h"
+
+#include <cstdint>
 
 void UnVQ_4x2(unsigned char *codebook, unsigned char *pointers,
               unsigned char *buffer, unsigned long blocksperrow,

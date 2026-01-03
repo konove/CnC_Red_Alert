@@ -1,3 +1,5 @@
 /build
 /build.*
+/strict-build
+/strict-build.*
 /.idea

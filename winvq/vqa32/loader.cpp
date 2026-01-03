@@ -70,6 +70,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
+#include "sdllib/include/ww_win.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"

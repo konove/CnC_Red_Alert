@@ -282,9 +282,6 @@ target_link_libraries(rasdl PRIVATE tech jshell port sdllib vqa32) # mpgdll wwip
 
 install(TARGETS rasdl)
 
-# Enable IWYU for all targets in this directory
-enable_iwyu_for_all_targets()
-
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES
             SUFFIX ".html"

@@ -159,7 +159,6 @@ class TPoint2D {
 // Defines for direct draw
 //
 //
-extern void *MainWindow;  // handle to programs main window
 
 enum GBC_Enum {
   GBC_NONE = 0,

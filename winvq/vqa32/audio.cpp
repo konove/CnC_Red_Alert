@@ -63,11 +63,13 @@
  *
  ****************************************************************************/
 
+#include <bits/chrono.h>
+
 #include <cstdint>
 #include <cstring>
-#include <bits/chrono.h>
-#include "winvq/vqa32/vqaplayp.h"
+
 #include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqaplayp.h"
 
 /*---------------------------------------------------------------------------
  * PROTOTYPES
