@@ -45,6 +45,7 @@
  *- - - - - - - */
 
 #include "ra/interpal.h"
+
 #include "ra/function.h"
 #include "sdllib/include/misc.h"
 
@@ -275,7 +276,7 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   }
 }
 
-int CopyType = 0;
+int CopyType = 1;  // Use line doubling instead of interlacing
 
 #if defined(WIN32) && !defined(LORES)
 /***************************************************************************

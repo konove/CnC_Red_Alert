@@ -40,8 +40,8 @@
 #ifndef CCINI_H
 #define CCINI_H
 
-#include "ra/ini.h"
 #include "ra/fixed.h"
+#include "ra/ini.h"
 #include "ra/pk.h"
 
 class TriggerTypeClass;
@@ -100,7 +100,8 @@ class CCINIClass : public INIClass {
   CrateType Get_CrateType(char const* section, char const* entry,
                           CrateType defvalue) const;
 
-  bool Put_Buildings(char const* section, char const* entry, long value);
+  bool Put_Buildings(char const* section, char const* entry,
+                     std::int32_t value);
   bool Put_AnimType(char const* section, char const* entry, AnimType value);
   bool Put_UnitType(char const* section, char const* entry, UnitType value);
   bool Put_ArmorType(char const* section, char const* entry, ArmorType value);

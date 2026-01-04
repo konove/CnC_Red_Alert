@@ -263,7 +263,8 @@ void *Open_Animation(char const *file_name, char *user_buffer,
   sys_header->largest_frame_size =
       (unsigned short)(delta_buffer_size - sizeof(SysAnimHeaderType));
 
-  strcpy(sys_header->file_name, file_name);
+  std::snprintf(sys_header->file_name, sizeof(sys_header->file_name), "%s",
+                file_name);
 
   // Figure how much room the frame offsets take up in the file.
   // Add 2 - one for the wrap around and one for the final end offset.

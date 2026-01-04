@@ -77,8 +77,8 @@ class AbstractTypeClass {
   int FullName;
 
   AbstractTypeClass(RTTIType rtti, int id, int name, char const *ini);
-  AbstractTypeClass(NoInitClass const &){};
-  ~AbstractTypeClass(void){};
+  AbstractTypeClass(NoInitClass const &) {};
+  virtual ~AbstractTypeClass() = default;
 
   RTTIType What_Am_I(void) const { return (RTTI); };
   TARGET As_Target(void) const { return (Build_Target(RTTI, ID)); };
@@ -272,6 +272,7 @@ class ObjectTypeClass : public AbstractTypeClass {
                   bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, bool is_footprint,
                   int fullname, char const *name);
+  virtual ~ObjectTypeClass();
 
   static void One_Time(void);
 
@@ -1512,7 +1513,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   unsigned char Width, Height;
 
   //----------------------------------------------------------
-  TemplateTypeClass(NoInitClass const &x) : ObjectTypeClass(x){};
+  TemplateTypeClass(NoInitClass const &x) : ObjectTypeClass(x) {};
   TemplateTypeClass(TemplateType iconset, int theater, char const *ininame,
                     int fullname);
 

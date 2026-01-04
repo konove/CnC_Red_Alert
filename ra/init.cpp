@@ -60,21 +60,22 @@
  *pre-prolog "please wait" page.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include <string>
+#include <string_view>
 
-#include "sdllib/include/file.h"
-#include "sdllib/include/font.h"
 #include "ra/function.h"
 #include "ra/graphics_loader.h"
 #include "ra/loaddlg.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/misc.h"
-
 #include "sdllib/include/ww_audio.h"
 #ifdef WIN32
 #ifdef WINSOCK_IPX
+#include "ra/internet.h"
+#include "ra/wspipx.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
-#include "ra/wspipx.h"
-#include "ra/internet.h"
 #else  // WINSOCK_IPX
 #include "ra/tcpip.h"
 #endif  // WINSOCK_IPX
@@ -84,9 +85,9 @@
 #include <conio.h>
 #include <sys\timeb.h>
 #endif
-#include "ra/ccdde.h"
-
 #include <ctime>
+
+#include "ra/ccdde.h"
 
 #ifdef DONGLE
 #include "cbn_.h"
@@ -1796,10 +1797,8 @@ bool Parse_Command_Line(int argc, char *argv[]) {
   Debug_Unshroud = false;
 
   for (int index = 1; index < argc; index++) {
-    char *string;  // Pointer to argument.
-    long code = 0;
-
-    string = strupr(argv[index]);
+    std::string original_arg = argv[index];  // Copy for preserving case.
+    char *string = strupr(argv[index]);      // Pointer to argument.
 
     /*
     **	Print usage text only if requested.
@@ -1906,7 +1905,8 @@ bool Parse_Command_Line(int argc, char *argv[]) {
     **	File search path override.
     */
     if (strstr(string, "-CD")) {
-      CCFileClass::Set_Search_Drives(&string[3]);
+      // Use original arg to preserve case-sensitive path on Unix systems
+      CCFileClass::Add_Search_Drives(original_arg.substr(3));
       continue;
     }
 
@@ -2131,6 +2131,14 @@ bool Parse_Command_Line(int argc, char *argv[]) {
       bNoMovies = true;
     }
 #endif
+
+    /*
+    ** Disable mouse grabbing for debugging
+    */
+    if (strstr(string, "-NOMOUSEGRAB")) {
+      extern bool NoMouseGrab;
+      NoMouseGrab = true;
+    }
 
     /*
     **	Special command line control parsing.
@@ -2930,7 +2938,7 @@ static void Init_CDROM_Access(void) {
     int error;
 
     do {
-      error = CCFileClass::Set_Search_Drives("?:\\");
+      error = CCFileClass::Add_Search_Drives("?:\\");
       switch (error) {
         case 1:
           VisiblePage.Clear();
@@ -3283,8 +3291,18 @@ static void Bootstrap(void) {
   /*
   **	Default palette initialization.
   */
-  memmove((unsigned char *)&GamePalette[0],
-          (void *)MFCD::Retrieve("TEMPERAT.PAL"), 768L);
+  const void *palette_data = MFCD::Retrieve("TEMPERAT.PAL");
+  if (!palette_data) {
+    fprintf(stderr,
+            "ERROR: Cannot find TEMPERAT.PAL - game data files not found!\n");
+    fprintf(stderr, "Please specify data directory with: -CD<path>\n");
+    fprintf(stderr,
+            "Example: ./rasdl "
+            "-CD\"/home/konsto/.local/share/Steam/steamapps/common/"
+            "Command & Conquer Red Alert\"\n");
+    exit(1);
+  }
+  memmove(&GamePalette[0], palette_data, 768L);
   WhitePalette[0] = BlackPalette[0];
   //	GamePalette.Set();
 

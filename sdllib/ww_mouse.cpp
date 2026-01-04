@@ -15,11 +15,14 @@
 
 extern void *MainWindow;
 
+// Global flag to disable mouse grabbing (for debugging)
+bool NoMouseGrab = false;
+
 static WWMouseClass *_Mouse = nullptr;
 
 WWMouseClass::WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
                            int mouse_max_height)
-    : MaxWidth(mouse_max_width), MaxHeight(mouse_max_width), State(0) {
+    : MaxWidth(mouse_max_width), MaxHeight(mouse_max_height), State(0) {
   Set_Cursor_Clip();
   _Mouse = this;
 
@@ -28,6 +31,13 @@ WWMouseClass::WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
 
 WWMouseClass::~WWMouseClass() {
   Clear_Cursor_Clip();
+
+  if (SDLCursor) {
+    SDL_FreeCursor(static_cast<SDL_Cursor *>(SDLCursor));
+  }
+  if (SDLSurface) {
+    SDL_FreeSurface(static_cast<SDL_Surface *>(SDLSurface));
+  }
 
   delete[] MouseCursor;
 }
@@ -138,7 +148,9 @@ void WWMouseClass::Draw_Mouse(GraphicViewPortClass *scr) {
 void WWMouseClass::Erase_Mouse(GraphicViewPortClass *scr, bool forced) {}
 
 void WWMouseClass::Set_Cursor_Clip(void) {
-  SDL_SetWindowGrab((SDL_Window *)MainWindow, SDL_TRUE);
+  if (!NoMouseGrab) {
+    SDL_SetWindowGrab((SDL_Window *)MainWindow, SDL_TRUE);
+  }
 }
 
 void WWMouseClass::Clear_Cursor_Clip(void) {
@@ -146,7 +158,7 @@ void WWMouseClass::Clear_Cursor_Clip(void) {
 }
 
 void WWMouseClass::Update_Palette() {
-  if (!WindowBuffer | !SDLSurface) return;
+  if (!WindowBuffer || !SDLSurface) return;
 
   if (State) {
     // don't do anything now if cursor is hidden anyway

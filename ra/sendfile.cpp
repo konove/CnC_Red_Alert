@@ -42,6 +42,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
+#include <string>
+
 #include "ra/function.h"
 #include "sdllib/include/misc.h"
 
@@ -82,13 +84,14 @@ extern WolapiObject *pWolapi;
  * INPUT:    ptr to buffer to copy file name into * game type - 0 for modem/null
  *modem, 1 otherwise                                   *
  *                                                                                             *
- * OUTPUT:   true if file sucessfully downloaded *
+ * OUTPUT:   true if file successfully downloaded *
  *                                                                                             *
  * WARNINGS: None *
  *                                                                                             *
  * HISTORY: * 8/22/96 3:06PM ST : Created *
  *=============================================================================================*/
-bool Get_Scenario_File_From_Host(char *return_name, int gametype) {
+bool Get_Scenario_File_From_Host(char *return_name, size_t dest_size,
+                                 int gametype) {
   // WWDebugString ("RA95 - In Get_Scenario_From_Host\n");
 
   unsigned int file_length;
@@ -109,11 +112,11 @@ bool Get_Scenario_File_From_Host(char *return_name, int gametype) {
   ** Send the scenario request using guaranteed delivery.
   */
   if (!gametype) {
-    memset((void *)&send_packet, 0, sizeof(send_packet));
+    memset(&send_packet, 0, sizeof(send_packet));
     send_packet.Command = SERIAL_REQ_SCENARIO;
     NullModem.Send_Message(&send_packet, sizeof(send_packet), 1);
   } else {
-    memset((void *)&net_send_packet, 0, sizeof(net_send_packet));
+    memset(&net_send_packet, 0, sizeof(net_send_packet));
     net_send_packet.Command = NET_REQ_SCENARIO;
     Ipx.Send_Global_Message(&net_send_packet, sizeof(net_send_packet), 1,
                             &(Session.HostAddress));
@@ -129,10 +132,10 @@ bool Get_Scenario_File_From_Host(char *return_name, int gametype) {
     do {
       NullModem.Service();
 
-      if (NullModem.Get_Message((void *)&receive_packet, (int *)&packet_len) >
-          0) {
+      if (NullModem.Get_Message(&receive_packet, (int *)&packet_len) > 0) {
         if (receive_packet.Command == SERIAL_FILE_INFO) {
-          strcpy(return_name, receive_packet.ScenarioInfo.ShortFileName);
+          strncpy(return_name, receive_packet.ScenarioInfo.ShortFileName,
+                  dest_size);
           file_length = receive_packet.ScenarioInfo.FileLength;
           break;
         }
@@ -153,7 +156,8 @@ bool Get_Scenario_File_From_Host(char *return_name, int gametype) {
             (Winsock.Get_Connected() ||
              sender_address == Session.HostAddress)) {
 #endif  // WINSOCK_IPX
-          strcpy(return_name, net_receive_packet.ScenarioInfo.ShortFileName);
+          strncpy(return_name, net_receive_packet.ScenarioInfo.ShortFileName,
+                  dest_size);
           file_length = net_receive_packet.ScenarioInfo.FileLength;
           // WWDebugString ("RA95 - Got file info packet from host\n");
           break;
@@ -297,11 +301,15 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
   ** If the file name is already in use, use the temp file name
   */
   CCFileClass test_file(file_name);
+
+  std::string save_file_name;
   if (test_file.Is_Available()) {
-    strcpy(file_name, "DOWNLOAD.TMP");
+    save_file_name = "DOWNLOAD.TMP";
+  } else {
+    save_file_name = std::string(file_name);
   }
 
-  RawFileClass save_file(file_name);
+  RawFileClass save_file(save_file_name.c_str());
 
   /*
   ** If the file already exists then delete it and re-create it.
@@ -606,12 +614,14 @@ bool Send_Remote_File(char *file_name, int gametype) {
   */
   if (!gametype) {
     file_info.Command = SERIAL_FILE_INFO;
-    strcpy(&file_info.ScenarioInfo.ShortFileName[0], file_name);
+    strncpy(file_info.ScenarioInfo.ShortFileName, file_name,
+            sizeof(file_info.ScenarioInfo.ShortFileName));
 #ifdef FIXIT_VERSION_3
     //	If we're sending an official map, always send it to 'download.tmp'.
     if (Is_Mission_Counterstrike(file_name) ||
         Is_Mission_Aftermath(file_name)) {
-      strcpy(&file_info.ScenarioInfo.ShortFileName[0], "DOWNLOAD.TMP");
+      strncpy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP",
+              sizeof(file_info.ScenarioInfo.ShortFileName));
     }
 #else
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98
@@ -628,13 +638,15 @@ bool Send_Remote_File(char *file_name, int gametype) {
     }
   } else {
     net_file_info.Command = NET_FILE_INFO;
-    strcpy(&net_file_info.ScenarioInfo.ShortFileName[0], file_name);
+    strncpy(net_file_info.ScenarioInfo.ShortFileName, file_name,
+            sizeof(net_file_info.ScenarioInfo.ShortFileName));
 //		debugprint( "Uploading '%s'\n", file_name );
 #ifdef FIXIT_VERSION_3
     //	If we're sending an official map, always send it to 'download.tmp'.
     if (Is_Mission_Counterstrike(file_name) ||
         Is_Mission_Aftermath(file_name)) {
-      strcpy(&net_file_info.ScenarioInfo.ShortFileName[0], "DOWNLOAD.TMP");
+      strncpy(net_file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP",
+              sizeof(net_file_info.ScenarioInfo.ShortFileName));
     }
 #else
 #ifdef FIXIT_CSII  //	checked - ajw 9/28/98

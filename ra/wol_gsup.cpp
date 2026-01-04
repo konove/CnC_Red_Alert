@@ -3522,7 +3522,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       }
       //	Wait for download from game host.
       // debugprint( "Wait for download from game host.\n" );
-      if (!Get_Scenario_File_From_Host(Session.ScenarioFileName, 1)) {
+      if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
+                                       sizeof(Session.ScenarioFileName), 1)) {
         //				debugprint( "Get_Scenario_File_From_Host
         // failed!\n" );
         bExitForGameTrigger = false;

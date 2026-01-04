@@ -16,98 +16,102 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/CDFILE.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Westwood LIbrary *
- *                                                                                             *
- *                    File Name : CDFILE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : October 18, 1994 *
- *                                                                                             *
- *                  Last Update : October 18, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef CDFILE_H
 #define CDFILE_H
 
+#include <string_view>
+#include <vector>
+
 #include "ra/bfiofile.h"
 
-/*
-**	This class is derived from the BufferIOFileClass. This class adds the
-*functionality of searching *	across multiple directories or drives. It is
-*designed for the typical case of a CD-ROM game *	were some data exists in
-*the current directory (hard drive) and the rest exists on the CD-ROM.
-**	Searching for the file occurs by first examining the current directory.
-*If the file does not *	exist there, then all the paths available are examined
-*in turn until the file can be found. *	For opening files to write, only the
-*current directory is examined. The directory search order *	is controlled by
-*the path list as submitted to Set_Search_Drives(). The format of the path
-**	string is the same as the DOS path string.
-*/
+// File I/O class with multi-directory search support.
+//
+// CDFileClass extends BufferIOFileClass to search for files across multiple
+// directories and drives. This is designed for CD-ROM games where data may
+// exist on both the hard drive and CD-ROM.
+//
+// File lookup behavior:
+//   - Read operations: Searches current directory first, then iterates through
+//     registered search paths in order until the file is found.
+//   - Write operations: Only uses the current directory (no path searching).
+//
+// Search paths are registered via Add_Search_Drives() using semicolon-delimited
+// strings (e.g., "C:\Game;D:\"). Paths support wildcard "?:" notation which
+// resolves to the current CD-ROM drive letter.
+//
+// Example usage:
+//   CDFileClass::Add_Search_Drives("C:\GameData;?:\Assets");
+//   CDFileClass file("textures\player.bmp");
+//   file.Open(READ);  // Searches C:\GameData, then CD drive
 class CDFileClass : public BufferIOFileClass {
  public:
-  CDFileClass(char const *filename);
-  CDFileClass(void);
-  virtual ~CDFileClass(void){};
+  explicit CDFileClass(char const *filename);
+  CDFileClass();
+  ~CDFileClass() override {}
 
-  virtual char const *Set_Name(char const *filename);
-  virtual int Open(char const *filename, int rights = READ);
-  virtual int Open(int rights = READ);
+  char const *Set_Name(char const *filename) override;
+  int Open(char const *filename, int rights = READ) override;
+  int Open(int rights = READ) override;
 
-  void Searching(int on) { IsDisabled = !on; };
+  void Searching(const bool on) { is_disabled_ = !on; }
 
-  static bool Is_There_Search_Drives(void) { return (First != nullptr); };
-  static int Set_Search_Drives(char *pathlist);
-  static void Add_Search_Drive(char *path);
-  static void Clear_Search_Drives(void);
-  static void Refresh_Search_Drives(void);
+  static bool Is_There_Search_Drives() { return !search_paths_.empty(); }
+
+  static void Add_Search_Drive(const std::string &path);
+
+  // Appends new paths to the persistent search list and immediately scans them.
+  //
+  // This function adds the provided paths to the internal storage (RawPath)
+  // and processes them to register valid search drives. It optimizes by only
+  // scanning the newly added paths, not the entire history.
+  //
+  // new_paths: A semicolon-delimited string of paths (e.g.,
+  // "C:\Data;D:\Assets").
+  //
+  // Returns:
+  //   0 if at least one valid path was found and added.
+  //   1 if no valid drives were found.
+  static int Add_Search_Drives(std::string_view new_paths);
+
+  static void Clear_Search_Drives();
+
+  // Clears and re-scans all currently stored search paths.
+  //
+  // This is used when the system configuration changes (e.g., a new CD is
+  // inserted). It wipes the active search list in the file system and
+  // re-evaluates the entire RawPath history, allowing wildcard drives ("?:")
+  // to resolve to new drive letters.
+  static void Refresh_Search_Drives();
   static void Set_CD_Drive(int drive);
-  static int Get_CD_Drive(void) { return (CurrentCDDrive); };
-  static int Get_Last_CD_Drive(void) { return (LastCDDrive); };
+  static int Get_CD_Drive() { return current_cd_drive_; }
+  static int Get_Last_CD_Drive() { return last_cd_drive_; }
 
  private:
-  /*
-  **	Is multi-drive searching disabled for this file object?
-  */
-  unsigned IsDisabled : 1;
+  // Helper function to tokenize and process a list of paths.
+  //
+  // Handles path normalization (ensuring trailing separators) and resolves
+  // wildcard drive specifications "?:" to the active CD-ROM drive.
+  //
+  // paths: The view of paths to process.
+  //
+  // Returns:
+  //   0 if at least one valid path was added.
+  //   1 otherwise.
+  static int Process_Path_Tokens(std::string_view paths);
 
-  /*
-  **	This is the control record for each of the drives specified in the
-  *search *	path. There can be many such search paths available.
-  */
-  typedef struct {
-    void *Next;        // Pointer to next search record.
-    char const *Path;  // Pointer to path string.
-  } SearchDriveType;
+  // Is multi-drive searching disabled for this file object?
+  bool is_disabled_ : true;
 
-  /*
-  **	This points to the first path record.
-  */
-  static SearchDriveType *First;
-  /*
-  ** This is a copy of the unparsed search path list
-  */
-  static char RawPath[512];
+  static std::vector<std::string> search_paths_;
 
-  /*
-  ** The drive letter of the current cd drive
-  */
-  static int CurrentCDDrive;
+  // Persistent storage for all added search paths.
+  static std::string raw_path_;
 
-  /*
-  ** The drive letter of the last used CD drive
-  */
-  static int LastCDDrive;
+  // The drive letter of the current CD drive
+  static int current_cd_drive_;
+
+  // The drive letter of the last used CD drive
+  static int last_cd_drive_;
 };
 
 #endif

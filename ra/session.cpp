@@ -239,7 +239,9 @@ SessionClass::SessionClass(void) {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-SessionClass::~SessionClass(void) {}  // end of ~SessionClass
+SessionClass::~SessionClass(void) {
+  Free_Scenario_Descriptions();
+}  // end of ~SessionClass
 
 /***************************************************************************
  * SessionClass::One_Time -- one-time initializations                      *

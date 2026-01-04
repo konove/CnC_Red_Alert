@@ -1,0 +1,4 @@
+# Suppress known system library leaks
+leak:libnvidia-glcore.so
+leak:libdbus-1.so
+leak:libSDL2

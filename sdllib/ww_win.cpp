@@ -29,15 +29,21 @@ int Change_Window(int windnum) {
 void SDL_Create_Main_Window(const char *title, int width, int height) {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
+  // Window scale multiplier (2x = 1280x800 for 640x400 logical resolution)
+  constexpr auto kWindowScale = 3;
+  const auto window_width = width * kWindowScale;
+  const auto window_height = height * kWindowScale;
+
   MainWindow = SDL_CreateWindow(
-      title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height,
-      SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+      title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width,
+      window_height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
   ForceRenderEventID = SDL_RegisterEvents(1);
 
   SDLRenderer = SDL_CreateRenderer((SDL_Window *)MainWindow, -1,
                                    SDL_RENDERER_PRESENTVSYNC);
 
+  // Keep logical size at original resolution, SDL will scale to window size
   SDL_RenderSetLogicalSize(SDLRenderer, width, height);
   SDL_RenderSetIntegerScale(SDLRenderer, SDL_TRUE);
 

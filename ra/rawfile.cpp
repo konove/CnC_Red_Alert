@@ -56,22 +56,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cstddef>
-
 #include "ra/rawfile.h"
 
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #ifdef PORTABLE
-#include "sdllib/include/file.h"
 #include "port/ex_string.h"
+#include "sdllib/include/file.h"
 #elif defined(WIN32)
 #include <windows.h>
 #else
+#include <dos.h>
 #include <fcntl.h>
 #include <io.h>
-#include <dos.h>
 #include <share.h>
 extern short Hard_Error_Occured;
 #endif
@@ -381,13 +381,13 @@ int RawFileClass::Is_Available(int forced) {
       if (Handle) {
         // if successful, replace the filename with the working one
         if (Allocated) {
-          strcpy((char *)Filename, lower_name);
-          free(lower_name);
-        } else
-          ((char *&)Filename) = lower_name;
+          free((char *)Filename);
+        }
+        ((char *&)Filename) = lower_name;
         Allocated = true;
-      } else
+      } else {
         free(lower_name);
+      }
     }
 
     if (!Handle) return false;

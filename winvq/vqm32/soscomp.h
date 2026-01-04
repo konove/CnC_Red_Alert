@@ -41,29 +41,34 @@ enum {
 };
 
 /* define compression structure */
-typedef struct _tagCOMPRESS_INFO {
-  char *lpSource;
-  char *lpDest;
-  unsigned long dwCompSize;
-  unsigned long dwUnCompSize;
-  short wBitSize;
-  short wChannels;
-  unsigned long dwSampleIndex;
-  int64_t dwPredicted;
-  long dwDifference;
-  short wCodeBuf;
-  short wCode;
-  short wStep;
-  short wIndex;
+struct SosCompressInfo {
+  std::uint8_t *source;
+  std::uint8_t *dest;
 
-  unsigned long dwSampleIndex2;  // added BP for channel 2
-  long dwPredicted2;             // added BP for channel 2
-  long dwDifference2;            // added BP for channel 2
-  short wCodeBuf2;               // added BP for channel 2
-  short wCode2;                  // added BP for channel 2
-  short wStep2;                  // added BP for channel 2
-  short wIndex2;                 // added BP for channel 2
-} _SOS_COMPRESS_INFO;
+  std::uint32_t comp_size;
+  std::uint32_t uncomp_size;
+
+  std::int16_t bit_size;
+  std::int16_t channels;
+
+  // --- Channel 1 State ---
+  std::uint32_t sample_index;
+  std::int32_t predicted;
+  std::int32_t difference;
+  std::int16_t code_buf;
+  std::int16_t code;
+  std::int16_t step_index;
+  std::int16_t index;
+
+  // Channel 2 Data
+  std::uint32_t sample_index2;
+  std::int32_t predicted2;
+  std::int32_t difference2;
+  std::int16_t code_buf2;
+  std::int16_t code2;
+  std::int16_t step_index2;
+  std::int16_t index2;
+};
 
 /* compressed file type header */
 typedef struct _tagCOMPRESS_HEADER {
@@ -80,11 +85,10 @@ typedef struct _tagCOMPRESS_HEADER {
 extern "C" {
 #endif
 
-void __cdecl VQA_sosCODECInitStream(_SOS_COMPRESS_INFO *);
-unsigned long __cdecl VQA_sosCODECCompressData(_SOS_COMPRESS_INFO *,
+void __cdecl VQA_sosCODECInitStream(SosCompressInfo *);
+unsigned long __cdecl VQA_sosCODECCompressData(SosCompressInfo *,
                                                unsigned long);
-unsigned long __cdecl VQA_sosCODECDecompressData(_SOS_COMPRESS_INFO *,
-                                                 unsigned long);
+bool __cdecl DecompressVqaSosData(SosCompressInfo *, unsigned long);
 
 #ifdef __cplusplus
 }

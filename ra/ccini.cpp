@@ -94,8 +94,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include <algorithm>
+#include <string>
+
+#include "ra/function.h"
 
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
@@ -430,35 +432,41 @@ long CCINIClass::Get_Owners(char const *section, char const *entry,
  *=============================================================================================*/
 bool CCINIClass::Put_Owners(char const *section, char const *entry,
                             long value) {
-  char buffer[128];
+  std::string buffer;
+  // Optimization: avoid repeated allocations for small strings
+  buffer.reserve(128);
 
-  buffer[0] = '\0';
+  // Helper lambda to safely append with comma separation
+  auto append = [&](const std::string_view str) {
+    if (!buffer.empty()) {
+      buffer += ',';
+    }
+    buffer += str;
+  };
 
   if ((value & HOUSEF_ALLIES) == HOUSEF_ALLIES) {
-    strcat(buffer, "allies");
+    append("allies");
     value &= ~HOUSEF_ALLIES;
   }
   if ((value & HOUSEF_SOVIET) == HOUSEF_SOVIET) {
-    if (buffer[0] != '\0') {
-      strcat(buffer, ",");
-    }
-    strcat(buffer, "soviet");
+    append("soviet");
     value &= ~HOUSEF_SOVIET;
   }
 
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-    if ((value & (1 << house)) != 0) {
-      if (buffer[0] != '\0') {
-        strcat(buffer, ",");
-      }
-      strcat(buffer, HouseTypeClass::As_Reference(house).Name());
+  // Iterate through House Types
+  for (int i = HOUSE_FIRST; i < static_cast<int>(HOUSE_COUNT); ++i) {
+    if ((value & (1L << i)) != 0) {
+      const auto house = static_cast<HousesType>(i);
+      append(HouseTypeClass::As_Reference(house).Name());
     }
   }
 
-  if (buffer[0] != '\0') {
-    return (Put_String(section, entry, buffer));
+  // Only write to INI if we actually constructed a string
+  if (!buffer.empty()) {
+    return Put_String(section, entry, buffer.c_str());
   }
-  return (true);
+
+  return true;
 }
 
 /***********************************************************************************************
@@ -1400,21 +1408,40 @@ long CCINIClass::Get_Buildings(char const *section, char const *entry,
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_Buildings(char const *section, char const *entry,
-                               long value) {
-  char buffer[128] = "";
-  int maxi = (32 < STRUCT_COUNT) ? 32 : STRUCT_COUNT;
+bool CCINIClass::Put_Buildings(const char *section, const char *entry,
+                               const int32_t value) {
+  // We reserve 256 bytes to prevent reallocations for typical lists.
+  std::string buffer;
+  buffer.reserve(256);
 
-  for (StructType index = STRUCT_FIRST; index < maxi; index++) {
-    if ((value & (1L << index)) != 0) {
-      if (buffer[0] != '\0') {
-        strcat(buffer, ",");
-      }
-      strcat(buffer, BuildingTypeClass::As_Reference(index).IniName);
+  // The input 'value' is a 'long', so it can only represent
+  // the first 32 buildings (Indices 0 to 31).
+  constexpr int limit = std::min(32, static_cast<int>(STRUCT_COUNT));
+
+  auto append = [&](const std::string_view name) {
+    if (!buffer.empty()) {
+      buffer += ',';
+    }
+    buffer += name;
+  };
+
+  // We start at STRUCT_FIRST (0) and go up to limit.
+  for (size_t i = STRUCT_FIRST; i < limit; ++i) {
+    // Check if the bit at index 'i' is set.
+    // We use 1L (long) to match the type of 'value'.
+    if ((value & (1L << i)) != 0) {
+      const auto index = static_cast<StructType>(i);
+
+      // Access the building name safely
+      append(BuildingTypeClass::As_Reference(index).IniName);
     }
   }
 
-  return (Put_String(section, entry, buffer));
+  if (!buffer.empty()) {
+    return Put_String(section, entry, buffer.c_str());
+  }
+
+  return true;
 }
 
 /***********************************************************************************************

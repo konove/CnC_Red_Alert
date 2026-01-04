@@ -44,9 +44,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cerrno>
+
 #include "sdllib/include/file.h"
 #include "td/function.h"
-#include <cerrno>
 
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
@@ -57,8 +58,8 @@
 */
 CDFileClass::SearchDriveType *CDFileClass::First = nullptr;
 
-int CDFileClass::CurrentCDDrive = 0;
-int CDFileClass::LastCDDrive = 0;
+int CDFileClass::current_cd_drive_ = 0;
+int CDFileClass::last_cd_drive_ = 0;
 char CDFileClass::RawPath[512];
 
 int __cdecl Is_Disk_Inserted(int disk) {
@@ -201,13 +202,13 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
       *the case of no CD-ROM attached, then *	merely ignore this path entry.
       */
       if (strncmp(path, "?:", 2) == 0) {
-        if (CurrentCDDrive) {
+        if (current_cd_drive_) {
           found = TRUE;
           /*
           ** If the drive has a C&C CD in it then add it to the path
           */
-          if (Get_CD_Index(CurrentCDDrive, 2 * 60) >= 0) {
-            path[0] = CurrentCDDrive + 'A';
+          if (Get_CD_Index(current_cd_drive_, 2 * 60) >= 0) {
+            path[0] = current_cd_drive_ + 'A';
             Add_Search_Drive(path);
           }
         }
@@ -247,8 +248,8 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
  *=============================================================================================*/
 
 void CDFileClass::Set_CD_Drive(int drive) {
-  LastCDDrive = CurrentCDDrive;
-  CurrentCDDrive = drive;
+  last_cd_drive_ = current_cd_drive_;
+  current_cd_drive_ = drive;
 }
 
 /***********************************************************************************************

@@ -114,9 +114,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
 #include <algorithm>
+
+#include "ra/function.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the
@@ -1892,7 +1892,27 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
       Armor(ARMOR_NONE),
       MaxStrength(0),
       ImageData(nullptr),
+      DimensionData(nullptr),
       RadarIcon(nullptr) {}
+
+/***********************************************************************************************
+ * ObjectTypeClass::~ObjectTypeClass -- Destructor for object type class.
+ *              *
+ *                                                                                             *
+ *    This destructor cleans up any allocated dimension data.               *
+ *                                                                                             *
+ * INPUT:   none                *
+ *                                                                                             *
+ * OUTPUT:  none                *
+ *                                                                                             *
+ * WARNINGS:   none                *
+ *                                                                                             *
+ * HISTORY: * 01/04/2026 : Created.                *
+ *=============================================================================================*/
+ObjectTypeClass::~ObjectTypeClass() {
+  delete[] DimensionData;
+  DimensionData = nullptr;
+}
 
 /***********************************************************************************************
  * ObjectTypeClass::Max_Pips -- Fetches the maximum pips allowed for this

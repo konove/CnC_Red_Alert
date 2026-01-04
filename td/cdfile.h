@@ -73,8 +73,8 @@ class CDFileClass : public RawFileClass {
   static void Clear_Search_Drives(void);
   static void Refresh_Search_Drives(void);
   static void Set_CD_Drive(int drive);
-  static int Get_CD_Drive(void) { return (CurrentCDDrive); };
-  static int Get_Last_CD_Drive(void) { return (LastCDDrive); };
+  static int Get_CD_Drive(void) { return (current_cd_drive_); };
+  static int Get_Last_CD_Drive(void) { return (last_cd_drive_); };
 
  private:
   /*
@@ -104,12 +104,12 @@ class CDFileClass : public RawFileClass {
   /*
   ** The drive letter of the current cd drive
   */
-  static int CurrentCDDrive;
+  static int current_cd_drive_;
 
   /*
   ** The drive letter of the last used CD drive
   */
-  static int LastCDDrive;
+  static int last_cd_drive_;
 };
 
 #endif

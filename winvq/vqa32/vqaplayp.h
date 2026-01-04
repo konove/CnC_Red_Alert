@@ -333,7 +333,7 @@ typedef struct _VQAAudio {
   unsigned char Channels;
   unsigned char BitsPerSample;
   unsigned long BytesPerSec;
-  _SOS_COMPRESS_INFO ADPCM_Info;
+  SosCompressInfo ADPCM_Info;
   unsigned ChunksMovedToAudioBuffer;
 } VQAAudio;
 

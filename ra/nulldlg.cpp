@@ -6304,8 +6304,9 @@ int Com_Show_Scenario_Dialog(void) {
                           Session.Options.ScenarioDescription))
                     break;
 #endif
-                  if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
-                                                   0)) {
+                  if (!Get_Scenario_File_From_Host(
+                          Session.ScenarioFileName,
+                          sizeof(Session.ScenarioFileName), 0)) {
                     rc = false;
                     break;
                   } else {

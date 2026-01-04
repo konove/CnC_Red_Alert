@@ -1191,7 +1191,7 @@ static void Message_Input(KeyNumType &input) {
     */
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
       if (input == KN_F1 || input == (KN_F1 + Session.MaxPlayers - 1)) {
-        strcpy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+        strncpy(txt, Text_String(TXT_MESSAGE), sizeof(txt));  // "Message:"
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -1207,8 +1207,8 @@ static void Message_Input(KeyNumType &input) {
       *ObiWan mode) *	F8 = "To All:"
       */
       if (input == (KN_F1 + Session.MaxPlayers - 1)) {
-        Session.MessageAddress = IPXAddressClass();  // set to broadcast
-        strcpy(txt, Text_String(TXT_TO_ALL));        // "To All:"
+        Session.MessageAddress = IPXAddressClass();          // set to broadcast
+        strncpy(txt, Text_String(TXT_TO_ALL), sizeof(txt));  // "To All:"
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -3273,7 +3273,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
                                     SysMemPage.Get_Buffer()))) != nullptr) {
 #endif
       ptr = Get_Shape_Header_Data(ptr);
-#else   // WIN#@
+#else   // WIN32
     if (Build_Frame(shapefile, shapenum + framelp, HidPage.Get_Buffer()) <=
         (unsigned long)HidPage.Get_Size()) {
 #endif  // WIN32
@@ -3700,6 +3700,7 @@ long VQ_Call_Back(unsigned char *, long) {
   int key = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get();
+    fprintf(stderr, "[VQA] Key pressed: %d (ESC=%d)\n", key, KN_ESC);
     Keyboard->Clear();
   }
   Check_VQ_Palette_Set();
@@ -3717,7 +3718,8 @@ long VQ_Call_Back(unsigned char *, long) {
 #endif
   // Call_Back();
 
-  if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
+  // Mask off modifier bits (shift, ctrl, alt, etc) to get base key code
+  if ((BreakoutAllowed || Debug_Flag) && (key & 0xFF) == KN_ESC) {
     Keyboard->Clear();
     Brokeout = true;
     return (true);

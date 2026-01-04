@@ -339,21 +339,21 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
     VQA_sosCODECInitStream(&audio->ADPCM_Info);
 
     if (header->Version == VQAHD_VER1) {
-      audio->ADPCM_Info.wBitSize = 8;
-      audio->ADPCM_Info.dwUnCompSize = (22050L / header->FPS) * header->Frames;
-      audio->ADPCM_Info.wChannels = 1;
+      audio->ADPCM_Info.bit_size = 8;
+      audio->ADPCM_Info.uncomp_size = (22050L / header->FPS) * header->Frames;
+      audio->ADPCM_Info.channels = 1;
     } else {
-      audio->ADPCM_Info.wBitSize = audio->BitsPerSample;
-      audio->ADPCM_Info.dwUnCompSize =
+      audio->ADPCM_Info.bit_size = audio->BitsPerSample;
+      audio->ADPCM_Info.uncomp_size =
           (((audio->SampleRate / header->FPS) * (audio->BitsPerSample >> 3)) *
            audio->Channels) *
           header->Frames;
 
-      audio->ADPCM_Info.wChannels = audio->Channels;
+      audio->ADPCM_Info.channels = audio->Channels;
     }
 
-    audio->ADPCM_Info.dwCompSize =
-        audio->ADPCM_Info.dwUnCompSize / (audio->ADPCM_Info.wBitSize / 4);
+    audio->ADPCM_Info.comp_size =
+        audio->ADPCM_Info.uncomp_size / (audio->ADPCM_Info.bit_size / 4);
   }
 
   /*-------------------------------------------------------------------------
@@ -2404,9 +2404,9 @@ static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize) {
     }
 
     /* Uncompress the audio frame. */
-    audio->ADPCM_Info.lpSource = (char *)loadbuf;
-    audio->ADPCM_Info.lpDest = (char *)audio->Buffer;
-    VQA_sosCODECDecompressData(&audio->ADPCM_Info, uncomp_size);
+    audio->ADPCM_Info.source = loadbuf;
+    audio->ADPCM_Info.dest = audio->Buffer;
+    DecompressVqaSosData(&audio->ADPCM_Info, uncomp_size);
 
     /* Set buffer positions & flags */
     audio->AudBufPos += uncomp_size;
@@ -2426,9 +2426,9 @@ static long Load_SND2(VQAHandleP *vqap, unsigned long iffsize) {
   }
 
   /* Uncompress the audio frame. */
-  audio->ADPCM_Info.lpSource = (char *)loadbuf;
-  audio->ADPCM_Info.lpDest = (char *)audio->TempBuf;
-  VQA_sosCODECDecompressData(&audio->ADPCM_Info, uncomp_size);
+  audio->ADPCM_Info.source = loadbuf;
+  audio->ADPCM_Info.dest = audio->TempBuf;
+  DecompressVqaSosData(&audio->ADPCM_Info, uncomp_size);
 
   /* Set the TempBufLen */
   audio->TempBufLen = uncomp_size;

@@ -8,6 +8,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Disable for quick iteration: cmake -DSTRICT_CHECKS=OFF ..
 option(STRICT_CHECKS "Enable clang-tidy and extra compiler warnings" ON)
 
+# Option to enable AddressSanitizer for debugging memory issues
+option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
+
+if (ENABLE_ASAN)
+    message(STATUS "AddressSanitizer enabled")
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
+    add_link_options(-fsanitize=address)
+endif ()
+
 if (STRICT_CHECKS)
     set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")

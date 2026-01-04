@@ -2615,7 +2615,9 @@ static int Net_Join_Dialog(void) {
               break;
 #endif
 
-            if (!Get_Scenario_File_From_Host(Session.ScenarioFileName, 1)) {
+            if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
+                                             sizeof(Session.ScenarioFileName),
+                                             1)) {
               break;
             } else {
               /*
@@ -8939,7 +8941,9 @@ static int Net_Fake_Join_Dialog(void) {
                 break;
 #endif
 
-              if (!Get_Scenario_File_From_Host(Session.ScenarioFileName, 1)) {
+              if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
+                                             sizeof(Session.ScenarioFileName),
+                                             1)) {
                 break;
               } else {
                 /*
