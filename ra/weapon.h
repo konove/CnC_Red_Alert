@@ -43,10 +43,10 @@
 #include <stddef.h>
 
 #include "ra/ccini.h"
-#include "ra/noinit.h"
+#include "ra/defines.h"
 #include "ra/type.h"
 #include "ra/warhead.h"
-#include "ra/defines.h"
+#include "tech/noinit.h"
 
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects

@@ -44,14 +44,14 @@
 #include <cstdint>
 
 #include "ra/compat.h"
-#include "ra/noinit.h"
 #include "ra/palette.h"
-#include "ra/wwfile.h"
 #include "sdllib/include/buffer.h"
 #include "sdllib/include/iff.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/timer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /*
 **	Interface class to the keyboard. This insulates the game from library

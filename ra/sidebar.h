@@ -43,13 +43,13 @@
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
-#include "ra/noinit.h"
-#include "ra/pipe.h"
 #include "ra/power.h"
 #include "ra/shapebtn.h"
 #include "ra/stage.h"
-#include "ra/straw.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class InitClass {};
 

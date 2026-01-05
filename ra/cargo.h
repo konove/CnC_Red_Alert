@@ -41,7 +41,7 @@
 #define CARGO_H
 
 #include "ra/house.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	This class handles the basic cargo logic.
@@ -51,8 +51,8 @@ class CargoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  CargoClass(void) : Quantity(0), CargoHold(nullptr){};
-  CargoClass(NoInitClass const &){};
+  CargoClass(void) : Quantity(0), CargoHold(nullptr) {};
+  CargoClass(NoInitClass const &) {};
   ~CargoClass(void) { CargoHold = nullptr; };
 
   /*---------------------------------------------------------------------

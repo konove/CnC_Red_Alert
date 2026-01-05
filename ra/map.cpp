@@ -70,36 +70,37 @@
 #include "ra/map.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <new>
 
-#include "ra/anim.h"
-#include "ra/defines.h"
-#include "ra/externs.h"
-#include "ra/inline.h"
-#include "ra/lcwpipe.h"
-#include "ra/lcwstraw.h"
-#include "ra/session.h"
-#include "ra/tracker.h"
-#include "sdllib/include/memflag.h"
 #include "ra/abstract.h"
+#include "ra/anim.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/display.h"
-#include "ra/fixed.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/mouse.h"
 #include "ra/region.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/session.h"
 #include "ra/special.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/template.h"
+#include "ra/tracker.h"
 #include "ra/type.h"
+#include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/lcwpipe.h"
+#include "tech/lcwstraw.h"
 
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {

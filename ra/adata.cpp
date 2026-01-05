@@ -47,18 +47,18 @@
 
 #include "ra/adata.h"
 
-#include <stddef.h>
+#include <cstddef>
 #include <filesystem>
 
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
-#include "ra/rawfile.h"
 #include "ra/type.h"
+#include "tech/fixed.h"
+#include "tech/rawfile.h"
 
 static AnimTypeClass const AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.

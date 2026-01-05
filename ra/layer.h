@@ -40,9 +40,9 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/vector.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class ObjectClass;
 

@@ -127,7 +127,6 @@
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
-#include "ra/fixed.h"
 #include "ra/foot.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
@@ -142,7 +141,6 @@
 #include "ra/object.h"
 #include "ra/queue.h"
 #include "ra/radio.h"
-#include "ra/rect.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
@@ -157,6 +155,8 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/rect.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac

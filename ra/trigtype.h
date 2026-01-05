@@ -44,13 +44,13 @@
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/taction.h"
 #include "ra/tevent.h"
 #include "ra/type.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /*
 **	There can be multiple trigger events and trigger actions. This

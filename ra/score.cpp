@@ -61,7 +61,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
 #include "ra/house.h"
@@ -72,8 +71,6 @@
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"
-#include "ra/random.h"
-#include "ra/rgb.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
 #include "ra/theme.h"
@@ -88,6 +85,9 @@
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
+#include "tech/fixed.h"
+#include "tech/random.h"
+#include "tech/rgb.h"
 
 #define SCORETEXT_X 184
 #define SCORETEXT_Y 8

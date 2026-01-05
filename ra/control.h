@@ -41,8 +41,8 @@
 #define CONTROL_H
 
 #include "ra/gadget.h"
-#include "ra/noinit.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/noinit.h"
 
 /***************************************************************************
  * ControlClass -- Region tracking class
@@ -63,7 +63,7 @@
  *=========================================================================*/
 class ControlClass : public GadgetClass {
  public:
-  ControlClass(NoInitClass const& x) : GadgetClass(x){};
+  ControlClass(NoInitClass const& x) : GadgetClass(x) {};
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = LEFTPRESS | RIGHTPRESS, int sticky = false);
   ControlClass(ControlClass const& control);

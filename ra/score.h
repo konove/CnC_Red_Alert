@@ -40,13 +40,13 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class ScoreClass {
  public:

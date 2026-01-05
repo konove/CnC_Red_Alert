@@ -574,13 +574,13 @@
 #define TXT_THEME_WASTELND 553                     // Chaos
 #define TXT_CARRIER 554                            // Héliport Mobile
 
-#include "ra/rect.h"
-#include "ra/type.h"
-#include "sdllib/include/shape.h"
-#include "winvq/vqa32/vqaplay.h"
 #include "ra/defines.h"
 #include "ra/face.h"
+#include "ra/type.h"
+#include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/rect.h"
+#include "winvq/vqa32/vqaplay.h"
 
 void List_Copy(short const *source, int len, short *dest);
 int Get_CD_Index(int cd_drive, int timeout);

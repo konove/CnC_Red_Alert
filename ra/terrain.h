@@ -48,12 +48,12 @@
 #include "ra/face.h"
 #include "ra/inline.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
 #include "ra/stage.h"
-#include "ra/straw.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated
@@ -75,7 +75,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   static void operator delete(void *ptr);
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const &x)
-      : ObjectClass(x), Class(x), StageClass(x){};
+      : ObjectClass(x), Class(x), StageClass(x) {};
   virtual ~TerrainClass(void);
   operator TerrainType(void) const { return Class->Type; };
 

@@ -68,10 +68,10 @@
 #include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *

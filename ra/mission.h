@@ -42,11 +42,11 @@
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide

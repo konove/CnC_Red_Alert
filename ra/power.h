@@ -40,19 +40,19 @@
 #ifndef POWER_H
 #define POWER_H
 
-#include "ra/radar.h"
 #include "ra/defines.h"
 #include "ra/display.h"
-#include "ra/ftimer.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "ra/radar.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 class PowerClass : public RadarClass {
  public:
   PowerClass(void);
-  PowerClass(NoInitClass const &x) : RadarClass(x), FlashTimer(x){};
+  PowerClass(NoInitClass const &x) : RadarClass(x), FlashTimer(x) {};
 
   /*
   ** Initialization
@@ -76,7 +76,7 @@ class PowerClass : public RadarClass {
     PowerButtonClass(void)
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true){};
+                      true) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

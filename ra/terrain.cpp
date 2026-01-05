@@ -70,8 +70,10 @@
 
 #include "ra/anim.h"
 #include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
@@ -79,11 +81,9 @@
 #include "ra/mouse.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
-#include "sdllib/include/shape.h"
-#include "ra/conquer.h"
-#include "ra/coord.h"
-#include "ra/globals.h"
 #include "ra/target.h"
+#include "sdllib/include/shape.h"
+#include "tech/fixed.h"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.

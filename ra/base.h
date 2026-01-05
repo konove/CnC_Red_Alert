@@ -42,10 +42,10 @@
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
-#include "ra/vector.h"
 #include "ra/object.h"
+#include "ra/vector.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node

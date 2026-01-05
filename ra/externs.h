@@ -40,8 +40,8 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
+#include "mixfile.h"
 #include "ra/base.h"
-#include "ra/bench.h"
 #include "ra/building.h"
 #include "ra/carry.h"
 #include "ra/cell.h"
@@ -51,15 +51,14 @@
 #include "ra/infantry.h"
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
-#include "ra/mixfile.h"
 #include "ra/options.h"
 #include "ra/overlay.h"
 #include "ra/queue.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
+#include "tech/bench.h"
 // #include "ra/session.h"
 #include "ra/mouse.h"
-#include "ra/rndstraw.h"
 #include "ra/rules.h"
 #include "ra/smudge.h"
 #include "ra/taction.h"
@@ -73,6 +72,7 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "sdllib/include/playcd.h"
+#include "tech/rndstraw.h"
 
 #ifdef SCENARIO_EDITOR
 #include "ra/mapedit.h"

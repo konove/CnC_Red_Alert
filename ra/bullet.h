@@ -48,11 +48,11 @@
 #include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/fuse.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/type.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:

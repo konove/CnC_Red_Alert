@@ -42,13 +42,13 @@
 
 #include <stddef.h>
 
+#include "ra/defines.h"
+#include "ra/object.h"
 #include "ra/stage.h"
 #include "ra/type.h"
-#include "ra/defines.h"
-#include "ra/noinit.h"
-#include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class FactoryClass : private StageClass {
  public:
@@ -56,7 +56,7 @@ class FactoryClass : private StageClass {
   int ID;
 
   FactoryClass(void);
-  FactoryClass(NoInitClass const &x) : StageClass(x){};
+  FactoryClass(NoInitClass const &x) : StageClass(x) {};
   ~FactoryClass(void);
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };

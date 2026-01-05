@@ -47,16 +47,16 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/factory.h"
-#include "ra/ftimer.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
 #include "ra/radio.h"
-#include "ra/straw.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open

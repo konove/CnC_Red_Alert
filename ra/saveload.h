@@ -2,9 +2,9 @@
 #define CNC_RED_ALERT_RA_SAVELOAD_H_
 
 #include "ra/defines.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
-#include "ra/wwfile.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
+#include "tech/wwfile.h"
 
 bool Load_Misc_Values(Straw &file);
 bool Save_Misc_Values(Pipe &file);

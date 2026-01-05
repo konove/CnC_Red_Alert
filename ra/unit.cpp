@@ -109,45 +109,39 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/unit.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <algorithm>
 
-#include "ra/anim.h"
-#include "ra/combat.h"
-#include "ra/defines.h"
-#include "ra/face.h"
-#include "ra/inline.h"
-#include "ra/session.h"
-#include "ra/team.h"
-#include "ra/trigger.h"
-#include "ra/trigtype.h"
-#include "ra/vessel.h"
-#include "ra/weapon.h"
-#include "ra/ww_audio.h"
 #include "ra/abstract.h"
+#include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/combat.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/drive.h"
 #include "ra/externs.h"
+#include "ra/face.h"
 #include "ra/facing.h"
-#include "ra/fixed.h"
 #include "ra/foot.h"
-#include "ra/ftimer.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mission.h"
@@ -155,16 +149,24 @@
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/radio.h"
-#include "ra/rect.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/session.h"
 #include "ra/target.h"
+#include "ra/team.h"
 #include "ra/techno.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
 #include "ra/type.h"
-#include "ra/unit.h"
+#include "ra/vessel.h"
 #include "ra/warhead.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/rect.h"
 
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *

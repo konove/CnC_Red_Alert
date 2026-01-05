@@ -40,23 +40,23 @@
 
 #include "ra/visudlg.h"
 
-#include "ra/dialog.h"
-#include "ra/externs.h"
-#include "ra/session.h"
-#include "ra/slider.h"
-#include "ra/textbtn.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_mouse.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
-#include "ra/fixed.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"
+#include "ra/session.h"
+#include "ra/slider.h"
+#include "ra/textbtn.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *

@@ -43,7 +43,7 @@
 #include "ra/defines.h"
 #include "ra/link.h"
 #include "ra/techno.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 class CarryoverClass : public LinkClass {
  public:

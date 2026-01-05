@@ -40,7 +40,7 @@
 #ifndef BAR_H
 #define BAR_H
 
-#include "ra/fixed.h"
+#include "tech/fixed.h"
 
 /*
 **	This is a manager for a progress (or other) bargraph. Such a graph

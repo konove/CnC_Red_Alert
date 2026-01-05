@@ -53,22 +53,23 @@
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <new>
 
-#include "ra/defines.h"
-#include "ra/externs.h"
-#include "ra/map.h"
 #include "ra/cell.h"
+#include "ra/defines.h"
 #include "ra/display.h"
+#include "ra/externs.h"
 #include "ra/jshell.h"
+#include "ra/map.h"
 #include "ra/mouse.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
 #include "ra/scenario.h"
-#include "ra/straw.h"
 #include "ra/target.h"
 #include "ra/type.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /***********************************************************************************************
  * CellClass::Should_Save -- Should the cell be written to disk? *

@@ -43,8 +43,8 @@
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/mission.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore

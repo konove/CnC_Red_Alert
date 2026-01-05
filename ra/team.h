@@ -45,15 +45,15 @@
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/ftimer.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/monoc.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/teamtype.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /*
 ** Units are only allowed to stray a certain distance away from their

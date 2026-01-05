@@ -60,7 +60,6 @@
 #include "ra/jshell.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
-#include "ra/rawfile.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
 #include "ra/vector.h"
@@ -69,7 +68,8 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
-#include "ra/ftimer.h"
+#include "tech/ftimer.h"
+#include "tech/rawfile.h"
 
 bool Receive_Remote_File(char *file_name, unsigned int file_length,
                          int gametype);

@@ -47,7 +47,6 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"
@@ -64,6 +63,7 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 class MusicListClass : public ListClass {
  public:

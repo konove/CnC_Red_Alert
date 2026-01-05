@@ -42,7 +42,7 @@
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/fixed.h"
+#include "tech/fixed.h"
 
 class DifficultyClass {
  public:

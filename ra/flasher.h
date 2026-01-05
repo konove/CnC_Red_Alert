@@ -40,7 +40,7 @@
 #ifndef FLASHER_H
 #define FLASHER_H
 
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 class FlasherClass {
  public:
@@ -62,8 +62,8 @@ class FlasherClass {
     FlashCount = 0;
     IsBlushing = false;
   };
-  FlasherClass(NoInitClass const &){};
-  ~FlasherClass(void){};
+  FlasherClass(NoInitClass const &) {};
+  ~FlasherClass(void) {};
 
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass *mono) const;

@@ -43,7 +43,7 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 DirType Direction(CELL cell1, CELL cell2);
 DirType Direction(COORDINATE coord1, COORDINATE coord2);
@@ -86,9 +86,9 @@ class AbstractClass {
   **	Constructor & destructors.
   */
   AbstractClass(RTTIType rtti, int id)
-      : RTTI(rtti), ID(id), Coord(0xFFFFFFFFL), Height(0){};
+      : RTTI(rtti), ID(id), Coord(0xFFFFFFFFL), Height(0) {};
   AbstractClass(NoInitClass const& x) { x(); };
-  virtual ~AbstractClass(void){};
+  virtual ~AbstractClass(void) {};
 
   /*
   **	Query functions.

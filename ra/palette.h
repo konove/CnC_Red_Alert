@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_PALETTE_H_
 #define CNC_RED_ALERT_RA_PALETTE_H_
 
-#include "ra/rgb.h"
+#include "tech/rgb.h"
 
 class PaletteClass {
  public:

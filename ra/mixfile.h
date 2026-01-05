@@ -23,10 +23,10 @@
 
 #include <cstdint>
 
-#include "ra/buff.h"
-#include "ra/ccfile.h"
+#include "ra/ccfile.h"  // IWYU pragma: keep
 #include "ra/listnode.h"
-#include "ra/pk.h"
+#include "tech/buff.h"
+#include "tech/pk.h"
 
 template <class T>
 class MixFileClass : public Node<MixFileClass<T> > {

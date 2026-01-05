@@ -43,13 +43,13 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/foot.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/unit.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.

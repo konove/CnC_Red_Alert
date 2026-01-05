@@ -43,13 +43,13 @@
 #include <stddef.h>
 
 #include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/object.h"
 #include "ra/tevent.h"
 #include "ra/trigtype.h"
-#include "ra/defines.h"
-#include "ra/noinit.h"
-#include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class TriggerClass {
  public:
@@ -68,7 +68,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass(TriggerTypeClass* trigtype = nullptr);
-  TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x){};
+  TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x) {};
   ~TriggerClass(void);
 
   /*

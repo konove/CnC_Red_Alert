@@ -49,10 +49,9 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
-#include "ra/rawfile.h"
+#include "ra/queue.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/sidebar.h"
@@ -61,7 +60,8 @@
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
-#include "ra/queue.h"
+#include "tech/fixed.h"
+#include "tech/rawfile.h"
 
 void const *TabClass::TabShape = nullptr;
 
@@ -119,7 +119,7 @@ void TabClass::Draw_It(bool complete) {
 
     LogicPage->Fill_Rect(0, 0, rightx, tab_height - 1, BLACK);
     //		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * RESFACTOR),
-    //BLACK);
+    // BLACK);
 
 #ifdef WIN32
     /*
@@ -139,7 +139,7 @@ void TabClass::Draw_It(bool complete) {
 #else
     //			Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH/2)
     //* RESFACTOR, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
-    //TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
+    // TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
     Fancy_Text_Print(
         TXT_TAB_BUTTON_CONTROLS, (EVA_WIDTH / 2) * RESFACTOR, 0,
         &ColorRemaps[PCOLOR_GREY], TBLACK,
@@ -215,7 +215,7 @@ void TabClass::Hilite_Tab(int tab) {
   Fancy_Text_Print(text, textx, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
                    TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
 //	Fancy_Text_Print(text, textx, 0, &ColorRemaps[PCOLOR_GREY], TBLACK,
-//TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
+// TPF_6PT_GRAD|TPF_NOSHADOW|TPF_CENTER|TPF_BRIGHT_COLOR);
 #endif
 }
 

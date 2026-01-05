@@ -147,7 +147,6 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/factory.h"
-#include "ra/fixed.h"
 #include "ra/foot.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
@@ -181,6 +180,7 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 enum SAMState {
   SAM_READY,  // Launcher can be facing any direction tracking targets.

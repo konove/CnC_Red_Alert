@@ -40,22 +40,22 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "ra/gscreen.h"
-#include "ra/crate.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/crate.h"
 #include "ra/defines.h"
+#include "ra/gscreen.h"
 #include "ra/house.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/vector.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class MapClass : public GScreenClass {
  public:
-  MapClass(void){};
-  MapClass(NoInitClass const &x) : GScreenClass(x), Array(x){};
+  MapClass(void) {};
+  MapClass(NoInitClass const &x) : GScreenClass(x), Array(x) {};
 
   /*
   ** Initialization

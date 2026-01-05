@@ -46,11 +46,11 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/house.h"
-#include "ra/noinit.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/target.h"
 #include "ra/type.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /*
 **	TeamMissionType: the various missions that a team can have.

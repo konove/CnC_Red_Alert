@@ -45,16 +45,16 @@
 #include "ra/gauge.h"
 
 #include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/jshell.h"
-#include "ra/defines.h"
-#include "ra/fixed.h"
 #include "ra/gadget.h"
+#include "ra/jshell.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 /***************************************************************************
  * GaugeClass::GaugeClass -- class constructor                             *
@@ -193,7 +193,7 @@ int GaugeClass::Value_To_Pixel(int value) {
   maximum -= 2;
   return (start + maximum * fixed(value, MaxValue));
   //	return(start + Fixed_To_Cardinal(maximum, Cardinal_To_Fixed(MaxValue,
-  //value)));
+  // value)));
 }
 
 /***********************************************************************************************

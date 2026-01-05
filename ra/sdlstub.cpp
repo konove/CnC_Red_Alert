@@ -1,11 +1,11 @@
 // more portable replacements for winstub
 
 #include "ra/externs.h"
-#include "sdllib/include/ww_win.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 
 // #include <SDL.h>  // sdl includes leaking into the rest of the code is bad
 

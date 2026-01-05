@@ -47,10 +47,10 @@
   16  // Number of frames in one complete rotation of the vortex.
 #include "ra/defines.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/palette.h"
 #include "sdllib/include/gbuffer.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 class ChronalVortexClass {
  public:

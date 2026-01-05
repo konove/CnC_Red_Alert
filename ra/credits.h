@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_CREDITS_H_
 #define CNC_RED_ALERT_RA_CREDITS_H_
 
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.
@@ -53,7 +53,7 @@ class CreditClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   CreditClass(void);
-  CreditClass(NoInitClass const&){};
+  CreditClass(NoInitClass const&) {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

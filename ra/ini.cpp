@@ -75,20 +75,16 @@
 #include <cstdio>
 #include <cstring>
 
-#include "ra/b64pipe.h"
-#include "ra/b64straw.h"
-#include "ra/int.h"
-#include "ra/readline.h"
-#include "ra/xpipe.h"
-#include "ra/xstraw.h"
+#include "tech/b64pipe.h"
+#include "tech/b64straw.h"
+#include "tech/int.h"
+#include "tech/readline.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 
 #ifdef FIXIT_FAST_LOAD
-#include "ra/cstraw.h"
+#include "tech/cstraw.h"
 #endif
-
-// Disable the "temporary object used to initialize a non-constant reference"
-// warning.
-#pragma warning 665 9
 
 /***********************************************************************************************
  * INIClass::~INIClass -- Destructor for INI handler. *

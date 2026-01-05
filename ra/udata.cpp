@@ -55,6 +55,7 @@
  *- - - - - - - */
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <filesystem>
 #include <string>
@@ -73,9 +74,9 @@
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/object.h"
-#include "ra/rawfile.h"
 #include "ra/type.h"
 #include "ra/unit.h"
+#include "tech/rawfile.h"
 
 /*
 **	This is the list of animation stages to use when the harvester

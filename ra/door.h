@@ -39,8 +39,8 @@
 
 #ifndef DOOR_H
 #define DOOR_H
-#include "ra/noinit.h"
 #include "ra/stage.h"
+#include "tech/noinit.h"
 
 class DoorClass {
  private:
@@ -73,7 +73,7 @@ class DoorClass {
 
  public:
   DoorClass(void);
-  DoorClass(NoInitClass const& x) : Control(x){};
+  DoorClass(NoInitClass const& x) : Control(x) {};
 
   bool Time_To_Redraw(void) { return (IsToRedraw); };
   void Clear_Redraw_Flag(void) { IsToRedraw = false; };

@@ -5,10 +5,10 @@
 #include <cstring>
 
 #include "ra/externs.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_win.h"
+#include "tech/ftimer.h"
 
 PaletteClass PaletteClass::CurrentPalette;
 

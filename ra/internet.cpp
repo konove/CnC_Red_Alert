@@ -70,7 +70,6 @@
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/profile.h"
-#include "ra/rawfile.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/startup.h"
@@ -83,6 +82,7 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/rawfile.h"
 
 extern bool SpawnedFromWChat;
 

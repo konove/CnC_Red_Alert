@@ -49,12 +49,12 @@
 #include "ra/ipxaddr.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
 #include "ra/special.h"
-#include "ra/straw.h"
 #include "ra/target.h"
 #include "ra/vector.h"
 #include "ra/version.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 //---------------------------------------------------------------------------
 // Defines

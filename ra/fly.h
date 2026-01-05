@@ -42,7 +42,7 @@
 
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 typedef enum ImpactType {
   IMPACT_NONE,    // No movement (of significance) occurred.
@@ -58,9 +58,9 @@ class FlyClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FlyClass(void) : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE){};
-  FlyClass(NoInitClass const &){};
-  ~FlyClass(void){};
+  FlyClass(void) : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE) {};
+  FlyClass(NoInitClass const &) {};
+  ~FlyClass(void) {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

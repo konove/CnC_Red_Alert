@@ -44,15 +44,13 @@
 
 #include <algorithm>
 
+#include "ra/abstract.h"
+#include "ra/cell.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
-#include "ra/warhead.h"
-#include "ra/abstract.h"
-#include "ra/cell.h"
-#include "ra/coord.h"
-#include "ra/fixed.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
@@ -61,6 +59,8 @@
 #include "ra/smudge.h"
 #include "ra/special.h"
 #include "ra/type.h"
+#include "ra/warhead.h"
+#include "tech/fixed.h"
 
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *

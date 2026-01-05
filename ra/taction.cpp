@@ -61,10 +61,10 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -94,8 +94,8 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
-#include "ra/conquer.h"
-#include "ra/ftimer.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
 
 /*
 **	These are the text names for the various actions. If the action name

@@ -45,24 +45,24 @@
 
 #include "ra/overlay.h"
 
-#include <assert.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdlib>
 
-#include "ra/externs.h"
-#include "ra/inline.h"
-#include "ra/lcwpipe.h"
-#include "ra/lcwstraw.h"
-#include "ra/session.h"
-#include "ra/xpipe.h"
-#include "ra/xstraw.h"
 #include "ra/abstract.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/externs.h"
 #include "ra/heap.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
+#include "ra/session.h"
+#include "tech/lcwpipe.h"
+#include "tech/lcwstraw.h"
+#include "tech/xpipe.h"
+#include "tech/xstraw.h"
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 

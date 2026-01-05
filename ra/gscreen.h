@@ -42,9 +42,9 @@
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
-#include "ra/noinit.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/noinit.h"
 
 class GScreenClass {
  public:

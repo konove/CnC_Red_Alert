@@ -41,9 +41,9 @@
 #define CRATE_H
 
 #include "ra/defines.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 class CrateClass {
  public:

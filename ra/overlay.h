@@ -42,15 +42,15 @@
 
 #include <stddef.h>
 
-#include "ra/globals.h"
-#include "ra/object.h"
-#include "ra/type.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/noinit.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
+#include "ra/globals.h"
+#include "ra/object.h"
+#include "ra/type.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function
@@ -71,7 +71,7 @@ class OverlayClass : public ObjectClass {
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(x){};
+  OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(x) {};
   virtual ~OverlayClass(void) {
     if (GameActive) OverlayClass::Limbo();
     Class = nullptr;

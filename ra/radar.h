@@ -40,18 +40,18 @@
 #ifndef RADAR_H
 #define RADAR_H
 
-#include "ra/display.h"
 #include "ra/defines.h"
+#include "ra/display.h"
 #include "ra/gadget.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/noinit.h"
 
 class RadarClass : public DisplayClass {
  public:
   RadarClass(void);
-  RadarClass(NoInitClass const &x) : DisplayClass(x){};
+  RadarClass(NoInitClass const &x) : DisplayClass(x) {};
 
   /*
   **	The dimensions and coordinates of the radar map.
@@ -170,7 +170,7 @@ class RadarClass : public DisplayClass {
     RTacticalClass(void)
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true){};
+                      true) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

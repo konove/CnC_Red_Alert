@@ -101,8 +101,6 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/facing.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
@@ -123,7 +121,6 @@
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
-#include "ra/random.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
@@ -142,6 +139,9 @@
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/random.h"
 
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"

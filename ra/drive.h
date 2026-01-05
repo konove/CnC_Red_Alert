@@ -40,12 +40,12 @@
 #ifndef DRIVE_H
 #define DRIVE_H
 
-#include "ra/foot.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/ftimer.h"
+#include "ra/foot.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
@@ -98,8 +98,8 @@ class DriveClass : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   DriveClass(RTTIType rtti, int id, HousesType house);
-  DriveClass(NoInitClass const &x) : FootClass(x), MoebiusCountDown(x){};
-  virtual ~DriveClass(void){};
+  DriveClass(NoInitClass const &x) : FootClass(x), MoebiusCountDown(x) {};
+  virtual ~DriveClass(void) {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

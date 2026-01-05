@@ -50,15 +50,12 @@
 #include "ra/egos.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
 #include "ra/palette.h"
-#include "ra/rndstraw.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/version.h"
@@ -70,6 +67,9 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/rndstraw.h"
 
 /*****************************
 **	Function prototypes

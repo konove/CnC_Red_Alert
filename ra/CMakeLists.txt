@@ -1,59 +1,3 @@
-add_library(tech STATIC
-        b64pipe.cpp
-        b64straw.cpp
-        base64.cpp
-        bench.cpp
-        bfiofile.cpp
-        blowfish.cpp
-        blowpipe.cpp
-        blwstraw.cpp
-        buff.cpp
-        cdfile.cpp
-        crc.cpp
-        crcpipe.cpp
-        crcstraw.cpp
-        fixed.cpp
-        hsv.cpp
-        ini.cpp
-        int.cpp
-        lcw.cpp
-        lcwpipe.cpp
-        lcwstraw.cpp
-        lcwuncmp.cpp
-        lzo1x_c.cpp
-        lzo1x_d.cpp
-        lzopipe.cpp
-        lzostraw.cpp
-        lzw.cpp
-        lzwpipe.cpp
-        lzwstraw.cpp
-        mixfile.cpp
-        monoc.cpp
-        mp.cpp
-        mpu.cpp
-        palette.cpp
-        pipe.cpp
-        pk.cpp
-        pkpipe.cpp
-        pkstraw.cpp
-        ramfile.cpp
-        random.cpp
-        rawfile.cpp
-        readline.cpp
-        rect.cpp
-        rgb.cpp
-        rndstraw.cpp
-        sendfile.cpp
-        sha.cpp
-        shapipe.cpp
-        shastraw.cpp
-        straw.cpp
-        xpipe.cpp
-        xstraw.cpp
-)
-target_link_libraries(tech sdllib port vqa32)
-target_compile_definitions(tech PUBLIC WINSOCK_IPX=1)
-
 add_executable(rasdl WIN32
         aadata.cpp
         abstract.cpp
@@ -145,6 +89,8 @@ add_executable(rasdl WIN32
         mapsel.cpp
         menus.cpp
         mission.cpp
+        mixfile.cpp
+        monoc.cpp
         mouse.cpp
         mplayer.cpp
         msgbox.cpp
@@ -157,6 +103,7 @@ add_executable(rasdl WIN32
         odata.cpp
         options.cpp
         overlay.cpp
+        palette.cpp
         power.cpp
         profile.cpp
         queue.cpp
@@ -169,6 +116,7 @@ add_executable(rasdl WIN32
         score.cpp
         scroll.cpp
         sdata.cpp
+        sendfile.cpp
         session.cpp
         shapebtn.cpp
         sidebar.cpp

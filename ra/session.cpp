@@ -75,12 +75,12 @@
 #include "ra/map.h"
 #include "ra/mouse.h"
 #include "ra/queue.h"
-#include "ra/rawfile.h"
 #include "ra/unit.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/file.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/rawfile.h"
 
 #ifndef PORTABLE
 #include <dos.h>  // for station ID computation

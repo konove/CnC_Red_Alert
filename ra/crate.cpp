@@ -43,15 +43,15 @@
 
 #include "ra/crate.h"
 
-#include "ra/defines.h"
-#include "ra/inline.h"
 #include "ra/cell.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
+#include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
 #include "ra/overlay.h"
 #include "ra/rules.h"
+#include "tech/fixed.h"
 
 /***********************************************************************************************
  * CrateClass::Remove_It -- Removes the crate from wherever it is. *

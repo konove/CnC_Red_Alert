@@ -55,7 +55,6 @@
 
 #include "ra/cell.h"
 #include "ra/externs.h"
-#include "ra/ftimer.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -66,6 +65,7 @@
 #include "ra/target.h"
 #include "ra/tracker.h"
 #include "ra/vector.h"
+#include "tech/ftimer.h"
 
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************

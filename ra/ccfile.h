@@ -42,9 +42,9 @@
 
 #include <cstdio>
 
-#include "ra/buff.h"
-#include "ra/cdfile.h"
 #include "ra/compat.h"
+#include "tech/buff.h"
+#include "tech/cdfile.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).

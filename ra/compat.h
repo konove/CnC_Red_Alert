@@ -97,41 +97,6 @@ typedef enum MenuIndexType {
   MENUPADDING = 0x1000
 } MenuIndexType;
 
-#ifdef NEVER
-#define BITSPERBYTE 8
-#define MAXSHORT 0x7FFF
-#define HIBITS 0x8000
-#define MAXLONG 0x7FFFFFFFL
-#define HIBITL 0x80000000
-
-#define MAXINT MAXLONG
-#define HIBITI HIBITL
-
-#define DMAXEXP 308
-#define FMAXEXP 38
-#define DMINEXP -307
-#define FMINEXP -37
-
-#define MAXDOUBLE 1.797693E+308
-#define MAXFLOAT 3.37E+38F
-#define MINDOUBLE 2.225074E-308
-#define MINFLOAT 8.43E-37F
-
-#define DSIGNIF 53
-#define FSIGNIF 24
-
-#define DMAXPOWTWO 0x3FF
-#define FMAXPOWTWO 0x7F
-#define DEXPLEN 11
-#define FEXPLEN 8
-#define EXPBASE 2
-#define IEEE 1
-#define LENBASE 1
-#define HIDDENBIT 1
-#define LN_MAXDOUBLE 7.0978E+2
-#define LN_MINDOUBLE -7.0840E+2
-#endif
-
 /* These defines handle the various names given to the same color. */
 #define DKGREEN GREEN
 #define DKBLUE BLUE
@@ -141,26 +106,6 @@ typedef enum MenuIndexType {
 #define LTGRAY LTGREY
 
 class IconsetClass;
-#ifndef WIN32
-typedef struct {
-  short Width;      // Width of icons (pixels).
-  short Height;     // Height of icons (pixels).
-  short Count;      // Number of (logical) icons in this set.
-  short Allocated;  // Was this iconset allocated?
-  short MapWidth;   // Width of map (in icons).
-  short MapHeight;  // Height of map (in icons).
-  long Size;        // Size of entire iconset memory block.
-  long Icons;       // Offset from buffer start to icon data.
-  //	unsigned char * Icons;	// Offset from buffer start to icon data.
-  long Palettes;   // Offset from buffer start to palette data.
-  long Remaps;     // Offset from buffer start to remap index data.
-  long TransFlag;  // Offset for transparency flag table.
-  long ColorMap;   // Offset for color control value table.
-  long Map;        // Icon map offset (if present).
-  //	unsigned char * Map;				// Icon map offset (if
-  // present).
-} IControl_Type;
-#endif
 
 inline int Get_IconSet_MapWidth(void const *data) {
   if (data) {

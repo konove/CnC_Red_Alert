@@ -48,18 +48,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <cstdarg>
 #include <cstring>
 
 #include "ra/ccfile.h"
 #include "ra/monoc.h"
 #include "ra/startup.h"
-#include "ra/wwfile.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
-#include "ra/rgb.h"
 #include "sdllib/include/tile.h"
 #include "sdllib/include/ww_win.h"
+#include "tech/rgb.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

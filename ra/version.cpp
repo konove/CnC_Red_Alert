@@ -54,7 +54,7 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/rawfile.h"
+#include "tech/rawfile.h"
 
 /****************************** Globals ************************************/
 //---------------------------------------------------------------------------

@@ -67,7 +67,6 @@
 #include "ra/factory.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
-#include "ra/noinit.h"
 #include "ra/overlay.h"
 #include "ra/smudge.h"
 #include "ra/team.h"
@@ -81,6 +80,7 @@
 #include "ra/vessel.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
+#include "tech/noinit.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

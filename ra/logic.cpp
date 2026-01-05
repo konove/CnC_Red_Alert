@@ -42,17 +42,10 @@
 #include "ra/logic.h"
 
 #include "ra/anim.h"
-#include "ra/externs.h"
-#include "ra/team.h"
-#include "ra/trigger.h"
-#include "ra/vortex.h"
-#include "ra/ww_audio.h"
-#include "session.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
+#include "ra/externs.h"
 #include "ra/factory.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -62,9 +55,16 @@
 #include "ra/scenario.h"
 #include "ra/special.h"
 #include "ra/target.h"
+#include "ra/team.h"
 #include "ra/tevent.h"
+#include "ra/trigger.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vortex.h"
+#include "ra/ww_audio.h"
+#include "session.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
 
 static unsigned FramesPerSecond = 0;
 
@@ -394,7 +394,7 @@ void LogicClass::AI(void) {
     }
   }
 #else  //	AI() is called redundantly 12 times in multiplayer games here.
-       //ajw
+       // ajw
   for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
     HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr && hptr->IsActive) {

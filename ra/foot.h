@@ -43,15 +43,15 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/target.h"
 #include "ra/techno.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects

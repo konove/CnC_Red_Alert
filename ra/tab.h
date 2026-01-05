@@ -42,16 +42,16 @@
 
 #include "ra/credits.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/sidebar.h"
 #include "sdllib/include/keyboard.h"
-#include "ra/ftimer.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 class TabClass : public SidebarClass {
  public:
   TabClass(void);
   TabClass(NoInitClass const &x)
-      : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x){};
+      : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {};
 
   virtual void AI(KeyNumType &input, int x, int y);
   virtual void Draw_It(bool complete = false);

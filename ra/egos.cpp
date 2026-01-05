@@ -44,25 +44,25 @@
 
 #include <cstring>
 
+#include "ra/ccfile.h"
+#include "ra/conquer.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
-#include "ra/graphics_loader.h"
-#include "ra/vector.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/memflag.h"
-#include "ra/ccfile.h"
-#include "ra/conquer.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/goptions.h"
+#include "ra/graphics_loader.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
+#include "ra/vector.h"
 #include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
 
 /*
 ** List of Ego Class instances

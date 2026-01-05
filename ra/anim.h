@@ -44,13 +44,13 @@
 
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/fixed.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/stage.h"
-#include "ra/straw.h"
 #include "ra/type.h"
-#include "ra/wwfile.h"
+#include "tech/fixed.h"
+#include "tech/noinit.h"
+#include "tech/straw.h"
+#include "tech/wwfile.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape
@@ -66,7 +66,7 @@ class AnimClass : public ObjectClass, public StageClass {
  public:
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
-  AnimClass(NoInitClass const &x) : ObjectClass(x), Class(x), StageClass(x){};
+  AnimClass(NoInitClass const &x) : ObjectClass(x), Class(x), StageClass(x) {};
   virtual ~AnimClass(void);
 
   operator AnimType(void) const { return Class->Type; };

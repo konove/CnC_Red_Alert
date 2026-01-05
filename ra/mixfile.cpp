@@ -58,17 +58,17 @@
 #include <filesystem>
 
 #include "port/ex_string.h"
-#include "ra/buff.h"
 #include "ra/ccfile.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
-#include "ra/pkstraw.h"
-#include "ra/shastraw.h"
 #include "ra/startup.h"
-#include "ra/straw.h"
-#include "ra/xstraw.h"
 #include "sdllib/include/misc.h"
+#include "tech/buff.h"
+#include "tech/pkstraw.h"
+#include "tech/shastraw.h"
+#include "tech/straw.h"
+#include "tech/xstraw.h"
 
 extern MFCD temp;
 

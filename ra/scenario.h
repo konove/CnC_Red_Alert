@@ -42,10 +42,10 @@
 
 #include "port/ex_string.h"
 #include "ra/defines.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/random.h"
-#include "ra/fixed.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/random.h"
 
 /*
 **	This class holds the information about the current game being played.
@@ -61,7 +61,7 @@ class ScenarioClass {
   void Set_Scenario_Name(int scenario, ScenarioPlayerType player,
                          ScenarioDirType dir = SCEN_DIR_NONE,
                          ScenarioVarType var = SCEN_VAR_NONE);
-  void Set_Scenario_Name(char const* name);
+  void Set_Scenario_Name(char const *name);
 
   bool Set_Global_To(int global, bool value);
   void Do_BW_Fade(void);
@@ -321,16 +321,16 @@ class ScenarioClass {
 
 #ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
   //	Timer to set the period for checking if an auto-sonar pulse should be
-  //performed. 	This will take place if a player has nothing but subs left in the
-  //game.
+  // performed. 	This will take place if a player has nothing but subs
+  // left in the game.
   CDTimerClass<FrameTimerClass> AutoSonarTimer;
 #endif
 
 #ifdef FIXIT_VERSION_3      //	Stalemate games.
   bool bLocalProposesDraw;  //	True if the local player in a 2-player game has
-                            //a draw offer extended.
+                            // a draw offer extended.
   bool bOtherProposesDraw;  //	True if the other player in a 2-player game has
-                            //a draw offer extended.
+                            // a draw offer extended.
 #endif
 };
 

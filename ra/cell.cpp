@@ -93,14 +93,17 @@
 #include <algorithm>
 #include <cassert>
 
+#include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/combat.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/foot.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -131,11 +134,8 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
-#include "ra/abstract.h"
-#include "ra/conquer.h"
-#include "ra/const.h"
-#include "ra/coord.h"
-#include "ra/ftimer.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *

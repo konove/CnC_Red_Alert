@@ -40,9 +40,9 @@
 #ifndef STAGE_H
 #define STAGE_H
 
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 class StageClass {
   /*
@@ -66,8 +66,8 @@ class StageClass {
   int Rate;
 
  public:
-  StageClass(void) : Stage(0), Timer(0), Rate(0){};
-  StageClass(NoInitClass const& x) : Timer(x){};
+  StageClass(void) : Stage(0), Timer(0), Rate(0) {};
+  StageClass(NoInitClass const& x) : Timer(x) {};
 
   int Fetch_Stage(void) const { return (Stage); };
   int Fetch_Rate(void) const { return (Rate); };

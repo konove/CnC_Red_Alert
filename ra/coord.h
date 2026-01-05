@@ -3,7 +3,7 @@
 
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/rect.h"
+#include "tech/rect.h"
 
 short const *Coord_Spillage_List(COORDINATE coord, Rect const &rect,
                                  bool nocenter = true);

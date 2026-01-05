@@ -58,8 +58,8 @@
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
-#include "ra/rawfile.h"
 #include "ra/startup.h"
+#include "tech/rawfile.h"
 
 /***********************************************************************************************
  * CCFileClass::CCFileClass -- Filename based constructor for C&C file. *

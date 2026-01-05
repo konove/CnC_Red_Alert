@@ -145,8 +145,6 @@
 #include "ra/edit.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/globals.h"
@@ -165,7 +163,6 @@
 #include "ra/msglist.h"
 #include "ra/palette.h"
 #include "ra/queue.h"
-#include "ra/random.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
@@ -186,6 +183,9 @@
 #include "sdllib/include/timer.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/random.h"
 
 #define SHOW_MONO 0
 // #define OLDWAY			1

@@ -63,13 +63,13 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/vector.h"
+#include "ra/version.h"
 #include "ra/wolstrng.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
-#include "ra/version.h"
 
 bool RedrawOptionsMenu;
 

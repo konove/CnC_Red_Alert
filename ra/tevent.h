@@ -43,11 +43,11 @@
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 /*
 **	These are the trigger events that are checked for and if qualified, they

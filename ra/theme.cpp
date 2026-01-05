@@ -55,21 +55,22 @@
 #include "ra/theme.h"
 
 #include <string.h>
+
 #include <filesystem>
 
-#include "ra/conquer.h"
-#include "ra/defines.h"
-#include "ra/inline.h"
-#include "sdllib/include/ww_audio.h"
-#include "session.h"
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/scenario.h"
+#include "sdllib/include/ww_audio.h"
+#include "session.h"
+#include "tech/fixed.h"
 
 #ifndef WIN32
 extern short StreamLowImpact;

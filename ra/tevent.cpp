@@ -56,7 +56,6 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -68,6 +67,7 @@
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 /*
 **	This is the text name for all of the trigger events. These are used by
@@ -265,7 +265,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 
     case TEVENT_MISSION_TIMER_EXPIRED:
       //			if (MissionSuspend == -1 || MissionTimer != 0)
-      //return(false);
+      // return(false);
       if (!Scen.MissionTimer.Is_Active() || Scen.MissionTimer != 0)
         return (false);
       return (true);
@@ -338,7 +338,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
           TeamClass* ptr = Teams.Ptr(index);
           if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
             //					if (ptr->Class == Team &&
-            //ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {
+            // ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {
             td.IsTripped = true;
             break;
           }

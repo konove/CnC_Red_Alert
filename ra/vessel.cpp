@@ -78,38 +78,38 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ra/monoc.h"
+#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
-#include "ra/externs.h"
-#include "ra/inline.h"
-#include "ra/session.h"
-#include "ra/team.h"
-#include "ra/trigger.h"
-#include "ra/trigtype.h"
-#include "ra/weapon.h"
-#include "ra/ww_audio.h"
-#include "ra/abstract.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/display.h"
-#include "ra/fixed.h"
+#include "ra/externs.h"
 #include "ra/foot.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
+#include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mission.h"
-#include "ra/monoc.h"
 #include "ra/mouse.h"
-#include "ra/rect.h"
 #include "ra/rules.h"
+#include "ra/session.h"
 #include "ra/target.h"
+#include "ra/team.h"
 #include "ra/teamtype.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
 #include "ra/unit.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/rect.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *
@@ -334,7 +334,8 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
     }
 
     TechnoClass *techno = cellptr->Cell_Techno();
-    if (techno != nullptr && techno->Cloak == CLOAKED && !House->Is_Ally(techno)) {
+    if (techno != nullptr && techno->Cloak == CLOAKED &&
+        !House->Is_Ally(techno)) {
       return (MOVE_CLOAK);
     }
 
@@ -1490,7 +1491,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
 
         if (!IsDriving && !IsRotating) {
           //				if (!IsDriving && !IsRotating &&
-          //!IsTethered) {
+          //! IsTethered) {
 
           /*
           **	If the potential passenger needs someplace to go, then figure
@@ -1672,7 +1673,8 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass *passenger,
       bestdir = face;
       //		} else {
       //			ObjectClass * obj =
-      //Map[cellnum].Cell_Occupier(); 			if (obj) obj->Scatter(Coord, true);
+      // Map[cellnum].Cell_Occupier(); 			if (obj)
+      // obj->Scatter(Coord, true);
     }
   }
 
@@ -1950,8 +1952,8 @@ int VesselClass::Mission_Retreat(void) {
       IsALoaner = true;
       if (!Target_Legal(NavCom)) {
         //				CELL cell =
-        //Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
-        //Team->Class->Origin : -1, -1, Class->Speed);
+        // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
+        // Team->Class->Origin : -1, -1, Class->Speed);
         CELL cell = Map.Calculated_Cell(
             House->Control.Edge, (Team.Is_Valid()) ? Team->Class->Origin : -1,
             Coord_Cell(Center_Coord()), Class->Speed);
@@ -2057,7 +2059,7 @@ void VesselClass::Read_INI(CCINIClass &ini) {
             if (vessel->Strength > vessel->Class->MaxStrength - 3)
               vessel->Strength = vessel->Class->MaxStrength;
             //						vessel->Strength =
-            //Fixed_To_Cardinal(vessel->Class->MaxStrength, strength);
+            // Fixed_To_Cardinal(vessel->Class->MaxStrength, strength);
             if (Session.Type == GAME_NORMAL || vessel->House->IsHuman) {
               vessel->Assign_Mission(mission);
               vessel->Commence();

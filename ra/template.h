@@ -46,10 +46,10 @@
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/type.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function
@@ -70,7 +70,7 @@ class TemplateClass : public ObjectClass {
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(x){};
+  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(x) {};
   virtual ~TemplateClass(void) {
     if (GameActive) TemplateClass::Limbo();
     Class = nullptr;

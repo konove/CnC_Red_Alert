@@ -40,7 +40,7 @@
 #ifndef LINK_H
 #define LINK_H
 
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
@@ -49,8 +49,8 @@
 */
 class LinkClass {
  public:
-  LinkClass(NoInitClass const &){};
-  LinkClass(void) : Next(nullptr), Prev(nullptr){};
+  LinkClass(NoInitClass const &) {};
+  LinkClass(void) : Next(nullptr), Prev(nullptr) {};
   virtual ~LinkClass(void);
 
   virtual LinkClass *Get_Next(void) const;

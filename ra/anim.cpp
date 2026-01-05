@@ -72,7 +72,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
@@ -84,7 +83,6 @@
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/palette.h"
-#include "ra/rect.h"
 #include "ra/rules.h"
 #include "ra/session.h"
 #include "ra/smudge.h"
@@ -95,6 +93,8 @@
 #include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/shape.h"
+#include "tech/fixed.h"
+#include "tech/rect.h"
 #define VIC 1
 
 /***********************************************************************************************

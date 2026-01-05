@@ -44,14 +44,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <cctype>
 #include <cstring>
 
 #include "port/ex_string.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
-#include "ra/readline.h"
-#include "ra/wwfile.h"
+#include "tech/readline.h"
+#include "tech/wwfile.h"
 
 static char *WriteBinBuffer = nullptr;
 static int WriteBinBufferLen = 0;
@@ -87,18 +88,18 @@ bool Read_Private_Config_Struct(FileClass &file, NewConfigType *config) {
                  sizeof(config->Language));
 
   //	config->DigitCard 	= WWGetPrivateProfileHex("Sound", "Card",
-  //profile); 	config->IRQ 			=
-  //WWGetPrivateProfileInt("Sound", "IRQ", 			 0,profile);
+  // profile); 	config->IRQ 			=
+  // WWGetPrivateProfileInt("Sound", "IRQ", 			 0,profile);
   //	config->DMA 			= WWGetPrivateProfileInt("Sound", "DMA",
-  //0,profile); 	config->Port 			=
-  //WWGetPrivateProfileHex("Sound", "Port", 			 profile);
+  // 0,profile); 	config->Port 			=
+  // WWGetPrivateProfileHex("Sound", "Port", 			 profile);
   //	config->BitsPerSample= WWGetPrivateProfileInt("Sound",
   //"BitsPerSample",0,profile); 	config->Channels 		=
-  //WWGetPrivateProfileInt("Sound", "Channels",		 0,profile);
+  // WWGetPrivateProfileInt("Sound", "Channels",		 0,profile);
   //	config->Reverse      = WWGetPrivateProfileInt("Sound", "Reverse",
-  //0,profile); 	config->Speed        = WWGetPrivateProfileInt("Sound", "Speed",
-  //0,profile); 	WWGetPrivateProfileString("Language", "Language", NULL,
-  //config->Language, 3, profile);
+  // 0,profile); 	config->Speed        = WWGetPrivateProfileInt("Sound",
+  // "Speed", 0,profile); 	WWGetPrivateProfileString("Language",
+  // "Language", NULL, config->Language, 3, profile);
 
   return ((config->DigitCard == 0) && (config->IRQ == 0) && (config->DMA == 0));
 }
@@ -554,7 +555,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   **	buffer length. 'offset' will point to 1st entry in the section, NULL if
   **	section not found.
   */
-  offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
+  offset =
+      WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
 
   /*
   **	If the section could not be found, then add it to the end. Don't add
@@ -615,7 +617,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   **	with 0 length will just return the offset of the found entry, NULL if
   **	entry not found.
   */
-  offset = WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
+  offset =
+      WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
 
   /*
   **	Remove any existing entry
@@ -640,7 +643,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     **	Entry doesn't exist, so point 'offset' to the 1st entry position in
     **	the section.
     */
-    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
+    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0,
+                                       profile);
   }
 
   /*

@@ -84,7 +84,6 @@
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/face.h"
-#include "ra/fixed.h"
 #include "ra/foot.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -98,6 +97,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "tech/fixed.h"
 
 #define FATSHIP
 

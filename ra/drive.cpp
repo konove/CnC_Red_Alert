@@ -66,11 +66,9 @@
 
 #include <assert.h>
 #include <string.h>
+
 #include <algorithm>
 
-#include "ra/inline.h"
-#include "ra/team.h"
-#include "ra/ww_audio.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -79,18 +77,21 @@
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/facing.h"
-#include "ra/fixed.h"
 #include "ra/house.h"
+#include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mission.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/rules.h"
 #include "ra/target.h"
+#include "ra/team.h"
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/unit.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 #ifdef NEVER
 void test(void) {

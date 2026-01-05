@@ -44,20 +44,20 @@
 
 #include <algorithm>
 
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/ww_audio.h"
-#include "ra/conquer.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
 #include "ra/scenario.h"
 #include "ra/tab.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
 
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.

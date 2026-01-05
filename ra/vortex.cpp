@@ -65,8 +65,6 @@
 
 #include <stdio.h>
 
-#include "ra/inline.h"
-#include "ra/ww_audio.h"
 #include "ra/abstract.h"
 #include "ra/building.h"
 #include "ra/ccfile.h"
@@ -74,20 +72,22 @@
 #include "ra/conquer.h"
 #include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
-#include "ra/rgb.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/buffer.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/rgb.h"
 
 /*
 ** Instance of chronal vortex class. This must be the only instance.
@@ -827,8 +827,8 @@ void ChronalVortexClass::Render(void) {
       ** the image from the hidpage.
       */
       if (!RenderBuffer) {
-        RenderBuffer = new GraphicBufferClass(CELL_PIXEL_W * 4,
-                                              CELL_PIXEL_H * 4, (void *)nullptr);
+        RenderBuffer = new GraphicBufferClass(
+            CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, (void *)nullptr);
       }
       CELL xc = Coord_XCell(Position);
       CELL yc = Coord_YCell(Position);
@@ -887,8 +887,7 @@ void ChronalVortexClass::Render(void) {
             if (ttype->Get_Image_Data()) {
               RenderBuffer->Draw_Stamp(ttype->Get_Image_Data(), icon,
                                        x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                                       nullptr,
-                                       WINDOW_MAIN);
+                                       nullptr, WINDOW_MAIN);
             }
 
             /*

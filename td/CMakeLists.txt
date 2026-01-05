@@ -157,7 +157,7 @@ add_executable(tdsdl WIN32
         face.cpp
 
         # also need these
-        ../ra/lcwuncmp.cpp
+        #        ../ra/lcwuncmp.cpp
         ../ra/2keyfbuf.cpp
         ../ra/winasm.cpp
 

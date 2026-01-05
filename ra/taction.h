@@ -44,9 +44,9 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
+#include "tech/noinit.h"
 
 typedef enum TActionType {
   TACTION_NONE,

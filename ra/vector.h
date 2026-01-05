@@ -62,7 +62,7 @@
 #include "ra/defines.h"
 #include "ra/egos.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 /**************************************************************************
 **	This is a general purpose vector class. A vector is defined by this

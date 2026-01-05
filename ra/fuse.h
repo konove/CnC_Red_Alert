@@ -41,8 +41,8 @@
 #define FUSE_H
 
 #include "ra/defines.h"
-#include "ra/noinit.h"
-#include "ra/wwfile.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /****************************************************************************
 **	The fuse is used by projectiles to determine whether detonation should
@@ -52,8 +52,8 @@
 class FuseClass {
  public:
   FuseClass(void);
-  FuseClass(NoInitClass const &){};
-  ~FuseClass(void){};
+  FuseClass(NoInitClass const &) {};
+  ~FuseClass(void) {};
 
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);

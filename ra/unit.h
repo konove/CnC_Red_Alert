@@ -49,16 +49,16 @@
 #include "ra/drive.h"
 #include "ra/face.h"
 #include "ra/facing.h"
-#include "ra/fixed.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
 #include "ra/radio.h"
-#include "ra/straw.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of

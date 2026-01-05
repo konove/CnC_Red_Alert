@@ -55,8 +55,8 @@
 #include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
-#include "ra/rawfile.h"
 #include "ra/type.h"
+#include "tech/rawfile.h"
 
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *

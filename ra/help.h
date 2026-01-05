@@ -40,21 +40,21 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "ra/tab.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "ra/tab.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 
 class HelpClass : public TabClass {
  public:
   HelpClass(void);
-  HelpClass(NoInitClass const &x) : TabClass(x){};
+  HelpClass(NoInitClass const &x) : TabClass(x) {};
 
   /*
   ** Initialization

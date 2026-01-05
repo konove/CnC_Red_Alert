@@ -86,8 +86,8 @@
 
 #include "ra/defines.h"
 #include "ra/link.h"
-#include "ra/noinit.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/noinit.h"
 
 class ControlClass;
 

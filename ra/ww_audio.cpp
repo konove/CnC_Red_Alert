@@ -55,7 +55,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
-#include "ra/fixed.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
@@ -64,6 +63,7 @@
 #include "ra/mouse.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

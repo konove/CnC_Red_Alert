@@ -58,6 +58,7 @@ add_subdirectory(port)
 add_subdirectory(sdllib)
 add_subdirectory(winvq)
 add_subdirectory(jshell)
+add_subdirectory(tech)
 
 add_subdirectory(ra)
 add_subdirectory(td)

@@ -41,10 +41,10 @@
 #define SCROLL_H
 
 #include "ra/help.h"
-#include "ra/ftimer.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "sdllib/include/keyboard.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 class ScrollClass : public HelpClass {
   /*
@@ -68,7 +68,7 @@ class ScrollClass : public HelpClass {
 
  public:
   ScrollClass(void);
-  ScrollClass(NoInitClass const &x) : HelpClass(x){};
+  ScrollClass(NoInitClass const &x) : HelpClass(x) {};
 
   bool Set_Autoscroll(int control);
 

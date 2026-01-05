@@ -40,7 +40,7 @@
 #ifndef FACING_H
 #define FACING_H
 #include "ra/face.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
 
 /*
 **	This is a general facing handler class. It is used in those cases where
@@ -52,8 +52,8 @@
 class FacingClass {
  public:
   FacingClass(void);
-  FacingClass(DirType dir) : CurrentFacing(dir), DesiredFacing(dir){};
-  FacingClass(NoInitClass const&){};
+  FacingClass(DirType dir) : CurrentFacing(dir), DesiredFacing(dir) {};
+  FacingClass(NoInitClass const&) {};
 
   operator DirType(void) const { return (CurrentFacing); };
 

@@ -85,8 +85,8 @@
 #include "ra/const.h"
 #include "ra/display.h"
 #include "ra/externs.h"
-#include "random.h"
 #include "sdllib/include/dipthong.h"
+#include "tech/random.h"
 
 /***********************************************************************************************
  * Lepton_To_Pixel -- Convert a lepton value into pixel value. *

@@ -48,16 +48,16 @@
 #include "ra/door.h"
 #include "ra/face.h"
 #include "ra/facing.h"
-#include "ra/fixed.h"
 #include "ra/flasher.h"
-#include "ra/ftimer.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/stage.h"
 #include "ra/type.h"
+#include "tech/fixed.h"
+#include "tech/ftimer.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	This is the common data between building and units.

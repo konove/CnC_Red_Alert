@@ -50,15 +50,15 @@
 
 #include <string.h>
 
-#include "ra/conquer.h"
-#include "ra/externs.h"
-#include "ra/type.h"
 #include "port/ex_string.h"
 #include "ra/ccini.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
-#include "ra/fixed.h"
+#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
+#include "ra/type.h"
+#include "tech/fixed.h"
 
 static HouseTypeClass const HouseEngland(
     HOUSE_ENGLAND,
@@ -409,7 +409,7 @@ HousesType HouseTypeClass::From_Name(char const *name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
         //			if (stricmp(Pointers[house]->IniName, name) ==
-        //0) {
+        // 0) {
         return (house);
       }
     }

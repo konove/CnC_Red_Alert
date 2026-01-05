@@ -79,36 +79,37 @@
 
 #include <stdio.h>
 #include <string.h>
+
 #include <algorithm>
 
-#include "ra/dialog.h"
-#include "ra/externs.h"
-#include "ra/inline.h"
-#include "ra/session.h"
-#include "ra/terrain.h"
-#include "ra/ww_audio.h"
-#include "sdllib/include/misc.h"
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
 #include "ra/infantry.h"
+#include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
-#include "ra/rawfile.h"
+#include "ra/session.h"
 #include "ra/shapebtn.h"
 #include "ra/sidebar.h"
 #include "ra/techno.h"
+#include "ra/terrain.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/misc.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/rawfile.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;

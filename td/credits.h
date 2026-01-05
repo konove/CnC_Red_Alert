@@ -41,7 +41,7 @@
 #ifndef CREDITS_H
 #define CREDITS_H
 
-#include "ra/noinit.h"
+#include "../tech/noinit.h"
 
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.

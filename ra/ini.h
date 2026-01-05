@@ -40,19 +40,19 @@
 #ifndef INI_H
 #define INI_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <cstring>
 
-#include "ra/crc.h"
-#include "ra/fixed.h"
+#include "ra/defines.h"
 #include "ra/listnode.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/pk.h"
 #include "ra/search.h"
-#include "ra/straw.h"
-#include "ra/wwfile.h"
-#include "ra/defines.h"
+#include "tech/crc.h"
+#include "tech/fixed.h"
+#include "tech/pipe.h"
+#include "tech/pk.h"
+#include "tech/straw.h"
+#include "tech/wwfile.h"
 
 /*
 **	This is an INI database handler class. It handles a database with a disk

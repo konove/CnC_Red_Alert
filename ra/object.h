@@ -44,9 +44,9 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "ra/fixed.h"
 #include "ra/jshell.h"
-#include "ra/noinit.h"
+#include "tech/fixed.h"
+#include "tech/noinit.h"
 
 class BuildingClass;
 class HouseClass;

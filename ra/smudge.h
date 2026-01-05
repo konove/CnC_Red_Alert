@@ -47,10 +47,10 @@
 #include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/object.h"
-#include "ra/pipe.h"
-#include "ra/straw.h"
 #include "ra/type.h"
-#include "ra/noinit.h"
+#include "tech/noinit.h"
+#include "tech/pipe.h"
+#include "tech/straw.h"
 
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent
@@ -73,7 +73,7 @@ class SmudgeClass : public ObjectClass {
   static void operator delete(void *ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const &x) : ObjectClass(x), Class(x){};
+  SmudgeClass(NoInitClass const &x) : ObjectClass(x), Class(x) {};
   operator SmudgeType(void) const { return Class->Type; };
   virtual ~SmudgeClass(void) {
     if (GameActive) SmudgeClass::Limbo();

@@ -108,13 +108,11 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/factory.h"
-#include "ra/fixed.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
-#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/palette.h"
 #include "ra/power.h"
@@ -131,6 +129,8 @@
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/fixed.h"
+#include "tech/noinit.h"
 
 void *SidebarClass::SidebarShape = nullptr;
 void *SidebarClass::SidebarMiddleShape = nullptr;

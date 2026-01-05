@@ -58,14 +58,12 @@
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/externs.h"
-#include "ra/ftimer.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
-#include "ra/readline.h"
 #include "ra/saveload.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
@@ -78,6 +76,8 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/ftimer.h"
+#include "tech/readline.h"
 
 #ifdef _WIN32
 #include <io.h>  // for unlink

@@ -88,32 +88,32 @@
 #include <string.h>
 
 #include "ra/aircraft.h"
-#include "ra/externs.h"
-#include "ra/foot.h"
-#include "ra/inline.h"
-#include "ra/mission.h"
-#include "ra/session.h"
-#include "ra/trigger.h"
-#include "ra/vessel.h"
-#include "ra/ww_audio.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/display.h"
-#include "ra/fixed.h"
+#include "ra/externs.h"
+#include "ra/foot.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
+#include "ra/inline.h"
 #include "ra/map.h"
+#include "ra/mission.h"
 #include "ra/mouse.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/session.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/tevent.h"
+#include "ra/trigger.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vector.h"
+#include "ra/vessel.h"
+#include "ra/ww_audio.h"
+#include "tech/fixed.h"
 
 /***********************************************************************************************
  * _Is_It_Breathing -- Checks to see if unit is an active team member. *
@@ -632,7 +632,7 @@ void TeamClass::AI(void) {
           if (dist < max) {
             cell = Fetch_A_Leader()->Safety_Point(As_Cell(Zone), cell, 2, 4);
             //						cell =
-            //Member->Safety_Point(As_Cell(Zone), cell, 2, 4);
+            // Member->Safety_Point(As_Cell(Zone), cell, 2, 4);
             if (cell != -1) {
               max = dist;
               dest = cell;
@@ -1446,7 +1446,7 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
     if (!team_member) return;
 
     FootClass const *closest = nullptr;  // Current closest friendly object.
-    int distance = -1;                // Record of last closest distance calc.
+    int distance = -1;  // Record of last closest distance calc.
 
     /*
     **	Scan through all vehicles.
@@ -1512,10 +1512,10 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
     }
 
   } else {
-    long x = 0;                    // Accumulated X coordinate.
-    long y = 0;                    // Accumulated Y coordinate.
-    int dist = 0;                  // Closest recorded distance to team target.
-    int quantity = 0;              // Number of team members counted.
+    long x = 0;        // Accumulated X coordinate.
+    long y = 0;        // Accumulated Y coordinate.
+    int dist = 0;      // Closest recorded distance to team target.
+    int quantity = 0;  // Number of team members counted.
     FootClass const *closest = nullptr;  // Closest member to target.
 
     /*
@@ -1565,7 +1565,8 @@ void TeamClass::Calc_Center(TARGET &center, TARGET &close_member) const {
       if (!closest->Can_Enter_Cell(As_Cell(center))) {
         //				if (Class->Origin != -1) {
         //					center =
-        //::As_Target(Scen.Waypoint[Class->Origin]); 				} else {
+        //::As_Target(Scen.Waypoint[Class->Origin]);
+        //:} else {
         center = ::As_Target(Coord_Cell(closest->Center_Coord()));
         //				}
       }

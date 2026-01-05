@@ -48,14 +48,14 @@
 
 #include "ra/power.h"
 
-#include "ra/externs.h"
 #include "ra/conquer.h"
-#include "ra/fixed.h"
+#include "ra/externs.h"
 #include "ra/house.h"
 #include "ra/mouse.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
+#include "tech/fixed.h"
 
 /*
 **	Points to the shape to use for the "desired" power level indicator.
@@ -182,7 +182,7 @@ void PowerClass::Draw_It(bool complete) {
         }
 
         //				LogicPage->Fill_Rect(POWER_X, POWER_Y,
-        //POWER_X+POWER_WIDTH-1, POWER_Y+POWER_HEIGHT-1, LTGREY);
+        // POWER_X+POWER_WIDTH-1, POWER_Y+POWER_HEIGHT-1, LTGREY);
         CC_Draw_Shape(PowerBarShape, 0, 240 * RESFACTOR, 88 * RESFACTOR,
                       WINDOW_MAIN, flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 
