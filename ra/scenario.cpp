@@ -147,11 +147,9 @@
 extern bool SpawnedFromWChat;
 extern int PreserveVQAScreen;
 
-// #include "WolDebug.h"
+// Stalemate games.
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
 #include "ra/wolstrng.h"
-#endif
 
 static void Remove_AI_Players(void);
 static void Create_Units(bool official);
@@ -169,10 +167,8 @@ static int _build_tech[11] = {
 #define TXT_HACKHACK Text_String(TXT_ACCOMPLISHED)
 #endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 bool Is_Mission_Counterstrike(char *file_name);
 bool Is_Mission_Aftermath(char *file_name);
-#endif
 
 /***********************************************************************************************
  * ScenarioClass::ScenarioClass -- Constructor for the scenario control object.
@@ -227,10 +223,8 @@ ScenarioClass::ScenarioClass(void)
       IsNoMapSel(false),
       IsTruckCrate(false),
       IsMoneyTiberium(false),
-#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
 #define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40
       AutoSonarTimer(AUTOSONAR_PERIOD),
-#endif
       FadeTimer(0) {
   for (int index = 0; index < ARRAY_SIZE(Waypoint); index++) {
     Waypoint[index] = -1;
@@ -480,46 +474,25 @@ bool Read_Scenario(char *name) {
   Clear_Scenario();
   ScenarioInit++;
   if (Read_Scenario_INI(name)) {
-#ifdef FIXIT_CSII  //	ajw - Added runtime check for Aftermath to skirmish mode
-                   // case.
     bool readini = false;
     switch (Session.Type) {
       case GAME_NORMAL:
         readini = false;
         break;
       case GAME_SKIRMISH:
-#ifdef FIXIT_VERSION_3
         readini = bAftermathMultiplayer;
-#endif
         break;
       case GAME_INTERNET:
-#ifndef FIXIT_VERSION_3  //	Loading of Aftermath rules depends on
-                         // bAftermathMultiplayer now.
-        if (Is_Mission_Counterstrike(name)) {
-          readini = false;  // Don't allow AM units on a CS map in WChat
-          break;
-        }
-#endif  //	( Note lack of break; )
       default:
-#ifdef FIXIT_VERSION_3
         readini = bAftermathMultiplayer;
-#else
-        if (PlayingAgainstVersion >= VERSION_AFTERMATH_CS) {
-          readini = true;
-        }
-#endif
         break;
     }
     if (readini) {
       /*
       ** Find out if the CD in the current drive is the Aftermath disc.
       */
-#ifdef FIXIT_VERSION_3
       int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
       if (!(Using_DVD() && cd_index == 5) && cd_index != 3) {
-#else
-      if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60) != 3) {
-#endif
         GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
@@ -549,7 +522,6 @@ bool Read_Scenario(char *name) {
         Rule.Difficulty(ini);
       }
     }
-#endif
     Fill_In_Data();
   } else {
     GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
@@ -828,14 +800,12 @@ void Clear_Scenario(void) {
     Scen.Waypoint[index] = -1;
   }
 
-#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
+  // For endgame auto-sonar pulse.
   bAutoSonarPulse = false;
-#endif
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
+  // Stalemate games.
   Scen.bLocalProposesDraw = false;
   Scen.bOtherProposesDraw = false;
-#endif
 }
 
 /***********************************************************************************************
@@ -877,12 +847,7 @@ void Do_Win(void) {
   ** score and map selection, don't increment scenario, and set it to
   ** variation B.
   */
-#ifdef FIXIT_ANTS
   if (Session.Type != GAME_NORMAL || !Scen.IsSkipScore || AntsEnabled) {
-#else
-  if (Session.Type != GAME_NORMAL || !Scen.IsSkipScore) {
-#endif  // FIXIT_ANTS
-
     /*
     **	Announce win to player.
     */
@@ -954,11 +919,10 @@ void Do_Win(void) {
     if (Scen.IsOneTimeOnly) {
       GameActive = false;
       Show_Mouse();
-#ifdef FIXIT_ANTS
       AntsEnabled = false;
-//			Mono_Printf("Scenario.cpp one time only antsenabled is
-// false\n");
-#endif
+      //			Mono_Printf("Scenario.cpp one time only
+      // antsenabled is
+      // false\n");
       return;
     }
 
@@ -975,9 +939,7 @@ void Do_Win(void) {
       Show_Who_Was_Responsible();
       GameActive = false;
       Show_Mouse();
-#ifdef FIXIT_ANTS
       AntsEnabled = false;
-#endif
       return;
     }
 
@@ -988,7 +950,6 @@ void Do_Win(void) {
     */
     if (Scen.IsNoMapSel) {
       // force it to play the second half of scenario 10
-#ifdef FIXIT_ANTS
       if (AntsEnabled) {
         char scenarioname[24];
         strcpy(scenarioname, Scen.ScenarioName);
@@ -1000,11 +961,6 @@ void Do_Win(void) {
       } else {
         Scen.ScenarioName[6] = 'B';
       }
-
-#else
-      Scen.ScenarioName[6] = 'B';
-#endif
-
     } else {
       Scen.Set_Scenario_Name(Map_Selection());
     }
@@ -1226,7 +1182,6 @@ void Do_Lose(void) {
   Show_Mouse();
 }
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
 /***********************************************************************************************
  * Do_Draw -- Parallels Do_Win and Do_Lose, for multiplayer games that end in a
  *draw.
@@ -1279,7 +1234,6 @@ void Do_Draw(void) {
   GameActive = 0;
   Show_Mouse();
 }
-#endif
 
 /***********************************************************************************************
  * Do_Restart -- Handle the restart mission process. *
@@ -1968,8 +1922,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   /*
   ** generate the filename
   */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-                   // Mono_Printf("In set_scenario_name, scenario # =
+  // Mono_Printf("In set_scenario_name, scenario # =
   // %d\n",scenario);Keyboard->Get();Keyboard->Get();
   if (scenario < 100) {
     sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
@@ -1986,9 +1939,6 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     sprintf(ScenarioName, "SC%c%c%c%c%c.INI", c_player, first, second, c_dir,
             c_var);
   }
-#else
-  sprintf(ScenarioName, "SC%c%02d%c%c.INI", c_player, scenario, c_dir, c_var);
-#endif
 }
 
 void ScenarioClass::Set_Scenario_Name(char const *name) {
@@ -1999,7 +1949,6 @@ void ScenarioClass::Set_Scenario_Name(char const *name) {
     char buf[3];
     memcpy(buf, &ScenarioName[3], 2);
     buf[2] = '\0';
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (buf[0] > '9' || buf[1] > '9') {
       char first = buf[0];
       char second = buf[1];
@@ -2019,9 +1968,6 @@ void ScenarioClass::Set_Scenario_Name(char const *name) {
     } else {
       Scenario = atoi(buf);
     }
-#else
-    Scenario = atoi(buf);
-#endif
   }
 }
 
@@ -2066,14 +2012,9 @@ bool Read_Scenario_INI(char *fname, bool) {
   ** scenario is stored locally on the hard drive. In this case, we
   ** have already verified its existance. ST 3/1/97 4:52PM.
   */
-#ifdef FIXIT_VERSION_3  //	Avoid CD check if official scenario was
-                        // downloaded.
+  // Avoid CD check if official scenario was downloaded.
   if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
       stricmp(Scen.ScenarioName, "download.tmp")) {
-#else
-  if (Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) {
-#endif
-
     /*
     ** If this is scenario 1 then it should be on all CDs unless its an ant
     *scenario
@@ -2091,7 +2032,6 @@ bool Read_Scenario_INI(char *fname, bool) {
       ** all CDs.
       */
       if (Session.Type != GAME_NORMAL) {
-#ifdef FIXIT_CSII         //	checked - ajw 9/28/98
         RequiredCD = -1;  // default that any CD will do.
         // If it's a counterstrike mission, require the counterstrike CD, unless
         // the Aftermath CD is already in the drive, in which case, leave it
@@ -2107,13 +2047,6 @@ bool Read_Scenario_INI(char *fname, bool) {
         if (Is_Mission_Aftermath(Scen.ScenarioName)) {
           RequiredCD = 3;
         }
-#else
-        if (Scen.Scenario > 24) {
-          RequiredCD = 2;
-        } else {
-          RequiredCD = -1;
-        }
-#endif
       } else {
         /*
         ** This is a solo game. If the scenario number is >= 20 or its an ant
@@ -2122,14 +2055,12 @@ bool Read_Scenario_INI(char *fname, bool) {
         */
         if (Scen.Scenario >= 20 || Scen.ScenarioName[2] == 'A') {
           RequiredCD = 2;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
           if (Scen.Scenario >= 36 && Scen.ScenarioName[2] != 'A') {
             RequiredCD = 3;
 #ifdef BOGUSCD
             RequiredCD = -1;
 #endif
           }
-#endif
         } else {
           /*
           ** This is a solo mission from the original Red Alert. Choose the
@@ -2148,24 +2079,18 @@ bool Read_Scenario_INI(char *fname, bool) {
         }
       }
     }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     // If we're asking for a CD swap, check to see if we need to set the palette
     // to avoid a black screen.  If this is a normal RA game, and the CD being
     // requested is an RA CD, then don't set the palette, leave the map screen
     // up.
 
-#ifdef FIXIT_VERSION_3
     int cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
     if (!(Using_DVD() && cd_index == 5) && cd_index != RequiredCD) {
-#else
-    if (Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60) != RequiredCD) {
-#endif
       if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
         SeenPage.Clear();
       }
       GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
     }
-#endif
     if (!Force_CD_Available(RequiredCD)) {
       // Prog_End();
       Emergency_Exit(EXIT_FAILURE);
@@ -2214,7 +2139,6 @@ bool Read_Scenario_INI(char *fname, bool) {
   /*
   **	Reset the rules values to their initial settings.
   */
-#ifdef FIXIT_NAME_OVERRIDE
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
     if (NameOverride[index] != nullptr) free((void *)NameOverride[index]);
     NameOverride[index] = nullptr;
@@ -2223,9 +2147,7 @@ bool Read_Scenario_INI(char *fname, bool) {
   if (Session.Type == GAME_NORMAL) {
     Special.IsShadowGrow = false;
   }
-#endif
 
-#ifdef FIXIT_ANTS
   Session.Messages.Reset();
   //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
@@ -2252,7 +2174,6 @@ bool Read_Scenario_INI(char *fname, bool) {
   BuildingTypeClass::As_Reference(STRUCT_QUEEN).Level = -1;
   BuildingTypeClass::As_Reference(STRUCT_LARVA1).Level = -1;
   BuildingTypeClass::As_Reference(STRUCT_LARVA2).Level = -1;
-#endif
 
   Rule.General(RuleINI);
   Rule.Recharge(RuleINI);
@@ -2263,8 +2184,6 @@ bool Read_Scenario_INI(char *fname, bool) {
   Rule.IQ(RuleINI);
   Rule.Objects(RuleINI);
   Rule.Difficulty(RuleINI);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98 - Except does this _change_ any
-                   // rules, or just add to them? - Just adds.
   Rule.General(AftermathINI);
   Rule.Recharge(AftermathINI);
   Rule.AI(AftermathINI);
@@ -2274,7 +2193,6 @@ bool Read_Scenario_INI(char *fname, bool) {
   Rule.IQ(AftermathINI);
   Rule.Objects(AftermathINI);
   Rule.Difficulty(AftermathINI);
-#endif
   /*
   **	Override any rules values specified in this
   **	particular scenario file.
@@ -2506,13 +2424,11 @@ bool Read_Scenario_INI(char *fname, bool) {
   /*
   **	Return with flag saying that the scenario file was read.
   */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98 - Added runtime check.
   if (Is_Aftermath_Installed()) {
     if (Session.Type == GAME_SKIRMISH) {
       bAftermathMultiplayer = NewUnitsEnabled = true;
     }
   }
-#endif
   ScenarioInit--;
   return (true);
 }
@@ -3471,7 +3387,6 @@ void Disect_Scenario_Name(char const *name, int &scenario,
   char buf[3];
   memcpy(buf, &name[3], 2);
   buf[2] = '\0';
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   char first = buf[0];
   char second = buf[1];
   if (first <= '9' && second <= '9') {
@@ -3497,9 +3412,6 @@ void Disect_Scenario_Name(char const *name, int &scenario,
     }
     scenario = (36 * first) + second;
   }
-#else
-  scenario = atoi(buf);
-#endif
 
   /*
   **	Fetch the scenario player (side).

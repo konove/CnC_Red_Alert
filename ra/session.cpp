@@ -548,12 +548,10 @@ bool SessionClass::Am_I_Master(void) {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Save(Pipe &file) const {
-#ifdef FIXIT_MULTI_SAVE
   file.Put(&CommProtocol, sizeof(CommProtocol));
   file.Put(&MaxAhead, sizeof(MaxAhead));
   file.Put(&FrameSendRate, sizeof(FrameSendRate));
   file.Put(&DesiredFrameRate, sizeof(DesiredFrameRate));
-#endif  // FIXIT_MULTI_SAVE
   file.Put(&PrefColor, sizeof(PrefColor));
   file.Put(&ColorIdx, sizeof(ColorIdx));
   file.Put(&House, sizeof(House));
@@ -591,14 +589,12 @@ int SessionClass::Save(Pipe &file) const {
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Load(Straw &file) {
-#ifdef FIXIT_MULTI_SAVE
   //	if(GameVersion != 0x0100616D){
   file.Get(&CommProtocol, sizeof(CommProtocol));
   file.Get(&MaxAhead, sizeof(MaxAhead));
   file.Get(&FrameSendRate, sizeof(FrameSendRate));
   file.Get(&DesiredFrameRate, sizeof(DesiredFrameRate));
-//	}
-#endif  // FIXIT_MULTI_SAVE
+  //	}
   file.Get(&PrefColor, sizeof(PrefColor));
   file.Get(&ColorIdx, sizeof(ColorIdx));
   file.Get(&House, sizeof(House));
@@ -768,13 +764,9 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
 
     //	Get the player's last-used Color
     PrefColor = (PlayerColorType)ini.Get_Int("MultiPlayer", "Color", 0);
-#ifdef FIXIT_VERSION_3
     int iSide = ini.Get_Int("MultiPlayer", "Side", HOUSE_USSR);
     iSide = std::max(2, std::min(6, iSide));
     House = (HousesType)iSide;
-#else
-    House = (HousesType)ini.Get_Int("MultiPlayer", "Side", HOUSE_USSR);
-#endif
     CurPhoneIdx = ini.Get_Int("MultiPlayer", "PhoneIndex", -1);
     TrapCheckHeap = ini.Get_Int("MultiPlayer", "CheckHeap", 0);
 
@@ -1226,17 +1218,14 @@ bool Is_Mission_Counterstrike(char *file_name) {
   if (isdigit(file_name[5])) {
     sscanf(file_name, "SCM%03d", &scenario_number);
   } else {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (!isdigit(file_name[3]) || !isdigit(file_name[4])) {
       return (false);
     }
-#endif
     sscanf(file_name, "SCM%02d", &scenario_number);
   }
   return (scenario_number > 24);
 }
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 bool Is_Mission_Aftermath(char *file_name) {
   //	ajw added
   //	Must start with "scm".
@@ -1274,8 +1263,6 @@ bool Is_Mission_126x126(char *file_name)  //	This is no longer used. ajw
   return (false);
 }
 
-#endif
-
 /***************************************************************************
  * SessionClass::Read_Scenario_Descriptions -- reads scen. descriptions    *
  *                                                                         *
@@ -1309,23 +1296,8 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       char const *fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-#ifdef FIXIT_VERSION_3
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
                                      Is_Mission_Counterstrike((char *)fname)));
-#else              //	FIXIT_VERSION_3
-#ifdef FIXIT_CSII  //	checked - ajw
-      bool official = Is_Mission_126x126((char *)fname);
-      if (!official) {
-        official = !Is_Mission_Aftermath((char *)fname);
-      }
-
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-                                     Is_Mission_Counterstrike((char *)fname)));
-#else
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
-                                     Is_Mission_Counterstrike((char *)fname)));
-#endif
-#endif  //	FIXIT_VERSION_3
     }
   /*		//	ajw Copy file for viewing.
                   CCFileClass fileCopy( "msns_pkt.txt" );
@@ -1359,39 +1331,22 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
-#ifdef FIXIT_VERSION_3
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
                                      Is_Mission_Counterstrike((char *)fname)));
-#else              //	FIXIT_VERSION_3
-#ifdef FIXIT_CSII  //	checked - ajw
-      bool official = Is_Mission_126x126((char *)fname);
-      if (!official) {
-        official = !Is_Mission_Aftermath((char *)fname);
-      }
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-                                     Is_Mission_Counterstrike((char *)fname)));
-#else
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, true,
-                                     Is_Mission_Counterstrike((char *)fname)));
-#endif
-#endif  //	FIXIT_VERSION_3
     }
 
     found = Find_Next_File(state);
   }
 
-#ifdef FIXIT_CSII  //	checked - ajw
-                   /*
-                   **	Fetch the Counterstrike multiplayer scenario packet data.
-                   ** Load the scenarios regardless of whether counterstrike's installed,
-                   ** and at the point of hosting a network game, enable the counterstrike
-                   ** maps only if they have CS installed.  If they don't, then the maps
-                   ** are available as a guest, but not as a host, which fixes a multitude
-                   ** of problems without obviously giving the maps away to non-CS owners.
-                   */
-#ifdef FIXIT_VERSION_3
+  /*
+  ** Fetch the Counterstrike multiplayer scenario packet data.
+  ** Load the scenarios regardless of whether counterstrike's installed,
+  ** and at the point of hosting a network game, enable the counterstrike
+  ** maps only if they have CS installed.  If they don't, then the maps
+  ** are available as a guest, but not as a host, which fixes a multitude
+  ** of problems without obviously giving the maps away to non-CS owners.
+  */
   if (Is_Counterstrike_Installed()) {
-#endif
     CCFileClass file2("CSTRIKE.PKT");
     if (file2.Is_Available()) {
       INIClass ini;
@@ -1402,35 +1357,23 @@ void SessionClass::Read_Scenario_Descriptions(void) {
         char const *fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-#ifdef FIXIT_VERSION_3
         Scenarios.Add(
             new MultiMission(fname, buffer, nullptr, true,
                              Is_Mission_Counterstrike((char *)fname)));
-#else
-      bool official = Is_Mission_126x126((char *)fname);
-      if (!official) {
-        official = !Is_Mission_Aftermath((char *)fname);
       }
-      Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-                                     Is_Mission_Counterstrike((char *)fname)));
-#endif
-      }
-    /*			//	ajw Copy file for viewing.
-                            CCFileClass fileCopy( "cs_pkt.txt" );
-                            file2.Seek( 0, SEEK_SET );
-                            long lSize = file2.Size();
-                            char* pData = new char[ lSize + 1 ];
-                            file2.Read( pData, lSize );
-                            fileCopy.Write( pData, lSize );
-                            fileCopy.Close();
-    */		}
-#ifdef FIXIT_VERSION_3
+      /*ajw Copy file for viewing.
+                              CCFileClass fileCopy( "cs_pkt.txt" );
+                              file2.Seek( 0, SEEK_SET );
+                              long lSize = file2.Size();
+                              char* pData = new char[ lSize + 1 ];
+                              file2.Read( pData, lSize );
+                              fileCopy.Write( pData, lSize );
+                              fileCopy.Close();
+      */
+    }
   }
-#endif
-#endif
 
-#ifdef FIXIT_VERSION_3  //	Aftermath scenarios are now in their own pkt
-                        // file.
+  // Aftermath scenarios are now in their own pkt file.
   if (Is_Aftermath_Installed()) {
     CCFileClass file2("AFTMATH.PKT");
     if (file2.Is_Available()) {
@@ -1448,7 +1391,6 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       }
     }
   }
-#endif
 
   /*
   ** Scan the current directory for any loose .MPR files and build the
@@ -1495,7 +1437,6 @@ void SessionClass::Read_Scenario_Descriptions(void) {
         char const *fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-#ifdef FIXIT_CSII
         bool official = Is_Mission_126x126((char *)fname);
         if (!official) {
           official = !Is_Mission_Aftermath((char *)fname);
@@ -1503,11 +1444,6 @@ void SessionClass::Read_Scenario_Descriptions(void) {
         Scenarios.Add(
             new MultiMission(fname, buffer, NULL, official,
                              Is_Mission_Counterstrike((char *)fname)));
-#else
-        Scenarios.Add(
-            new MultiMission(fname, buffer, NULL, true,
-                             Is_Mission_Counterstrike((char *)fname)));
-#endif
       }
 
     } while (_dos_findnext(&block) == 0);
@@ -1533,7 +1469,6 @@ void SessionClass::Read_Scenario_Descriptions(void) {
     } while (_dos_findnext(&block) == 0);
   }
 
-#ifdef FIXIT_CSII
   /*
   **	Fetch the Counterstrike multiplayer scenario packet data.
   ** Load the scenarios regardless of whether counterstrike's installed,
@@ -1561,8 +1496,7 @@ void SessionClass::Read_Scenario_Descriptions(void) {
                                      Is_Mission_Counterstrike((char *)fname)));
     }
   }
-//	}
-#endif
+  //	}
 
 #endif  // WIN32
 }

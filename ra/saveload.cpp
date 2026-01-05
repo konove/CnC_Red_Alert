@@ -144,9 +144,7 @@ extern bool SpawnedFromWChat;
 
 static int Reconcile_Players(void);
 extern bool Is_Mission_Counterstrike(char *file_name);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool Is_Mission_Aftermath(char *file_name);
-#endif
 
 /***********************************************************************************************
  * Put_All -- Store all save game data to the pipe. *
@@ -406,9 +404,7 @@ bool Save_Game(int id, char const *descr, bool) {
   **	Save the save-game version, for loading verification
   */
   unsigned long version = SAVEGAME_VERSION;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   version++;
-#endif
   fpipe.Put(&version, sizeof(version));
 
   int pos = file.Seek(0, SEEK_CUR);
@@ -546,15 +542,9 @@ bool Load_Game(int id) {
     return (false);
   }
   GameVersion = version;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (version != SAVEGAME_VERSION && ((version - 1) != SAVEGAME_VERSION)) {
     return (false);
   }
-#else
-  if (version != SAVEGAME_VERSION /*&& version != 0x0100616D*/) {
-    return (false);
-  }
-#endif
   /*
   **	Get the message digest that is embedded in the file.
   */
@@ -631,22 +621,18 @@ bool Load_Game(int id) {
       int cd = -1;
       if (Is_Mission_Counterstrike(Scen.ScenarioName)) {
         cd = 2;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (Expansion_AM_Present()) {
           int current_drive = CCFileClass::Get_CD_Drive();
           int index = Get_CD_Index(current_drive, 1 * 60);
           if (index == 3) cd = 3;
         }
-#endif
       }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (Is_Mission_Aftermath(Scen.ScenarioName)) {
         cd = 3;
 #ifdef BOGUSCD
         cd = -1;
 #endif
       }
-#endif
       RequiredCD = cd;
       if (!Force_CD_Available(RequiredCD)) {
         Emergency_Exit(EXIT_FAILURE);
@@ -813,7 +799,6 @@ bool Load_Game(int id) {
   **	loaded.
   */
   if (RequiredCD != -2 && !load_net) {
-#ifdef FIXIT_ANTS
     /*
     **	Determines if this an ant mission. Since the ant mission looks no
     *different from *	a regular mission, examining of the scenario name is the
@@ -829,33 +814,26 @@ bool Load_Game(int id) {
     } else {
       AntsEnabled = false;
     }
-#endif
 
     if (Scen.Scenario == 1) {
       RequiredCD = -1;
     } else {
-#ifdef FIXIT_ANTS
       if (Scen.Scenario > 19 || AntsEnabled) {
         RequiredCD = 2;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (Scen.Scenario >= 36) {
           RequiredCD = 3;
 #ifdef BOGUSCD
           RequiredCD = -1;
 #endif
         }
-#endif
       } else {
-#endif  // FIXIT_ANTS
         if (PlayerPtr->Class->House != HOUSE_USSR &&
             PlayerPtr->Class->House != HOUSE_UKRAINE) {
           RequiredCD = 0;
         } else {
           RequiredCD = 1;
         }
-#ifdef FIXIT_ANTS
       }
-#endif  // FIXIT_ANTS
     }
 
   } else {
@@ -919,8 +897,6 @@ bool Load_Game(int id) {
   Rule.IQ(RuleINI);
   Rule.Objects(RuleINI);
   Rule.Difficulty(RuleINI);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98 - But does this incorporate
-                   //*changes*? - NO.
   Rule.General(AftermathINI);
   Rule.Recharge(AftermathINI);
   Rule.AI(AftermathINI);
@@ -930,7 +906,6 @@ bool Load_Game(int id) {
   Rule.IQ(AftermathINI);
   Rule.Objects(AftermathINI);
   Rule.Difficulty(AftermathINI);
-#endif
 
   /*
   **	Override any rules values specified in this
@@ -945,8 +920,6 @@ bool Load_Game(int id) {
   Rule.IQ(ini);
   Rule.Objects(ini);
   Rule.Difficulty(ini);
-#ifdef FIXIT_CSII  //	ajw - Added runtime check for Aftermath to skirmish
-                   // mode.
   if (load_net) {
     bool readini = false;
     switch (Session.Type) {
@@ -957,13 +930,7 @@ bool Load_Game(int id) {
         readini = Is_Aftermath_Installed();
         break;
       default:
-#ifdef FIXIT_VERSION_3
         readini = bAftermathMultiplayer;
-#else
-        if (PlayingAgainstVersion >= VERSION_AFTERMATH_CS) {
-          readini = true;
-        }
-#endif
         break;
     }
     if (readini) {
@@ -974,15 +941,6 @@ bool Load_Game(int id) {
         GamePalette.Set(FADE_PALETTE_FAST, Call_Back);
         if (!Force_CD_Available(3)) {  // force Aftermath CD in drive.
                                        // Prog_End();
-#ifndef FIXIT_VERSION_3                //	WChat eliminated.
-#ifdef WIN32
-          if (Special.IsFromWChat || SpawnedFromWChat) {
-            char packet[10] = {"Hello"};
-            Send_Data_To_DDE_Server(packet, strlen(packet),
-                                    DDEServerClass::DDE_CONNECTION_FAILED);
-          }
-#endif
-#endif
           Emergency_Exit(EXIT_FAILURE);
         }
       }
@@ -1001,7 +959,6 @@ bool Load_Game(int id) {
       }
     }
   }
-#endif
   if (Scen.TransitTheme == THEME_NONE) {
     Theme.Queue_Song(THEME_FIRST);
   } else {
@@ -1420,11 +1377,7 @@ bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep) {
   if (straw.Get(&version, sizeof(version)) != sizeof(version)) {
     return (false);
   }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (version != SAVEGAME_VERSION && ((version - 1 != SAVEGAME_VERSION))) {
-#else
-  if (version != SAVEGAME_VERSION) {
-#endif
     return (false);
   }
   return (true);

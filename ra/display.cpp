@@ -1365,11 +1365,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
   **	problem of accessing cells off the top or bottom of the map and into
   **	who-knows-what memory.
   */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if ((unsigned)(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) return (-1);
-#else
-  if ((unsigned)(Cell_Y(cell) - 1) > MAP_CELL_H - 2) return (-1);
-#endif
   // if ((unsigned)(Cell_Y(cell)-1) > MAP_CELL_H-2) return(-2);
 
   CellClass const *cellptr = &(*this)[cell];
@@ -2973,13 +2969,10 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
             action = ACTION_NOMOVE;
           }
 
-        }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-        else {     // If the object is no longer valid, cancel targetting mode.
+        } else {  // If the object is no longer valid, cancel targetting mode.
           action = ACTION_NOMOVE;
           Map.IsTargettingMode = SPC_NONE;
         }
-#endif
       }
 
       if (Map.PendingObject) {
@@ -4265,34 +4258,6 @@ void DisplayClass::Read_INI(CCINIClass &ini) {
   int y = ini.Get_Int(name, "Y", 1);
   int w = ini.Get_Int(name, "Width", MAP_CELL_W - 2);
   int h = ini.Get_Int(name, "Height", MAP_CELL_H - 2);
-
-#ifndef FIXIT_VERSION_3  //	Map size no longer restricted.
-
-#ifdef FIXIT_CSII  //	checked - ajw
-  if (Session.Type >= GAME_MODEM && Session.Type <= GAME_INTERNET &&
-      PlayingAgainstVersion < VERSION_AFTERMATH_CS) {
-    /*
-    **	HACK ALERT:
-    **	Force the map to be limited to the size that 96x96 would be. If the
-    **	size is greater (due to hacking?) then shrink it down to legal size.
-    ** BG Note: only do this for multiplayer games against non-AfterMath.
-    */
-    if (w * h > 96 * 96) {
-      h -= (((w * h) - (96 * 96)) / w) + 1;
-    }
-  }
-#else
-  /*
-  **	HACK ALERT:
-  **	Force the map to be limited to the size that 96x96 would be. If the
-  **	size is greater (due to hacking?) then shrink it down to legal size.
-  */
-  if (w * h > 96 * 96) {
-    h -= (((w * h) - (96 * 96)) / w) + 1;
-  }
-#endif
-
-#endif  //	!FIXIT_VERSION_3
 
   Set_Map_Dimensions(x, y, w, h);
 

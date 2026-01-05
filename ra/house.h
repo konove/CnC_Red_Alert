@@ -575,29 +575,12 @@ class HouseClass {
   **	Tracks number of each building type owned by this house. Even if the
   **	building is in construction, it will be reflected in this total.
   */
-#ifdef FIXIT_ANTS
   int BQuantity[STRUCT_COUNT - 3];
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   int UQuantity[UNIT_RA_COUNT - 3];
-#else
-  int UQuantity[UNIT_COUNT - 3];
-#endif
-#else
-  int BQuantity[STRUCT_COUNT];
-  int UQuantity[UNIT_COUNT];
-#endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   int IQuantity[INFANTRY_RA_COUNT];
-#else
-  int IQuantity[INFANTRY_COUNT];
-#endif
   int AQuantity[AIRCRAFT_COUNT];
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   int VQuantity[VESSEL_RA_COUNT];
-#else
-  int VQuantity[VESSEL_COUNT];
-#endif
 
   /*
   **	This timer keeps track of when an all out attack should be performed.
@@ -929,7 +912,6 @@ class HouseClass {
 #endif
 
   int QuantityB(int index) { return (BQuantity[index]); }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   int QuantityU(int index) {
     if (index >= UNIT_RA_COUNT) index -= UNIT_RA_COUNT;
     return (UQuantity[index]);
@@ -943,12 +925,6 @@ class HouseClass {
     if (index >= VESSEL_RA_COUNT) index -= VESSEL_RA_COUNT;
     return (VQuantity[index]);
   }
-#else
-  int QuantityU(int index) { return (UQuantity[index]); }
-  int QuantityI(int index) { return (IQuantity[index]); }
-  int QuantityA(int index) { return (AQuantity[index]); }
-  int QuantityV(int index) { return (VQuantity[index]); }
-#endif
 };
 
 #endif

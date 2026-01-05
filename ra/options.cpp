@@ -110,9 +110,7 @@ OptionsClass::OptionsClass(void)
 #ifdef WIN32
       Volume(".40"),  // was .295
       ScoreVolume(".25"),
-#ifdef FIXIT_VERSION_3
       MultiScoreVolume("0"),
-#endif
 #else
       Volume(".8"),
       ScoreVolume(".6"),
@@ -558,10 +556,8 @@ void OptionsClass::Load_Settings(void) {
   Set_Brightness(ini.Get_Fixed(OPTIONS, "Brightness", Brightness));
   Set_Sound_Volume(ini.Get_Fixed(OPTIONS, "Volume", Volume), false);
   Set_Score_Volume(ini.Get_Fixed(OPTIONS, "ScoreVolume", ScoreVolume), false);
-#ifdef FIXIT_VERSION_3
   MultiScoreVolume =
       ini.Get_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
-#endif
   Set_Contrast(ini.Get_Fixed(OPTIONS, "Contrast", Contrast));
   Set_Saturation(ini.Get_Fixed(OPTIONS, "Color", Saturation));
   Set_Tint(ini.Get_Fixed(OPTIONS, "Tint", Tint));
@@ -726,15 +722,9 @@ void OptionsClass::Save_Settings(void) {
   ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
   ini.Put_Fixed(OPTIONS, "Brightness", Brightness);
   ini.Put_Fixed(OPTIONS, "Volume", Volume);
-#ifdef FIXIT_VERSION_3
-  if (Session.Type == GAME_NORMAL)  //	Save only when non-multiplayer.
+  if (Session.Type == GAME_NORMAL)  // Save only when non-multiplayer.
     ini.Put_Fixed(OPTIONS, "ScoreVolume", ScoreVolume);
-#else
-  ini.Put_Fixed(OPTIONS, "ScoreVolume", ScoreVolume);
-#endif
-#ifdef FIXIT_VERSION_3
   ini.Put_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
-#endif
   ini.Put_Fixed(OPTIONS, "Contrast", Contrast);
   ini.Put_Fixed(OPTIONS, "Color", Saturation);
   ini.Put_Fixed(OPTIONS, "Tint", Tint);

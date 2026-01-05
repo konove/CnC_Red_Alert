@@ -319,19 +319,16 @@ class ScenarioClass {
   */
   CDTimerClass<FrameTimerClass> FadeTimer;
 
-#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
+  //	For endgame auto-sonar pulse.
   //	Timer to set the period for checking if an auto-sonar pulse should be
   // performed. 	This will take place if a player has nothing but subs
   // left in the game.
   CDTimerClass<FrameTimerClass> AutoSonarTimer;
-#endif
 
-#ifdef FIXIT_VERSION_3      //	Stalemate games.
   bool bLocalProposesDraw;  //	True if the local player in a 2-player game has
                             // a draw offer extended.
   bool bOtherProposesDraw;  //	True if the other player in a 2-player game has
                             // a draw offer extended.
-#endif
 };
 
 void Disect_Scenario_Name(char const *name, int &scenario,

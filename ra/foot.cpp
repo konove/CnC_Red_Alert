@@ -94,32 +94,33 @@
 
 #include <assert.h>
 #include <string.h>
+
 #include <algorithm>
 
-#include "ra/externs.h"
-#include "ra/inline.h"
-#include "ra/team.h"
-#include "ra/trigger.h"
-#include "ra/trigtype.h"
-#include "ra/vessel.h"
-#include "ra/ww_audio.h"
-#include "sdllib/include/memflag.h"
 #include "ra/abstract.h"
 #include "ra/building.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/event.h"
+#include "ra/externs.h"
 #include "ra/infantry.h"
+#include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mission.h"
 #include "ra/mouse.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
+#include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/tevent.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vector.h"
+#include "ra/vessel.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/memflag.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
@@ -708,7 +709,6 @@ int FootClass::Mission_Hunt(void) {
   assert(IsActive);
   if (!Target_Something_Nearby(THREAT_NORMAL)) {
 #if (0)
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (What_Am_I() == RTTI_INFANTRY &&
         *(InfantryClass *)this == INFANTRY_GENERAL &&
         House->Class->House == HOUSE_UKRAINE && Scen.Scenario == 47) {
@@ -737,7 +737,6 @@ int FootClass::Mission_Hunt(void) {
         }
       }
     }
-#endif
 #endif
     Random_Animate();
   } else {

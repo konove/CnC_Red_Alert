@@ -191,9 +191,7 @@ typedef enum RetcodeEnum {
   RC_CANCEL,             // user cancelled
 } RetcodeType;
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern void Enable_Secret_Units(void);
-#endif
 
 /********************************* Prototypes *******************************/
 //...........................................................................
@@ -746,11 +744,7 @@ static void Queue_AI_Multiplayer(void) {
       their_recv[i] = 0;
     }
     my_sent = 0;
-#ifdef FIXIT_MULTI_SAVE
     skip_crc = 32;
-#else
-    skip_crc = Frame + 32;
-#endif  // FIXIT_MULTI_SAVE
     for (i = 0; i < 32; i++) CRC[i] = 0;
 
     //.....................................................................
@@ -890,7 +884,7 @@ static void Queue_AI_Multiplayer(void) {
   //------------------------------------------------------------------------
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
-#if defined(FIXIT_VERSION_3) && defined(WOLAPI_INTEGRATION)
+#if defined(WOLAPI_INTEGRATION)
   int iFramesyncTimeout;
   if (Session.Type == GAME_INTERNET && pWolapi &&
       pWolapi->GameInfoCurrent.iPlayerCount > 2)
@@ -1148,16 +1142,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
           retry_timer = resend_delta;
           dialog_timer = dialog_time;
           timeout_timer = timeout;
-        }
-#ifdef FIXIT_MULTI_SAVE
-#ifdef FIXIT_VERSION_3
-        else if ((Session.Type == GAME_MODEM ||
-                  Session.Type == GAME_NULL_MODEM)) {
-#else
-        else if ((Session.Type == GAME_MODEM ||
-                  Session.Type == GAME_NULL_MODEM) &&
-                 PlayingAgainstVersion != VERSION_RED_ALERT_104) {
-#endif
+        } else if ((Session.Type == GAME_MODEM ||
+                    Session.Type == GAME_NULL_MODEM)) {
           if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
                                      TXT_YES, TXT_NO, TXT_NONE) == 0) {
             Session.EmergencySave = 1;
@@ -1174,9 +1160,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
             Session.EmergencySave = 0;
           }
           return (RC_CANCEL);
-        }
-#endif  // FIXIT_MULTI_SAVE
-        else {
+        } else {
           return (RC_NOT_RESPONDING);
         }
       }
@@ -1238,36 +1222,23 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
         // Connection was lost
         //...............................................................
         else if (rc == RC_HUNG_UP) {
-#ifdef FIXIT_MULTI_SAVE
-#ifndef FIXIT_VERSION_3
-          if (PlayingAgainstVersion != VERSION_RED_ALERT_104) {
-#endif
-            if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_HUNG_UP, TXT_YES,
-                                       TXT_NO, TXT_NONE) == 0) {
-              Session.EmergencySave = 1;
-              // printf("Saving emergency game; frame:%d,
-              // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before
-              // Save: Count1:%d, Count2:%d, Seed:%d\n",
-              //	Scen.RandomNumber.Count1,
-              //	Scen.RandomNumber.Count2,
-              //	Scen.RandomNumber.Seed);
-              Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
-              // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
-              //	Scen.RandomNumber.Count1,
-              //	Scen.RandomNumber.Count2,
-              //	Scen.RandomNumber.Seed);
-              Session.EmergencySave = 0;
-            }
-            return (RC_CANCEL);
-#ifndef FIXIT_VERSION_3
-          } else {
-            return (RC_NOT_RESPONDING);
+          if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_HUNG_UP, TXT_YES,
+                                     TXT_NO, TXT_NONE) == 0) {
+            Session.EmergencySave = 1;
+            // printf("Saving emergency game; frame:%d,
+            // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); printf("Before
+            // Save: Count1:%d, Count2:%d, Seed:%d\n",
+            //	Scen.RandomNumber.Count1,
+            //	Scen.RandomNumber.Count2,
+            //	Scen.RandomNumber.Seed);
+            Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
+            // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
+            //	Scen.RandomNumber.Count1,
+            //	Scen.RandomNumber.Count2,
+            //	Scen.RandomNumber.Seed);
+            Session.EmergencySave = 0;
           }
-#endif
-
-#else
-          return (RC_NOT_RESPONDING);
-#endif  // FIXIT_MULTI_SAVE
+          return (RC_CANCEL);
         }
         //...............................................................
         // If it was any other type of serial packet, break
@@ -2103,12 +2074,10 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
             serial_packet->Name, serial_packet->ID,
             serial_packet->Message.Message,
             Rule.MessageDelay * TICKS_PER_MINUTE)) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98 - Appears to do nothing
       char *ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
       }
-#endif
       Session.Messages.Add_Message(
           serial_packet->Name, serial_packet->ID,
           serial_packet->Message.Message, (PlayerColorType)serial_packet->ID,
@@ -2370,17 +2339,6 @@ static int Handle_Timeout(ConnManClass *net, long *their_frame,
   if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
     if (net->Num_Connections()) {
       if (!Reconnect_Modem()) {
-#ifndef FIXIT_MULTI_SAVE
-        //...............................................................
-        // Set 'Session.EmergencySave', so when this game is loaded, we
-        // won't check the CRC of the game state (this system & the
-        // other may be on different frames, in which case the CRC
-        // won't match).
-        //...............................................................
-        Session.EmergencySave = 1;
-        // Save_Game (-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
-        Session.EmergencySave = 0;
-#endif  // FIXIT_MULTI_SAVE
         return (0);
       } else {
         return (1);

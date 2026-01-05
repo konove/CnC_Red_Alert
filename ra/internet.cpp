@@ -90,11 +90,9 @@ extern bool SpawnedFromWChat;
 int Read_Game_Options(void);
 #endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool Is_Mission_126x126(char *file_name);
 extern bool Is_Mission_Aftermath(char *file_name);
 extern bool Is_Mission_Counterstrike(char *file_name);
-#endif
 
 /***************************************************************************
 ** Internet specific globals
@@ -369,17 +367,11 @@ int Read_Game_Options(char *name) {
     */
     if (Session.Options.ScenarioIndex == -1) {
       // WWDebugString ("RA95I - Session.Options.ScenarioIndex == -1\n");
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if ((Expansion_CS_Present() &&
            Is_Mission_Counterstrike(Session.ScenarioFileName)) ||
           (Expansion_AM_Present() &&
            Is_Mission_Aftermath(Session.ScenarioFileName))) {
-#else
-      if (Expansion_CS_Present()) {
-#endif
-
         int current_drive = CCFileClass::Get_CD_Drive();
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         int index = Get_CD_Index(current_drive, 1 * 60);
         bool needcd = false;
         if (Is_Mission_Counterstrike(Session.ScenarioFileName)) {
@@ -395,10 +387,6 @@ int Read_Game_Options(char *name) {
           }
         }
         if (needcd) {
-#else
-        if (Get_CD_Index(current_drive, 1 * 60) != 2) {
-          RequiredCD = 2;
-#endif
           // WWDebugString ("RA95I - CounterStrike CD not in drive\n");
 
           if (!Force_CD_Available(RequiredCD)) {

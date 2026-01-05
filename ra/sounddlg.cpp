@@ -105,12 +105,8 @@ void SoundControlsClass::Process(void) {
   int listbox_x = LISTBOX_X * RESFACTOR;
   int listbox_y = LISTBOX_Y * RESFACTOR;
   int listbox_w = LISTBOX_W * RESFACTOR;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 #ifdef WIN32
   int listbox_h = (LISTBOX_H * RESFACTOR) + 2;
-#else
-  int listbox_h = LISTBOX_H * RESFACTOR;
-#endif
 #else
   int listbox_h = LISTBOX_H * RESFACTOR;
 #endif
@@ -386,10 +382,8 @@ void SoundControlsClass::Process(void) {
       */
       case SLIDER_MUSIC | KN_BUTTON:
         Options.Set_Score_Volume(fixed(music.Get_Value(), 256), true);
-#ifdef FIXIT_VERSION_3
         if (Session.Type != GAME_NORMAL)
           Options.MultiScoreVolume = Options.ScoreVolume;
-#endif
         break;
 
       /*

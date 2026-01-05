@@ -522,7 +522,6 @@ static UnitTypeClass const UnitConvoyTruck(
     MISSION_GUARD  // ORDERS:		Default order to give new unit.
 );
 
-#ifdef FIXIT_ANTS
 /*
 [ANT]
 Name=Warrior Ant
@@ -640,9 +639,7 @@ static UnitTypeClass const UnitAnt3(
     0,            // Turret center offset along body centerline.
     MISSION_HUNT  // ORDERS:		Default order to give new unit.
 );
-#endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 // Chrono Tank
 static UnitTypeClass const UnitChrono(
     UNIT_CHRONOTANK,
@@ -766,7 +763,6 @@ static UnitTypeClass const UnitDemoTruck(
     0,             // Turret center offset along body centerline.
     MISSION_GUARD  // ORDERS:		Default order to give new unit.
 );
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
 static UnitTypeClass const UnitPhase(
     UNIT_PHASE,
     TXT_PHASETRANSPORT,  // NAME:			Text name of this unit
@@ -798,9 +794,6 @@ static UnitTypeClass const UnitPhase(
     0,            // Turret center offset along body centerline.
     MISSION_HUNT  // ORDERS:		Default order to give new unit.
 );
-
-#endif
-#endif
 
 /***********************************************************************************************
  * UnitTypeClass::UnitTypeClass -- Constructor for unit types. *
@@ -931,21 +924,14 @@ void UnitTypeClass::Init_Heap(void) {
   new UnitTypeClass(UnitMCV);          // UNIT_MCV
   new UnitTypeClass(UnitV2Launcher);   //	UNIT_V2_LAUNCHER
   new UnitTypeClass(UnitConvoyTruck);  // UNIT_TRUCK
-#ifdef FIXIT_ANTS
-  new UnitTypeClass(UnitAnt1);  // UNIT_ANT1
-  new UnitTypeClass(UnitAnt2);  // UNIT_ANT2
-  new UnitTypeClass(UnitAnt3);  // UNIT_ANT3
-#endif
-
-#ifdef FIXIT_CSII                    //	checked - ajw 9/28/98
-  new UnitTypeClass(UnitChrono);     // UNIT_CHRONOTANK
-  new UnitTypeClass(UnitTesla);      // UNIT_TESLATANK
-  new UnitTypeClass(UnitMAD);        // UNIT_MAD
-  new UnitTypeClass(UnitDemoTruck);  // UNIT_DEMOTRUCK
-#ifdef FIXIT_PHASETRANSPORT          //	checked - ajw 9/28/98
-  new UnitTypeClass(UnitPhase);      //	UNIT_PHASETRANSPORT
-#endif
-#endif
+  new UnitTypeClass(UnitAnt1);         // UNIT_ANT1
+  new UnitTypeClass(UnitAnt2);         // UNIT_ANT2
+  new UnitTypeClass(UnitAnt3);         // UNIT_ANT3
+  new UnitTypeClass(UnitChrono);       // UNIT_CHRONOTANK
+  new UnitTypeClass(UnitTesla);        // UNIT_TESLATANK
+  new UnitTypeClass(UnitMAD);          // UNIT_MAD
+  new UnitTypeClass(UnitDemoTruck);    // UNIT_DEMOTRUCK
+  new UnitTypeClass(UnitPhase);        //	UNIT_PHASETRANSPORT
 }
 
 /***********************************************************************************************

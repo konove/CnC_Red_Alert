@@ -1938,7 +1938,6 @@ static AnimTypeClass const MineExp1(
     VOC_MINEBLOW,    // Sound effect to play.
     ANIM_NONE);
 
-#ifdef FIXIT_ANTS
 static AnimTypeClass const AntDeath(
     ANIM_ANT_DEATH,  // Animation number.
     "ANTDIE",        // Data name of animation.
@@ -1962,7 +1961,6 @@ static AnimTypeClass const AntDeath(
     1,               // Number of times the animation loops.
     VOC_ANTDIE,      // Sound effect to play.
     ANIM_NONE);
-#endif
 
 /***********************************************************************************************
  * AnimTypeClass::AnimTypeClass -- Constructor for animation types. *
@@ -2149,9 +2147,7 @@ void AnimTypeClass::Init_Heap(void) {
   new AnimTypeClass(CrateTQuake);
   new AnimTypeClass(ParaBomb);
   new AnimTypeClass(MineExp1);
-#ifdef FIXIT_ANTS
   new AnimTypeClass(AntDeath);
-#endif
 }
 
 /***********************************************************************************************

@@ -136,7 +136,6 @@ extern short StreamLowImpact;
 char const *Map_Selection(void) {
   static char scenarioname[_MAX_FNAME + _MAX_EXT];
 
-#ifdef FIXIT_ANTS
   if (AntsEnabled) {
     strcpy(scenarioname, Scen.ScenarioName);
     char buf[10];
@@ -145,7 +144,6 @@ char const *Map_Selection(void) {
     return (scenarioname);
   }
 
-#endif
   char _filename[] = "MSAA.WSA";
   int house = (PlayerPtr->Class->House == HOUSE_USSR ||
                PlayerPtr->Class->House == HOUSE_UKRAINE);

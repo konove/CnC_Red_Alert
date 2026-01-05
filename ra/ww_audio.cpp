@@ -324,7 +324,6 @@ static struct {
     {"RAMBO1", 20, IN_NOVAR},
     {"RAMBO2", 20, IN_NOVAR},
     {"RAMBO3", 20, IN_NOVAR},
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     {"MYES1", 20,
      IN_NOVAR},                 // VOC_MECHYES1			Mechanic: "Yes sir!"
     {"MHOWDY1", 20, IN_NOVAR},  // VOC_MECHHOWDY1 Mechanic: "Howdy!"
@@ -374,8 +373,6 @@ static struct {
      IN_NOVAR},  // VOC_MAD_EXPLODE		MAD tank explodes
     {"SHKTROP1", 20,
      IN_NOVAR},  // VOC_SHOCK_TROOP1		Shock Trooper fires
-
-#endif
 };
 
 /***********************************************************************************************
@@ -599,49 +596,45 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
 **	This elaborates all the EVA speech voices.
 */
 static char const* Speech[VOX_COUNT] = {
-    "MISNWON1",    //	VOX_ACCOMPLISHED
-                   // mission accomplished
-    "MISNLST1",    //	VOX_FAIL
-                   // your mission has failed
-    "PROGRES1",    //	VOX_NO_FACTORY
-                   // unable to comply, building in progress
-    "CONSCMP1",    //	VOX_CONSTRUCTION
-                   // construction complete
-    "UNITRDY1",    //	VOX_UNIT_READY unit ready
-    "NEWOPT1",     //	VOX_NEW_CONSTRUCT
-                   // new construction options
-    "NODEPLY1",    //	VOX_DEPLOY
-                   // cannot deploy here
-    "STRCKIL1",    //	VOX_STRUCTURE_DESTROYED,		structure
-                   // destroyed
-    "NOPOWR1",     //	VOX_INSUFFICIENT_POWER,			insufficient
-                   // power
-    "NOFUNDS1",    //	VOX_NO_CASH
-                   // insufficient funds
-    "BCT1",        //	VOX_CONTROL_EXIT					battle
-                   // control terminated
-    "REINFOR1",    //	VOX_REINFORCEMENTS
-                   // reinforcements have arrived
-    "CANCLD1",     //	VOX_CANCELED
-                   // canceled
-    "ABLDGIN1",    //	VOX_BUILDING
-                   // building
-    "LOPOWER1",    //	VOX_LOW_POWER low power
-    "NOFUNDS1",    //	VOX_NEED_MO_MONEY
-                   // insufficent funds
-    "BASEATK1",    //	VOX_BASE_UNDER_ATTACK			our base is
-                   // under attack
-    "NOBUILD1",    //	VOX_UNABLE_TO_BUILD				unable
-                   // to build more
-    "PRIBLDG1",    //	VOX_PRIMARY_SELECTED				primary
-                   // building selected
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
+    "MISNWON1",  //	VOX_ACCOMPLISHED
+                 // mission accomplished
+    "MISNLST1",  //	VOX_FAIL
+                 // your mission has failed
+    "PROGRES1",  //	VOX_NO_FACTORY
+                 // unable to comply, building in progress
+    "CONSCMP1",  //	VOX_CONSTRUCTION
+                 // construction complete
+    "UNITRDY1",  //	VOX_UNIT_READY unit ready
+    "NEWOPT1",   //	VOX_NEW_CONSTRUCT
+                 // new construction options
+    "NODEPLY1",  //	VOX_DEPLOY
+                 // cannot deploy here
+    "STRCKIL1",  //	VOX_STRUCTURE_DESTROYED,		structure
+                 // destroyed
+    "NOPOWR1",   //	VOX_INSUFFICIENT_POWER,			insufficient
+                 // power
+    "NOFUNDS1",  //	VOX_NO_CASH
+                 // insufficient funds
+    "BCT1",      //	VOX_CONTROL_EXIT					battle
+                 // control terminated
+    "REINFOR1",  //	VOX_REINFORCEMENTS
+                 // reinforcements have arrived
+    "CANCLD1",   //	VOX_CANCELED
+                 // canceled
+    "ABLDGIN1",  //	VOX_BUILDING
+                 // building
+    "LOPOWER1",  //	VOX_LOW_POWER low power
+    "NOFUNDS1",  //	VOX_NEED_MO_MONEY
+                 // insufficent funds
+    "BASEATK1",  //	VOX_BASE_UNDER_ATTACK			our base is
+                 // under attack
+    "NOBUILD1",  //	VOX_UNABLE_TO_BUILD				unable
+                 // to build more
+    "PRIBLDG1",  //	VOX_PRIMARY_SELECTED				primary
+                 // building selected
 #ifdef ENGLISH
     "TANK01",  // VOX_MADTANK_DEPLOYED				M.A.D. Tank
                // Deployed
-#else
-    "none",
-#endif
 #else
     "none",
 #endif

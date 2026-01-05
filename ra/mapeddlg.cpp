@@ -550,14 +550,9 @@ int MapEditClass::Load_Scenario(void) {
     **	Buttons
     */
     ControlClass* commands = NULL;  // the button list
-#ifdef FIXIT_CSII                   //	checked - ajw 9/28/98
     EditClass editbtn(BUTTON_SCENARIO, scen_buf, 5, TPF_EFNT | TPF_NOSHADOW,
                       D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H,
                       EditClass::ALPHANUMERIC);
-#else
-  EditClass editbtn(BUTTON_SCENARIO, scen_buf, 5, TPF_EFNT | TPF_NOSHADOW,
-                    D_SCEN_X, D_SCEN_Y, D_SCEN_W, D_SCEN_H, EditClass::NUMERIC);
-#endif
 
     TextButtonClass varabtn(BUTTON_VAR_A, "A", TPF_EBUTTON, D_VARA_X, D_VARA_Y,
                             D_VARA_W, D_VARA_H);
@@ -591,7 +586,6 @@ int MapEditClass::Load_Scenario(void) {
     */
     Set_Logic_Page(SeenBuff);
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (scen_nump < 100) {
       sprintf(scen_buf, "%d", scen_nump);  // init edit buffer
     } else {
@@ -608,9 +602,6 @@ int MapEditClass::Load_Scenario(void) {
       }
       scen_buf[2] = 0;
     }
-#else
-  sprintf(scen_buf, "%d", scen_nump);  // init edit buffer
-#endif
     editbtn.Set_Text(scen_buf, 5);
 
     varabtn.Turn_Off();
@@ -676,7 +667,6 @@ int MapEditClass::Load_Scenario(void) {
             neubtn.Turn_On();
             break;
         }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       } else {
         switch (Scen.ScenarioName[2]) {
           case 'G':
@@ -691,7 +681,6 @@ int MapEditClass::Load_Scenario(void) {
             playermbtn.Turn_On();
             break;
         }
-#endif
       }
     }
 
@@ -865,7 +854,6 @@ int MapEditClass::Load_Scenario(void) {
     /*
     **	Save selections & return
     */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (scen_buf[0] <= '9' && scen_buf[1] <= '9') {
       scen_nump = atoi(scen_buf);
     } else {
@@ -893,9 +881,6 @@ int MapEditClass::Load_Scenario(void) {
       // Mono_Printf("Converted to: %d, %d = %d\n",first, second,
       // scen_nump);Keyboard->Get();Keyboard->Get();
     }
-#else
-  scen_nump = atoi(scen_buf);
-#endif
 
     return (0);
   }

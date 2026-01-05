@@ -631,19 +631,9 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     if (factory != nullptr) {
       TechnoClass *obj = factory->Get_Object();
       if (obj != nullptr) {
-#ifdef FIXIT_CSII
         CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
                       window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL,
                       nullptr);
-#else
-        void const *remapper =
-            obj->House->Remap_Table(false, obj->Techno_Type_Class()->Remap);
-        CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
-                      window,
-                      SHAPE_CENTER | SHAPE_WIN_REL |
-                          ((remapper != nullptr) ? SHAPE_FADING : SHAPE_NORMAL),
-                      remapper);
-#endif
       }
     }
   }
@@ -3149,16 +3139,12 @@ bool BuildingClass::Captured(HouseClass *newowner) {
         smudge->Disown(cell);
         delete smudge;
       }
-#ifdef FIXIT_CAPTURE_BIB
       if (Session.Type == GAME_NORMAL) {
         new SmudgeClass(bib, Cell_Coord(cell),
                         Class->IsBase ? House->Class->House : HOUSE_NONE);
       } else {
         new SmudgeClass(bib, Cell_Coord(cell), House->Class->House);
       }
-#else
-      new SmudgeClass(bib, Cell_Coord(cell), House->Class->House);
-#endif
     }
 
     House->Harvested(booty);
@@ -4134,7 +4120,6 @@ int BuildingClass::Mission_Missile(void) {
       ** opening on the building, the missile rising, and smoke broiling.
       */
       case DOOR_OPENING: {
-#ifdef FIXIT_VERSION_3
         COORDINATE door = Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
         AnimClass *sput = new AnimClass(ANIM_SPUTDOOR, door);
         if (sput) {
@@ -4142,14 +4127,6 @@ int BuildingClass::Mission_Missile(void) {
           Status = LAUNCH_UP;
           AnimToTrack = sput->As_Target();
         }
-#else
-        IsReadyToCommence = false;
-        COORDINATE door = Coord_Move(Center_Coord(), (DirType)0xC0, 0x30);
-        AnimClass *sput = new AnimClass(ANIM_SPUTDOOR, door);
-        Status = LAUNCH_UP;
-        AnimToTrack = sput->As_Target();
-        return (1);
-#endif
       }
 
       /*

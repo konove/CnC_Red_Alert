@@ -188,13 +188,11 @@ COORDINATE AbstractTypeClass::Coord_Fixup(COORDINATE coord) const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 int AbstractTypeClass::Full_Name(void) const {
-#ifdef FIXIT_NAME_OVERRIDE
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
     if (NameIDOverride[index] == ((RTTI + 1) * 100) + ID) {
       return (-(index + 1));
     }
   }
-#endif
   return (FullName);
 }
 

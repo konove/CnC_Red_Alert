@@ -239,9 +239,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
       WasSelected(false),
       Fear(FEAR_NONE) {
   House->Tracking_Add(this);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   IsCloakable = Class->IsCloakable;
-#endif
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
   *first time *	the object fires. For non two shooters, set the flag since it
@@ -664,25 +662,16 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             if (tech->What_Am_I() == RTTI_BUILDING) {
               iscapturable = ((BuildingClass *)tech)->Class->IsCaptureable;
             }
-#ifdef FIXIT_ENGINEER  //	checked - ajw 9/28/98
             if (tech->Health_Ratio() <= EngineerCaptureLevel && iscapturable) {
-#else
-            if (tech->Health_Ratio() <= Rule.ConditionRed && iscapturable) {
-#endif
               if (tech->Trigger.Is_Valid()) {
                 tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
               }
               tech->House->IsThieved = true;
               tech->Captured(House);
             } else {
-#ifdef FIXIT_ENGINEER  //	checked - ajw 9/28/98
               int damage = std::min(
                   (tech->Techno_Type_Class()->MaxStrength) * EngineerDamage,
                   tech->Strength - 1);
-#else
-              int damage = min((tech->Techno_Type_Class()->MaxStrength) / 3,
-                               tech->Strength - 1);
-#endif
               tech->Take_Damage(damage, 0, WARHEAD_HE, this, true);
             }
             BEnd(BENCH_PCP);
@@ -1694,11 +1683,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   ** illegal so he won't be constantly healing healed infantrymen.
   */
   if (Combat_Damage() < 0) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     TechnoClass *targ = As_Techno(target);
-#else
-    InfantryClass *targ = As_Infantry(target);
-#endif
     if (targ == nullptr || targ->Health_Ratio() >= Rule.ConditionGreen) {
       return (FIRE_ILLEGAL);
     }
@@ -2449,11 +2434,9 @@ void InfantryClass::Response_Select(void) {
                                           VOC_YESSIR,  VOC_YESSIR, VOC_READY,
                                           VOC_AWAIT};
     static VocType _stavros[] = {VOC_STAVCMDR, VOC_STAVYES};
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     static VocType _mechanic_response[] = {VOC_MECHHOWDY1, VOC_MECHHUH1,
                                            VOC_MECHLAFF1};
     static VocType _shock_response[] = {VOC_STYES1, VOC_STJUMP1, VOC_STJUICE1};
-#endif
 
     int size = 0;
     VocType *response = nullptr;
@@ -2483,19 +2466,16 @@ void InfantryClass::Response_Select(void) {
       case INFANTRY_SPY:
         response = _spy_response;
         size = ARRAY_SIZE(_spy_response);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (house == HOUSE_USSR) {
           response = _default_response;
           size = ARRAY_SIZE(_default_response);
         }
-#endif
         break;
 
       case INFANTRY_MEDIC:
         response = _medic_response;
         size = ARRAY_SIZE(_medic_response);
         break;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       case INFANTRY_MECHANIC:
         response = _mechanic_response;
         size = ARRAY_SIZE(_mechanic_response);
@@ -2504,7 +2484,6 @@ void InfantryClass::Response_Select(void) {
         response = _shock_response;
         size = ARRAY_SIZE(_shock_response);
         break;
-#endif
       case INFANTRY_TANYA:
         response = _tanya_response;
         size = ARRAY_SIZE(_tanya_response);
@@ -2579,11 +2558,9 @@ void InfantryClass::Response_Move(void) {
     static VocType _default_response[] = {VOC_ROGER, VOC_RIGHT_AWAY, VOC_UGOTIT,
                                           VOC_AFFIRM, VOC_AFFIRM};
     static VocType _stavros[] = {VOC_STAVMOV, VOC_STAVCRSE};
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     static VocType _mechanic[] = {VOC_MECHYES1, VOC_MECHRISE1, VOC_MECHHEAR1,
                                   VOC_MECHBOSS1};
     static VocType _shock[] = {VOC_STPOWER1, VOC_STDANCE1, VOC_STCHRGE1};
-#endif
 
     int size = 0;
     VocType *response = nullptr;
@@ -2618,12 +2595,10 @@ void InfantryClass::Response_Move(void) {
       case INFANTRY_SPY:
         response = _spy_response;
         size = ARRAY_SIZE(_spy_response);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (house == HOUSE_USSR) {
           response = _default_response;
           size = ARRAY_SIZE(_default_response);
         }
-#endif
         break;
 
       case INFANTRY_MEDIC:
@@ -2631,7 +2606,6 @@ void InfantryClass::Response_Move(void) {
         size = ARRAY_SIZE(_medic_response);
         break;
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       case INFANTRY_MECHANIC:
         response = _mechanic;
         size = ARRAY_SIZE(_mechanic);
@@ -2642,7 +2616,6 @@ void InfantryClass::Response_Move(void) {
         size = ARRAY_SIZE(_shock);
         break;
 
-#endif
       case INFANTRY_TANYA:
         response = _tanya_response;
         size = ARRAY_SIZE(_tanya_response);
@@ -2715,12 +2688,10 @@ void InfantryClass::Response_Attack(void) {
         VOC_RIGHT_AWAY, VOC_AFFIRM, VOC_AFFIRM, VOC_UGOTIT,
         VOC_NO_PROB,    VOC_YESSIR, VOC_YESSIR, VOC_YESSIR};
     static VocType _stavros[] = {VOC_STAVCRSE};
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     static VocType _mechanic[] = {VOC_MECHYEEHAW1, VOC_MECHHOTDIG1,
                                   VOC_MECHWRENCH1};
     static VocType _shock[] = {VOC_STLIGHT1, VOC_STBURN1, VOC_STCRISP1,
                                VOC_STSHOCK1};
-#endif
 
     int size = 0;
     VocType *response = nullptr;
@@ -2745,12 +2716,10 @@ void InfantryClass::Response_Attack(void) {
       case INFANTRY_SPY:
         response = _spy_response;
         size = ARRAY_SIZE(_spy_response);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (house == HOUSE_USSR) {
           response = _default_response;
           size = ARRAY_SIZE(_default_response);
         }
-#endif
         break;
 
       case INFANTRY_EINSTEIN:
@@ -2767,7 +2736,7 @@ void InfantryClass::Response_Attack(void) {
         response = _medic_response;
         size = ARRAY_SIZE(_medic_response);
         break;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
+
       case INFANTRY_MECHANIC:
         response = _mechanic;
         size = ARRAY_SIZE(_mechanic);
@@ -2777,7 +2746,7 @@ void InfantryClass::Response_Attack(void) {
         response = _shock;
         size = ARRAY_SIZE(_shock);
         break;
-#endif
+
       case INFANTRY_TANYA:
         response = _tanya_response;
         size = ARRAY_SIZE(_tanya_response);
@@ -2842,18 +2811,11 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
         return (ACTION_GREPAIR);
       } else {
         if (bldg->Class->IsCaptureable) {
-#ifdef FIXIT_ENGINEER  //	checked - ajw 9/28/98
           if (bldg->Health_Ratio() <= EngineerCaptureLevel) {
-#else
-          if (bldg->Health_Ratio() <= Rule.ConditionRed) {
-#endif
             return (ACTION_CAPTURE);
           }
           return (ACTION_DAMAGE);
         }
-
-        //				if (bldg->Health_Ratio() <=
-        // Rule.ConditionRed && bldg->Class->IsCaptureable) {
       }
     }
   }
@@ -2865,7 +2827,6 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   */
   if (Combat_Damage() < 0 && House->IsPlayerControl) {
     if (House->Is_Ally(object)) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if ((object->What_Am_I() == RTTI_INFANTRY && object != this &&
            *this == INFANTRY_MEDIC) ||
           (*this == INFANTRY_MECHANIC &&
@@ -2882,13 +2843,6 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
           }
         }
       }
-#else
-      if (object->What_Am_I() == RTTI_INFANTRY && object != this) {
-        if (object->Health_Ratio() < Rule.ConditionGreen) {
-          return (ACTION_HEAL);
-        }
-      }
-#endif
       if (!object->Is_Techno() ||
           !((TechnoClass *)object)->Techno_Type_Class()->Max_Passengers()) {
         if (action == ACTION_GUARD_AREA || action == ACTION_MOVE) {
@@ -2958,10 +2912,8 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   **	Check to see if it can enter a transporter.
   */
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno()) {
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     if (object->What_Am_I() != RTTI_VESSEL ||
         *(VesselClass *)object != VESSEL_CARRIER) {
-#endif
       switch (((InfantryClass *)this)
                   ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass *)object)) {
         case RADIO_ROGER:
@@ -2975,9 +2927,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
         default:
           break;
       }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     }
-#endif
   }
 
   if (Class->IsCapture && action == ACTION_ATTACK) {
@@ -3639,7 +3589,6 @@ void InfantryClass::Firing_AI(void) {
         case FIRE_ILLEGAL:
           if (Combat_Damage(primary) < 0) {
             ObjectClass *targ = As_Object(TarCom);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
             if (targ) {
               if ((targ->What_Am_I() == RTTI_INFANTRY &&
                    *this == INFANTRY_MEDIC) ||
@@ -3653,15 +3602,6 @@ void InfantryClass::Firing_AI(void) {
             } else {
               Assign_Target(TARGET_NONE);
             }
-#else
-            if (targ && targ->What_Am_I() == RTTI_INFANTRY) {
-              if (targ->Health_Ratio() >= Rule.ConditionGreen) {
-                Assign_Target(TARGET_NONE);
-              }
-            } else {
-              Assign_Target(TARGET_NONE);
-            }
-#endif
           }
           break;
 

@@ -117,13 +117,8 @@ void Check_Use_Compressed_Shapes(void) {
 
 unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
                           void *buffptr) {
-#ifdef FIXIT_SCORE_CRASH
   char *ptr;
   unsigned long offcurr, offdiff;
-#else
-  char *ptr, *lockptr;
-  unsigned long offcurr, off16, offdiff;
-#endif
   unsigned long offset[SUBFRAMEOFFS];
   KeyFrameHeaderType *keyfr;
   unsigned short buffsize, currframe, subframe;
@@ -187,25 +182,11 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
       ptr = (char *)Add_Long_To_Pointer(ptr, 768L);
     }
 
-#ifndef FIXIT_SCORE_CRASH
-    off16 = (unsigned long)lockptr & 0x00003FFFL;
-#endif
-
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
       return (nullptr);
     }
-
-#ifndef FIXIT_SCORE_CRASH
-    if (((offset[2] & 0x00FFFFFFL) - offcurr) >= (0x00010000L - off16)) {
-      ptr = (char *)Add_Long_To_Pointer(ptr, offdiff);
-      off16 = (unsigned long)ptr & 0x00003FFFL;
-
-      offcurr += offdiff;
-      offdiff = 0;
-    }
-#endif
 
 #ifdef NEVER
     // check for LCW'd rsd
@@ -229,17 +210,6 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
 
       while (currframe <= framenumber) {
         offdiff = (offset[subframe] & 0x00FFFFFFL) - offcurr;
-
-#ifndef FIXIT_SCORE_CRASH
-        if (((offset[subframe + 2] & 0x00FFFFFFL) - offcurr) >=
-            (0x00010000L - off16)) {
-          ptr = (char *)Add_Long_To_Pointer(ptr, offdiff);
-          off16 = (unsigned long)lockptr & 0x00003FFFL;
-
-          offcurr += offdiff;
-          offdiff = 0;
-        }
-#endif
 
 #ifdef NEVER
         // check for LCW'd rsd

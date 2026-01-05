@@ -81,17 +81,15 @@
 #include "ra/type.h"
 #include "ra/vector.h"
 #include "ra/vessel.h"
+#include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/gbuffer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
+
 #ifdef _WIN32
 #include "ra/ccdde.h"
-#endif  // WIN32
-
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
-#include "ra/wolstrng.h"
-#endif
+#endif  // _WIN32
 
 /***************************************************************************
 ** Table of what data is really used in the EventClass struct for different
@@ -121,32 +119,28 @@ unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
     size_of(EventClass, Data.SellCell),         // SELLCELL
     size_of(EventClass, Data.Options),          // SPECIAL
     0,                                          // FRAMESYNC
-    0,                                          //	MESSAGE
+    0,                                          // MESSAGE
     size_of(EventClass, Data.FrameInfo.Delay),  // RESPONSE_TIME
     size_of(EventClass, Data.FrameInfo),        // FRAMEINFO
-    0,                                          //	SAVEGAME
+    0,                                          // SAVEGAME
     size_of(EventClass, Data.NavCom),           // ARCHIVE
     size_of(EventClass, Data.Variable.Size),    // ADDPLAYER
     size_of(EventClass, Data.Timing),           // TIMING
     size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
-#ifdef FIXIT_VERSION_3                          //	Stalemate games.
-    0,                                          //	PROPOSE_DRAW
-    0,                                          //	RETRACT_DRAW
-#endif
+    0,                                          // PROPOSE_DRAW
+    0,                                          // RETRACT_DRAW
 };
 
 char *EventClass::EventNames[EventClass::LAST_EVENT] = {
-    "EMPTY",         "ALLY",         "MEGAMISSION",  "MEGAMISSION_F",
-    "IDLE",          "SCATTER",      "DESTRUCT",     "DEPLOY",
-    "PLACE",         "OPTIONS",      "GAMESPEED",    "PRODUCE",
-    "SUSPEND",       "ABANDON",      "PRIMARY",      "SPECIAL_PLACE",
-    "EXIT",          "ANIMATION",    "REPAIR",       "SELL",
-    "SELLCELL",      "SPECIAL",      "FRAMESYNC",    "MESSAGE",
-    "RESPONSE_TIME", "FRAMEINFO",    "SAVEGAME",     "ARCHIVE",
-    "ADDPLAYER",     "TIMING",       "PROCESS_TIME",
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
-    "PROPOSE_DRAW",  "RETRACT_DRAW",
-#endif
+    "EMPTY",         "ALLY",      "MEGAMISSION",  "MEGAMISSION_F",
+    "IDLE",          "SCATTER",   "DESTRUCT",     "DEPLOY",
+    "PLACE",         "OPTIONS",   "GAMESPEED",    "PRODUCE",
+    "SUSPEND",       "ABANDON",   "PRIMARY",      "SPECIAL_PLACE",
+    "EXIT",          "ANIMATION", "REPAIR",       "SELL",
+    "SELLCELL",      "SPECIAL",   "FRAMESYNC",    "MESSAGE",
+    "RESPONSE_TIME", "FRAMEINFO", "SAVEGAME",     "ARCHIVE",
+    "ADDPLAYER",     "TIMING",    "PROCESS_TIME", "PROPOSE_DRAW",
+    "RETRACT_DRAW",
 };
 
 /***********************************************************************************************
@@ -976,7 +970,6 @@ void EventClass::Execute(void) {
       }
       break;
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
     case PROPOSE_DRAW:
       if (ID == PlayerPtr->ID) {
         if (Scen.bOtherProposesDraw) {
@@ -1036,7 +1029,6 @@ void EventClass::Execute(void) {
       }
       Sound_Effect(VOC_INCOMING_MESSAGE);
       break;
-#endif
 
     /*
     **	Default: do nothing.

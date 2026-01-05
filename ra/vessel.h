@@ -143,9 +143,7 @@ class VesselClass : public DriveClass {
   virtual void Active_Click_With(ActionType action, ObjectClass *object);
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual bool Is_Allowed_To_Recloak(void) const;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   virtual BulletClass *Fire_At(TARGET target, int which = 0);
-#endif
   /*
   **	File I/O.
   */

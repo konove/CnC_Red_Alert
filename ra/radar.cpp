@@ -927,18 +927,11 @@ void RadarClass::Zoom_Mode(CELL cell) {
   /*
   ** Make sure we do not show more cells than are on the map.
   */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 #ifdef WIN32
   map_c_width = std::min(map_c_width, RadIWidth);
   map_c_width = std::min(map_c_width, MapCellWidth);
   map_c_height = std::min(map_c_height, RadIHeight);
   map_c_height = std::min(map_c_height, MapCellHeight);
-#else
-  map_c_width = std::min(map_c_width, 62 * RESFACTOR);
-  map_c_width = std::min(map_c_width, MapCellWidth);
-  map_c_height = std::min(map_c_height, 62 * RESFACTOR);
-  map_c_height = std::min(map_c_height, MapCellHeight);
-#endif
 #else
   map_c_width = std::min(map_c_width, 62 * RESFACTOR);
   map_c_width = std::min(map_c_width, MapCellWidth);

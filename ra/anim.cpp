@@ -694,7 +694,6 @@ void AnimClass::AI(void) {
     return;
   }
 
-#ifdef FIXIT_MULTI_SAVE
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
     ((int &)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
@@ -703,7 +702,6 @@ void AnimClass::AI(void) {
   if (Class->LoopEnd == -1) {
     ((int &)Class->LoopEnd) = Class->Stages;
   }
-#endif
 
   if (Delay) {
     Delay--;
@@ -711,7 +709,6 @@ void AnimClass::AI(void) {
       Start();
     }
   } else {
-#ifdef FIXIT_MULTI_SAVE
     if (Class->Stages == -1) {
       IsTheaterShape = Class->IsTheater;
       ((int &)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
@@ -720,7 +717,6 @@ void AnimClass::AI(void) {
     if (Class->LoopEnd == -1) {
       ((int &)Class->LoopEnd) = Class->Stages;
     }
-#endif
 
     /*
     **	This is necessary because there is no recording of animations on the map

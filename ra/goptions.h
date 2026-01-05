@@ -50,9 +50,7 @@ class GameOptionsClass : public OptionsClass {
     BUTTON_DELETE,
     BUTTON_GAME,
     BUTTON_QUIT,
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
     BUTTON_DRAW,
-#endif
     BUTTON_RESUME,
     BUTTON_RESTATE,
 

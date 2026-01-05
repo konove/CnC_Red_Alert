@@ -57,23 +57,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <algorithm>
 
-#include "ra/dialog.h"
-#include "ra/externs.h"
-#include "ra/init.h"
-#include "ra/inline.h"
-#include "ra/msgbox.h"
-#include "ra/textbtn.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/misc.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/textbtn.h"
 #include "ra/vector.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
@@ -83,8 +84,8 @@
 #else
 #define INVALID_HANDLE_VALUE NULL
 #endif
-#include "sdllib/include/wincomm.h"
 #include "sdllib/include/modemreg.h"
+#include "sdllib/include/wincomm.h"
 
 extern ModemRegistryEntryClass *ModemRegistry;
 #else
@@ -1515,13 +1516,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 2);
 
   if (status < ASSUCCESS) {
-#ifdef FIXIT_MULTI_SAVE
     return (false);
-#else
-    if (WWMessageBox().Process(TXT_ERROR_NO_RESP, TXT_IGNORE, TXT_CANCEL))
-      return (false);
-    error_count++;
-#endif
   }
 
   /*

@@ -238,24 +238,17 @@ char _staging_buffer[32000];
 bool IsTanyaDead;
 bool SaveTanya;
 
-#ifdef FIXIT_ANTS
 bool AntsEnabled = false;
-#endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 bool NewUnitsEnabled = false;
 bool SecretUnitsEnabled = false;
 int MTankDistance = 15;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
 int CarrierLaunchDelay = 60;
-#endif
-#endif
 
 int NewINIFormat = 0;
 
 bool TimeQuake;
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 bool PendingTimeQuake;
 TARGET TimeQuakeCenter;
 fixed QuakeUnitDamage = 0x300;
@@ -263,12 +256,9 @@ fixed QuakeBuildingDamage = 0x300;
 int QuakeInfantryDamage = 25;
 int QuakeDelay;
 fixed ChronoTankDuration = 0x300;  // chrono override for chrono tanks
-#ifdef FIXIT_ENGINEER              //	checked - ajw 9/28/98
 fixed EngineerDamage = 0x55;       // Amount of damage an engineer does
 fixed EngineerCaptureLevel =
     0x40;  // Building damage level before engineer can capture
-#endif
-#endif
 
 #ifdef WIN32
 unsigned short Hard_Error_Occured = 0;
@@ -307,13 +297,11 @@ PKey FastKey;
 PKey SlowKey;
 #endif
 
-#ifdef FIXIT_NAME_OVERRIDE
 /***************************************************************************
 **	This is where the name overrides for the units will reside.
 */
 char const *NameOverride[25];
 int NameIDOverride[25];
-#endif
 
 /***************************************************************************
 **	These are the mission control structures. They hold the information
@@ -333,9 +321,7 @@ uint16_t TutorialTextOffsets[225];
 *the *	program's run, but may need to be referenced intermitently.
 */
 CCINIClass RuleINI;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 CCINIClass AftermathINI;
-#endif
 
 /***************************************************************************
 **	This points to the benchmark objects that are allocated only if the
@@ -675,13 +661,8 @@ int NewMaxAheadFrame1;
 int NewMaxAheadFrame2;
 #endif
 
-#ifdef FIXIT_VERSION_3
 bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
                              // rules?
-#else
-unsigned long PlayingAgainstVersion;  // Negotiated version number
-bool Version107InMix;                 // Is there a v1.07 in the game
-#endif
 
 /***************************************************************************
 **	This is the null modem manager class.  Declaring this class doesn't
@@ -852,6 +833,4 @@ MCIMovie *MciMovie = NULL;
 MPGSettings *MpgSettings = NULL;
 #endif
 
-#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
 bool bAutoSonarPulse = false;
-#endif

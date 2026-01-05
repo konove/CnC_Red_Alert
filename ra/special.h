@@ -102,10 +102,6 @@ class SpecialClass {
 
 void Special_Dialog(bool simple = false);
 char const *Fetch_Password(int caption, int message, int btext = TXT_OK);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 int Fetch_Difficulty(bool amath = false);
-#else
-int Fetch_Difficulty(void);
-#endif
 
 #endif

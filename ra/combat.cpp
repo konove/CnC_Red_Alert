@@ -104,14 +104,10 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   *if the heal *	effect is close enough.
   */
   if (damage < 0) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (distance < 0x008) {
       if (warhead != WARHEAD_MECHANICAL && armor == ARMOR_NONE) return (damage);
       if (warhead == WARHEAD_MECHANICAL && armor != ARMOR_NONE) return (damage);
     }
-#else
-    if (distance < 0x008 && armor == ARMOR_NONE) return (damage);
-#endif
     return (0);
   }
 

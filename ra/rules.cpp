@@ -288,7 +288,6 @@ RulesClass::RulesClass(void)
       MovieTime(fixed(1, 4)),
       TiberiumShortScan(0x0600),
       TiberiumLongScan(0x2000) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   NewUnitsEnabled = SecretUnitsEnabled = 0;
   MTankDistance = 30;
   QuakeUnitDamage = 0x080;
@@ -296,15 +295,10 @@ RulesClass::RulesClass(void)
   QuakeInfantryDamage = 0;
   QuakeDelay = 120;
   ChronoTankDuration = 0x300;
-#ifdef FIXIT_ENGINEER                    //	checked - ajw 9/28/98
   EngineerDamage = (fixed)1 / (fixed)3;  // Amount of damage an engineer does
   EngineerCaptureLevel =
       ConditionRed;  // Building damage level before engineer can capture
-#endif
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   CarrierLaunchDelay = 60;
-#endif
-#endif
 }
 
 /***********************************************************************************************
@@ -394,7 +388,6 @@ bool RulesClass::Process(CCINIClass& ini) {
  *=============================================================================================*/
 bool RulesClass::General(CCINIClass& ini) {
   static char const* const GENERAL = "General";
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   static char const* const AFTERMATH = "Aftermath";
 
   if (ini.Is_Present(AFTERMATH)) {
@@ -411,12 +404,7 @@ bool RulesClass::General(CCINIClass& ini) {
     QuakeDelay = ini.Get_Int(AFTERMATH, "QuakeDelay", QuakeDelay);
     ChronoTankDuration =
         ini.Get_Fixed(AFTERMATH, "ChronoTankDuration", ChronoTankDuration);
-// Mono_Set_Cursor(0,0);Mono_Printf("Chrono duration: %08x
-// \n",ChronoTankDuration);Keyboard->Get();Keyboard->Get();
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     CarrierLaunchDelay = ini.Get_Int(AFTERMATH, "CarrierLaunchDelay", 120);
-#endif
-#ifdef FIXIT_ENGINEER  //	checked - ajw 9/28/98
     //	Engineer changing fields were specifically left out of Aftrmath.ini,
     // thus these values are not found to set. ajw 	Implies interesting
     // security hole if user creates a separate Aftrmath.ini file!
@@ -427,10 +415,7 @@ bool RulesClass::General(CCINIClass& ini) {
         ini.Get_Fixed(AFTERMATH, "EngineerCaptureLevel",
                       EngineerCaptureLevel);  // Building damage level before
                                               // engineer can capture
-#endif
   }
-
-#endif
 
   if (ini.Is_Present(GENERAL)) {
     TurboBoost = ini.Get_Fixed(GENERAL, "TurboBoost", TurboBoost);
@@ -675,9 +660,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   new WarheadTypeClass("Super");
   new WarheadTypeClass("Organic");
   new WarheadTypeClass("Nuke");
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   new WarheadTypeClass("Mechanical");
-#endif
 
   Weapons.Set_Heap(WeaponMax);
   new WeaponTypeClass("Colt45");
@@ -715,22 +698,14 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   new WeaponTypeClass("SCUD");
   new WeaponTypeClass("Flamer");
   new WeaponTypeClass("RedEye");
-
-#ifdef FIXIT_ANTS
   new WeaponTypeClass("Mandible");
-#endif
-
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   new WeaponTypeClass("PortaTesla");
   new WeaponTypeClass("GoodWrench");
   new WeaponTypeClass("SubSCUD");
   new WeaponTypeClass("TTankZap");
   new WeaponTypeClass("APTusk");
   new WeaponTypeClass("Democharge");
-#endif
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   new WeaponTypeClass("AirAssault");
-#endif
 
   return (true);
 }

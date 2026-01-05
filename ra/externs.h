@@ -118,23 +118,15 @@ extern void const *LightningShapes;
 
 extern int NewINIFormat;
 
-#ifdef FIXIT_ANTS
 extern bool AntsEnabled;
-#endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool NewUnitsEnabled;
 extern bool SecretUnitsEnabled;
 extern int MTankDistance;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
 extern int CarrierLaunchDelay;
-#endif
-#endif
 
-#ifdef FIXIT_NAME_OVERRIDE
 extern char const *NameOverride[25];
 extern int NameIDOverride[25];
-#endif
 
 #ifdef WIN32
 extern bool GameInFocus;
@@ -175,9 +167,7 @@ extern uint16_t TutorialTextOffsets[225];
 extern Buffer *TheaterBuffer;
 extern GetCDClass CDList;
 extern CCINIClass RuleINI;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern CCINIClass AftermathINI;
-#endif
 extern Benchmark *Benches;
 extern int MapTriggerID;
 extern int LogicTriggerID;
@@ -292,7 +282,6 @@ extern bool SaveTanya;
 
 extern bool TimeQuake;
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool PendingTimeQuake;
 extern TARGET TimeQuakeCenter;
 extern fixed QuakeUnitDamage;
@@ -300,12 +289,9 @@ extern fixed QuakeBuildingDamage;
 extern int QuakeInfantryDamage;
 extern int QuakeDelay;
 extern fixed ChronoTankDuration;  // chrono override for chrono tanks
-#ifdef FIXIT_ENGINEER             //	checked - ajw 9/28/98
 extern fixed EngineerDamage;      // Amount of damage an engineer does
 extern fixed
     EngineerCaptureLevel;  // Building damage level before engineer can capture
-#endif
-#endif
 
 /*
 **	Loaded data file pointers.
@@ -352,17 +338,10 @@ extern PaletteClass ScorePalette;
 extern int BuildLevel;
 extern unsigned long ScenarioCRC;
 
-#ifdef FIXIT_VERSION_3
 extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
                                     // Aftermath rules?
-#else
-extern unsigned long PlayingAgainstVersion;  // Negotiated version number
-extern bool Version107InMix;                 // Is there a v1.07 in the game
-#endif
 
-#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
 extern bool bAutoSonarPulse;
-#endif
 
 #ifdef SCENARIO_EDITOR
 extern CELL CurrentCell;

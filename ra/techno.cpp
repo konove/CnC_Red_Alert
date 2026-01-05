@@ -776,13 +776,7 @@ extern int UnitBuildPenalty;
 int TechnoClass::Time_To_Build(void) const {
   int val = Class_Of().Time_To_Build();
 
-#ifdef FIXIT_VERSION_3
   if (Session.Type == GAME_NORMAL) {
-#else
-  if (Session.Type == GAME_NORMAL ||
-      PlayingAgainstVersion == VERSION_RED_ALERT_104 ||
-      PlayingAgainstVersion == VERSION_RED_ALERT_107) {
-#endif
     val *= House->BuildSpeedBias;
   } else {
     if (What_Am_I() == RTTI_BUILDING || What_Am_I() == RTTI_INFANTRY) {
@@ -805,7 +799,6 @@ int TechnoClass::Time_To_Build(void) const {
 
   int divisor = House->Factory_Count(What_Am_I());
   if (divisor != 0) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     // Hack: allow the multiple-factory bonus, but only up to two factories if
     //			this is an AM<->AM game.
     if (NewUnitsEnabled) {
@@ -813,9 +806,6 @@ int TechnoClass::Time_To_Build(void) const {
     } else {
       val /= divisor;
     }
-#else
-    val /= divisor;
-#endif
   }
   return (val);
 }
@@ -2155,12 +2145,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     if (What_Am_I() == RTTI_INFANTRY) {
       if (((InfantryClass *)this)->Class->IsDog || Combat_Damage() < 0) {
         method = THREAT_INFANTRY | (method & (THREAT_RANGE | THREAT_AREA));
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (*(InfantryClass *)this == INFANTRY_MECHANIC) {
           method = (THREAT_VEHICLES | THREAT_AIR) |
                    (method & (THREAT_RANGE | THREAT_AREA));
         }
-#endif
       }
     }
 
@@ -2854,18 +2842,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	If the object is on the ground, then don't allow firing if it can't fire
     *upon ground objects.
     */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (object != nullptr && object->Height == 0 &&
         (object->What_Am_I() != RTTI_VESSEL ||
          (*((VesselClass *)object) != VESSEL_SS &&
           *((VesselClass *)object) != VESSEL_MISSILESUB)) &&
-#else
-  if (object != nullptr && object->Height == 0 &&
-      (object->What_Am_I() != RTTI_VESSEL ||
-       *((VesselClass *)object) != VESSEL_SS) &&
-#endif
         !weapon->Bullet->IsAntiGround) {
-
       return (FIRE_CANT);
     }
     if (Is_Target_Cell(target) && !weapon->Bullet->IsAntiGround) {
@@ -2895,7 +2876,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     **	If cloaked, then firing is disabled.
     */
     if (Cloak != UNCLOAKED) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       // Special hack for John Archer's Hunt-The-Wumpus multiplayer mission...
       // if the object firing is a cloaked civilian, don't require uncloaking
       // before allowing firing.
@@ -2903,7 +2883,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           ((InfantryClass *)this)->Class->IsCivilian) {
         return (FIRE_OK);
       }
-#endif
       return (FIRE_CLOAKED);
     }
 
@@ -3293,15 +3272,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       */
       if (weapon->IsElectric) {
         bool gonnadraw = Electric_Zap(target, which);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (What_Am_I() != RTTI_INFANTRY) {
           Set_Stage(0);
           Set_Rate(0);
         }
-#else
-      Set_Stage(0);
-      Set_Rate(0);
-#endif
         if (Ammo <= 1 && What_Am_I() == RTTI_BUILDING) {
           ((BuildingClass *)this)->IsCharged = false;
         }
@@ -4064,14 +4038,12 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       */
       source->House->PointTotal += points;
     }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     // Hack check: if they were trying to teleport this unit when it died, take
     //	the map mode out of teleportation mode.
     if (IsOwnedByPlayer && Map.IsTargettingMode == SPC_CHRONO2 &&
         House->UnitToTeleport == As_Target()) {
       Map.IsTargettingMode = SPC_NONE;
     }
-#endif
     switch (What_Am_I()) {
       case RTTI_BUILDING: {
         StructType bldg = *(BuildingClass *)this;
@@ -4212,15 +4184,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       Cloak = UNCLOAKING;
       CloakingDevice.Set_Stage(0);
       CloakingDevice.Set_Rate(1);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (What_Am_I() == RTTI_VESSEL) {
         Sound_Effect(VOC_SUBSHOW, Coord);
       } else {
         Sound_Effect(VOC_IRON1, Coord);
       }
-#else
-    Sound_Effect(VOC_SUBSHOW, Coord);
-#endif
     }
   }
 
@@ -4250,15 +4218,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
       Cloak = CLOAKING;
       CloakingDevice.Set_Stage(0);
       CloakingDevice.Set_Rate(1);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (What_Am_I() == RTTI_VESSEL) {
         Sound_Effect(VOC_SUBSHOW, Coord);
       } else {
         Sound_Effect(VOC_IRON1, Coord);
       }
-#else
-    Sound_Effect(VOC_SUBSHOW, Coord);
-#endif
     }
   }
 
@@ -5585,7 +5549,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           if (object->What_Am_I() == RTTI_INFANTRY) {
             pip = ((InfantryClass *)object)->Class->Pip;
           }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
           if (What_Am_I() == RTTI_VESSEL &&
               *(VesselClass *)this == VESSEL_CARRIER) {
             if (object->What_Am_I() == RTTI_AIRCRAFT) {
@@ -5598,7 +5561,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               }
             }
           }
-#endif
           object = object->Next;
         }
         CC_Draw_Shape(Class_Of().PipShapes, pip, x + index * 3, y, window,
@@ -5648,7 +5610,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
                         SHAPE_CENTER | SHAPE_WIN_REL);
         }
       }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       /*
       ** Check if it's a Chrono tank, to show the recharge gauge.
       */
@@ -5677,7 +5638,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           CC_Draw_Shape(Class_Of().PipShapes, shape, x + index * 3, y, window,
                         SHAPE_CENTER | SHAPE_WIN_REL);
         }
-#endif
       } else {
         bool building = false;
         int pip = PIP_FULL;  // green
@@ -6379,7 +6339,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *=============================================================================================*/
   bool TechnoTypeClass::Read_INI(CCINIClass & ini) {
     if (ini.Is_Present(Name())) {
-#ifdef FIXIT_NAME_OVERRIDE
       char buffer[256];
       int id = ((RTTI + 1) * 100) + ID;
 
@@ -6408,7 +6367,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
           }
         }
       }
-#endif
 
       IsDoubleOwned = ini.Get_Bool(Name(), "DoubleOwned", IsDoubleOwned);
       ThreatRange = ini.Get_Lepton(Name(), "GuardRange", ThreatRange);

@@ -241,10 +241,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
           /*
           ** Free the THIPX32 dll
           */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-#else
-          Unload_IPX_Dll();
-#endif
 
           if (Winsock.Get_Connected()) Winsock.Close();
 #endif  // WINSOCK_IPX

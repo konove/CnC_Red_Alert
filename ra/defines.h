@@ -79,80 +79,123 @@
 #define MOVIE640
 #endif
 
-// #if (GERMAN | FRENCH)
-// #define	BOGUSCD
-// #endif
+// Fixes score screen crash
+// #define FIXIT_SCORE_CRASH
 
-#define FIXIT_SCORE_CRASH    // Fixes score screen crash
-#define FIXIT_MULTI_SAVE     // Fixes multiplayer save/load
-#define FIXIT_NO_COMP_ALLY   // Prevent ally with computer
-#define FIXIT_DESTNET        // Fixes -destnet parameter in Win95
-#define FIXIT_RANDOM_GAME    // Fixes random seed at start of multiplayer games
-#define FIXIT_FORCE_CD       // Forces correct CD load after scenario #1
-#define FIXIT_IP_CRASH       // Fixes crash if internet game aborts too quickly
-#define FIXIT_IP_STATS       // Fixes so vessels show up in internet stat info
-#define FIXIT_NAME_OVERRIDE  // Allows changing of unit names
-#define FIXIT_RADAR_JAMMED   // Fixes unjamming by merely starting to build a
-                             // radar facility
-#define FIXIT_CAPTURE_BIB  // Fixes so that if fake is captured, you still can't
-                           // build off of it.
-#define FIXIT_BASE_ANNOUNCE  // Fixes so player controlled buildings count as
-                             // base when attacked.
-#define FIXIT_APTIVA_MODEM   // Fixes crash with Aptiva modem.
-#define FIXIT_FLAG_CHECK     // Disable placing building over a flag.
+// Fixes multiplayer save/load
+// #define FIXIT_MULTI_SAVE
 
-#define FIXIT_ANTS  // Adds Ant Units
+// Prevent ally with computer
+// #define FIXIT_NO_COMP_ALLY
 
-#define FIXIT_CSII  // Adds Aftermath CounterStrike II units
-//	ajw 9/28/98 - Note about FIXIT_CSII. Changes seem to have been made for
-// Aftermath ("Counterstrike II") that: a) were 	bug fixes that should
-// never be rolled back, b) change the nature of the game, at least in
-// multi-player. This meant 	that the "Red Alert" executable ( ==
-// Counterstrike executable ) could no longer be built. Apparently, at the time,
-// this was justified, as it was believed that no further patches to the RA
-// executable would ever be necessary. 	Given that Denzil's DVD changes and my
-// WOLAPI integration are essentially a patch, we've got a problem. 	We've
-// decided to level the field and make sure every who gets or patches to the new
-// version of Red Alert, CS, AM, (and 	their DVD equivalent(s)) will have the
-// same executable. So we're assuming that all of the FIXIT_CSII changes are
-// permanent (as, in fact, all prior FIXIT_'s are - makes me wonder why the old
-// non-compiling code has to hang around 	forever), and fixing the code so
-// that the assumption "this is an Aftermath game" is no longer hard-coded, but
-// can 	change at runtime. (Which is what should have been done when Aftermath
-// was created.) 	<This goes for the following three defines as well.>
-#define FIXIT_CARRIER         // Adds Aftermath aircraft carrier
-#define FIXIT_PHASETRANSPORT  // Adds Aftermath cloaking APC
-//	ajw - Discovered that engineer changing fields were specifically left
-// out of aftrmath.ini, thus this has no effect. 	Engineer changes (and
+// Fixes -destnet parameter in Win95
+// #define FIXIT_DESTNET
+
+// Fixes random seed at start of multiplayer games
+// #define FIXIT_RANDOM_GAME
+
+// Forces correct CD load after scenario #1
+// #define FIXIT_FORCE_CD
+
+// Fixes crash if internet game aborts too quickly
+// #define FIXIT_IP_CRASH
+
+// Fixes so vessels show up in internet stat info
+// #define FIXIT_IP_STATS
+
+// Allows changing of unit names
+// #define FIXIT_NAME_OVERRIDE
+
+// Fixes unjamming by merely starting to build a radar facility
+// #define FIXIT_RADAR_JAMMED
+
+// Fixes so that if fake is captured, you still can't build off of it.
+// #define FIXIT_CAPTURE_BIB
+
+// Fixes so player controlled buildings count as base when attacked.
+// #define FIXIT_BASE_ANNOUNCE
+
+// Fixes crash with Aptiva modem.
+// #define FIXIT_APTIVA_MODEM
+
+// Disable placing building over a flag.
+// #define FIXIT_FLAG_CHECK
+
+// Adds Ant Units
+// #define FIXIT_ANTS
+
+// Adds Aftermath CounterStrike II units
+// #define FIXIT_CSII
+
+// ajw 9/28/98 - Note about FIXIT_CSII. Changes seem to have been made for
+// Aftermath ("Counterstrike II") that:
+// a) were bug fixes that should never be rolled back,
+// b) change the nature of the game, at least in multi-player.
+// This meant that the "Red Alert" executable ( == Counterstrike executable )
+// could no longer be built. Apparently, at the time, this was justified, as it
+// was believed that no further patches to the RA executable would ever be
+// necessary. Given that Denzil's DVD changes and my WOLAPI integration are
+// essentially a patch, we've got a problem. We've decided to level the field
+// and make sure every who gets or patches to the new version of Red Alert, CS,
+// AM, (and their DVD equivalent(s)) will have the same executable. So we're
+// assuming that all the FIXIT_CSII changes are permanent (as, in fact, all
+// prior FIXIT_'s are - makes me wonder why the old non-compiling code has to
+// hang around 	forever), and fixing the code so that the assumption "this is an
+// Aftermath game" is no longer hard-coded, but can change at runtime.
+// (Which is what should have been done when Aftermath was created.)
+// <This goes for the following three defines as well.>
+
+// Adds Aftermath aircraft carrier
+// #define FIXIT_CARRIER
+
+// Adds Aftermath cloaking APC
+// #define FIXIT_PHASETRANSPORT
+
+// ajw - Discovered that engineer changing fields were specifically left
+// out of aftrmath.ini, thus this has no effect. Engineer changes (and
 // other game rule changes) are in mplayer.ini, which was loaded before
 // aftermath-only mplayer games.
-#define FIXIT_ENGINEER  // Adds Engineer rules.ini overrides
 
-// #define	FIXIT_FAST_LOAD			// Enables faster INI loading
+// Adds Engineer rules.ini overrides
+// #define FIXIT_ENGINEER
+
+// Enables faster INI loading
+// #define FIXIT_FAST_LOAD
 
 // These fixes will cause the game to go out of sync.
-// #define	FIXIT_ENGINEER_CAPTURE	// If building not allied, will still
-// capture if engineer not allied with building. #define
-// FIXIT_HELI_LANDING	// Fixes so new helicopters land at free helipad #define
-// FIXIT_MINE_PASSABLE	// Fixes units not driving onto mines
+
+// If building not allied, will still capture if engineer not allied with
+// building.
+// #define FIXIT_ENGINEER_CAPTURE
+
+// Fixes so new helicopters land at free helipad
+// #define FIXIT_HELI_LANDING
+
+// Fixes units not driving onto mines
+// #define FIXIT_MINE_PASSABLE
 
 /* Turn on these changes for the 1.08 patch */
-#define FIXIT_PATCH_108
+// #define FIXIT_PATCH_108
 
-#ifdef FIXIT_PATCH_108
-#define STEVES_LOAD_OVERRIDE  // Allows loading of CONQUER.ENG instead of from
-                              // mix file.
-#define FIXIT_DIFFICULTY      // Fixes no difficulty level for CStrike missions
-#define FIXIT_VERSION         // Fixes version playability for 1.04, 1.07 & 1.08
-#define FIXIT_MODEM_LOAD_CRASH  // Fixes crash after loading a modem game when
-                                // names are the same
-#define FIXIT_PHONELIST_CRASH   // Fixes crash when clicking on an empty
-                                // phonelist
-#endif
+// Allows loading of CONQUER.ENG instead of from mix file.
+// #define STEVES_LOAD_OVERRIDE
 
-//	Denotes changes made for version 3 - reunification of all existing
+// Fixes no difficulty level for CStrike missions
+// #define FIXIT_DIFFICULTY
+
+// Fixes version playability for 1.04, 1.07 & 1.08
+// #define FIXIT_VERSION
+
+// Fixes crash after loading a modem game when names are the same
+// #define FIXIT_MODEM_LOAD_CRASH
+
+// Fixes crash when clicking on an empty phonelist
+// #define FIXIT_PHONELIST_CRASH
+
+// Denotes changes made for version 3 - reunification of all existing
 // versions and undoing of Aftermath divergence. - ajw
-#define FIXIT_VERSION_3
+// #define FIXIT_VERSION_3
+
 #define DVD
 
 // Define DVD to turn on RADVD additions/changes - Denzil
@@ -862,7 +905,6 @@ typedef enum ThemeType {
   THEME_UNDER3,
   THEME_VR2,
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   THEME_BOG,
   THEME_FLOAT_V2,
   THEME_GLOOM,
@@ -871,7 +913,6 @@ typedef enum ThemeType {
   THEME_SEARCH,
   THEME_TRACTION,
   THEME_WASTELND,
-#endif
 
   THEME_COUNT,
   THEME_LAST = (int)THEME_COUNT - 1,
@@ -1387,11 +1428,9 @@ typedef enum StructType {
   STRUCT_BARREL,
   STRUCT_BARREL3,
 
-#ifdef FIXIT_ANTS
   STRUCT_QUEEN,
   STRUCT_LARVA1,
   STRUCT_LARVA2,
-#endif
 
   STRUCT_COUNT,
   STRUCT_FIRST = 0
@@ -1500,18 +1539,14 @@ typedef enum InfantryType {
   INFANTRY_DELPHI,    // Agent "Delphi"
   INFANTRY_CHAN,      // Dr. Chan
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-                   // CounterStrike II only!
+  // CounterStrike II only!
   INFANTRY_SHOCK,  // Shock Trooper
   INFANTRY_MECHANIC,
-#endif
 
   INFANTRY_COUNT,
-  INFANTRY_FIRST = 0
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-  ,
+  INFANTRY_FIRST = 0,
+  // TODO(konove): Replace this weird count with sets.
   INFANTRY_RA_COUNT = INFANTRY_SHOCK
-#endif
 } InfantryType;
 
 #define INFANTRYF_DOG (1L << INFANTRY_DOG)
@@ -1537,29 +1572,20 @@ typedef enum UnitType {
   UNIT_V2_LAUNCHER,  // V2 rocket launcher.
   UNIT_TRUCK,        // Convoy truck
 
-#ifdef FIXIT_ANTS
   UNIT_ANT1,  // Warrior ant.
   UNIT_ANT2,  // Warrior ant.
   UNIT_ANT3,  // Warrior ant.
-#endif
 
-#ifdef FIXIT_CSII            //	checked - ajw 9/28/98
-                             // CS II ONLY!
-  UNIT_CHRONOTANK,           // Chrono-shifting tank
-  UNIT_TESLATANK,            // Tesla-equipped tank
-  UNIT_MAD,                  // Timequake tank
-  UNIT_DEMOTRUCK,            // Jihad truck
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
-  UNIT_PHASE,                // cloaking APC for special missions
-#endif
-#endif
+  // CS II ONLY!
+  UNIT_CHRONOTANK,  // Chrono-shifting tank
+  UNIT_TESLATANK,   // Tesla-equipped tank
+  UNIT_MAD,         // Timequake tank
+  UNIT_DEMOTRUCK,   // Jihad truck
+  UNIT_PHASE,       // cloaking APC for special missions
 
   UNIT_COUNT,
-  UNIT_FIRST = 0
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-  ,
+  UNIT_FIRST = 0,
   UNIT_RA_COUNT = UNIT_CHRONOTANK
-#endif
 } UnitType;
 
 #define UNITF_HTANK (1L << UNIT_HTANK)
@@ -1580,25 +1606,20 @@ typedef enum UnitType {
 typedef enum VesselType {
   VESSEL_NONE = -1,
 
-  VESSEL_SS,          // Submarine
-  VESSEL_DD,          // Medium weapon patrol craft
-  VESSEL_CA,          // Heavy weapon patrol craft
-  VESSEL_TRANSPORT,   // Unit transporter
-  VESSEL_PT,          // Light weapon patrol craft
-#ifdef FIXIT_CSII     //	checked - ajw 9/28/98
-                      // CS II ONLY
+  VESSEL_SS,         // Submarine
+  VESSEL_DD,         // Medium weapon patrol craft
+  VESSEL_CA,         // Heavy weapon patrol craft
+  VESSEL_TRANSPORT,  // Unit transporter
+  VESSEL_PT,         // Light weapon patrol craft
+
+  // CS II ONLY
   VESSEL_MISSILESUB,  // Missile-equipped submarine
-#endif
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   VESSEL_CARRIER,
-#endif
 
   VESSEL_COUNT,
-  VESSEL_FIRST = 0
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-  ,
+  VESSEL_FIRST = 0,
+  // TODO(konove): Replace this weird count with sets
   VESSEL_RA_COUNT = VESSEL_MISSILESUB
-#endif
 } VesselType;
 
 #define VESSELF_SS (1L << VESSEL_SS)
@@ -2044,9 +2065,7 @@ typedef enum TemplateType : uint16_t {
   TEMPLATE_XTRA0015,
   TEMPLATE_XTRA0016,
 
-#ifdef FIXIT_ANTS
   TEMPLATE_HILL01,
-#endif
 
   TEMPLATE_COUNT,
   TEMPLATE_NONE = 65535,
@@ -2216,9 +2235,7 @@ typedef enum AnimType {
   ANIM_PARA_BOMB,
   ANIM_MINE_EXP1,
 
-#ifdef FIXIT_ANTS
   ANIM_ANT_DEATH,
-#endif
 
   ANIM_COUNT,
   ANIM_FIRST = 0
@@ -2531,9 +2548,7 @@ typedef enum WarheadType {
   WARHEAD_TESLA,         // Electrocution warhead for infantrymen
   WARHEAD_DOG,           // Slavering attack beast mauling infantryman
   WARHEAD_NUKE,          // Nuclear missile
-#ifdef FIXIT_CSII        //	checked - ajw 9/28/98
   WARHEAD_MECHANICAL,    // repair weapon for vehicles
-#endif
   WARHEAD_COUNT,
   WARHEAD_FIRST = 0
 } WarheadType;
@@ -2582,21 +2597,15 @@ typedef enum WeaponType {
   WEAPON_FLAMER,
   WEAPON_REDEYE,
 
-#ifdef FIXIT_ANTS
   WEAPON_MANDIBLE,
-#endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   WEAPON_PORTATESLA,
   WEAPON_GOODWRENCH,
   WEAPON_SUBSCUD,
   WEAPON_TTANKZAP,
   WEAPON_APTUSK,
   WEAPON_DEMOCHARGE,
-#endif
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   WEAPON_CARRIER,
-#endif
 
   WEAPON_COUNT,
   WEAPON_FIRST = 0
@@ -3096,13 +3105,8 @@ typedef enum VocType {
 
   VOC_THIEF_YEA,  // Thief: "yea?"
 
-#ifdef FIXIT_ANTS
   VOC_ANTDIE,
   VOC_ANTBITE,
-#else
-  VOC_x9,
-  VOC_x10,
-#endif
 
   VOC_THIEF_MOVEOUT,  // Thief: "movin' out"
   VOC_THIEF_OKAY,     // Thief: "ok"
@@ -3119,7 +3123,6 @@ typedef enum VocType {
   VOC_RAMBO2,
   VOC_RAMBO3,
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   VOC_MECHYES1,
   VOC_MECHHOWDY1,
   VOC_MECHRISE1,
@@ -3147,7 +3150,6 @@ typedef enum VocType {
   VOC_MAD_EXPLODE,
   VOC_SHOCK_TROOP1,
 
-#endif
   VOC_COUNT,
   VOC_FIRST = 0
 } VocType;

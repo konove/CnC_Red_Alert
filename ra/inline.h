@@ -865,11 +865,9 @@ inline FacingType Dir_To_8(DirType facing) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline char const *Text_String(int string) {
-#ifdef FIXIT_NAME_OVERRIDE
   if (string < 0 && abs(string) < ARRAY_SIZE(NameOverride)) {
     return (NameOverride[-(string + 1)]);
   }
-#endif
 
   if (string < 1000) return (Extract_String(SystemStrings, string));
   return (Extract_String(DebugStrings, string - 1000));

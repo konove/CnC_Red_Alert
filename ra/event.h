@@ -43,8 +43,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "ra/special.h"
 #include "ra/defines.h"
+#include "ra/special.h"
 #include "ra/target.h"
 
 /*
@@ -92,8 +92,8 @@ class EventClass {
                 // frame # Used to initiate game connection phase & to
                 // reconnect; When one of these is received, the receiver knows
                 // there are no associated commands in this packet.
-    MESSAGE,        // Message to another player (The message is the 40 bytes
-                    // after the event class).
+    MESSAGE,    // Message to another player (The message is the 40 bytes
+                // after the event class).
     RESPONSE_TIME,  // use a new propagation delay value
     FRAMEINFO,      // Game-heartbeat packet; includes Game CRC & command count
                 // All packets sent for a frame are prefixed with one of these
@@ -104,11 +104,9 @@ class EventClass {
     TIMING,        // new timing values for all systems to use
     PROCESS_TIME,  // a system's average processing time, in ticks per frame
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
-    PROPOSE_DRAW,       //	Players proposes that 2-player game be called a
-                        //stalemate.
-    RETRACT_DRAW,       //	Player retracts proposed draw offer.
-#endif
+    PROPOSE_DRAW,  // Players proposes that 2-player game be called a
+                   // stalemate.
+    RETRACT_DRAW,  // Player retracts proposed draw offer.
 
     LAST_EVENT,  // one past the last event
   } EventType;

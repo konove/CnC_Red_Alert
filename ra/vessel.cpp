@@ -78,7 +78,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ra/monoc.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -96,6 +95,7 @@
 #include "ra/inline.h"
 #include "ra/map.h"
 #include "ra/mission.h"
+#include "ra/monoc.h"
 #include "ra/mouse.h"
 #include "ra/rules.h"
 #include "ra/session.h"
@@ -383,11 +383,9 @@ int VesselClass::Shape_Number(void) const {
   if (*this == VESSEL_TRANSPORT) {
     shapenum = 0;
   }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   if (*this == VESSEL_CARRIER) {
     shapenum = 0;
   }
-#endif
   /*
   **	Door opening and closing animation stage check.
   */
@@ -634,7 +632,6 @@ void VesselClass::AI(void) {
   }
 #endif
 
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   // Re-stock the ammo of any on-board helicopters on an aircraft carrier.
   if (*this == VESSEL_CARRIER && How_Many()) {
     if (!MoebiusCountDown) {
@@ -647,7 +644,6 @@ void VesselClass::AI(void) {
       }
     }
   }
-#endif
   /*
   **	Process base class AI routine. If as a result of this, the vessel gets
   **	destroyed, then detect this fact and bail early.
@@ -795,9 +791,7 @@ ActionType VesselClass::What_Action(ObjectClass const *object) const {
     } else {
       // check to see if the transporter can unload.
       bool found = 0;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       if (*this != VESSEL_CARRIER)
-#endif
         for (FacingType face = FACING_N; face < FACING_COUNT && !found;
              face++) {
           CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
@@ -830,12 +824,10 @@ ActionType VesselClass::What_Action(ObjectClass const *object) const {
       action = ACTION_ENTER;
     }
   }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (action == ACTION_ATTACK && object->What_Am_I() == RTTI_VESSEL &&
       (*this == VESSEL_MISSILESUB || *this == VESSEL_CA)) {
     action = ACTION_NOMOVE;
   }
-#endif
   /*
   **	If it doesn't know what to do with the object, then just
   **	say it can't move there.
@@ -1011,13 +1003,8 @@ ResultType VesselClass::Take_Damage(int &damage, int distance,
     **	When damaged and below half strength, start smoking if
     **	it isn't already smoking (and it's not a submarine).
     */
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached &&
         (*this != VESSEL_SS && *this != VESSEL_MISSILESUB)) {
-#else
-    if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached &&
-        (*this != VESSEL_SS)) {
-#endif
       AnimClass *anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim != nullptr) anim->Attach_To(this);
@@ -1052,7 +1039,6 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
   DirType dir;  // The facing to impart upon the projectile.
   int diff;
 
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   if (*this == VESSEL_CARRIER) {
     if (!How_Many() || Arm) {
       return (FIRE_REARM);
@@ -1060,7 +1046,6 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       return (FIRE_OK);
     }
   }
-#endif
   FireErrorType fire = DriveClass::Can_Fire(target, which);
   if (*this == VESSEL_DD) {
     Mono_Set_Cursor(0, 0);
@@ -1126,26 +1111,18 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       if (!isseatarget) {
         return (FIRE_CANT);
       } else {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (Is_Target_Vessel(target) &&
             (*As_Vessel(target) != VESSEL_SS &&
              *As_Vessel(target) != VESSEL_MISSILESUB)) {
-#else
-        if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS) {
-#endif
           if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
             return (FIRE_CANT);
           }
         }
       }
     } else {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (Is_Target_Vessel(target) &&
           (*As_Vessel(target) == VESSEL_SS ||
            *As_Vessel(target) == VESSEL_MISSILESUB)) {
-#else
-      if (Is_Target_Vessel(target) && *As_Vessel(target) == VESSEL_SS) {
-#endif
         return (FIRE_CANT);
       }
     }
@@ -1290,11 +1267,9 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
       threat = (ThreatType)(threat & (~THREAT_INFANTRY));
     }
   }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   if (*this == VESSEL_CARRIER) {
     return (TARGET_NONE);
   }
-#endif
   return (FootClass::Greatest_Threat(threat));
 }
 
@@ -1400,11 +1375,9 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
           !House->Is_Ally(from->Owner()))
         return (RADIO_STATIC);
       if (How_Many() < Class->Max_Passengers()) {
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
         if (*this == VESSEL_CARRIER && from->What_Am_I() == RTTI_AIRCRAFT) {
           return (RADIO_ROGER);
         }
-#endif
         /*
         ** Before saying "Sure, come on board", make sure we're adjacent to
         ** the shore.
@@ -1422,17 +1395,13 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
     **	entered the transport.
     */
     case RADIO_IM_IN:
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       if (*this != VESSEL_CARRIER) {
-#endif
         if (How_Many() == Class->Max_Passengers()) {
           LST_Close_Door();
         } else {
           DoorShutCountDown = TICKS_PER_SECOND;
         }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       }
-#endif
       return (RADIO_ATTACH);
 
     /*
@@ -1542,7 +1511,6 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
         }
         return (RADIO_ROGER);
       }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       if (Class->Max_Passengers() > 0 && *this == VESSEL_CARRIER &&
           How_Many() < Class->Max_Passengers()) {
         TechnoClass::Receive_Message(from, message, param);
@@ -1561,7 +1529,6 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
         }
         return (RADIO_ROGER);
       }
-#endif
       break;
 
     /*
@@ -2341,7 +2308,6 @@ void VesselClass::Repair_AI(void) {
   }
 }
 
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
 /***********************************************************************************************
  * VesselClass::Fire_At -- Try to fire upon the target specified. *
  *                                                                                             *
@@ -2383,5 +2349,3 @@ BulletClass *VesselClass::Fire_At(TARGET target, int which) {
   }
   return (nullptr);
 }
-
-#endif

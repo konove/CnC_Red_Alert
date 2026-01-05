@@ -253,7 +253,6 @@ class TechnoClass : public RadioClass,
   **	Constructors, Destructors, and overloaded operators.
   */
   TechnoClass(RTTIType rtti, int id, HousesType house = HOUSE_NONE);
-#ifdef FIXIT_MULTI_SAVE
   TechnoClass(NoInitClass const &x)
       : RadioClass(x),
         FlasherClass(x),
@@ -267,20 +266,6 @@ class TechnoClass : public RadioClass,
         CloakDelay(x),
         PrimaryFacing(x),
         Arm(x) {};
-#else
-  TechnoClass(NoInitClass const &x)
-      : RadioClass(x),
-        FlasherClass(x),
-        StageClass(x),
-        CargoClass(x),
-        DoorClass(x),
-        IronCurtainCountDown(x),
-        House(x),
-        Crew(x),
-        CloakDelay(x),
-        PrimaryFacing(x),
-        Arm(x) {};
-#endif
   virtual ~TechnoClass(void) { House = nullptr; };
 
   /*

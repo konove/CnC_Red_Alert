@@ -376,34 +376,7 @@ unsigned short VersionClass::Minor_Version(void) {
   //------------------------------------------------------------------------
 #else
 
-#ifdef FIXIT_VERSION_3  //	Insanity. CS installation should not have
-                        // affected version number. ajw
-
   MinorVer = MINOR_VERSION;
-
-#else  //	FIXIT_VERSION_3
-
-#ifdef FIXIT_CSII
-  MinorVer = MINOR_VERSION;
-  if (Is_Counterstrike_Installed()) {
-    MinorVer = MINOR_VERSION - 1;
-  }
-#else
-#ifdef FIXIT_VERSION
-  /* If counterstrike is not installed then we report version 1.06
-   * otherwise we report ourselves as 1.08
-   */
-  if (Is_Counterstrike_Installed() == false) {
-    MinorVer = (MINOR_VERSION - CS_MINOR_VERSION_MODIFIER);
-  } else {
-    MinorVer = MINOR_VERSION;
-  }
-#else
-  MinorVer = MINOR_VERSION;
-#endif
-#endif
-
-#endif  //	FIXIT_VERSION_3
 
 #endif
 
@@ -665,29 +638,21 @@ unsigned long VersionClass::Min_Version(void) {
   return (Version_Number());
 #else
 
-#if defined(FIXIT_VERSION_3) && defined(WOLAPI_INTEGRATION)
+#if defined(WOLAPI_INTEGRATION)
 
   //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
   //	But no time to do three full rebuilds right now, so I'm not deleting
   // them from the header file...   ajw
   return GAME_VERSION;
 
-#else  //	FIXIT_VERSION_3
+#else  // WOLAPI_INTEGRATION
 
-#ifdef FIXIT_VERSION
   if (Is_Counterstrike_Installed()) {
     return (MIN_VERSION - 1);
   }
   return (MIN_VERSION);
-#else
-  if (Is_Counterstrike_Installed()) {
-    return (MIN_VERSION - CS_MINOR_VERSION_MODIFIER);
-  } else {
-    return (MIN_VERSION);
-  }
-#endif
 
-#endif  //	FIXIT_VERSION_3
+#endif  // WOLAPI_INTEGRATION
 
 #endif
 
@@ -722,39 +687,19 @@ unsigned long VersionClass::Min_Version(void) {
 unsigned long VersionClass::Max_Version(void) {
 #ifdef DEV_VERSION
   return (Version_Number());
-#else
+#else  // DEV_VERSION
 
-#if defined(FIXIT_VERSION_3) && defined(WOLAPI_INTEGRATION)
-
-  //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
-  //	But no time to do three full rebuilds right now, so I'm not deleting
+#ifdef WOLAPI_INTEGRATION
+  // Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
+  // But no time to do three full rebuilds right now, so I'm not deleting
   // them from the header file...   ajw
   return GAME_VERSION;
+#else   // WOLAPI_INTEGRATION
+  return MAX_VERSION;
+#endif  // WOLAPI_INTEGRATION
 
-#else
-
-#ifdef FIXIT_CSII  //	checked - ajw
-  return (MAX_VERSION);
-#else
-#ifdef FIXIT_VERSION
-  if (Is_Counterstrike_Installed() == false) {
-    return (MAX_VERSION - CS_MINOR_VERSION_MODIFIER);
-  } else {
-    return (MAX_VERSION);
-  }
-#else
-  if (Is_Counterstrike_Installed()) {
-    return (MAX_VERSION + CS_MINOR_VERSION_MODIFIER);
-  } else {
-    return (MAX_VERSION);
-  }
-#endif
-#endif
-#endif
-
-#endif  //	FIXIT_VERSION_3
-
-} /* end of Max_Version */
+#endif  // DEV_VERSION
+}
 
 char const* Version_Name(void) {
 #ifdef NEVER
@@ -805,7 +750,6 @@ char const* Version_Name(void) {
 
   memset(buffer, '\0', sizeof(buffer));
 
-#ifdef FIXIT_VERSION_3
   strcpy(buffer, "3.03");
 
 #ifdef ENGLISH
@@ -819,40 +763,6 @@ char const* Version_Name(void) {
 #endif
 #endif
 #endif
-
-#else  //	FIXIT_VERSION_3
-
-#ifdef FIXIT_PATCH_108
-  // strcpy(buffer, "1.08PE");
-  strcpy(buffer, "1.08P");
-
-#ifdef FIXIT_CSII
-  strcpy(buffer, "2.00");
-#ifdef DEV_VERSION
-  strcpy(buffer, VerNum.Version_Name());
-#endif
-#ifdef DEV_VER_NAME
-  strcpy(buffer, __DATE__);  // format: Mmm dd yyyy
-#endif
-#endif
-
-#ifdef ENGLISH
-  strcat(buffer, "E");
-#else
-#ifdef GERMAN
-  strcat(buffer, "G");
-#else
-#ifdef FRENCH
-  strcat(buffer, "F");
-#endif
-#endif
-#endif
-
-#else
-  strcpy(buffer, "1.07E");
-#endif
-
-#endif  //	FIXIT_VERSION_3
 
   if (Is_Counterstrike_Installed()) {
     strcat(buffer, "CS");

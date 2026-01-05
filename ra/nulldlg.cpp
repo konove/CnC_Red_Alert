@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
@@ -113,10 +114,6 @@
 #include "sdllib/include/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-
-#ifdef FIXIT_RANDOM_GAME
-#include <ctime>
-#endif
 #ifdef WIN32
 #include "sdllib/include/modemreg.h"
 #include "sdllib/include/wincomm.h"
@@ -124,11 +121,9 @@
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 #endif                                             // WIN32
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool Is_Mission_126x126(char *file_name);
 extern bool Is_Mission_Counterstrike(char *file_name);
 extern bool Is_Mission_Aftermath(char *file_name);
-#endif
 
 // #include "WolDebug.h"
 
@@ -174,10 +169,8 @@ HousesType TheirHouse;
 static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::PHONE_MAX_NUM - 1];
 static SerialSettingsType *DialSettings;
 
-#ifdef FIXIT_VERSION_3
 bool Force_Scenario_Available(const char *szName);
 bool bSpecialAftermathScenario(const char *szScenarioDescription);
-#endif
 
 #define PCOLOR_BROWN PCOLOR_GREY
 
@@ -3466,27 +3459,26 @@ int Com_Scenario_Dialog(bool skirmish) {
     int j;
     for (j = 0; EngMisStr[j] != nullptr; j++) {
       if (!strcmp(Session.Scenarios[i]->Description(), EngMisStr[j])) {
-#ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
-                   // assumed). 	Add mission if it's available to us.
+        // ajw Added Aftermath installed checks (before, it was
+        // assumed). Add mission if it's available to us.
         if (!((Is_Mission_Counterstrike(
                    (char *)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Counterstrike_Installed()) ||
               (Is_Mission_Aftermath(
                    (char *)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Aftermath_Installed())))
-#endif
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
 #else
-        scenariolist.Add_Item(EngMisStr[j]);
+          scenariolist.Add_Item(EngMisStr[j]);
 #endif
         break;
       }
     }
     if (EngMisStr[j] == nullptr) {
-#ifdef FIXIT_CSII  //	ajw Added Aftermath installed checks (before, it was
-                   // assumed). Added officialness check. 	Add mission if
-                   // it's available to us.
+      // ajw Added Aftermath installed checks (before, it was
+      // assumed). Added officialness check. Add mission if
+      // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
           !((Is_Mission_Counterstrike(
                  (char *)(Session.Scenarios[i]->Get_Filename())) &&
@@ -3494,7 +3486,6 @@ int Com_Scenario_Dialog(bool skirmish) {
             (Is_Mission_Aftermath(
                  (char *)(Session.Scenarios[i]->Get_Filename())) &&
              !Is_Aftermath_Installed())))
-#endif
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
     }
   }
@@ -3505,13 +3496,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-#ifdef FIXIT_RANDOM_GAME
   srand(time(nullptr));
   Seed = rand();
-#else
-//	randomize();
-//	Seed = rand();
-#endif
 
   /*........................................................................
   Init the message display system
@@ -3581,18 +3567,9 @@ oh_dear_its_a_label:
       if (!ok_button_added && gameoptions && kludge_timer == 0) {
         okbtn.Add_Tail(*commands);
         ok_button_added = true;
-#ifdef FIXIT_VERSION_3
         if (loadfile.Is_Available()) {
           loadbtn.Add_Tail(*commands);
         }
-#else
-#ifdef FIXIT_MULTI_SAVE
-        if (loadfile.Is_Available() &&
-            PlayingAgainstVersion > VERSION_RED_ALERT_104) {
-          loadbtn.Add_Tail(*commands);
-        }
-#endif
-#endif
         if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
       }
     }
@@ -3896,7 +3873,7 @@ oh_dear_its_a_label:
         /*------------------------------------------------------------------
         New Scenario selected.
         ------------------------------------------------------------------*/
-#ifdef FIXIT_VERSION_3  //	All scenarios now allowable as downloads. ajw
+        // All scenarios now allowable as downloads. ajw
       case (BUTTON_SCENARIOLIST | KN_BUTTON):
         if (housebtn.IsDropped) {
           housebtn.Collapse();
@@ -3908,58 +3885,6 @@ oh_dear_its_a_label:
           transmit = true;
         }
         break;
-
-#else              //	FIXIT_VERSION_3		Whoever duplicated Netdlg into Nulldlg
-                   // should be shot. Wasn't it enough?
-
-      Abandon all hope ye who hit enter here.
-
-          case (BUTTON_SCENARIOLIST | KN_BUTTON):
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
-#ifdef FIXIT_CSII  //	checked - ajw
-          if (!skirmish &&
-              (PlayingAgainstVersion != VERSION_RED_ALERT_107 &&
-               PlayingAgainstVersion != VERSION_RED_ALERT_108 &&
-               PlayingAgainstVersion < VERSION_AFTERMATH_CS) &&
-#else
-          if (!skirmish && PlayingAgainstVersion < VERSION_RED_ALERT_107 &&
-#endif
-              Session.Scenarios[scenariolist.Current_Index()]
-                  ->Get_Expansion()) {
-            scenariolist.Set_Selected_Index(Session.Options.ScenarioIndex);
-            Session.Messages.Add_Message(
-                NULL, 0, (char *)Text_String(TXT_NO_CS_SCENARIOS), PCOLOR_BROWN,
-                TPF_TEXT, 1200);
-            Sound_Effect(VOC_SYS_ERROR);
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-#ifdef FIXIT_CSII  //	checked - ajw
-          } else if (!skirmish &&
-                     PlayingAgainstVersion < VERSION_AFTERMATH_CS &&
-                     Is_Mission_126x126(
-                         (char *)Session
-                             .Scenarios[scenariolist.Current_Index()]
-                             ->Get_Filename())) {
-            scenariolist.Set_Selected_Index(Session.Options.ScenarioIndex);
-            Session.Messages.Add_Message(
-                NULL, 0, (char *)Text_String(TXT_NO_CS_SCENARIOS), PCOLOR_BROWN,
-                TPF_TEXT, 1200);
-            Sound_Effect(VOC_SYS_ERROR);
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-#endif
-          } else {
-            Session.Options.ScenarioIndex = scenariolist.Current_Index();
-            transmit = 1;
-          }
-
-          strcpy(Session.Handle, namebuf);
-          transmit = true;
-        }
-        break;
-#endif
 
       /*------------------------------------------------------------------
       User adjusts max # units
@@ -4445,9 +4370,6 @@ oh_dear_its_a_label:
                 // common; look up the protocol that goes with this version.
                 // ........................................................
                 Session.CommProtocol = VerNum.Version_Protocol(version);
-#ifndef FIXIT_VERSION_3
-                PlayingAgainstVersion = version;
-#endif
               }
             }
             /*.........................................................
@@ -4644,7 +4566,6 @@ oh_dear_its_a_label:
     if (!skirmish) {
       who = new NodeNameType;
 
-#ifdef FIXIT_MODEM_LOAD_CRASH
       /* If the names of the players are the same then we MUST force them
        * be be unique. This is necessary to prevent a crash after loading
        * a modem save game.
@@ -4656,7 +4577,6 @@ oh_dear_its_a_label:
           strcat(TheirName, "2");
         }
       }
-#endif
 
       strcpy(who->Name, TheirName);
       who->Player.House = TheirHouse;
@@ -4729,7 +4649,6 @@ oh_dear_its_a_label:
         NullModem.Service();
 
         if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-#ifdef FIXIT_VERSION_3
           if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
             if (Session.Scenarios[Session.Options.ScenarioIndex]
                     ->Get_Official()) {
@@ -4738,9 +4657,6 @@ oh_dear_its_a_label:
             }
             break;
           }
-#else
-          if (ReceivePacket.Command == SERIAL_READY_TO_GO) break;
-#endif
 
           if (ReceivePacket.Command == SERIAL_NO_SCENARIO) {
             WWMessageBox().Process(TXT_NO_EXPANSION_SCENARIO, TXT_CANCEL);
@@ -4759,13 +4675,11 @@ oh_dear_its_a_label:
 
 #endif
 
-#ifdef FIXIT_VERSION_3
             if (Session.Scenarios[Session.Options.ScenarioIndex]
                     ->Get_Official()) {
               if (!Force_Scenario_Available(Scen.ScenarioName))
                 Emergency_Exit(EXIT_FAILURE);
             }
-#endif
 
             Send_Remote_File(Scen.ScenarioName, 0);
 
@@ -4863,9 +4777,7 @@ oh_dear_its_a_label:
   return (rc);
 }
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 extern bool Is_Mission_Aftermath(char *file_name);
-#endif
 
 /***********************************************************************************************
  * Find_Local_Scenario -- finds the file name of the scenario with matching
@@ -4931,9 +4843,10 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
             ini.Get_String("Digest", "1", "No digest here mate. Nope.",
                            digest_buffer, sizeof(digest_buffer));
           }
-// debugprint("digest = %s, digest_buffer = %s.\n", digest, digest_buffer);
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98. But don't know why this happens.
-                   // Because of autodownload?
+          // debugprint("digest = %s, digest_buffer = %s.\n", digest,
+          // digest_buffer);
+          // But don't know why this happens.
+          // Because of autodownload?
           /*
           ** If this is an aftermath scenario then ignore the digest and return
           *success.
@@ -4944,7 +4857,6 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
             strcpy(filename, Session.Scenarios[index]->Get_Filename());
             return (true);
           }
-#endif
 
           /*
           ** This must be the same scenario. Copy the name and return true.
@@ -6113,9 +6025,6 @@ int Com_Show_Scenario_Dialog(void) {
                 rc = false;
               } else {
                 Session.CommProtocol = VerNum.Version_Protocol(version);
-#ifndef FIXIT_VERSION_3
-                PlayingAgainstVersion = version;
-#endif
               }
             }
 
@@ -6226,20 +6135,14 @@ int Com_Show_Scenario_Dialog(void) {
               */
               //	This is duplicated for Aftermath scenarios. ajw
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
               if (Session.ScenarioIsOfficial &&
                   ((Expansion_CS_Present() &&
                     Is_Mission_Counterstrike(Session.ScenarioFileName)) ||
                    (Expansion_AM_Present() &&
                     Is_Mission_Aftermath(Session.ScenarioFileName)))) {
-#else
-              if (Expansion_CS_Present() && Session.ScenarioIsOfficial) {
-#endif
-
                 CCFileClass check_file(Session.ScenarioFileName);
                 if (!check_file.Is_Available()) {
                   int current_drive = CCFileClass::Get_CD_Drive();
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
                   int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
                   if (Is_Mission_Counterstrike(Session.ScenarioFileName)) {
@@ -6255,10 +6158,6 @@ int Com_Show_Scenario_Dialog(void) {
                     }
                   }
                   if (needcd) {
-#else
-                  if (Get_CD_Index(current_drive, 1 * 60) != 2) {
-                    RequiredCD = 2;
-#endif
 #ifdef WIN32
                     WWDebugString("RA95 - Counterstrike CD is not in drive\n");
 #endif
@@ -6324,55 +6223,20 @@ int Com_Show_Scenario_Dialog(void) {
                   }
                 }
               } else {
-#ifndef FIXIT_VERSION_3  //	Removed restriction on downloading official
-                         // maps.
-                /*
-                 ** Oh dear. Thats a scenario I dont have. Request that the host
-                 *sends the          *	scenario to me provided it isnt an
-                 * official Westwood scenario.
-                 **
-                 ** If the file is received OK then we will get a true return
-                 *value and the
-                 ** actual file name to load will be in Session.ScenarioFileName
-                 */
-                if (Session.ScenarioIsOfficial) {
-                  /*
-                  ** We dont have the scenario and we dont want to request that
-                  *it gets
-                  ** sent because its an official one.
-                  ** Print up a message saying we cant play this scenario and
-                  *reply to the
-                  ** host, telling him to select another.
-                  */
-                  memset((void *)&SendPacket, 0, sizeof(SendPacket));
-                  SendPacket.Command = SERIAL_NO_SCENARIO;
-                  NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-                  NullModem.Service();
-                  WWMessageBox().Process(TXT_UNABLE_PLAY_WAAUGH);
-                  display = REDRAW_ALL;
-                  lastmsgtime = TickCount;
+                if (bSpecialAftermathScenario(
+                        Session.Options.ScenarioDescription))
+                  break;
+                if (!Get_Scenario_File_From_Host(
+                        Session.ScenarioFileName,
+                        sizeof(Session.ScenarioFileName), 0)) {
+                  rc = false;
                   break;
                 } else {
-#endif
-#ifdef FIXIT_VERSION_3
-                  if (bSpecialAftermathScenario(
-                          Session.Options.ScenarioDescription))
-                    break;
-#endif
-                  if (!Get_Scenario_File_From_Host(
-                          Session.ScenarioFileName,
-                          sizeof(Session.ScenarioFileName), 0)) {
-                    rc = false;
-                    break;
-                  } else {
-                    /*
-                    ** Make sure we dont time-out because of the download
-                    */
-                    lastmsgtime = TickCount;
-                  }
-#ifndef FIXIT_VERSION_3
+                  /*
+                  ** Make sure we dont time-out because of the download
+                  */
+                  lastmsgtime = TickCount;
                 }
-#endif
               }
             } else {
               /*
@@ -6488,9 +6352,8 @@ int Com_Show_Scenario_Dialog(void) {
     .....................................................................*/
     who = new NodeNameType;
 
-#ifdef FIXIT_MODEM_LOAD_CRASH
     /* If the names of the players are the same then we MUST force them
-     * be be unique. This is necessary to prevent a crash after loading
+     * to be unique. This is necessary to prevent a crash after loading
      * a modem save game.
      */
     if (strcmp(TheirName, namebuf) == 0) {
@@ -6500,7 +6363,6 @@ int Com_Show_Scenario_Dialog(void) {
         strcat(namebuf, "2");
       }
     }
-#endif
 
     strcpy(who->Name, namebuf);
     who->Player.House = Session.House;
@@ -6856,22 +6718,18 @@ static int Phone_Dialog(void) {
       New phone listing selected.
       ------------------------------------------------------------------*/
       case (BUTTON_PHONELIST | KN_BUTTON):
-/*...............................................................
-Detect a change in the selected item; update CurPhoneIdx, and
-the edit box buffer.
-...............................................................*/
-#ifdef FIXIT_PHONELIST_CRASH
+        /*...............................................................
+        Detect a change in the selected item; update CurPhoneIdx, and
+        the edit box buffer.
+        ...............................................................*/
         if (Session.CurPhoneIdx != -1) {
-#endif
           if (phonelist.Current_Index() != Session.CurPhoneIdx) {
             Session.CurPhoneIdx = phonelist.Current_Index();
             strcpy(phone_num, Session.PhoneBook[Session.CurPhoneIdx]->Number);
             numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
             changed = true;
           }
-#ifdef FIXIT_PHONELIST_CRASH
         }
-#endif
         break;
 
       /*------------------------------------------------------------------
@@ -7615,7 +7473,6 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
   }
 
 #ifdef WIN32
-#ifdef FIXIT_APTIVA_MODEM
 
   /*
   ** Completely disable audio. This is required for MWave devices like those
@@ -7639,7 +7496,6 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
     }
     SoundOn = 0;
   }
-#endif  // FIXIT_APTIVA_MODEM
 #endif  // WIN32
 
   dialstatus =
@@ -7692,7 +7548,6 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
   NullModem.Reset_EchoBuf();
 
 #ifdef WIN32
-#ifdef FIXIT_APTIVA_MODEM
   /*
   ** Restore audio capability
   */
@@ -7700,7 +7555,6 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }
-#endif  // FIXIT_APTIVA_MODEM
 #endif  // WIN32
 
   Session.ModemService = true;
@@ -7798,7 +7652,6 @@ static bool Answer_Modem(SerialSettingsType *settings, bool reconnect) {
   }
 
 #ifdef WIN32
-#ifdef FIXIT_APTIVA_MODEM
   /*
   ** Completely disable audio. This is required for some MWave devices like
   *those
@@ -7822,7 +7675,6 @@ static bool Answer_Modem(SerialSettingsType *settings, bool reconnect) {
     }
     SoundOn = 0;
   }
-#endif  // FIXIT_APTIVA_MODEM
 #endif  // WIN32
 
   dialstatus = NullModem.Answer_Modem(reconnect);
@@ -7858,7 +7710,6 @@ static bool Answer_Modem(SerialSettingsType *settings, bool reconnect) {
   NullModem.Reset_EchoBuf();
 
 #ifdef WIN32
-#ifdef FIXIT_APTIVA_MODEM
   /*
   ** Restore audio capability
   */
@@ -7866,7 +7717,6 @@ static bool Answer_Modem(SerialSettingsType *settings, bool reconnect) {
   if (SoundOn) {
     Theme.Play_Song(old_theme);
   }
-#endif  // FIXIT_APTIVA_MODEM
 #endif  // WIN32
 
   Session.ModemService = true;

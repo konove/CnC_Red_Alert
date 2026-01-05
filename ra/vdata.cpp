@@ -56,23 +56,24 @@
  *- - - - - - - */
 
 #include <stddef.h>
+
 #include <filesystem>
 #include <string>
 
-#include "ra/conquer.h"
-#include "ra/externs.h"
-#include "ra/inline.h"
-#include "ra/type.h"
-#include "ra/vessel.h"
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
+#include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/heap.h"
 #include "ra/house.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
+#include "ra/type.h"
+#include "ra/vessel.h"
 
 // Submarine
 static VesselTypeClass const VesselSubmarine(
@@ -164,7 +165,6 @@ static VesselTypeClass const VesselPTBoat(
     14            // Turret center offset along body centerline.
 );
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 // Missile Submarine
 static VesselTypeClass const VesselMissileSubmarine(
     VESSEL_MISSILESUB,
@@ -182,9 +182,7 @@ static VesselTypeClass const VesselMissileSubmarine(
     8,               // Rotation stages.
     14               // Turret center offset along body centerline.
 );
-#endif
 
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
 // Transport
 static VesselTypeClass const VesselCarrier(
     VESSEL_CARRIER,
@@ -202,7 +200,6 @@ static VesselTypeClass const VesselCarrier(
     0,            // Rotation stages.
     0             // Turret center offset along body centerline.
 );
-#endif
 
 /***********************************************************************************************
  * VesselTypeClass::VesselTypeClass -- Constructor for unit types. *
@@ -310,12 +307,8 @@ void VesselTypeClass::Init_Heap(void) {
   new VesselTypeClass(VesselCruiser);           // VESSEL_CA
   new VesselTypeClass(VesselTransport);         // VESSEL_TRANSPORT
   new VesselTypeClass(VesselPTBoat);            // VESSEL_PT
-#ifdef FIXIT_CSII                               //	checked - ajw 9/28/98
   new VesselTypeClass(VesselMissileSubmarine);  // VESSEL_MISSILESUB
-#endif
-#ifdef FIXIT_CARRIER                   //	checked - ajw 9/28/98
-  new VesselTypeClass(VesselCarrier);  // VESSEL_CARRIER
-#endif
+  new VesselTypeClass(VesselCarrier);           // VESSEL_CARRIER
 }
 
 /***********************************************************************************************
@@ -535,13 +528,7 @@ void VesselTypeClass::Dimensions(int &width, int &height) const {
 void VesselTypeClass::One_Time(void) {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
     VesselTypeClass const &uclass = As_Reference(index);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
-#else
-    if (uclass.Level != -1) {
-#endif
-      //		if (uclass.IsBuildable) {
-
       /*
       **	Fetch the supporting data files for the unit.
       */

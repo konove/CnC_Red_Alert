@@ -57,9 +57,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
-#ifdef FIXIT_VERSION_3
 bool cancel_current_msgbox = false;
-#endif
 
 /***********************************************************************************************
  * WWMessageBox::Process -- pops up a message with yes/no, etc *
@@ -320,13 +318,11 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
       **	Fetch and process input.
       */
       KeyNumType input = buttonlist->Input();
-#ifdef FIXIT_VERSION_3
       //	I really hate to do this, but...      ajw
       if (cancel_current_msgbox) {
         cancel_current_msgbox = false;
         input = KN_ESC;
       }
-#endif
       switch (input) {
         case (KN_ESC):
           selection = realval[numbuttons - 1];

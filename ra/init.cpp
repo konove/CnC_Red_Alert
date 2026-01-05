@@ -76,6 +76,7 @@
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/compat.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -198,9 +199,7 @@ extern int WOL_Main();
 extern WolapiObject *pWolapi;
 #endif
 
-#ifdef FIXIT_VERSION_3
 bool Expansion_Dialog(bool bCounterstrike);
-#endif
 
 extern bool Is_Mission_Counterstrike(char *file_name);
 
@@ -222,13 +221,8 @@ extern bool Is_Mission_Counterstrike(char *file_name);
  *=============================================================================================*/
 static void Load_Prolog_Page(void) {
   Hide_Mouse();
-#ifdef WIN32
   Load_Title_Screen("PROLOG.PCX", &HidPage, CCPalette);
   HidPage.Blit(SeenPage);
-#else
-  Load_Picture("PROLOG.CPS", HidPage, HidPage, CCPalette, BM_DEFAULT);
-  HidPage.Blit(SeenPage);
-#endif
   CCPalette.Set();
   Show_Mouse();
 }
@@ -331,7 +325,6 @@ bool Init_Game(int, char *[]) {
   if (RuleINI.Load(fc, false)) {
     Rule.Process(RuleINI);
   }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   //  Aftermath runtime change 9/29/98
   //	This is safe to do, as only rules for aftermath units are included in
   // this ini.
@@ -341,7 +334,6 @@ bool Init_Game(int, char *[]) {
       Rule.Process(AftermathINI);
     }
   }
-#endif
 
   Session.MaxPlayers = Rule.MaxPlayers;
 
@@ -355,14 +347,6 @@ bool Init_Game(int, char *[]) {
   **	Initialize the animation system.
   */
   Anim_Init();
-
-#ifndef FIXIT_VERSION_3  //	WChat eliminated.
-#ifdef WIN32
-  if (SpawnedFromWChat) {
-    Special.IsFromWChat = true;
-  }
-#endif
-#endif
 
 #ifdef MPEGMOVIE  // Denzil 6/15/98
   if (Using_DVD()) {
@@ -478,7 +462,6 @@ extern bool Get_Broadcast_Addresses(void);
  *=============================================================================================*/
 bool Select_Game(bool fade) {
   //	Enums in Select_Game() must match order of buttons in Main_Menu().
-#ifdef FIXIT_VERSION_3
   enum {
     SEL_TIMEOUT = -1,      // main menu timeout--go into attract mode
     SEL_NEW_SCENARIO_CS,   // Expansion scenario to play.
@@ -491,25 +474,6 @@ bool Select_Game(bool fade) {
     SEL_FAME,              // view the hall o' fame
     SEL_NONE,              // placeholder default value
   };
-#else                                         //	FIXIT_VERSION_3
-  enum {
-    SEL_TIMEOUT = -1,    // main menu timeout--go into attract mode
-    SEL_NEW_SCENARIO,    // Expansion scenario to play.
-    SEL_START_NEW_GAME,  // start a new game
-#if defined(WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
-    SEL_INTERNET,
-#endif                                        // WIN32
-    // #if defined(MPEGMOVIE) // Denzil 6/25/98
-    //		SEL_MOVIESETTINGS,
-    // #endif
-    SEL_LOAD_MISSION,      // load a saved game
-    SEL_MULTIPLAYER_GAME,  // play modem/null-modem/network game
-    SEL_INTRO,             // couch-potato mode
-    SEL_EXIT,              // exit to DOS
-    SEL_FAME,              // view the hall o' fame
-    SEL_NONE,              // placeholder default value
-  };
-#endif                                        //	FIXIT_VERSION_3
 
   bool gameloaded = false;  // Has the game been loaded from the menu?
   int selection;            // the default selection
@@ -525,10 +489,8 @@ bool Select_Game(bool fade) {
   unsigned char cBoxName[] = "\x00\x00";
 #endif
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   int cdcheck = 0;
   bool cs = Is_Counterstrike_Installed();
-#endif
 
   //	#ifndef DVD // Denzil - We want the menu screen			ajw No
   // we don't 	if (Special.IsFromInstall) { 		display = false;
@@ -537,11 +499,9 @@ bool Select_Game(bool fade) {
 
   Show_Mouse();
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   NewUnitsEnabled = SecretUnitsEnabled =
       0;  // Assume new units disabled, unless specifically .INI enabled or
           // multiplayer negotiations enable it.
-#endif
 
 #ifndef WOLAPI_INTEGRATION
 #ifdef _WIN32
@@ -648,23 +608,6 @@ bool Select_Game(bool fade) {
         Session.Play = false;
     }
 
-#ifndef FIXIT_VERSION_3
-#if defined(WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
-    /*
-    ** Handle case where we were spawned from Wchat
-    */
-    if (SpawnedFromWChat) {
-      Special.IsFromInstall =
-          false;  // Dont play intro if we were spawned from wchat
-      selection = SEL_INTERNET;
-      Theme.Queue_Song(THEME_QUIET);
-      Session.Type = GAME_INTERNET;
-      display = false;
-      Set_Logic_Page(SeenBuff);
-    }
-#endif  // WIN32
-#endif
-
     while (process) {
       /*
       **	Redraw the title page if needed
@@ -733,9 +676,7 @@ bool Select_Game(bool fade) {
 #endif
 
       if (selection == SEL_NONE) {
-#ifdef FIXIT_ANTS
         AntsEnabled = false;
-#endif
         selection = Main_Menu(ATTRACT_MODE_TIMEOUT);
       }
       Call_Back();
@@ -744,17 +685,12 @@ bool Select_Game(bool fade) {
         /*
         **	Pick an expansion scenario.
         */
-#ifdef FIXIT_VERSION_3
         case SEL_NEW_SCENARIO_CS:
         case SEL_NEW_SCENARIO_AM:
-#else   //	FIXIT_VERSION_3
-        case SEL_NEW_SCENARIO:
-#endif  //	FIXIT_VERSION_3
           Scen.CarryOverMoney = 0;
           IsTanyaDead = false;
           SaveTanya = false;
 
-#ifdef FIXIT_VERSION_3
           if (selection == SEL_NEW_SCENARIO_CS) {
             if (!Force_CD_Available(2)) {
               selection = SEL_NONE;
@@ -774,38 +710,8 @@ bool Select_Game(bool fade) {
               break;
             }
           }
-#else              //	FIXIT_VERSION_3
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-          if (cs) {
-            cdcheck = 2;
-          }
-          if (Is_Aftermath_Installed()) {
-            if (!cdcheck) {
-              cdcheck = 3;
-            } else {
-              cdcheck = 4;  // special case: means check for 3 or 4
-            }
-          }
-          if (!Force_CD_Available(cdcheck)) {
-            return (false);
-          }
-#else
-          if (!Force_CD_Available(2)) {
-            return (false);
-          }
-#endif
-          if (!Expansion_Dialog()) {
-            selection = SEL_NONE;
-            break;
-          }
-#endif  //	FIXIT_VERSION_3
 
-#ifdef FIXIT_DIFFICULTY
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
           switch (Fetch_Difficulty(cdcheck >= 3)) {
-#else
-          switch (Fetch_Difficulty()) {
-#endif
             case 0:
               Scen.CDifficulty = DIFF_HARD;
               Scen.Difficulty = DIFF_EASY;
@@ -831,7 +737,7 @@ bool Select_Game(bool fade) {
               Scen.Difficulty = DIFF_HARD;
               break;
           }
-#endif
+
           Theme.Fade_Out();
           Theme.Queue_Song(THEME_FIRST);
           Session.Type = GAME_NORMAL;
@@ -880,12 +786,9 @@ bool Select_Game(bool fade) {
           Whom = HOUSE_GOOD;
 
           if (!Special.IsFromInstall) {
-#ifdef FIXIT_ANTS
             if (AntsEnabled) {
               Scen.Set_Scenario_Name("SCA01EA.INI");
             } else {
-#endif
-#ifdef FIXIT_VERSION_3
               switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_CANCEL,
                                              TXT_SOVIET)) {
                 case 2:
@@ -894,21 +797,11 @@ bool Select_Game(bool fade) {
                 default:
                   selection = SEL_NONE;
                   continue;
-#else
-            switch (
-                WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET)) {
-              case 1:
-                Scen.Set_Scenario_Name("SCU01EA.INI");
-                break;
-              default:
-#endif
                 case 0:
                   Scen.Set_Scenario_Name("SCG01EA.INI");
                   break;
               }
-#ifdef FIXIT_ANTS
             }
-#endif
             Theme.Fade_Out();
             Load_Title_Page();
           } else {
@@ -930,37 +823,6 @@ bool Select_Game(bool fade) {
           Session.Type = GAME_NORMAL;
           process = false;
           break;
-
-#ifndef FIXIT_VERSION_3                       //	Removed button from main menu.
-#if defined(WIN32) && !defined(INTERNET_OFF)  // Denzil 5/1/98 - Internet play
-        /*
-        ** Internet game is requested
-        */
-        case SEL_INTERNET:
-          /*
-          ** Only call up the internet menu code if we dont already have connect
-          *info from WChat
-          */
-          if (!DDEServer.Get_MPlayer_Game_Info()) {
-            if (Do_The_Internet_Menu_Thang() &&
-                DDEServer.Get_MPlayer_Game_Info()) {
-              Check_From_WChat(nullptr);
-              selection = SEL_MULTIPLAYER_GAME;
-              display = false;
-              Session.Type = GAME_INTERNET;
-            } else {
-              selection = SEL_NONE;
-              display = true;
-            }
-          } else {
-            Check_From_WChat(nullptr);
-            display = false;
-            Session.Type = GAME_INTERNET;
-            selection = SEL_MULTIPLAYER_GAME;
-          }
-          break;
-#endif  // WIN32
-#endif
 
           //				#if defined(MPEGMOVIE) // Denzil 6/25/98
           //				case SEL_MOVIESETTINGS:
@@ -1016,7 +878,6 @@ bool Select_Game(bool fade) {
                 } else {
                   //	Ever hits? Session.Type set to GAME_SKIRMISH without
                   // user selecting in Select_MPlayer_Game()?
-#ifdef FIXIT_VERSION_3
                   //	If mission is Counterstrike, CS CD will be required. But
                   // aftermath units require AM CD.
                   bAftermathMultiplayer =
@@ -1026,7 +887,6 @@ bool Select_Game(bool fade) {
                   Session.ScenarioIsOfficial =
                       Session.Scenarios[Session.Options.ScenarioIndex]
                           ->Get_Official();
-#endif
                 }
                 break;
 
@@ -1264,11 +1124,7 @@ bool Select_Game(bool fade) {
             case GAME_SKIRMISH:
               Theme.Fade_Out();
               process = false;
-#ifdef FIXIT_VERSION_3
               Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-              Options.ScoreVolume = 0;
-#endif
               break;
 
 #ifdef WOLAPI_INTEGRATION  //	implies also WINSOCK_IPX
@@ -1280,11 +1136,7 @@ bool Select_Game(bool fade) {
                 switch (WOL_Main()) {
                   case 1:
                     //	Start game.
-#ifdef FIXIT_VERSION_3
                     Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-                    Options.ScoreVolume = 0;
-#endif
                     process = false;
                     Theme.Fade_Out();
                     break;
@@ -1350,11 +1202,7 @@ bool Select_Game(bool fade) {
               WWDebugString("RA95 - About to call Init_Network.\n");
               if (Session.Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
-#ifdef FIXIT_VERSION_3
                 Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-                Options.ScoreVolume = 0;
-#endif
                 process = false;
                 Theme.Fade_Out();
               } else {  // user hit cancel, or init failed
@@ -1374,11 +1222,7 @@ bool Select_Game(bool fade) {
             */
             case GAME_TEN:
               if (Init_TEN()) {
-#ifdef FIXIT_VERSION_3
                 Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-                Options.ScoreVolume = 0;
-#endif
                 process = false;
                 Theme.Fade_Out();
               } else {
@@ -1395,11 +1239,7 @@ bool Select_Game(bool fade) {
             */
             case GAME_MPATH:
               if (Init_MPATH()) {
-#ifdef FIXIT_VERSION_3
                 Options.ScoreVolume = Options.MultiScoreVolume;
-#else
-                Options.ScoreVolume = 0;
-#endif
                 process = false;
                 Theme.Fade_Out();
               } else {
@@ -1500,16 +1340,11 @@ bool Select_Game(bool fade) {
     }
   }
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   switch (Session.Type) {
     case GAME_MODEM:
     case GAME_NULL_MODEM:
     case GAME_IPX:
-#ifdef FIXIT_VERSION_3
       if (!bAftermathMultiplayer) {
-#else
-      if (PlayingAgainstVersion < VERSION_AFTERMATH_CS) {
-#endif
         NewUnitsEnabled = SecretUnitsEnabled = false;
       } else {
         NewUnitsEnabled = true;
@@ -1537,7 +1372,6 @@ bool Select_Game(bool fade) {
     default:
       break;
   }
-#endif
   /*
   **	Load the scenario.  Specify variation 'A' for the editor; for the game,
   **	don't specify a variation, to make 'Set_Scenario_Name()' pick a random
@@ -1559,13 +1393,8 @@ bool Select_Game(bool fade) {
 
     if (selection != SEL_START_NEW_GAME) {
       BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
-#ifdef WIN32
       HiddenPage.Clear();
       VisiblePage.Clear();
-#else
-      HidPage.Clear();
-      SeenPage.Clear();
-#endif  // WIN32
     }
     Show_Mouse();
     // Mono_Printf("About to call Start Scenario with %s\n", Scen.ScenarioName);
@@ -1591,11 +1420,7 @@ bool Select_Game(bool fade) {
                                      // // enable edit overflow
       20,                            // min,
       MAX_MESSAGE_LENGTH - 14,       //    max for trimming overflow
-#ifdef WIN32
       Lepton_To_Pixel(Map.TacLeptonWidth));  // Width in pixels of buffer
-#else
-      (320 - SIDEBAR_WID));  // Width in pixels of buffer
-#endif
 
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       !Session.Play) {
@@ -1630,24 +1455,16 @@ bool Select_Game(bool fade) {
   Call_Back();
   Hide_Mouse();
   BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
-//	Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
-#ifdef WIN32
   HiddenPage.Clear();
   VisiblePage.Clear();
-#else
-  HidPage.Clear();
-  SeenPage.Clear();
-#endif  // WIN32
   Show_Mouse();
   Set_Logic_Page(SeenBuff);
-#ifdef WIN32
   /*
   ** Sidebar is always active in hi-res.
   */
   if (!Debug_Map) {
     Map.SidebarClass::Activate(1);
   }
-#endif  // WIN32
   Map.Flag_To_Redraw();
   Call_Back();
   Map.Render();
@@ -1731,21 +1548,17 @@ static void Play_Intro(bool sequenced) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-#ifdef WIN32
 #ifdef MOVIE640
 GraphicBufferClass VQ640(640, 400, (void *)nullptr);
 #endif
-#endif
 void Anim_Init(void) {
-#ifdef WIN32
-
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
   AnimControl.DrawFlags = VQACFGF_TOPLEFT;
   AnimControl.DrawFlags |= VQACFGF_BUFFER;
   // AnimControl.DrawFlags |= VQACFGF_NODRAW;
-  // BG - M. Grayford says turn this off	AnimControl.DrawFlags |=
-  // VQACFGF_NOSKIP;
+  // BG - M. Grayford says turn this off
+  // AnimControl.DrawFlags |= VQACFGF_NOSKIP;
 
   AnimControl.DrawFlags |= VQACFGF_NOSKIP;
   AnimControl.FrameRate = -1;
@@ -1771,49 +1584,12 @@ void Anim_Init(void) {
   if (SlowPalette) {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
-#ifdef PORTABLE
   AnimControl.AudioDeviceID = Get_Audio_Device();
   AnimControl.AudioCallback = Get_Audio_Callback_Ptr();
   AnimControl.AudioSpec = Get_Audio_Spec();
-#else
-  AnimControl.SoundObject = SoundObject;
-  AnimControl.PrimaryBufferPtr = PrimaryBufferPtr;
-#endif
   if (MonoClass::Is_Enabled()) {
     AnimControl.OptionFlags |= VQAOPTF_MONO;
   }
-
-#else  // WIN32
-  /* Configure player with INI file */
-  VQA_DefaultConfig(&AnimControl);
-  //	void const * font = Load_Font(FONT8);
-  //	AnimControl.EVAFont = (char *)font;
-  //	AnimControl.CapFont = (char *)font;
-  AnimControl.DrawerCallback = VQ_Call_Back;
-  AnimControl.ImageWidth = 320;
-  AnimControl.ImageHeight = 200;
-  AnimControl.Vmode = MCGA_MODE;
-  AnimControl.VBIBit = VertBlank;
-  AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
-  AnimControl.OptionFlags |= VQAOPTF_HMIINIT | VQAOPTF_CAPTIONS | VQAOPTF_EVA;
-  //	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
-  //	AnimControl.AudioBufSize = 32768U;
-  AnimControl.DigiCard = NewConfig.DigitCard;
-  AnimControl.HMIBufSize = 8192;
-  AnimControl.DigiHandle = Get_Digi_Handle();
-  AnimControl.Volume = 0x00FF;
-  AnimControl.AudioRate = 22050;
-  //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-
-  if (!Debug_Quiet && Get_Digi_Handle() != -1) {
-    AnimControl.OptionFlags |= VQAOPTF_AUDIO;
-  }
-
-  if (MonoClass::Is_Enabled()) {
-    AnimControl.OptionFlags |= VQAOPTF_MONO;
-  }
-
-#endif  // WIN32
 }
 
 /***********************************************************************************************
@@ -2046,7 +1822,6 @@ bool Parse_Command_Line(int argc, char *argv[]) {
       continue;
     }
 
-#ifdef WIN32
     /*
     ** Set screen to 640x480 instead of 640x400
     */
@@ -2055,37 +1830,13 @@ bool Parse_Command_Line(int argc, char *argv[]) {
       continue;
     }
 
-    /*
-    ** Check for spawn from WChat
-    */
-#ifndef FIXIT_VERSION_3  //	WChat eliminated.
-    if (strstr(string, "-WCHAT")) {
-      SpawnedFromWChat = true;
+    if constexpr (config::kCheatKeysEnabled) {
+      // Specify the random number seed (for debugging)
+      if (strstr(string, "-SEED")) {
+        CustomSeed = (unsigned short)(atoi(string + strlen("SEED")));
+        continue;
+      }
     }
-#endif
-
-#endif
-
-#ifdef CHEAT_KEYS
-    /*
-    **	Specify the random number seed (for debugging)
-    */
-    if (strstr(string, "-SEED")) {
-      CustomSeed = (unsigned short)(atoi(string + strlen("SEED")));
-      continue;
-    }
-
-#ifndef WIN32
-    /*
-    **	Don't install Page Fault Handler (MUST use this for debugger)
-    */
-    if (stricmp(string, "-NOPFS") == 0) {
-      UsePageFaultHandler = 0;
-      continue;
-    }
-#endif
-
-#endif
 
 #if (TEN)
     /*
@@ -2532,16 +2283,15 @@ void Init_Random(void) {
   CryptRandom.Seed_Bit(t.wYear);
 #else
 
-    /*
-    **	Gather some "random" bits from the DOS mode timer.
-    */
-    struct timeb t;
-    ftime(&t);
-    CryptRandom.Seed_Byte(t.millitm);
-    CryptRandom.Seed_Byte(t.time);
+  /*
+  **	Gather some "random" bits from the DOS mode timer.
+  */
+  struct timeb t;
+  ftime(&t);
+  CryptRandom.Seed_Byte(t.millitm);
+  CryptRandom.Seed_Byte(t.time);
 #endif
 
-#ifdef FIXIT_MULTI_SAVE
   //
   // If we've loaded a multiplayer save game, return now; the random #
   // class is loaded along with ScenarioClass.
@@ -2559,18 +2309,6 @@ void Init_Random(void) {
     Scen.RandomNumber = Seed;
     return;
   }
-#else
-  /*
-  ** Do nothing if we've loaded a multiplayer game, or we're playing back
-  ** a recording; the random number generator is initialized by loading
-  ** the game.
-  */
-  if (Session.LoadGame || Session.Play) {
-    RandNumb = Seed;
-    Scen.RandomNumber = Seed;
-    return;
-  }
-#endif  // FIXIT_MULTI_SAVE
 
   /*
   **	Initialize the random number Seed.  For multiplayer, this will have been
@@ -2653,16 +2391,12 @@ static void Init_Color_Remaps(void) {
   ** after that are the remap colors.
   */
 
-#ifdef WIN32
 #if RESFACTOR == 2
   SysMemPage.Clear();
   Load_Picture("PALETTE.CPS", SysMemPage, SysMemPage, nullptr, BM_DEFAULT);
   SysMemPage.Blit(HidPage);
 #else
   Load_Picture("PALETTE.CPS", HiddenPage, HiddenPage, nullptr, BM_DEFAULT);
-#endif
-#else
-  Load_Picture("PALETTE.CPS", HidPage, HidPage, nullptr, BM_DEFAULT);
 #endif
   for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
     unsigned char *ptr = ColorRemaps[pcolor].RemapTable;
@@ -2959,7 +2693,6 @@ static void Init_CDROM_Access(void) {
   VisiblePage.Clear();
   HidPage.Clear();
 
-#ifdef FIXIT_VERSION_3
   //	Determine if we're going to be running from a DVD.
   //	The entire session will either require a DVD, or the regular CDs. Never
   // both. 	Call Using_DVD() to determine which case it is. 	Here we
@@ -2967,7 +2700,6 @@ static void Init_CDROM_Access(void) {
   Determine_If_Using_DVD();
   //	Force_CD_Available() is modified when Using_DVD() is true so that all
   // requests become requests for the DVD.
-#endif
 
   /*
   **	Always try to look at the CD-ROM for data files.
@@ -3060,7 +2792,6 @@ static void Init_Bootstrap_Mixfiles(void) {
   }
 #endif
 
-#ifdef FIXIT_CSII  //	Ok. ajw
   CCFileClass file2("EXPAND2.MIX");
   if (file2.Is_Available()) {
     new MFCD("EXPAND2.MIX", &FastKey);
@@ -3077,16 +2808,13 @@ static void Init_Bootstrap_Mixfiles(void) {
     assert(ok);
 #endif
   }
-#endif
 
-#ifdef FIXIT_ANTS  //	Ok. ajw
   CCFileClass file("EXPAND.MIX");
   if (file.Is_Available()) {
     new MFCD("EXPAND.MIX", &FastKey);
     bool ok = MFCD::Cache("EXPAND.MIX");
     assert(ok);
   }
-#endif
 
   new MFCD("REDALERT.MIX", &FastKey);
 
@@ -3257,17 +2985,15 @@ static void Bootstrap(void) {
     RequiredCD = -2;
   }
 
-/*
-** Process the message loop until we are in focus. We need to be in focus to
-*read pixels from
-** the screen.
-*/
-#ifdef WIN32
+  /*
+  ** Process the message loop until we are in focus. We need to be in focus to
+  *read pixels from
+  ** the screen.
+  */
   do {
     Keyboard->Check();
   } while (!GameInFocus);
   AllSurfaces.SurfacesRestored = false;
-#endif
 
   /*
   **	Perform any special debug-only processing. This includes preparing the
@@ -3301,17 +3027,10 @@ static void Bootstrap(void) {
   }
 #endif
 
-/*
-**	Setup the keyboard processor in preparation for the game.
-*/
-#ifdef WIN32
+  /*
+  **	Setup the keyboard processor in preparation for the game.
+  */
   Keyboard->Clear();
-#else
-  Keyboard_Attributes_Off(BREAKON | SCROLLLOCKON | TRACKEXT | PAUSEON |
-                          CTRLSON | CTRLCON | FILTERONLY | TASKSWITCHABLE);
-  Keyboard_Attributes_On(PASSBREAKS);
-  Keyboard->Clear();
-#endif
 
   /*
   **	This is the shape staging buffer. It must always be available, so it is
@@ -3325,7 +3044,6 @@ static void Bootstrap(void) {
   **	Fetch the language text from the hard drive first. If it cannot be
   **	found on the hard drive, then look for it in the mixfile.
   */
-#ifdef STEVES_LOAD_OVERRIDE
   RawFileClass strings("CONQUER.ENG");
   if (strings.Is_Available()) {
     SystemStrings = new char[strings.Size()];
@@ -3333,9 +3051,6 @@ static void Bootstrap(void) {
   } else {
     SystemStrings = (char const *)MFCD::Retrieve(Language_Name("CONQUER"));
   }
-#else
-  SystemStrings = (char const *)MFCD::Retrieve(Language_Name("CONQUER"));
-#endif
   DebugStrings = (char const *)MFCD::Retrieve("DEBUG.ENG");
 
   /*
@@ -3419,109 +3134,6 @@ static void Init_Mouse(void) {
   Call_Back();
   Hide_Mouse();
 }
-
-#ifdef OBSOLETE
-/***********************************************************************************************
- * Init_Authorization -- Verifies that the player is authorized to play the
- *game.              *
- *                                                                                             *
- *    This is a development routine that restricts access to the game by way of
- *passwords.     *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/03/1996 JLB : Created. *
- *=============================================================================================*/
-static void Init_Authorization(void) {
-  if (Special.IsFromInstall) return;
-
-  Load_Title_Page();
-#ifdef WIN32
-  Wait_Vert_Blank();
-#else   // WIN32
-  Init_Delay();
-  Wait_Vert_Blank(VertBlank);
-#endif  // WIN32
-
-  CCPalette.Set();
-  //		Set_Palette(Palette);
-  HidPage.Blit(SeenPage);
-  Show_Mouse();
-
-  /*
-  **	Fetch the type of game to be played. This will be either
-  **	C&C:Red Alert or C&C:Plus.
-  */
-  // tryagain:
-
-  bool ok = Debug_Flag;
-  int counter = 3;
-
-  if (Debug_Flag) ok = true;
-
-  /*
-  **	C&C:Red Alert requires a password for legal entry. Try (three times) to
-  *get a correct *	password. If not found, then try again.
-  */
-  bool skipper = false;
-#ifdef NEVER
-  while (!ok && counter) {
-    SmartPtr<char const> str =
-        Fetch_Password(TXT_PASSWORD_CAPTION, TXT_PASSWORD_MESSAGE, TXT_OK);
-    SmartPtr<long const> lptr = &CheatCodes[0];
-    while (*lptr) {
-      if (Obfuscate(str) == *lptr++) {
-        ok = true;
-        break;
-      }
-    }
-    lptr = &EditorCodes[0];
-    while (*lptr) {
-      if (Obfuscate(str) == *lptr++) {
-        ok = true;
-        break;
-      }
-    }
-    lptr = &PlayCodes[0];
-    while (*lptr) {
-      if (Obfuscate(str) == *lptr++) {
-        ok = true;
-        skipper = true;
-        break;
-      }
-    }
-
-    if (ok) break;
-
-    Hide_Mouse();
-    Load_Title_Page();
-    HidPage.Blit(SeenPage);
-    Show_Mouse();
-    Delay(TIMER_SECOND * (4 - counter) * 1);
-    if (WWMessageBox().Process(TXT_PASSWORD_ERROR, TXT_TRY_AGAIN, TXT_CANCEL)) {
-      goto tryagain;
-    }
-
-    counter--;
-    if (counter == 0) goto tryagain;
-  }
-#endif
-
-  if (!skipper) {
-    CCPalette.Set();
-  }
-
-  Hide_Mouse();
-  Load_Title_Page();
-  HidPage.Blit(SeenPage);
-  Show_Mouse();
-  Call_Back();
-}
-#endif
 
 /***********************************************************************************************
  * Init_Bulk_Data -- Initialize the time-consuming mixfile caching. *
@@ -3715,8 +3327,6 @@ void Extract(char *filename, char *outname) {
   }
 }
 
-#ifdef FIXIT_VERSION_3
-
 bool bUsingDVD = false;
 
 const char *Game_Registry_Key();
@@ -3766,5 +3376,3 @@ bool Determine_If_Using_DVD() {
 
 //***********************************************************************************************
 bool Using_DVD() { return bUsingDVD; }
-
-#endif

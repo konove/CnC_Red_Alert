@@ -97,17 +97,11 @@ void GameOptionsClass::Process(void) {
     bool Multiplay;  // Allowed in multiplayer version?
   } _constants[] = {
       {BUTTON_LOAD, TXT_LOAD_MISSION, false},
-#ifdef FIXIT_MULTI_SAVE
       {BUTTON_SAVE, TXT_SAVE_MISSION, true},
-#else
-      {BUTTON_SAVE, TXT_SAVE_MISSION, false},
-#endif
       {BUTTON_DELETE, TXT_DELETE_MISSION, true},
       {BUTTON_GAME, TXT_GAME_CONTROLS, true},
       {BUTTON_QUIT, TXT_QUIT_MISSION, true},
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
       {BUTTON_DRAW, TXT_OK, true},
-#endif
       {BUTTON_RESUME, TXT_RESUME_MISSION, true},
       {BUTTON_RESTATE, TXT_RESTATE_MISSION, false},
   };
@@ -118,11 +112,7 @@ void GameOptionsClass::Process(void) {
   TextButtonClass* buttons = nullptr;
   int selection;
   bool pressed;
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
   int curbutton = 7;
-#else
-  int curbutton = 6;
-#endif
   int y;
   TextButtonClass* buttonsel[ARRAY_SIZE(_constants)];
   static int num_buttons = sizeof(_constants) / sizeof(_constants[0]);
@@ -160,20 +150,10 @@ void GameOptionsClass::Process(void) {
       continue;
     }
 
-#ifdef FIXIT_VERSION_3
     if (Session.Type != GAME_NORMAL && (num_players < 2) &&
         text == TXT_SAVE_MISSION) {
       continue;
     }
-#else
-#ifdef FIXIT_MULTI_SAVE
-    if (Session.Type != GAME_NORMAL &&
-        (num_players < 2 || PlayingAgainstVersion == VERSION_RED_ALERT_104) &&
-        text == TXT_SAVE_MISSION) {
-      continue;
-    }
-#endif  // FIXIT_MULTI_SAVE
-#endif
 
     if (Session.Type == GAME_SKIRMISH && text == TXT_DELETE_MISSION) {
       continue;
@@ -183,18 +163,13 @@ void GameOptionsClass::Process(void) {
       text = TXT_RESIGN;
     }
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
     if (index < 6) {
-#else
-    if (index < 5) {
-#endif
       y = (SeenBuff.Get_Height() - OptionHeight) / 2 + ButtonY +
           ((OButtonHeight + 2) * index);
     } else {
       y = OptionY + ButtonResumeY;
     }
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
     TextButtonClass* g;
     if (_constants[index].ID == BUTTON_DRAW) {
       if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
@@ -217,10 +192,6 @@ void GameOptionsClass::Process(void) {
         continue;
     } else
       g = new TextButtonClass(_constants[index].ID, text, TPF_BUTTON, 0, y);
-#else
-    TextButtonClass* g =
-        new TextButtonClass(_constants[index].ID, text, TPF_BUTTON, 0, y);
-#endif
 
     if (g->Width > maxwidth) {
       maxwidth = g->Width;
@@ -414,12 +385,10 @@ void GameOptionsClass::Process(void) {
         pressed = true;
         break;
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
       case (BUTTON_DRAW | KN_BUTTON):
         selection = BUTTON_DRAW;
         pressed = true;
         break;
-#endif
 
       case (KN_ESC):
       case (BUTTON_RESUME | KN_BUTTON):
@@ -561,7 +530,6 @@ void GameOptionsClass::Process(void) {
           }
           break;
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
         case BUTTON_DRAW:
           if (Scen.bLocalProposesDraw) {
             //	Retract draw offer.
@@ -585,7 +553,6 @@ void GameOptionsClass::Process(void) {
             }
           }
           break;
-#endif
 
         case (BUTTON_GAME):
           display = true;
@@ -622,11 +589,7 @@ void GameOptionsClass::Process(void) {
 
 void GameOptionsClass::Adjust_Variables_For_Resolution(void) {
   OptionWidth = (216 + 8) * RESFACTOR;
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
   OptionHeight = 111 * RESFACTOR;
-#else
-  OptionHeight = 100 * RESFACTOR;
-#endif
   OptionX = ((SeenBuff.Get_Width() - OptionWidth) / 2);
   OptionY = ((SeenBuff.Get_Height() - OptionHeight) / 2);
   ButtonWidth = 130 * RESFACTOR;

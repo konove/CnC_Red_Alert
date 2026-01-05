@@ -77,13 +77,11 @@ char *TheaterShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = FALSE;
 bool IsTheaterShape = false;
 }
-#ifdef FIXIT_SCORE_CRASH
 /*
 ** Global required to fix the score screen crash bug by allowing disabling of
 *uncompressed shapes.
 */
 bool OriginalUseBigShapeBuffer = false;
-#endif  // FIXIT
 char *BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
 bool ReallocShapeBufferFlag = FALSE;
@@ -154,7 +152,6 @@ void Reallocate_Big_Shape_Buffer(void) {
   }
 }
 
-#ifdef FIXIT_SCORE_CRASH
 /***********************************************************************************************
  * Disable_Uncompressed_Shapes -- Temporarily turns off shape decompression *
  *                                                                                             *
@@ -187,7 +184,6 @@ void Disable_Uncompressed_Shapes(void) { UseBigShapeBuffer = false; }
 void Enable_Uncompressed_Shapes(void) {
   UseBigShapeBuffer = OriginalUseBigShapeBuffer;
 }
-#endif  // FIXIT
 
 void Check_Use_Compressed_Shapes(void) {
 #ifdef PORTABLE
@@ -201,24 +197,17 @@ void Check_Use_Compressed_Shapes(void) {
 
   UseBigShapeBuffer = (mem_info.dwTotalPhys > 16 * 1024 * 1024) ? TRUE : FALSE;
 #endif
-#ifdef FIXIT_SCORE_CRASH
   /*
   ** Keep track of our original decision about whether to use cached shapes.
   ** This is needed for the score screen crash fix.
   */
   OriginalUseBigShapeBuffer = UseBigShapeBuffer;
-#endif  // FIXIT
 }
 
 void *Build_Frame(void const *dataptr, unsigned short framenumber,
                   void *buffptr) {
-#ifdef FIXIT_SCORE_CRASH
   char *ptr;
   unsigned long offcurr, offdiff;
-#else
-  char *ptr, *lockptr;  //, *uncomp_ptr;
-  unsigned long offcurr, off16, offdiff;
-#endif
   uint32_t offset[SUBFRAMEOFFS];
   KeyFrameHeaderType *keyfr;
   unsigned short buffsize, currframe, subframe;
@@ -348,25 +337,11 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
       ptr = (char *)Add_Long_To_Pointer(ptr, 768L);
     }
 
-#ifndef FIXIT_SCORE_CRASH
-    off16 = (unsigned long)lockptr & 0x00003FFFL;
-#endif
-
     length = LCW_Uncompress(ptr, buffptr, buffsize);
 
     if (length > buffsize) {
       return (nullptr);
     }
-
-#ifndef FIXIT_SCORE_CRASH
-    if (((offset[2] & 0x00FFFFFFL) - offcurr) >= (0x00010000L - off16)) {
-      ptr = (char *)Add_Long_To_Pointer(ptr, offdiff);
-      off16 = (unsigned long)ptr & 0x00003FFFL;
-
-      offcurr += offdiff;
-      offdiff = 0;
-    }
-#endif
 
     length = buffsize;
     Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));
@@ -379,17 +354,6 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
 
       while (currframe <= framenumber) {
         offdiff = (offset[subframe] & 0x00FFFFFFL) - offcurr;
-
-#ifndef FIXIT_SCORE_CRASH
-        if (((offset[subframe + 2] & 0x00FFFFFFL) - offcurr) >=
-            (0x00010000L - off16)) {
-          ptr = (char *)Add_Long_To_Pointer(ptr, offdiff);
-          off16 = (unsigned long)lockptr & 0x00003FFFL;
-
-          offcurr += offdiff;
-          offdiff = 0;
-        }
-#endif
 
         length = buffsize;
         Apply_Delta(buffptr, Add_Long_To_Pointer(ptr, offdiff));

@@ -1136,11 +1136,8 @@ static TemplateTypeClass const Xtra0015(TEMPLATE_XTRA0015, THEATERF_INTERIOR,
                                         "XTRA0015", TXT_INTERIOR);
 static TemplateTypeClass const Xtra0016(TEMPLATE_XTRA0016, THEATERF_INTERIOR,
                                         "XTRA0016", TXT_INTERIOR);
-
-#ifdef FIXIT_ANTS
 static TemplateTypeClass const AntHill(TEMPLATE_HILL01, THEATERF_TEMPERATE,
                                        "HILL01", TXT_ROCK);
-#endif
 
 /***********************************************************************************************
  * TemplateTypeClass::TemplateTypeClass -- Constructor for template type
@@ -1397,10 +1394,7 @@ static void _Watcom_Ugh_Hack(void) {
   (void)new TemplateTypeClass(Xtra0014);  //	TEMPLATE_XTRA0014
   (void)new TemplateTypeClass(Xtra0015);  //	TEMPLATE_XTRA0015
   (void)new TemplateTypeClass(Xtra0016);  //	TEMPLATE_XTRA0016
-
-#ifdef FIXIT_ANTS
-  (void)new TemplateTypeClass(AntHill);  //	TEMPLATE_ROAD36
-#endif
+  (void)new TemplateTypeClass(AntHill);   //	TEMPLATE_ROAD36
 }
 
 void TemplateTypeClass::Init_Heap(void) {

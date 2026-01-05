@@ -83,12 +83,10 @@ class OptionsClass {
   */
   unsigned int GameSpeed;
 
-  int ScrollRate;     // Distance to scroll.
-  fixed Volume;       // Volume for sound effects.
-  fixed ScoreVolume;  // Volume for scores.
-#ifdef FIXIT_VERSION_3
-  fixed MultiScoreVolume;  //	Volume for scores during multiplayer games.
-#endif
+  int ScrollRate;                // Distance to scroll.
+  fixed Volume;                  // Volume for sound effects.
+  fixed ScoreVolume;             // Volume for scores.
+  fixed MultiScoreVolume;        // Volume for scores during multiplayer games.
   fixed Brightness;              // Brightness.
   fixed Tint;                    // Hue
   fixed Saturation;              // Saturation

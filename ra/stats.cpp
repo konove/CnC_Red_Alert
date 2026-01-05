@@ -164,9 +164,8 @@ enum {
   COMPLETION_PLAYER_2_WON,
   COMPLETION_PLAYER_2_WON_BY_RESIGNATION,
   COMPLETION_PLAYER_2_WON_BY_DISCONNECTION,
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
+  // Stalemate games.
   COMPLETION_WASH = 64,
-#endif
 };
 
 extern unsigned long PlanetWestwoodGameID;
@@ -406,7 +405,7 @@ void Send_Statistics_Packet(void) {
       int completion = -1;
 
       if (player1 && player2) {  //	Can this ever fail?		ajw
-#if defined(FIXIT_VERSION_3) && defined(WOLAPI_INTEGRATION)
+#if defined(WOLAPI_INTEGRATION)
         //	Send IP addresses of both players.
         NetNumType net;
         NetNodeType node;
@@ -461,11 +460,10 @@ void Send_Statistics_Packet(void) {
         sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2], node[3]);
         stats.Add_Field(FIELD_PLAYER2_IP, (char *)szIPAddress);
 #endif
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
+        // Stalemate games.
         if (Scen.bLocalProposesDraw && Scen.bOtherProposesDraw) {
           completion = COMPLETION_WASH;
         } else {
-#endif
           if (ConnectionLost) {
 #ifdef WOLAPI_INTEGRATION
             if (bReconnectDialogCancelled) {
@@ -488,7 +486,7 @@ void Send_Statistics_Packet(void) {
               // finished!!!!!!!!!!!!!!!\n" );
             }
 #else
-        completion = COMPLETION_CONNECTION_LOST;
+          completion = COMPLETION_CONNECTION_LOST;
 #endif
           } else {
             if (player1->IsGiverUpper) {
@@ -528,9 +526,7 @@ void Send_Statistics_Packet(void) {
               }
             }
           }
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
         }
-#endif
       }
 
       stats.Add_Field(FIELD_COMPLETION, (char)completion);
@@ -556,16 +552,12 @@ void Send_Statistics_Packet(void) {
     /*
     ** Avg. frame rate.
     */
-#ifdef FIXIT_IP_CRASH
     long divisor = GameEndTime / 60;
     if (divisor != 0) {
       stats.Add_Field(FIELD_FRAME_RATE, (long)Frame / (GameEndTime / 60));
     } else {
       stats.Add_Field(FIELD_FRAME_RATE, 0l);
     }
-#else
-    stats.Add_Field(FIELD_FRAME_RATE, (long)Frame / (GameEndTime / 60));
-#endif
 
 #ifndef PORTABLE
     /*
@@ -785,9 +777,7 @@ void Send_Statistics_Packet(void) {
       field_player_units_left[3] = '1' + (char)house;
       field_player_planes_left[3] = '1' + (char)house;
       field_player_buildings_left[3] = '1' + (char)house;
-#ifdef FIXIT_IP_STATS
       field_player_vessels_left[3] = '1' + (char)house;
-#endif
       stats.Add_Field(field_player_infantry_left,
                       (void *)player->InfantryTotals->Get_All_Totals(),
                       player->InfantryTotals->Get_Unit_Count() * 4);
@@ -832,15 +822,9 @@ void Send_Statistics_Packet(void) {
       stats.Add_Field(field_player_buildings_killed,
                       (void *)player->DestroyedBuildings->Get_All_Totals(),
                       player->DestroyedBuildings->Get_Unit_Count() * 4);
-#ifdef FIXIT_VERSION_3
       stats.Add_Field(field_player_vessels_killed,
                       (void *)player->DestroyedVessels->Get_All_Totals(),
                       player->DestroyedVessels->Get_Unit_Count() * 4);
-#else
-      stats.Add_Field(field_player_vessels_killed,
-                      (void *)player->DestroyedVessels->Get_All_Totals(),
-                      player->DestroyedBuildings->Get_Unit_Count() * 4);
-#endif
 
       /*
       ** Number and type of enemy buildings captured

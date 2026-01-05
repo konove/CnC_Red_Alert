@@ -1716,7 +1716,6 @@ int AircraftClass::Mission_Move(void) {
             **	Normal aircraft try to find a good landing spot to rest.
             */
             BuildingClass *building = Find_Docking_Bay(Class->Building, false);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
               if (building) dist = Distance(building);
@@ -1734,22 +1733,14 @@ int AircraftClass::Mission_Move(void) {
                 }
               }
             }
-#endif
             Assign_Destination(TARGET_NONE);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
             if (building &&
                 (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER ||
                  building->What_Am_I() == RTTI_VESSEL)) {
-#else
-            if (building &&
-                Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
-#endif
               mission = MISSION_ENTER;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
               if (building->What_Am_I() == RTTI_VESSEL) {
                 Assign_Destination(building->As_Target());
               }
-#endif
             } else {
               Assign_Destination(Good_LZ());
 
@@ -2035,7 +2026,6 @@ void AircraftClass::Enter_Idle_Mode(bool) {
             **	Normal aircraft try to find a good landing spot to rest.
             */
             BuildingClass *building = Find_Docking_Bay(Class->Building, false);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
               if (building) dist = Distance(building);
@@ -2052,22 +2042,14 @@ void AircraftClass::Enter_Idle_Mode(bool) {
                 }
               }
             }
-#endif
             Assign_Destination(TARGET_NONE);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
             if (building &&
                 (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER ||
                  building->What_Am_I() == RTTI_VESSEL)) {
-#else
-            if (building &&
-                Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
-#endif
               mission = MISSION_ENTER;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
               if (building->What_Am_I() == RTTI_VESSEL) {
                 Assign_Destination(building->As_Target());
               }
-#endif
             } else {
               Assign_Destination(Good_LZ());
               mission = MISSION_MOVE;
@@ -2310,7 +2292,6 @@ ActionType AircraftClass::What_Action(ObjectClass const *target) const {
           RADIO_ROGER) {
     action = ACTION_ENTER;
   }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
   if (!Class->IsFixedWing && House->IsPlayerControl && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_VESSEL &&
       *(VesselClass *)target == VESSEL_CARRIER &&
@@ -2319,7 +2300,6 @@ ActionType AircraftClass::What_Action(ObjectClass const *target) const {
           RADIO_ROGER) {
     action = ACTION_ENTER;
   }
-#endif
 
   if (Class->IsFixedWing && action == ACTION_MOVE) {
     action = ACTION_NOMOVE;
@@ -3336,15 +3316,10 @@ int AircraftClass::Mission_Enter(void) {
           Transmit_Message(RADIO_DOCKING);
           Status = STACK;
         } else {
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
           if (tech->What_Am_I() != RTTI_VESSEL) {
             Assign_Destination(TARGET_NONE);
             Enter_Idle_Mode();
           }
-#else
-          Assign_Destination(TARGET_NONE);
-          Enter_Idle_Mode();
-#endif
         }
       }
       break;
@@ -3416,11 +3391,7 @@ int AircraftClass::Mission_Enter(void) {
 
     case TRAVEL:
       Transmit_Message(RADIO_DOCKING);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       if (!In_Radio_Contact() && !Is_Target_Vessel(NavCom)) {
-#else
-      if (!In_Radio_Contact()) {
-#endif
         Assign_Destination(TARGET_NONE);
         Enter_Idle_Mode();
       } else {
@@ -3440,19 +3411,15 @@ int AircraftClass::Mission_Enter(void) {
               SecondaryFacing.Set_Desired(Pose_Dir());
             }
 
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
             if (Is_Target_Vessel(NavCom) && !In_Radio_Contact()) {
               Enter_Idle_Mode();
               break;
             }
-#endif
             if (distance < 0x0010) {
               Status = LANDING;
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
               if (Is_Target_Vessel(NavCom) && As_Vessel(NavCom)->NavCom) {
                 Status = TRAVEL;
               }
-#endif
             }
             break;
           } else {
@@ -3470,13 +3437,11 @@ int AircraftClass::Mission_Enter(void) {
         Assign_Destination(TARGET_NONE);
         Enter_Idle_Mode();
       }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       // If we were trying to land on a carrier and it moved, take off again
       if (As_Vessel(NavCom) && !In_Radio_Contact()) {
         Status = INITIAL;
         break;
       }
-#endif
       if (Process_Landing()) {
         switch (Transmit_Message(RADIO_IM_IN)) {
           case RADIO_ROGER:
@@ -3484,11 +3449,7 @@ int AircraftClass::Mission_Enter(void) {
             break;
 
           case RADIO_ATTACH:
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
             if (Contact_With_Whom()->What_Am_I() != RTTI_VESSEL) Limbo();
-#else
-            Limbo();
-#endif
             Contact_With_Whom()->Attach(this);
             break;
 
@@ -3761,7 +3722,6 @@ int AircraftClass::Mission_Guard(void) {
   if (Ammo == 0 && Is_Weapon_Equipped()) {
     if (!In_Radio_Contact()) {
       BuildingClass *building = Find_Docking_Bay(STRUCT_HELIPAD, false);
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
       if (!Class->IsFixedWing) {
         int dist = 0x7FFFFFFF;
         if (building) dist = Distance(building);
@@ -3778,7 +3738,6 @@ int AircraftClass::Mission_Guard(void) {
           }
         }
       }
-#endif
       if (building != nullptr) {
         Assign_Destination(building->As_Target());
         Assign_Target(TARGET_NONE);

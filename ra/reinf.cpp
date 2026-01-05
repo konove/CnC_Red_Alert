@@ -47,26 +47,27 @@
 #include "ra/reinf.h"
 
 #include <string.h>
+
 #include <cassert>
 
 #include "ra/aircraft.h"
-#include "ra/externs.h"
-#include "ra/foot.h"
-#include "ra/inline.h"
-#include "ra/team.h"
-#include "ra/ww_audio.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/externs.h"
 #include "ra/face.h"
+#include "ra/foot.h"
 #include "ra/heap.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
 #include "ra/scenario.h"
+#include "ra/team.h"
 #include "ra/techno.h"
 #include "ra/unit.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *
@@ -457,7 +458,6 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
 
   CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,
                                   object->Techno_Type_Class()->Speed);
-#ifdef FIXIT_ANTS
   /*
   **	For the ants, they will pop out of the ant hill directly.
   */
@@ -472,7 +472,6 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
       }
     }
   }
-#endif
 
   CELL newcell = cell;
 

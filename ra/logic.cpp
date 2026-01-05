@@ -324,7 +324,6 @@ void LogicClass::AI(void) {
     if (TimeQuake && obj != nullptr && obj->IsActive && !obj->IsInLimbo &&
         obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (TimeQuakeCenter) {
         if (::Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
             MTankDistance) {
@@ -348,9 +347,6 @@ void LogicClass::AI(void) {
       } else {
         obj->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       }
-#else
-      obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
-#endif
     }
     /*
     **	If the object was destroyed in the process of performing its AI, then
@@ -377,7 +373,6 @@ void LogicClass::AI(void) {
   /*
   **	House processing is performed.
   */
-#ifdef FIXIT_VERSION_3
   if (Session.Type != GAME_NORMAL) {
     for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
@@ -393,17 +388,7 @@ void LogicClass::AI(void) {
       }
     }
   }
-#else  //	AI() is called redundantly 12 times in multiplayer games here.
-       // ajw
-  for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-    HouseClass* hptr = HouseClass::As_Pointer(house);
-    if (hptr && hptr->IsActive) {
-      hptr->AI();
-    }
-  }
-#endif
 
-#ifdef FIXIT_VERSION_3  //	For endgame auto-sonar pulse.
   if (Session.Type != GAME_NORMAL && Scen.AutoSonarTimer == 0) {
     if (bAutoSonarPulse) {
       Map.Activate_Pulse();
@@ -413,7 +398,6 @@ void LogicClass::AI(void) {
 #define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40;
     Scen.AutoSonarTimer = AUTOSONAR_PERIOD;
   }
-#endif
 }
 
 /***********************************************************************************************

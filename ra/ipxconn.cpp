@@ -638,14 +638,7 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
 
   if (immed) {
     memcpy(send_address, immed, 6);
-#ifdef FIXIT_DESTNET
-    // fixes DESTNET
     address->Get_Address(net, node);
-#else
-    // breaks DESTNET
-    memcpy(node, immed, 6);
-    memset(net, 0, sizeof(net));
-#endif
   } else {
     address->Get_Address(net, node);
     /*.....................................................................

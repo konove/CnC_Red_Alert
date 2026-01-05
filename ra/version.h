@@ -47,26 +47,26 @@
 #define VERSION_AFTERMATH 0x00012000      // Aftermath
 
 //	Aftermath has, in a sense, used version 2.00. (Because of the text on
-//title screen.) Call ourselves version 3.
+// title screen.) Call ourselves version 3.
 #define VERSION_RA_300 \
   0x00030000  //	RA, CS, AM executables unified into one. All are now the
-              //same version. -ajw
+              // same version. -ajw
 //	It seems that extra information, that didn't belong there, was being
-//stuffed into version number. Namely, whether or not 	Counterstrike is
-//installed. I'm going to change things back to the way they should be, as I see
-//it. Version will describe 	the version of the executable only. When it comes to
-//communicating whether or not a player has expansions present, separate 	data
-//will be transmitted.
+// stuffed into version number. Namely, whether or not 	Counterstrike is
+// installed. I'm going to change things back to the way they should be, as I
+// see it. Version will describe 	the version of the executable only. When
+// it comes to communicating whether or not a player has expansions present,
+// separate 	data will be transmitted.
 
 //	However, having said that, a caveat. I'm going to have to use the same
-//communication method that was used previously, because 	I need to have prior
-//versions of the game recognize that they can't play against this version. What
-//I'll do is encode 	"does player have aftermath" (which is actually the only
-//fact that matters, in multiplayer) in the communicated version 	number, as a
-//high bit set/unset. This version of the game will receive this communicated
-//value and pull out the Aftermath 	bit. Older version will reject us as a
-//possible opponent, because, whether or not AM is installed, our version number
-//will 	be too high for them.
+// communication method that was used previously, because 	I need to have
+// prior versions of the game recognize that they can't play against this
+// version. What I'll do is encode 	"does player have aftermath" (which is
+// actually the only fact that matters, in multiplayer) in the communicated
+// version 	number, as a high bit set/unset. This version of the game will
+// receive this communicated value and pull out the Aftermath 	bit. Older
+// version will reject us as a possible opponent, because, whether or not AM is
+// installed, our version number will 	be too high for them.
 
 //	These horrible things are no longer used. ajw
 #define CS_MAJOR_VERSION_MODIFIER 0x0000
@@ -94,7 +94,7 @@ class VersionClass {
   // Constructor/Destructor
   //.....................................................................
   VersionClass(void);
-  virtual ~VersionClass(){};
+  virtual ~VersionClass() {};
 
   //.....................................................................
   // These routines return the current version number.  The long version
@@ -146,15 +146,7 @@ class VersionClass {
   // These values define the major & minor version #'s for the current
   // version.  Change these values to change the game's version #!
   //.....................................................................
-  enum VersionEnum {
-#ifdef FIXIT_VERSION_3
-    MAJOR_VERSION = 0x0003,
-    MINOR_VERSION = 0x0000
-#else
-    MAJOR_VERSION = 0x0001,
-    MINOR_VERSION = 0x2000
-#endif
-  };
+  enum VersionEnum { MAJOR_VERSION = 0x0003, MINOR_VERSION = 0x0000 };
 
   //.....................................................................
   // These values control which other versions this program will connect
@@ -163,14 +155,9 @@ class VersionClass {
   // values aren't used.
   //.....................................................................
   enum VersionRangeEnum {
-#ifdef FIXIT_VERSION_3
     //	ajw - We can only play against same version.
     MIN_VERSION = VERSION_RA_300,
     MAX_VERSION = VERSION_RA_300
-#else
-    MIN_VERSION = VERSION_RED_ALERT_104,  // 0x00010000,	// Version: 1.0
-    MAX_VERSION = VERSION_AFTERMATH       // 0x00012000	// Version: 1.2
-#endif
   };
 
   //.....................................................................

@@ -500,11 +500,9 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   /*
   **	Prevents a building from being placed over a flag object.
   */
-#ifdef FIXIT_FLAG_CHECK
   if (IsFlagged) {
     return (false);
   }
-#endif
 
   /*
   **	Walls are always considered to block the terrain for general passability
@@ -2431,17 +2429,8 @@ bool CellClass::Goodie_Check(FootClass *object) {
         **	If no unit type has been determined, then pick one at random.
         */
         while (utp == nullptr) {
-#ifdef FIXIT_ANTS
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
           UnitType utype =
               Random_Pick(UNIT_FIRST, (UnitType)(UNIT_RA_COUNT - 1 - 3));
-#else
-          UnitType utype =
-              Random_Pick(UNIT_FIRST, (UnitType)(UNIT_COUNT - 1 - 3));
-#endif
-#else
-          UnitType utype = Random_Pick(UNIT_FIRST, (UnitType)(UNIT_COUNT - 1));
-#endif
           if (utype != UNIT_MCV || Session.Options.Bases) {
             utp = &UnitTypeClass::As_Reference(utype);
             if (utp->IsCrateGoodie &&

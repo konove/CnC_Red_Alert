@@ -451,11 +451,9 @@ void UnitClass::AI(void) {
   *permit, the *	unit will fire upon its target.
   */
   Firing_AI();
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (!IsActive) {
     return;
   }
-#endif
   /*
   **	Turret rotation processing. Handles rotating radar dish
   **	as well as conventional turrets if present. If no turret present, but
@@ -685,11 +683,7 @@ void UnitClass::Firing_AI(void) {
         break;
 
       case FIRE_FACING:
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (Class->IsLockTurret || Class->Type == UNIT_DEMOTRUCK) {
-#else
-        if (Class->IsLockTurret) {
-#endif
           if (!Target_Legal(NavCom) && !IsDriving) {
             PrimaryFacing.Set_Desired(Direction(TarCom));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
@@ -863,11 +857,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass *from,
               **	transport doors. Close the doors if the transport is or
               *needs *	to rotate.
               */
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
               if (*this == UNIT_APC || *this == UNIT_PHASE) {
-#else
-              if (*this == UNIT_APC) {
-#endif
                 if (IsRotating) {
                   if (!Is_Door_Closed()) {
                     APC_Close_Door();
@@ -886,12 +876,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass *from,
               */
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                   RADIO_YEA_NOW_WHAT) {
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
                 if ((*this != UNIT_APC && *this != UNIT_PHASE) ||
                     Is_Door_Open()) {
-#else
-                if (*this != UNIT_APC || Is_Door_Open()) {
-#endif
                   param = (long)As_Target();
                   Transmit_Message(RADIO_TETHER);
                   if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
@@ -1135,15 +1121,11 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     **	it isn't already smoking.
     */
     if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached) {
-#ifdef FIXIT_ANTS
       if (*this != UNIT_ANT1 && *this != UNIT_ANT2 && *this != UNIT_ANT3) {
-#endif
         AnimClass *anim =
             new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
         if (anim) anim->Attach_To(this);
-#ifdef FIXIT_ANTS
       }
-#endif
     }
 
     /*
@@ -1244,14 +1226,10 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass *object) {
   if (object == this && action == ACTION_NOMOVE) {
     return;
   }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (*this == UNIT_MAD && (IsDumping || Gold)) {
   } else {
     DriveClass::Active_Click_With(action, object);
   }
-#else
-  DriveClass::Active_Click_With(action, object);
-#endif
 }
 
 /***********************************************************************************************
@@ -1279,14 +1257,10 @@ void UnitClass::Active_Click_With(ActionType action, CELL cell) {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (*this == UNIT_MAD && (IsDumping || Gold)) {
   } else {
     DriveClass::Active_Click_With(action, cell);
   }
-#else
-  DriveClass::Active_Click_With(action, cell);
-#endif
 }
 
 /***********************************************************************************************
@@ -1353,19 +1327,15 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
             Is_Something_Attached() && !Team.Is_Valid()) {
           order = MISSION_UNLOAD;
         } else {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
           if (*this == UNIT_MAD && Mission == MISSION_UNLOAD) {
             order = MISSION_UNLOAD;
           } else {
-#endif
             order = MISSION_GUARD;
             Assign_Target(TARGET_NONE);
             Assign_Destination(TARGET_NONE);
           }
         }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       }
-#endif
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
           (Mission != MISSION_NONE && (MissionControl[Mission].IsParalyzed ||
@@ -1919,7 +1889,6 @@ int UnitClass::Shape_Number(void) const {
   int tfacing = Dir_To_32(SecondaryFacing);
   DirType rotation = DIR_N;
 
-#ifdef FIXIT_ANTS
   /*
   **	This handles the ant case.
   */
@@ -1944,8 +1913,6 @@ int UnitClass::Shape_Number(void) const {
       }
     }
   } else {
-#endif
-
     /*
     **	Fetch the harvesting animation stage as appropriate.
     */
@@ -1965,7 +1932,6 @@ int UnitClass::Shape_Number(void) const {
       */
       if (IsDumping) {
         unsigned stage = Fetch_Stage();
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (*this == UNIT_MAD) {
           if (stage >= 8) {
             stage = 7;
@@ -1976,11 +1942,6 @@ int UnitClass::Shape_Number(void) const {
             stage = ARRAY_SIZE(Class->Harvester_Dump_List) - 1;
           shapenum = Class->Harvester_Dump_List[stage] + 96;
         }
-#else
-      if (stage >= ARRAY_SIZE(Class->Harvester_Dump_List))
-        stage = ARRAY_SIZE(Class->Harvester_Dump_List) - 1;
-      shapenum = Class->Harvester_Dump_List[stage] + 96;
-#endif
       } else {
         shapenum = UnitClass::BodyShape[facing];
 
@@ -2006,10 +1967,7 @@ int UnitClass::Shape_Number(void) const {
         }
       }
     }
-
-#ifdef FIXIT_ANTS
   }
-#endif
 
   /*
   **	The body of the V2 launcher indicates whether it is loaded with a
@@ -2090,24 +2048,12 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
       } else {
-        // #ifdef FIXIT_PHASETRANSPORT	//	checked - ajw 9/28/98
-        //				if (*this == UNIT_PHASE) {
-        //					shapenum = 38 + (Frame & 7);
-        //				} else {
-        //					shapenum = 32 + (Frame % 32);
-        //				}
-        // #else
         shapenum = 32 + (Frame % 32);
-// #endif
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (*this == UNIT_TESLATANK) {
           Techno_Draw_Object(shapefile, shapenum, x, y, window);
         } else {
           Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
         }
-#else
-        Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
-#endif
       }
     }
 
@@ -2124,11 +2070,9 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	is any firing animation in progress.
       */
       shapenum = TechnoClass::BodyShape[tfacing] + 32;
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
       if (*this == UNIT_PHASE) {
         shapenum += 6;
       }
-#endif
       /*
       **	A recoiling turret moves "backward" one pixel.
       */
@@ -2476,9 +2420,7 @@ int UnitClass::Mission_Unload(void) {
       break;
 
     case UNIT_APC:
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
     case UNIT_PHASE:
-#endif
       switch (Status) {
         case INITIAL_CHECK:
           dir = Desired_Load_Dir(nullptr, cell);
@@ -2675,7 +2617,6 @@ int UnitClass::Mission_Unload(void) {
       }
       break;
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
     case UNIT_MAD:
       if (!Gems && !IsDumping) {
         Gems = 1;
@@ -2690,7 +2631,6 @@ int UnitClass::Mission_Unload(void) {
         Set_Rate(Rule.OreDumpRate * 2);
         IsDumping = true;
 
-#if 1
         InfantryClass *crew =
             new InfantryClass(INFANTRY_C1, House->Class->House);
         if (crew != nullptr) crew->IsTechnician = true;
@@ -2711,7 +2651,6 @@ int UnitClass::Mission_Unload(void) {
             }
           }
         }
-#endif
       }
 
       if ((Arm && !Gold) || IronCurtainCountDown) {
@@ -2748,7 +2687,6 @@ int UnitClass::Mission_Unload(void) {
 
       Assign_Mission(MISSION_GUARD);
       break;
-#endif
     default:
       break;
   }
@@ -3468,7 +3406,6 @@ ActionType UnitClass::What_Action(ObjectClass const *object) const {
           action = ACTION_NO_DEPLOY;
         }
       } else {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         if (*this == UNIT_CHRONOTANK || *this == UNIT_MAD) {
           if (*this == UNIT_CHRONOTANK) {
             // If the chrono tank's counter is still charging up, don't allow
@@ -3481,7 +3418,6 @@ ActionType UnitClass::What_Action(ObjectClass const *object) const {
             }
           }
         } else {
-#endif
           /*
           **	All other units can "deploy" their passengers if they in-fact
           *have *	passengers and are a transport vehicle. Otherwise, they
@@ -3494,9 +3430,7 @@ ActionType UnitClass::What_Action(ObjectClass const *object) const {
           } else {
             action = ACTION_NONE;
           }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
         }
-#endif
       }
     }
   }
@@ -3533,9 +3467,7 @@ ActionType UnitClass::What_Action(ObjectClass const *object) const {
   */
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno() &&
       object->What_Am_I() == RTTI_VESSEL) {
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     if (*(VesselClass *)object != VESSEL_CARRIER) {
-#endif
       switch (((UnitClass *)this)
                   ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass *)object)) {
         case RADIO_ROGER:
@@ -3550,16 +3482,12 @@ ActionType UnitClass::What_Action(ObjectClass const *object) const {
           action = ACTION_NONE;
           break;
       }
-#ifdef FIXIT_CARRIER  //	checked - ajw 9/28/98
     }
-#endif
   }
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (*this == UNIT_MAD && (IsDumping || Gold)) {
     action = ACTION_NONE;
   }
-#endif
   /*
   **	If it doesn't know what to do with the object, then just
   **	say it can't move there.
@@ -3595,11 +3523,9 @@ ActionType UnitClass::What_Action(CELL cell) const {
       Class->IsToHarvest) {
     return (ACTION_HARVEST);
   }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (*this == UNIT_MAD && (IsDumping || Gold)) {
     action = ACTION_NOMOVE;
   }
-#endif
   return (action);
 }
 
@@ -3911,12 +3837,10 @@ int UnitClass::Pip_Count(void) const {
     return ((Gold + Gems) / 4);
   }
 
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
   if (*this == UNIT_CHRONOTANK) {
     int fulldur = ChronoTankDuration * TICKS_PER_MINUTE;
     return ((fulldur - MoebiusCountDown) / (fulldur / 5));
   }
-#endif
   return (0);
 }
 
@@ -4228,9 +4152,7 @@ BulletClass *UnitClass::Fire_At(TARGET target, int which) {
     bullet = DriveClass::Fire_At(target, which);
 
     if (bullet != nullptr) {
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
       if (Class->Type == UNIT_DEMOTRUCK && IsActive) delete this;
-#endif
       /*
       **	Possible reload timer set.
       */
@@ -5010,14 +4932,9 @@ int UnitClass::Mission_Guard_Area(void) {
   *doing anything. *	Such an APC should load up with infantry.
   */
   if (Session.Type != GAME_NORMAL &&
-#ifdef FIXIT_PHASETRANSPORT  //	checked - ajw 9/28/98
-      (*this == UNIT_APC || *this == UNIT_PHASE) &&
-#else
-      *this == UNIT_APC &&
-#endif
-      !Target_Legal(TarCom) && !In_Radio_Contact() &&
-      House->Which_Zone(this) != ZONE_NONE && !House->IsHuman) {
-
+      (*this == UNIT_APC || *this == UNIT_PHASE) && !Target_Legal(TarCom) &&
+      !In_Radio_Contact() && House->Which_Zone(this) != ZONE_NONE &&
+      !House->IsHuman) {
     int needed = Class->Max_Passengers() - How_Many();
     for (int index = 0; index < Infantry.Count(); index++) {
       if (needed == 0) break;

@@ -23,10 +23,6 @@
 
 #include "ra/function.h"
 
-#ifndef FIXIT_CSII
-#error FIXIT_CSII must be defined.
-#endif
-
 #include "IconList.h"
 #include "WolapiOb.h"
 #include "WolStrng.h"

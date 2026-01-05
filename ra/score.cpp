@@ -138,10 +138,8 @@ void Animate_Cursor(int pos, int ypos);
 void Animate_Score_Objs(void);
 void Cycle_Wait_Click(bool cycle = true);
 
-#ifdef FIXIT_SCORE_CRASH
 void Disable_Uncompressed_Shapes(void);
 void Enable_Uncompressed_Shapes(void);
-#endif  // FIXIT
 
 void const *Beepy6;
 int ControlQ;  // cheat key to skip past score/mapsel screens
@@ -425,12 +423,10 @@ void ScoreClass::Presentation(void) {
   static int const _bldgny[2] = {150, 150};
 
 #ifdef WIN32
-#ifdef FIXIT_SCORE_CRASH
   /*
   ** Fix for the score screen crash due to uncompressed shape buffer overflow.
   */
   Disable_Uncompressed_Shapes();
-#endif  // FIXIT
 #ifdef SEENBUF_COPY
   PseudoSeenBuff = new GraphicBufferClass(SeenBuff.Get_Width(),
                                           SeenBuff.Get_Height(), (void *)NULL);
@@ -937,12 +933,10 @@ void ScoreClass::Presentation(void) {
 #ifdef SEENBUF_COPY
   delete PseudoSeenBuff;
 #endif
-#ifdef FIXIT_SCORE_CRASH
   /*
   ** Fix for the score screen crash due to uncompressed shape buffer overflow.
   */
   Enable_Uncompressed_Shapes();
-#endif  // FIXIT
 
 #endif
 }

@@ -39,8 +39,8 @@
 
 #include "ra/expand.h"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
@@ -55,6 +55,7 @@
 #include "ra/profile.h"
 #include "ra/scenario.h"
 #include "ra/textbtn.h"
+#include "ra/wolstrng.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
@@ -62,10 +63,6 @@
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
-
-#ifdef FIXIT_VERSION_3
-#include "ra/wolstrng.h"
-#endif
 
 // #define CS_DEBUG
 
@@ -90,7 +87,7 @@ bool Expansion_CS_Present(void) {
   //	RawFileClass file("EXPAND.MIX");
   //	return(file.Is_Available());
 }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
+
 /***********************************************************************************************
  * Expansion_AM_Present -- Is the Aftermath expansion available? *
  *                                                                                             *
@@ -110,13 +107,11 @@ bool Expansion_AM_Present(void) {
   //	RawFileClass file("EXPAND2.MIX");
   //	return(file.Is_Available());
 }
-#endif
 
 const char* ExpandNames[] = {"SCG20EA", "SCG21EA", "SCG22EA", "SCG23EA",
                              "SCG24EA", "SCG26EA", "SCG27EA", "SCG28EA",
                              "SCU31EA", "SCU32EA", "SCU33EA", "SCU34EA",
                              "SCU35EA", "SCU36EA", "SCU37EA", "SCU38EA",
-#ifdef FIXIT_CSII                        //	checked - ajw 9/28/98
                              "SCG43EA",  // Harbor Reclamation
                              "SCG41EA",  // In the nick of time
                              "SCG40EA",  // Caught in the act
@@ -136,7 +131,6 @@ const char* ExpandNames[] = {"SCG20EA", "SCG21EA", "SCG22EA", "SCG23EA",
                              "SCU46EA",  // Brothers in Arms
                              "SCU47EA",  // Deus Ex Machina
                              "SCU48EA",  // Grunyev Revolution
-#endif
                              nullptr};
 
 const char* TestNames2[] = {
@@ -152,7 +146,6 @@ const char* XlatNames[] = {
     "Sibirien 3 - Wildnis", "Das Feld der Ehre", "Belagerung", "Mausefalle",
     "Teslas Erbe", "Soldat Volkov", "Die Spitze der Welt", "Paradoxe Gleichung",
     "Nukleare Eskalation",
-#ifdef FIXIT_CSII                     //	checked - ajw 9/28/98
     "Ein sicherer Hafen",             //	"SCG43EA",		// Harbor Reclamation
     "Zeitkritische Routine",          //	"SCG41EA",		// In the nick
                                       // of time
@@ -178,8 +171,6 @@ const char* XlatNames[] = {
     "Deus Ex Machina",              //	"SCU47EA",		// Deus Ex Machina
     "Die Replikanten von Grunyev",  //	"SCU48EA",		// Grunyev
                                     // Revolution
-
-#endif
     nullptr};
 
 #endif
@@ -202,7 +193,6 @@ const char* XlatNames[] = {
     "Jusqu'au Sommet du Monde",
     "Effets Secondaires",
     "Intensification nucléaire",
-#ifdef FIXIT_CSII              //	checked - ajw 9/28/98
     "Le vieux port",           //	"SCG43EA",		// Harbor Reclamation
     "Juste à temps",           //	"SCG41EA",		// In the nick of time
     "La main dans le sac",     //	"SCG40EA",		// Caught in the act
@@ -226,8 +216,6 @@ const char* XlatNames[] = {
     "La Révolution de Grunyev",  //	"SCU48EA",		// Grunyev
                                  // Revolution
 
-#endif
-
     nullptr,
 };
 
@@ -236,23 +224,15 @@ const char* XlatNames[] = {
 #if RESFACTOR == 1
 
 #define OPTION_WIDTH 236
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
-                   // #error Can never again build without WIN32 defined.
+// #error Can never again build without WIN32 defined.
 #define OPTION_HEIGHT 162
-#else
-#define OPTION_HEIGHT 162
-#endif
 #define OPTION_X ((320 - OPTION_WIDTH) / 2)
 #define OPTION_Y (200 - OPTION_HEIGHT) / 2
 
 #else
 
 #define OPTION_WIDTH 560
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 #define OPTION_HEIGHT 332
-#else
-#define OPTION_HEIGHT 300
-#endif
 #define OPTION_X ((640 - OPTION_WIDTH) / 2)
 #define OPTION_Y (400 - OPTION_HEIGHT) / 2
 #endif
@@ -354,12 +334,8 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
 #endif
 }
 
-#ifdef FIXIT_VERSION_3
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                                             // was called for Aftermath.
-#else
-bool Expansion_Dialog(void)
-#endif
 {
   GadgetClass* buttons = nullptr;
 
@@ -397,12 +373,7 @@ bool Expansion_Dialog(void)
   CCFileClass file;
   char buffer[128], buffer2[128];
   char* sbuffer = (char*)_ShapeBuffer;
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98 - Though disgusted.
   for (int index = 20; index < (36 + 18); index++) {
-#else
-  for (int index = 20; index < 36; index++) {
-#endif
-
 #ifndef CS_DEBUG
     strcpy(buffer, ExpandNames[index - 20]);
     strcpy(buffer2, ExpandNames[index - 20]);
@@ -417,7 +388,6 @@ bool Expansion_Dialog(void)
     Scen.Set_Scenario_Name(buffer);
     Scen.Scenario = index;
     file.Set_Name(buffer);
-#ifdef FIXIT_VERSION_3
     bool bOk;
     if (index < 36)
       bOk = bCounterstrike;
@@ -425,9 +395,6 @@ bool Expansion_Dialog(void)
       bOk = !bCounterstrike;
 
     if (bOk && file.Is_Available()) {
-#else   //	FIXIT_VERSION_3
-    if (file.Is_Available()) {
-#endif  //	FIXIT_VERSION_3
       EObjectClass* obj = new EObjectClass;
       switch (buffer[2]) {
         case 'G':
@@ -509,14 +476,10 @@ bool Expansion_Dialog(void)
       CCPalette.Set();
 
       Dialog_Box(OPTION_X, OPTION_Y, OPTION_WIDTH, OPTION_HEIGHT);
-#ifdef FIXIT_VERSION_3
       if (bCounterstrike)
         Draw_Caption(TXT_WOL_CS_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
       else
         Draw_Caption(TXT_WOL_AM_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
-#else
-      Draw_Caption(TXT_NEW_MISSIONS, OPTION_X, OPTION_Y, OPTION_WIDTH);
-#endif
       buttons->Draw_All();
       Show_Mouse();
     }

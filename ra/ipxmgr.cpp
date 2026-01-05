@@ -257,11 +257,9 @@ IPXManagerClass::~IPXManagerClass() {
     Free_RealMode_Mem();
     RealMemAllocd = 0;
   }
-#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
 #ifdef WIN32
 #ifndef WINSOCK_IPX
   Unload_IPX_Dll();
-#endif
 #endif
 #endif
 } /* end of ~IPXManagerClass */

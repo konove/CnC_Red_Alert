@@ -2809,7 +2809,6 @@ static BuildingTypeClass const Fence(
     (short const *)nullptr  // OVERLAPLIST:List of overlap cell offset.
 );
 
-#ifdef FIXIT_ANTS
 static BuildingTypeClass const ClassQueen(
     STRUCT_QUEEN,
     TXT_NONE,           // NAME:			Short name of the structure.
@@ -2900,7 +2899,6 @@ static BuildingTypeClass const ClassLarva2(
         List1,              // OCCUPYLIST:	List of active foundation squares.
     (short const *)nullptr  // OVERLAPLIST:List of overlap cell offset.
 );
-#endif
 void const *BuildingTypeClass::WarFactoryOverlay;
 void const *LightningShapes;
 
@@ -3125,11 +3123,9 @@ void BuildingTypeClass::Init_Heap(void) {
   new BuildingTypeClass(ClassBarrel);         // STRUCT_BARREL
   new BuildingTypeClass(ClassBarrel3);        // STRUCT_BARREL3
 
-#ifdef FIXIT_ANTS
   new BuildingTypeClass(ClassQueen);   // STRUCT_QUEEN
   new BuildingTypeClass(ClassLarva1);  // STRUCT_LARVA1
   new BuildingTypeClass(ClassLarva2);  // STRUCT_LARVA2
-#endif
 }
 
 /***********************************************************************************************
@@ -3174,9 +3170,7 @@ void BuildingTypeClass::One_Time() {
       {STRUCT_BARRACKS, BSTATE_IDLE, 0, 10, 3},
       {STRUCT_TENT, BSTATE_ACTIVE, 0, 10, 3},
       {STRUCT_TENT, BSTATE_IDLE, 0, 10, 3},
-#ifdef FIXIT_ANTS
       {STRUCT_QUEEN, BSTATE_IDLE, 0, 10, 3},
-#endif
       {STRUCT_CONST, BSTATE_ACTIVE, 0, 26, 3},
       {STRUCT_FAKECONST, BSTATE_ACTIVE, 0, 26, 3},
       {STRUCT_HELIPAD, BSTATE_ACTIVE, 0, 7, 4},

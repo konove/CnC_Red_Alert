@@ -231,14 +231,9 @@ class BuildingClass : public TechnoClass {
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
   BuildingClass(StructType type, HousesType house);
-#ifdef FIXIT_MULTI_SAVE
   BuildingClass(NoInitClass const &x)
       : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {
         };
-#else
-  BuildingClass(NoInitClass const &x)
-      : TechnoClass(x), Class(x), CountDown(x), PlacementDelay(x) {};
-#endif
   virtual ~BuildingClass(void);
   operator StructType(void) const { return Class->Type; };
 

@@ -419,13 +419,11 @@ GameType Select_MPlayer_Game(void) {
           if (Com_Scenario_Dialog(true)) {
             retval = GAME_SKIRMISH;
             process = false;
-#ifdef FIXIT_VERSION_3
             bAftermathMultiplayer = Is_Aftermath_Installed();
             //	ajw I'll bet this was needed before also...
             Session.ScenarioIsOfficial =
                 Session.Scenarios[Session.Options.ScenarioIndex]
                     ->Get_Official();
-#endif
           } else {
             buttons[curbutton]->IsPressed = false;
             Session.Type = GAME_NORMAL;
@@ -695,16 +693,9 @@ static void Garble_Message(char *buf) {
  * HISTORY:                                                                *
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
 int Surrender_Dialog(int text) { return Surrender_Dialog(Text_String(text)); }
-#endif
 
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
-int Surrender_Dialog(const char *text)
-#else
-int Surrender_Dialog(int text)
-#endif
-{
+int Surrender_Dialog(const char *text) {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -802,15 +793,10 @@ int Surrender_Dialog(int text)
       //...............................................................
       //	Draw the captions
       //...............................................................
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
+      // Stalemate games.
       Fancy_Text_Print(text, D_DIALOG_CX, D_DIALOG_Y + D_TOPMARGIN,
                        GadgetClass::Get_Color_Scheme(), TBLACK,
                        TPF_CENTER | TPF_TEXT);
-#else
-      Fancy_Text_Print(Text_String(text), D_DIALOG_CX, D_DIALOG_Y + D_TOPMARGIN,
-                       GadgetClass::Get_Color_Scheme(), TBLACK,
-                       TPF_CENTER | TPF_TEXT);
-#endif
 
       //..................................................................
       //	Redraw the buttons
