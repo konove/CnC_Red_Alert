@@ -45,10 +45,10 @@
 
 #include "ra/loaddlg.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <charconv>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 
 #include "port/ex_string.h"
@@ -58,24 +58,24 @@
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/externs.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/msgbox.h"
+#include "ra/palette.h"
 #include "ra/readline.h"
 #include "ra/saveload.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
-#include "ra/ww_audio.h"
-#include "sdllib/include/file.h"
-#include "sdllib/include/misc.h"
-#include "ra/ftimer.h"
-#include "ra/gadget.h"
-#include "ra/jshell.h"
-#include "ra/palette.h"
 #include "ra/theme.h"
 #include "ra/toggle.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/file.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
@@ -209,7 +209,7 @@ int LoadOptionsClass::Process(void) {
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[DESCRIP_MAX] = {0};  // save-game description
-  char fname[13 + _MAX_EXT];           // for generating filename to delete
+  char fname[_MAX_FNAME + _MAX_EXT];   // for generating filename to delete
   int rc;                              // return code
 
   /*

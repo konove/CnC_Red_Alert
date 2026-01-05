@@ -37,7 +37,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/rotbmp.h"
+#include "jshell/rotbmp.h"
 
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/wwstd.h"

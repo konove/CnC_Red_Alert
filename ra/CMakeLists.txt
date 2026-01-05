@@ -1,18 +1,3 @@
-add_library(jshell STATIC)
-
-target_sources(jshell PRIVATE
-        rotbmp.cpp
-        sprite.cpp
-)
-
-target_sources(jshell PUBLIC
-        FILE_SET HEADERS
-        BASE_DIRS ${CMAKE_SOURCE_DIR}
-        FILES rotbmp.h
-)
-
-target_link_libraries(jshell sdllib port)
-
 add_library(tech STATIC
         b64pipe.cpp
         b64straw.cpp

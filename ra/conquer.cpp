@@ -81,6 +81,7 @@
 #include <filesystem>
 #include <string>
 
+#include "jshell/rotbmp.h"
 #include "port/ex_string.h"
 #include "ra/2keyfbuf.h"
 #include "ra/aircraft.h"
@@ -129,7 +130,6 @@
 #include "ra/queue.h"
 #include "ra/rect.h"
 #include "ra/rgb.h"
-#include "ra/rotbmp.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
@@ -158,7 +158,7 @@
 #include "sdllib/include/wwstd.h"
 #include "winvq/vqa32/vqaplay.h"
 
-#ifdef WOLAPI_INTEGRATION
+#if defined(WOLAPI_INTEGRATION)
 // #include "WolDebug.h"
 #include "WolStrng.h"
 #include "WolapiOb.h"

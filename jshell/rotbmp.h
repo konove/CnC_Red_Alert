@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_RA_ROTBMP_H_
-#define CNC_RED_ALERT_RA_ROTBMP_H_
+#ifndef CNC_RED_ALERT_JSHELL_ROTBMP_H_
+#define CNC_RED_ALERT_JSHELL_ROTBMP_H_
 
 #include "sdllib/include/gbuffer.h"
 
@@ -26,8 +26,6 @@
 #define MAKE_PTR2(vp, x, y)   \
   (char *)(vp->Get_Offset() + \
            (((y) << 1) * (vp->Get_Width() + vp->Get_XAdd())) + ((x) << 1))
-
-// list of 256 sines
 
 inline long Cos256[] = {
     128,  127,  127,  127,  127,  127,  126,  126,  125,  124,  124,  123,
@@ -81,4 +79,4 @@ inline long Sin256[] = {
 int Rotate_Bitmap(GraphicViewPortClass *srcvp, GraphicViewPortClass *destvp,
                   int angle);
 
-#endif  // CNC_RED_ALERT_RA_ROTBMP_H_
+#endif  // CNC_RED_ALERT_JSHELL_ROTBMP_H_

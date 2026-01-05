@@ -57,6 +57,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 add_subdirectory(port)
 add_subdirectory(sdllib)
 add_subdirectory(winvq)
+add_subdirectory(jshell)
 
 add_subdirectory(ra)
 add_subdirectory(td)
