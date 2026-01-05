@@ -47,6 +47,7 @@
 #include "ra/display.h"
 #include "ra/face.h"
 #include "ra/fixed.h"
+#include "ra/coord.h"
 
 /***********************************************************************************************
  * FlyClass::Physics -- Performs vector physics (movement). *

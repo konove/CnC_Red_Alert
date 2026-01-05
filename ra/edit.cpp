@@ -46,12 +46,19 @@
 
 #include "ra/edit.h"
 
+#include <ctype.h>
+#include <string.h>
+
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "sdllib/include/font.h"
+#include "ra/jshell.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * EditClass::EditClass -- Normal constructor for edit class object. *

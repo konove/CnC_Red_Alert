@@ -40,11 +40,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "fuse.h"
+#include "ra/fuse.h"
 
 #include <algorithm>
 
-#include "ra/coord.h"
+#include "ra/abstract.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 

@@ -43,6 +43,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * TextLableClass::TextLabelClass -- Constructor *

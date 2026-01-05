@@ -16,10 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/function.h"
-
 #ifdef MCIMPEG
 #include "ra/mcimovie.h"
+
 #include <memory.h>
 
 /****************************************************************************

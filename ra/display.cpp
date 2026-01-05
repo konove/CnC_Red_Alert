@@ -102,6 +102,10 @@
 
 #include "ra/display.h"
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <algorithm>
 
 #include "ra/aircraft.h"
@@ -117,6 +121,35 @@
 #include "ra/xstraw.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/misc.h"
+#include "ra/abstract.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/coord.h"
+#include "ra/event.h"
+#include "ra/foot.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/infantry.h"
+#include "ra/logic.h"
+#include "ra/mouse.h"
+#include "ra/msglist.h"
+#include "ra/palette.h"
+#include "ra/queue.h"
+#include "ra/rawfile.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/target.h"
+#include "ra/trigtype.h"
+#include "ra/unit.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 
 /*
 **	These layer control elements are used to group the displayable objects

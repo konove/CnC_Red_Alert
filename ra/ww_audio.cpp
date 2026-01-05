@@ -49,12 +49,14 @@
 #include <filesystem>
 
 #include "port/ex_string.h"
+#include "ra/abstract.h"
 #include "ra/ccfile.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/fixed.h"
-#include "ra/function.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/inline.h"

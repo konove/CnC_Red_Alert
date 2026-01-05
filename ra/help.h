@@ -41,6 +41,13 @@
 #define HELP_H
 
 #include "ra/tab.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/wwstd.h"
 
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 

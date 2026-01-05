@@ -85,11 +85,12 @@
 #include "ra/2keyfbuf.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
-#include "ra/ccdde.h"
 #include "ra/ccfile.h"
 #include "ra/ccptr.h"
 #include "ra/cdfile.h"
 #include "ra/compat.h"
+#include "ra/const.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/event.h"
@@ -98,6 +99,8 @@
 #include "ra/filepcx.h"
 #include "ra/fixed.h"
 #include "ra/foot.h"
+#include "ra/ftimer.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -142,6 +145,7 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
+#include "sdllib/include/bitmap.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
@@ -153,12 +157,6 @@
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
 #include "winvq/vqa32/vqaplay.h"
-
-#ifdef WINSOCK_IPX
-#include "ra/wsproto.h"
-#else  // WINSOCK_IPX
-#include "ra/tcpip.h"
-#endif  // WINSOCK_IPX
 
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"

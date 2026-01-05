@@ -40,6 +40,8 @@
 #ifndef EDIT_H
 #define EDIT_H
 #include "ra/control.h"
+#include "ra/defines.h"
+#include "sdllib/include/keyboard.h"
 
 class EditClass : public ControlClass {
  public:

@@ -51,6 +51,8 @@
 
 #include "ra/event.h"
 
+#include <stdio.h>
+
 #include "ra/anim.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
@@ -60,6 +62,29 @@
 #include "ra/team.h"
 #include "ra/vessel.h"
 #include "ra/ww_audio.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/ftimer.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/msglist.h"
+#include "ra/object.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/techno.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/vector.h"
+#include "sdllib/include/gbuffer.h"
 #ifdef _WIN32
 #include "ra/ccdde.h"
 #endif  // WIN32

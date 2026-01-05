@@ -40,6 +40,7 @@
 #ifndef INI_H
 #define INI_H
 
+#include <stdlib.h>
 #include <cstring>
 
 #include "ra/crc.h"
@@ -51,6 +52,7 @@
 #include "ra/search.h"
 #include "ra/straw.h"
 #include "ra/wwfile.h"
+#include "ra/defines.h"
 
 /*
 **	This is an INI database handler class. It handles a database with a disk

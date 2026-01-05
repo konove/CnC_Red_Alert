@@ -40,10 +40,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/vortex.h"
-#include <cstdarg>
-
 #ifdef CHEAT_KEYS
 
 static CDTimerClass<SystemTimerClass> DebugTimer;

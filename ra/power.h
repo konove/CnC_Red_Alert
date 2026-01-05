@@ -41,6 +41,13 @@
 #define POWER_H
 
 #include "ra/radar.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "sdllib/include/keyboard.h"
 
 class PowerClass : public RadarClass {
  public:

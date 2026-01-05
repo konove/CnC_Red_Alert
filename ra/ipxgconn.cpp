@@ -42,10 +42,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/ipxgconn.h"
 
-#include <cstdio>
 #include <cstring>
 
-#include "ra/function.h"
+#include "ra/combuf.h"
 
 /***************************************************************************
  * IPXGlobalConnClass::IPXGlobalConnClass -- class constructor             *

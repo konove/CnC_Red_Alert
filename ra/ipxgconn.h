@@ -80,6 +80,9 @@
 #define IPXGLOBALCONN_H
 
 #include "ra/ipxconn.h"
+#include "ra/connect.h"
+#include "ra/ipx.h"
+#include "ra/ipxaddr.h"
 
 /*
 ********************************** Defines **********************************

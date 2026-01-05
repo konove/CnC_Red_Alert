@@ -46,6 +46,8 @@
 
 #include "ra/jshell.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <cstdarg>
 #include <cstring>
 
@@ -55,6 +57,9 @@
 #include "ra/wwfile.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
+#include "ra/rgb.h"
+#include "sdllib/include/tile.h"
+#include "sdllib/include/ww_win.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

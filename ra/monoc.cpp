@@ -70,7 +70,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "ra/function.h"
 #include "ra/inline.h"
 
 extern void output(short port, short data);

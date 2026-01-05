@@ -43,6 +43,7 @@
 #define TXTLABEL_H
 
 #include "ra/gadget.h"
+#include "ra/defines.h"
 
 class TextLabelClass : public GadgetClass {
  public:

@@ -53,6 +53,7 @@
 #include "ra/straw.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "ra/noinit.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated

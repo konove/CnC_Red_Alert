@@ -55,13 +55,24 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stddef.h>
 #include <filesystem>
+#include <string>
 
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/type.h"
 #include "ra/vessel.h"
+#include "port/ex_string.h"
+#include "ra/ccptr.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
 
 // Submarine
 static VesselTypeClass const VesselSubmarine(

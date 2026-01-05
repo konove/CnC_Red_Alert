@@ -45,6 +45,10 @@
 
 #include "ra/externs.h"
 #include "ra/inline.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/goptions.h"
+#include "sdllib/include/gbuffer.h"
 
 #ifdef WIN32
 #define SCROLL_DELAY 1

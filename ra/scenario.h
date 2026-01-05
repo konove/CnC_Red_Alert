@@ -45,6 +45,7 @@
 #include "ra/ftimer.h"
 #include "ra/jshell.h"
 #include "ra/random.h"
+#include "ra/fixed.h"
 
 /*
 **	This class holds the information about the current game being played.

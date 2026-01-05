@@ -49,8 +49,6 @@
 #define TYPE_STRING 7
 #define TYPE_CHUNK 20
 
-class PacketClass;
-
 class FieldClass {
  public:
   friend class PacketClass;
@@ -58,7 +56,7 @@ class FieldClass {
   // Define constructors to be able to create all the different kinds
   // of fields.
   //
-  FieldClass(void){};
+  FieldClass(void) {};
   FieldClass(char const *id, char data);
   FieldClass(char const *id, unsigned char data);
   FieldClass(char const *id, short data);

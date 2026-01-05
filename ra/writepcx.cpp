@@ -39,6 +39,9 @@
 #include <cstring>
 
 #include "ra/filepcx.h"
+#include "ra/palette.h"
+#include "ra/wwfile.h"
+#include "sdllib/include/gbuffer.h"
 
 static void Write_Pcx_ScanLine(FileClass &file, int scansize, char *ptr);
 

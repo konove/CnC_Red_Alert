@@ -135,6 +135,7 @@
 #include "ra/ipxgconn.h"
 #include "ra/ipxaddr.h"
 #include "ra/connmgr.h"
+#include "ra/ipx.h"
 
 /*
 ********************************** Defines **********************************

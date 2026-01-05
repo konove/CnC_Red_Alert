@@ -43,6 +43,12 @@
 #include "ra/msgbox.h"
 #include "sdllib/include/ww_audio.h"
 #include "winvq/vqa32/vqaplay.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/palette.h"
+#include "ra/special.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 VQAHandle* Open_Movie(char* name);
 VQAHandle* Open_Movie(char* name) {

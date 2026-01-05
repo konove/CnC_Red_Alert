@@ -150,7 +150,11 @@
 
 #include "ra/house.h"
 
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
 #include <algorithm>
+#include <new>
 
 #include "ra/aircraft.h"
 #include "ra/externs.h"
@@ -163,6 +167,38 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
+#include "port/ex_string.h"
+#include "ra/abstract.h"
+#include "ra/base.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
+#include "ra/display.h"
+#include "ra/drive.h"
+#include "ra/face.h"
+#include "ra/factory.h"
+#include "ra/foot.h"
+#include "ra/goptions.h"
+#include "ra/infantry.h"
+#include "ra/ipxmgr.h"
+#include "ra/logic.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/msglist.h"
+#include "ra/radar.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/sidebar.h"
+#include "ra/special.h"
+#include "ra/teamtype.h"
+#include "ra/techno.h"
+#include "ra/tevent.h"
+#include "ra/trigtype.h"
+#include "ra/unit.h"
+#include "ra/vector.h"
+#include "sdllib/include/gbuffer.h"
 // #include "WolDebug.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
@@ -2282,15 +2318,6 @@ void HouseClass::Make_Ally(HousesType house) {
       }
 #endif  // TEN
 
-#if (MPATH)
-      //
-      // Notify the MPATH server of the new alliance
-      //
-      // if (this == PlayerPtr && hptr != nullptr && Session.Type == GAME_MPATH)
-      // { Send_MPATH_Alliance(hptr->IniName, 1);
-      //}
-#endif  // MPATH
-
       Map.Flag_To_Redraw(false);
     }
   }
@@ -2356,15 +2383,6 @@ void HouseClass::Make_Enemy(HousesType house) {
         Send_TEN_Alliance(enemy->IniName, 0);
       }
 #endif  // TEN
-
-#if (MPATH)
-      //
-      // Notify the MPATH server of the broken alliance
-      //
-      // if (this == PlayerPtr && enemy != nullptr && Session.Type ==
-      // GAME_MPATH) { Send_MPATH_Alliance(enemy->IniName, 0);
-      //}
-#endif  // MPATH
     }
   }
 }

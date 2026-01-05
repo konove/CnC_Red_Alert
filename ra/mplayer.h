@@ -3,6 +3,8 @@
 
 #include "ra/list.h"
 #include "ra/session.h"
+#include "ra/defines.h"
+#include "ra/vector.h"
 
 GameType Select_MPlayer_Game(void);
 void Clear_Listbox(ListClass *list);

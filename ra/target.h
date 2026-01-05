@@ -44,6 +44,7 @@
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/object.h"
+#include "ra/noinit.h"
 
 class AbstractTypeClass;
 class AircraftClass;

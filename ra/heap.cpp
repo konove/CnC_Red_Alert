@@ -64,7 +64,11 @@
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
-#include "ra/function.h"
+#include "ra/factory.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/noinit.h"
+#include "ra/overlay.h"
 #include "ra/smudge.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
@@ -72,8 +76,10 @@
 #include "ra/terrain.h"
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
+#include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
+#include "ra/warhead.h"
 #include "ra/weapon.h"
 
 /***********************************************************************************************

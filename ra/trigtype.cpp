@@ -59,7 +59,17 @@
 
 #include "ra/trigtype.h"
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "ra/externs.h"
+#include "port/ex_string.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *

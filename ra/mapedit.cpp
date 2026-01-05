@@ -58,8 +58,6 @@
  *   MapEditClass::Verify_House -- sees if given house can own given obj   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /*
@@ -784,7 +782,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
         ** Now set the new Home cell
         */
         //			Scen.Waypoint[WAYPT_HOME] =
-        //Coord_Cell(TacticalCoord);
+        // Coord_Cell(TacticalCoord);
         //			(*this)[TacticalCoord].IsWaypoint = 1;
         //			Flag_Cell(Coord_Cell(TacticalCoord));
         Scen.Waypoint[WAYPT_HOME] = CurrentCell;
@@ -911,7 +909,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
       if (CurrentCell != 0) {
         waypt_idx = (Keyboard->To_ASCII((KeyNumType)(input & 0xff)) - KA_1);
         //				waypt_idx = (KN_To_KA(input & 0xff) -
-        //KA_1);
+        // KA_1);
         house = (HousesType)(HOUSE_MULTI1 + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
           HouseClass::As_Pointer(house)->Flag_Attach(CurrentCell, true);
@@ -1165,7 +1163,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
         }
       }
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
-      //Buttons, POPUP_FIRST);
+      // Buttons, POPUP_FIRST);
       HidPage.Clear();
       Buttons->Flag_List_To_Redraw();
       Flag_To_Redraw(true);
@@ -1182,14 +1180,14 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
       //
       //			/*
       //			**	Convert input value into a house value;
-      //assume HOUSE_GOOD is 0
+      // assume HOUSE_GOOD is 0
       //			*/
       //			house = (HousesType)( (input & (~KN_BUTTON)) -
-      //POPUP_FIRST);
+      // POPUP_FIRST);
       //
       //			/*
       //			**	If that house doesn't own this object,
-      //try to transfer it
+      // try to transfer it
       //			*/
       //			if (CurrentObject[0]->Owner()!=house) {
       //				if (Change_House(house)) {
@@ -1197,8 +1195,9 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
       //				}
       //			}
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
-      //Buttons, POPUP_FIRST); 			HidPage.Clear(); 			Flag_To_Redraw(true); 			input =
-      //KN_NONE; 			break;
+      // Buttons, POPUP_FIRST); 			HidPage.Clear();
+      // Flag_To_Redraw(true); 			input = KN_NONE;
+      // break;
 
     case POPUP_SELLABLE | KN_BUTTON:
       if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
@@ -1264,7 +1263,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
         strength = CurrentObject[0]->Class_Of().MaxStrength *
                    fixed(HealthGauge->Get_Value(), 256);
         //				strength =
-        //Fixed_To_Cardinal((unsigned)CurrentObject[0]->Class_Of().MaxStrength,
+        // Fixed_To_Cardinal((unsigned)CurrentObject[0]->Class_Of().MaxStrength,
         //(unsigned)HealthGauge->Get_Value());
 
         /*
@@ -1831,7 +1830,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
     **	Break if this is a valid house
     */
     //		if (HouseClass::As_Pointer(curhouse) && Verify_House(curhouse,
-    //objtype)) {
+    // objtype)) {
     break;
     //		}
   }
@@ -1984,7 +1983,7 @@ bool MapEditClass::Get_Waypoint_Name(char wayptname[]) {
       if (display) {
         Dialog_Box(D_DIALOG_X, D_DIALOG_Y, D_DIALOG_W, D_DIALOG_H);
         //				Draw_Caption(caption, D_DIALOG_X,
-        //D_DIALOG_Y, D_DIALOG_W);
+        // D_DIALOG_Y, D_DIALOG_W);
       }
 
       /*

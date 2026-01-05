@@ -57,16 +57,11 @@
 
 #ifdef WIN32
 
-#include "ra/function.h"
 #include "ra/tcpip.h"
 
 #ifdef _WIN32
 typedef int socklen_t;
 #else
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <unistd.h>
 
 #define closesocket close
 #define INVALID_SOCKET -1

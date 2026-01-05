@@ -42,6 +42,11 @@
 
 #include "ra/list.h"
 #include "ra/edit.h"
+#include "ra/control.h"
+#include "ra/defines.h"
+#include "ra/link.h"
+#include "ra/shapebtn.h"
+#include "sdllib/include/keyboard.h"
 
 class DropListClass : public EditClass {
  public:

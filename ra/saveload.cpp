@@ -50,39 +50,78 @@
 
 #include "ra/saveload.h"
 
+#include <cassert>
+#include <cctype>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <new>
+
+#include "port/ex_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/base.h"
+#include "ra/bfiofile.h"
+#include "ra/blowfish.h"
 #include "ra/blowpipe.h"
 #include "ra/blwstraw.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/carry.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
+#include "ra/factory.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/layer.h"
+#include "ra/logic.h"
 #include "ra/lzopipe.h"
 #include "ra/lzostraw.h"
+#include "ra/mouse.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/overlay.h"
+#include "ra/palette.h"
+#include "ra/rawfile.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/score.h"
 #include "ra/session.h"
 #include "ra/shapipe.h"
 #include "ra/shastraw.h"
+#include "ra/smudge.h"
+#include "ra/special.h"
 #include "ra/startup.h"
+#include "ra/target.h"
 #include "ra/team.h"
+#include "ra/teamtype.h"
+#include "ra/template.h"
 #include "ra/terrain.h"
+#include "ra/theme.h"
 #include "ra/trigger.h"
+#include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vector.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/xpipe.h"
 #include "ra/xstraw.h"
 
-#ifdef WIN32
-#include "ra/tcpip.h"
-#include "ra/ccdde.h"
-
-// #include "WolDebug.h"
-
 extern bool SpawnedFromWChat;
-#endif
 
-// #define	SAVE_BLOCK_SIZE	512
 #define SAVE_BLOCK_SIZE 4096
-// #define	SAVE_BLOCK_SIZE	1024
 
 /*
 ********************************** Defines **********************************

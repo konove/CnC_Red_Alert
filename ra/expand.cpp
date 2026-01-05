@@ -39,6 +39,9 @@
 
 #include "ra/expand.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #include "ra/conquer.h"
 #include "ra/dialog.h"
 #include "ra/init.h"
@@ -47,6 +50,18 @@
 #include "ra/profile.h"
 #include "ra/textbtn.h"
 #include "sdllib/include/misc.h"
+#include "ra/ccfile.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
+#include "ra/palette.h"
+#include "ra/scenario.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef FIXIT_VERSION_3
 #include "ra/wolstrng.h"

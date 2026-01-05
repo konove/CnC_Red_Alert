@@ -54,8 +54,6 @@
  *   MapEditClass::Toggle_House -- toggles current placement object's house*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************
@@ -379,7 +377,7 @@ int MapEditClass::Placement_Dialog(void) {
                BOXSTYLE_DOWN, false);
       curobj->Display(WinW / 2, WinH >> 1, WINDOW_EDITOR, LastHouse);
       //			curobj->Display(WinW<<2, WinH>>1, WINDOW_EDITOR,
-      //LastHouse);
+      // LastHouse);
 
       /*
       **	Erase the grid
@@ -794,8 +792,8 @@ int MapEditClass::Place_Object(void) {
   ObjectClass *occupier;     // occupying object
   TemplateType save_ttype;   // for saving cell's TType
   unsigned char save_ticon;  // for saving cell's TIcon
-                             //	BaseNodeClass node;						// for
-                             //adding to an AI Base
+                             //	BaseNodeClass node;
+                             //// for adding to an AI Base
 
   /*
   **	Placing a template:
@@ -982,7 +980,8 @@ int MapEditClass::Place_Object(void) {
     */
     if (BaseBuilding && PendingObject->What_Am_I() == RTTI_BUILDINGTYPE) {
       //			node.Type = ((BuildingTypeClass
-      //*)PendingObject)->Type; 			node.Cell = Coord_Cell(PendingObjectPtr->Coord);
+      //*)PendingObject)->Type; 			node.Cell =
+      // Coord_Cell(PendingObjectPtr->Coord);
       Base.Nodes.Add(BaseNodeClass(((BuildingTypeClass *)PendingObject)->Type,
                                    Coord_Cell(PendingObjectPtr->Coord)));
     }

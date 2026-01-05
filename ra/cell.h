@@ -43,7 +43,7 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/foot.h"
-#include "ra/house.h"
+#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/pipe.h"
 #include "ra/straw.h"
@@ -205,8 +205,8 @@ class CellClass {
       unsigned SE : 1;
       unsigned Vehicle : 1;   // Reserved for vehicle occupation.
       unsigned Monolith : 1;  // Some immovable blockage is in cell.
-      unsigned
-          Building : 1;  // A building of some time (usually blocks movement).
+      unsigned Building
+          : 1;  // A building of some time (usually blocks movement).
     } Occupy;
     unsigned char Composite;
   } Flag;

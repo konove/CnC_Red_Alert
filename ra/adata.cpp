@@ -47,6 +47,7 @@
 
 #include "ra/adata.h"
 
+#include <stddef.h>
 #include <filesystem>
 
 #include "ra/conquer.h"

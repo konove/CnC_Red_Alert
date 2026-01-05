@@ -58,9 +58,19 @@
 
 #include "ra/factory.h"
 
+#include <assert.h>
 #include <algorithm>
 
 #include "ra/externs.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/fixed.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/rules.h"
+#include "ra/techno.h"
 
 /***********************************************************************************************
  * FactoryClass::FactoryClass -- Default constructor for factory objects. *

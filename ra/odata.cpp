@@ -56,12 +56,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstddef>
 #include <filesystem>
 #include <string>
 
-#include "ra/function.h"
+#include "port/ex_string.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/heap.h"
+#include "ra/house.h"
 #include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/overlay.h"
 #include "ra/type.h"
+#include "sdllib/include/shape.h"
 
 static OverlayTypeClass const Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.
@@ -699,9 +712,9 @@ short const *OverlayTypeClass::Occupy_List(bool) const {
  *=========================================================================*/
 unsigned char *OverlayTypeClass::Radar_Icon(int data) const {
   unsigned char *icon =
-      (unsigned char *)Get_Radar_Data();     // Get pointer to radar icons
+      (unsigned char *)Get_Radar_Data();        // Get pointer to radar icons
   if (icon != nullptr) icon += (data * 9) + 2;  // move icon ptr to correct icon
-  return (icon);                             // Return the correct icon
+  return (icon);                                // Return the correct icon
 }
 
 #ifdef SCENARIO_EDITOR

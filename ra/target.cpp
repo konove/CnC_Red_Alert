@@ -63,15 +63,15 @@
 
 #include "ra/target.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/cell.h"
+#include "ra/coord.h"
 #include "ra/externs.h"
-#include "ra/function.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
@@ -162,7 +162,8 @@ TriggerClass *As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass *As_Team(TARGET target) {
-  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr);
+  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target))
+                                 : nullptr);
 }
 
 /***********************************************************************************************
@@ -362,7 +363,8 @@ ObjectClass *As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass *As_Unit(TARGET target) {
-  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr);
+  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target))
+                                 : nullptr);
 }
 
 /***********************************************************************************************

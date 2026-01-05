@@ -41,6 +41,8 @@
 #define RULES_H
 
 #include "ra/ccini.h"
+#include "ra/defines.h"
+#include "ra/fixed.h"
 
 class DifficultyClass {
  public:

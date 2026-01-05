@@ -76,6 +76,11 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_audio.h"
+#include "ra/ccfile.h"
+#include "ra/ini.h"
+#include "ra/jshell.h"
+#include "ra/rgb.h"
+#include "ra/theme.h"
 
 #ifdef WIN32
 char const* const OptionsClass::HotkeyName = "WinHotkeys";

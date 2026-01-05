@@ -40,7 +40,12 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include <stdint.h>
+#include <string.h>
+
 #include "ra/special.h"
+#include "ra/defines.h"
+#include "ra/target.h"
 
 /*
 **	This event class is used to contain all external game events (things

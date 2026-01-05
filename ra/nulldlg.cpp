@@ -51,6 +51,10 @@
 
 #include "ra/nulldlg.h"
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <algorithm>
 #include <cstdarg>
 
@@ -76,6 +80,39 @@
 #include "sdllib/include/font.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_audio.h"
+#include "port/ex_string.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
+#include "ra/conquer.h"
+#include "ra/event.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/house.h"
+#include "ra/ini.h"
+#include "ra/jshell.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
+#include "ra/msglist.h"
+#include "ra/palette.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/slider.h"
+#include "ra/special.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/vector.h"
+#include "ra/version.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef FIXIT_RANDOM_GAME
 #include <ctime>
@@ -83,6 +120,7 @@
 #ifdef WIN32
 #include "sdllib/include/wincomm.h"
 #include "sdllib/include/modemreg.h"
+
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 #endif                                             // WIN32
 
@@ -3297,10 +3335,6 @@ int Com_Scenario_Dialog(bool skirmish) {
   }
   cancelbtn.Add_Tail(*commands);
   if (!skirmish && loadfile.Is_Available()) {
-#ifdef FIXIT_MULTI_SAVE
-    // Load button added only when other player has arrived
-    // loadbtn.Add_Tail(*commands);
-#endif
   } else {
     cancelbtn.X = loadbtn.X;
   }

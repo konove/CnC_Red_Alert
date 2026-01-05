@@ -40,25 +40,36 @@
 #include "ra/menus.h"
 
 #include <algorithm>
+#include <cctype>
 
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/egos.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/goptions.h"
 #include "ra/init.h"
-#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/palette.h"
+#include "ra/rndstraw.h"
 #include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/version.h"
 #include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
-
-#ifdef WIN32
-#include "ra/ccdde.h"
-#else  // WIN32
-#include <sys\timeb.h>
-#endif
 
 /*****************************
 **	Function prototypes

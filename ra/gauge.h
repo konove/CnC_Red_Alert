@@ -40,6 +40,7 @@
 #ifndef GAUGE_H
 #define GAUGE_H
 #include "ra/control.h"
+#include "sdllib/include/keyboard.h"
 
 class GaugeClass : public ControlClass {
  public:

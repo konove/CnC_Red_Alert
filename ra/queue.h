@@ -46,9 +46,10 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include "ra/mission.h"
-#include "ra/target.h"
+#include <cstdint>
+
 #include "ra/defines.h"
+#include "ra/target.h"
 
 #pragma warn - inl
 

@@ -40,6 +40,8 @@
 #define WSPUDP_H
 
 #include "ra/wsproto.h"
+#include "ra/vector.h"
+#include "sdllib/include/net_select.h"
 
 /*
 ** Class to allow access to UDP specific portions of the Winsock interface.

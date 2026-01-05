@@ -69,6 +69,7 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "ra/version.h"
 
 bool RedrawOptionsMenu;
 

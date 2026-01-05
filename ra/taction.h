@@ -41,10 +41,11 @@
 #define ACTION_H
 
 #include "port/ex_string.h"
+#include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
+#include "ra/noinit.h"
 #include "ra/object.h"
-#include "ra/target.h"
 #include "ra/teamtype.h"
 
 typedef enum TActionType {
@@ -128,7 +129,7 @@ struct TActionClass {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
   };
-  TActionClass(NoInitClass const& x) : Team(x), Trigger(x){};
+  TActionClass(NoInitClass const& x) : Team(x), Trigger(x) {};
 
   void Detach(TARGET target);
   void Code_Pointers(void);

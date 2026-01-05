@@ -62,6 +62,9 @@
 #include "ra/gadget.h"
 
 #include "ra/externs.h"
+#include "ra/control.h"
+#include "ra/jshell.h"
+#include "sdllib/include/ww_mouse.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".

@@ -40,14 +40,26 @@
 #ifndef HOUSE_H
 #define HOUSE_H
 
+#include <cstddef>
+
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
 #include "ra/heap.h"
+#include "ra/jshell.h"
+#include "ra/monoc.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
 #include "ra/region.h"
+#include "ra/straw.h"
 #include "ra/super.h"
+#include "ra/target.h"
 #include "ra/type.h"
 #include "ra/utracker.h"
-#include "ra/vector.h"
 
-class TriggerClass;
 class FootClass;
 class FactoryClass;
 
@@ -63,7 +75,7 @@ class FactoryClass;
 class HouseStaticClass {
  public:
   HouseStaticClass(void);
-  HouseStaticClass(NoInitClass const &){};
+  HouseStaticClass(NoInitClass const &) {};
 
   /*
   **	This value indicates the degree of smartness to assign to this house.
@@ -648,7 +660,7 @@ class HouseClass {
         SpeakAttackDelay(x),
         SpeakPowerDelay(x),
         SpeakMoneyDelay(x),
-        SpeakMaxedDelay(x){};
+        SpeakMaxedDelay(x) {};
   ~HouseClass(void);
   operator HousesType(void) const;
 
@@ -882,8 +894,8 @@ class HouseClass {
     UrgencyType Urgency;   // The urgency of the build request.
     StructType Structure;  // The type of building to produce.
 
-    BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s){};
-    BuildChoiceClass(NoInitClass const &){};
+    BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {};
+    BuildChoiceClass(NoInitClass const &) {};
     int Save(Pipe &) const { return (true); };
     int Load(Straw &) { return (true); };
     void Code_Pointers(void) {};
@@ -912,7 +924,7 @@ class HouseClass {
 #ifdef WOLAPI_INTEGRATION
   //	For Internet games only, unchanging name of player when game began.
   //	This name does not get changed to "Computer" if computer takes over for
-  //player.
+  // player.
   char InitialName[HOUSE_NAME_MAX];
 #endif
 

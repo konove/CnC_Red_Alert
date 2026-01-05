@@ -29,6 +29,7 @@
 **********************************************************************/
 
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/bitmap.h"
 
 #ifndef WIN32
 class BitmapClass {

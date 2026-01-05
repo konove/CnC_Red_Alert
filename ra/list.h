@@ -40,10 +40,16 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <stddef.h>
+
 #include "ra/control.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
 #include "ra/vector.h"
+#include "ra/defines.h"
+#include "ra/gadget.h"
+#include "ra/link.h"
+#include "sdllib/include/keyboard.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab stops.

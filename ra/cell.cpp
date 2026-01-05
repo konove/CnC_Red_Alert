@@ -131,6 +131,11 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
+#include "ra/abstract.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/coord.h"
+#include "ra/ftimer.h"
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *

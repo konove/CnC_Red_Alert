@@ -50,25 +50,44 @@
  *- - - - - - - */
 #include "ra/score.h"
 
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+
+#include "ra/ccfile.h"
+#include "ra/ccptr.h"
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/goptions.h"
+#include "ra/graphics_loader.h"
+#include "ra/house.h"
 #include "ra/inline.h"
+#include "ra/interpal.h"
+#include "ra/logic.h"
+#include "ra/mouse.h"
 #include "ra/nullmgr.h"
+#include "ra/object.h"
+#include "ra/palette.h"
+#include "ra/random.h"
+#include "ra/rgb.h"
+#include "ra/scenario.h"
 #include "ra/session.h"
+#include "ra/theme.h"
 #include "ra/type.h"
+#include "ra/vector.h"
 #include "ra/ww_audio.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
 #include "sdllib/include/wsa.h"
 #include "sdllib/include/ww_audio.h"
-#ifndef WIN32
-extern short StreamLowImpact;
-#endif
-
-#include "ra/function.h"
-
-#include <algorithm>
-
-#include "ra/interpal.h"
-#include "ra/graphics_loader.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 
 #define SCORETEXT_X 184
 #define SCORETEXT_Y 8

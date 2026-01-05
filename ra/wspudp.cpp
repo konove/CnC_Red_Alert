@@ -49,12 +49,15 @@
 
 #include "ra/wspudp.h"
 
+#include <stdint.h>
+#include <sys/socket.h>
 #include <cassert>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
 
 #include "ra/externs.h"
+#include "ra/jshell.h"
 
 #ifdef _WIN32
 #include <svcguid.h>

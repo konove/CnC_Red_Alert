@@ -40,9 +40,17 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
+#include <stddef.h>
+
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/noinit.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function

@@ -40,10 +40,17 @@
 #ifndef TRIGTYPE_H
 #define TRIGTYPE_H
 
-#include "ra/tevent.h"
-#include "ra/taction.h"
+#include <cstddef>
 
-class TriggerClass;
+#include "ra/ccini.h"
+#include "ra/defines.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/taction.h"
+#include "ra/tevent.h"
+#include "ra/type.h"
 
 /*
 **	There can be multiple trigger events and trigger actions. This
@@ -101,7 +108,7 @@ class TriggerTypeClass : public AbstractTypeClass {
 
   TriggerTypeClass(void);
   TriggerTypeClass(NoInitClass const &x)
-      : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x){};
+      : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {};
   virtual ~TriggerTypeClass(void);
 
   static void *operator new(size_t);

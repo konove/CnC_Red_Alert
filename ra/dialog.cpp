@@ -51,14 +51,21 @@
 #include "ra/dialog.h"
 
 #include <cstdarg>
+#include <cstdio>
+#include <cstring>
 
+#include "ra/compat.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/function.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/jshell.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
 
 unsigned char *Font_Palette(int color);

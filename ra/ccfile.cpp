@@ -55,8 +55,8 @@
 #include <cstring>
 #include <new>
 
+#include "ra/conquer.h"
 #include "ra/externs.h"
-#include "ra/function.h"
 #include "ra/jshell.h"
 #include "ra/rawfile.h"
 #include "ra/startup.h"

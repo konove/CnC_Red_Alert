@@ -45,6 +45,7 @@
 #include "ra/noinit.h"
 #include "ra/sidebar.h"
 #include "sdllib/include/keyboard.h"
+#include "ra/ftimer.h"
 
 class TabClass : public SidebarClass {
  public:

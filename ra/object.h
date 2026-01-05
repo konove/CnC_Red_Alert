@@ -40,16 +40,19 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "jshell.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/fixed.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
 
-class ObjectClass;
-class TechnoClass;
-class ObjectTypeClass;
-class HouseClass;
 class BuildingClass;
+class HouseClass;
+class ObjectTypeClass;
 class RadioClass;
+class TechnoClass;
 class TriggerClass;
 
 /**********************************************************************

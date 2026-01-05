@@ -50,6 +50,7 @@
 */
 #include "ra/connect.h"
 #include "ra/ipxaddr.h"
+#include "ra/ipx.h"
 
 /*
 ***************************** Class Declaration *****************************

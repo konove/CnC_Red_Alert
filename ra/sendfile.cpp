@@ -69,6 +69,7 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "ra/ftimer.h"
 
 bool Receive_Remote_File(char *file_name, unsigned int file_length,
                          int gametype);
@@ -83,6 +84,7 @@ extern bool Is_Mission_Aftermath(char *file_name);
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolapiOb.h"
+
 extern WolapiObject *pWolapi;
 #endif
 

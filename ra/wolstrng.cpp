@@ -19,7 +19,6 @@
 //	New character strings for wolapi integration.
 
 // #ifdef WOLAPI_INTEGRATION
-#include "ra/function.h"
 #include "ra/wolstrng.h"
 
 // #undef ENGLISH
@@ -31,7 +30,7 @@
 //	Menu choice for Internet game.
 const char TXT_WOL_INTERNETBUTTON[] = "Internet";
 //	Generic error message, though implies that blame lies with Westwood
-//Online.
+// Online.
 const char TXT_WOL_ERRORMESSAGE[] =
     "Unexpected error occurred communicating with Westwood Online.";
 //	Connect button on login dialog.
@@ -43,7 +42,7 @@ const char TXT_WOL_NAME[] = "Nickname";
 //	Appears on login dialog - user password field.
 const char TXT_WOL_PASSWORD[] = "Password";
 //	Appears on login dialog - checkbox specifying whether nickname/password
-//should be saved to disk.
+// should be saved to disk.
 const char TXT_WOL_SAVELOGIN[] = "Save";
 //	User hit the Escape button to cancel the logging in process.
 const char TXT_WOL_LOGINCANCEL[] = "Login cancelled.";
@@ -70,7 +69,7 @@ const char TXT_WOL_ATTEMPTLOGIN[] = "Logging in...";
 //	Appears while logging out and disconnecting from Westwood Online.
 const char TXT_WOL_ATTEMPTLOGOUT[] = "Logging out...";
 //	Appears while logging out and disconnecting from Westwood Online after
-//an error has occurred.
+// an error has occurred.
 const char TXT_WOL_ERRORLOGOUT[] =
     "Terminating connection with Westwood Online...";
 //	Common "please wait" message.
@@ -81,7 +80,7 @@ const char TXT_WOL_TOPLEVELTITLE[] = "Westwood Online";
 //	Title for the WW Online level where "official" chat channels are listed.
 const char TXT_WOL_OFFICIALCHAT[] = "Official Chat";
 //	Title for the WW Online level where "user" (in other words, unofficial)
-//chat channels are listed.
+// chat channels are listed.
 const char TXT_WOL_USERCHAT[] = "User Chat";
 //	Title for the WW Online level where game channels are listed.
 const char TXT_WOL_GAMECHANNELS[] = "Game Channels";
@@ -93,7 +92,7 @@ const char TXT_WOL_CHANNELLISTLOADING[] = "...downloading...";
 const char TXT_WOL_YOURENOTINCHANNEL[] =
     "You are not currently in a chat channel.";
 //	"Action" button. Causes text entered by user to show up as if they were
-//performing an action, as opposed to speaking.
+// performing an action, as opposed to speaking.
 const char TXT_WOL_ACTION[] = "Action";
 //	"Join" button. Allows user to join a channel, game, or WW Online level.
 const char TXT_WOL_JOIN[] = "Join";
@@ -109,13 +108,13 @@ const char TXT_WOL_CREATECHANNELPROMPT[] = "Channel Name: ";
 //	Prompt for fields where the user must enter a password.
 const char TXT_WOL_PASSPROMPT[] = "Password: ";
 //	Prompt for fields where the user may enter a password, but it is not
-//required.
+// required.
 const char TXT_WOL_OPTIONALPASSPROMPT[] = "Password (optional): ";
 //	Appears in channel list, as top choice, which the user can use to go
-//back to the top WW Online level.
+// back to the top WW Online level.
 const char TXT_WOL_CHANNEL_TOP[] = ".. <back to top>";
 //	Appears in channel list, as top choice, which the user can use to go
-//back up one WW Online level.
+// back up one WW Online level.
 const char TXT_WOL_CHANNEL_BACK[] = ".. <back>";
 //	%s is replaced by the name of a channel.
 const char TXT_WOL_YOUJOINED[] = "You have joined the %s channel.";
@@ -130,14 +129,14 @@ const char TXT_WOL_YOULEFT[] = "You have left the %s channel.";
 //	%s is replaced by the name of a lobby.
 const char TXT_WOL_YOULEFTLOBBY[] = "You have left the %s lobby.";
 //	Title for dialog that prompts user for the password needed to enter a
-//private channel.
+// private channel.
 const char TXT_WOL_JOINPRIVATETITLE[] = "Join Private Channel";
 
 const char TXT_WOL_JOINPRIVATEPROMPT[] = "Enter Channel Password: ";
 
 const char TXT_WOL_BADCHANKEY[] = "Incorrect channel password.";
 //	Title for the Page/Locate dialog. Page = send a user a message. Locate =
-//find out where a user is.
+// find out where a user is.
 const char TXT_WOL_PAGELOCATE[] = "Page/Locate";
 //	Appears on Page/Locate dialog.
 const char TXT_WOL_USERNAMEPROMPT[] = "User Name: ";
@@ -160,7 +159,7 @@ const char TXT_WOL_FOUNDIN[] = "User found in the %s channel.";
 //	Title for Page dialog.
 const char TXT_WOL_PAGEMESSAGETITLE[] = "Page User";
 //	Prompt for field in which user enters the message that is to be sent to
-//user.
+// user.
 const char TXT_WOL_PAGEMESSAGEPROMPT[] = "Message to Send: ";
 //	%s is replaced with name of user being paged.
 const char TXT_WOL_PAGING[] = "Paging %s...";
@@ -175,8 +174,9 @@ const char TXT_WOL_ONPAGE[] = "Page from %s: %s";
 const char TXT_WOL_WASPAGED[] = "%s was successfully paged.";
 //	%s is replaced with the name of a user that has just been squelched.
 //(Currently unused.) const char TXT_WOL_USERISSQUELCHED[]		= "%s
-// has been squelched."; 	%s is replaced with the name of a user that has had
-//squelch removed. (Currently unused.) const char TXT_WOL_USERISNOTSQUELCHED[]
+// has been squelched."; 	%s is replaced with the name of a user that has
+// had
+// squelch removed. (Currently unused.) const char TXT_WOL_USERISNOTSQUELCHED[]
 // = "%s is no longer squelched.";
 
 const char TXT_WOL_ONLYOWNERCANKICK[] =
@@ -191,7 +191,7 @@ const char TXT_WOL_NOONETOKICK[] = "Select the user(s) you wish to kick out.";
 //	%s replaced with user name.
 const char TXT_WOL_USERWASBANNED[] = "%s has been banned from the channel.";
 //	Title for dialog in which user enters password for new game they are
-//creating.
+// creating.
 const char TXT_WOL_CREATEPRIVGAMETITLE[] = "Create Private Game";
 
 const char TXT_WOL_YOUREBANNED[] =
@@ -204,11 +204,11 @@ const char TXT_WOL_PLAYERJOINEDGAME[] = "%s has joined the game.";
 const char TXT_WOL_YOUWEREKICKEDFROMGAME[] =
     "You've been kicked out of the game.";
 //	Shows user's ladder ranking and win/loss record. Appears above main chat
-//area.
+// area.
 const char TXT_WOL_PERSONALWINLOSSRECORD[] =
     "%s. Red Alert: Ranked %u. Won %u. Lost %u. Points %u.";
 //	Shows user's ladder ranking and win/loss record. Appears above main chat
-//area. Appended Aftermath ranking.
+// area. Appended Aftermath ranking.
 const char TXT_WOL_PERSONALWINLOSSRECORDAM[] =
     "%s. Aftermath: Ranked %u. Won %u. Lost %u. Points %u.";
 //	Used to show brief user ladder ranking in user lists. Example: FredX
@@ -221,7 +221,7 @@ const char TXT_WOL_USERRANKHOUSE[] = "%s (Rank %u) <%s>";
 //	Button host user presses to start a game they have created.
 const char TXT_WOL_STARTBUTTON[] = "Start";
 //	Button that guests joining a game press to indicate that they agree to
-//the game rules set up by the host.
+// the game rules set up by the host.
 const char TXT_WOL_ACCEPTBUTTON[] = "Accept";
 //	%s replaced with user name.
 const char TXT_WOL_HOSTLEFTGAME[] = "%s has cancelled the game.";
@@ -254,7 +254,7 @@ const char TXT_WOL_TTIP_START[] = " Start the game ";
 //(accept) game rules set up by the host.
 const char TXT_WOL_TTIP_ACCEPT[] = " Accept the current game settings ";
 //	Tooltip help. Appears for the small buttons that allow users to enlarge
-//or diminish the size of channel/user lists.
+// or diminish the size of channel/user lists.
 const char TXT_WOL_TTIP_EXPANDLIST[] = " Expand/contract list ";
 //	Tooltip for Cancel button during game setup.
 const char TXT_WOL_TTIP_CANCELGAME[] = " Go back a level ";
@@ -273,7 +273,7 @@ const char TXT_WOL_OPTPAGE[] = "Let others PAGE you.";
 
 const char TXT_WOL_OPTLANGUAGE[] = "Filter out bad language.";
 //	"Display just the games that were created by someone in the lobby you
-//are currently in."
+// are currently in."
 const char TXT_WOL_OPTGAMESCOPE[] = "Show local lobby games only.";
 
 const char TXT_WOL_CHANNELGONE[] = "Channel no longer exists.";
@@ -310,7 +310,7 @@ const char TXT_WOL_TTIP_COUNTERSTRIKE[] = "Counterstrike";
 //	Appears in tooltip help for a channel list item.
 const char TXT_WOL_TTIP_AFTERMATH[] = "Aftermath";
 //	%s = name of user, first %i = number of players in channel, second %i =
-//maximum number of players allowed.
+// maximum number of players allowed.
 const char TXT_WOL_TTIP_CHANLIST_RAGAME[] =
     " %s game (%i players of a maximum %i). ";
 //	%s = name of user, %i = number of players in channel.
@@ -328,35 +328,35 @@ const char TXT_WOL_TOURNAMENTPLAYERLIMIT[] =
 //	Shows on game setup screen for private games. %s = password for game.
 const char TXT_WOL_PRIVATEPASSWORD[] = "Password: %s";
 //	User cannot join game because either he or the game host has hacked the
-//game.
+// game.
 const char TXT_WOL_RULESMISMATCH[] =
     "Your game is incompatible with the host's!";
 //	Message appears when game host presses start button but slow responses
-//cause an automatic cancellation of game start.
+// cause an automatic cancellation of game start.
 const char TXT_WOL_STARTTIMEOUT[] =
     "Timed out waiting for guest responses! Game start cancelled.";
 //	Message appears for guests when automatic cancellation occurs.
 const char TXT_WOL_STARTCANCELLED[] = "Game start cancelled.";
 //	Text of button on game setup screen that takes user out of the game
-//channel.
+// channel.
 const char TXT_WOL_CANCELGAME[] = "Back";
 
 const char TXT_WOL_PATCHQUESTION[] =
     "An update patch is required for Internet play. Do you want to download it "
     "now?";
 //	Title of patch download dialog. First %i = current file being
-//downloaded, second %i = total # of files to download.
+// downloaded, second %i = total # of files to download.
 const char TXT_WOL_DOWNLOADING[] = "Download file %i of %i";
 
 const char TXT_WOL_DOWNLOADERROR[] = "An error occurred during file download.";
 //	Appears on patch download dialog. First %i = current # of bytes
-//downloaded, second %i = total # of bytes to download.
+// downloaded, second %i = total # of bytes to download.
 const char TXT_WOL_DOWNLOADBYTES[] = "Received %i bytes out of %i. (%i%%%%)";
 //	Appears on patch download dialog. First %i = number of minutes left,
-//second %i = number of seconds left.
+// second %i = number of seconds left.
 const char TXT_WOL_DOWNLOADTIME[] = "Time Remaining: %i min. %i secs.";
 //	Appended to title of patch download dialog when resuming an interrupted
-//download. %s is the regular title, as above.
+// download. %s is the regular title, as above.
 const char TXT_WOL_DOWNLOADRESUMED[] = "%s (Resumed after interruption.)";
 
 const char TXT_WOL_DOWNLOADCONNECTING[] = "Status: Connecting...";
@@ -387,7 +387,7 @@ const char TXT_WOL_GAMEADVERTSHELL[] =
 //	Appears above user list. %i = number of users in the current channel.
 const char TXT_WOL_USERLIST[] = "Users   %i";
 //	Appears above user list to explain why no users are being listed:
-//because the user is not currently in a chat channel.
+// because the user is not currently in a chat channel.
 const char TXT_WOL_NOUSERLIST[] = "(not in a channel)";
 
 const char TXT_WOL_CANTCREATEHERE[] =
@@ -403,7 +403,7 @@ const char TXT_WOL_NOTPAGED[] = "Can't respond to page; no one has paged you.";
 //	Appears briefly in the space for scenario name, in game setup dialog.
 const char TXT_WOL_SCENARIONAMEWAIT[] = "waiting for scenario...";
 //	Text of button on chat screen that takes user out of a chat channel, or
-//up one WW Online level.
+// up one WW Online level.
 const char TXT_WOL_BACK[] = "Back";
 
 const char TXT_WOL_AMDISCNEEDED[] =
@@ -436,10 +436,10 @@ const char TXT_WOL_DRAW_RETRACTED_LOCAL[] =
 const char TXT_WOL_DRAW_RETRACTED_OTHER[] =
     "%s has retracted the offer of a draw.";
 //	Message that appears in place of "Mission Accomplished" or "Mission
-//Failed", when game is a draw.
+// Failed", when game is a draw.
 const char TXT_WOL_DRAW[] = "The Game is a Draw";
 //	Error message that appears when user's web browser can't be
-//automatically launched. %s is a web site URL.
+// automatically launched. %s is a web site URL.
 const char TXT_WOL_CANTLAUNCHBROWSER[] = "Can't launch web browser to open %s!";
 
 const char TXT_WOL_CHANNELFULL[] = "That chat/game channel is full.";
@@ -506,7 +506,7 @@ const char TXT_WOL_PRIVATE[] = "<private>";
 #pragma message("...Building German version...")
 
 //	Replaced "" with ascii 169 (in octal, 251) in cases where 8 point font
-//is used (see 8point.lbm for why).
+// is used (see 8point.lbm for why).
 const char TXT_WOL_INTERNETBUTTON[] = "Internet";
 const char TXT_WOL_ERRORMESSAGE[] =
     "Unerwarteter Fehler trat bei der Kommunikation mit Westwood Online auf.";
@@ -870,8 +870,7 @@ const char TXT_WOL_YOUREBANNED[] =
     "Vous n'tes pas autoris  entrer dans ce canal.";
 const char TXT_WOL_PLAYERLEFTGAME[] = "%s a quitt la partie.";
 const char TXT_WOL_PLAYERJOINEDGAME[] = "%s a rejoint la partie.";
-const char TXT_WOL_YOUWEREKICKEDFROMGAME[] =
-    "Vous avez t expuls de la partie.";
+const char TXT_WOL_YOUWEREKICKEDFROMGAME[] = "Vous avez t expuls de la partie.";
 const char TXT_WOL_PERSONALWINLOSSRECORD[] =
     "%s. Alerte Rouge: position %u. Vict. %u. Df. %u. Pts. %u.";
 const char TXT_WOL_PERSONALWINLOSSRECORDAM[] =
@@ -949,15 +948,13 @@ const char TXT_WOL_PATCHQUESTION[] =
     "Un patch mis  jour est ncessaire pour le jeu sur Internet. Voulez-vous "
     "le tlcharger maintenant ?";
 const char TXT_WOL_DOWNLOADING[] = "Tlcharger %i fichier(s) sur %i.";
-const char TXT_WOL_DOWNLOADERROR[] =
-    "Erreur lors du tlchargement du fichier.";
+const char TXT_WOL_DOWNLOADERROR[] = "Erreur lors du tlchargement du fichier.";
 const char TXT_WOL_DOWNLOADBYTES[] = "Rception de %i octets sur %i. (%i%%%%).";
 const char TXT_WOL_DOWNLOADTIME[] = "Temps restant : %i min. %i secs.";
 const char TXT_WOL_DOWNLOADRESUMED[] = "%s (reprise aprs interruption.)";
 const char TXT_WOL_DOWNLOADCONNECTING[] = "Etat : en cours de connexion...";
 const char TXT_WOL_DOWNLOADLOCATING[] = "Etat : recherche du fichier...";
-const char TXT_WOL_DOWNLOADDOWNLOADING[] =
-    "Etat : en cours de tlchargement...";
+const char TXT_WOL_DOWNLOADDOWNLOADING[] = "Etat : en cours de tlchargement...";
 const char TXT_WOL_DOWNLOADEXITWARNING[] =
     "Tlchargement termin ! Alerte Rouge est relanc pour que le nouveau "
     "patch soit pris en compte.";
@@ -990,10 +987,8 @@ const char TXT_WOL_AMDISCNEEDED[] =
 const char TXT_WOL_CONFIRMLOGOUT[] =
     "Voulez-vous vraiment quitter Westwood Online ?";
 const char TXT_WOL_PROPOSE_DRAW[] = "Proposer une fin avec galit";
-const char TXT_WOL_RETRACT_DRAW[] =
-    "Annuler la proposition de fin avec galit";
-const char TXT_WOL_ACCEPT_DRAW[] =
-    "Accepter la proposition de fin avec galit";
+const char TXT_WOL_RETRACT_DRAW[] = "Annuler la proposition de fin avec galit";
+const char TXT_WOL_ACCEPT_DRAW[] = "Accepter la proposition de fin avec galit";
 const char TXT_WOL_PROPOSE_DRAW_CONFIRM[] =
     "Voulez-vous vraiment proposer une fin avec galit ?";
 const char TXT_WOL_ACCEPT_DRAW_CONFIRM[] =

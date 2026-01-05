@@ -45,8 +45,11 @@
 
 #include "ra/warhead.h"
 
+#include <string.h>
+
 #include "ra/defines.h"
 #include "ra/heap.h"
+#include "ra/jshell.h"
 
 /***************************************************************************
 **	This is the warhead data object array.

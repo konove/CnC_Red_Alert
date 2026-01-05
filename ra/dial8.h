@@ -41,6 +41,8 @@
 #define DIAL8_H
 #include "ra/control.h"
 #include "ra/face.h"
+#include "ra/defines.h"
+#include "sdllib/include/keyboard.h"
 
 class Dial8Class : public ControlClass {
  public:

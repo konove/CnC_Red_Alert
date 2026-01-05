@@ -2,6 +2,8 @@
 #define CNC_RED_ALERT_RA_REINF_H_
 #include "ra/house.h"
 #include "ra/teamtype.h"
+#include "ra/defines.h"
+#include "ra/type.h"
 
 bool Do_Reinforcements(TeamTypeClass const *team);
 bool Create_Special_Reinforcement(HouseClass *house,

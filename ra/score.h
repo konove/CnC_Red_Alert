@@ -40,13 +40,18 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-#include "ra/unit.h"
-#include "ra/building.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 class ScoreClass {
  public:
-  ScoreClass(void){};
-  ScoreClass(NoInitClass const &){};
+  ScoreClass(void) {};
+  ScoreClass(NoInitClass const &) {};
 
   int Score;
   int NKilled;
@@ -122,7 +127,7 @@ class ScoreTimeClass : public ScoreAnimClass {
   int TimerReset;
   virtual void Update(void);
   ScoreTimeClass(int xpos, int ypos, void const *data, int max, int timer);
-  virtual ~ScoreTimeClass(void){};
+  virtual ~ScoreTimeClass(void) {};
 };
 
 class ScorePrintClass : public ScoreAnimClass {

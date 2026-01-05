@@ -41,20 +41,29 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifdef WIN32
+#include <cstdio>
 
 #include "ra/aircraft.h"
+#include "ra/building.h"
 #include "ra/ccptr.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
 #include "ra/house.h"
+#include "ra/infantry.h"
 #include "ra/packet.h"
+#include "ra/scenario.h"
 #include "ra/session.h"
+#include "ra/special.h"
 #include "ra/tcpip.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/utracker.h"
+#include "ra/vector.h"
+#include "ra/version.h"
 #include "ra/vessel.h"
 #include "sdllib/include/timer.h"
-#ifndef _WIN32
-#include "ra/ccdde.h"
-#endif
 
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"
@@ -173,8 +182,6 @@ TimerClass GameTimer;
 long GameEndTime;
 void *PacketLater = nullptr;
 
-#include "ra/woldebug.h"
-
 #ifdef WOLAPI_INTEGRATION
 #include "WolapiOb.h"
 extern WolapiObject *pWolapi;
@@ -274,7 +281,7 @@ void Send_Statistics_Packet(void) {
     // pWolapi->GameInfoCurrent.iPlayerCount );
 
     //	Number of players remaining in game. Not sure of what use this will be
-    //statistically...
+    // statistically...
     stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
                     (unsigned long)Session.Players.Count());
     // debugprint( "Stats: number of remaining players is %i\n",
@@ -287,7 +294,7 @@ void Send_Statistics_Packet(void) {
 
 //	ajw This is now in WOLAPI...
 //		//	A unique value that identifies the machine that the game
-//was played on. 		HW_PROFILE_INFO hwinfo;
+// was played on. 		HW_PROFILE_INFO hwinfo;
 //		::GetCurrentHwProfile( &hwinfo );
 //		stats.Add_Field( FIELD_HARDWARE_GUID, hwinfo.szHwProfileGuid );
 #endif
@@ -413,7 +420,7 @@ void Send_Statistics_Packet(void) {
           if (iRes != SOCKET_ERROR)  //	else forget about trying
           {
             //						debugprint( "gethostname
-            //got me %s\n", szHostName );
+            // got me %s\n", szHostName );
             struct hostent *pHostent = gethostbyname(szHostName);
             if (pHostent)  //	else forget about trying
             {
@@ -425,7 +432,7 @@ void Send_Statistics_Packet(void) {
                 strcpy(szAsciiIP, inet_ntoa(*((struct in_addr *)piAddress)));
                 //	We have an address in the right form.
                 //	Now, is it an address in a private network? If so we
-                //should ignore it.
+                // should ignore it.
                 unsigned char q1 = ((char *)piAddress)[0];  //	First digit.
                 unsigned char q2 = ((char *)piAddress)[1];  //	Second digit.
                 //								debugprint(
@@ -433,7 +440,7 @@ void Send_Statistics_Packet(void) {
                 if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||
                     (q1 == 192 && q2 == 168)) {
                   //	This is a private network address - ignore it and go on
-                  //to next.
+                  // to next.
                 } else {
                   strcpy(szIPAddress, szAsciiIP);
                   break;
@@ -447,7 +454,7 @@ void Send_Statistics_Packet(void) {
           }
           //					else
           //						debugprint( "gethostname
-          //failed with %i, error %i\n", iRes, WSAGetLastError() );
+          // failed with %i, error %i\n", iRes, WSAGetLastError() );
         }
         stats.Add_Field(FIELD_PLAYER1_IP, (char *)szIPAddress);
         Session.Players[1]->Address.Get_Address(net, node);
@@ -471,14 +478,14 @@ void Send_Statistics_Packet(void) {
               completion = COMPLETION_CONNECTION_LOST;
               if (pWolapi->bDisconnectPingingCompleted) {
                 char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
-                                       //4/5"
+                                       // 4/5"
                 pWolapi->DisconnectPingResultsString(szPingResult);
                 stats.Add_Field(FIELD_DISCONNECT_PINGS, (char *)szPingResult);
               }
               //						else
               //							debugprint(
               //"Stats: bDisconnectPingingCompleted is false! Should be
-              //finished!!!!!!!!!!!!!!!\n" );
+              // finished!!!!!!!!!!!!!!!\n" );
             }
 #else
         completion = COMPLETION_CONNECTION_LOST;
@@ -658,7 +665,7 @@ void Send_Statistics_Packet(void) {
 
 #ifdef WOLAPI_INTEGRATION
       //	Whether or not this player was taken over by the computer, due
-      //to his quitting the game.
+      // to his quitting the game.
       if (strcmp(player->IniName, player->InitialName))
         stats.Add_Field(FIELD_COMPUTERTOOKOVER, (unsigned char)1);
       else
@@ -936,5 +943,3 @@ extern void Register_Game_End_Time(void) {
   GameEndTime = GameTimer.Time();
   GameTimerInUse = false;
 }
-
-#endif  // WIN32

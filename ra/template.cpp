@@ -49,8 +49,8 @@
 #include <cassert>
 
 #include "ra/cell.h"
-#include "ra/function.h"
-// #include "ra/externs.h"
+#include "ra/coord.h"
+#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/map.h"

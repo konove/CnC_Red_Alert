@@ -578,6 +578,9 @@
 #include "ra/type.h"
 #include "sdllib/include/shape.h"
 #include "winvq/vqa32/vqaplay.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "sdllib/include/wwstd.h"
 
 void List_Copy(short const *source, int len, short *dest);
 int Get_CD_Index(int cd_drive, int timeout);

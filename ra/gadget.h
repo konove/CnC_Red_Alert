@@ -85,9 +85,9 @@
 #define GADGET_H
 
 #include "ra/defines.h"
-#include "ra/key.h"
 #include "ra/link.h"
 #include "ra/noinit.h"
+#include "sdllib/include/keyboard.h"
 
 class ControlClass;
 
@@ -106,8 +106,8 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass(NoInitClass const &x) : LinkClass(x){};
-  GadgetClass(void){};
+  GadgetClass(NoInitClass const &x) : LinkClass(x) {};
+  GadgetClass(void) {};
   GadgetClass(GadgetClass const &gadget);
   virtual ~GadgetClass(void);
 

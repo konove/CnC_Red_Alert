@@ -50,12 +50,27 @@
 #include "sdllib/include/ww_audio.h"
 #include "session.h"
 #include "slider.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/goptions.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/options.h"
+#include "ra/queue.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #define GERMAN_OFFSET_Y 4  // VG
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #include "WolapiOb.h"
+
 extern WolapiObject* pWolapi;
 bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
 #endif

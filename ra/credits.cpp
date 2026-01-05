@@ -48,6 +48,16 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/ww_audio.h"
+#include "ra/conquer.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/scenario.h"
+#include "ra/tab.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.

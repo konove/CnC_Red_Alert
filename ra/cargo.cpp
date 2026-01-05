@@ -44,7 +44,6 @@
 #include "ra/cargo.h"
 
 #include "ra/foot.h"
-#include "ra/function.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/techno.h"

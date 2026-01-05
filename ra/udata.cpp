@@ -54,6 +54,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stddef.h>
 #include <algorithm>
 #include <filesystem>
 #include <string>

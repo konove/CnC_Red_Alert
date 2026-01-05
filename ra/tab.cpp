@@ -61,6 +61,7 @@
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/wwstd.h"
+#include "ra/queue.h"
 
 void const *TabClass::TabShape = nullptr;
 

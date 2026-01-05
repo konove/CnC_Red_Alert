@@ -37,8 +37,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
 void GDI_Ending(void) {
 #ifdef NEVER
   if (TempleIoned) {

@@ -61,20 +61,7 @@
  *   Let_IPX_Breath -- gives IPX some CPU time                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-#include <cstdio>
 #include "ra/ipx.h"
-
-#ifdef WIN32
-#ifndef PORTABLE
-#include "ra/ipx95.h"
-#endif
-#else
-#include <i86.h>
-#endif  // WIN32
-
-// Turn off "expression is not meaningful".
-#pragma warning 628 9
 
 /***************************************************************************
  * IPX_SPX_Installed -- checks for installation of IPX/SPX                 *

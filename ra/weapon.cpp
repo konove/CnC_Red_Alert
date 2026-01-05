@@ -50,9 +50,11 @@
 
 #include "ra/weapon.h"
 
+#include "port/ex_string.h"
 #include "ra/const.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
 
 /***************************************************************************
 **	These are the various weapons and their characteristics.
@@ -224,7 +226,8 @@ bool WeaponTypeClass::Read_INI(CCINIClass &ini) {
       WarheadPtr = nullptr;
     }
 
-    BulletType btype = (Bullet != nullptr) ? BulletType(Bullet->ID) : BULLET_NONE;
+    BulletType btype =
+        (Bullet != nullptr) ? BulletType(Bullet->ID) : BULLET_NONE;
     btype = ini.Get_BulletType(Name(), "Projectile", btype);
     if (btype != BULLET_NONE) {
       Bullet = &BulletTypeClass::As_Reference(btype);

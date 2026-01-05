@@ -16,6 +16,13 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "ra/_wsproto.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
 #include "ra/colrlist.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -23,9 +30,15 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/init.h"
+#include "ra/jshell.h"
+#include "ra/palette.h"
 #include "ra/textbtn.h"
-#include "ra/wspudp.h"
+#include "ra/wsproto.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 bool Get_Broadcast_Addresses(void) {
   int d_dialog_w = 320 * RESFACTOR;                       // dialog width

@@ -48,7 +48,6 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/fixed.h"
-#include "ra/function.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"

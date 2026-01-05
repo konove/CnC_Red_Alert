@@ -41,39 +41,24 @@
 #define JSHELL_H
 
 #include <cassert>
+#include <cstdint>
 
 #include "ra/compat.h"
 #include "ra/noinit.h"
 #include "ra/palette.h"
 #include "ra/wwfile.h"
+#include "sdllib/include/buffer.h"
 #include "sdllib/include/iff.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/timer.h"
 #include "sdllib/include/ww_mouse.h"
-
-#ifdef WIN32
-// #define getch	Get_Key_Num
-// #define kbhit	Check_Key_Num
-#include "ra/key.h"
-#else
-#include <conio.h>
-#endif
 
 /*
 **	Interface class to the keyboard. This insulates the game from library
 *vagaries. Most *	notable being the return values are declared as "int" in
 *the library whereas C&C *	expects it to be of KeyNumType.
 */
-#ifdef WIN32
-// #define KeyNumType	int
-// #define KeyASCIIType	int
-
-// lint -esym(1725,KeyboardClass::MouseQX,KeyboardClass::MouseQY)
-struct KeyboardClass : public WWKeyboardClass
-#else
-struct KeyboardClass
-#endif
-{
-
+struct KeyboardClass : public WWKeyboardClass {
   /*
   **	This flag is used to indicate whether the WW library has taken over
   **	the keyboard or not. If not, then the normal console input

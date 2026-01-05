@@ -97,6 +97,10 @@
 
 #include "ra/infantry.h"
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <algorithm>
 
 #include "ra/anim.h"
@@ -110,6 +114,28 @@
 #include "ra/vessel.h"
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
+#include "ra/abstract.h"
+#include "ra/building.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/facing.h"
+#include "ra/fixed.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/map.h"
+#include "ra/mission.h"
+#include "ra/mouse.h"
+#include "ra/rect.h"
+#include "ra/rules.h"
+#include "ra/special.h"
+#include "ra/super.h"
+#include "ra/target.h"
+#include "ra/tevent.h"
+#include "ra/trigtype.h"
+#include "ra/unit.h"
+#include "ra/warhead.h"
 
 int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,

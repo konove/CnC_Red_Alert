@@ -5,7 +5,7 @@
 #include <cstring>
 
 #include "ra/externs.h"
-#include "ra/function.h"
+#include "ra/ftimer.h"
 #include "ra/jshell.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_win.h"

@@ -54,6 +54,8 @@
 
 #include "ra/mission.h"
 
+#include <assert.h>
+
 #include "port/ex_string.h"
 #include "ra/const.h"
 #include "ra/externs.h"

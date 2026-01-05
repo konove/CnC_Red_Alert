@@ -50,6 +50,7 @@
 #include "ra/pipe.h"
 #include "ra/straw.h"
 #include "ra/type.h"
+#include "ra/noinit.h"
 
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent

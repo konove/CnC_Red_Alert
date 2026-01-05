@@ -48,6 +48,17 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/vessel.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/ccptr.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/logic.h"
+#include "ra/mouse.h"
+#include "ra/teamtype.h"
+#include "ra/unit.h"
+#include "ra/vortex.h"
 
 /***********************************************************************************************
  * Detach_This_From_All -- Detaches this object from all others. *

@@ -39,6 +39,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "port/ex_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -48,6 +51,24 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/wsa.h"
 #include "sdllib/include/ww_audio.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/goptions.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/rgb.h"
+#include "ra/scenario.h"
+#include "ra/score.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 void Cycle_Call_Back_Delay(int time, PaletteClass &pal);
 extern int ControlQ;

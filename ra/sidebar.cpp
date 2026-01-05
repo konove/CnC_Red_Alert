@@ -88,13 +88,49 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <filesystem>
-#include <format>
+#include "ra/sidebar.h"
 
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <new>
+#include <string>
+
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
 #include "ra/const.h"
+#include "ra/control.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/event.h"
 #include "ra/externs.h"
+#include "ra/factory.h"
+#include "ra/fixed.h"
+#include "ra/gadget.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/palette.h"
+#include "ra/power.h"
+#include "ra/queue.h"
 #include "ra/session.h"
+#include "ra/shapebtn.h"
+#include "ra/super.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 #include "ra/ww_audio.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
 
 void *SidebarClass::SidebarShape = nullptr;
 void *SidebarClass::SidebarMiddleShape = nullptr;

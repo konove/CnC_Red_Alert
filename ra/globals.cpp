@@ -55,6 +55,52 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/vessel.h"
+#include "ra/base.h"
+#include "ra/bench.h"
+#include "ra/buff.h"
+#include "ra/carry.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/compat.h"
+#include "ra/connect.h"
+#include "ra/credits.h"
+#include "ra/defines.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/goptions.h"
+#include "ra/house.h"
+#include "ra/ipxgconn.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
+#include "ra/logic.h"
+#include "ra/mission.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/palette.h"
+#include "ra/pk.h"
+#include "ra/queue.h"
+#include "ra/random.h"
+#include "ra/rgb.h"
+#include "ra/rndstraw.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/score.h"
+#include "ra/special.h"
+#include "ra/teamtype.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vector.h"
+#include "ra/version.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/playcd.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "winvq/vqa32/vqaplay.h"
 
 bool IsVQ640 = false;
 unsigned long GameVersion = 0;
@@ -749,10 +795,6 @@ VideoBufferClass SeenPage;
 GraphicBufferClass &VisiblePage = SeenBuff;
 #endif
 
-#ifdef WIN32
-#else
-#endif
-
 int SoundOn;
 CDTimerClass<SystemTimerClass> FrameTimer;
 CDTimerClass<SystemTimerClass> CountDownTimer;
@@ -801,10 +843,12 @@ int UnitBuildPenalty = 100;
 #ifdef MPEGMOVIE  // Denzil 6/15/98
 #ifdef MCIMPEG
 #include "ra/mcimovie.h"
+
 MCIMovie *MciMovie = NULL;
 #endif
 
 #include "ra/mpgset.h"
+
 MPGSettings *MpgSettings = NULL;
 #endif
 

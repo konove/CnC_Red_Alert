@@ -45,12 +45,18 @@
 
 #include "ra/statbtn.h"
 
+#include <string.h>
+#include <new>
+
 #include "ra/conquer.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/wwstd.h"
+#include "ra/jshell.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***********************************************************************************************
  * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.

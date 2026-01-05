@@ -47,9 +47,10 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/factory.h"
-#include "ra/function.h"
+#include "ra/ftimer.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
+#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/pipe.h"
 #include "ra/radio.h"
@@ -317,7 +318,8 @@ class BuildingClass : public TechnoClass {
   virtual FireErrorType Can_Fire(TARGET, int which) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr, bool forced = false);
+                                 TechnoClass *source = nullptr,
+                                 bool forced = false);
   virtual bool Captured(HouseClass *newowner);
   void Update_Radar_Spied(void);
 

@@ -50,8 +50,9 @@
 #include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/foot.h"
-#include "ra/function.h"
+#include "ra/ftimer.h"
 #include "ra/jshell.h"
+#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/pipe.h"
 #include "ra/radio.h"
@@ -79,11 +80,8 @@ class AircraftClass : public FootClass, public FlyClass {
   operator AircraftType(void) const { return Class->Type; };
   AircraftClass(AircraftType classid, HousesType house);
   AircraftClass(NoInitClass const &x)
-      : FootClass(x),
-        FlyClass(x),
-        Class(x),
-        SecondaryFacing(x),
-        SightTimer(x){};
+      : FootClass(x), FlyClass(x), Class(x), SecondaryFacing(x), SightTimer(x) {
+        };
   virtual ~AircraftClass(void);
 
   static void Init(void);

@@ -47,6 +47,12 @@
 #include "ra/dialog.h"
 #include "ra/face.h"
 #include "ra/inline.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***************************************************************************
  * Dial8Class::Dial8Class -- constructor for the facing dial               *

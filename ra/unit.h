@@ -40,11 +40,25 @@
 #ifndef UNIT_H
 #define UNIT_H
 
+#include <cstddef>
+
+#include "ra/bullet.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
 #include "ra/drive.h"
+#include "ra/face.h"
+#include "ra/facing.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
 #include "ra/radio.h"
-#include "ra/cargo.h"
-#include "ra/mission.h"
-#include "ra/target.h"
+#include "ra/straw.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of
@@ -122,7 +136,7 @@ class UnitClass : public DriveClass {
   static void operator delete(void *ptr);
   UnitClass(UnitType classid, HousesType house);
   UnitClass(NoInitClass const &x)
-      : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x){};
+      : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {};
   operator UnitType(void) const { return Class->Type; };
   virtual ~UnitClass(void);
 
@@ -193,7 +207,8 @@ class UnitClass : public DriveClass {
   **	Combat related.
   */
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr, bool forced = false);
+                                 TechnoClass *source = nullptr,
+                                 bool forced = false);
   virtual BulletClass *Fire_At(TARGET target, int which = 0);
 
   /*

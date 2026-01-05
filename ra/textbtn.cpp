@@ -51,6 +51,13 @@
 #include "ra/externs.h"
 #include "ra/inline.h"
 #include "sdllib/include/font.h"
+#include "ra/control.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *

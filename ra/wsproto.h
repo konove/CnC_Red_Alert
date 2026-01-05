@@ -39,7 +39,6 @@
 #ifndef WSPROTO_H
 #define WSPROTO_H
 
-#include "ra/_wsproto.h"
 #include "ra/vector.h"
 
 #ifdef _WIN32

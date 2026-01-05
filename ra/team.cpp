@@ -84,6 +84,9 @@
 
 #include "ra/team.h"
 
+#include <assert.h>
+#include <string.h>
+
 #include "ra/aircraft.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
@@ -93,6 +96,24 @@
 #include "ra/trigger.h"
 #include "ra/vessel.h"
 #include "ra/ww_audio.h"
+#include "ra/building.h"
+#include "ra/cell.h"
+#include "ra/coord.h"
+#include "ra/display.h"
+#include "ra/fixed.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/infantry.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/target.h"
+#include "ra/techno.h"
+#include "ra/tevent.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vector.h"
 
 /***********************************************************************************************
  * _Is_It_Breathing -- Checks to see if unit is an active team member. *

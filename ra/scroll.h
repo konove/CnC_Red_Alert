@@ -41,6 +41,10 @@
 #define SCROLL_H
 
 #include "ra/help.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "sdllib/include/keyboard.h"
 
 class ScrollClass : public HelpClass {
   /*

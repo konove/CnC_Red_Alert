@@ -16,6 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <assert.h>
+#include <stdint.h>
+
 /* $Header: /CounterStrike/IOOBJ.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
@@ -73,6 +76,23 @@
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/trigtype.h"
+#include "ra/bullet.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/factory.h"
+#include "ra/foot.h"
+#include "ra/ftimer.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/mission.h"
+#include "ra/pipe.h"
+#include "ra/radio.h"
+#include "ra/straw.h"
+#include "ra/taction.h"
+#include "ra/target.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/vector.h"
 
 /***********************************************************************************************
  * TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *

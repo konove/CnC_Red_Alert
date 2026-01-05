@@ -41,20 +41,21 @@
  *   DynamicVectorClass<T>::Resize -- Changes size of a dynamic vector.    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/vector.h"
-#ifdef WINSOCK_IPX
-#include "ra/wsproto.h"
-#include "ra/wspudp.h"
-#endif  // WINSOCK_IPX
-#include <cstdio>
+#include <cstring>
 
+#include "ra/base.h"
+#include "ra/ccini.h"
 #include "ra/ccptr.h"
+#include "ra/defines.h"
 #include "ra/egos.h"
 #include "ra/loaddlg.h"
+#include "ra/object.h"
 #include "ra/session.h"
 #include "ra/taction.h"
 #include "ra/teamtype.h"
 #include "ra/tevent.h"
+#include "ra/vector.h"
+#include "ra/wsproto.h"
 
 /***********************************************************************************************
  * DynamicVectorClass<T>::DynamicVectorClass -- Constructor for dynamic vector.
@@ -227,7 +228,8 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
   if (ActiveCount) {
     // We explicitly use NOLINT because we intend to move the raw pointers,
     // so sizeof(T) returning the pointer size is correct behavior.
-    memmove(&(*this)[1], &(*this)[0], ActiveCount * sizeof(T)); // NOLINT(bugprone-sizeof-expression)
+    memmove(&(*this)[1], &(*this)[0],
+            ActiveCount * sizeof(T));  // NOLINT(bugprone-sizeof-expression)
   }
   (*this)[0] = object;
   ActiveCount++;

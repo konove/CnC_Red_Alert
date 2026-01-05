@@ -52,23 +52,37 @@
 
 #ifdef WIN32
 
+#include <cstdlib>
 #include <cstring>
 
-#include "msgbox.h"
-#include "ra/ccdde.h"
+#include "ra/ccfile.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/palette.h"
 #include "ra/profile.h"
 #include "ra/rawfile.h"
 #include "ra/session.h"
+#include "ra/special.h"
 #include "ra/startup.h"
 #include "ra/tcpip.h"
 #include "ra/textbtn.h"
+#include "ra/vector.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 extern bool SpawnedFromWChat;
 

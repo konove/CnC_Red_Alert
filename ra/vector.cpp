@@ -55,21 +55,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#ifdef WINSOCK_IPX
-#include "ra/wsproto.h"
-#include "ra/wspudp.h"
-#endif  // WINSOCK_IPX
-#include <cstdio>
+#include "ra/vector.h"
 
+#include <cstring>
+
+#include "ra/base.h"
+#include "ra/ccini.h"
 #include "ra/ccptr.h"
+#include "ra/cell.h"
 #include "ra/egos.h"
 #include "ra/loaddlg.h"
+#include "ra/object.h"
 #include "ra/session.h"
 #include "ra/taction.h"
 #include "ra/teamtype.h"
 #include "ra/tevent.h"
-#include "ra/vector.h"
+#include "ra/wsproto.h"
 
 /*
 **	The following template function can be located here ONLY if all the

@@ -48,6 +48,13 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
+#include "ra/defines.h"
+#include "ra/fixed.h"
+#include "ra/gadget.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 /***************************************************************************
  * GaugeClass::GaugeClass -- class constructor                             *

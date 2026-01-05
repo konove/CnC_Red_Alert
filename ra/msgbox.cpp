@@ -40,6 +40,7 @@
 
 #include "ra/msgbox.h"
 
+#include <string.h>
 #include <algorithm>
 
 #include "ra/dialog.h"
@@ -47,6 +48,14 @@
 #include "ra/inline.h"
 #include "ra/textbtn.h"
 #include "sdllib/include/font.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/jshell.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef FIXIT_VERSION_3
 bool cancel_current_msgbox = false;

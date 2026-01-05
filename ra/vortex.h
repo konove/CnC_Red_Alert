@@ -49,6 +49,8 @@
 #include "ra/object.h"
 #include "ra/pipe.h"
 #include "ra/straw.h"
+#include "ra/palette.h"
+#include "sdllib/include/gbuffer.h"
 
 class ChronalVortexClass {
  public:

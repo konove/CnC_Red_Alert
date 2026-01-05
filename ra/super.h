@@ -43,6 +43,7 @@
 #include "ra/defines.h"
 #include "ra/ftimer.h"
 #include "ra/jshell.h"
+#include "ra/noinit.h"
 
 class SuperClass {
  public:

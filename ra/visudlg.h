@@ -40,8 +40,6 @@
 #ifndef VISUDLG_H
 #define VISUDLG_H
 
-#include "ra/gadget.h"
-
 class VisualControlsClass {
  private:
   enum VisualControlEnums {
@@ -67,7 +65,7 @@ class VisualControlsClass {
   };
 
  public:
-  VisualControlsClass(void){};
+  VisualControlsClass(void) {};
   void Process(void);
 };
 

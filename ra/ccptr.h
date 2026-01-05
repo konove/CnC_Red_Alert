@@ -39,8 +39,7 @@
 #include <cassert>
 
 #include "ra/heap.h"
-
-class FixedIHeapClass;
+#include "ra/noinit.h"
 
 /*
 **	The CCPtr class is designed for a specific purpose. It functions like a

@@ -40,8 +40,8 @@
 #ifndef GOPTIONS_H
 #define GOPTIONS_H
 
+#include "ra/defines.h"
 #include "ra/options.h"
-#include "ra/gadget.h"
 
 class GameOptionsClass : public OptionsClass {
   enum GameOptionsButtonEnum {
@@ -78,7 +78,7 @@ class GameOptionsClass : public OptionsClass {
   };
 
  public:
-  GameOptionsClass(void) : OptionsClass(){};
+  GameOptionsClass(void) : OptionsClass() {};
   void Adjust_Variables_For_Resolution(void);
   void Process(void);
 

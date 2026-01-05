@@ -39,23 +39,22 @@
 #ifndef SESSION_H
 #define SESSION_H
 
+#include <cstdint>
+
+#include "port/ex_string.h"
+#include "ra/ccfile.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
+#include "ra/event.h"
 #include "ra/ipxaddr.h"
 #include "ra/msglist.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/special.h"
+#include "ra/straw.h"
+#include "ra/target.h"
+#include "ra/vector.h"
 #include "ra/version.h"
-
-//---------------------------------------------------------------------------
-// Forward declarations
-//---------------------------------------------------------------------------
-class AircraftClass;
-class AnimClass;
-class BuildingClass;
-class BulletClass;
-class InfantryClass;
-class UnitClass;
-class PhoneEntryClass;
-class CellClass;
 
 //---------------------------------------------------------------------------
 // Defines
@@ -317,7 +316,7 @@ typedef struct {
       unsigned int IsGoodies : 1;         // 1 = goodies are allowed
       unsigned int IsGhosties : 1;        // 1 = ghosts are allowed
       unsigned int OfficialScenario : 1;  //	Is this scenario an official
-                                          //Westwood one?
+                                          // Westwood one?
       int CheatCheck;                     // Unique ID of "rules.ini" file.
       unsigned char BuildLevel;           // buildable level
       unsigned char UnitCount;            // max # units
@@ -383,8 +382,8 @@ typedef struct GlobalPacketType {
       uint8_t IsTiberium : 1;      // 1 = tiberium is allowed
       uint8_t IsGoodies : 1;       // 1 = goodies are allowed
       uint8_t IsGhosties : 1;      // 1 = ghosts are allowed
-      uint8_t
-          OfficialScenario : 1;  // Is this scenario an official Westwood one?
+      uint8_t OfficialScenario
+          : 1;                   // Is this scenario an official Westwood one?
       unsigned char BuildLevel;  // buildable level
       unsigned char UnitCount;   // max # units
       unsigned char AIPlayers;   // # of AI players allowed
@@ -443,9 +442,9 @@ typedef struct {
 */
 class MultiMission {
  public:
-  MultiMission(char const *filename = nullptr, char const *description = nullptr,
-               char const *digest = nullptr, bool official = true,
-               bool expansion = false);
+  MultiMission(char const *filename = nullptr,
+               char const *description = nullptr, char const *digest = nullptr,
+               bool official = true, bool expansion = false);
 
   void Set_Description(char const *description);
   void Set_Filename(char const *filename);

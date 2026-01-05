@@ -45,7 +45,6 @@
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/factory.h"
-#include "ra/function.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/overlay.h"

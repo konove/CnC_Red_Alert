@@ -47,13 +47,10 @@
 
 #include "ra/connect.h"
 
+#include <bits/types/struct_timeb.h>
 #include <sys/timeb.h>
 
-#include <cstdio>
 #include <cstring>
-
-#include "ra/function.h"
-#include "ra/woldebug.h"
 
 /*
 ********************************* Globals ***********************************

@@ -51,12 +51,10 @@
 #include <cstdio>
 #include <cstring>
 
+#include "ra/conquer.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/function.h"
-
-#ifdef FIXIT_VERSION_3
-#include "ra/rawolapi.h"  //	For version number.
-#endif
+#include "ra/rawfile.h"
 
 /****************************** Globals ************************************/
 //---------------------------------------------------------------------------
@@ -120,7 +118,9 @@ VersionClass::VersionClass(void)
  ** Thus, version 1.07 would appear as 0x0001 0700
  **
  *                                                                         *
- *   This format guarantees that a greater-than or less-than comparison * will work on version numbers.														*
+ *   This format guarantees that a greater-than or less-than comparison * will
+ * work on version numbers.
+ *							*
  *                                                                         *
  * CHEAT format:
  ** Byte 3: Month #
@@ -158,10 +158,11 @@ VersionClass::VersionClass(void)
  *=========================================================================*/
 
 // ajw Note: This function is no longer called. MIN_VERSION is now incorrect,
-// but I don't have time 	for a full rebuild (3 hrs!), and as MIN_VERSION is no
-//longer referred to, I'm going to leave it. 	Really, it should be deleted or
-//commented out. 	Version number used is now GAME_VERSION. 	Note also that
-//VERSION_RA_300 is wrong, but not used.
+// but I don't have time 	for a full rebuild (3 hrs!), and as MIN_VERSION
+// is no
+// longer referred to, I'm going to leave it. 	Really, it should be deleted or
+// commented out. 	Version number used is now GAME_VERSION. 	Note
+// also that VERSION_RA_300 is wrong, but not used.
 
 unsigned long VersionClass::Version_Number(void) {
   //------------------------------------------------------------------------
@@ -376,7 +377,7 @@ unsigned short VersionClass::Minor_Version(void) {
 #else
 
 #ifdef FIXIT_VERSION_3  //	Insanity. CS installation should not have
-                        //affected version number. ajw
+                        // affected version number. ajw
 
   MinorVer = MINOR_VERSION;
 
@@ -573,14 +574,16 @@ void VersionClass::Init_Clipping(void) {
  *                                                                         *
  * This routine compares another program's supported min/max version * range
  *with the range currently defined by 'MinClipVer' and 'MaxClipVer'.* If there
- *is overlap in the two ranges, Min & MaxClipVer are adjusted		* to the bounds of the overlap. The routine returns the largest version	* number
+ *is overlap in the two ranges, Min & MaxClipVer are adjusted		* to the
+ * bounds of the overlap. The routine returns the largest version	* number
  *shared by the ranges (MaxClipVer).
  **
  *																									*
  * Thus, by calling Init_Clipping(), then a series of Clip_Version() calls,*
  * a mutually-acceptable range of version #'s may be negotiated between *
- * different versions of this program.  The max shared version may then * be used to decide upon a communications protocol that all programs		*
- * support.
+ * different versions of this program.  The max shared version may then * be
+ * used to decide upon a communications protocol that all programs
+ *	* support.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -666,7 +669,7 @@ unsigned long VersionClass::Min_Version(void) {
 
   //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
   //	But no time to do three full rebuilds right now, so I'm not deleting
-  //them from the header file...   ajw
+  // them from the header file...   ajw
   return GAME_VERSION;
 
 #else  //	FIXIT_VERSION_3
@@ -725,7 +728,7 @@ unsigned long VersionClass::Max_Version(void) {
 
   //	Note! I'm no longer using MIN_VERSION, MAX_VERSION, or VERSION_RA_300!
   //	But no time to do three full rebuilds right now, so I'm not deleting
-  //them from the header file...   ajw
+  // them from the header file...   ajw
   return GAME_VERSION;
 
 #else

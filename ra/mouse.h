@@ -40,8 +40,14 @@
 #ifndef CNC_RED_ALERT_RA_MOUSE_H_
 #define CNC_RED_ALERT_RA_MOUSE_H_
 
-#include "ra/stage.h"
+#include "ra/defines.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/pipe.h"
 #include "ra/scroll.h"
+#include "ra/straw.h"
+#include "sdllib/include/keyboard.h"
 
 class MouseClass : public ScrollClass {
  public:

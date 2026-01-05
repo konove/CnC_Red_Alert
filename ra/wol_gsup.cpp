@@ -20,19 +20,20 @@
 
 #include "port/ex_string.h"
 #include "ra/externs.h"
-#include "ra/function.h"
 #include "ra/session.h"
+#include "ra/vector.h"
 
 #ifdef WOLAPI_INTEGRATION  //	Now implies also WINSOCK_IPX, WIN32, and
                            // FIXIT_CSII must be true
 
-#include "ra/wol_gsup.h"
-#include "IconList.h"
 #include <ctime>
-#include "WolStrng.h"
-#include "ra/wsproto.h"
+
 #include "BigCheck.h"
+#include "IconList.h"
 #include "ToolTip.h"
+#include "WolStrng.h"
+#include "ra/wol_gsup.h"
+#include "ra/wsproto.h"
 
 extern char const* EngMisStr[];
 
@@ -698,8 +699,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       Session.Options.ScenarioIndex = 0;  // 1st scenario is selected
 
       ScenarioDisplayMode(SCENARIO_RA);  //	Always start on RedAlert tab.
-                                         //Next line depends on selected item in
-                                         // list matching selected scenario.
+                                         // Next line depends on selected item
+                                         // in list matching selected scenario.
       //			pStaticDescrip->Set_Text( pILScens->Get_Item(
       // pILScens->Current_Index() ), false );
       strcpy(szScenarioNameDisplay,
@@ -2173,7 +2174,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         //			debugprint( "______________Host received invalid
         // accept from '%s'. ID = %i when it should be %i.\n",
         //(char*)pUser->name, 				atoi( szRequest ),
-        //nHostLastParamID );
+        // nHostLastParamID );
       }
       break;
     case WOL_GAMEOPT_REQSTART:
@@ -2304,7 +2305,8 @@ void WOL_GameSetupDialog::ProcessInform(char* szInform) {
         //			{
         //				//	Rules.ini incompatible. Don't
         // respond to call for start.
-        // bLeaveDueToRulesMismatchTrigger = true; 				break;
+        // bLeaveDueToRulesMismatchTrigger = true;
+        // break;
         //			}
         User* pUserHost = pWO->pGameHost();
         if (pUserHost)  //	This better'd be true.
@@ -2888,7 +2890,8 @@ bool WOL_GameSetupDialog::InformAboutCancelStart() {
   //	Game host tells all guests that he wants to start the game.
   //	Note that nHostLastParamID is involved here. We want to make sure that
   // guest responses apply 	to the latest WOL_GAMEOPT_INFSTART, and not to
-  // an earlier one we canceled out of. 	debugprint( "InformAboutCancelStart!\n"
+  // an earlier one we canceled out of. 	debugprint(
+  // "InformAboutCancelStart!\n"
   //);
 
   char szSend[10];
@@ -2978,7 +2981,8 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
       // myself, as I'm the host. 			if( strcmp(
       // szPlayerName, pWO->szMyName ) != 0
       //&& pWO->bItemMarkedAccepted( i ) ) 				strcat(
-      //szSendPiece, " 1" ); 			else 				strcat( szSendPiece, " 0"
+      // szSendPiece, " 1" ); 			else
+      // strcat( szSendPiece, " 0"
       //);
 
       strcat(szSend, szSendPiece);
@@ -3506,9 +3510,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   */
   //	gotit		WWGetPrivateProfileString("Options", "Scenario",
   //"SCM01EA.INI",
-  //Session.Options.ScenarioDescription,
-  //sizeof (Session.Options.ScenarioDescription),
-  //buffer); WWDebugString ("RA95I -
+  // Session.Options.ScenarioDescription,
+  // sizeof (Session.Options.ScenarioDescription),
+  // buffer); WWDebugString ("RA95I -
   // Scenario is "); WWDebugString (Session.Options.ScenarioDescription);
   // WWDebugString ("\n");
 

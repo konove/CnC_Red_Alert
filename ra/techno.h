@@ -40,15 +40,24 @@
 #ifndef TECHNO_H
 #define TECHNO_H
 
+#include "ra/bullet.h"
+#include "ra/cargo.h"
+#include "ra/ccptr.h"
+#include "ra/crew.h"
+#include "ra/defines.h"
+#include "ra/door.h"
+#include "ra/face.h"
+#include "ra/facing.h"
+#include "ra/fixed.h"
+#include "ra/flasher.h"
+#include "ra/ftimer.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
 #include "ra/radio.h"
 #include "ra/stage.h"
-#include "ra/cargo.h"
-#include "ra/flasher.h"
-#include "ra/house.h"
-#include "ra/target.h"
-#include "ra/bullet.h"
-#include "ra/door.h"
-#include "ra/crew.h"
+#include "ra/type.h"
 
 /****************************************************************************
 **	This is the common data between building and units.
@@ -257,7 +266,7 @@ class TechnoClass : public RadioClass,
         Crew(x),
         CloakDelay(x),
         PrimaryFacing(x),
-        Arm(x){};
+        Arm(x) {};
 #else
   TechnoClass(NoInitClass const &x)
       : RadioClass(x),
@@ -270,7 +279,7 @@ class TechnoClass : public RadioClass,
         Crew(x),
         CloakDelay(x),
         PrimaryFacing(x),
-        Arm(x){};
+        Arm(x) {};
 #endif
   virtual ~TechnoClass(void) { House = nullptr; };
 
@@ -345,7 +354,8 @@ class TechnoClass : public RadioClass,
   virtual bool In_Range(COORDINATE coord, int which = 0) const;
   virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(ObjectClass const *target, int which = 0) const;
-  virtual void Death_Announcement(TechnoClass const *source = nullptr) const = 0;
+  virtual void Death_Announcement(
+      TechnoClass const *source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual void Assign_Target(TARGET target);
@@ -356,7 +366,8 @@ class TechnoClass : public RadioClass,
   virtual int Weapon_Range(int which) const;
   virtual bool Captured(HouseClass *newowner);
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr, bool forced = false);
+                                 TechnoClass *source = nullptr,
+                                 bool forced = false);
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
                      TechnoClass const **object, int &value,
                      int zone = 0) const;

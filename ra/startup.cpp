@@ -40,29 +40,45 @@
 
 #include "ra/startup.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 
+#include "ra/cdfile.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/ini.h"
 #include "ra/init.h"
+#include "ra/ipx.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/nullconn.h"
+#include "ra/palette.h"
 #include "ra/rawfile.h"
 #include "ra/session.h"
+#include "ra/special.h"
 #include "ra/wwfile.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/file.h"
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/playcd.h"
 #include "sdllib/include/timer.h"
 #include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef _WIN32
 #include <direct.h>  //chdir
-#else
-#include <unistd.h>
-#endif
 
-#ifdef _WIN32
 #include "ra/ccdde.h"
 #include "ra/ipx95.h"
 #endif  // WIN32

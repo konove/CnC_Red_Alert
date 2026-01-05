@@ -62,18 +62,22 @@
 
 #include "ra/wsproto.h"
 
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include <cassert>
 #include <cerrno>
 #include <cstdio>
+#include <cstring>
 
 #include "ra/externs.h"
-#include "ra/function.h"
+#include "ra/ipxaddr.h"
+#include "ra/jshell.h"
 
 #ifdef _WIN32
 typedef int socklen_t;
 #else
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/socket.h>
 
 #define INVALID_SOCKET -1
 #define INVALID_HANDLE_VALUE NULL

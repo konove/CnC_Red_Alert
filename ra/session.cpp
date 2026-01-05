@@ -53,11 +53,34 @@
 #include "ra/session.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/conquer.h"
 #include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/ini.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/queue.h"
+#include "ra/rawfile.h"
+#include "ra/unit.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/file.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 #ifndef PORTABLE
 #include <dos.h>  // for station ID computation

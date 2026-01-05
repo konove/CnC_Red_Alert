@@ -45,8 +45,6 @@
  *   MapEditClass::Size_Map -- lets user set size & location of map        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************
@@ -340,7 +338,8 @@ int MapEditClass::Load_Scenario(void) {
     //	if (fp) {
     //		fclose(fp);
     //		rc = WWMessageBox().Process("File exists. Replace?", TXT_YES,
-    //TXT_NO); 		HidPage.Clear(); 		Flag_To_Redraw(true); 		Render(); 		if (rc==1) {
+    // TXT_NO); 		HidPage.Clear();
+    // Flag_To_Redraw(true); 		Render(); 		if (rc==1) {
     //			return(-1);
     //		}
     //	}
@@ -953,16 +952,17 @@ int MapEditClass::Load_Scenario(void) {
       D_DIALOG_W = 350,  // dialog width
       D_DIALOG_H = 225,  // dialog height
       D_DIALOG_X = 0,    // centered x-coord
-      D_DIALOG_Y = 0,    // centered y-coord
-                         //		D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
-                         //// coord of x-center
+      D_DIALOG_Y =
+          0,  // centered y-coord
+              //		D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),
+              //// coord of x-center
 
       D_TXT8_H = 11,  // ht of 8-pt text
       D_MARGIN = 7,   // margin width/height
 
       D_BORD_X1 = D_DIALOG_X + 45,
       //		D_BORD_X1 = D_DIALOG_X + (D_DIALOG_W / 2 - MAP_CELL_W) /
-      //2,
+      // 2,
       D_BORD_Y1 = D_DIALOG_Y + 25,
       D_BORD_X2 = D_BORD_X1 + MAP_CELL_W + 1,
       D_BORD_Y2 = D_BORD_Y1 + MAP_CELL_H + 1,
@@ -1093,16 +1093,16 @@ int MapEditClass::Load_Scenario(void) {
             LogicPage->Draw_Rect(D_BORD_X1, D_BORD_Y1, D_BORD_X2, D_BORD_Y2,
                                  scheme->Shadow);
             //					for (index = D_BORD_X1; index <
-            //D_BORD_X2; 						index += (320/ICON_PIXEL_W)) {
-            //						LogicPage->Put_Pixel(index,
-            //D_BORD_Y1-1, scheme->Shadow); 						LogicPage->Put_Pixel(index,
-            //D_BORD_Y2+1, scheme->Shadow);
+            // D_BORD_X2; 						index +=
+            // (320/ICON_PIXEL_W)) {
+            // LogicPage->Put_Pixel(index, D_BORD_Y1-1, scheme->Shadow);
+            // LogicPage->Put_Pixel(index, D_BORD_Y2+1, scheme->Shadow);
             //					}
             //					for (index = D_BORD_Y1; index <
-            //D_BORD_Y2-8; 						index += (200/ICON_PIXEL_H)) {
-            //						LogicPage->Put_Pixel(D_BORD_X1-1,
-            //index, scheme->Shadow); 						LogicPage->Put_Pixel(D_BORD_X2+1, index,
-            //scheme->Shadow);
+            // D_BORD_Y2-8; 						index +=
+            // (200/ICON_PIXEL_H)) {
+            // LogicPage->Put_Pixel(D_BORD_X1-1, index, scheme->Shadow);
+            // LogicPage->Put_Pixel(D_BORD_X2+1, index, scheme->Shadow);
             //					}
 
             /*
@@ -1137,10 +1137,13 @@ int MapEditClass::Load_Scenario(void) {
                              TBLACK, TPF_DROPSHADOW | TPF_EFNT);
             //					txt_y += 8;
             //					Plain_Text_Print("GDI Unit",
-            //txt_x, txt_y, YELLOW, TBLACK, TPF_DROPSHADOW | TPF_EFNT); 					txt_y +=
-            //8; 					Plain_Text_Print("Nod Unit", txt_x, txt_y, RED, TBLACK,
-            //TPF_DROPSHADOW | TPF_EFNT); 					txt_y += 8; 					Plain_Text_Print("Neutral
-            //Unit", txt_x, txt_y, PURPLE, TBLACK, TPF_DROPSHADOW | TPF_EFNT);
+            // txt_x, txt_y, YELLOW, TBLACK, TPF_DROPSHADOW | TPF_EFNT);
+            // txt_y += 8;
+            // Plain_Text_Print("Nod Unit", txt_x, txt_y, RED, TBLACK,
+            // TPF_DROPSHADOW | TPF_EFNT);
+            // txt_y += 8;
+            // Plain_Text_Print("Neutral Unit", txt_x, txt_y, PURPLE, TBLACK,
+            // TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
             Plain_Text_Print("Terrain Object", txt_x, txt_y, DKGREEN, TBLACK,
                              TPF_DROPSHADOW | TPF_EFNT);
@@ -1267,9 +1270,10 @@ int MapEditClass::Load_Scenario(void) {
             **	Erase old coordinates
             */
             //					LogicPage->Fill_Rect( D_DIALOG_X
-            //+ 7, 						D_DIALOG_Y + D_DIALOG_H - D_OK_H - 22, 						D_DIALOG_X +
-            //D_DIALOG_W - 7, 						D_DIALOG_Y + D_DIALOG_H - D_OK_H - 22 + 10,
-            //BLACK);
+            //+ 7, 						D_DIALOG_Y +
+            // D_DIALOG_H - D_OK_H - 22,
+            // D_DIALOG_X + D_DIALOG_W - 7,
+            // D_DIALOG_Y + D_DIALOG_H - D_OK_H - 22 + 10, BLACK);
 
             /*
             **	Draw the coordinates

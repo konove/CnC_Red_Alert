@@ -47,6 +47,8 @@
 #include "ra/connmgr.h"
 #include "ra/nullconn.h"
 #include "ra/session.h"
+#include "ra/gadget.h"
+#include "sdllib/include/keyboard.h"
 
 /*
 ***************************** Class Declaration *****************************

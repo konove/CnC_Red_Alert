@@ -46,6 +46,7 @@
 
 #include "ra/reinf.h"
 
+#include <string.h>
 #include <cassert>
 
 #include "ra/aircraft.h"
@@ -54,6 +55,18 @@
 #include "ra/inline.h"
 #include "ra/team.h"
 #include "ra/ww_audio.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/face.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/scenario.h"
+#include "ra/techno.h"
+#include "ra/unit.h"
 
 /***********************************************************************************************
  * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *

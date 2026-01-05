@@ -40,9 +40,20 @@
 #ifndef TEAM_H
 #define TEAM_H
 
-#include "ra/wwfile.h"
-#include "ra/teamtype.h"
+#include <cstddef>
+
 #include "ra/abstract.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/ftimer.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/monoc.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/teamtype.h"
 
 /*
 ** Units are only allowed to stray a certain distance away from their
@@ -200,7 +211,7 @@ class TeamClass : public AbstractClass {
         SuspendTimer(x),
         Trigger(x),
         TimeOut(x),
-        Member(x){};
+        Member(x) {};
   virtual ~TeamClass(void);
   static void operator delete(void *ptr);
   static void *operator new(size_t size) throw();

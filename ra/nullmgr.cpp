@@ -53,6 +53,10 @@
 
 #include "ra/nullmgr.h"
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <algorithm>
 
 #include "ra/dialog.h"
@@ -63,6 +67,15 @@
 #include "ra/textbtn.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/misc.h"
+#include "ra/combuf.h"
+#include "ra/connect.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/jshell.h"
+#include "ra/vector.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef WIN32
 #ifdef _WIN32
@@ -72,6 +85,7 @@
 #endif
 #include "sdllib/include/wincomm.h"
 #include "sdllib/include/modemreg.h"
+
 extern ModemRegistryEntryClass *ModemRegistry;
 #else
 #include "i86.h"

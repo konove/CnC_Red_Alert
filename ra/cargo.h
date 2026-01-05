@@ -41,6 +41,7 @@
 #define CARGO_H
 
 #include "ra/house.h"
+#include "ra/noinit.h"
 
 /****************************************************************************
 **	This class handles the basic cargo logic.

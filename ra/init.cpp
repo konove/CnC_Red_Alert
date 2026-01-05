@@ -62,47 +62,86 @@
  *- - - - - - - */
 #include "ra/init.h"
 
+#include <cassert>
+#include <cctype>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 #include <string>
-#include <string_view>
 
+#include "port/ex_string.h"
+#include "ra/_wsproto.h"
+#include "ra/buff.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/crc.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/event.h"
 #include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
 #include "ra/graphics_loader.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/ini.h"
 #include "ra/inline.h"
+#include "ra/internet.h"
 #include "ra/intro.h"
+#include "ra/ipx.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/loaddlg.h"
+#include "ra/logic.h"
 #include "ra/menus.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
+#include "ra/msglist.h"
 #include "ra/netdlg.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
+#include "ra/palette.h"
+#include "ra/pk.h"
+#include "ra/queue.h"
 #include "ra/ramfile.h"
+#include "ra/random.h"
+#include "ra/rawfile.h"
+#include "ra/rgb.h"
+#include "ra/rndstraw.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/session.h"
+#include "ra/sidebar.h"
+#include "ra/special.h"
 #include "ra/startup.h"
-#include "sdllib/include/file.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_audio.h"
-#ifdef WIN32
-#ifdef WINSOCK_IPX
-#include "ra/internet.h"
-#include "ra/wspipx.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/vector.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
-#else  // WINSOCK_IPX
-#include "ra/tcpip.h"
-#endif  // WINSOCK_IPX
-
-#endif
-#ifndef WIN32
-#include <conio.h>
-#include <sys\timeb.h>
-#endif
-#include <ctime>
-
-#include "ra/ccdde.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "winvq/vqa32/vqaplay.h"
 
 #ifdef DONGLE
 #include "cbn_.h"
@@ -113,8 +152,6 @@
 #endif
 
 RemapControlType SidebarScheme;
-
-#include "ra/woldebug.h"
 
 #ifdef CHEAT_KEYS
 extern bool bNoMovies;
@@ -211,8 +248,6 @@ static void Load_Prolog_Page(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-#include "ra/sha.h"
-// #include    <locale.h>
 bool Init_Game(int, char *[]) {
 /*
 **	Allocate the benchmark tracking objects only if the machine and

@@ -54,12 +54,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stddef.h>
 #include <filesystem>
 
 #include "externs.h"
 #include "ra/conquer.h"
 #include "ra/inline.h"
 #include "ra/type.h"
+#include "port/ex_string.h"
+#include "ra/const.h"
+#include "ra/defines.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/smudge.h"
+#include "sdllib/include/shape.h"
 
 static SmudgeTypeClass const Crater1(
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,

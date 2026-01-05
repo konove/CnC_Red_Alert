@@ -48,9 +48,13 @@
 
 #include "ra/mouse.h"
 
+#include <assert.h>
+
 #include "ra/externs.h"
 #include "ra/rawfile.h"
 #include "sdllib/include/shape.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 /*
 **	This points to the loaded mouse shapes.

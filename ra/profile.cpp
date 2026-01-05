@@ -42,6 +42,8 @@
 
 #include "ra/profile.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <cctype>
 #include <cstring>
 

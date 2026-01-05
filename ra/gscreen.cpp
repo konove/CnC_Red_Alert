@@ -56,6 +56,11 @@
 #include "ra/gadget.h"
 #include "ra/inline.h"
 #include "ra/session.h"
+#include "ra/display.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/msglist.h"
+#include "sdllib/include/ww_mouse.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 

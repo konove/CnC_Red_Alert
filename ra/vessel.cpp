@@ -73,6 +73,11 @@
 
 #include "ra/vessel.h"
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/externs.h"
@@ -83,6 +88,28 @@
 #include "ra/trigtype.h"
 #include "ra/weapon.h"
 #include "ra/ww_audio.h"
+#include "ra/abstract.h"
+#include "ra/building.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/coord.h"
+#include "ra/display.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/map.h"
+#include "ra/mission.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
+#include "ra/rect.h"
+#include "ra/rules.h"
+#include "ra/target.h"
+#include "ra/teamtype.h"
+#include "ra/unit.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *

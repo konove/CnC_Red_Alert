@@ -43,14 +43,13 @@
  *                                                                         *
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
-#ifdef WIN32
+#ifndef CNC_RED_ALERT_RA_TCPIP_H_
+#define CNC_RED_ALERT_RA_TCPIP_H_
 
 #ifdef _WIN32
 #include <winsock.h>
 #else
-#include "ra/compat.h"
-#include <netinet/in.h>
+
 typedef int SOCKET;
 typedef void *HANDLE;
 #define IN_ADDR in_addr
@@ -208,4 +207,4 @@ extern int Read_Game_Options(char *);
 
 #endif
 
-#endif  // WIN32
+#endif  // CNC_RED_ALERT_RA_TCPIP_H_

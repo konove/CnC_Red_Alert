@@ -44,9 +44,7 @@
 
 #include "ra/wspipx.h"
 
-#include <string.h>
-
-#include "ra/function.h"
+#include <cstring>
 
 #ifdef _WIN32
 /*

@@ -40,9 +40,16 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
+#include <stddef.h>
+
 #include "ra/ccptr.h"
 #include "ra/tevent.h"
 #include "ra/trigtype.h"
+#include "ra/defines.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
 
 class TriggerClass {
  public:

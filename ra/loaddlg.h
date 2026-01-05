@@ -45,6 +45,7 @@
 
 #include "ra/defines.h"
 #include "ra/list.h"
+#include "ra/vector.h"
 
 class FileEntryClass {
  public:

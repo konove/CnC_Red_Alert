@@ -48,6 +48,23 @@
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
 #include "session.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
+#include "ra/factory.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/special.h"
+#include "ra/target.h"
+#include "ra/tevent.h"
+#include "ra/type.h"
+#include "ra/vector.h"
 
 static unsigned FramesPerSecond = 0;
 

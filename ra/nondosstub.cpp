@@ -27,6 +27,13 @@
 #include "ra/interpal.h"
 #include "sdllib/include/iconcach.h"
 #include "sdllib/include/ww_audio.h"
+#include "ra/ccfile.h"
+#include "ra/compat.h"
+#include "ra/mouse.h"
+#include "ra/palette.h"
+#include "ra/theme.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 void output(short, short) {}
 

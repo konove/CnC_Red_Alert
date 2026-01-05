@@ -40,10 +40,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <cstdint>
+#include <cstring>
+
+#include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/function.h"
+#include "sdllib/include/iff.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/wsa.h"
+#include "sdllib/include/wwstd.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 

@@ -45,6 +45,7 @@
 #include "ra/pipe.h"
 #include "ra/straw.h"
 #include "ra/vector.h"
+#include "ra/object.h"
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node

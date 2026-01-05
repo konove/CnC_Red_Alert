@@ -125,44 +125,67 @@
 #include "ra/netdlg.h"
 
 #include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 
+#include "port/ex_string.h"
+#include "ra/_wsproto.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/drop.h"
 #include "ra/edit.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/house.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/ipx.h"
+#include "ra/ipxgconn.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
 #include "ra/list.h"
+#include "ra/mouse.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
+#include "ra/msglist.h"
+#include "ra/palette.h"
+#include "ra/queue.h"
+#include "ra/random.h"
+#include "ra/rules.h"
 #include "ra/saveload.h"
+#include "ra/scenario.h"
 #include "ra/session.h"
+#include "ra/special.h"
 #include "ra/startup.h"
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
+#include "ra/type.h"
+#include "ra/vector.h"
+#include "ra/version.h"
 #include "ra/ww_audio.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
-
-#ifdef WIN32
-#ifdef WINSOCK_IPX
-#include "ra/wsproto.h"
-#else  // WINSOCK_IPX
-#include "ra/tcpip.h"
-#endif  // WINSOCK_IPX
-#include "ra/ccdde.h"
-#else  // WIN32
-#include "ra/fakesock.h"
-#include <dos.h>
-#endif  // WIN32
-
-#include <ctime>
-
-#include "ra/woldebug.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #define SHOW_MONO 0
 // #define OLDWAY			1
@@ -8962,8 +8985,8 @@ static int Net_Fake_Join_Dialog(void) {
 #endif
 
               if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
-                                             sizeof(Session.ScenarioFileName),
-                                             1)) {
+                                               sizeof(Session.ScenarioFileName),
+                                               1)) {
                 break;
               } else {
                 /*

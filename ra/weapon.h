@@ -40,10 +40,13 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
+#include <stddef.h>
+
 #include "ra/ccini.h"
 #include "ra/noinit.h"
 #include "ra/type.h"
 #include "ra/warhead.h"
+#include "ra/defines.h"
 
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects

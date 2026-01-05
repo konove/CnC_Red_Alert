@@ -79,28 +79,69 @@
  *   Print_Framesync_Values -- displays frame-sync variables               *
  *   Check_Mirror -- Checks mirror memory                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#include "ra/queue.h"
+
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/ccfile.h"
+#include "ra/ccptr.h"
+#include "ra/connect.h"
 #include "ra/connmgr.h"
+#include "ra/conquer.h"
 #include "ra/defines.h"
-#include "ra/dialog.h"
 #include "ra/event.h"
 #include "ra/externs.h"
+#include "ra/facing.h"
+#include "ra/fixed.h"
 #include "ra/ftimer.h"
+#include "ra/globals.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/ipxmgr.h"
 #include "ra/jshell.h"
+#include "ra/layer.h"
+#include "ra/logic.h"
+#include "ra/mission.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
 #include "ra/msgbox.h"
+#include "ra/msglist.h"
 #include "ra/netdlg.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
+#include "ra/object.h"
+#include "ra/overlay.h"
+#include "ra/random.h"
+#include "ra/rules.h"
 #include "ra/saveload.h"
+#include "ra/scenario.h"
+#include "ra/session.h"
+#include "ra/smudge.h"
 #include "ra/startup.h"
+#include "ra/target.h"
+#include "ra/template.h"
 #include "ra/terrain.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vector.h"
+#include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/ww_audio.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"

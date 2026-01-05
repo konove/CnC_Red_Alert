@@ -46,7 +46,6 @@
 
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/function.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/vector.h"

@@ -51,12 +51,18 @@
 
 #include "ra/help.h"
 
+#include <stdio.h>
+#include <string.h>
 #include <algorithm>
 
 #include "ra/conquer.h"
 #include "ra/dialog.h"
 #include "ra/inline.h"
 #include "sdllib/include/font.h"
+#include "ra/coord.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 /*
 **	This is the holding buffer for the text overlap list. This buffer must

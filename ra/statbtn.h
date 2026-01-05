@@ -42,6 +42,7 @@
 
 #include "ra/gadget.h"
 #include "ra/buff.h"
+#include "ra/defines.h"
 
 class StaticButtonClass : public GadgetClass {
  public:

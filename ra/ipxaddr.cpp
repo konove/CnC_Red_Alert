@@ -47,12 +47,10 @@
 
 #include "ra/ipxaddr.h"
 
-#include <cstdio>
 #include <cstring>
 
-#ifdef WINSOCK_IPX
+#include "ra/_wsproto.h"
 #include "ra/wsproto.h"
-#endif  // WINSOCK_IPX
 
 /***************************************************************************
  * IPXAddressClass::IPXAddressClass -- class constructor                   *

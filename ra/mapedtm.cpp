@@ -39,8 +39,6 @@
  *   MapEditClass::Team_Members -- user picks makeup of a team             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************
@@ -184,7 +182,7 @@ int MapEditClass::Select_Team(char const *) {
     D_DIALOG_X = 0,    // centered x-coord
     D_DIALOG_Y = 0,    // centered y-coord
     //		D_DIALOG_CX = D_DIALOG_X + (D_DIALOG_W / 2),		// coord
-    //of x-center
+    // of x-center
 
     D_TXT8_H = 11,  // ht of 8-pt text
     D_MARGIN = 25,  // margin width/height
@@ -623,8 +621,9 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   //	if (house!=HOUSE_GOOD && house!=HOUSE_BAD && house != HOUSE_MULTI1 &&
   //		house != HOUSE_MULTI2 && house != HOUSE_MULTI3 && house !=
-  //HOUSE_MULTI4 ) { 		if (Scen.ScenPlayer == SCEN_PLAYER_MPLAYER) { 			house =
-  //HOUSE_MULTI1; 		} else { 			house = HOUSE_GOOD;
+  // HOUSE_MULTI4 ) { 		if (Scen.ScenPlayer == SCEN_PLAYER_MPLAYER) {
+  // house = HOUSE_MULTI1; 		} else { 			house =
+  // HOUSE_GOOD;
   //		}
   //	}
 
@@ -924,7 +923,7 @@ void MapEditClass::Draw_Member(TechnoTypeClass const *ptr, int index, int quant,
     Fancy_Text_Print("%d", x + 1, y + 1, scheme, TBLACK,
                      TPF_8POINT | TPF_DROPSHADOW, quant);
     //		Fancy_Text_Print("%d", x+1, y+D_PICTURE_H-8, scheme, TBLACK,
-    //TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
+    // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
   }
   Show_Mouse();
 }

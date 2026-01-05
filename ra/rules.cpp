@@ -55,6 +55,8 @@
 
 #include "ra/rules.h"
 
+#include <stdlib.h>
+#include <string.h>
 #include <algorithm>
 
 #include "ra/anim.h"
@@ -64,6 +66,13 @@
 #include "ra/readline.h"
 #include "ra/vortex.h"
 #include "ra/weapon.h"
+#include "ra/conquer.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
+#include "ra/mission.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/warhead.h"
 
 /***********************************************************************************************
  * _Scale_To_256 -- Scales a 1..100 number into a 1..255 number. *

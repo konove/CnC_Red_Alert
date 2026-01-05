@@ -48,9 +48,9 @@
 #include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/fuse.h"
+#include "ra/noinit.h"
 #include "ra/object.h"
 #include "ra/pipe.h"
-#include "ra/radio.h"
 #include "ra/straw.h"
 #include "ra/type.h"
 
@@ -86,10 +86,11 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
               WarheadType warhead, int speed);
 #ifdef FIXIT_MULTI_SAVE
   BulletClass(NoInitClass const &x)
-      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x){};
+      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {
+        };
 #else
   BulletClass(NoInitClass const &x)
-      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x){};
+      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x) {};
 #endif
   virtual ~BulletClass(void);
   operator BulletType(void) const { return Class->Type; };

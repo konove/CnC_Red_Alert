@@ -40,11 +40,24 @@
 #ifndef VESSEL_H
 #define VESSEL_H
 
+#include <cstddef>
+
+#include "ra/bullet.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
 #include "ra/drive.h"
+#include "ra/face.h"
+#include "ra/facing.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
 #include "ra/radio.h"
-#include "ra/cargo.h"
-#include "ra/mission.h"
-#include "ra/target.h"
+#include "ra/straw.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 
 class VesselClass : public DriveClass {
  public:
@@ -79,7 +92,7 @@ class VesselClass : public DriveClass {
 
   VesselClass(VesselType classid, HousesType house);
   VesselClass(NoInitClass const &x)
-      : DriveClass(x), Class(x), SecondaryFacing(x){};
+      : DriveClass(x), Class(x), SecondaryFacing(x) {};
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
@@ -119,7 +132,8 @@ class VesselClass : public DriveClass {
   virtual void Assign_Destination(TARGET target);
 
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr, int forced = false);
+                                 TechnoClass *source = nullptr,
+                                 int forced = false);
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
 
   virtual void Enter_Idle_Mode(bool initial = false);

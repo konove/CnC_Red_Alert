@@ -73,7 +73,6 @@
 
 #include <cctype>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 
 #include "ra/b64pipe.h"

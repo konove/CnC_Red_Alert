@@ -40,12 +40,13 @@
 #ifndef TEAMTYPE_H
 #define TEAMTYPE_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/house.h"
+#include "ra/noinit.h"
 #include "ra/pipe.h"
 #include "ra/straw.h"
 #include "ra/target.h"
@@ -77,11 +78,6 @@ typedef enum TeamMissionType {
   TMISSION_COUNT,
   TMISSION_FIRST = 0
 } TeamMissionType;
-
-/*
-** Forward declarations.
-*/
-class TechnoTypeClass;
 
 /*
 **	This structure contains one team mission value & its argument.
@@ -125,8 +121,8 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass(void);
-  TeamTypeClass(NoInitClass const &x) : AbstractTypeClass(x), Trigger(x){};
-  virtual ~TeamTypeClass(void){};
+  TeamTypeClass(NoInitClass const &x) : AbstractTypeClass(x), Trigger(x) {};
+  virtual ~TeamTypeClass(void) {};
 
   static void *operator new(size_t);
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };

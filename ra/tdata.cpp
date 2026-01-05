@@ -53,11 +53,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include <cstddef>
+#include <filesystem>
+
+#include "port/ex_string.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
 #include "ra/terrain.h"
 #include "ra/type.h"
-
-#include <filesystem>
 
 static short const _List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, REFRESH_EOL};

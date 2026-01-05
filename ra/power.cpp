@@ -49,6 +49,13 @@
 #include "ra/power.h"
 
 #include "ra/externs.h"
+#include "ra/conquer.h"
+#include "ra/fixed.h"
+#include "ra/house.h"
+#include "ra/mouse.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/shape.h"
 
 /*
 **	Points to the shape to use for the "desired" power level indicator.

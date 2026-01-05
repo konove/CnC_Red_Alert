@@ -45,6 +45,9 @@
 
 #include "ra/loaddlg.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <charconv>
 #include <filesystem>
 
@@ -65,6 +68,16 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/file.h"
 #include "sdllib/include/misc.h"
+#include "ra/ftimer.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
+#include "ra/palette.h"
+#include "ra/theme.h"
+#include "ra/toggle.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef _WIN32
 #include <io.h>  // for unlink

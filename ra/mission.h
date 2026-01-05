@@ -41,8 +41,11 @@
 #define MISSION_H
 
 #include "ra/ccini.h"
+#include "ra/defines.h"
+#include "ra/fixed.h"
 #include "ra/ftimer.h"
-#include "ra/monoc.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
 #include "ra/object.h"
 
 /****************************************************************************
@@ -72,8 +75,8 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(RTTIType rtti, int id);
-  MissionClass(NoInitClass const &x) : ObjectClass(x), Timer(x){};
-  virtual ~MissionClass(void){};
+  MissionClass(NoInitClass const &x) : ObjectClass(x), Timer(x) {};
+  virtual ~MissionClass(void) {};
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.

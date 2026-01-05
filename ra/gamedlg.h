@@ -40,11 +40,9 @@
 #ifndef GAMEDLG_H
 #define GAMEDLG_H
 
-#include "ra/gadget.h"
-
 class GameControlsClass {
  public:
-  GameControlsClass(void){};
+  GameControlsClass(void) {};
   void Process(void);
 };
 

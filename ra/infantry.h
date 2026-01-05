@@ -39,8 +39,24 @@
 
 #ifndef INFANTRY_H
 #define INFANTRY_H
+#include <stddef.h>
+
 #include "ra/cell.h"
 #include "ra/foot.h"
+#include "ra/bullet.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 
 class InfantryClass : public FootClass {
  public:

@@ -49,6 +49,7 @@
 #include "ra/pipe.h"
 #include "ra/straw.h"
 #include "ra/type.h"
+#include "ra/noinit.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function

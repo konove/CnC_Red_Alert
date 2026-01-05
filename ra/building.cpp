@@ -129,6 +129,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -136,6 +137,8 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/drive.h"
@@ -146,7 +149,7 @@
 #include "ra/factory.h"
 #include "ra/fixed.h"
 #include "ra/foot.h"
-#include "ra/function.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"

@@ -42,6 +42,15 @@
 
 #include "ra/gscreen.h"
 #include "ra/crate.h"
+#include "ra/cell.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/house.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/vector.h"
 
 class MapClass : public GScreenClass {
  public:

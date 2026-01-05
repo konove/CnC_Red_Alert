@@ -114,6 +114,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <assert.h>
 #include <algorithm>
 
 #include "ra/anim.h"
@@ -124,6 +125,32 @@
 #include "ra/trigger.h"
 #include "ra/type.h"
 #include "session.h"
+#include "ra/abstract.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/fixed.h"
+#include "ra/globals.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/jshell.h"
+#include "ra/logic.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/radio.h"
+#include "ra/rawfile.h"
+#include "ra/rect.h"
+#include "ra/rules.h"
+#include "ra/target.h"
+#include "ra/techno.h"
+#include "ra/tevent.h"
+#include "ra/vector.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the

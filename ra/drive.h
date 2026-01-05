@@ -41,6 +41,11 @@
 #define DRIVE_H
 
 #include "ra/foot.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects

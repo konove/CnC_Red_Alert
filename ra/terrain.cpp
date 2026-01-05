@@ -80,6 +80,10 @@
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "sdllib/include/shape.h"
+#include "ra/conquer.h"
+#include "ra/coord.h"
+#include "ra/globals.h"
+#include "ra/target.h"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.

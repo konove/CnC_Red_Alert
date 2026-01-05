@@ -42,7 +42,6 @@
 
 #include "ra/nullconn.h"
 
-#include <cstdio>
 #include <cstring>
 
 #include "sdllib/include/wincomm.h"

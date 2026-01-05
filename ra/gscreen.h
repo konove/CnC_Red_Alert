@@ -40,13 +40,16 @@
 #ifndef GSCREEN_H
 #define GSCREEN_H
 
-#include "ra/cell.h"
+#include "ra/defines.h"
 #include "ra/gadget.h"
+#include "ra/noinit.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 
 class GScreenClass {
  public:
   GScreenClass(void);
-  GScreenClass(NoInitClass const &){};
+  GScreenClass(NoInitClass const &) {};
 
   /*
   ** Initialization

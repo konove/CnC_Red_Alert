@@ -41,9 +41,10 @@
  * 																								*
  *	Displaying a message:
  ** Call Add_Message(); the buffer you pass in is copied into a static * buffer
- *in this class.  Each message is given a timeout; after this		* time, the message is removed from the displayed list.						*
- *   Each message also has a 2-byte ID, which can be used to identify the
- *   sender.
+ *in this class.  Each message is given a timeout; after this		* time,
+ * the message is removed from the displayed list.
+ *		* Each message also has a 2-byte ID, which can be used to
+ * identify the sender.
  *																									*
  * Editing a message:
  ** Call Add_Edit(), giving it the color & style to print in.  An
@@ -94,14 +95,15 @@
 #ifndef MSGLIST_H
 #define MSGLIST_H
 
-#include "ra/externs.h"
+#include "ra/defines.h"
+#include "sdllib/include/keyboard.h"
 
 //***************************************************************************
 // Defines
 //***************************************************************************
 //---------------------------------------------------------------------------
 //	Max length of inter-player message buffers.  Messages.Init() should
-//specify
+// specify
 // a value <= this.  For editing messages, the "to" field length is added to
 // this length to generate the entire editable message length.  For displayed
 // messages, a "From" prefix length should be added to this value to generate

@@ -41,6 +41,7 @@
 #define SPECIAL_H
 
 #include "ra/conquer.h"
+#include "ra/defines.h"
 
 class SpecialClass {
  public:

@@ -41,9 +41,15 @@
 #define SIDEBAR_H
 
 #include "ra/control.h"
-#include "ra/factory.h"
+#include "ra/defines.h"
+#include "ra/gadget.h"
+#include "ra/noinit.h"
+#include "ra/pipe.h"
 #include "ra/power.h"
 #include "ra/shapebtn.h"
+#include "ra/stage.h"
+#include "ra/straw.h"
+#include "sdllib/include/keyboard.h"
 
 class InitClass {};
 
@@ -145,7 +151,7 @@ class SidebarClass : public PowerClass {
     class SelectClass : public ControlClass {
      public:
       SelectClass(void);
-      SelectClass(NoInitClass const &x) : ControlClass(x){};
+      SelectClass(NoInitClass const &x) : ControlClass(x) {};
 
       void Set_Owner(StripClass &strip, int index);
 
@@ -159,7 +165,7 @@ class SidebarClass : public PowerClass {
    public:
     StripClass(void) {}
     StripClass(InitClass const &);
-    StripClass(NoInitClass const &){};
+    StripClass(NoInitClass const &) {};
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
@@ -374,7 +380,7 @@ class SidebarClass : public PowerClass {
         : GadgetClass((int)((int)SIDE_X + 8) * RESFACTOR,
                       (int)SIDE_Y * RESFACTOR,
                       (int)((int)SIDE_WIDTH - 1) * RESFACTOR - 1,
-                      (int)((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP){};
+                      (int)((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {};
     // #else
     //				SBGadgetClass(void) : GadgetClass((int)SIDE_X+8,
     //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif

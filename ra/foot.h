@@ -40,13 +40,18 @@
 #ifndef FOOT_H
 #define FOOT_H
 
-#include "ra/target.h"
-#include "ra/type.h"
-#include "ra/techno.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/fixed.h"
 #include "ra/ftimer.h"
-
-class UnitClass;
-class BuildingClass;
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/radio.h"
+#include "ra/target.h"
+#include "ra/techno.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
@@ -262,7 +267,7 @@ class FootClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   FootClass(NoInitClass const &x)
-      : TechnoClass(x), Team(x), PathDelay(x), BaseAttackTimer(x){};
+      : TechnoClass(x), Team(x), PathDelay(x), BaseAttackTimer(x) {};
   FootClass(RTTIType rtti, int id, HousesType house);
 
   /*---------------------------------------------------------------------
@@ -312,7 +317,8 @@ class FootClass : public TechnoClass {
   */
   virtual void Stun(void);
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr, bool forced = false);
+                                 TechnoClass *source = nullptr,
+                                 bool forced = false);
   virtual void Death_Announcement(TechnoClass const *source = nullptr) const;
 
   /*

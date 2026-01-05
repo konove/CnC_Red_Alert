@@ -41,6 +41,8 @@
 #define CONTROL_H
 
 #include "ra/gadget.h"
+#include "ra/noinit.h"
+#include "sdllib/include/keyboard.h"
 
 /***************************************************************************
  * ControlClass -- Region tracking class

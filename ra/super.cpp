@@ -54,6 +54,7 @@
 
 #include "ra/defines.h"
 #include "ra/ww_audio.h"
+#include "ra/fixed.h"
 
 /***********************************************************************************************
  * SuperClass::SuperClass -- Constructor for special super weapon objects. *

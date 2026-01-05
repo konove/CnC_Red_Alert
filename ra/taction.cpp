@@ -94,6 +94,8 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
+#include "ra/conquer.h"
+#include "ra/ftimer.h"
 
 /*
 **	These are the text names for the various actions. If the action name

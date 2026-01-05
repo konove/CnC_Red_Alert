@@ -40,11 +40,11 @@
 #ifndef RADIO_H
 #define RADIO_H
 
+#include "ra/defines.h"
 #include "ra/globals.h"
 #include "ra/mission.h"
-
-class ObjectClass;
-class TechnoClass;
+#include "ra/noinit.h"
+#include "ra/object.h"
 
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore
@@ -77,8 +77,8 @@ class RadioClass : public MissionClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr){};
-  RadioClass(NoInitClass const &x) : MissionClass(x){};
+  RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {};
+  RadioClass(NoInitClass const &x) : MissionClass(x) {};
   virtual ~RadioClass(void) { Radio = nullptr; };
 
   /*---------------------------------------------------------------------

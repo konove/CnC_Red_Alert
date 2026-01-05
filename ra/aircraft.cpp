@@ -112,13 +112,16 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/conquer.h"
 #include "ra/const.h"
+#include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
@@ -126,6 +129,7 @@
 #include "ra/facing.h"
 #include "ra/fixed.h"
 #include "ra/foot.h"
+#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -136,6 +140,7 @@
 #include "ra/mission.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
+#include "ra/queue.h"
 #include "ra/radio.h"
 #include "ra/rect.h"
 #include "ra/rules.h"

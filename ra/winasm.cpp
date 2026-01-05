@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <cstdint>
 
 #include "sdllib/include/gbuffer.h"

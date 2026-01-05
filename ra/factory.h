@@ -40,8 +40,15 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
+#include <stddef.h>
+
 #include "ra/stage.h"
 #include "ra/type.h"
+#include "ra/defines.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
 
 class FactoryClass : private StageClass {
  public:

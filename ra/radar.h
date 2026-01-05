@@ -41,6 +41,12 @@
 #define RADAR_H
 
 #include "ra/display.h"
+#include "ra/defines.h"
+#include "ra/gadget.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "sdllib/include/keyboard.h"
 
 class RadarClass : public DisplayClass {
  public:

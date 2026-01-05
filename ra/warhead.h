@@ -40,8 +40,12 @@
 #ifndef WARHEAD_H
 #define WARHEAD_H
 
+#include <stddef.h>
+
 #include "ra/ccini.h"
 #include "ra/noinit.h"
+#include "ra/defines.h"
+#include "ra/fixed.h"
 
 /**********************************************************************
 **	Each of the warhead types has specific characteristics. This structure

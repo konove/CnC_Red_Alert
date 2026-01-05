@@ -55,11 +55,31 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stddef.h>
 #include <filesystem>
+#include <string>
 
 #include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/type.h"
+#include "port/ex_string.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/const.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/rawfile.h"
+#include "ra/rules.h"
 
 static DoInfoStruct DogDoControls[DO_COUNT] = {
     {0, 1, 1},      // DO_STAND_READY

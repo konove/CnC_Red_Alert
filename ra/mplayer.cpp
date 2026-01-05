@@ -55,6 +55,17 @@
 #include "ra/nulldlg.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/gadget.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/palette.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 extern bool Is_Mission_Counterstrike(char *file_name);
 
