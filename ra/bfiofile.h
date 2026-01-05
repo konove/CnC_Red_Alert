@@ -40,7 +40,10 @@
 #ifndef BFIOFILE_H
 #define BFIOFILE_H
 
+#include <cstdio>
+
 #include "ra/rawfile.h"
+#include "ra/wwfile.h"
 
 /*
 **	This derivation of the raw file class handles buffering the input/output

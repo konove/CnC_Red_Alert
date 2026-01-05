@@ -43,7 +43,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/radio.h"
+
+#include "ra/techno.h"
 
 /*
 **	These are the text representations of the radio messages that can be

@@ -40,11 +40,11 @@
 #ifndef CCFILE_H
 #define CCFILE_H
 
-// #include	<wwlib32.h>
-#include <climits>
-#include "ra/mixfile.h"
-#include "ra/cdfile.h"
+#include <cstdio>
+
 #include "ra/buff.h"
+#include "ra/cdfile.h"
+#include "ra/compat.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).

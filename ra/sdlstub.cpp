@@ -1,13 +1,16 @@
 // more portable replacements for winstub
 
-#include "ra/function.h"
-
+#include "ra/externs.h"
 #include "sdllib/include/ww_win.h"
 
-#undef WIN32
-#include "sdllib/include/misc.h"
+// #include <SDL.h>  // sdl includes leaking into the rest of the code is bad
 
-#include <SDL.h>  // sdl includes leaking into the rest of the code is bad
+#include <SDL_events.h>
+
+#include "ra/language.h"
+#include "ra/msgbox.h"
+#include "ra/nullconn.h"
+#include "sdllib/include/misc.h"
 
 void Focus_Loss(void);
 void Focus_Restore(void);

@@ -50,7 +50,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/map.h"
 
 /***********************************************************************************************
  * CellClass::Should_Save -- Should the cell be written to disk? *

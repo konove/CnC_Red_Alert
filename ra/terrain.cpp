@@ -62,8 +62,24 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/terrain.h"
+
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+
+#include "ra/anim.h"
+#include "ra/cell.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
+#include "ra/keyframe.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "sdllib/include/shape.h"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.

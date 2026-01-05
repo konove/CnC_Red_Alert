@@ -49,9 +49,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
+#include "ra/help.h"
+
 #include <algorithm>
+
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/inline.h"
+#include "sdllib/include/font.h"
 
 /*
 **	This is the holding buffer for the text overlap list. This buffer must

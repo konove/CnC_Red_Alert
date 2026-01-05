@@ -116,7 +116,14 @@
 
 #include <algorithm>
 
-#include "ra/function.h"
+#include "ra/anim.h"
+#include "ra/combat.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/tracker.h"
+#include "ra/trigger.h"
+#include "ra/type.h"
+#include "session.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the

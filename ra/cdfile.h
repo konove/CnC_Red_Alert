@@ -19,10 +19,12 @@
 #ifndef CDFILE_H
 #define CDFILE_H
 
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "ra/bfiofile.h"
+#include "ra/wwfile.h"
 
 // File I/O class with multi-directory search support.
 //
@@ -113,5 +115,13 @@ class CDFileClass : public BufferIOFileClass {
   // The drive letter of the last used CD drive
   static int last_cd_drive_;
 };
+
+#ifdef WIN32
+int harderr_handler(unsigned, unsigned, unsigned *);
+#else
+int harderr_handler(unsigned, unsigned, unsigned __far *);
+#endif
+
+int Get_CD_Drive(void);
 
 #endif

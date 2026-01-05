@@ -40,10 +40,11 @@
 #ifndef PKPIPE_H
 #define PKPIPE_H
 
+#include "ra/blowfish.h"
+#include "ra/blowpipe.h"
 #include "ra/pipe.h"
 #include "ra/pk.h"
 #include "ra/rndstraw.h"
-#include "ra/blowpipe.h"
 
 /*
 **	This pipe will encrypt/decrypt the data stream. The data is encrypted by

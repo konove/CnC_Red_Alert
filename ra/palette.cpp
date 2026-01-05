@@ -1,8 +1,14 @@
 #include "ra/palette.h"
 
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
+#include "ra/externs.h"
 #include "ra/function.h"
+#include "ra/jshell.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_win.h"
 
 PaletteClass PaletteClass::CurrentPalette;
 

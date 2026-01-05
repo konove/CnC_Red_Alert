@@ -45,9 +45,10 @@
  *   IPXAddressClass::operator!= -- overloaded comparison operator         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-#include <cstdio>
 #include "ra/ipxaddr.h"
+
+#include <cstdio>
+#include <cstring>
 
 #ifdef WINSOCK_IPX
 #include "ra/wsproto.h"
@@ -455,7 +456,7 @@ int IPXAddressClass::operator>(IPXAddressClass &addr) {
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXAddressClass::operator<(IPXAddressClass &addr) {
-  return (memcmp(this, &addr, 10) < 0);
+  return (std::memcmp(this, &addr, 10) < 0);
 
 } /* end of operator< */
 

@@ -49,7 +49,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/event.h"
+
+#include "ra/anim.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/msgbox.h"
+#include "ra/saveload.h"
+#include "ra/session.h"
+#include "ra/team.h"
+#include "ra/vessel.h"
+#include "ra/ww_audio.h"
 #ifdef _WIN32
 #include "ra/ccdde.h"
 #endif  // WIN32

@@ -48,7 +48,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/weapon.h"
+
+#include "ra/const.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
 
 /***************************************************************************
 **	These are the various weapons and their characteristics.

@@ -40,6 +40,8 @@
 #ifndef THEME_H
 #define THEME_H
 
+#include "ra/defines.h"
+
 class ThemeClass {
  private:
   static char const* Theme_File_Name(ThemeType theme);

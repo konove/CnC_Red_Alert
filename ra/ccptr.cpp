@@ -37,8 +37,26 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/ccptr.h"
 
+#include "port/ex_string.h"
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/factory.h"
+#include "ra/function.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/overlay.h"
+#include "ra/smudge.h"
+#include "ra/team.h"
+#include "ra/teamtype.h"
+#include "ra/template.h"
+#include "ra/terrain.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/type.h"
 /*
 **	These member functions for the CCPtr class cannot be declared inside the
 **	class definition since they could refer to other objects that themselves

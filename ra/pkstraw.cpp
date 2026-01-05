@@ -43,8 +43,11 @@
  *- - - - - - - */
 
 #include "ra/pkstraw.h"
-#include "ra/rndstraw.h"
+
+#include <cstring>
+
 #include "ra/blwstraw.h"
+#include "ra/rndstraw.h"
 
 /***********************************************************************************************
  * PKStraw::PKStraw -- Initialize the public key straw object. *

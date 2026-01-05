@@ -38,6 +38,10 @@
 
 #include <cassert>
 
+#include "ra/heap.h"
+
+class FixedIHeapClass;
+
 /*
 **	The CCPtr class is designed for a specific purpose. It functions like a
 *pointer except that *	it requires no fixups for saving and loading. If pointer

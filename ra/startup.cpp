@@ -38,23 +38,23 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/file.h"
+#include "ra/startup.h"
 
 #include <filesystem>
 
-#include "ra/function.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/language.h"
+#include "ra/nullconn.h"
+#include "ra/rawfile.h"
+#include "ra/session.h"
+#include "ra/wwfile.h"
+#include "sdllib/include/file.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
 #include "sdllib/include/ww_audio.h"
-
-#ifdef WIN32
-#ifndef PORTABLE
-#include <windows.h>
-#endif
-#else
-#include <conio.h>
-#include <io.h>
-#endif
 
 #ifdef _WIN32
 #include <direct.h>  //chdir
@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
 #endif  // MPATH
 
 #ifdef PORTABLE
-    WindowsTimer = new WinTimerClass(60, FALSE);
+    WindowsTimer = new WinTimerClass(60, false);
 #elif defined(WIN32)
     WindowsTimer = new WinTimerClass(60, FALSE);
 

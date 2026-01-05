@@ -41,7 +41,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/crate.h"
+
+#include "ra/defines.h"
+#include "ra/inline.h"
 
 /***********************************************************************************************
  * CrateClass::Remove_It -- Removes the crate from wherever it is. *

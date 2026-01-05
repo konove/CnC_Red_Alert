@@ -36,7 +36,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/globals.h"
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/factory.h"
+#include "ra/heap.h"
+#include "ra/infantry.h"
+#include "ra/nullmgr.h"
+#include "ra/overlay.h"
+#include "ra/session.h"
+#include "ra/smudge.h"
+#include "ra/team.h"
+#include "ra/template.h"
+#include "ra/terrain.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/vessel.h"
 
 bool IsVQ640 = false;
 unsigned long GameVersion = 0;

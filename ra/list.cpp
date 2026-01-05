@@ -59,11 +59,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
+#include "ra/list.h"
 
 #include <algorithm>
 #include <vector>
+
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/inline.h"
+#include "sdllib/include/font.h"
 
 /***************************************************************************
  * ListClass::ListClass -- class constructor                               *

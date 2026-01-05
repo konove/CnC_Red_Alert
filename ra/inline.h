@@ -82,6 +82,10 @@
 #ifndef INLINE_H
 #define INLINE_H
 
+#include "ra/const.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "random.h"
 #include "sdllib/include/dipthong.h"
 
 /***********************************************************************************************
@@ -936,7 +940,6 @@ inline bool Percent_Chance(int percent) {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-extern RandomClass NonCriticalRandomNumber;
 template <class T>
 inline T Sim_Random_Pick(T a, T b) {
   return T(NonCriticalRandomNumber((int)a, (int)b));

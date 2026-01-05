@@ -41,6 +41,7 @@
 #define PK_H
 
 #include "ra/int.h"
+#include "ra/straw.h"
 
 /*
 **	This class holds a public or private key used in Public Key

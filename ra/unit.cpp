@@ -109,9 +109,20 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
 #include <algorithm>
+
+#include "ra/anim.h"
+#include "ra/combat.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/inline.h"
+#include "ra/session.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *

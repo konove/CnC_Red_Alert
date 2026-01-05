@@ -69,11 +69,34 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
+#include <cstddef>
 #include <filesystem>
-#include <format>
 #include <string>
+
+#include "port/ex_string.h"
+#include "ra/building.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/function.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/keyframe.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/rules.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 
 #define FATSHIP
 

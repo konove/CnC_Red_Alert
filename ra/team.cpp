@@ -82,8 +82,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/team.h"
+
+#include "ra/aircraft.h"
+#include "ra/externs.h"
+#include "ra/foot.h"
+#include "ra/inline.h"
 #include "ra/mission.h"
+#include "ra/session.h"
+#include "ra/trigger.h"
+#include "ra/vessel.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * _Is_It_Breathing -- Checks to see if unit is an active team member. *

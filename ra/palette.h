@@ -1,5 +1,5 @@
-#pragma once
-#include <cstdlib>
+#ifndef CNC_RED_ALERT_RA_PALETTE_H_
+#define CNC_RED_ALERT_RA_PALETTE_H_
 
 #include "ra/rgb.h"
 
@@ -34,3 +34,5 @@ class PaletteClass {
 void Set_Palette(void *palette);
 
 extern "C" unsigned char *CurrentPalette;
+
+#endif  // CNC_RED_ALERT_RA_PALETTE_H_

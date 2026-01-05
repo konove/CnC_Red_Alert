@@ -40,6 +40,12 @@
 #ifndef SCENARIO_H
 #define SCENARIO_H
 
+#include "port/ex_string.h"
+#include "ra/defines.h"
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/random.h"
+
 /*
 **	This class holds the information about the current game being played.
 *This information is *	global to the scenario and is generally of a similar
@@ -326,5 +332,22 @@ class ScenarioClass {
                             //a draw offer extended.
 #endif
 };
+
+void Disect_Scenario_Name(char const *name, int &scenario,
+                          ScenarioPlayerType &player, ScenarioDirType &dir,
+                          ScenarioVarType &var);
+void Post_Load_Game(int load_net);
+bool End_Game(void);
+bool Read_Scenario(char *root);
+bool Start_Scenario(char *root, bool briefing = true);
+HousesType Select_House(void);
+void Clear_Scenario(void);
+void Do_Briefing(char const *text);
+void Do_Lose(void);
+void Do_Win(void);
+void Do_Restart(void);
+void Fill_In_Data(void);
+bool Restate_Mission(char const *name, int button1, int button2);
+bool BGMessageBox(char const *text, int button1, int button2);
 
 #endif

@@ -40,6 +40,11 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
+#include "ra/ccini.h"
+#include "ra/noinit.h"
+#include "ra/type.h"
+#include "ra/warhead.h"
+
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects
 **	can have multiple weapons and this class is used to isolate and
@@ -159,5 +164,8 @@ class WeaponTypeClass {
   */
   AnimType Anim;
 };
+
+WeaponType Weapon_From_Name(char const *name);
+ArmorType Armor_From_Name(char const *name);
 
 #endif

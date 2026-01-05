@@ -40,6 +40,7 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include "port/ex_string.h"
 #include "ra/mission.h"
 #include "ra/target.h"
 

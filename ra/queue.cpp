@@ -79,9 +79,28 @@
  *   Print_Framesync_Values -- displays frame-sync variables               *
  *   Check_Mirror -- Checks mirror memory                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "ra/function.h"
-
 #include <algorithm>
+#include <cstdint>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/connmgr.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/ftimer.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/msgbox.h"
+#include "ra/netdlg.h"
+#include "ra/nulldlg.h"
+#include "ra/nullmgr.h"
+#include "ra/saveload.h"
+#include "ra/startup.h"
+#include "ra/terrain.h"
+#include "ra/vessel.h"
+#include "ra/ww_audio.h"
 
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"

@@ -40,9 +40,19 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "ra/object.h"
+#include <cstddef>
+
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/fuse.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/radio.h"
+#include "ra/straw.h"
+#include "ra/type.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:

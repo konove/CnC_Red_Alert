@@ -47,12 +47,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/internet.h"
 #include "ra/wspudp.h"
 
 #include <cassert>
+#include <cerrno>
 #include <cstdio>
+#include <cstring>
+
+#include "ra/externs.h"
 
 #ifdef _WIN32
 #include <svcguid.h>

@@ -41,8 +41,6 @@
  *- - - - - - - */
 
 #include "ra/pipe.h"
-#include <cstddef>
-#include <cstring>
 
 /***********************************************************************************************
  * Pipe::~Pipe -- Destructor for pipe class object. *

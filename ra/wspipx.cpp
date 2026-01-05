@@ -42,12 +42,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/wspipx.h"
-#include "ra/ipxaddr.h"
 
-#include <cassert>
-#include <cstdio>
+#include <string.h>
+
+#include "ra/function.h"
 
 #ifdef _WIN32
 /*

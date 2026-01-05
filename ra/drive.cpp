@@ -62,8 +62,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/drive.h"
+
 #include <algorithm>
+
+#include "ra/inline.h"
+#include "ra/team.h"
+#include "ra/ww_audio.h"
 
 #ifdef NEVER
 void test(void) {

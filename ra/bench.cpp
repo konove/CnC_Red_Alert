@@ -42,7 +42,6 @@
  *- - - - - - - */
 
 #include "ra/bench.h"
-#include "ra/mpu.h"
 
 /***********************************************************************************************
  * Benchmark::Benchmark -- Constructor for the benchmark object. *

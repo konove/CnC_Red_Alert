@@ -37,10 +37,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include "ra/xstraw.h"
 #include "ra/xpipe.h"
 #include "ra/buff.h"

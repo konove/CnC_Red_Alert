@@ -41,5 +41,6 @@
 #define ENDING_H
 
 void Nod_Ending(void);
+void GDI_Ending(void);
 
 #endif

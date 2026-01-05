@@ -40,8 +40,11 @@
 #ifndef HOUSE_H
 #define HOUSE_H
 
-#include "ra/type.h"
+#include "ra/heap.h"
 #include "ra/region.h"
+#include "ra/super.h"
+#include "ra/type.h"
+#include "ra/utracker.h"
 #include "ra/vector.h"
 
 class TriggerClass;

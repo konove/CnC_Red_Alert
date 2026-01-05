@@ -46,8 +46,22 @@
 
 #include "sdllib/include/ww_audio.h"
 
-#include "ra/function.h"
 #include <filesystem>
+
+#include "port/ex_string.h"
+#include "ra/ccfile.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/function.h"
+#include "ra/goptions.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/wwstd.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

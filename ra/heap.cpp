@@ -55,11 +55,26 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/heap.h"
-#include <cstdio>
-#include <cstddef>
+
 #include <cstring>
+#include <new>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/function.h"
+#include "ra/smudge.h"
+#include "ra/team.h"
+#include "ra/teamtype.h"
+#include "ra/template.h"
+#include "ra/terrain.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/unit.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

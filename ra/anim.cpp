@@ -56,8 +56,42 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/anim.h"
+
 #include <algorithm>
+#include <cassert>
+#include <cstddef>
+
+#include "port/ex_string.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/combat.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/function.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/keyframe.h"
+#include "ra/logic.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/palette.h"
+#include "ra/rect.h"
+#include "ra/rules.h"
+#include "ra/session.h"
+#include "ra/smudge.h"
+#include "ra/stage.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/vector.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/shape.h"
 #define VIC 1
 
 /***********************************************************************************************

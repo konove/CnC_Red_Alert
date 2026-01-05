@@ -39,6 +39,8 @@
 
 #ifndef INFANTRY_H
 #define INFANTRY_H
+#include "ra/cell.h"
+#include "ra/foot.h"
 
 class InfantryClass : public FootClass {
  public:

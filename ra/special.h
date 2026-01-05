@@ -40,6 +40,8 @@
 #ifndef SPECIAL_H
 #define SPECIAL_H
 
+#include "ra/conquer.h"
+
 class SpecialClass {
  public:
   /*
@@ -96,5 +98,13 @@ class SpecialClass {
   */
   unsigned IsFromWChat : 1;
 };
+
+void Special_Dialog(bool simple = false);
+char const *Fetch_Password(int caption, int message, int btext = TXT_OK);
+#ifdef FIXIT_CSII  //	checked - ajw 9/28/98
+int Fetch_Difficulty(bool amath = false);
+#else
+int Fetch_Difficulty(void);
+#endif
 
 #endif

@@ -39,8 +39,19 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/carry.h"
 
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vessel.h"
 /***********************************************************************************************
  * CarryoverClass::CarryoverClass -- Constructor for carry over objects. *
  *                                                                                             *

@@ -56,11 +56,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/type.h"
-
 #include <filesystem>
 #include <string>
+
+#include "ra/function.h"
+#include "ra/inline.h"
+#include "ra/type.h"
 
 static OverlayTypeClass const Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.

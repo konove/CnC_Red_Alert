@@ -40,8 +40,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/credits.h"
+
 #include <algorithm>
+
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.

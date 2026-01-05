@@ -40,6 +40,7 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
+#include "ra/defines.h"
 #include "ra/layer.h"
 
 /***********************************************************************************************

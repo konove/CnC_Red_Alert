@@ -75,10 +75,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/radar.h"
 
 #include <algorithm>
+
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/session.h"
+#include "ra/terrain.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/misc.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;

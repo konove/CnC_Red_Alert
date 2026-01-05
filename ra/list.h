@@ -43,6 +43,7 @@
 #include "ra/control.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
+#include "ra/vector.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab stops.

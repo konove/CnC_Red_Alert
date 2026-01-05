@@ -55,8 +55,41 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/bullet.h"
+
 #include <algorithm>
+#include <cassert>
+#include <cstddef>
+
+#include "port/ex_string.h"
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/combat.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/facing.h"
+#include "ra/fly.h"
+#include "ra/function.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/radar.h"
+#include "ra/rules.h"
+#include "ra/target.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vessel.h"
+#include "sdllib/include/shape.h"
 
 /***********************************************************************************************
  * BulletClass::BulletClass -- Bullet constructor. *

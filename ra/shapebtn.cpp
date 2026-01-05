@@ -40,8 +40,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/shapebtn.h"
+
+#include "ra/externs.h"
+#include "ra/keyframe.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type

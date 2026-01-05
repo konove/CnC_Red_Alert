@@ -40,6 +40,8 @@
 #ifndef REGION_H
 #define REGION_H
 
+#include <cstring>
+
 class RegionClass {
  public:
   RegionClass(void) { Threat = 0; };

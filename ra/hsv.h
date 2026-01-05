@@ -41,7 +41,6 @@
 #define HSV_H
 
 class RGBClass;
-class HSVClass;
 
 /*
 **	Each color entry is represented by this class. It holds the values for

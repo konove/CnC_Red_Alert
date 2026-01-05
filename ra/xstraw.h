@@ -40,10 +40,9 @@
 #ifndef XSTRAW_H
 #define XSTRAW_H
 
-#include "ra/straw.h"
 #include "ra/buff.h"
+#include "ra/straw.h"
 #include "ra/wwfile.h"
-#include <cstddef>
 
 /*
 **	This class is used to manage a buffer as a data source. Data requests

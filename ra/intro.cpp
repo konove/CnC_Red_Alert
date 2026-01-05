@@ -37,9 +37,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
 #include "sdllib/include/ww_audio.h"
+#include "winvq/vqa32/vqaplay.h"
 
 VQAHandle* Open_Movie(char* name);
 VQAHandle* Open_Movie(char* name) {

@@ -71,7 +71,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/vessel.h"
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/session.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *

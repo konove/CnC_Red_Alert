@@ -40,9 +40,24 @@
 #ifndef AIRCRAFT_H
 #define AIRCRAFT_H
 
-#include "ra/radio.h"
+#include <cstddef>
+
+#include "ra/bullet.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/facing.h"
 #include "ra/fly.h"
-#include "ra/target.h"
+#include "ra/foot.h"
+#include "ra/function.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/radio.h"
+#include "ra/straw.h"
+#include "ra/techno.h"
+#include "ra/type.h"
 
 /*
 **	This aircraft class is used for all flying sentient objects. This
@@ -261,5 +276,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   char AttacksRemaining;
 };
+
+bool Building_Check();
 
 #endif

@@ -46,7 +46,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/mouse.h"
+
+#include "ra/externs.h"
+#include "ra/rawfile.h"
+#include "sdllib/include/shape.h"
 
 /*
 **	This points to the loaded mouse shapes.

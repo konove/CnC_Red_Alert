@@ -44,7 +44,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/reinf.h"
+
+#include <cassert>
+
+#include "ra/aircraft.h"
+#include "ra/externs.h"
+#include "ra/foot.h"
+#include "ra/inline.h"
+#include "ra/team.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *

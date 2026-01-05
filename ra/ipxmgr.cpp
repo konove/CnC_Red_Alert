@@ -67,9 +67,12 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-#include <cstdio>
 #include "ra/ipxmgr.h"
+
+#include <cstdio>
+
+#include "ra/externs.h"
+#include "ra/session.h"
 #include "sdllib/include/wwlib32.h"  // to enable mono output
 
 #ifdef WINSOCK_IPX

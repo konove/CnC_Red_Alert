@@ -284,4 +284,16 @@ inline T *QueueClass<T, size>::Get_Array(void) {
   return Array;
 }
 
+bool Queue_Target(TargetClass whom, TARGET target);
+bool Queue_Destination(TargetClass whom, TARGET target);
+bool Queue_Mission(TargetClass whom, MissionType mission);
+bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
+                   TARGET destination);
+bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
+                   TARGET destination, SpeedType speed, MPHType maxspeed);
+bool Queue_Options(void);
+bool Queue_Exit(void);
+void Queue_AI(void);
+void Add_CRC(uint32_t *crc, uint32_t val);
+
 #endif

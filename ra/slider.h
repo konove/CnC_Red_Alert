@@ -40,8 +40,10 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
+#include "ra/control.h"
 #include "ra/gauge.h"
 #include "ra/shapebtn.h"
+#include "sdllib/include/keyboard.h"
 
 /***************************************************************************
  * SliderClass -- Like a Windows ListBox structure

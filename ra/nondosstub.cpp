@@ -22,11 +22,10 @@
 #include <cstring>
 #include <string_view>
 
+#include "ra/externs.h"
 #include "ra/graphics_loader.h"
-#include "ra/function.h"
-#include "sdllib/include/iconcach.h"
 #include "ra/interpal.h"
-
+#include "sdllib/include/iconcach.h"
 #include "sdllib/include/ww_audio.h"
 
 void output(short, short) {}

@@ -40,6 +40,7 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
+#include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
 

@@ -41,6 +41,10 @@
  *                                                                         				*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
+#ifndef CNC_RED_ALERT_RA_EGOS_H_
+#define CNC_RED_ALERT_RA_EGOS_H_
+#include "ra/defines.h"
+#include "sdllib/include/gbuffer.h"
 
 class EgoClass {
  public:
@@ -56,3 +60,7 @@ class EgoClass {
   int YPos;
   TextPrintType Flags;
 };
+
+void Show_Who_Was_Responsible(void);
+
+#endif  // CNC_RED_ALERT_RA_EGOS_H_

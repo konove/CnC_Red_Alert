@@ -46,7 +46,9 @@
  *- - - - - - - */
 
 #include "ra/pk.h"
-#include "ra/rndstraw.h"
+
+#include <cstdlib>
+#include <cstring>
 
 /***********************************************************************************************
  * PKey::PKey -- Construct a key using encoded strings. *

@@ -1,4 +1,6 @@
 // re-implemented from assembly in 2keyfbuf.asm
+#include "ra/2keyfbuf.h"
+
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>

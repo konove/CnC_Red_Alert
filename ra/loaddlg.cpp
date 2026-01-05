@@ -43,12 +43,28 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/file.h"
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/loaddlg.h"
 
-#include <filesystem>
 #include <charconv>
+#include <filesystem>
+
+#include "port/ex_string.h"
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/edit.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/list.h"
+#include "ra/msgbox.h"
+#include "ra/readline.h"
+#include "ra/saveload.h"
+#include "ra/session.h"
+#include "ra/textbtn.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/misc.h"
 
 #ifdef _WIN32
 #include <io.h>  // for unlink
@@ -180,7 +196,7 @@ int LoadOptionsClass::Process(void) {
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[DESCRIP_MAX] = {0};  // save-game description
-  char fname[_MAX_NAME + _MAX_EXT];    // for generating filename to delete
+  char fname[13 + _MAX_EXT];           // for generating filename to delete
   int rc;                              // return code
 
   /*

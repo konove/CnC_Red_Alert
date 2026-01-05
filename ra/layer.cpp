@@ -40,8 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/layer.h"
+
+#include "ra/object.h"
 
 /***********************************************************************************************
  * LayerClass::Submit -- Adds an object to a layer list. *

@@ -39,6 +39,7 @@
 
 #ifndef GAUGE_H
 #define GAUGE_H
+#include "ra/control.h"
 
 class GaugeClass : public ControlClass {
  public:

@@ -41,10 +41,11 @@
  *- - - - - - - */
 
 #include "ra/lzopipe.h"
-#include "ra/lzo.h"
-#include "ra/buff.h"
-#include <cstring>
+
 #include <cassert>
+#include <cstring>
+
+#include "ra/lzo.h"
 
 /***********************************************************************************************
  * LZOPipe::LZOPipe -- Constructor for the LZO processor pipe. *

@@ -54,10 +54,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/type.h"
-
 #include <filesystem>
+
+#include "externs.h"
+#include "ra/conquer.h"
+#include "ra/inline.h"
+#include "ra/type.h"
 
 static SmudgeTypeClass const Crater1(
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,

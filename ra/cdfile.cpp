@@ -47,8 +47,7 @@
 
 #include "ra/cdfile.h"
 
-#include <cstdio>
-#include <cstring>
+#include <cerrno>
 #include <filesystem>
 #include <ranges>
 

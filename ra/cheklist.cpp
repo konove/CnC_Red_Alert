@@ -47,8 +47,20 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/cheklist.h"
 
+#include <cstdio>
+
+#include "port/ex_string.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/gadget.h"
+#include "ra/jshell.h"
+#include "ra/list.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/wwstd.h"
 /***************************************************************************
  * CheckListClass::CheckListClass -- constructor                           *
  *                                                                         *

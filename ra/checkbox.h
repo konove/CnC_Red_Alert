@@ -41,6 +41,7 @@
 #define CHECKBOX_H
 
 #include "ra/toggle.h"
+#include "sdllib/include/keyboard.h"
 
 class CheckBoxClass : public ToggleClass {
  public:

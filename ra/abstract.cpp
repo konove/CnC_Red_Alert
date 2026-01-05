@@ -44,8 +44,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/abstract.h"
 
+#include <cstring>
+
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/jshell.h"
+#include "ra/type.h"
 /***********************************************************************************************
  * AbstractClass::Debug_Dump -- Display debug information to mono screen. *
  *                                                                                             *

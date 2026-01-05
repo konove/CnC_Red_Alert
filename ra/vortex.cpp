@@ -61,8 +61,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
-#include "ra/function.h"
 #include "ra/vortex.h"
+
+#include "ra/inline.h"
+#include "ra/ww_audio.h"
 
 /*
 ** Instance of chronal vortex class. This must be the only instance.

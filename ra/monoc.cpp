@@ -62,18 +62,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-// #include	"watcom.h"
 #include "ra/monoc.h"
 
-#include "ra/function.h"
-
-#include <cstdlib>
-#include <cstdio>
-#include <cstdarg>
-#include <cstring>
 #include <algorithm>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "ra/function.h"
 #include "ra/inline.h"
-#include "ra/list.h"
 
 extern void output(short port, short data);
 #pragma aux output parm[dx][ax] =           \

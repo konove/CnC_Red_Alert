@@ -40,6 +40,13 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include "port/ex_string.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/object.h"
+#include "ra/target.h"
+#include "ra/teamtype.h"
+
 typedef enum TActionType {
   TACTION_NONE,
 
@@ -92,9 +99,6 @@ typedef enum TActionType {
 TActionType Action_From_Name(char const* name);
 char const* Name_From_Action(TActionType action);
 NeedType Action_Needs(TActionType action);
-
-class TriggerTypeClass;
-class TeamTypeClass;
 
 /*
 **	This elaborates the information necessary to carry out

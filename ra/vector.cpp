@@ -60,8 +60,16 @@
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #endif  // WINSOCK_IPX
-#include "ra/vector.h"
 #include <cstdio>
+
+#include "ra/ccptr.h"
+#include "ra/egos.h"
+#include "ra/loaddlg.h"
+#include "ra/session.h"
+#include "ra/taction.h"
+#include "ra/teamtype.h"
+#include "ra/tevent.h"
+#include "ra/vector.h"
 
 /*
 **	The following template function can be located here ONLY if all the

@@ -46,9 +46,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
+#include <cstddef>
 #include <filesystem>
+
+#include "ra/ccini.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/heap.h"
+#include "ra/jshell.h"
+#include "ra/rawfile.h"
+#include "ra/type.h"
 
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *

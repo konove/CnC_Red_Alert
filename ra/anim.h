@@ -40,7 +40,17 @@
 #ifndef ANIM_H
 #define ANIM_H
 
+#include <cstddef>
+
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/fixed.h"
+#include "ra/noinit.h"
+#include "ra/object.h"
+#include "ra/stage.h"
+#include "ra/straw.h"
 #include "ra/type.h"
+#include "ra/wwfile.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape
@@ -152,5 +162,8 @@ class AnimClass : public ObjectClass, public StageClass {
   */
   fixed Accum;
 };
+
+void Shorten_Attached_Anims(ObjectClass *obj);
+AnimType Anim_From_Name(char const *name);
 
 #endif

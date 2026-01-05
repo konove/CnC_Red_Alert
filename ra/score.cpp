@@ -48,9 +48,16 @@
  *   ScoreClass::Pulse_Bar_Graph -- Pulses the bargraph color. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "ra/score.h"
+
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/nullmgr.h"
+#include "ra/session.h"
+#include "ra/type.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/wsa.h"
-
 #include "sdllib/include/ww_audio.h"
 #ifndef WIN32
 extern short StreamLowImpact;

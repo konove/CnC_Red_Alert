@@ -49,8 +49,29 @@
  *-- greater-than operator                                        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "ra/base.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "ra/building.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/function.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/type.h"
+#include "ra/vector.h"
 
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *

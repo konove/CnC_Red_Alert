@@ -44,11 +44,9 @@
 /*
 ********************************* Includes **********************************
 */
-#include "ra/nullconn.h"
 #include "ra/connmgr.h"
-#ifndef WIN32
-#include "commlib.h"
-#endif
+#include "ra/nullconn.h"
+#include "ra/session.h"
 
 /*
 ***************************** Class Declaration *****************************

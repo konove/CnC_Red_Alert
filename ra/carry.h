@@ -40,6 +40,10 @@
 #ifndef CARRY_H
 #define CARRY_H
 
+#include "ra/defines.h"
+#include "ra/link.h"
+#include "ra/techno.h"
+
 class CarryoverClass : public LinkClass {
  public:
   CarryoverClass(TechnoClass* techno = nullptr);

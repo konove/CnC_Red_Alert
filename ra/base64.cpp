@@ -40,7 +40,6 @@
  *- - - - - - - */
 
 #include "ra/base64.h"
-#include <cstddef>
 
 /*
 **	This is the magic padding character used to fill out the encoded data to

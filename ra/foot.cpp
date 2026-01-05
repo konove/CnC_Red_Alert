@@ -90,10 +90,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "sdllib/include/memflag.h"
+#include "ra/foot.h"
 
 #include <algorithm>
+
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/vessel.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/memflag.h"
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *

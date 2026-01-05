@@ -42,6 +42,7 @@
  */
 
 #include "ra/lzo1x.h"
+#include "ra/lzoconf.h"
 #define NDEBUG
 #include <cassert>
 

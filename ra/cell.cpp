@@ -88,9 +88,49 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/vortex.h"
+#include "ra/cell.h"
+
 #include <algorithm>
+#include <cassert>
+
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/combat.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/layer.h"
+#include "ra/logic.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/overlay.h"
+#include "ra/rules.h"
+#include "ra/score.h"
+#include "ra/session.h"
+#include "ra/super.h"
+#include "ra/target.h"
+#include "ra/techno.h"
+#include "ra/terrain.h"
+#include "ra/tracker.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/utracker.h"
+#include "ra/vector.h"
+#include "ra/vessel.h"
+#include "ra/vortex.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *

@@ -39,9 +39,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/scroll.h"
 
 #include <algorithm>
+
+#include "ra/externs.h"
+#include "ra/inline.h"
 
 #ifdef WIN32
 #define SCROLL_DELAY 1

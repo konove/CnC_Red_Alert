@@ -105,8 +105,53 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/aircraft.h"
+
 #include <algorithm>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
+
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/const.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/facing.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/keyframe.h"
+#include "ra/map.h"
+#include "ra/mission.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/radio.h"
+#include "ra/rect.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/session.h"
+#include "ra/target.h"
+#include "ra/team.h"
+#include "ra/teamtype.h"
+#include "ra/techno.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac

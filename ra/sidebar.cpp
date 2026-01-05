@@ -88,10 +88,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
 #include <filesystem>
 #include <format>
+
+#include "ra/const.h"
+#include "ra/externs.h"
+#include "ra/session.h"
+#include "ra/ww_audio.h"
 
 void *SidebarClass::SidebarShape = nullptr;
 void *SidebarClass::SidebarMiddleShape = nullptr;

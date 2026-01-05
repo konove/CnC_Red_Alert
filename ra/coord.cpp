@@ -53,8 +53,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/coord.h"
+
 #include <algorithm>
+
+#include "ra/inline.h"
+#include "ra/target.h"
 
 /***********************************************************************************************
  * Coord_Cell -- Convert a coordinate into a cell number. *

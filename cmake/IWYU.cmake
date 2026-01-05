@@ -1,11 +1,14 @@
 # IWYU.cmake - Include-What-You-Use integration module
 # This module provides functions to enable IWYU checking for CMake targets
 
-# ENABLE_IWYU is automatically controlled by STRICT_CHECKS option
-if (DEFINED STRICT_CHECKS)
-    set(ENABLE_IWYU ${STRICT_CHECKS})
-else ()
-    option(ENABLE_IWYU "Enable Include-What-You-Use analysis" ON)
+# Set default based on STRICT_CHECKS, but allow independent override
+if (NOT DEFINED ENABLE_IWYU)
+    if (DEFINED STRICT_CHECKS)
+        set(ENABLE_IWYU_DEFAULT ${STRICT_CHECKS})
+    else ()
+        set(ENABLE_IWYU_DEFAULT ON)
+    endif ()
+    option(ENABLE_IWYU "Enable Include-What-You-Use analysis" ${ENABLE_IWYU_DEFAULT})
 endif ()
 
 if (ENABLE_IWYU)
@@ -24,7 +27,7 @@ if (ENABLE_IWYU)
             set(IWYU_COMMAND
                     "${IWYU_PATH}"
                     "-Xiwyu" "--mapping_file=${CMAKE_SOURCE_DIR}/.iwyu_mappings"
-                    #                    "-Xiwyu" "--error"
+#                    "-Xiwyu" "--error"
                     "-Xiwyu" "--cxx17ns"
                     "-Xiwyu" "--no_fwd_decls"
                     "-Xiwyu" "--max_line_length=120"

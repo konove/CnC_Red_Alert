@@ -44,6 +44,7 @@
 
 #include "ra/pkpipe.h"
 
+#include <cstring>
 /***********************************************************************************************
  * PKPipe::PKPipe -- Constructor for the public key pipe object. *
  *                                                                                             *

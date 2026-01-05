@@ -36,7 +36,8 @@
  * int Save_PCX_File (char* name, GraphicViewPortClass& pic, char* palette)*
  *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
-#include "ra/function.h"
+#include <cstring>
+
 #include "ra/filepcx.h"
 
 static void Write_Pcx_ScanLine(FileClass &file, int scansize, char *ptr);

@@ -38,22 +38,37 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/goptions.h"
 
 #include <algorithm>
 
-#include "ra/goptions.h"
-#include "ra/loaddlg.h"
-#include "ra/sounddlg.h"
-#include "ra/visudlg.h"
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/dialog.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/gamedlg.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/loaddlg.h"
+#include "ra/mouse.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
+#include "ra/palette.h"
+#include "ra/queue.h"
+#include "ra/scenario.h"
+#include "ra/session.h"
+#include "ra/tab.h"
 #include "ra/textbtn.h"
-#include "ra/descdlg.h"
-#include "sdllib/include/misc.h"
-
-#ifdef FIXIT_VERSION_3  //	Stalemate games.
+#include "ra/theme.h"
+#include "ra/vector.h"
 #include "ra/wolstrng.h"
-#endif
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 bool RedrawOptionsMenu;
 

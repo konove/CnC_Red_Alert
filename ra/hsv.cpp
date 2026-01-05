@@ -43,7 +43,6 @@
 #include "ra/hsv.h"
 
 #include "ra/rgb.h"
-#include "ra/watcom.h"
 
 HSVClass const HSVClass::BlackColor(0, 0, 0);
 

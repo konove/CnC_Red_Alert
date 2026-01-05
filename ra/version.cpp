@@ -46,6 +46,12 @@
  *   VersionClass::Max_Version -- returns highest version # to connect to  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "version.h"
+
+#include <cstdio>
+#include <cstring>
+
+#include "ra/externs.h"
 #include "ra/function.h"
 
 #ifdef FIXIT_VERSION_3

@@ -123,36 +123,11 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "sdllib/include/bitmap.h"
 #include "sdllib/include/buffer.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
-
-#if !defined(FUNCTION_H) || defined(TD)
-
-#ifndef BITMAPCLASS
-#define BITMAPCLASS
-class BitmapClass {
- public:
-  BitmapClass(int w, int h, unsigned char *data)
-      : Width(w), Height(h), Data(data) {};
-
-  int Width;
-  int Height;
-  unsigned char *Data;
-};
-
-class TPoint2D {
- public:
-  TPoint2D(int xx, int yy) : x(xx), y(yy) {};
-  TPoint2D(void) : x(0), y(0) {};
-
-  int x;
-  int y;
-};
-#endif
-
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 //

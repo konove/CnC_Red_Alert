@@ -40,7 +40,9 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include "jshell.h"
 #include "ra/abstract.h"
+#include "ra/ccptr.h"
 
 class ObjectClass;
 class TechnoClass;

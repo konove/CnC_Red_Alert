@@ -50,10 +50,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/file.h"
-#include "ra/function.h"
+#include "ra/session.h"
 
 #include <algorithm>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/dialog.h"
+#include "sdllib/include/file.h"
 
 #ifndef PORTABLE
 #include <dos.h>  // for station ID computation

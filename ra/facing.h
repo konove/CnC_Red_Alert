@@ -39,6 +39,8 @@
 
 #ifndef FACING_H
 #define FACING_H
+#include "ra/face.h"
+#include "ra/noinit.h"
 
 /*
 **	This is a general facing handler class. It is used in those cases where

@@ -40,6 +40,8 @@
 #ifndef FLASHER_H
 #define FLASHER_H
 
+#include "ra/noinit.h"
+
 class FlasherClass {
  public:
   /*

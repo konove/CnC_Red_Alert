@@ -52,11 +52,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "sdllib/include/memflag.h"
+#include "ra/findpath.h"
 
 #include <algorithm>
-// #include	<string.h>
+
+#include "ra/foot.h"
+#include "ra/inline.h"
+#include "ra/team.h"
+#include "sdllib/include/memflag.h"
+#include "session.h"
 
 /*
 **	When an edge search is started, it can be performed CLOCKwise or

@@ -54,8 +54,12 @@
  *   MessageListClass::Reset -- Reset so no messages are visible.          *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "ra/msglist.h"
+
+#include "ra/dialog.h"
+#include "ra/txtlabel.h"
+#include "ra/ww_audio.h"
 #include "sdllib/include/font.h"
-#include "ra/function.h"
 
 /**************************** Globals **************************************/
 

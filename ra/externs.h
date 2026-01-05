@@ -40,15 +40,38 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#include "ra/cell.h"
-#include "ra/techno.h"
-#include "ra/type.h"
+#include "ra/base.h"
+#include "ra/bench.h"
 #include "ra/building.h"
-#include "ra/unit.h"
+#include "ra/carry.h"
+#include "ra/cell.h"
 #include "ra/credits.h"
+#include "ra/event.h"
 #include "ra/goptions.h"
-#include "ra/options.h"
 #include "ra/infantry.h"
+#include "ra/ipxmgr.h"
+#include "ra/logic.h"
+#include "ra/mixfile.h"
+#include "ra/options.h"
+#include "ra/overlay.h"
+#include "ra/queue.h"
+#include "ra/scenario.h"
+#include "ra/score.h"
+// #include "ra/session.h"
+#include "ra/mouse.h"
+#include "ra/rndstraw.h"
+#include "ra/rules.h"
+#include "ra/smudge.h"
+#include "ra/taction.h"
+#include "ra/techno.h"
+#include "ra/template.h"
+#include "ra/tevent.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/version.h"
+#include "ra/vortex.h"
+#include "ra/warhead.h"
 #include "sdllib/include/playcd.h"
 
 #ifdef SCENARIO_EDITOR
@@ -315,7 +338,6 @@ extern long CellCount;
 extern long TargetScan;
 extern long SidebarRedraws;
 extern DMonoType MonoPage;
-extern bool GameActive;
 extern bool SpecialFlag;
 extern int ScenarioInit;
 extern HouseClass *PlayerPtr;
@@ -346,7 +368,9 @@ extern bool bAutoSonarPulse;
 extern CELL CurrentCell;
 #endif
 
+class SessionClass;
 extern SessionClass Session;
+class NullModemClass;
 extern NullModemClass NullModem;
 extern IPXManagerClass Ipx;
 
@@ -362,54 +386,6 @@ extern MPlayerManClass *MPath;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 #endif
-
-extern int Seed;
-extern int CustomSeed;
-extern GroundType Ground[LAND_COUNT];
-
-/*
-**	Constant externs (data is not modified during game play).
-*/
-extern char const *Missions[MISSION_COUNT];
-extern char const Keys[];
-extern char const *const VQName[VQ_COUNT];
-extern int CrateData[CRATE_COUNT];
-extern char const *const CrateNames[CRATE_COUNT];
-extern int CrateShares[CRATE_COUNT];
-extern AnimType CrateAnims[CRATE_COUNT];
-extern char const *const SpecialWeaponName[SPC_COUNT];
-extern int const SpecialWeaponHelp[SPC_COUNT];
-extern char const *const SpecialWeaponFile[SPC_COUNT];
-extern char const *const ArmorName[ARMOR_COUNT];
-extern char const *const QuarryName[QUARRY_COUNT];
-extern char const *const FormationName[FORMATION_COUNT];
-extern long const PlayCodes[];
-extern long const CheatCodes[];
-// extern char const * const ProjectileNames[];
-extern long const EditorCodes[];
-extern char const *const SourceName[SOURCE_COUNT];
-extern int const GroundColor[LAND_COUNT];
-extern int const SnowColor[LAND_COUNT];
-extern TheaterDataType const Theaters[THEATER_COUNT];
-extern unsigned char const Facing32[256];
-extern unsigned char const Facing16[256];
-extern signed char const Rotation16[256];
-extern unsigned char const Facing8[256];
-extern unsigned char const Pixel2Lepton[24];
-extern COORDINATE const StoppingCoordAbs[5];
-extern CELL const AdjacentCell[FACING_COUNT];
-extern COORDINATE const AdjacentCoord[FACING_COUNT];
-extern unsigned char const RemapCiv2[];
-extern unsigned char const RemapCiv4[];
-extern unsigned char const RemapCiv5[];
-extern unsigned char const RemapCiv6[];
-extern unsigned char const RemapCiv7[];
-extern unsigned char const RemapCiv8[];
-extern unsigned char const RemapCiv9[];
-extern unsigned char const RemapCiv10[];
-extern unsigned char const RemapEmber[];
-
-extern int SoundOn;
 
 #ifdef WIN32
 extern GraphicViewPortClass HidPage;
@@ -441,6 +417,7 @@ extern bool IsTheaterShape;
 
 extern void Reset_Theater_Shapes(void);
 extern TheaterType LastTheater;
+
 void Coordinate_Remap(GraphicViewPortClass *inbuffer, int x, int y, int width,
                       int height, unsigned char *remap_table);
 void Do_Vortex(int x, int y, int frame);

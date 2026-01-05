@@ -84,7 +84,10 @@
 #ifndef GADGET_H
 #define GADGET_H
 
+#include "ra/defines.h"
+#include "ra/key.h"
 #include "ra/link.h"
+#include "ra/noinit.h"
 
 class ControlClass;
 

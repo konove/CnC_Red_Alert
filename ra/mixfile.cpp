@@ -48,13 +48,26 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/buff.h"
-#include "ra/function.h"
-#include <cerrno>
 #include "ra/mixfile.h"
+
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 
-#include "ra/cdfile.h"
+#include "port/ex_string.h"
+#include "ra/buff.h"
+#include "ra/ccfile.h"
+#include "ra/compat.h"
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/pkstraw.h"
+#include "ra/shastraw.h"
+#include "ra/startup.h"
+#include "ra/straw.h"
+#include "ra/xstraw.h"
 #include "sdllib/include/misc.h"
 
 extern MFCD temp;

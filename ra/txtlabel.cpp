@@ -38,7 +38,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/txtlabel.h"
+
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/gadget.h"
 
 /***********************************************************************************************
  * TextLableClass::TextLabelClass -- Constructor *
@@ -57,7 +61,7 @@
  *=============================================================================================*/
 TextLabelClass::TextLabelClass(char *txt, int x, int y, RemapControlType *color,
                                TextPrintType style)
-    : GadgetClass(x, y, 1, 1, 0, 0) {
+    : ::GadgetClass(x, y, 1, 1, 0, 0) {
   Text = txt;
   Color = color;
   Style = style;

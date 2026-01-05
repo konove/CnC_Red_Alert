@@ -40,10 +40,9 @@
  *into the hash accumulator.          *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-
-#include <cstdlib>
-#include <iostream>
 #include "ra/sha.h"
+
+#include <cstring>
 
 #if !defined(__BORLANDC__) && !defined(min)
 #define min(a, b) ((a) < (b)) ? (a) : (b)

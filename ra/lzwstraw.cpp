@@ -40,9 +40,12 @@
  *- - - - - - - */
 
 #include "ra/lzwstraw.h"
-#include "ra/lzw.h"
-#include <cstring>
+
 #include <cassert>
+#include <cstring>
+
+#include "ra/buff.h"
+#include "ra/lzw.h"
 
 /***********************************************************************************************
  * LZWStraw::LZWStraw -- Constructor for LZW straw object. *

@@ -50,7 +50,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/gscreen.h"
+
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/inline.h"
+#include "ra/session.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 

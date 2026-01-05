@@ -41,7 +41,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/dial8.h"
+
+#include "ra/control.h"
+#include "ra/dialog.h"
+#include "ra/face.h"
+#include "ra/inline.h"
 
 /***************************************************************************
  * Dial8Class::Dial8Class -- constructor for the facing dial               *
@@ -62,7 +67,7 @@
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
-    : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true) {
+    : ::ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true) {
   /*
   **	Center coordinates.
   */

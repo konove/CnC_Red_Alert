@@ -95,9 +95,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/infantry.h"
 
 #include <algorithm>
+
+#include "ra/anim.h"
+#include "ra/combat.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/session.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
 
 int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,

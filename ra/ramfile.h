@@ -40,6 +40,8 @@
 #ifndef RAMFILE_H
 #define RAMFILE_H
 
+#include <cstdio>
+
 #include "ra/wwfile.h"
 
 class RAMFileClass : public FileClass {

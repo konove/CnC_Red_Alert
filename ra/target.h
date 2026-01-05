@@ -40,6 +40,24 @@
 #ifndef TARGET_H
 #define TARGET_H
 
+#include "ra/abstract.h"
+#include "ra/ccini.h"
+#include "ra/defines.h"
+#include "ra/object.h"
+
+class AbstractTypeClass;
+class AircraftClass;
+class AnimClass;
+class BulletClass;
+class CellClass;
+class InfantryClass;
+class TeamClass;
+class TeamTypeClass;
+class TechnoTypeClass;
+class TerrainClass;
+class UnitClass;
+class VesselClass;
+
 inline RTTIType Target_Kind(TARGET a) {
   return (RTTIType(((TARGET_COMPOSITE &)a).Sub.Exponent));
 }
@@ -94,22 +112,6 @@ TARGET As_Target(CELL cell);
 TARGET As_Target(COORDINATE coord);
 // inline TARGET As_Target(CELL cell) {return (TARGET)(((unsigned)RTTI_CELL <<
 // TARGET_MANTISSA) | cell);}
-
-class UnitClass;
-class BuildingClass;
-class TechnoClass;
-class TerrainClass;
-class ObjectClass;
-class InfantryClass;
-class BulletClass;
-class TriggerClass;
-class TeamClass;
-class TeamTypeClass;
-class AnimClass;
-class AircraftClass;
-class VesselClass;
-class CellClass;
-class TriggerTypeClass;
 
 /*
 ** Must not have a constructor since Watcom cannot handle a class that has a
@@ -226,5 +228,24 @@ class TargetClass : public xTargetClass {
   TargetClass(AbstractTypeClass const *ptr);
   TargetClass(CellClass const *ptr);
 };
+
+TechnoTypeClass const *As_TechnoType(TARGET target);
+COORDINATE As_Movement_Coord(TARGET target);
+AircraftClass *As_Aircraft(TARGET target);
+AnimClass *As_Animation(TARGET target);
+BuildingClass *As_Building(TARGET target);
+BulletClass *As_Bullet(TARGET target);
+CELL As_Cell(TARGET target);
+COORDINATE As_Coord(TARGET target);
+InfantryClass *As_Infantry(TARGET target);
+TeamClass *As_Team(TARGET target);
+TeamTypeClass *As_TeamType(TARGET target);
+TechnoClass *As_Techno(TARGET target);
+TriggerClass *As_Trigger(TARGET target);
+TriggerTypeClass *As_TriggerType(TARGET target);
+UnitClass *As_Unit(TARGET target);
+VesselClass *As_Vessel(TARGET target);
+inline bool Target_Legal(TARGET target) { return (target != TARGET_NONE); };
+ObjectClass *As_Object(TARGET target);
 
 #endif

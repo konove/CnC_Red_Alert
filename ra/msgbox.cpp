@@ -38,12 +38,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/msgbox.h"
 
-#include "sdllib/include/font.h"
-#include "ra/gadget.h"
 #include <algorithm>
+
+#include "ra/dialog.h"
+#include "ra/gadget.h"
+#include "ra/inline.h"
+#include "ra/textbtn.h"
+#include "sdllib/include/font.h"
 
 #ifdef FIXIT_VERSION_3
 bool cancel_current_msgbox = false;

@@ -45,24 +45,13 @@
 #define RAWFILE_Hx
 
 #include <climits>
-#include <cerrno>
-#include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 
-#ifdef PORTABLE
+#include "ra/wwfile.h"
+
 #define NULL_HANDLE NULL
 #define HANDLE_TYPE void *
-#elif defined(WIN32)
-#include <windows.h>
-
-#define NULL_HANDLE INVALID_HANDLE_VALUE
-#define HANDLE_TYPE HANDLE
-#else
-#define NULL_HANDLE -1
-#define HANDLE_TYPE int
-#endif
-
-#include "ra/wwfile.h"
 
 #ifdef NEVER
 /*

@@ -40,6 +40,10 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
+#include "ra/ccptr.h"
+#include "ra/tevent.h"
+#include "ra/trigtype.h"
+
 class TriggerClass {
  public:
   RTTIType RTTI;
@@ -118,5 +122,7 @@ class TriggerClass {
   */
   CELL Cell;
 };
+
+TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);
 
 #endif

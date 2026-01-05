@@ -43,7 +43,9 @@
 #ifndef CHEKLIST_H
 #define CHEKLIST_H
 
+#include "ra/defines.h"
 #include "ra/list.h"
+#include "sdllib/include/keyboard.h"
 
 class CheckObject {
  public:

@@ -40,7 +40,15 @@
 #ifndef SMUDGE_H
 #define SMUDGE_H
 
+#include <cstddef>
+
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/globals.h"
 #include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
 #include "ra/type.h"
 
 /******************************************************************************

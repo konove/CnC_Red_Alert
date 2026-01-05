@@ -44,8 +44,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/edit.h"
+
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
 #include "sdllib/include/font.h"
-#include "ra/function.h"
 
 /***********************************************************************************************
  * EditClass::EditClass -- Normal constructor for edit class object. *

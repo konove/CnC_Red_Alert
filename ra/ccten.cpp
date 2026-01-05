@@ -40,6 +40,8 @@
  *   Send_TEN_Out_Of_Sync -- Announces this game out of sync               *
  *   Send_TEN_Packet_Too_Late -- Announces packet-received-too-late        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#include "ra/ccten.h"
+
 #include "ra/function.h"
 
 #if (TEN)

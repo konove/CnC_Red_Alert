@@ -42,7 +42,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/gauge.h"
+
+#include "ra/control.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/jshell.h"
 
 /***************************************************************************
  * GaugeClass::GaugeClass -- class constructor                             *
@@ -60,7 +65,7 @@
  * HISTORY:  01/05/1995 MML : Created.                                     *
  *=========================================================================*/
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
-    : ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true) {
+    : ::ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true) {
   Set_Maximum(255);
   Set_Value(0);
 

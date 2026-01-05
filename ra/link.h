@@ -40,6 +40,8 @@
 #ifndef LINK_H
 #define LINK_H
 
+#include "ra/noinit.h"
+
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
 *traverse the *	list. Since this is a doubly linked list, it is possible to

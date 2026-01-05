@@ -43,10 +43,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/statbtn.h"
 
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.

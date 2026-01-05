@@ -35,6 +35,8 @@
  *   Connect_MPATH -- Waits for connections to other players               *
  *   Destroy_MPATH_Connection -- Destroys the given connection             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#include "ra/ccmpath.h"
+
 #include "ra/function.h"
 
 /***************************************************************************

@@ -40,6 +40,17 @@
 #ifndef TEAMTYPE_H
 #define TEAMTYPE_H
 
+#include <stddef.h>
+
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/house.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/target.h"
+#include "ra/type.h"
+
 /*
 **	TeamMissionType: the various missions that a team can have.
 */
@@ -271,5 +282,7 @@ class TeamTypeClass : public AbstractTypeClass {
 
   static char const *TMissions[TMISSION_COUNT];
 };
+
+NeedType TeamMission_Needs(TeamMissionType tmtype);
 
 #endif

@@ -67,10 +67,19 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "sdllib/include/memflag.h"
+#include "ra/map.h"
 
 #include <algorithm>
+
+#include "ra/anim.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/lcwpipe.h"
+#include "ra/lcwstraw.h"
+#include "ra/session.h"
+#include "ra/tracker.h"
+#include "sdllib/include/memflag.h"
 
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {

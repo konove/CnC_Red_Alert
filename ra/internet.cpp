@@ -52,9 +52,22 @@
 
 #ifdef WIN32
 
-#include "ra/function.h"
-#include "ra/tcpip.h"
+#include <cstring>
+
+#include "msgbox.h"
 #include "ra/ccdde.h"
+#include "ra/dialog.h"
+#include "ra/expand.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/profile.h"
+#include "ra/rawfile.h"
+#include "ra/session.h"
+#include "ra/startup.h"
+#include "ra/tcpip.h"
+#include "ra/textbtn.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
 
 extern bool SpawnedFromWChat;

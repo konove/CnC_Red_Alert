@@ -44,8 +44,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/template.h"
+
+#include <cassert>
+
+#include "ra/cell.h"
+#include "ra/function.h"
+// #include "ra/externs.h"
+#include "ra/heap.h"
+#include "ra/inline.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "sdllib/include/tile.h"
 
 /***********************************************************************************************
  * TemplateClass::Init -- Resets the template object system. *

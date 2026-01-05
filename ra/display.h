@@ -40,8 +40,9 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "ra/map.h"
+#include "ra/gadget.h"
 #include "ra/layer.h"
+#include "ra/map.h"
 
 #define ICON_PIXEL_W 24
 #define ICON_PIXEL_H 24

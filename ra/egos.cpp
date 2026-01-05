@@ -40,10 +40,16 @@
  * Functions: *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
+#include "ra/egos.h"
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
+#include <cstring>
+
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
 #include "ra/graphics_loader.h"
+#include "ra/vector.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/memflag.h"
 
 /*
@@ -167,7 +173,7 @@ EgoClass::EgoClass(int x, int y, char *text, TextPrintType flags) {
   XPos = x;
   YPos = y;
   Flags = flags;
-  Text = new char[strlen(text) + 1];
+  Text = new char[std::strlen(text) + 1];
   strcpy(Text, text);
 }
 

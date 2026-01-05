@@ -40,7 +40,14 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
+#include <cstddef>
+
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/globals.h"
 #include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
 #include "ra/type.h"
 
 /******************************************************************************

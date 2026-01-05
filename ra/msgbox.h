@@ -40,7 +40,7 @@
 #ifndef MSGBOX_H
 #define MSGBOX_H
 
-#include "ra/jshell.h"
+#include "ra/conquer.h"
 
 class WWMessageBox {
   int Caption;

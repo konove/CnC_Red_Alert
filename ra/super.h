@@ -40,7 +40,9 @@
 #ifndef SUPER_H
 #define SUPER_H
 
+#include "ra/defines.h"
 #include "ra/ftimer.h"
+#include "ra/jshell.h"
 
 class SuperClass {
  public:

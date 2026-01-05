@@ -40,7 +40,18 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include <stddef.h>
+
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/inline.h"
 #include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/stage.h"
+#include "ra/straw.h"
+#include "ra/techno.h"
 #include "ra/type.h"
 
 /****************************************************************************

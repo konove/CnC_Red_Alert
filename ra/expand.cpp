@@ -37,7 +37,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/expand.h"
+
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/list.h"
+#include "ra/profile.h"
+#include "ra/textbtn.h"
 #include "sdllib/include/misc.h"
 
 #ifdef FIXIT_VERSION_3

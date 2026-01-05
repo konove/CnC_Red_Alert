@@ -43,7 +43,6 @@
  *- - - - - - - */
 
 #include "ra/buff.h"
-#include <cstddef>
 
 /***********************************************************************************************
  * Buffer::Buffer -- Constructor for buffer object. *

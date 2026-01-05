@@ -121,8 +121,63 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/building.h"
+
 #include <algorithm>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/base.h"
+#include "ra/bullet.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/cell.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/drive.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/facing.h"
+#include "ra/factory.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/function.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/map.h"
+#include "ra/mission.h"
+#include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/overlay.h"
+#include "ra/power.h"
+#include "ra/queue.h"
+#include "ra/radar.h"
+#include "ra/radio.h"
+#include "ra/rules.h"
+#include "ra/session.h"
+#include "ra/smudge.h"
+#include "ra/target.h"
+#include "ra/techno.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/utracker.h"
+#include "ra/vector.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/wwstd.h"
 
 enum SAMState {
   SAM_READY,  // Launcher can be facing any direction tracking targets.

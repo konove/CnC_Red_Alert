@@ -207,5 +207,8 @@ class VersionClass {
   unsigned MinorInit : 1;
   unsigned TextInit : 1;
 };
+
+char const *Version_Name(void);
+
 #endif
 /************************** end of version.h *******************************/

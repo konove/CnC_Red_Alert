@@ -47,9 +47,19 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include <cerrno>
 #include "ra/ccfile.h"
+
+#include <cassert>
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
+#include <new>
+
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/jshell.h"
+#include "ra/rawfile.h"
+#include "ra/startup.h"
 
 /***********************************************************************************************
  * CCFileClass::CCFileClass -- Filename based constructor for C&C file. *

@@ -51,11 +51,18 @@
  *   NullModemClass::Hangup_Modem -- hangs up the modem                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/nullmgr.h"
 
 #include <algorithm>
+
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/msgbox.h"
+#include "ra/textbtn.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/misc.h"
 
 #ifdef WIN32
 #ifdef _WIN32

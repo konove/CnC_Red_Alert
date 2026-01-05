@@ -40,6 +40,8 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "ra/special.h"
+
 /*
 **	This event class is used to contain all external game events (things
 *that the player can *	do at any time) so that these events can be transported

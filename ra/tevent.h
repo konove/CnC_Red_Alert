@@ -40,6 +40,14 @@
 #ifndef TEVENT_H
 #define TEVENT_H
 
+#include "port/ex_string.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/function.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/teamtype.h"
+
 /*
 **	These are the trigger events that are checked for and if qualified, they
 *will signal *	a successful trigger event. This might result in the trigger

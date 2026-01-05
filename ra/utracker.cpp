@@ -44,6 +44,10 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "ra/utracker.h"
+
+#include <cstring>
+
 #include "ra/function.h"
 
 /*

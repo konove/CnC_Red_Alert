@@ -61,7 +61,27 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/teamtype.h"
+
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "port/ex_string.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/function.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/target.h"
+#include "ra/team.h"
+#include "ra/type.h"
 
 TeamMissionClass TeamMissions[TMISSION_COUNT] = {
     {TMISSION_ATTACK},     {TMISSION_ATT_WAYPT},    {TMISSION_FORMATION},

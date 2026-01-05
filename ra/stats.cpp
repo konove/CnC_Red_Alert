@@ -43,9 +43,15 @@
 
 #ifdef WIN32
 
-#include "ra/function.h"
-#include "ra/tcpip.h"
+#include "ra/aircraft.h"
+#include "ra/ccptr.h"
+#include "ra/externs.h"
+#include "ra/house.h"
 #include "ra/packet.h"
+#include "ra/session.h"
+#include "ra/tcpip.h"
+#include "ra/vessel.h"
+#include "sdllib/include/timer.h"
 #ifndef _WIN32
 #include "ra/ccdde.h"
 #endif

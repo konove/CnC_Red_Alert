@@ -47,10 +47,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/slider.h"
 
 #include <algorithm>
+
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)

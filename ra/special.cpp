@@ -41,11 +41,36 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/special.h"
+
+#include <string.h>
 
 #include <algorithm>
+
+#include "ra/checkbox.h"
+#include "ra/conquer.h"
+#include "ra/debug.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/edit.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/mapedit.h"
+#include "ra/mouse.h"
+#include "ra/queue.h"
+#include "ra/rules.h"
+#include "ra/session.h"
+#include "ra/slider.h"
+#include "ra/textbtn.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef WIN32
 #define OPTION_WIDTH 236 * 2

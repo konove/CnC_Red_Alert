@@ -39,6 +39,8 @@
 
 #ifndef DOOR_H
 #define DOOR_H
+#include "ra/noinit.h"
+#include "ra/stage.h"
 
 class DoorClass {
  private:

@@ -42,22 +42,33 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
+#include <cstring>
 #include <string>
 
-#include "ra/function.h"
+#include "ra/ccfile.h"
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
+#include "ra/nullmgr.h"
+#include "ra/palette.h"
+#include "ra/rawfile.h"
+#include "ra/session.h"
+#include "ra/textbtn.h"
+#include "ra/vector.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
-
-#ifdef WINSOCK_IPX
-#include "ra/wsproto.h"
-#else
-
-#ifdef WIN32
-#include "ra/tcpip.h"
-#else
-#include "ra/fakesock.h"
-#endif  // WIN32
-
-#endif  // WINSOCK_IPX
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 bool Receive_Remote_File(char *file_name, unsigned int file_length,
                          int gametype);

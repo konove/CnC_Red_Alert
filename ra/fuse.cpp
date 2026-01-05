@@ -40,8 +40,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "fuse.h"
+
 #include <algorithm>
+
+#include "ra/coord.h"
+#include "ra/defines.h"
+#include "ra/display.h"
 
 /***********************************************************************************************
  * FuseClass::FuseClass -- Constructor. *

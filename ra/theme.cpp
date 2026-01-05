@@ -52,11 +52,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/theme.h"
 
-#include "sdllib/include/ww_audio.h"
 #include <filesystem>
+
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/inline.h"
+#include "sdllib/include/ww_audio.h"
+#include "session.h"
 
 #ifndef WIN32
 extern short StreamLowImpact;

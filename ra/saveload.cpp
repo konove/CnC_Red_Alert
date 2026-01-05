@@ -48,8 +48,29 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/saveload.h"
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/blowpipe.h"
+#include "ra/blwstraw.h"
+#include "ra/expand.h"
+#include "ra/externs.h"
+#include "ra/lzopipe.h"
+#include "ra/lzostraw.h"
+#include "ra/session.h"
+#include "ra/shapipe.h"
+#include "ra/shastraw.h"
+#include "ra/startup.h"
+#include "ra/team.h"
+#include "ra/terrain.h"
+#include "ra/trigger.h"
+#include "ra/type.h"
+#include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "ra/xpipe.h"
+#include "ra/xstraw.h"
+
 #ifdef WIN32
 #include "ra/tcpip.h"
 #include "ra/ccdde.h"

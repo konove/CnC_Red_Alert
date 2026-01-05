@@ -15,6 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef CNC_RED_ALERT_RA_DEBUG_H_
+#define CNC_RED_ALERT_RA_DEBUG_H_
 
 #define TXT_CLEAR_MAP 0x3e8            // Clear the map
 #define TXT_INHERIT_MAP 0x3e9          // Inherit previous map
@@ -48,14 +50,20 @@
 #define TXT_REBUILD 0x405              // Rebuild
 #define TXT_SPEED_BUILD 0x406          // Building constructin time
 #define TXT_SCENARIO_ERRORx 0x407      // Scenario authentication
-#define TXT_DEBUG_STRESS 0x408         // ÚFrames:ÄÂF/R:ÂCPU:ÄÄÂF/R:ÄÄ
-#define TXT_DEBUG_VEHICLE 0x409        // ÚFull
-#define TXT_DEBUG_INFANTRY 0x40a       // ÚFull
-#define TXT_DEBUG_SHIP 0x40b           // ÚFull
-#define TXT_DEBUG_BUILDING 0x40c       // ÚFull
-#define TXT_DEBUG_PERFORMANCE 0x40d    //  Game Objects³  Drawing
-#define TXT_DEBUG_AIRCRAFT 0x40e       // ÚFull
-#define TXT_DEBUG_HOUSE 0x40f          // ÚFull Name:ÄÄÄÄÄÄÄÄÂAct
+#define TXT_DEBUG_STRESS 0x408  // â”ŒFrames:â”€â”¬F/R:â”¬CPU:â”€â”€â”¬F/R:â”€â”€
+#define TXT_DEBUG_VEHICLE 0x409      // â”ŒFull
+#define TXT_DEBUG_INFANTRY 0x40a     // â”ŒFull
+#define TXT_DEBUG_SHIP 0x40b         // â”ŒFull
+#define TXT_DEBUG_BUILDING 0x40c     // â”ŒFull
+#define TXT_DEBUG_PERFORMANCE 0x40d  //  Game Objectsâ”‚  Drawing
+#define TXT_DEBUG_AIRCRAFT 0x40e     // â”ŒFull
+#define TXT_DEBUG_HOUSE 0x40f  // â”ŒFull Name:â”€â”€â”€â”€â”€â”€â”€â”€â”¬Act
 #define TXT_NO_PENTIUM 0x410           // ****************************
 #define TXT_SIZE_MAP 0x411             // Size Map
 #define TXT_TRUCK_CRATE 0x412          // Trucks drop crate when
+
+void Log_Event(char const *text, ...);
+void Debug_Key(unsigned input);
+void Self_Regulate(void);
+
+#endif  // CNC_RED_ALERT_RA_DEBUG_H_

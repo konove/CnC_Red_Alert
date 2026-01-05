@@ -38,12 +38,13 @@ size);
 Buff);
 ;* int Write_PCX_File (char* name, GraphicViewPortClass& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-#include "sdllib/include/gbuffer.h"
-#include <cstring>
-#include "sdllib/include/buffer.h"
+#ifndef CNC_RED_ALERT_RA_FILEPCX_H_
+#define CNC_RED_ALERT_RA_FILEPCX_H_
 
-#ifndef PCX_H
-#define PCX_H
+#include "ra/palette.h"
+#include "ra/wwfile.h"
+#include "sdllib/include/buffer.h"
+#include "sdllib/include/gbuffer.h"
 
 typedef struct {
   char red;
@@ -75,8 +76,7 @@ GraphicBufferClass* Read_PCX_File(char const* name, char* palette = nullptr,
 GraphicBufferClass* Read_PCX_File(char const* name, BufferClass& Buff,
                                   char* palette = nullptr);
 
-#ifndef TD
 int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
                    PaletteClass* palette);
-#endif
-#endif
+
+#endif  // CNC_RED_ALERT_RA_FILEPCX_H_

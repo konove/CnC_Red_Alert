@@ -60,10 +60,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/wsproto.h"
 
+#include <cerrno>
 #include <cstdio>
+
+#include "ra/externs.h"
+#include "ra/function.h"
 
 #ifdef _WIN32
 typedef int socklen_t;

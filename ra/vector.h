@@ -55,18 +55,11 @@
 
 #ifndef VECTOR_H
 #define VECTOR_H
-
-#ifdef NEVER
-#ifndef false
-#define false 0
-#endif
-#ifndef true
-#define true 1
-#endif
-#endif
-
-#include <cstdlib>
 #include <cstddef>
+#include <cstdlib>
+
+#include "ra/jshell.h"
+#include "ra/noinit.h"
 
 /**************************************************************************
 **	This is a general purpose vector class. A vector is defined by this

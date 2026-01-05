@@ -38,10 +38,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/visudlg.h"
 
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/session.h"
+#include "ra/slider.h"
+#include "ra/textbtn.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *

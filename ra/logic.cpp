@@ -39,9 +39,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/logic.h"
+
+#include "ra/anim.h"
+#include "ra/externs.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
 #include "ra/vortex.h"
+#include "ra/ww_audio.h"
+#include "session.h"
 
 static unsigned FramesPerSecond = 0;
 

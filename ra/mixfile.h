@@ -21,10 +21,12 @@
 #ifndef MIXFILE_H
 #define MIXFILE_H
 
-#include <cstdlib>
+#include <cstdint>
+
+#include "ra/buff.h"
+#include "ra/ccfile.h"
 #include "ra/listnode.h"
 #include "ra/pk.h"
-#include "ra/buff.h"
 
 template <class T>
 class MixFileClass : public Node<MixFileClass<T> > {

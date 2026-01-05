@@ -39,8 +39,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "port/ex_string.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
 #include "ra/interpal.h"
+#include "ra/palette.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/wsa.h"
 #include "sdllib/include/ww_audio.h"

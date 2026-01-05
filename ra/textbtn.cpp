@@ -44,9 +44,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/textbtn.h"
 
+#include "ra/conquer.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
 #include "sdllib/include/font.h"
 
 /***********************************************************************************************

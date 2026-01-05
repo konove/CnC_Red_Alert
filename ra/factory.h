@@ -41,6 +41,7 @@
 #define FACTORY_H
 
 #include "ra/stage.h"
+#include "ra/type.h"
 
 class FactoryClass : private StageClass {
  public:

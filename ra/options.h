@@ -39,6 +39,10 @@
 
 #ifndef OPTIONS_H
 #define OPTIONS_H
+#include "ra/defines.h"
+#include "ra/fixed.h"
+#include "ra/palette.h"
+#include "sdllib/include/keyboard.h"
 
 class OptionsClass {
  public:

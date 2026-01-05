@@ -45,7 +45,29 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/tevent.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/gadget.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/scenario.h"
+#include "ra/team.h"
+#include "ra/teamtype.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
 
 /*
 **	This is the text name for all of the trigger events. These are used by

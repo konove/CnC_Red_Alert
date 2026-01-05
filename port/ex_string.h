@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_PORT_EX_STRING_H_
 #define CNC_RED_ALERT_PORT_EX_STRING_H_
 
+#include <cstdio>
+
 // paths
 #define _MAX_PATH 260
 #define _MAX_FNAME 256
@@ -9,8 +11,8 @@
 
 // case-insensitive comparisons
 int stricmp(const char *string1, const char *string2);
-int strnicmp(const char *string1, const char *string2, size_t count);
-int memicmp(const void *buffer1, const void *buffer2, size_t count);
+int strnicmp(const char *string1, const char *string2, std::size_t count);
+int memicmp(const void *buffer1, const void *buffer2, std::size_t count);
 
 // in-place modification
 char *strupr(char *str);

@@ -45,11 +45,14 @@
  ** ConnectionClass::Command_Name -- returns name for a packet command *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-#include <cstdio>
-#include <sys/timeb.h>
 #include "ra/connect.h"
 
+#include <sys/timeb.h>
+
+#include <cstdio>
+#include <cstring>
+
+#include "ra/function.h"
 #include "ra/woldebug.h"
 
 /*
@@ -240,7 +243,7 @@ int ConnectionClass::Send_Packet(void *buf, int buflen, int ack_req) {
   /*------------------------------------------------------------------------
   Now build the packet
   ------------------------------------------------------------------------*/
-  memcpy(PacketBuf + sizeof(CommHeaderType), buf, buflen);
+  std::memcpy(PacketBuf + sizeof(CommHeaderType), buf, buflen);
 
   /*------------------------------------------------------------------------
   Add it to the queue; don't add any extra data with it.

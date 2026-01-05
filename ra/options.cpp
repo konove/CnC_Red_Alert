@@ -67,9 +67,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/options.h"
 
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/hsv.h"
+#include "ra/session.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_audio.h"
 
 #ifdef WIN32

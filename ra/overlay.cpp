@@ -43,8 +43,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/overlay.h"
+
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/lcwpipe.h"
+#include "ra/lcwstraw.h"
+#include "ra/session.h"
+#include "ra/xpipe.h"
+#include "ra/xstraw.h"
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 

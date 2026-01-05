@@ -43,9 +43,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/bar.h"
+
 #include "ra/fixed.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***********************************************************************************************
  * ProgressBarClass::ProgressBarClass -- Constructor for the bargraph object. *

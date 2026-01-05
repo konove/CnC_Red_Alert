@@ -53,7 +53,11 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
-#include "ra/function.h"
+#include "ra/dial8.h"
+#include "ra/list.h"
+#include "ra/mouse.h"
+#include "ra/textbtn.h"
+#include "ra/txtlabel.h"
 
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.

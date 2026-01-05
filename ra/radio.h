@@ -40,6 +40,7 @@
 #ifndef RADIO_H
 #define RADIO_H
 
+#include "ra/globals.h"
 #include "ra/mission.h"
 
 class ObjectClass;

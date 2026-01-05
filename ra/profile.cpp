@@ -40,7 +40,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/profile.h"
+
+#include <cctype>
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "ra/defines.h"
+#include "ra/ini.h"
+#include "ra/readline.h"
+#include "ra/wwfile.h"
 
 static char *WriteBinBuffer = nullptr;
 static int WriteBinBufferLen = 0;

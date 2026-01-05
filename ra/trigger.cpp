@@ -49,7 +49,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/trigger.h"
+
+#include "ra/externs.h"
 #include "ra/function.h"
+#include "ra/tracker.h"
 
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************

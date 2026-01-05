@@ -40,6 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/externs.h"
 #include "ra/function.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/wsa.h"

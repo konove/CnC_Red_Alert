@@ -53,10 +53,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/vortex.h"
+#include "ra/rules.h"
 
 #include <algorithm>
+
+#include "ra/anim.h"
+#include "ra/const.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/readline.h"
+#include "ra/vortex.h"
+#include "ra/weapon.h"
 
 /***********************************************************************************************
  * _Scale_To_256 -- Scales a 1..100 number into a 1..255 number. *

@@ -40,8 +40,11 @@
 #ifndef TAB_H
 #define TAB_H
 
-#include "ra/sidebar.h"
 #include "ra/credits.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+#include "ra/sidebar.h"
+#include "sdllib/include/keyboard.h"
 
 class TabClass : public SidebarClass {
  public:

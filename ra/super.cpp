@@ -48,9 +48,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/super.h"
 
 #include <algorithm>
+
+#include "ra/defines.h"
+#include "ra/ww_audio.h"
 
 /***********************************************************************************************
  * SuperClass::SuperClass -- Constructor for special super weapon objects. *

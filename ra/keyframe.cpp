@@ -40,6 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/keyframe.h"
+
 #include "ra/function.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)

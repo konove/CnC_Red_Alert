@@ -40,8 +40,6 @@
 #ifndef STRAW_H
 #define STRAW_H
 
-#include <cstdlib>
-
 /*
 **	This is a demand driven data carrier. It will retrieve the byte request
 *by passing *	the request down the chain (possibly processing on the way) in

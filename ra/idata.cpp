@@ -55,10 +55,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/type.h"
-
 #include <filesystem>
+
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/type.h"
 
 static DoInfoStruct DogDoControls[DO_COUNT] = {
     {0, 1, 1},      // DO_STAND_READY

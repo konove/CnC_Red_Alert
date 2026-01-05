@@ -40,10 +40,7 @@
 #ifndef SHA_H
 #define SHA_H
 
-#include <cstdio>
 #include <cstdint>
-#include <cstring>
-#include <cstdlib>
 #include <new>
 
 /*

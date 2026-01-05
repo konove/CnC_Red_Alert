@@ -40,9 +40,9 @@
 #ifndef INT_H
 #define INT_H
 
-#include <memory.h>
 #include <climits>
-#include <cassert>
+#include <cstring>
+
 #include "ra/mp.h"
 #include "ra/straw.h"
 

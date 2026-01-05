@@ -40,9 +40,14 @@
 #ifndef JSHELL_H
 #define JSHELL_H
 
-#include "sdllib/include/timer.h"
-
 #include <cassert>
+
+#include "ra/compat.h"
+#include "ra/noinit.h"
+#include "ra/palette.h"
+#include "ra/wwfile.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/timer.h"
 #include "sdllib/include/ww_mouse.h"
 
 #ifdef WIN32
@@ -521,5 +526,34 @@ class SmartPtr {
  private:
   T *Pointer;
 };
+
+typedef struct {
+  unsigned char SourceColor;
+  unsigned char DestColor;
+  unsigned char Fading;
+  unsigned char reserved;
+} TLucentType;
+
+int Load_Picture(char const *filename, BufferClass &scratchbuf,
+                 BufferClass &destbuf, unsigned char *palette,
+                 PicturePlaneType format);
+void *Conquer_Build_Fading_Table(PaletteClass const &palette, void *dest,
+                                 int color, int frac);
+void *Small_Icon(void const *iconptr, int iconnum);
+void Set_Window(int window, int x, int y, int w, int h);
+void *Load_Alloc_Data(FileClass &file);
+long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
+                     BuffType &dest_buff, void *reserved_data);
+long Translucent_Table_Size(int count);
+void *Build_Translucent_Table(PaletteClass const &palette,
+                              TLucentType const *control, int count,
+                              void *buffer);
+void *Conquer_Build_Translucent_Table(PaletteClass const &palette,
+                                      TLucentType const *control, int count,
+                                      void *buffer);
+void *Make_Fading_Table(PaletteClass const &palette, void *dest, int color,
+                        int frac);
+
+void Fatal(char const *message, ...);
 
 #endif

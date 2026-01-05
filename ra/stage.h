@@ -40,6 +40,10 @@
 #ifndef STAGE_H
 #define STAGE_H
 
+#include "ra/ftimer.h"
+#include "ra/jshell.h"
+#include "ra/noinit.h"
+
 class StageClass {
   /*
   **	This handles the animation stage of the object. This includes smoke,

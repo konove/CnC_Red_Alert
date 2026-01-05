@@ -94,11 +94,39 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/ccini.h"
+
 #include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <cstring>
 #include <string>
+#include <string_view>
 
+#include "port/ex_string.h"
+#include "ra/adata.h"
+#include "ra/anim.h"
+#include "ra/const.h"
+#include "ra/crc.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
 #include "ra/function.h"
-
+#include "ra/ini.h"
+#include "ra/jshell.h"
+#include "ra/pipe.h"
+#include "ra/shapipe.h"
+#include "ra/straw.h"
+#include "ra/theme.h"
+#include "ra/trigtype.h"
+#include "ra/type.h"
+#include "ra/warhead.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
+#include "ra/wwfile.h"
+#include "ra/xpipe.h"
+#include "ra/xstraw.h"
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *

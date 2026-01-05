@@ -42,7 +42,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/tab.h"
+
+#include "ra/conquer.h"
+#include "ra/credits.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/jshell.h"
+#include "ra/mouse.h"
+#include "ra/rawfile.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/sidebar.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/wwstd.h"
 
 void const *TabClass::TabShape = nullptr;
 

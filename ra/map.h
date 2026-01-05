@@ -183,4 +183,6 @@ class MapClass : public GScreenClass {
   enum MapEnum { SCAN_AMOUNT = MAP_CELL_TOTAL };
 };
 
+int Coord_Spillage_Number(COORDINATE coord, int maxsize);
+
 #endif

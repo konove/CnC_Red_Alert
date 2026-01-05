@@ -36,6 +36,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "ra/inicode.h"
+
 #include "ra/function.h"
 
 #ifdef TOFIX

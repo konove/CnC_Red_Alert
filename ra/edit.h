@@ -39,6 +39,7 @@
 
 #ifndef EDIT_H
 #define EDIT_H
+#include "ra/control.h"
 
 class EditClass : public ControlClass {
  public:

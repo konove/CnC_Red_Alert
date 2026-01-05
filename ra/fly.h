@@ -40,6 +40,10 @@
 #ifndef FLY_H
 #define FLY_H
 
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/noinit.h"
+
 typedef enum ImpactType {
   IMPACT_NONE,    // No movement (of significance) occurred.
   IMPACT_NORMAL,  // Some (non eventful) movement occurred.

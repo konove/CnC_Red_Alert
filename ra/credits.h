@@ -37,8 +37,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CREDITS_H
-#define CREDITS_H
+#ifndef CNC_RED_ALERT_RA_CREDITS_H_
+#define CNC_RED_ALERT_RA_CREDITS_H_
+
+#include "ra/noinit.h"
 
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.
@@ -71,4 +73,4 @@ class CreditClass {
   int Countdown;  // Delay between ticks.
 };
 
-#endif
+#endif  // CNC_RED_ALERT_RA_CREDITS_H_

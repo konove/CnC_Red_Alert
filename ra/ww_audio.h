@@ -41,58 +41,70 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include "memory.h"
+#include "ra/defines.h"
 
-class AudioClass {
-  char const *Name;     // Name of audio asset.
-  void const *Data;     // Loaded audio data.
-  int Handle;           // Handle of asset (as it is playing).
-  MemoryClass *Mem;     // Pointer to memory handler class.
-  unsigned IsMIDI : 1;  // Is this a midi file?
+// class AudioClass {
+//   char const *Name;     // Name of audio asset.
+//   void const *Data;     // Loaded audio data.
+//   int Handle;           // Handle of asset (as it is playing).
+//   MemoryClass *Mem;     // Pointer to memory handler class.
+//   unsigned IsMIDI : 1;  // Is this a midi file?
+//
+//  public:
+//   AudioClass(void);
+//   AudioClass(char const *name, MemoryClass &mem);
+//   virtual ~AudioClass(void);
+//
+//   bool Load(char const *name = nullptr);
+//   bool Free(void);
+//   bool Play(int volume = 0xFF);
+//   bool Stop(void);
+//   bool Pause(void);
+//   bool Resume(void);
+//   bool Set_Name(char const *name);
+//   bool Is_Playing(void) const;
+//   bool Is_Loaded(void) const;
+//   bool Is_MIDI(void) const;
+// };
+//
+// inline AudioClass::AudioClass(void) {
+//   Name = nullptr;
+//   Data = nullptr;
+//   Mem = 0;
+//   Handle = -1;
+// };
+//
+// inline AudioClass::AudioClass(char const *name, MemoryClass &mem) {
+//   if (mem) {
+//     Mem = &mem;
+//   } else {
+//     Mem = &::Mem;  // Uses global default memory handler.
+//   }
+//   Name = strdup(name);
+//   Data = nullptr;
+//   Handle = -1;
+// };
+//
+// inline AudioClass::~AudioClass(void) {
+//   if (GameActive) {
+//     if (Name) free(Name);
+//     if (Data) Mem->Free(Data);
+//     Name = nullptr;
+//     Data = nullptr;
+//     Handle = -1;
+//   }
+// };
 
- public:
-  AudioClass(void);
-  AudioClass(char const *name, MemoryClass &mem);
-  virtual ~AudioClass(void);
-
-  bool Load(char const *name = nullptr);
-  bool Free(void);
-  bool Play(int volume = 0xFF);
-  bool Stop(void);
-  bool Pause(void);
-  bool Resume(void);
-  bool Set_Name(char const *name);
-  bool Is_Playing(void) const;
-  bool Is_Loaded(void) const;
-  bool Is_MIDI(void) const;
-};
-
-inline AudioClass::AudioClass(void) {
-  Name = nullptr;
-  Data = nullptr;
-  Mem = 0;
-  Handle = -1;
-};
-
-inline AudioClass::AudioClass(char const *name, MemoryClass &mem) {
-  if (mem) {
-    Mem = &mem;
-  } else {
-    Mem = &::Mem;  // Uses global default memory handler.
-  }
-  Name = strdup(name);
-  Data = nullptr;
-  Handle = -1;
-};
-
-inline AudioClass::~AudioClass(void) {
-  if (GameActive) {
-    if (Name) free(Name);
-    if (Data) Mem->Free(Data);
-    Name = nullptr;
-    Data = nullptr;
-    Handle = -1;
-  }
-};
+VocType Voc_From_Name(char const *name);
+char const *Speech_Name(VoxType speech);
+char const *Voc_Name(VocType voc);
+int Sound_Effect(VocType voc, fixed volume = 1, int variation = 1,
+                 signed short panvalue = 0, HousesType house = HOUSE_NONE);
+void Speak(VoxType voice);
+void Speak_AI(void);
+void Stop_Speaking(void);
+void Sound_Effect(VocType voc, COORDINATE coord, int variation = 1,
+                  HousesType house = HOUSE_NONE);
+bool Is_Speaking(void);
 
 #endif

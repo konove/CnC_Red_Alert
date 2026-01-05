@@ -51,11 +51,23 @@
  *Allocates a template type from special heap.           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-
-#include "ra/function.h"
-#include "sdllib/include/iconcach.h"
-
+#include <cstddef>
 #include <filesystem>
+
+#include "port/ex_string.h"
+#include "ra/compat.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/template.h"
+#include "ra/type.h"
+#include "sdllib/include/iconcach.h"
 
 static TemplateTypeClass const Empty(TEMPLATE_CLEAR1,
                                      THEATERF_TEMPERATE | THEATERF_SNOW |

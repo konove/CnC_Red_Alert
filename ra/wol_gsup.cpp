@@ -16,7 +16,12 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "ra/externs.h"
 #include "ra/function.h"
+#include "ra/session.h"
 
 #ifdef WOLAPI_INTEGRATION  //	Now implies also WINSOCK_IPX, WIN32, and
                            // FIXIT_CSII must be true

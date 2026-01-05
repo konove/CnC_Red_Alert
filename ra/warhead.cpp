@@ -43,7 +43,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/warhead.h"
+
+#include "ra/defines.h"
+#include "ra/heap.h"
 
 /***************************************************************************
 **	This is the warhead data object array.

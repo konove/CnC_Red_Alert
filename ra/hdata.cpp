@@ -48,7 +48,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/conquer.h"
+#include "ra/externs.h"
+#include "ra/type.h"
 
 static HouseTypeClass const HouseEngland(
     HOUSE_ENGLAND,

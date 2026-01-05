@@ -38,13 +38,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/gamedlg.h"
 
+#include "ra/dialog.h"
+#include "ra/inline.h"
+#include "ra/msgbox.h"
+#include "ra/sounddlg.h"
+#include "ra/textbtn.h"
+#include "ra/visudlg.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_audio.h"
-#include "ra/sounddlg.h"
-#include "ra/visudlg.h"
+#include "session.h"
+#include "slider.h"
 
 #define GERMAN_OFFSET_Y 4  // VG
 

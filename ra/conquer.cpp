@@ -69,50 +69,96 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/conquer.h"
+
+#include <fcntl.h>
+
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
-#include <format>
+#include <string>
 
+#include "port/ex_string.h"
+#include "ra/2keyfbuf.h"
+#include "ra/aircraft.h"
+#include "ra/building.h"
+#include "ra/ccdde.h"
+#include "ra/ccfile.h"
+#include "ra/ccptr.h"
+#include "ra/cdfile.h"
+#include "ra/compat.h"
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/event.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/filepcx.h"
+#include "ra/fixed.h"
+#include "ra/foot.h"
+#include "ra/goptions.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/infantry.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/interpal.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxgconn.h"
+#include "ra/ipxmgr.h"
+#include "ra/jshell.h"
+#include "ra/keyframe.h"
+#include "ra/language.h"
+#include "ra/layer.h"
+#include "ra/logic.h"
+#include "ra/monoc.h"
+#include "ra/mouse.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
+#include "ra/msglist.h"
+#include "ra/netdlg.h"
+#include "ra/nulldlg.h"
+#include "ra/nullmgr.h"
+#include "ra/object.h"
+#include "ra/palette.h"
+#include "ra/queue.h"
+#include "ra/rect.h"
+#include "ra/rgb.h"
+#include "ra/rotbmp.h"
+#include "ra/rules.h"
+#include "ra/scenario.h"
+#include "ra/score.h"
+#include "ra/session.h"
+#include "ra/sidebar.h"
+#include "ra/special.h"
+#include "ra/target.h"
+#include "ra/theme.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vector.h"
+#include "ra/version.h"
+#include "ra/vessel.h"
+#include "ra/vortex.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/playcd.h"
+#include "sdllib/include/shape.h"
 #include "sdllib/include/ww_audio.h"
-#ifdef TESTCODE
-class A {
- public:
-  enum { VAR = 1 };
-};
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "winvq/vqa32/vqaplay.h"
 
-template <class T>
-class B {
- public:
-  enum { VAR2 = T::VAR };  // this is the line in question.
-};
-
-B<A> test;
-#endif
-
-#include "ra/function.h"
-#ifdef WIN32
 #ifdef WINSOCK_IPX
 #include "ra/wsproto.h"
 #else  // WINSOCK_IPX
 #include "ra/tcpip.h"
 #endif  // WINSOCK_IPX
-#else
-#include "ra/fakesock.h"
-TcpipManagerClass Winsock;
-#endif
-#include <fcntl.h>
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#ifndef WIN32
-#include <dos.h>
-#include <io.h>
-#include <share.h>
-#endif
-#include "ra/ccdde.h"
-#include "ra/vortex.h"
 
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"

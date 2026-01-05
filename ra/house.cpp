@@ -148,10 +148,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "ra/vortex.h"
+#include "ra/house.h"
 
 #include <algorithm>
+
+#include "ra/aircraft.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/reinf.h"
+#include "ra/session.h"
+#include "ra/team.h"
+#include "ra/tracker.h"
+#include "ra/trigger.h"
+#include "ra/vessel.h"
+#include "ra/vortex.h"
+#include "ra/ww_audio.h"
 // #include "WolDebug.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;

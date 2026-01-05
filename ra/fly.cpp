@@ -39,7 +39,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/fly.h"
+
+#include <cstdlib>
+
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/face.h"
+#include "ra/fixed.h"
 
 /***********************************************************************************************
  * FlyClass::Physics -- Performs vector physics (movement). *

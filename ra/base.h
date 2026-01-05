@@ -40,7 +40,6 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/pipe.h"

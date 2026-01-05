@@ -100,11 +100,23 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
-#include "ra/vortex.h"
+#include "ra/display.h"
+
 #include <algorithm>
+
+#include "ra/aircraft.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/session.h"
+#include "ra/trigger.h"
+#include "ra/vessel.h"
+#include "ra/vortex.h"
+#include "ra/ww_audio.h"
+#include "ra/xpipe.h"
+#include "ra/xstraw.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/misc.h"
 
 /*
 **	These layer control elements are used to group the displayable objects

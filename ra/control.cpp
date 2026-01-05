@@ -43,7 +43,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/control.h"
 
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *

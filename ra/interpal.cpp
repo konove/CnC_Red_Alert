@@ -46,12 +46,12 @@
 
 #include "ra/interpal.h"
 
-#include "ra/function.h"
+#include "ra/externs.h"
 #include "sdllib/include/misc.h"
 
 #ifndef LORES
 
-bool InterpolationPaletteChanged = FALSE;
+bool InterpolationPaletteChanged = false;
 extern "C" {
 extern void __cdecl Asm_Interpolate(unsigned char* src_ptr,
                                     unsigned char* dest_ptr, int lines,

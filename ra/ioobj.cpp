@@ -66,8 +66,13 @@
  *   TriggerClass::Decode_Pointers -- decodes pointers for load/save *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-
-#include "ra/function.h"
+#include "ra/cargo.h"
+#include "ra/layer.h"
+#include "ra/object.h"
+#include "ra/score.h"
+#include "ra/team.h"
+#include "ra/teamtype.h"
+#include "ra/trigtype.h"
 
 /***********************************************************************************************
  * TeamTypeClass::Code_Pointers -- codes class's pointers for load/save *

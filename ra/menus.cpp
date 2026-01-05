@@ -37,11 +37,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/menus.h"
 
 #include <algorithm>
+
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/egos.h"
+#include "ra/expand.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/textbtn.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 #ifdef WIN32
 #include "ra/ccdde.h"

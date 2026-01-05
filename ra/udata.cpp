@@ -54,11 +54,27 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-
 #include <algorithm>
 #include <filesystem>
 #include <string>
+
+#include "port/ex_string.h"
+#include "ra/ccfile.h"
+#include "ra/ccini.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/face.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/keyframe.h"
+#include "ra/object.h"
+#include "ra/rawfile.h"
+#include "ra/type.h"
+#include "ra/unit.h"
 
 /*
 **	This is the list of animation stages to use when the harvester

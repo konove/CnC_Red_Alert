@@ -40,8 +40,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/combat.h"
+
 #include <algorithm>
+
+#include "ra/defines.h"
+#include "ra/display.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/warhead.h"
 
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *

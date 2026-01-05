@@ -40,7 +40,7 @@
 #ifndef CARGO_H
 #define CARGO_H
 
-class FootClass;
+#include "ra/house.h"
 
 /****************************************************************************
 **	This class handles the basic cargo logic.

@@ -56,8 +56,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/factory.h"
+
 #include <algorithm>
+
+#include "ra/externs.h"
 
 /***********************************************************************************************
  * FactoryClass::FactoryClass -- Default constructor for factory objects. *

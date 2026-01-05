@@ -42,6 +42,8 @@
 #ifndef TXTLABEL_H
 #define TXTLABEL_H
 
+#include "ra/gadget.h"
+
 class TextLabelClass : public GadgetClass {
  public:
   /*

@@ -40,6 +40,7 @@
 #ifndef CRATE_H
 #define CRATE_H
 
+#include "ra/defines.h"
 #include "ra/ftimer.h"
 #include "ra/jshell.h"
 

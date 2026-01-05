@@ -39,7 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/face.h"
 
 /***********************************************************************************************
  * Desired_Facing8 -- Determines facing from one coordinate to another. *

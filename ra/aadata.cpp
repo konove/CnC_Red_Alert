@@ -56,8 +56,20 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <format>
-#include "ra/function.h"
+#include <cstddef>
+#include <string>
+
+#include "port/ex_string.h"
+#include "ra/aircraft.h"
+#include "ra/ccptr.h"
+#include "ra/conquer.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/heap.h"
+#include "ra/house.h"
+#include "ra/jshell.h"
+#include "ra/object.h"
+#include "ra/type.h"
 
 void const *AircraftTypeClass::LRotorData = nullptr;
 void const *AircraftTypeClass::RRotorData = nullptr;

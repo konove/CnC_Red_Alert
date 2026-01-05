@@ -38,6 +38,10 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include <cstdint>
+
+#include "ra/fixed.h"
+
 #if defined(BIG_ENDIAN) && defined(BYTE_ORDER) && BYTE_ORDER != BIG_ENDIAN
 #undef BIG_ENDIAN
 #endif

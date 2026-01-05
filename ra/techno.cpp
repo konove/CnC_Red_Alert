@@ -155,10 +155,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/techno.h"
 
 #include <algorithm>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/combat.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/inline.h"
+#include "ra/keyframe.h"
+#include "ra/session.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
+#include "ra/type.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/misc.h"
 
 /***************************************************************************
 **	Cloaking control values.

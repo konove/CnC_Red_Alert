@@ -40,9 +40,16 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "ra/building.h"
+#include "ra/ccptr.h"
+#include "ra/defines.h"
+#include "ra/foot.h"
+#include "ra/house.h"
+#include "ra/object.h"
+#include "ra/pipe.h"
+#include "ra/straw.h"
+#include "ra/target.h"
+#include "ra/techno.h"
 #include "ra/unit.h"
-#include "ra/template.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.

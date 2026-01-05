@@ -46,7 +46,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/power.h"
+
+#include "ra/externs.h"
 
 /*
 **	Points to the shape to use for the "desired" power level indicator.

@@ -16,7 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// list of 256 sines
+#ifndef CNC_RED_ALERT_RA_ROTBMP_H_
+#define CNC_RED_ALERT_RA_ROTBMP_H_
+
+#include "sdllib/include/gbuffer.h"
 
 #define MAKE_PTR(vp, x, y) \
   (char *)(vp->Get_Offset() + ((y) * (vp->Get_Width() + vp->Get_XAdd())) + (x))
@@ -24,28 +27,9 @@
   (char *)(vp->Get_Offset() + \
            (((y) << 1) * (vp->Get_Width() + vp->Get_XAdd())) + ((x) << 1))
 
-#ifndef WIN32
-class BitmapClass {
- public:
-  BitmapClass(int w, int h, unsigned char *data)
-      : Width(w), Height(h), Data(data){};
+// list of 256 sines
 
-  int Width;
-  int Height;
-  unsigned char *Data;
-};
-
-class TPoint2D {
- public:
-  TPoint2D(int xx, int yy) : x(xx), y(yy){};
-  TPoint2D(void) : x(0), y(0){};
-
-  int x;
-  int y;
-};
-#endif
-
-long Cos256[] = {
+inline long Cos256[] = {
     128,  127,  127,  127,  127,  127,  126,  126,  125,  124,  124,  123,
     122,  121,  120,  119,  118,  116,  115,  114,  112,  111,  109,  107,
     106,  104,  102,  100,  98,   96,   94,   92,   90,   87,   85,   83,
@@ -69,7 +53,7 @@ long Cos256[] = {
     119,  120,  121,  122,  123,  124,  124,  125,  126,  126,  127,  127,
     127,  127,  127,  127,
 };
-long Sin256[] = {
+inline long Sin256[] = {
     0,    3,    6,    9,    12,   15,   18,   21,   25,   28,   31,   34,
     37,   40,   43,   46,   49,   52,   54,   57,   60,   63,   66,   68,
     71,   73,   76,   79,   81,   83,   86,   88,   90,   92,   95,   97,
@@ -93,3 +77,8 @@ long Sin256[] = {
     -46,  -43,  -40,  -37,  -34,  -31,  -28,  -25,  -21,  -18,  -15,  -12,
     -9,   -6,   -3,   0,
 };
+
+int Rotate_Bitmap(GraphicViewPortClass *srcvp, GraphicViewPortClass *destvp,
+                  int angle);
+
+#endif  // CNC_RED_ALERT_RA_ROTBMP_H_

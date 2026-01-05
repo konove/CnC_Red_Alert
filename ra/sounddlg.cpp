@@ -38,10 +38,33 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/sounddlg.h"
 
+#include <cstdio>
+
+#include "ra/conquer.h"
+#include "ra/control.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/fixed.h"
+#include "ra/function.h"
+#include "ra/gadget.h"
+#include "ra/goptions.h"
+#include "ra/jshell.h"
+#include "ra/list.h"
+#include "ra/session.h"
+#include "ra/shapebtn.h"
+#include "ra/slider.h"
+#include "ra/textbtn.h"
+#include "ra/theme.h"
+#include "ra/vector.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 class MusicListClass : public ListClass {
  public:

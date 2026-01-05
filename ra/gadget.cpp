@@ -59,7 +59,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/gadget.h"
+
+#include "ra/externs.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".

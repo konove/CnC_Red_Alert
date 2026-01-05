@@ -37,7 +37,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/tracker.h"
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/defines.h"
+#include "ra/externs.h"
+#include "ra/target.h"
+#include "ra/team.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/vessel.h"
 
 /***********************************************************************************************
  * Detach_This_From_All -- Detaches this object from all others. *

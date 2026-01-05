@@ -44,7 +44,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
+#include "ra/mplayer.h"
+
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/list.h"
+#include "ra/nulldlg.h"
+#include "ra/session.h"
+#include "ra/textbtn.h"
 
 extern bool Is_Mission_Counterstrike(char *file_name);
 

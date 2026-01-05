@@ -37,9 +37,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/drop.h"
 
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "ra/dialog.h"
+#include "ra/keyframe.h"
 #include "sdllib/include/font.h"
 
 DropListClass::DropListClass(int id, char *text, int max_len,

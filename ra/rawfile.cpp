@@ -58,23 +58,13 @@
 
 #include "ra/rawfile.h"
 
-#include <cstddef>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#ifdef PORTABLE
 #include "port/ex_string.h"
 #include "sdllib/include/file.h"
-#elif defined(WIN32)
-#include <windows.h>
-#else
-#include <dos.h>
-#include <fcntl.h>
-#include <io.h>
-#include <share.h>
-extern short Hard_Error_Occured;
-#endif
 
 /***********************************************************************************************
  * RawFileClass::Error -- Handles displaying a file error message. *

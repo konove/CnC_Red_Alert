@@ -40,8 +40,6 @@
 #ifndef PIPE_H
 #define PIPE_H
 
-#include <cstddef>
-
 /*
 **	A "push through" pipe interface abstract class used for such purposes as
 *compression *	and translation of data. In STL terms, this is functionally

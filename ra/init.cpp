@@ -60,12 +60,27 @@
  *pre-prolog "please wait" page.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "ra/init.h"
+
 #include <string>
 #include <string_view>
 
-#include "ra/function.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/externs.h"
 #include "ra/graphics_loader.h"
+#include "ra/inline.h"
+#include "ra/intro.h"
+#include "ra/language.h"
 #include "ra/loaddlg.h"
+#include "ra/menus.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
+#include "ra/netdlg.h"
+#include "ra/nulldlg.h"
+#include "ra/nullmgr.h"
+#include "ra/ramfile.h"
+#include "ra/startup.h"
 #include "sdllib/include/file.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/misc.h"

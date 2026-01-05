@@ -122,11 +122,31 @@
  *- - - - - - - */
 //	Warning - Most disgusting cpp file of all time. ajw
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
-#include "sdllib/include/misc.h"
+#include "ra/netdlg.h"
 
 #include <algorithm>
+
+#include "ra/cheklist.h"
+#include "ra/colrlist.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/drop.h"
+#include "ra/edit.h"
+#include "ra/expand.h"
+#include "ra/externs.h"
+#include "ra/init.h"
+#include "ra/inline.h"
+#include "ra/list.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
+#include "ra/saveload.h"
+#include "ra/session.h"
+#include "ra/startup.h"
+#include "ra/statbtn.h"
+#include "ra/textbtn.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/misc.h"
 
 #ifdef WIN32
 #ifdef WINSOCK_IPX

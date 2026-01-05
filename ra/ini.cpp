@@ -69,17 +69,19 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstring>
-#include <cstdlib>
-#include <cstddef>
-#include <cstdio>
-#include <cctype>
 #include "ra/ini.h"
+
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "ra/b64pipe.h"
+#include "ra/b64straw.h"
+#include "ra/int.h"
 #include "ra/readline.h"
 #include "ra/xpipe.h"
-#include "ra/b64pipe.h"
 #include "ra/xstraw.h"
-#include "ra/b64straw.h"
 
 #ifdef FIXIT_FAST_LOAD
 #include "ra/cstraw.h"

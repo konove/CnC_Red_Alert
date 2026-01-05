@@ -61,8 +61,33 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/target.h"
+
+#include <assert.h>
+
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/building.h"
+#include "ra/bullet.h"
+#include "ra/cell.h"
+#include "ra/externs.h"
+#include "ra/function.h"
+#include "ra/heap.h"
+#include "ra/infantry.h"
+#include "ra/inline.h"
+#include "ra/map.h"
+#include "ra/mouse.h"
+#include "ra/overlay.h"
+#include "ra/smudge.h"
+#include "ra/team.h"
+#include "ra/teamtype.h"
+#include "ra/techno.h"
+#include "ra/terrain.h"
+#include "ra/trigger.h"
+#include "ra/trigtype.h"
+#include "ra/type.h"
+#include "ra/unit.h"
+#include "ra/vessel.h"
 
 TargetClass::TargetClass(TARGET target) { Target.Target = target; }
 

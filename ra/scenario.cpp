@@ -64,13 +64,32 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "sdllib/include/font.h"
-#include "ra/function.h"
+#include "ra/scenario.h"
 
 #include <algorithm>
+#include <cstring>
 
+#include "ra/aircraft.h"
+#include "ra/anim.h"
+#include "ra/defines.h"
+#include "ra/dialog.h"
+#include "ra/egos.h"
+#include "ra/externs.h"
 #include "ra/graphics_loader.h"
-
+#include "ra/inline.h"
+#include "ra/jshell.h"
+#include "ra/mplayer.h"
+#include "ra/msgbox.h"
+#include "ra/session.h"
+#include "ra/startup.h"
+#include "ra/team.h"
+#include "ra/terrain.h"
+#include "ra/textbtn.h"
+#include "ra/trigger.h"
+#include "ra/vessel.h"
+#include "ra/weapon.h"
+#include "ra/ww_audio.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/ww_audio.h"
 
 #ifdef WIN32

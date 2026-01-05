@@ -40,6 +40,10 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include <cstddef>
+
+#include "ra/pipe.h"
+#include "ra/straw.h"
 #include "ra/vector.h"
 
 // Fixed-size block memory allocator that manages a pool of uniformly-sized memory blocks.

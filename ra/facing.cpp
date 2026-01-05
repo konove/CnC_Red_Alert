@@ -41,9 +41,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/facing.h"
+
 #include <algorithm>
+
+#include "ra/face.h"
+#include "ra/inline.h"
 
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *
