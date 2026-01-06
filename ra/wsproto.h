@@ -52,9 +52,7 @@ typedef void *HANDLE;
 #define WM_USER 0x400
 #endif
 
-#ifdef PORTABLE
 #include "sdllib/include/net_select.h"
-#endif
 
 /*
 ** Misc defines
@@ -122,11 +120,7 @@ class WinsockInterfaceClass {
 
   virtual bool Open_Socket(SOCKET) { return (false); };
 
-#ifdef PORTABLE
   virtual void Event_Handler(int, SocketEvent) {}
-#else
-  virtual long Message_Handler(HWND, UINT, UINT, LONG) { return (1); }
-#endif
 
   typedef enum ConnectStatusEnum {
     CONNECTED_OK = 0,

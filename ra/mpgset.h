@@ -19,8 +19,6 @@
 #ifndef _MPGSETTINGS_H_
 #define _MPGSETTINGS_H_
 
-#include "ra/function.h"
-
 #ifdef DVD
 #include "ra/mci.h"
 #include "ra/rawfile.h"

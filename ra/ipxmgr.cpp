@@ -75,7 +75,6 @@
 #include "ra/_wsproto.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
-#include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/house.h"

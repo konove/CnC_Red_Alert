@@ -63,6 +63,7 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
+#include "ra/defines.h"
 #include "ra/egos.h"
 #include "ra/loaddlg.h"
 #include "ra/object.h"

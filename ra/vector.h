@@ -57,10 +57,7 @@
 #define VECTOR_H
 
 #include <cstddef>
-#include <new>
 
-#include "ra/defines.h"
-#include "ra/egos.h"
 #include "ra/jshell.h"
 #include "tech/noinit.h"
 

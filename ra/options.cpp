@@ -70,6 +70,7 @@
 #include "ra/options.h"
 
 #include "ra/ccfile.h"
+#include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/ini.h"
 #include "ra/jshell.h"

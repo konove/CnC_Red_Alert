@@ -40,8 +40,6 @@
 #ifndef SAVEDLG_H
 #define SAVEDLG_H
 
-#include "ra/gadget.h"
-
 class SaveOptionsClass {
  private:
   enum SaveOptionsClassEnums {
@@ -63,7 +61,7 @@ class SaveOptionsClass {
   };
 
  public:
-  SaveOptionsClass(void){};
+  SaveOptionsClass(void) {};
   void Process(void);
 };
 

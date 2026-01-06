@@ -40,7 +40,6 @@
 #ifndef GOPTIONS_H
 #define GOPTIONS_H
 
-#include "ra/defines.h"
 #include "ra/options.h"
 
 class GameOptionsClass : public OptionsClass {

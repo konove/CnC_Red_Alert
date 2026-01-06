@@ -53,11 +53,22 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
+#include "ra/ccini.h"
+#include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dial8.h"
+#include "ra/face.h"
+#include "ra/gadget.h"
+#include "ra/gauge.h"
 #include "ra/list.h"
 #include "ra/mouse.h"
+#include "ra/object.h"
+#include "ra/teamtype.h"
 #include "ra/textbtn.h"
 #include "ra/txtlabel.h"
+#include "ra/type.h"
+#include "sdllib/include/keyboard.h"
+#include "tech/noinit.h"
 
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.
@@ -72,7 +83,7 @@ enum MapEdit1Enum {
   (int)UNIT_COUNT + (int)INFANTRY_COUNT + (int)AIRCRAFT_COUNT,
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
-  //assigned an object
+  // assigned an object
 
   NUM_EDIT_CLASSES = 9,  // # different classes (templates, terrain, etc)
 
@@ -169,8 +180,6 @@ enum MapEditButtonIDEnum {
   BUTTON_FLAG = 0x8000
 };
 
-class TeamTypeClass;
-
 class MapEditClass : public MouseClass {
   /*
   **	Public Interface
@@ -180,7 +189,7 @@ class MapEditClass : public MouseClass {
   **	mapedit.cpp
   */
   MapEditClass(void);
-  MapEditClass(NoInitClass const &x) : MouseClass(x){};
+  MapEditClass(NoInitClass const &x) : MouseClass(x) {};
   bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_index);
 

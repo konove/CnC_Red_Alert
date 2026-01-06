@@ -44,6 +44,7 @@
 
 #include "ra/conquer.h"
 #include "ra/control.h"
+#include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/event.h"
 #include "ra/externs.h"

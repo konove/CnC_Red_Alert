@@ -105,8 +105,6 @@ typedef enum MenuIndexType {
 #define DKGRAY GREY
 #define LTGRAY LTGREY
 
-class IconsetClass;
-
 inline int Get_IconSet_MapWidth(void const *data) {
   if (data) {
     return (((IControl_Type *)data)->MapWidth);

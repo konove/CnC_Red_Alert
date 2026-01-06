@@ -40,12 +40,17 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include "port/ex_string.h"
-#include "ra/mission.h"
-#include "ra/target.h"
+#include <cstring>
 
-class MapEditClass;
-class HouseClass;
+#include "port/ex_string.h"
+#include "ra/ccini.h"
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/object.h"
+#include "tech/fixed.h"
+#include "tech/noinit.h"
+#include "tech/rect.h"
+
 class WeaponTypeClass;
 
 /***************************************************************************

@@ -202,7 +202,7 @@
 #ifdef DVD
 // #define INTERNET_OFF
 #ifndef PORTABLE
-#define MPEGMOVIE
+// #define MPEGMOVIE
 #endif
 // #define MCIMPEG
 #endif

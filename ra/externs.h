@@ -40,26 +40,22 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#include "mixfile.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/carry.h"
 #include "ra/cell.h"
-#include "ra/credits.h"
 #include "ra/event.h"
 #include "ra/goptions.h"
 #include "ra/infantry.h"
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
-#include "ra/options.h"
+#include "ra/mixfile.h"
+#include "ra/mouse.h"
 #include "ra/overlay.h"
 #include "ra/queue.h"
+#include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
-#include "tech/bench.h"
-// #include "ra/session.h"
-#include "ra/mouse.h"
-#include "ra/rules.h"
 #include "ra/smudge.h"
 #include "ra/taction.h"
 #include "ra/techno.h"
@@ -72,6 +68,7 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "sdllib/include/playcd.h"
+#include "tech/bench.h"
 #include "tech/rndstraw.h"
 
 #ifdef SCENARIO_EDITOR
@@ -128,7 +125,6 @@ extern int CarrierLaunchDelay;
 extern char const *NameOverride[25];
 extern int NameIDOverride[25];
 
-#ifdef WIN32
 extern bool GameInFocus;
 extern unsigned char *InterpolatedPalettes[100];
 extern bool PalettesRead;
@@ -142,21 +138,9 @@ extern GraphicBufferClass HiddenPage;
 extern GraphicBufferClass VisiblePage;
 extern GraphicViewPortClass SeenBuff;
 extern GraphicBufferClass SysMemPage;
-#ifndef PORTABLE
-extern HANDLE hInstance;
-extern LPDIRECTSOUND SoundObject;
-extern LPDIRECTSOUNDBUFFER PrimaryBufferPtr;
-#endif
 extern int ScreenWidth;
 extern int ScreenHeight;
 extern GraphicBufferClass ModeXBuff;
-
-#else
-
-extern VideoBufferClass SeenPage;
-extern GraphicBufferClass SeenBuff;
-extern GraphicBufferClass &VisiblePage;
-#endif
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
@@ -366,11 +350,7 @@ extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 #endif
 
-#ifdef WIN32
 extern GraphicViewPortClass HidPage;
-#else
-extern GraphicBufferClass HidPage;
-#endif
 extern int MenuList[][8];
 extern CDTimerClass<SystemTimerClass> FrameTimer;
 extern CDTimerClass<SystemTimerClass> CountDownTimer;
@@ -401,23 +381,14 @@ void Coordinate_Remap(GraphicViewPortClass *inbuffer, int x, int y, int width,
                       int height, unsigned char *remap_table);
 void Do_Vortex(int x, int y, int frame);
 
-/************************************************************
-** Win32 specific externs
-*/
-#ifdef WIN32
 extern bool ReadyToQuit;          // Are we about to exit cleanly
 extern bool InDebugger;           // Are we being run from a debugger
 void Memory_Error_Handler(void);  // Memory error handler function
 void WWDebugString(char const *string);
-#else
-extern bool IsTheaterShape;
-#endif  // WIN32
 
 /*************************************************************
 ** Internet specific externs
 */
-#ifdef WIN32
-
 extern char PlanetWestwoodHandle[];     // Planet WW user name
 extern char PlanetWestwoodPassword[];   // Planet WW password
 extern char PlanetWestwoodIPAddress[];  // IP of server or other player
@@ -442,8 +413,6 @@ bool Server_Remote_Connect(void);
 bool Client_Remote_Connect(void);
 extern int UnitBuildPenalty;
 
-#endif  // WIN32
-
 /*
 ** From SENDFILE.CPP - externs for scenario file transfers
 */
@@ -452,17 +421,22 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
 bool Send_Remote_File(char *file_name, int gametype);
 bool Get_Scenario_File_From_Host(char *return_name, size_t dest_size,
                                  int gametype);
+
 bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
                          char *digest, bool official);
 
 #ifdef MPEGMOVIE  // Denzil 6/15/98
+
 #ifdef MCIMPEG
+
 #include "ra/mcimovie.h"
 extern MCIMovie *MciMovie;
+
 #endif
 
 #include "ra/mpgset.h"
 extern MPGSettings *MpgSettings;
+
 #endif
 
 #endif

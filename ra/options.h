@@ -39,7 +39,7 @@
 
 #ifndef OPTIONS_H
 #define OPTIONS_H
-#include "ra/defines.h"
+
 #include "ra/palette.h"
 #include "sdllib/include/keyboard.h"
 #include "tech/fixed.h"

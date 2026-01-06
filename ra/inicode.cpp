@@ -38,8 +38,6 @@
 
 #include "ra/inicode.h"
 
-#include "ra/function.h"
-
 #ifdef TOFIX
 
 void Get_Scenario_Digest(char *digest, char *buffer) {

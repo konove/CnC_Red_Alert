@@ -1,207 +1,97 @@
-add_executable(rasdl WIN32
-        aadata.cpp
-        abstract.cpp
-        adata.cpp
-        aircraft.cpp
-        anim.cpp
-        ww_audio.cpp
-        bar.cpp
-        base.cpp
-        bbdata.cpp
-        bdata.cpp
-        building.cpp
-        bullet.cpp
-        cargo.cpp
-        carry.cpp
-        ccfile.cpp
-        ccini.cpp
-        ccptr.cpp
-        cdata.cpp
-        cell.cpp
-        checkbox.cpp
-        cheklist.cpp
-        colrlist.cpp
-        combat.cpp
-        combuf.cpp
-        connect.cpp
-        conquer.cpp
-        const.cpp
-        control.cpp
-        coord.cpp
-        crate.cpp
-        credits.cpp
-        crew.cpp
-        debug.cpp
-        dial8.cpp
-        dialog.cpp
-        display.cpp
-        door.cpp
-        drive.cpp
-        drop.cpp
-        dynavec.cpp
-        edit.cpp
-        egos.cpp
-        ending.cpp
-        event.cpp
-        expand.cpp
-        face.cpp
-        facing.cpp
-        factory.cpp
-        findpath.cpp
-        flasher.cpp
-        fly.cpp
-        foot.cpp
-        fuse.cpp
-        gadget.cpp
-        gamedlg.cpp
-        gauge.cpp
-        globals.cpp
-        goptions.cpp
-        gscreen.cpp
-        hdata.cpp
-        heap.cpp
-        help.cpp
-        house.cpp
-        idata.cpp
-        infantry.cpp
-        ini.cpp
-        init.cpp
-        intro.cpp
-        iomap.cpp
-        ioobj.cpp
-        ipx.cpp
-        ipxaddr.cpp
-        ipxconn.cpp
-        ipxgconn.cpp
-        ipxmgr.cpp
-        # ipxprot.asm
-        jshell.cpp
-        layer.cpp
-        link.cpp
-        list.cpp
-        loaddlg.cpp
-        logic.cpp
-        map.cpp
-        mapeddlg.cpp
-        mapedit.cpp
-        mapedplc.cpp
-        mapedtm.cpp
-        mapsel.cpp
-        menus.cpp
-        mission.cpp
-        mixfile.cpp
-        monoc.cpp
-        mouse.cpp
-        mplayer.cpp
-        msgbox.cpp
-        msglist.cpp
-        netdlg.cpp
-        nullconn.cpp
-        nulldlg.cpp
-        nullmgr.cpp
-        object.cpp
-        odata.cpp
-        options.cpp
-        overlay.cpp
-        palette.cpp
-        power.cpp
-        profile.cpp
-        queue.cpp
-        radar.cpp
-        radio.cpp
-        reinf.cpp
-        rules.cpp
-        saveload.cpp
-        scenario.cpp
-        score.cpp
-        scroll.cpp
-        sdata.cpp
-        sendfile.cpp
-        session.cpp
-        shapebtn.cpp
-        sidebar.cpp
-        slider.cpp
-        smudge.cpp
-        sounddlg.cpp
-        special.cpp
-        startup.cpp
-        statbtn.cpp
-        super.cpp
-        tab.cpp
-        taction.cpp
-        target.cpp
-        tdata.cpp
-        team.cpp
-        teamtype.cpp
-        techno.cpp
-        template.cpp
-        terrain.cpp
-        tevent.cpp
-        textbtn.cpp
-        theme.cpp
-        toggle.cpp
-        tracker.cpp
-        trigger.cpp
-        trigtype.cpp
-        txtlabel.cpp
-        udata.cpp
-        unit.cpp
-        utracker.cpp
-        vdata.cpp
-        vector.cpp
-        version.cpp
-        vessel.cpp
-        visudlg.cpp
-        vortex.cpp
-        warhead.cpp
-        weapon.cpp
-        mcimovie.cpp
-        mci.cpp
-        mpgset.cpp
-        iconlist.cpp
-        wol_main.cpp
-        wol_chat.cpp
-        rawolapi.cpp
-        wolapiob.cpp
-        # cominit.cpp # COM
-        wol_logn.cpp
-        woledit.cpp
-        # passedit.obj ?
-        seditdlg.cpp
-        #dibfile.cpp #very win32-api
-        #dibutil.cpp #
-        wol_gsup.cpp
-        udpaddr.cpp
-        wsproto.cpp
-        wspudp.cpp
-        wspipx.cpp
-        _wsproto.cpp
-        #tooltip.cpp # requires WOLAPI_INTEGRATION
-        wol_opt.cpp
-        wol_cgam.cpp
-        bigcheck.cpp
-        wol_dnld.cpp
-        wolstrng.cpp
+add_executable(rasdl WIN32)
 
-        # win32
-        #2keyfbuf.asm
-        #cpuid.asm
-        interpal.cpp
-        #winasm.asm
-        #2txtprnt.asm
-        writepcx.cpp
-        2keyfram.cpp
-        tcpip.cpp
-        internet.cpp
-        stats.cpp
-        packet.cpp
-        field.cpp
+file(GLOB_RECURSE RA_SOURCES
+        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+list(REMOVE_ITEM RA_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/comqueue.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dibfile.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/key.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mplib.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mplpc.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrd.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrw.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/number.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/rand.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/stub.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/surface.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tarcom.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tooltip.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/turret.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cpp"
+)
 
-        # new
-        nondosstub.cpp
-        sdlstub.cpp
-        2keyfbuf.cpp
-        winasm.cpp
+file(GLOB_RECURSE RA_HEADERS
+        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+list(REMOVE_ITEM RA_HEADERS
+        "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/bufferx.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cominit.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/comqueue.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/crew.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cstraw.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dibapi.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/key.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/memcheck.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/movie.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrd.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/mpmgrw.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/noseqcon.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/nullconn.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/nullmgr.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/seqconn.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/surface.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tarcom.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tcpip.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tenmgr.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tooltip.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/turret.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wolapi/wolapi.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wspipx.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wspudp.h"
+
+        "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
+)
+
+target_sources(rasdl PRIVATE
+        ${RA_SOURCES}
+)
+
+target_sources(rasdl PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        FILES ${RA_HEADERS}
+)
+
+set_target_properties(rasdl PROPERTIES
+        ENABLE_EXPORTS ON
 )
 
 if (WIN32)

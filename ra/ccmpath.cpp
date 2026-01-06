@@ -37,8 +37,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/ccmpath.h"
 
-#include "ra/function.h"
-
 /***************************************************************************
  * Init_MPATH -- Performs MPATH-specific initialization                    *
  *                                                                         *

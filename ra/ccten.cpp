@@ -42,8 +42,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 #include "ra/ccten.h"
 
-#include "ra/function.h"
-
 #if (TEN)
 #ifdef WIN32
 #define WINDOWS

@@ -40,7 +40,6 @@
 #ifndef LISTNODE_H
 #define LISTNODE_H
 
-#include <cstddef>
 #include <cassert>
 
 #pragma warn - inl
