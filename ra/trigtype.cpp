@@ -59,15 +59,19 @@
 
 #include "ra/trigtype.h"
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <format>
+#include <string>
+#include <utility>
 
-#include "ra/externs.h"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
+#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
 
@@ -957,7 +961,7 @@ bool TriggerTypeClass::Edit(void) {
   EditClass name_edt(NAME_EDIT, namebuf, sizeof(namebuf),
                      TPF_EFNT | TPF_NOSHADOW, D_DIALOG_X + 40, D_DIALOG_Y + 30,
                      40, 9, EditClass::ALPHANUMERIC);
-  strcpy(namebuf, IniName);  // Name
+  port::SafeCopy(namebuf, IniName);  // Name
 
   /*
   **	Create the list of house's allowed for trigger.
@@ -1961,11 +1965,11 @@ void TriggerTypeClass::Write_INI(CCINIClass &ini) {
   */
   for (int index = 0; index < TriggerTypes.Count(); index++) {
     //	for (int index = TriggerTypes.Count()-1; index >= 0; index--) {
-    char buf[256];
+    std::string buf;
     TriggerTypeClass *trigger = TriggerTypes.Ptr(index);
 
     trigger->Build_INI_Entry(buf);
-    ini.Put_String(INI_Name(), trigger->IniName, buf);
+    ini.Put_String(INI_Name(), trigger->IniName, buf.c_str());
   }
 }
 
@@ -1986,29 +1990,27 @@ void TriggerTypeClass::Write_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Build_INI_Entry(char *buffer) const {
+void TriggerTypeClass::Build_INI_Entry(std::string &buffer) const {
   /*
-  **	Build the root portion of the trigger event.
+  ** Build the root portion of the trigger event.
   */
-  sprintf(buffer, "%d,%d,%d,%d,", IsPersistant, House, EventControl,
-          ActionControl);
+  buffer =
+      std::format("{},{},{},{},", std::to_underlying(IsPersistant),
+                  std::to_underlying(House), std::to_underlying(EventControl),
+                  std::to_underlying(ActionControl));
 
   /*
   **	Append the event and action values.
   */
-  buffer += strlen(buffer);
   Event1.Build_INI_Entry(buffer);
+  buffer += ",";
 
-  strcat(buffer, ",");
-  buffer += strlen(buffer);
   Event2.Build_INI_Entry(buffer);
+  buffer += ",";
 
-  strcat(buffer, ",");
-  buffer += strlen(buffer);
   Action1.Build_INI_Entry(buffer);
+  buffer += ",";
 
-  strcat(buffer, ",");
-  buffer += strlen(buffer);
   Action2.Build_INI_Entry(buffer);
 }
 

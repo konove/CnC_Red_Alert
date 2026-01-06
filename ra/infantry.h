@@ -39,7 +39,7 @@
 
 #ifndef INFANTRY_H
 #define INFANTRY_H
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/bullet.h"
 #include "ra/ccini.h"

@@ -50,10 +50,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <assert.h>
-#include <stdint.h>
-#include <string.h>
-
+#include <cassert>
+#include <cstdint>
+#include <cstring>
 #include <new>
 
 #include "ra/cell.h"

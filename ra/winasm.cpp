@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <cstdint>
+#include <cstdio>
 
 #include "sdllib/include/gbuffer.h"
 

@@ -88,6 +88,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -2091,7 +2092,7 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
     //	Save this message in our last-message buffer
     //.....................................................................
     if (strlen(serial_packet->Message.Message)) {
-      strcpy(Session.LastMessage, serial_packet->Message.Message);
+      port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
     }
 
     //.....................................................................
@@ -3515,7 +3516,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               hptr->IsHuman = false;
               hptr->IQ = Rule.MaxIQ;
               hptr->Computer_Paranoid();
-              strcpy(hptr->IniName, Text_String(TXT_COMPUTER));
+              port::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
               Session.NumPlayers--;
             }
           }

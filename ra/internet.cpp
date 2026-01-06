@@ -55,6 +55,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -188,7 +189,7 @@ void Check_From_WChat(char *wchat_name) {
       if (wchat_name) delete ini_file;
       return;
     }
-    strcpy(PlanetWestwoodIPAddress, key_string);
+    port::SafeCopy(PlanetWestwoodIPAddress, key_string);
 
     /*
     ** Get the port number
@@ -257,7 +258,7 @@ int Read_Game_Options(char *name) {
   char filename[256] = {"INVALID.123"};
 
   if (name) {
-    strcpy(filename, name);
+    port::SafeCopy(filename, name);
   }
 
   /*------------------------------------------------------------------------
@@ -285,7 +286,7 @@ int Read_Game_Options(char *name) {
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("Options", "Handle", "Noname", Session.Handle,
                             sizeof(Session.Handle), buffer);
-  strcpy(Session.GameName, Session.Handle);
+  port::SafeCopy(Session.GameName, Session.Handle);
   Session.ColorIdx =
       (PlayerColorType)WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   Session.PrefColor = Session.ColorIdx;
@@ -451,10 +452,10 @@ int Read_Game_Options(char *name) {
 extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
 #endif
 
-void Just_Path(char *path, char *destpath) {
+void Just_Path(char *path, char *destpath, size_t dest_size) {
   char *terminator = nullptr;  // He'll be back.
 
-  strcpy(destpath, path);
+  port::SafeCopy(destpath, path, dest_size);
   terminator = strrchr(destpath, '\\');
   if (terminator) {
     *terminator = 0;
@@ -661,7 +662,7 @@ bool Spawn_WChat(bool can_launch) {
   memset((void *)&start_info, 0, sizeof(start_info));
   start_info.cb = sizeof(start_info);
   char justpath[256];
-  Just_Path(wchat_loc, justpath);
+  Just_Path(wchat_loc, justpath, sizeof(justpath));
 
   /*
   ** We found WChat in the registry. Minimize myself then try to spawn it.
@@ -748,7 +749,7 @@ bool Spawn_Registration_App(void) {
   char justpath[256];
   memset((void *)&start_info, 0, sizeof(start_info));
   start_info.cb = sizeof(start_info);
-  Just_Path(inetreg_loc, justpath);
+  Just_Path(inetreg_loc, justpath, sizeof(justpath));
 
   BOOL success = CreateProcess(inetreg_loc, NULL, NULL, NULL, false, 0, NULL,
                                justpath, &start_info, &process_info);

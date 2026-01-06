@@ -83,6 +83,7 @@
 
 #include "jshell/rotbmp.h"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/2keyfbuf.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
@@ -1222,7 +1223,7 @@ static void Message_Input(KeyNumType &input) {
     */
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
       if (input == KN_F1 || input == (KN_F1 + Session.MaxPlayers - 1)) {
-        strncpy(txt, Text_String(TXT_MESSAGE), sizeof(txt));  // "Message:"
+        port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -1238,8 +1239,8 @@ static void Message_Input(KeyNumType &input) {
       *ObiWan mode) *	F8 = "To All:"
       */
       if (input == (KN_F1 + Session.MaxPlayers - 1)) {
-        Session.MessageAddress = IPXAddressClass();          // set to broadcast
-        strncpy(txt, Text_String(TXT_TO_ALL), sizeof(txt));  // "To All:"
+        Session.MessageAddress = IPXAddressClass();    // set to broadcast
+        port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
         Session.Messages.Add_Edit(
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -1411,14 +1412,15 @@ static void Message_Input(KeyNumType &input) {
       serial_packet = (SerialPacketType *)NullModem.BuildBuf;
 
       serial_packet->Command = SERIAL_MESSAGE;
-      strcpy(serial_packet->Name, Session.Players[0]->Name);
+      port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
       serial_packet->ID = Session.ColorIdx;
 
       if (rc == 3) {
-        strcpy(serial_packet->Message.Message, Session.Messages.Get_Edit_Buf());
+        port::SafeCopy(serial_packet->Message.Message,
+                       Session.Messages.Get_Edit_Buf());
       } else {
-        strcpy(serial_packet->Message.Message,
-               Session.Messages.Get_Overflow_Buf());
+        port::SafeCopy(serial_packet->Message.Message,
+                       Session.Messages.Get_Overflow_Buf());
         Session.Messages.Clear_Overflow_Buf();
       }
 
@@ -1432,7 +1434,7 @@ static void Message_Input(KeyNumType &input) {
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
       }
-      strcpy(Session.LastMessage, serial_packet->Message.Message);
+      port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
     } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
 #ifdef WOLAPI_INTEGRATION
       NetNumType blip;
@@ -1458,15 +1460,16 @@ static void Message_Input(KeyNumType &input) {
         **	Network game: fill in a GlobalPacketType & send it.
         */
         Session.GPacket.Command = NET_MESSAGE;
-        strcpy(Session.GPacket.Name, Session.Players[0]->Name);
+        port::SafeCopy(Session.GPacket.Name, Session.Players[0]->Name);
         Session.GPacket.Message.Color = Session.ColorIdx;
         Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
 
         if (rc == 3) {
-          strcpy(Session.GPacket.Message.Buf, Session.Messages.Get_Edit_Buf());
+          port::SafeCopy(Session.GPacket.Message.Buf,
+                         Session.Messages.Get_Edit_Buf());
         } else {
-          strcpy(Session.GPacket.Message.Buf,
-                 Session.Messages.Get_Overflow_Buf());
+          port::SafeCopy(Session.GPacket.Message.Buf,
+                         Session.Messages.Get_Overflow_Buf());
           Session.Messages.Clear_Overflow_Buf();
         }
 
@@ -1500,7 +1503,7 @@ static void Message_Input(KeyNumType &input) {
         **	Store this message in our LastMessage buffer; the computer may
         *send *	us a version of it later.
         */
-        strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
+        port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
       }
     }
 #if (TEN)
@@ -1821,7 +1824,7 @@ void IPX_Call_Back(void) {
               /*
               **	Save this message in our last-message buffer
               */
-              strcpy(Session.LastMessage, Session.GPacket.Message.Buf);
+              port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
             }
           } else {
             Process_Global_Packet(&Session.GPacket, &Session.GAddress);
@@ -4764,11 +4767,7 @@ void *Hires_Load(char *name) {
   int length;
   void *return_ptr;
 
-#ifdef WIN32
   sprintf(filename, "H%s", name);
-#else
-  strcpy(filename, name);
-#endif
   CCFileClass file(filename);
 
   if (file.Is_Available()) {

@@ -54,8 +54,7 @@
 
 #include "ra/theme.h"
 
-#include <string.h>
-
+#include <cstring>
 #include <filesystem>
 
 #include "port/ex_string.h"

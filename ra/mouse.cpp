@@ -48,7 +48,7 @@
 
 #include "ra/mouse.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "ra/externs.h"
 #include "sdllib/include/gbuffer.h"

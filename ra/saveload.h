@@ -10,7 +10,8 @@ bool Load_Misc_Values(Straw &file);
 bool Save_Misc_Values(Pipe &file);
 bool Load_MPlayer_Values(Straw &file);
 bool Save_MPlayer_Values(Pipe &file);
-bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep);
+bool Get_Savefile_Info(int id, char *buf, size_t buf_size, unsigned *scenp,
+                       HousesType *housep);
 bool Load_Game(int id);
 bool Read_Object(void *ptr, int base_size, int class_size, FileClass &file,
                  void *vtable);

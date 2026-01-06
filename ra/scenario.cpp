@@ -73,6 +73,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -229,9 +230,9 @@ ScenarioClass::ScenarioClass(void)
   for (int index = 0; index < ARRAY_SIZE(Waypoint); index++) {
     Waypoint[index] = -1;
   }
-  strcpy(Description, "");
-  strcpy(ScenarioName, "");
-  strcpy(BriefingText, "");
+  port::SafeCopy(Description, "");
+  port::SafeCopy(ScenarioName, "");
+  port::SafeCopy(BriefingText, "");
   memset(GlobalFlags, '\0', sizeof(GlobalFlags));
   memset(Views, '\0', sizeof(Views));
 }
@@ -952,7 +953,7 @@ void Do_Win(void) {
       // force it to play the second half of scenario 10
       if (AntsEnabled) {
         char scenarioname[24];
-        strcpy(scenarioname, Scen.ScenarioName);
+        port::SafeCopy(scenarioname, Scen.ScenarioName);
         char buf[10];
         Scen.Scenario++;
         sprintf(buf, "%02d", Scen.Scenario);
@@ -1320,7 +1321,7 @@ bool Restate_Mission(char const *name, int button1, int button2) {
     **	If mission object text was found, then display it.
     */
     if (strlen(Scen.BriefingText)) {
-      strcpy(_ShapeBuffer, Scen.BriefingText);
+      port::SafeCopy(_ShapeBuffer, Scen.BriefingText, _ShapeBufferSize);
       BlackPalette.Set(FADE_PALETTE_MEDIUM, Call_Back);
       if (BGMessageBox(_ShapeBuffer, button2, button1)) {
         return (true);
@@ -1452,7 +1453,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
   */
   buffer[BUFFSIZE - 1] = 0;
   int buffend = BUFFSIZE - 1;
-  strncpy(buffer, msg, BUFFSIZE - 1);
+  port::SafeCopy(buffer, msg, BUFFSIZE - 1);
   /*
   ** Scan through the string to see if it got clipped, and if so, we'll
   ** trim it back to the last space so it'll clip on a word.
@@ -1943,7 +1944,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
 
 void ScenarioClass::Set_Scenario_Name(char const *name) {
   if (name != nullptr) {
-    strncpy(ScenarioName, name, sizeof(ScenarioName));
+    port::SafeCopy(ScenarioName, name);
     ScenarioName[ARRAY_SIZE(ScenarioName) - 1] = '\0';
 
     char buf[3];
@@ -2589,13 +2590,10 @@ void Assign_Houses(void) {
     //.....................................................................
     house = (HousesType)(i + HOUSE_MULTI1);
     housep = HouseClass::As_Pointer(house);
-    memset((char *)housep->IniName, 0, MPLAYER_NAME_MAX);
-    strncpy((char *)housep->IniName, Session.Players[index]->Name,
-            MPLAYER_NAME_MAX - 1);
+    port::SafeCopy(housep->IniName, Session.Players[index]->Name);
 #ifdef WOLAPI_INTEGRATION
     //	Make another copy of name, permanent throughout entire game.
-    strncpy((char *)housep->InitialName, Session.Players[index]->Name,
-            MPLAYER_NAME_MAX - 1);
+    port::SafeCopy(housep->InitialName, Session.Players[index]->Name);
 #endif
     housep->IsHuman = true;
     housep->Init_Data((PlayerColorType)(Session.Players[index]->Player.Color),
@@ -2655,7 +2653,7 @@ void Assign_Houses(void) {
     housep->IsHuman = false;
     housep->IsStarted = true;
 
-    strcpy(housep->IniName, Text_String(TXT_COMPUTER));
+    port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
     if (Session.Type != GAME_NORMAL) {
       housep->IQ = Rule.MaxIQ;

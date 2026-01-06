@@ -54,6 +54,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -282,7 +283,9 @@ int Format_Window_String(char *string, int maxlinelen, int &width,
   height = 0;
 
   // In no string was passed in, then there are no lines.
-  if (!string) return (0);
+  if (!string) {
+    return 0;
+  }
 
   // While there are more letters left divide the line up.
   while (*string) {
@@ -290,21 +293,19 @@ int Format_Window_String(char *string, int maxlinelen, int &width,
     height += FontHeight + FontYSpacing;
     lines++;
 
-    /*
-    **	Look for special line break character and force a line break when it is
-    **	discovered.
-    */
+    // Look for special line break character and force a line break when it is
+    // discovered.
     if (*string == '@') {
       *string = '\r';
     }
 
-    // While the current line is less then the max length...
+    // While the current line is less than the max length...
     while (linelen < maxlinelen && *string != '\r' && *string != '\0' &&
            *string != '@') {
       linelen += Char_Pixel_Width(*string++);
     }
 
-    // if the line is to long...
+    // if the line is too long...
     if (linelen >= maxlinelen) {
       /*
       **	Back up to an appropriate location to break.
@@ -797,7 +798,7 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
   char buffer[512];
 
   if (text) {
-    strcpy(buffer, text);
+    port::SafeCopy(buffer, text);
 
     /*
     **	Set the font and spacing characteristics according to the flag

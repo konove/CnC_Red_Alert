@@ -40,7 +40,7 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/ccptr.h"
 #include "ra/defines.h"

@@ -48,7 +48,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <string.h>
+#include <cstring>
 
 #include "port/ex_string.h"
 #include "ra/ccini.h"

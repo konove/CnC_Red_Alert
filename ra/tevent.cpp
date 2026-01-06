@@ -50,6 +50,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <format>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
@@ -509,8 +511,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
  *                                                                                             *
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
-void TEventClass::Build_INI_Entry(char* ptr) const {
-  sprintf(ptr, "%d,%d,%d", Event, TeamTypes.Logical_ID(Team), Data.Value);
+void TEventClass::Build_INI_Entry(std::string& buffer) const {
+  buffer += std::format("{},{},{}", std::to_underlying(Event),
+                        TeamTypes.Logical_ID(Team), Data.Value);
 }
 
 /***********************************************************************************************

@@ -52,6 +52,7 @@
 #include <filesystem>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -546,7 +547,7 @@ int LoadOptionsClass::Process(void) {
           ** it is, set the edit buffer to empty.
           */
           if (game_idx != 0) {
-            strcpy(game_descr, listbtn.Get_Item(game_idx));
+            port::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
 
             /*
             **	Strip any leading parenthesis off of the description.
@@ -649,7 +650,7 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
   */
   if (Style == SAVE) {
     fdata = new FileEntryClass;
-    strcpy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
+    port::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
     fdata->DateTime = 0xffffffff;  // will always be first
     Files.Add(fdata);
   }
@@ -669,13 +670,13 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
       /*
       ** get the game's info; if success, add it to the list
       */
-      bool ok = Get_Savefile_Info(id, descr, &scenario, &house);
+      bool ok = Get_Savefile_Info(id, descr, sizeof(descr), &scenario, &house);
 
       fdata = new FileEntryClass;
 
       fdata->Descr[0] = '\0';
       if (!ok) {
-        strcpy(fdata->Descr, Text_String(TXT_OLD_GAME));
+        port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
       } else {
         if (house == HOUSE_USSR || house == HOUSE_UKRAINE) {
 #ifdef WIN32
@@ -691,8 +692,7 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
 #endif
         }
       }
-      strncat(fdata->Descr, descr,
-              (sizeof(fdata->Descr) - strlen(fdata->Descr)) - 1);
+      port::SafeAppend(fdata->Descr, descr);
       fdata->Valid = ok;
       fdata->Scenario = scenario;
       fdata->House = house;

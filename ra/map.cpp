@@ -69,9 +69,8 @@
 
 #include "ra/map.h"
 
-#include <stdint.h>
-
 #include <algorithm>
+#include <cstdint>
 #include <new>
 
 #include "ra/abstract.h"

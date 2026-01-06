@@ -72,6 +72,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
@@ -736,7 +737,7 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char *name) {
   if (index >= NumConnections) return;
 
   Connection[index]->ID = id;
-  strcpy(Connection[index]->Name, name);
+  port::SafeCopy(Connection[index]->Name, name);
 
 } /* end of Set_Connection_Parms */
 

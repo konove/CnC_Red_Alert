@@ -51,6 +51,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/wsproto.h"
 
@@ -114,7 +115,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   ------------------------------------------------------------------------*/
   if (address) Address = (*address);
   ID = id;
-  strcpy(Name, name);
+  port::SafeCopy(Name, name);
 
 #ifdef WINSOCK_IPX
   Address.Get_Address(net, node);

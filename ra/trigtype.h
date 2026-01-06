@@ -41,6 +41,7 @@
 #define TRIGTYPE_H
 
 #include <cstddef>
+#include <string>
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -126,7 +127,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   static void Read_INI(CCINIClass &ini);
   static void Write_INI(CCINIClass &ini);
   void Fill_In(char *name, char *entry);
-  void Build_INI_Entry(char *buf) const;
+  void Build_INI_Entry(std::string &buffer) const;
 
   static char const *INI_Name(void) { return "Trigs"; };
   bool Load(Straw &file);

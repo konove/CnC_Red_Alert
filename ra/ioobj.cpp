@@ -16,9 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
-#include <stdint.h>
-
 /* $Header: /CounterStrike/IOOBJ.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
@@ -69,6 +66,9 @@
  *   TriggerClass::Decode_Pointers -- decodes pointers for load/save *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include <cassert>
+#include <cstdint>
+
 #include "ra/bullet.h"
 #include "ra/cargo.h"
 #include "ra/ccptr.h"

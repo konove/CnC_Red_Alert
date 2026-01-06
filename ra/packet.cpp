@@ -40,6 +40,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include "port/safe_string.h"
+
 // htons/ntohs
 #ifdef _WIN32
 #define NOMINMAX
@@ -402,10 +404,10 @@ bool PacketClass::Get_Field(char const *id, long &data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, char *data) {
+bool PacketClass::Get_Field(char const *id, char *data, size_t data_size) {
   FieldClass *field = Find_Field(id);
   if (field) {
-    strcpy(data, (char *)field->Data);
+    port::SafeCopy(data, (char *)field->Data, data_size);
   }
   return ((field) ? true : false);
 }

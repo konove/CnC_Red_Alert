@@ -40,21 +40,22 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/control.h"
-#include "ra/shapebtn.h"
-#include "ra/slider.h"
-#include "ra/vector.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "ra/link.h"
+#include "ra/shapebtn.h"
+#include "ra/slider.h"
+#include "ra/vector.h"
 #include "sdllib/include/keyboard.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.
-// Displays a list of text items with support for selection, scrolling, and tab stops.
-// Automatically manages an optional scroll bar when the list content exceeds visible area.
-// Items can be added/removed dynamically and accessed by index or text string.
+// Displays a list of text items with support for selection, scrolling, and tab
+// stops. Automatically manages an optional scroll bar when the list content
+// exceeds visible area. Items can be added/removed dynamically and accessed by
+// index or text string.
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,

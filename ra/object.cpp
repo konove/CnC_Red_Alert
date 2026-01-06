@@ -116,9 +116,8 @@
 
 #include "ra/object.h"
 
-#include <assert.h>
-
 #include <algorithm>
+#include <cassert>
 
 #include "ra/abstract.h"
 #include "ra/anim.h"

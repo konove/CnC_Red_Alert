@@ -44,6 +44,7 @@
 
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/dialog.h"
@@ -185,8 +186,7 @@ EgoClass::EgoClass(int x, int y, char *text, TextPrintType flags) {
   XPos = x;
   YPos = y;
   Flags = flags;
-  Text = new char[std::strlen(text) + 1];
-  strcpy(Text, text);
+  Text = port::CloneString(text);
 }
 
 /***********************************************************************************************

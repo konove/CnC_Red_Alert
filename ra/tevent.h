@@ -40,6 +40,8 @@
 #ifndef TEVENT_H
 #define TEVENT_H
 
+#include <string>
+
 #include "port/ex_string.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -156,7 +158,7 @@ struct TEventClass {
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
                   ObjectClass const* object, bool forced);
   void Read_INI(void);
-  void Build_INI_Entry(char* buffer) const;
+  void Build_INI_Entry(std::string& buffer) const;
 };
 
 typedef enum AttachType {

@@ -40,7 +40,7 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/ccini.h"
 #include "ra/defines.h"

@@ -43,10 +43,10 @@
 
 #include "ra/special.h"
 
-#include <string.h>
-
 #include <algorithm>
+#include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/checkbox.h"
 #include "ra/conquer.h"
 #include "ra/debug.h"
@@ -371,8 +371,7 @@ char const* Fetch_Password(int caption, int message, int btext) {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  buffer[BUFFSIZE - 1] = 0;
-  strncpy(buffer, Text_String(message), BUFFSIZE - 1);
+  port::SafeCopy(buffer, Text_String(message));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width;
@@ -513,8 +512,7 @@ int Fetch_Difficulty(bool amath) {
   **	the text into appropriate spacing.
   */
   char buffer[512];
-  strncpy(buffer, Text_String(TXT_DIFFICULTY), sizeof(buffer) - 1);
-  buffer[sizeof(buffer) - 1] = '\0';
+  port::SafeCopy(buffer, Text_String(TXT_DIFFICULTY));
   // If it's an aftermath mission, trim the sentence to get rid of the campaign
   // stuff.
   if (amath) {

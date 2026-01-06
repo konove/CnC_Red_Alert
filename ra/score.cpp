@@ -843,39 +843,31 @@ void ScoreClass::Presentation(void) {
   */
   Set_Logic_Page(SeenBuff);
 
-#ifdef WIN32
   char maststr[NUMFAMENAMES * 32];
-#endif
   unsigned char const *pal;
   for (i = 0; i < NUMFAMENAMES; i++) {
     pal = hallfame[i].side ? _redpal : _bluepal;
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
                                      HALLFAME_Y + (i * 8), pal));
     if (hallfame[i].score) {
-#ifdef WIN32
       char *str = maststr + i * 32;
-#else
-      char *str = (char *)(HidPage.Get_Buffer()) + i * 32;
-#endif
       sprintf(str, "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 14),
                                        HALLFAME_Y + (i * 8), pal, BLACK));
       if (hallfame[i].level < 20) {
         sprintf(str + 16, "%d", hallfame[i].level);
       } else {
-        strcpy(str + 16, "**");
+        sprintf(str + 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 11),
                                        HALLFAME_Y + (i * 8), pal, BLACK));
       Call_Back_Delay(13);
     }
   }
-#ifdef WIN32
   // Wait for text printing to complete
   while (StillUpdating) {
     Call_Back_Delay(1);
   }
-#endif
   /*
   ** If the player's on the hall of fame, have him enter his name now
   */
@@ -905,31 +897,19 @@ void ScoreClass::Presentation(void) {
       ScoreObjs[i] = nullptr;
     }
   BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
-#ifdef WIN32
   VisiblePage.Clear();
-#else
-  SeenPage.Clear();
-#endif
   Show_Mouse();
-  //	Map_Selection();
-  //	Scen.ScenVar = SCEN_VAR_A;
-  //	Scen.ScenDir = SCEN_DIR_EAST;
 
   Theme.Queue_Song(THEME_NONE);
 
   BlackPalette.Set(FADE_PALETTE_FAST, nullptr);
-#ifdef WIN32
   VisiblePage.Clear();
-#else
-  SeenPage.Clear();
-#endif
   GamePalette.Set();
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
   ControlQ = 0;
 
-#ifdef WIN32
 #ifdef SEENBUF_COPY
   delete PseudoSeenBuff;
 #endif
@@ -937,8 +917,6 @@ void ScoreClass::Presentation(void) {
   ** Fix for the score screen crash due to uncompressed shape buffer overflow.
   */
   Enable_Uncompressed_Shapes();
-
-#endif
 }
 
 void Cycle_Wait_Click(bool cycle) {

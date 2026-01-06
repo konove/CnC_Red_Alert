@@ -1,22 +1,20 @@
 // more portable replacements for winstub
 
-#include "ra/externs.h"
-#include "ra/jshell.h"
-#include "ra/palette.h"
-#include "sdllib/include/gbuffer.h"
-#include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/ww_win.h"
-
-// #include <SDL.h>  // sdl includes leaking into the rest of the code is bad
-
 #include <SDL_events.h>
 #include <SDL_video.h>
-#include <stdlib.h>
 
+#include <cstdlib>
+
+#include "ra/externs.h"
+#include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/msgbox.h"
 #include "ra/nullconn.h"
+#include "ra/palette.h"
+#include "sdllib/include/gbuffer.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 
 void Focus_Loss(void);
 void Focus_Restore(void);

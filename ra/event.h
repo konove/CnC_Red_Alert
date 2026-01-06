@@ -40,8 +40,8 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 
 #include "ra/defines.h"
 #include "ra/special.h"

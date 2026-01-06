@@ -60,6 +60,7 @@
 #include <ctime>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
@@ -166,7 +167,7 @@ static SerialPacketType ReceivePacket;
 char TheirName[MPLAYER_NAME_MAX];
 PlayerColorType TheirColor;
 HousesType TheirHouse;
-static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::PHONE_MAX_NUM - 1];
+static std::string DialString;
 static SerialSettingsType *DialSettings;
 
 bool Force_Scenario_Available(const char *szName);
@@ -340,7 +341,7 @@ int Test_Null_Modem(void) {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  strcpy(buffer, Text_String(TXT_WAITING_CONNECT));
+  port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
@@ -681,7 +682,7 @@ static int Reconnect_Null_Modem(void) {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  strcpy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
+  port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
@@ -906,7 +907,7 @@ void Destroy_Null_Connection(int id, int error) {
   housep->IsHuman = false;
   //	housep->Smartness = IQ_MENSA;
   housep->IQ = Rule.MaxIQ;
-  strcpy(housep->IniName, Text_String(TXT_COMPUTER));
+  port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
   Session.NumPlayers--;
 
@@ -1224,21 +1225,18 @@ GameType Select_Serial_Dialog(void) {
             } else {
               settings = &(Session.PhoneBook[Session.CurPhoneIdx]->Settings);
             }
-#ifdef WIN32
             if (SerialPort) {
               delete SerialPort;
             }
             SerialPort = new WinModemClass;
-#endif  // WIN32
             if (Init_Null_Modem(settings)) {
               if (settings->CallWaitStringIndex == CALL_WAIT_CUSTOM) {
-                strcpy(DialString, settings->CallWaitString);
+                DialString = settings->CallWaitString;
               } else {
-                strcpy(DialString,
-                       Session.CallWaitStrings[settings->CallWaitStringIndex]);
+                DialString =
+                    Session.CallWaitStrings[settings->CallWaitStringIndex];
               }
-              strcat(DialString,
-                     Session.PhoneBook[Session.CurPhoneIdx]->Number);
+              DialString += Session.PhoneBook[Session.CurPhoneIdx]->Number;
 
               if (Dial_Modem(settings, false)) {
                 Session.ModemType = MODEM_DIALER;
@@ -1465,13 +1463,14 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
   /*
   ** Initialise the button text
   */
-  strcpy(compress_text,
-         settings->Compression ? Text_String(TXT_ON) : Text_String(TXT_OFF));
-  strcpy(correction_text, settings->ErrorCorrection ? Text_String(TXT_ON)
-                                                    : Text_String(TXT_OFF));
-  strcpy(flowcontrol_text, settings->HardwareFlowControl
-                               ? Text_String(TXT_ON)
-                               : Text_String(TXT_OFF));
+  port::SafeCopy(compress_text, settings->Compression ? Text_String(TXT_ON)
+                                                      : Text_String(TXT_OFF));
+  port::SafeCopy(correction_text, settings->ErrorCorrection
+                                      ? Text_String(TXT_ON)
+                                      : Text_String(TXT_OFF));
+  port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
+                                       ? Text_String(TXT_ON)
+                                       : Text_String(TXT_OFF));
 
   /*
   ** Create the buttons
@@ -1597,24 +1596,25 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
     switch (input) {
       case (BUTTON_COMPRESSION | KN_BUTTON):
         settings->Compression = settings->Compression ^ 1;
-        strcpy(compress_text, settings->Compression ? Text_String(TXT_ON)
-                                                    : Text_String(TXT_OFF));
+        port::SafeCopy(compress_text, settings->Compression
+                                          ? Text_String(TXT_ON)
+                                          : Text_String(TXT_OFF));
         if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
         break;
 
       case (BUTTON_ERROR_CORRECTION | KN_BUTTON):
         settings->ErrorCorrection = settings->ErrorCorrection ^ 1;
-        strcpy(correction_text, settings->ErrorCorrection
-                                    ? Text_String(TXT_ON)
-                                    : Text_String(TXT_OFF));
+        port::SafeCopy(correction_text, settings->ErrorCorrection
+                                            ? Text_String(TXT_ON)
+                                            : Text_String(TXT_OFF));
         if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
         break;
 
       case (BUTTON_HARDWARE_FLOW_CONTROL | KN_BUTTON):
         settings->HardwareFlowControl = settings->HardwareFlowControl ^ 1;
-        strcpy(flowcontrol_text, settings->HardwareFlowControl
-                                     ? Text_String(TXT_ON)
-                                     : Text_String(TXT_OFF));
+        port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
+                                             ? Text_String(TXT_ON)
+                                             : Text_String(TXT_OFF));
         if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
         break;
 
@@ -1623,16 +1623,17 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
         settings->ErrorCorrection = false;
         settings->HardwareFlowControl = true;
 
-        strcpy(compress_text, settings->Compression ? Text_String(TXT_ON)
-                                                    : Text_String(TXT_OFF));
+        port::SafeCopy(compress_text, settings->Compression
+                                          ? Text_String(TXT_ON)
+                                          : Text_String(TXT_OFF));
 
-        strcpy(correction_text, settings->ErrorCorrection
-                                    ? Text_String(TXT_ON)
-                                    : Text_String(TXT_OFF));
+        port::SafeCopy(correction_text, settings->ErrorCorrection
+                                            ? Text_String(TXT_ON)
+                                            : Text_String(TXT_OFF));
 
-        strcpy(flowcontrol_text, settings->HardwareFlowControl
-                                     ? Text_String(TXT_ON)
-                                     : Text_String(TXT_OFF));
+        port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
+                                             ? Text_String(TXT_ON)
+                                             : Text_String(TXT_OFF));
 
         if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
         break;
@@ -2010,22 +2011,22 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   switch (tempsettings.IRQ) {
     case (2):
       irq_index = 0;
-      strcpy(irqbuf, "2");
+      port::SafeCopy(irqbuf, "2");
       break;
 
     case (3):
       irq_index = 1;
-      strcpy(irqbuf, "3");
+      port::SafeCopy(irqbuf, "3");
       break;
 
     case (4):
       irq_index = 2;
-      strcpy(irqbuf, "4");
+      port::SafeCopy(irqbuf, "4");
       break;
 
     case (5):
       irq_index = 3;
-      strcpy(irqbuf, "5");
+      port::SafeCopy(irqbuf, "5");
       break;
 
     default:
@@ -2035,7 +2036,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       if (temp) {
         pos = (int)(temp - irqname[4]) + 2;
         len = strlen(irqbuf);
-        strncpy(irqname[4] + pos, irqbuf, len);
+        port::SafeCopy(irqname[4] + pos, irqbuf, len);
         *(irqname[4] + pos + len) = 0;
       }
       break;
@@ -2091,8 +2092,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   for (i = 0; i < 10; i++) {
     ModemRegistry = new ModemRegistryEntryClass(i);
     if (ModemRegistry->Get_Modem_Name()) {
-      strncpy(modemnames[modems_found], ModemRegistry->Get_Modem_Name(),
-              MODEM_NAME_MAX);
+      port::SafeCopy(modemnames[modems_found], ModemRegistry->Get_Modem_Name());
       portlist.Add_Item(modemnames[modems_found++]);
       port_custom_index++;
     }
@@ -2113,7 +2113,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     for (i = 0; i < port_custom_index; i++) {
       if (!stricmp(portlist.Get_Item(i), tempsettings.ModemName)) {
         port_index = i;
-        strcpy(portbuf, tempsettings.ModemName);
+        port::SafeCopy(portbuf, tempsettings.ModemName);
         break;
       }
     }
@@ -2126,9 +2126,9 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       if (temp) {
         pos = (int)(temp - custom_port) + 2;
         len = strlen(tempsettings.ModemName);
-        strncpy(custom_port + pos, tempsettings.ModemName, len);
+        port::SafeCopy(custom_port + pos, tempsettings.ModemName, len);
         *(custom_port + pos + len) = 0;
-        strcpy(portbuf, tempsettings.ModemName);
+        port::SafeCopy(portbuf, tempsettings.ModemName);
         port_index = port_custom_index;
       }
     }
@@ -2139,22 +2139,22 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     switch (tempsettings.Port) {
       case (0x3f8):
         port_index = 0;
-        strcpy(portbuf, "COM1");
+        port::SafeCopy(portbuf, "COM1");
         break;
 
       case (0x2f8):
         port_index = 1;
-        strcpy(portbuf, "COM2");
+        port::SafeCopy(portbuf, "COM2");
         break;
 
       case (0x3e8):
         port_index = 2;
-        strcpy(portbuf, "COM3");
+        port::SafeCopy(portbuf, "COM3");
         break;
 
       case (0x2e8):
         port_index = 3;
-        strcpy(portbuf, "COM4");
+        port::SafeCopy(portbuf, "COM4");
         break;
 
       default:
@@ -2164,7 +2164,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         if (temp) {
           pos = (int)(temp - custom_port) + 2;
           len = strlen(portbuf);
-          strncpy(custom_port + pos, portbuf, len);
+          port::SafeCopy(custom_port + pos, portbuf, len);
           *(custom_port + pos + len) = 0;
         }
         break;
@@ -2213,15 +2213,15 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       if (temp) {
         pos = (int)(temp - item) + 2;
         len = strlen(tempsettings.CallWaitString);
-        strncpy(item + pos, tempsettings.CallWaitString, len);
+        port::SafeCopy(item + pos, tempsettings.CallWaitString, len);
         *(item + pos + len) = 0;
         if (i == cwaitstr_index) {
-          strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
+          port::SafeCopy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
         }
       }
       free(item);
     } else if (i == cwaitstr_index) {
-      strncpy(cwaitstrbuf, Session.CallWaitStrings[i], CWAITSTRBUF_MAX);
+      port::SafeCopy(cwaitstrbuf, Session.CallWaitStrings[i], CWAITSTRBUF_MAX);
     }
     cwaitstrlist.Add_Item(Session.CallWaitStrings[i]);
   }
@@ -2395,11 +2395,10 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         if (port_index < 4) {
           temp = strchr(item, ' ');
           if (!temp) {
-            strncpy(portbuf, item, PORTBUF_MAX);
+            port::SafeCopy(portbuf, item, PORTBUF_MAX);
           } else {
             pos = (int)(temp - item);
-            strncpy(portbuf, item, pos);
-            portbuf[pos] = 0;
+            port::SafeCopy(portbuf, item, pos);
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
           port_edt.Flag_To_Redraw();
@@ -2412,25 +2411,25 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           if (stricmp(portbuf, "3F8") == 0) {
             port_index = 0;
             portlist.Set_Selected_Index(port_index);
-            strcpy(portbuf, "COM1");
+            port::SafeCopy(portbuf, "COM1");
             display = REDRAW_BUTTONS;
 
           } else if (stricmp(portbuf, "2F8") == 0) {
             port_index = 1;
             portlist.Set_Selected_Index(port_index);
-            strcpy(portbuf, "COM2");
+            port::SafeCopy(portbuf, "COM2");
             display = REDRAW_BUTTONS;
 
           } else if (stricmp(portbuf, "3E8") == 0) {
             port_index = 2;
             portlist.Set_Selected_Index(port_index);
-            strcpy(portbuf, "COM3");
+            port::SafeCopy(portbuf, "COM3");
             display = REDRAW_BUTTONS;
 
           } else if (stricmp(portbuf, "2E8") == 0) {
             port_index = 3;
             portlist.Set_Selected_Index(port_index);
-            strcpy(portbuf, "COM4");
+            port::SafeCopy(portbuf, "COM4");
             display = REDRAW_BUTTONS;
 
           } else if (strncmp(portbuf, "COM", 3) == 0) {
@@ -2462,7 +2461,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
                   if (temp) {
                     pos = (int)(temp - item) + 2;
                     len = strlen(portbuf);
-                    strncpy(item + pos, portbuf, len);
+                    port::SafeCopy(item + pos, portbuf, len);
                     *(item + pos + len) = 0;
                     display = REDRAW_BUTTONS;
                   }
@@ -2482,7 +2481,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
             if (temp) {
               pos = (int)(temp - item) + 2;
               len = strlen(portbuf);
-              strncpy(item + pos, portbuf, len);
+              port::SafeCopy(item + pos, portbuf, len);
               *(item + pos + len) = 0;
               display = REDRAW_BUTTONS;
             }
@@ -2504,7 +2503,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           if (port_index < 4) {
             temp = strchr(item, ' ');
             pos = (int)(temp - item);
-            strncpy(portbuf, item, pos);
+            port::SafeCopy(portbuf, item, pos);
             portbuf[pos] = 0;
             port_edt.Clear_Focus();
 
@@ -2515,10 +2514,10 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
             item = (char *)irqlist.Current_Item();
             temp = strchr(item, ' ');
             if (!temp) {
-              strncpy(irqbuf, item, 2);
+              port::SafeCopy(irqbuf, item, 2);
             } else {
               pos = (int)(temp - item);
-              strncpy(irqbuf, item, pos);
+              port::SafeCopy(irqbuf, item, pos);
               irqbuf[pos] = 0;
             }
             irq_edt.Clear_Focus();
@@ -2536,7 +2535,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
                 if (*(item + pos) == '?') {
                   portbuf[0] = 0;
                 } else {
-                  strncpy(portbuf, item + pos, PORTBUF_MAX);
+                  port::SafeCopy(portbuf, item + pos);
                 }
               }
               port_edt.Set_Focus();
@@ -2544,7 +2543,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
               /*
               ** Must be a modem name entry so just copy iy
               */
-              strncpy(portbuf, item, PORTBUF_MAX);
+              port::SafeCopy(portbuf, item);
             }
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2562,10 +2561,10 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         if (irq_index < 4) {
           temp = strchr(item, ' ');
           if (!temp) {
-            strncpy(irqbuf, item, IRQBUF_MAX);
+            port::SafeCopy(irqbuf, item);
           } else {
             pos = (int)(temp - item);
-            strncpy(irqbuf, item, pos);
+            port::SafeCopy(irqbuf, item, pos);
             irqbuf[pos] = 0;
           }
           irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
@@ -2575,7 +2574,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           if (temp) {
             pos = (int)(temp - item) + 2;
             len = strlen(irqbuf);
-            strncpy(item + pos, irqbuf, len);
+            port::SafeCopy(item + pos, irqbuf, len);
             *(item + pos + len) = 0;
             display = REDRAW_BUTTONS;
           }
@@ -2591,10 +2590,10 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           if (irq_index < 4) {
             temp = strchr(item, ' ');
             if (!temp) {
-              strncpy(irqbuf, item, IRQBUF_MAX);
+              port::SafeCopy(irqbuf, item);
             } else {
               pos = (int)(temp - item);
-              strncpy(irqbuf, item, pos);
+              port::SafeCopy(irqbuf, item, pos);
               irqbuf[pos] = 0;
             }
             irq_edt.Clear_Focus();
@@ -2605,7 +2604,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
               if (*(item + pos) == '?') {
                 irqbuf[0] = 0;
               } else {
-                strncpy(irqbuf, item + pos, IRQBUF_MAX);
+                port::SafeCopy(irqbuf, item + pos);
               }
             }
             irq_edt.Set_Focus();
@@ -2621,7 +2620,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #endif  // WIN32
       case (BUTTON_BAUD | KN_BUTTON):
         item = (char *)baudlist.Current_Item();
-        strncpy(baudbuf, item, BAUDBUF_MAX);
+        port::SafeCopy(baudbuf, item);
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
         initstr_edt.Flag_To_Redraw();
@@ -2632,7 +2631,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
           item = (char *)baudlist.Current_Item();
-          strncpy(baudbuf, item, BAUDBUF_MAX);
+          port::SafeCopy(baudbuf, item, BAUDBUF_MAX);
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
           display = REDRAW_BUTTONS;
@@ -2642,7 +2641,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #if 0
 			case (BUTTON_INITSTR | KN_BUTTON):
 				strupr( initstrbuf );
-				strncpy( Session.InitStrings[ initstr_index ], initstrbuf, INITSTRBUF_MAX );
+				port::SafeCopy( Session.InitStrings[ initstr_index ], initstrbuf);
 				Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
 					&initstr_index);
 				cwaitstr_edt.Set_Focus();
@@ -2655,7 +2654,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
           item = (char *)initstrlist.Current_Item();
-          strncpy(initstrbuf, item, INITSTRBUF_MAX);
+          port::SafeCopy(initstrbuf, item);
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
         initstr_edt.Set_Focus();
@@ -2672,7 +2671,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         memset(item, 0, INITSTRBUF_MAX);
 
         strupr(initstrbuf);
-        strncpy(item, initstrbuf, INITSTRBUF_MAX - 1);
+        port::SafeCopy(item, initstrbuf, INITSTRBUF_MAX);
 
         Session.InitStrings.Add(item);
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
@@ -2683,7 +2682,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         for (i = 0; i < Session.InitStrings.Count(); i++) {
           if (item == Session.InitStrings[i]) {
             initstr_index = i;
-            strcpy(initstrbuf, Session.InitStrings[initstr_index]);
+            port::SafeCopy(initstrbuf, Session.InitStrings[initstr_index]);
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -2713,7 +2712,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           if (temp) {
             pos = (int)(temp - item) + 2;
             len = strlen(cwaitstrbuf);
-            strncpy(item + pos, cwaitstrbuf, len);
+            port::SafeCopy(item + pos, cwaitstrbuf, len);
             *(item + pos + len) = 0;
             display = REDRAW_BUTTONS;
           }
@@ -2725,13 +2724,13 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           cwaitstr_index = cwaitstrlist.Current_Index();
           item = (char *)cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
-            strncpy(cwaitstrbuf, item, CWAITSTRBUF_MAX);
+            port::SafeCopy(cwaitstrbuf, item);
             cwaitstr_edt.Clear_Focus();
           } else {
             temp = strchr(item, '-');
             if (temp) {
               pos = (int)(temp - item) + 2;
-              strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
+              port::SafeCopy(cwaitstrbuf, item + pos);
             }
             cwaitstr_edt.Set_Focus();
           }
@@ -2786,7 +2785,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
           default:
             if (port_index == port_custom_index) {
 #ifdef WIN32
-              strncpy(tempsettings.ModemName, portbuf, MODEM_NAME_MAX);
+              port::SafeCopy(tempsettings.ModemName, portbuf);
               tempsettings.Port = 1;
 #else   // WIN32
               sscanf(portbuf, "%x", &tempsettings.Port);
@@ -2796,7 +2795,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
               /*
               ** Must be a modem name index
               */
-              strcpy(tempsettings.ModemName, portlist.Current_Item());
+              port::SafeCopy(tempsettings.ModemName, portlist.Current_Item());
               tempsettings.Port = 1;
             }
             break;
@@ -2834,12 +2833,12 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         temp = strchr(item, '-');
         if (temp) {
           pos = (int)(temp - item) + 2;
-          strncpy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
+          port::SafeCopy(cwaitstrbuf, item + pos);
         } else {
           cwaitstrbuf[0] = 0;
         }
 
-        strncpy(tempsettings.CallWaitString, cwaitstrbuf, CWAITSTRBUF_MAX);
+        port::SafeCopy(tempsettings.CallWaitString, cwaitstrbuf);
 
         dpstatus = NullModem.Detect_Port(&tempsettings);
 
@@ -2944,7 +2943,7 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
   ........................................................................*/
   for (i = 0; i < Session.InitStrings.Count(); i++) {
     item = new char[INITSTRBUF_MAX];
-    strcpy(item, Session.InitStrings[i]);
+    port::SafeCopy(item, Session.InitStrings[i], INITSTRBUF_MAX);
     list->Add_Item(item);
   }
   list->Flag_To_Redraw();
@@ -2962,7 +2961,7 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
   Fill in initstring edit buffer
   ........................................................................*/
   if (curidx > -1) {
-    strcpy(buf, Session.InitStrings[curidx]);
+    port::SafeCopy(buf, Session.InitStrings[curidx], INITSTRBUF_MAX);
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -3344,8 +3343,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init player name & house
   ........................................................................*/
-  Session.ColorIdx = Session.PrefColor;  // init my preferred color
-  strcpy(namebuf, Session.Handle);       // set my name
+  Session.ColorIdx = Session.PrefColor;     // init my preferred color
+  port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(&ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
                                       ? PCOLOR_REALLY_BLUE
@@ -3819,7 +3818,7 @@ oh_dear_its_a_label:
           Session.Messages.Set_Edit_Color(
               (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx);
-          strcpy(Session.Handle, namebuf);
+          port::SafeCopy(Session.Handle, namebuf);
           transmit = true;
           changed = true;
           if (housebtn.IsDropped) {
@@ -3837,7 +3836,7 @@ oh_dear_its_a_label:
           housebtn.Collapse();
           display = REDRAW_BACKGROUND;
         }
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         changed = true;
         break;
@@ -3850,7 +3849,7 @@ oh_dear_its_a_label:
         Session.House = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         break;
 
@@ -3858,13 +3857,13 @@ oh_dear_its_a_label:
         Session.House = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         break;
 #else
       case (BUTTON_HOUSE | KN_BUTTON):
         Session.House = HousesType(housebtn.Current_Index() + HOUSE_USSR);
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         display = REDRAW_BACKGROUND;
         transmit = true;
         break;
@@ -3881,7 +3880,7 @@ oh_dear_its_a_label:
         }
         if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
           Session.Options.ScenarioIndex = scenariolist.Current_Index();
-          strcpy(Session.Handle, namebuf);
+          port::SafeCopy(Session.Handle, namebuf);
           transmit = true;
         }
         break;
@@ -4102,14 +4101,14 @@ oh_dear_its_a_label:
             ...............................................................*/
             memset(&SendPacket, 0, sizeof(SerialPacketType));
             SendPacket.Command = SERIAL_MESSAGE;
-            strcpy(SendPacket.Name, namebuf);
+            port::SafeCopy(SendPacket.Name, namebuf);
             SendPacket.ID = Session.ColorIdx;
             if (i == 3) {
-              strcpy(SendPacket.Message.Message,
-                     Session.Messages.Get_Edit_Buf());
+              port::SafeCopy(SendPacket.Message.Message,
+                             Session.Messages.Get_Edit_Buf());
             } else {
-              strcpy(SendPacket.Message.Message,
-                     Session.Messages.Get_Overflow_Buf());
+              port::SafeCopy(SendPacket.Message.Message,
+                             Session.Messages.Get_Overflow_Buf());
               Session.Messages.Clear_Overflow_Buf();
             }
 
@@ -4143,7 +4142,7 @@ oh_dear_its_a_label:
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
     if (strcmp(namebuf, Session.Handle)) {
-      strcpy(Session.Handle, namebuf);
+      port::SafeCopy(Session.Handle, namebuf);
       transmit = true;
       changed = true;
     }
@@ -4161,7 +4160,7 @@ oh_dear_its_a_label:
     if (transmit && (TickCount - transmittime) > PACKET_RETRANS_TIME) {
       memset(&SendPacket, 0, sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
-      strcpy(SendPacket.Name, namebuf);
+      port::SafeCopy(SendPacket.Name, namebuf);
       SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
       SendPacket.ScenarioInfo.MinVersion = VerNum.Min_Version();
       SendPacket.ScenarioInfo.MaxVersion = VerNum.Max_Version();
@@ -4184,24 +4183,27 @@ oh_dear_its_a_label:
       *his machine
       ** or request a download if it doesnt exist
       */
-      strcpy(SendPacket.ScenarioInfo.Scenario,
-             Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+      port::SafeCopy(
+          SendPacket.ScenarioInfo.Scenario,
+          Session.Scenarios[Session.Options.ScenarioIndex]->Description());
       CCFileClass file(
           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
       SendPacket.ScenarioInfo.FileLength = file.Size();
 
 #ifdef WOLAPI_INTEGRATION
-      strcpy(SendPacket.ScenarioInfo.ShortFileName,
-             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+      port::SafeCopy(
+          SendPacket.ScenarioInfo.ShortFileName,
+          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #else
-      strncpy(SendPacket.ScenarioInfo.ShortFileName,
-              Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename(),
-              sizeof(SendPacket.ScenarioInfo.ShortFileName));
+      port::SafeCopy(
+          SendPacket.ScenarioInfo.ShortFileName,
+          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
-      strncpy((char *)SendPacket.ScenarioInfo.FileDigest,
-              Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
-              sizeof SendPacket.ScenarioInfo.FileDigest);
+      port::SafeCopy(
+          reinterpret_cast<char *>(SendPacket.ScenarioInfo.FileDigest),
+          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
+          sizeof(SendPacket.ScenarioInfo.FileDigest));
       SendPacket.ScenarioInfo.OfficialScenario =
           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
       NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
@@ -4315,7 +4317,7 @@ oh_dear_its_a_label:
             oppscorescreen = false;
             gameoptions = true;
             kludge_timer = 2 * 60;
-            strcpy(TheirName, ReceivePacket.Name);
+            port::SafeCopy(TheirName, ReceivePacket.Name);
             TheirColor = ReceivePacket.ScenarioInfo.Color;
             TheirHouse = ReceivePacket.ScenarioInfo.House;
             transmit = true;
@@ -4513,15 +4515,16 @@ oh_dear_its_a_label:
     Session.NumPlayers = skirmish ? 1 : 2;
 
     Scen.Scenario = Session.Options.ScenarioIndex;
-    strcpy(Scen.ScenarioName,
-           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+    port::SafeCopy(
+        Scen.ScenarioName,
+        Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
     /*.....................................................................
     Add both players to the Players vector; the local system is always
     index 0.
     .....................................................................*/
     who = new NodeNameType;
-    strcpy(who->Name, namebuf);
+    port::SafeCopy(who->Name, namebuf);
     who->Player.House = Session.House;
     who->Player.Color = Session.ColorIdx;
     who->Player.ProcessTime = -1;
@@ -4574,11 +4577,11 @@ oh_dear_its_a_label:
         if (strlen(TheirName) == (MPLAYER_NAME_MAX - 1)) {
           TheirName[MPLAYER_NAME_MAX - 1] = '\0';
         } else {
-          strcat(TheirName, "2");
+          port::SafeAppend(TheirName, "2");
         }
       }
 
-      strcpy(who->Name, TheirName);
+      port::SafeCopy(who->Name, TheirName);
       who->Player.House = TheirHouse;
       who->Player.Color = TheirColor;
       who->Player.ProcessTime = -1;
@@ -4854,7 +4857,8 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
           if (Is_Mission_Aftermath(
                   (char *)Session.Scenarios[index]->Get_Filename())) {
             // debugprint("a 1match!\n");
-            strcpy(filename, Session.Scenarios[index]->Get_Filename());
+            port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
+                           _MAX_FNAME + _MAX_EXT + 1);
             return (true);
           }
 
@@ -4863,7 +4867,8 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
           */
           if (official || !strcmp(digest, digest_buffer)) {
             // debugprint("a match!\n");
-            strcpy(filename, Session.Scenarios[index]->Get_Filename());
+            port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
+                           _MAX_FNAME + _MAX_EXT + 1);
             return (true);
           }
         }
@@ -5192,8 +5197,8 @@ int Com_Show_Scenario_Dialog(void) {
   //........................................................................
   // Name & Color
   //........................................................................
-  Session.ColorIdx = Session.PrefColor;  // init my preferred color
-  strcpy(namebuf, Session.Handle);       // set my name
+  Session.ColorIdx = Session.PrefColor;     // init my preferred color
+  port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(&ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
                                       ? PCOLOR_REALLY_BLUE
@@ -5590,7 +5595,7 @@ int Com_Show_Scenario_Dialog(void) {
               (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
                                                        : Session.ColorIdx);
           if (display < REDRAW_COLORS) display = REDRAW_COLORS;
-          strcpy(Session.Handle, namebuf);
+          port::SafeCopy(Session.Handle, namebuf);
           transmit = true;
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -5625,7 +5630,7 @@ int Com_Show_Scenario_Dialog(void) {
         Session.House = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         break;
 
@@ -5633,13 +5638,13 @@ int Com_Show_Scenario_Dialog(void) {
         Session.House = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         break;
 #else   // OLDWAY
       case (BUTTON_HOUSE | KN_BUTTON):
         Session.House = HousesType(housebtn.Current_Index() + HOUSE_USSR);
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         // display = REDRAW_BACKGROUND;
         break;
@@ -5653,7 +5658,7 @@ int Com_Show_Scenario_Dialog(void) {
           housebtn.Collapse();
           display = REDRAW_BACKGROUND;
         }
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         changed = true;
         break;
@@ -5705,13 +5710,14 @@ int Com_Show_Scenario_Dialog(void) {
           ...............................................................*/
           memset(&SendPacket, 0, sizeof(SerialPacketType));
           SendPacket.Command = SERIAL_MESSAGE;
-          strcpy(SendPacket.Name, namebuf);
+          port::SafeCopy(SendPacket.Name, namebuf);
           SendPacket.ID = Session.ColorIdx;
           if (i == 3) {
-            strcpy(SendPacket.Message.Message, Session.Messages.Get_Edit_Buf());
+            port::SafeCopy(SendPacket.Message.Message,
+                           Session.Messages.Get_Edit_Buf());
           } else {
-            strcpy(SendPacket.Message.Message,
-                   Session.Messages.Get_Overflow_Buf());
+            port::SafeCopy(SendPacket.Message.Message,
+                           Session.Messages.Get_Overflow_Buf());
             Session.Messages.Clear_Overflow_Buf();
           }
 
@@ -5742,7 +5748,7 @@ int Com_Show_Scenario_Dialog(void) {
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
     if (strcmp(namebuf, Session.Handle)) {
-      strcpy(Session.Handle, namebuf);
+      port::SafeCopy(Session.Handle, namebuf);
       transmit = true;
       changed = true;
     }
@@ -5753,7 +5759,7 @@ int Com_Show_Scenario_Dialog(void) {
     if (transmit && (TickCount - transmittime) > PACKET_RETRANS_TIME) {
       memset(&SendPacket, 0, sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
-      strcpy(SendPacket.Name, namebuf);
+      port::SafeCopy(SendPacket.Name, namebuf);
       SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
       SendPacket.ScenarioInfo.MinVersion = VerNum.Min_Version();
       SendPacket.ScenarioInfo.MaxVersion = VerNum.Max_Version();
@@ -5871,7 +5877,7 @@ int Com_Show_Scenario_Dialog(void) {
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
             parms_received = true;
 
-            strcpy(TheirName, ReceivePacket.Name);
+            port::SafeCopy(TheirName, ReceivePacket.Name);
             TheirColor = ReceivePacket.ScenarioInfo.Color;
             TheirHouse = ReceivePacket.ScenarioInfo.House;
 
@@ -5962,17 +5968,16 @@ int Com_Show_Scenario_Dialog(void) {
             play so ee can request this scenario from the host if we don't
             have it locally.
             ...............................................................*/
-            strcpy(Session.Options.ScenarioDescription,
-                   ReceivePacket.ScenarioInfo.Scenario);
-            strcpy(Session.ScenarioFileName,
-                   ReceivePacket.ScenarioInfo.ShortFileName);
+            port::SafeCopy(Session.Options.ScenarioDescription,
+                           ReceivePacket.ScenarioInfo.Scenario);
+            port::SafeCopy(Session.ScenarioFileName,
+                           ReceivePacket.ScenarioInfo.ShortFileName);
 #ifdef WOLAPI_INTEGRATION
-            strncpy(Session.ScenarioDigest,
-                    (char *)ReceivePacket.ScenarioInfo.FileDigest,
-                    sizeof(ReceivePacket.ScenarioInfo.FileDigest));
+            port::SafeCopy(Session.ScenarioDigest,
+                           (char *)ReceivePacket.ScenarioInfo.FileDigest);
 #else
-            strcpy(Session.ScenarioDigest,
-                   (char *)ReceivePacket.ScenarioInfo.FileDigest);
+            port::SafeCopy(Session.ScenarioDigest,
+                           (char *)ReceivePacket.ScenarioInfo.FileDigest);
 #endif
             Session.ScenarioIsOfficial =
                 ReceivePacket.ScenarioInfo.OfficialScenario;
@@ -6257,7 +6262,7 @@ int Com_Show_Scenario_Dialog(void) {
             /*
             ** Fall through here...
             */
-            strcpy(Scen.ScenarioName, Session.ScenarioFileName);
+            port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
             //
             // calculated one way delay for a packet and overall delay
             // to execute a packet
@@ -6360,18 +6365,18 @@ int Com_Show_Scenario_Dialog(void) {
       if (strlen(TheirName) == (MPLAYER_NAME_MAX - 1)) {
         namebuf[MPLAYER_NAME_MAX - 1] = '\0';
       } else {
-        strcat(namebuf, "2");
+        port::SafeAppend(namebuf, "2");
       }
     }
 
-    strcpy(who->Name, namebuf);
+    port::SafeCopy(who->Name, namebuf);
     who->Player.House = Session.House;
     who->Player.Color = Session.ColorIdx;
     who->Player.ProcessTime = -1;
     Session.Players.Add(who);
 
     who = new NodeNameType;
-    strcpy(who->Name, TheirName);
+    port::SafeCopy(who->Name, TheirName);
     who->Player.House = TheirHouse;
     who->Player.Color = TheirColor;
     who->Player.ProcessTime = -1;
@@ -6725,7 +6730,8 @@ static int Phone_Dialog(void) {
         if (Session.CurPhoneIdx != -1) {
           if (phonelist.Current_Index() != Session.CurPhoneIdx) {
             Session.CurPhoneIdx = phonelist.Current_Index();
-            strcpy(phone_num, Session.PhoneBook[Session.CurPhoneIdx]->Number);
+            port::SafeCopy(phone_num,
+                           Session.PhoneBook[Session.CurPhoneIdx]->Number);
             numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
             changed = true;
           }
@@ -6764,7 +6770,8 @@ static int Phone_Dialog(void) {
           for (i = 0; i < Session.PhoneBook.Count(); i++) {
             if (p_entry == Session.PhoneBook[i]) {
               Session.CurPhoneIdx = i;
-              strcpy(phone_num, Session.PhoneBook[Session.CurPhoneIdx]->Number);
+              port::SafeCopy(phone_num,
+                             Session.PhoneBook[Session.CurPhoneIdx]->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
               phonelist.Set_Selected_Index(Session.CurPhoneIdx);
             }
@@ -6810,7 +6817,8 @@ static int Phone_Dialog(void) {
             if (Session.PhoneBook[Session.CurPhoneIdx] ==
                 Session.PhoneBook[i]) {
               Session.CurPhoneIdx = i;
-              strcpy(phone_num, Session.PhoneBook[Session.CurPhoneIdx]->Number);
+              port::SafeCopy(phone_num,
+                             Session.PhoneBook[Session.CurPhoneIdx]->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
               phonelist.Set_Selected_Index(Session.CurPhoneIdx);
             }
@@ -6870,8 +6878,8 @@ static int Phone_Dialog(void) {
           }
 
           p_entry = new PhoneEntryClass();
-          strcpy(p_entry->Name, "NONAME");
-          strcpy(p_entry->Number, phone_num);
+          port::SafeCopy(p_entry->Name, "NONAME");
+          port::SafeCopy(p_entry->Number, phone_num);
           p_entry->Settings.Port = 0;
           p_entry->Settings.IRQ = -1;
           p_entry->Settings.Baud = -1;
@@ -6980,21 +6988,19 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
   for (i = 0; i < Session.PhoneBook.Count(); i++) {
     item = new char[80];
     if (!(strlen(Session.PhoneBook[i]->Name))) {
-      strcpy(phonename, " ");
+      port::SafeCopy(phonename, " ");
     } else {
-      strncpy(phonename, Session.PhoneBook[i]->Name, 20);
-      phonename[21] = 0;
+      port::SafeCopy(phonename, Session.PhoneBook[i]->Name);
     }
 
     if (!(strlen(Session.PhoneBook[i]->Number))) {
-      strcpy(phonenum, " ");
+      port::SafeCopy(phonenum, " ");
     } else {
       if (strlen(Session.PhoneBook[i]->Number) < 14) {
-        strcpy(phonenum, Session.PhoneBook[i]->Number);
+        port::SafeCopy(phonenum, Session.PhoneBook[i]->Number);
       } else {
-        strncpy(phonenum, Session.PhoneBook[i]->Number, 12);
-        phonenum[12] = 0;
-        strcat(phonenum, "...");
+        port::SafeCopy(phonenum, Session.PhoneBook[i]->Number);
+        port::SafeAppend(phonenum, "...");
       }
     }
 
@@ -7024,7 +7030,8 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
   Fill in phone number edit buffer
   ........................................................................*/
   if (Session.CurPhoneIdx > -1) {
-    strcpy(buf, Session.PhoneBook[Session.CurPhoneIdx]->Number);
+    port::SafeCopy(buf, Session.PhoneBook[Session.CurPhoneIdx]->Number,
+                   PhoneEntryClass::PHONE_MAX_NUM);
     edit->Set_Text(buf, PhoneEntryClass::PHONE_MAX_NUM);
     list->Set_Selected_Index(Session.CurPhoneIdx);
   }
@@ -7220,10 +7227,10 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
     custom = true;
   }
 
-  strcpy(namebuf, phone->Name);
+  port::SafeCopy(namebuf, phone->Name);
   nameedit.Set_Text(namebuf, PhoneEntryClass::PHONE_MAX_NAME);
 
-  strcpy(numbuf, phone->Number);
+  port::SafeCopy(numbuf, phone->Number);
   numedit.Set_Text(numbuf, PhoneEntryClass::PHONE_MAX_NUM);
 
   /*
@@ -7354,15 +7361,15 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
   If 'Save', save all current settings
   ------------------------------------------------------------------------*/
   if (rc) {
-    strcpy(phone->Name, strupr(namebuf));
+    port::SafeCopy(phone->Name, strupr(namebuf));
 
     // if nothing was entered then make if NONAME
 
     if (!(phone->Name[0])) {
-      strcpy(phone->Name, "NONAME");
+      port::SafeCopy(phone->Name, "NONAME");
     }
 
-    strcpy(phone->Number, strupr(numbuf));
+    port::SafeCopy(phone->Number, strupr(numbuf));
 
     if (custom) {
       phone->Settings = settings;
@@ -7499,7 +7506,7 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
 #endif  // WIN32
 
   dialstatus =
-      NullModem.Dial_Modem(DialString, settings->DialMethod, reconnect);
+      NullModem.Dial_Modem(DialString.c_str(), settings->DialMethod, reconnect);
 
   if (reconnect) {
     /*

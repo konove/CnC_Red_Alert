@@ -63,7 +63,7 @@
 
 #include "ra/vortex.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "ra/abstract.h"
 #include "ra/building.h"

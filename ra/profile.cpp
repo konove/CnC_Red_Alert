@@ -42,13 +42,13 @@
 
 #include "ra/profile.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <cctype>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
 #include "tech/readline.h"
@@ -538,7 +538,7 @@ char *WWGetPrivateProfileString(char const *section, char const *entry,
 bool WWWritePrivateProfileString(char const *section, char const *entry,
                                  char const *string, char *profile) {
   char buffer[250];  // Working section buffer
-  char const *offset;
+  char *offset;
   char const *next;  // ptr to next section
   char c;            // Working character value
 
@@ -565,7 +565,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   */
   if (!offset && entry) {
     sprintf(buffer, "\r\n[%s]\r\n", section);
-    strcat(profile, buffer);
+    // TODO(konove): Why profile is initialized with SHAPE_BUFFER_SIZE?
+    port::SafeAppend(profile, buffer, SHAPE_BUFFER_SIZE);
   }
 
   /*
@@ -607,7 +608,10 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     /*
     **	Remove the section
     */
-    strcpy((char *)offset, (char *)next);
+    // Profile is initialized to be of size SHAPE_BUFFER_SIZE, which is big
+    // enough.
+    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
+    strcpy(offset, next);
 
     return (true);
   }
@@ -636,7 +640,10 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     **	Erase the entry by strcpy'ing the entire INI file over this entry
     */
     if (eol) {
-      strcpy((char *)offset, offset + eol + 1);
+      // Profile is initialized to be of size SHAPE_BUFFER_SIZE, which is big
+      // enough.
+      // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
+      strcpy(offset, offset + eol + 1);
     }
   } else {
     /*
@@ -659,12 +666,12 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     /*
     **	Make room for new entry.
     */
-    memmove((char *)offset + strlen(buffer), offset, strlen(offset) + 1);
+    memmove(offset + strlen(buffer), offset, strlen(offset) + 1);
 
     /*
     **	Copy the entry into the INI buffer.
     */
-    memcpy((char *)offset, buffer, strlen(buffer));
+    memcpy(offset, buffer, strlen(buffer));
   }
 
   return (true);

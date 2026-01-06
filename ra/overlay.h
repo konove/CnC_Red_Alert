@@ -40,7 +40,7 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/ccini.h"
 #include "ra/ccptr.h"

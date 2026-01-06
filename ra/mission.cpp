@@ -54,7 +54,7 @@
 
 #include "ra/mission.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "port/ex_string.h"
 #include "ra/const.h"

@@ -46,10 +46,10 @@
 
 #include "ra/reinf.h"
 
-#include <string.h>
-
 #include <cassert>
+#include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -598,7 +598,7 @@ bool Create_Special_Reinforcement(HouseClass *house,
       /*
       **	Fill in the team characteristics.
       */
-      strcpy((char *)&team->IniName[0], "TEMP");
+      port::SafeCopy(team->IniName, "TEMP");
       team->IsReinforcable = false;
       team->IsTransient = true;
       team->ClassCount = 1;

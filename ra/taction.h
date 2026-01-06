@@ -40,6 +40,8 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include <string>
+
 #include "port/ex_string.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -135,7 +137,7 @@ struct TActionClass {
   void Code_Pointers(void);
   void Decode_Pointers(void);
   void Read_INI(void);
-  void Build_INI_Entry(char* buffer) const;
+  void Build_INI_Entry(std::string& buffer) const;
 
   bool operator()(HousesType house, ObjectClass* object, int id, CELL cell);
 };

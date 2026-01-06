@@ -56,10 +56,11 @@
 
 #include "ra/msglist.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -346,7 +347,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
   if (name) {
     sprintf(message, "%s:%s", name, txt);
   } else {
-    strcpy(message, txt);
+    port::SafeCopy(message, txt);
   }
 
   //------------------------------------------------------------------------
@@ -427,7 +428,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
     if (BufferAvail[i]) {
       BufferAvail[i] = 0;
       memset(MessageBuffers[i], 0, MAX_MESSAGE_LENGTH + 30);
-      strcpy(MessageBuffers[i], message);
+      port::SafeCopy(MessageBuffers[i], message);
       txtlabel->Text = MessageBuffers[i];
       found = 1;
       break;
@@ -622,8 +623,8 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
     int name_width = String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg);
     int width;
 
-    strcpy(concat_test, msg);
-    strcat(concat_test, txt);
+    port::SafeCopy(concat_test, msg, MaxChars);
+    port::SafeAppend(concat_test, txt, MaxChars);
     width = String_Pixel_Width(concat_test) + name_width;
     min_chars = 10;
 
@@ -635,15 +636,15 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
 
       Trim_Message(nullptr, msg, min_chars, max_chars, 0);
 
-      strcpy(concat_test, msg);
-      strcat(concat_test, txt);
+      port::SafeCopy(concat_test, msg, MaxChars);
+      port::SafeAppend(concat_test, txt, MaxChars);
 
       width = String_Pixel_Width(concat_test) + name_width;
     };
 
     delete[] concat_test;
 
-    strcat(msg, txt);
+    port::SafeAppend(msg, txt, MAX_MESSAGE_LENGTH);
   }
 
   //------------------------------------------------------------------------
@@ -658,7 +659,7 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
       max_chars = min_chars;
     }
     Trim_Message(nullptr, msg, min_chars, max_chars, 0);
-    strcat(msg, txt);
+    port::SafeCopy(msg, txt, MAX_MESSAGE_LENGTH);
   }
 
   //------------------------------------------------------------------------
@@ -775,7 +776,7 @@ TextLabelClass *MessageListClass::Add_Edit(PlayerColorType color,
   //	Initialize the buffer positions; create a new text label object
   //------------------------------------------------------------------------
   memset(EditBuf, 0, sizeof(EditBuf));
-  strcpy(EditBuf, to);
+  port::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = strlen(to);
   EditLabel =

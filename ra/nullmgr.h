@@ -45,9 +45,9 @@
 ********************************* Includes **********************************
 */
 #include "ra/connmgr.h"
+#include "ra/gadget.h"
 #include "ra/nullconn.h"
 #include "ra/session.h"
-#include "ra/gadget.h"
 #include "sdllib/include/keyboard.h"
 
 /*
@@ -159,7 +159,7 @@ class NullModemClass : public ConnManClass {
 
   DetectPortType Detect_Port(SerialSettingsType *settings);
   int Detect_Modem(SerialSettingsType *settings, bool reconnect = 0);
-  DialStatusType Dial_Modem(char *string, DialMethodType method,
+  DialStatusType Dial_Modem(const char *string, DialMethodType method,
                             bool reconnect = 0);
   DialStatusType Answer_Modem(bool reconnect = 0);
   bool Hangup_Modem(void);
@@ -177,7 +177,7 @@ class NullModemClass : public ConnManClass {
 
   int Change_IRQ_Priority(int irq);
   int Get_Modem_Status(void);
-  int Send_Modem_Command(char *command, char terminator, char *buffer,
+  int Send_Modem_Command(const char *command, char terminator, char *buffer,
                          int buflen, int delay, int retries);
   int Verify_And_Convert_To_Int(char *buffer);
 

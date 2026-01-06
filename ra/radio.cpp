@@ -45,7 +45,7 @@
 
 #include "ra/radio.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "ra/techno.h"
 

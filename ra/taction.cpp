@@ -54,6 +54,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <format>
+#include <utility>
 
 #include "port/ex_string.h"
 #include "ra/aircraft.h"
@@ -268,9 +270,10 @@ void TActionClass::Detach(TARGET target) {
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Build_INI_Entry(char *ptr) const {
-  sprintf(ptr, "%d,%d,%d,%d", Action, TeamTypes.Logical_ID(Team),
-          TriggerTypes.Logical_ID(Trigger), Data.Value);
+void TActionClass::Build_INI_Entry(std::string &buffer) const {
+  buffer += std::format("{},{},{},{}", std::to_underlying(Action),
+                        TeamTypes.Logical_ID(Team),
+                        TriggerTypes.Logical_ID(Trigger), Data.Value);
 }
 
 /***********************************************************************************************

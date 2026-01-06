@@ -40,7 +40,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/ccini.h"
 #include "ra/ccptr.h"

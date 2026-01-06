@@ -45,7 +45,7 @@
 
 #include "ra/warhead.h"
 
-#include <string.h>
+#include <cstring>
 
 #include "ra/defines.h"
 #include "ra/heap.h"

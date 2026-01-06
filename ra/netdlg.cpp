@@ -132,6 +132,7 @@
 #include <ctime>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/ccfile.h"
 #include "ra/ccini.h"
@@ -1093,7 +1094,7 @@ bool Process_Global_Packet(GlobalPacketType *packet, IPXAddressClass *address) {
       memset(&mypacket, 0, sizeof(GlobalPacketType));
 
       mypacket.Command = NET_ANSWER_GAME;
-      strcpy(mypacket.Name, Session.GameName);
+      port::SafeCopy(mypacket.Name, Session.GameName);
       mypacket.GameInfo.IsOpen = Session.NetOpen;
 
       Ipx.Send_Global_Message(&mypacket, sizeof(GlobalPacketType), 1, address);
@@ -1110,7 +1111,7 @@ bool Process_Global_Packet(GlobalPacketType *packet, IPXAddressClass *address) {
     memset(&mypacket, 0, sizeof(GlobalPacketType));  // changed DRD 9/26
 
     mypacket.Command = NET_ANSWER_PLAYER;
-    strcpy(mypacket.Name, Session.Players[0]->Name);
+    port::SafeCopy(mypacket.Name, Session.Players[0]->Name);
     mypacket.PlayerInfo.House = Session.House;
     mypacket.PlayerInfo.Color = Session.ColorIdx;
     mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(Session.GameName);
@@ -1196,7 +1197,7 @@ void Destroy_Connection(int id, int error) {
   //------------------------------------------------------------------------
   housep->IsHuman = false;
   housep->IQ = Rule.MaxIQ;
-  strcpy(housep->IniName, Text_String(TXT_COMPUTER));
+  port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
   Session.NumPlayers--;
 
@@ -1632,8 +1633,8 @@ static int Net_Join_Dialog(void) {
   //........................................................................
   // Name & Color
   //........................................................................
-  Session.ColorIdx = Session.PrefColor;  // init my preferred color
-  strcpy(namebuf, Session.Handle);       // set my name
+  Session.ColorIdx = Session.PrefColor;     // init my preferred color
+  port::SafeCopy(namebuf, Session.Handle);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   if (Session.ColorIdx == PCOLOR_DIALOG_BLUE) {
     name_edt.Set_Color(&ColorRemaps[PCOLOR_REALLY_BLUE]);
@@ -1727,7 +1728,7 @@ static int Net_Join_Dialog(void) {
   // Add myself to the Chat vector
   //------------------------------------------------------------------------
   who = new NodeNameType;
-  strcpy(who->Name, namebuf);
+  port::SafeCopy(who->Name, namebuf);
   who->Chat.LastTime = 0;
   who->Chat.LastChance = 0;
   who->Chat.Color = Session.GPacket.Chat.Color;
@@ -1743,7 +1744,7 @@ static int Net_Join_Dialog(void) {
   who->Game.LastTime = 0;
   Session.Games.Add(who);
   item = new char[MPLAYER_NAME_MAX];
-  strcpy(item, Text_String(TXT_LOBBY));
+  port::SafeCopy(item, Text_String(TXT_LOBBY), MPLAYER_NAME_MAX);
   gamelist.Add_Item(item);
   gamelist.Set_Selected_Index(0);
   game_index = 0;
@@ -2187,7 +2188,7 @@ static int Net_Join_Dialog(void) {
             game_index = lastclick_idx;
             name_edt.Clear_Focus();
             name_edt.Flag_To_Redraw();
-            strcpy(Session.Handle, namebuf);
+            port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
             Session.House = (HousesType)(housebtn.Current_Index() + HOUSE_USSR);
 #endif
@@ -2275,7 +2276,7 @@ static int Net_Join_Dialog(void) {
       case (BUTTON_JOIN | KN_BUTTON):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
-        strcpy(Session.Handle, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
 #ifndef OLDWAY
         Session.House = (HousesType)(housebtn.Current_Index() + HOUSE_USSR);
 #endif
@@ -2316,7 +2317,7 @@ static int Net_Join_Dialog(void) {
           //...............................................................
           memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
           Session.GPacket.Command = NET_SIGN_OFF;
-          strcpy(Session.GPacket.Name, namebuf);
+          port::SafeCopy(Session.GPacket.Name, namebuf);
           for (i = 1; i < Session.Chat.Count(); i++) {
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
                                     1, &(Session.Chat[i]->Address));
@@ -2382,8 +2383,8 @@ static int Net_Join_Dialog(void) {
         //...............................................................
         //	Save player & game name
         //...............................................................
-        strcpy(Session.Handle, namebuf);
-        strcpy(Session.GameName, namebuf);
+        port::SafeCopy(Session.Handle, namebuf);
+        port::SafeCopy(Session.GameName, namebuf);
 #ifndef OLDWAY
         Session.House = (HousesType)(housebtn.Current_Index() + HOUSE_USSR);
 #endif
@@ -2433,13 +2434,13 @@ static int Net_Join_Dialog(void) {
           //...............................................................
           memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
           Session.GPacket.Command = NET_MESSAGE;
-          strcpy(Session.GPacket.Name, namebuf);
+          port::SafeCopy(Session.GPacket.Name, namebuf);
           if (i == 3) {
-            strcpy(Session.GPacket.Message.Buf,
-                   Session.Messages.Get_Edit_Buf());
+            port::SafeCopy(Session.GPacket.Message.Buf,
+                           Session.Messages.Get_Edit_Buf());
           } else {
-            strcpy(Session.GPacket.Message.Buf,
-                   Session.Messages.Get_Overflow_Buf());
+            port::SafeCopy(Session.GPacket.Message.Buf,
+                           Session.Messages.Get_Overflow_Buf());
             Session.Messages.Clear_Overflow_Buf();
           }
           Session.GPacket.Message.Color = Session.ColorIdx;
@@ -2638,7 +2639,7 @@ static int Net_Join_Dialog(void) {
         }
 
         Ipx.Set_Timing(30, (unsigned long)-1, 600);
-        strcpy(Scen.ScenarioName, Session.ScenarioFileName);
+        port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
         rc = 0;
         process = false;
       } else if (joinstate == JOIN_CONFIRMED) {
@@ -2670,7 +2671,7 @@ static int Net_Join_Dialog(void) {
                                       : &ColorRemaps[Session.ColorIdx]);
 
         who = new NodeNameType;
-        strcpy(who->Name, namebuf);
+        port::SafeCopy(who->Name, namebuf);
         who->Player.House = Session.House;
         who->Player.Color = Session.ColorIdx;
         Session.Players.Add(who);
@@ -2844,7 +2845,7 @@ static int Net_Join_Dialog(void) {
       // If I've changed my name or color, make sure those changes go into
       // the Chat vector.
       //.....................................................................
-      strcpy(Session.Chat[0]->Name, namebuf);
+      port::SafeCopy(Session.Chat[0]->Name, namebuf);
       Session.Chat[0]->Chat.Color = Session.ColorIdx;
       if (Session.Chat[0]->Chat.Color == PCOLOR_DIALOG_BLUE) {
         Session.Chat[0]->Chat.Color = PCOLOR_REALLY_BLUE;
@@ -2906,7 +2907,8 @@ static int Net_Join_Dialog(void) {
               if (playerlist.Colors[i] == &ColorRemaps[PCOLOR_DIALOG_BLUE]) {
                 playerlist.Colors[i] = &ColorRemaps[PCOLOR_REALLY_BLUE];
               }
-              strcpy((char *)playerlist.Get_Item(i), Session.Chat[i]->Name);
+              port::SafeCopy((char *)playerlist.Get_Item(i),
+                             Session.Chat[i]->Name, MPLAYER_NAME_MAX);
               playerlist.Flag_To_Redraw();
             }
           }
@@ -2915,7 +2917,8 @@ static int Net_Join_Dialog(void) {
               &ColorRemaps[Session.Chat[0]->Chat.Color] !=
                   playerlist.Colors[0]) {
             playerlist.Colors[0] = &ColorRemaps[Session.Chat[0]->Chat.Color];
-            strcpy((char *)playerlist.Get_Item(0), Session.Chat[0]->Name);
+            port::SafeCopy((char *)playerlist.Get_Item(0),
+                           Session.Chat[0]->Name, MPLAYER_NAME_MAX);
             playerlist.Flag_To_Redraw();
           }
           if (Update_WWChat()) {
@@ -2947,7 +2950,7 @@ static int Net_Join_Dialog(void) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
       Session.GPacket.Command = NET_SIGN_OFF;
-      strcpy(Session.GPacket.Name, namebuf);
+      port::SafeCopy(Session.GPacket.Name, namebuf);
 
       //..................................................................
       // Don't send myself the message.
@@ -3120,7 +3123,7 @@ static int Request_To_Join(char *playername, int join_index, HousesType house,
   memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
   Session.GPacket.Command = NET_QUERY_JOIN;
-  strcpy(Session.GPacket.Name, playername);
+  port::SafeCopy(Session.GPacket.Name, playername);
   Session.GPacket.PlayerInfo.House = house;
   Session.GPacket.PlayerInfo.Color = color;
   //	Guest sends host his version.
@@ -3181,7 +3184,7 @@ static void Unjoin_Game(char *namebuf, JoinStateType joinstate,
   //------------------------------------------------------------------------
   memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
   Session.GPacket.Command = NET_SIGN_OFF;
-  strcpy(Session.GPacket.Name, namebuf);
+  port::SafeCopy(Session.GPacket.Name, namebuf);
 
   //------------------------------------------------------------------------
   //	If we're joined to a game, make extra sure the other players in
@@ -3334,7 +3337,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
     Session.GPacket.Command = NET_QUERY_PLAYER;
-    strcpy(Session.GPacket.Name, Session.Games[curgame]->Name);
+    port::SafeCopy(Session.GPacket.Name, Session.Games[curgame]->Name);
 
     Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 0,
                             nullptr);
@@ -3358,7 +3361,7 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
     memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
     Session.GPacket.Command = NET_CHAT_ANNOUNCE;
-    strcpy(Session.GPacket.Name, myname);
+    port::SafeCopy(Session.GPacket.Name, myname);
     Session.GPacket.Chat.ID = Session.UniqueID;
     Session.GPacket.Chat.Color = Session.ColorIdx;
 
@@ -3516,7 +3519,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       //	Create a new node structure, fill it in, add it to 'Games'
       //..................................................................
       who = new NodeNameType;
-      strcpy(who->Name, Session.GPacket.Name);
+      port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
       who->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
       who->Game.LastTime = TickCount;
@@ -3579,7 +3582,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       // new entry.
       //..................................................................
       if (Session.Players[i]->Address == Session.GAddress) {
-        strcpy(Session.Players[i]->Name, Session.GPacket.Name);
+        port::SafeCopy(Session.Players[i]->Name, Session.GPacket.Name);
         Session.Players[i]->Player.House = Session.GPacket.PlayerInfo.House;
         Session.Players[i]->Player.Color = Session.GPacket.PlayerInfo.Color;
 
@@ -3621,7 +3624,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       //	Create & add a node to the Vector
       //..................................................................
       who = new NodeNameType;
-      strcpy(who->Name, Session.GPacket.Name);
+      port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
       who->Player.House = Session.GPacket.PlayerInfo.House;
       who->Player.Color = Session.GPacket.PlayerInfo.Color;
@@ -3675,7 +3678,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
   //------------------------------------------------------------------------
   else if (Session.GPacket.Command == NET_CONFIRM_JOIN) {
     if ((*joinstate) != JOIN_CONFIRMED) {
-      strcpy(Session.GameName, Session.GPacket.Name);
+      port::SafeCopy(Session.GameName, Session.GPacket.Name);
       Session.House = Session.GPacket.PlayerInfo.House;
       Session.ColorIdx = Session.GPacket.PlayerInfo.Color;
 
@@ -3697,7 +3700,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
     if ((*joinstate) == JOIN_CONFIRMED) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
       Session.GPacket.Command = NET_SIGN_OFF;
-      strcpy(Session.GPacket.Name, my_name);
+      port::SafeCopy(Session.GPacket.Name, my_name);
 
       for (i = 1; i < Session.Players.Count(); i++) {
         Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
@@ -3791,17 +3794,16 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       play so ee can request this scenario from the host if we don't
       have it locally.
       ...............................................................*/
-      strcpy(Session.Options.ScenarioDescription,
-             Session.GPacket.ScenarioInfo.Scenario);
-      strcpy(Session.ScenarioFileName,
-             Session.GPacket.ScenarioInfo.ShortFileName);
+      port::SafeCopy(Session.Options.ScenarioDescription,
+                     Session.GPacket.ScenarioInfo.Scenario);
+      port::SafeCopy(Session.ScenarioFileName,
+                     Session.GPacket.ScenarioInfo.ShortFileName);
 #ifdef WOLAPI_INTEGRATION
-      strncpy(Session.ScenarioDigest,
-              (char *)Session.GPacket.ScenarioInfo.FileDigest,
-              sizeof(Session.GPacket.ScenarioInfo.FileDigest));
+      port::SafeCopy(Session.ScenarioDigest,
+                     (char *)Session.GPacket.ScenarioInfo.FileDigest);
 #else
-      strcpy(Session.ScenarioDigest,
-             (char *)Session.GPacket.ScenarioInfo.FileDigest);
+      port::SafeCopy(Session.ScenarioDigest,
+                     (char *)Session.GPacket.ScenarioInfo.FileDigest);
 #endif
       Session.ScenarioIsOfficial =
           Session.GPacket.ScenarioInfo.OfficialScenario;
@@ -3956,7 +3958,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
     else {
       for (i = 0; i < Session.Chat.Count(); i++) {
         if (Session.Chat[i]->Address == Session.GAddress) {
-          strcpy(Session.Chat[i]->Name, Session.GPacket.Name);
+          port::SafeCopy(Session.Chat[i]->Name, Session.GPacket.Name);
           Session.Chat[i]->Chat.LastTime = TickCount;
           Session.Chat[i]->Chat.LastChance = 0;
           Session.Chat[i]->Chat.Color = Session.GPacket.Chat.Color;
@@ -3970,7 +3972,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
     //.....................................................................
     if (!found) {
       who = new NodeNameType;
-      strcpy(who->Name, Session.GPacket.Name);
+      port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
       who->Chat.LastTime = TickCount;
       who->Chat.LastChance = 0;
@@ -3988,7 +3990,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
       Session.GPacket.Command = NET_CHAT_ANNOUNCE;
-      strcpy(Session.GPacket.Name, my_name);
+      port::SafeCopy(Session.GPacket.Name, my_name);
       Session.GPacket.Chat.ID = Session.UniqueID;
       Session.GPacket.Chat.Color = Session.ColorIdx;
 
@@ -4453,7 +4455,7 @@ static int Net_New_Dialog(void) {
                                 : &ColorRemaps[Session.ColorIdx]);
 
   who = new NodeNameType;
-  strcpy(who->Name, Session.Handle);
+  port::SafeCopy(who->Name, Session.Handle);
   who->Player.House = Session.House;
   who->Player.Color = Session.ColorIdx;
   Session.Players.Add(who);
@@ -4814,7 +4816,7 @@ static int Net_New_Dialog(void) {
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
-        strcpy(Session.GPacket.Name, Session.Handle);
+        port::SafeCopy(Session.GPacket.Name, Session.Handle);
 
         //...............................................................
         //	Broadcast my sign-off over my network
@@ -4894,13 +4896,13 @@ static int Net_New_Dialog(void) {
           //...............................................................
           memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
           Session.GPacket.Command = NET_MESSAGE;
-          strcpy(Session.GPacket.Name, Session.Handle);
+          port::SafeCopy(Session.GPacket.Name, Session.Handle);
           if (i == 3) {
-            strcpy(Session.GPacket.Message.Buf,
-                   Session.Messages.Get_Edit_Buf());
+            port::SafeCopy(Session.GPacket.Message.Buf,
+                           Session.Messages.Get_Edit_Buf());
           } else {
-            strcpy(Session.GPacket.Message.Buf,
-                   Session.Messages.Get_Overflow_Buf());
+            port::SafeCopy(Session.GPacket.Message.Buf,
+                           Session.Messages.Get_Overflow_Buf());
             Session.Messages.Clear_Overflow_Buf();
           }
           Session.GPacket.Message.Color = Session.ColorIdx;
@@ -4989,20 +4991,20 @@ static int Net_New_Dialog(void) {
         * scenario on his machine
         ** or request a download if it doesnt exist
         */
-        strcpy(Session.GPacket.ScenarioInfo.Scenario,
-               Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+        port::SafeCopy(
+            Session.GPacket.ScenarioInfo.Scenario,
+            Session.Scenarios[Session.Options.ScenarioIndex]->Description());
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
         Session.GPacket.ScenarioInfo.FileLength = file.Size();
 #ifdef WOLAPI_INTEGRATION
-        strcpy(
+        port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #else
-        strncpy(
+        port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename(),
-            sizeof(Session.GPacket.ScenarioInfo.ShortFileName));
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
         strncpy((char *)Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
@@ -5079,8 +5081,9 @@ static int Net_New_Dialog(void) {
     Session.NumPlayers = Session.Players.Count();
 
     Scen.Scenario = Session.Options.ScenarioIndex;
-    strcpy(Scen.ScenarioName,
-           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+    port::SafeCopy(
+        Scen.ScenarioName,
+        Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
     //.....................................................................
     //	Compute frame delay value for packet transmissions:
@@ -5435,7 +5438,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
       //	Add node to the Vector list
       //..................................................................
       who = new NodeNameType;
-      strcpy(who->Name, Session.GPacket.Name);
+      port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
       who->Player.House = Session.GPacket.PlayerInfo.House;
       Session.Players.Add(who);
@@ -5484,7 +5487,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
       Session.GPacket.Command = NET_CONFIRM_JOIN;
-      strcpy(Session.GPacket.Name, Session.Handle);
+      port::SafeCopy(Session.GPacket.Name, Session.Handle);
       Session.GPacket.PlayerInfo.House = who->Player.House;
       Session.GPacket.PlayerInfo.Color = who->Player.Color;
 
@@ -5589,7 +5592,7 @@ uint32_t Compute_Name_CRC(char *name) {
   uint32_t crc = 0L;
   int i;
 
-  strcpy(buf, name);
+  port::SafeCopy(buf, name);
   strupr(buf);
 
   for (i = 0; i < strlen(buf); i++) {
@@ -7726,7 +7729,7 @@ static int Net_Fake_New_Dialog(void) {
   }
 
   who = new NodeNameType;
-  strcpy(who->Name, Session.Handle);
+  port::SafeCopy(who->Name, Session.Handle);
   who->Player.House = Session.House;
   who->Player.Color = Session.ColorIdx;
   Session.Players.Add(who);
@@ -7803,7 +7806,7 @@ static int Net_Fake_New_Dialog(void) {
         memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
         Session.GPacket.Command = NET_SIGN_OFF;
-        strcpy(Session.GPacket.Name, Session.Handle);
+        port::SafeCopy(Session.GPacket.Name, Session.Handle);
 
         //...............................................................
         //	Broadcast my sign-off over my network
@@ -7914,8 +7917,9 @@ static int Net_Fake_New_Dialog(void) {
         * scenario on his machine
         ** or request a download if it doesnt exist
         */
-        strcpy(Session.GPacket.ScenarioInfo.Scenario,
-               Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+        port::SafeCopy(
+            Session.GPacket.ScenarioInfo.Scenario,
+            Session.Scenarios[Session.Options.ScenarioIndex]->Description());
         CCFileClass file(
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
@@ -7974,7 +7978,7 @@ static int Net_Fake_New_Dialog(void) {
             memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
             Session.GPacket.Command = NET_SIGN_OFF;
-            strcpy(Session.GPacket.Name, Session.Handle);
+            port::SafeCopy(Session.GPacket.Name, Session.Handle);
 
             //..................................................................
             // Don't send myself the message.
@@ -8012,14 +8016,13 @@ static int Net_Fake_New_Dialog(void) {
 
         Session.GPacket.ScenarioInfo.FileLength = file.Size();
 #ifdef WOLAPI_INTEGRATION
-        strcpy(
+        port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #else
-        strncpy(
+        port::SafeCopy(
             Session.GPacket.ScenarioInfo.ShortFileName,
-            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename(),
-            sizeof(Session.GPacket.ScenarioInfo.ShortFileName));
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
         strncpy((char *)Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
@@ -8085,8 +8088,9 @@ static int Net_Fake_New_Dialog(void) {
     Session.NumPlayers = Session.Players.Count();
 
     Scen.Scenario = Session.Options.ScenarioIndex;
-    strcpy(Scen.ScenarioName,
-           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+    port::SafeCopy(
+        Scen.ScenarioName,
+        Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
     //.....................................................................
     //	Compute frame delay value for packet transmissions:
@@ -8454,8 +8458,8 @@ static int Net_Fake_Join_Dialog(void) {
   //........................................................................
   // Name & Color
   //........................................................................
-  Session.ColorIdx = Session.PrefColor;  // init my preferred color
-  strcpy(namebuf, Session.Handle);       // set my name
+  Session.ColorIdx = Session.PrefColor;     // init my preferred color
+  port::SafeCopy(namebuf, Session.Handle);  // set my name
 
   //........................................................................
   // List boxes
@@ -8478,7 +8482,7 @@ static int Net_Fake_Join_Dialog(void) {
   // Add myself to the Chat vector
   //------------------------------------------------------------------------
   who = new NodeNameType;
-  strcpy(who->Name, namebuf);
+  port::SafeCopy(who->Name, namebuf);
   who->Chat.LastTime = 0;
   who->Chat.LastChance = 0;
   who->Chat.Color = Session.GPacket.Chat.Color;
@@ -8489,12 +8493,12 @@ static int Net_Fake_Join_Dialog(void) {
   // node for the gamelist, so Games[i] will always match gamelist[i]
   //------------------------------------------------------------------------
   who = new NodeNameType;
-  strcpy(who->Name, "");
+  port::SafeCopy(who->Name, "");
   who->Game.IsOpen = 0;
   who->Game.LastTime = 0;
   Session.Games.Add(who);
   item = new char[MPLAYER_NAME_MAX];
-  strcpy(item, Text_String(TXT_LOBBY));
+  port::SafeCopy(item, Text_String(TXT_LOBBY), MPLAYER_NAME_MAX);
   gamelist.Add_Item(item);
   gamelist.Set_Selected_Index(0);
   game_index = 0;
@@ -8631,7 +8635,7 @@ static int Net_Fake_Join_Dialog(void) {
         else {
           memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
           Session.GPacket.Command = NET_SIGN_OFF;
-          strcpy(Session.GPacket.Name, namebuf);
+          port::SafeCopy(Session.GPacket.Name, namebuf);
           for (i = 1; i < Session.Chat.Count(); i++) {
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
                                     1, &(Session.Chat[i]->Address));
@@ -8672,7 +8676,7 @@ static int Net_Fake_Join_Dialog(void) {
         if (joinstate == JOIN_NOTHING && gamelist.Count() > 1) {
           gamelist.Set_Selected_Index(1);  // lastclick_idx);
           game_index = 1;
-          strcpy(Session.Handle, namebuf);
+          port::SafeCopy(Session.Handle, namebuf);
           // Session.House = (HousesType)housebtn.Current_Index();
           join_index = gamelist.Current_Index();
           parms_received = 0;
@@ -8839,7 +8843,7 @@ static int Net_Fake_Join_Dialog(void) {
           while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0);
         }
 
-        strcpy(Scen.ScenarioName, Session.ScenarioFileName);
+        port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
 
         rc = 0;
         process = false;
@@ -8873,7 +8877,7 @@ static int Net_Fake_Join_Dialog(void) {
                                       : &ColorRemaps[Session.ColorIdx]);
 
         who = new NodeNameType;
-        strcpy(who->Name, namebuf);
+        port::SafeCopy(who->Name, namebuf);
         who->Player.House = Session.House;
         who->Player.Color = Session.ColorIdx;
         Session.Players.Add(who);
@@ -9007,7 +9011,7 @@ static int Net_Fake_Join_Dialog(void) {
       memset(&Session.GPacket, 0, sizeof(GlobalPacketType));
 
       Session.GPacket.Command = NET_SIGN_OFF;
-      strcpy(Session.GPacket.Name, namebuf);
+      port::SafeCopy(Session.GPacket.Name, namebuf);
 
       //..................................................................
       // Don't send myself the message.

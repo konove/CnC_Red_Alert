@@ -40,7 +40,7 @@
 #ifndef WARHEAD_H
 #define WARHEAD_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/ccini.h"
 #include "ra/defines.h"

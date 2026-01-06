@@ -42,6 +42,7 @@
 #include <cstring>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/dialog.h"
 #include "ra/keyframe.h"
 #include "sdllib/include/font.h"
@@ -92,7 +93,7 @@ DropListClass *DropListClass::Remove(void) {
 }
 
 int DropListClass::Add_Item(char const *text) {
-  strncpy(String, text, MaxLength);
+  port::SafeCopy(String, text, MaxLength);
   Flag_To_Redraw();
   return (List.Add_Item(text));
 }
@@ -104,7 +105,7 @@ int DropListClass::Current_Index(void) { return (List.Current_Index()); }
 void DropListClass::Set_Selected_Index(int index) {
   if ((unsigned)index < List.Count()) {
     List.Set_Selected_Index(index);
-    strcpy(String, List.Get_Item(Current_Index()));
+    port::SafeCopy(String, List.Get_Item(Current_Index()), MaxLength);
   } else {
     String[0] = '\0';
   }
@@ -126,7 +127,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType &key,
   }
 
   if (&whom == &List) {
-    strncpy(String, List.Current_Item(), MaxLength);
+    port::SafeCopy(String, List.Current_Item(), MaxLength);
     Flag_To_Redraw();
     key = (KeyNumType)(ID | KN_BUTTON);
   }

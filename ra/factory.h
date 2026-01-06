@@ -40,7 +40,7 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "ra/defines.h"
 #include "ra/object.h"

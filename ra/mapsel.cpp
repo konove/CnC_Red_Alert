@@ -39,10 +39,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -137,7 +138,7 @@ char const *Map_Selection(void) {
   static char scenarioname[_MAX_FNAME + _MAX_EXT];
 
   if (AntsEnabled) {
-    strcpy(scenarioname, Scen.ScenarioName);
+    port::SafeCopy(scenarioname, Scen.ScenarioName);
     char buf[10];
     sprintf(buf, "%02d", Scen.Scenario + 1);
     memcpy(&scenarioname[3], buf, 2);
@@ -335,9 +336,9 @@ char const *Map_Selection(void) {
   if (Scen.ScenarioName[2] == 'A') {
     int antnum = Scen.Scenario++;
     if (antnum > 4) antnum = 1;
-    strcpy(scenarioname, antmission[antnum]);
+    port::SafeCopy(scenarioname, antmission[antnum]);
   } else {
-    strcpy(scenarioname, Scen.ScenarioName);
+    port::SafeCopy(scenarioname, Scen.ScenarioName);
     char buf[10];
     sprintf(buf, "%02d", Scen.Scenario + 1);
     memcpy(&scenarioname[3], buf, 2);

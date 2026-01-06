@@ -50,6 +50,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -702,88 +703,40 @@ unsigned long VersionClass::Max_Version(void) {
 }
 
 char const* Version_Name(void) {
-#ifdef NEVER
-  static char buffer[32];
+  static std::string version;
 
-  /*
-  **	Fetch the day and month components from the current
-  **	build date.
-  */
-  static char* date = __DATE__;  // format: Mmm dd yyyy
-  strupr(date);
-  char const* tok = strtok(date, " ");
-  static char const* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
-  char const* ptr = strstr(months, tok);
-  int monthnum = 0;
-  if (ptr != NULL) {
-    monthnum = (((ptr - months) / 3) + 1);
-  }
-
-  tok = strtok(NULL, " ");
-  int daynum = 0;
-  if (tok != NULL) {
-    daynum = atoi(tok);
-  }
-
-  /*
-  **	Fetch the time components from the current build time.
-  */
-  static char* time = __TIME__;  // format: hh:mm:ss
-  tok = strtok(time, ": ");
-  int hournum = 0;
-  if (tok != NULL) {
-    hournum = atoi(tok);
-  }
-
-  tok = strtok(NULL, ": ");
-  int minnum = 0;
-  if (tok != NULL) {
-    minnum = atoi(tok);
-  }
-
-  sprintf(buffer, "%02d%02d%02d", monthnum, daynum,
-          (hournum * 4) + (minnum / 15));
-  return (buffer);
-#else
-
-  static char buffer[128];
-
-  memset(buffer, '\0', sizeof(buffer));
-
-  strcpy(buffer, "3.03");
+  version = "3.03";
 
 #ifdef ENGLISH
-  strcat(buffer, "E");
-#else
-#ifdef GERMAN
-  strcat(buffer, "G");
-#else
-#ifdef FRENCH
-  strcat(buffer, "F");
-#endif
-#endif
+  version += "E";
+#elifdef GERMAN
+  version += "G";
+#elifdef FRENCH
+  version += "F";
 #endif
 
   if (Is_Counterstrike_Installed()) {
-    strcat(buffer, "CS");
+    version += "CS";
   }
   if (Is_Aftermath_Installed()) {
-    strcat(buffer, "AM");
+    version += "AM";
   }
 
 #if (TEN)
-  strcat(buffer, "Ten");  // Ten version
+  version += "Ten";  // Ten version
 #endif
 
 #if (MPATH)
-  strcat(buffer, "MPath");  // MPath version
+  version += "MPath";  // MPath version
 #endif
 
   RawFileClass file("VERSION.TXT");
   if (file.Is_Available()) {
-    strcat(buffer, "\r");
-    file.Read(&buffer[strlen(buffer)], 25);
+    char file_content[26] = {};
+    version += "\r";
+    file.Read(file_content, 25);
+    file_content[25] = '\0';  // Ensure null termination
+    version += file_content;
   }
-  return (buffer);
-#endif
+  return version.c_str();
 }

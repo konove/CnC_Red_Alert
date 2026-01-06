@@ -51,16 +51,16 @@
 
 #include "ra/help.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
 
 #include "ra/conquer.h"
+#include "ra/coord.h"
 #include "ra/dialog.h"
 #include "ra/inline.h"
-#include "sdllib/include/font.h"
-#include "ra/coord.h"
 #include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
 

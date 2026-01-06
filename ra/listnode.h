@@ -42,8 +42,6 @@
 
 #include <cassert>
 
-#pragma warn - inl
-
 /*
 **	This is a doubly linked list node. Typical use of this node is to derive
 **	objects from this node. The interface class for this node can be used

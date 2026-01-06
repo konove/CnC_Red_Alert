@@ -84,8 +84,8 @@
 
 #include "ra/team.h"
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 
 #include "ra/aircraft.h"
 #include "ra/building.h"

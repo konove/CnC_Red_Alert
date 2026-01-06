@@ -53,13 +53,15 @@
 
 #include "ra/nullmgr.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <sstream>
+#include <string>
 
+#include "port/safe_string.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
@@ -1436,7 +1438,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   Determine the dimensions of the text to be used for the dialog box.
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
-  strcpy(buffer, Text_String(TXT_INITIALIZING_MODEM));
+  port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
   int lines =
@@ -1525,132 +1527,78 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   if (settings->InitStringIndex == -1) {
     status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
   } else {
-    /*
-    ** Split up the init string into seperate strings if it contains one or more
-    *'|' characters.
-    ** This character acts as a carriage return/pause.
-    */
-    char *istr =
-        new char[2 + strlen(Session.InitStrings[settings->InitStringIndex])];
-    char *tokenptr;
-    strcpy(istr, Session.InitStrings[settings->InitStringIndex]);
+    std::string initStr = Session.InitStrings[settings->InitStringIndex];
 
-    /*
-    ** Tokenise the string and send it in chunks
-    */
-    tokenptr = strtok(istr, "|");
-    while (tokenptr) {
-      status = Send_Modem_Command(tokenptr, '\r', buffer, 81, 3000, 1);
-      /*
-      ** Handle error case.
-      */
+    std::istringstream tokenStream(initStr);
+    std::string token;
+
+    while (std::getline(tokenStream, token, '|')) {
+      // Handle consecutive delimiters
+      if (token.empty()) continue;
+
+      status = Send_Modem_Command(token.c_str(), '\r', buffer, 81, 3000, 1);
+
       if (status < ASSUCCESS) {
         if (WWMessageBox().Process(TXT_ERROR_NO_INIT, TXT_IGNORE, TXT_CANCEL)) {
-          delete istr;
-          return (false);
+          return false;
         }
-#ifdef WIN32
         error_count++;
-#endif  // WIN32
         break;
       }
-
-      tokenptr = strtok(nullptr, "|");
     }
   }
-
-#ifdef WIN32
 
   if (settings->Port == 1 && ModemRegistry) {
-    /*
-    ** Send the init strings from the registry if available
-    */
-    char send_string[256] = {"AT"};
+    // Helper lambda to handle the "Append AT -> Send -> Check Error" pattern.
+    // Captures context to access 'buffer' and other necessary variables.
+    auto sendInitCommand = [&](const char *cmdSuffix, int errorMsgId,
+                               int timeout = DEFAULT_TIMEOUT) -> bool {
+      if (!cmdSuffix) return true;  // Nothing to send, proceed.
 
-    /*
-    ** Send the init string for hardware flow control
-    */
-    if (settings->HardwareFlowControl) {
-      if (ModemRegistry->Get_Modem_Hardware_Flow_Control()) {
-        strcpy(&send_string[2],
-               ModemRegistry->Get_Modem_Hardware_Flow_Control());
-        status = Send_Modem_Command(send_string, '\r', buffer, 81, 300, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (WWMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
-            return (false);
+      std::string fullCommand = "AT";
+      fullCommand += cmdSuffix;
+
+      int result =
+          Send_Modem_Command(fullCommand.c_str(), '\r', buffer, 81, timeout, 1);
+
+      if (result != MODEM_CMD_OK && result != MODEM_CMD_0) {
+        // Process returns true if the user clicked "Cancel"
+        if (WWMessageBox().Process(errorMsgId, TXT_IGNORE, TXT_CANCEL)) {
+          return false;  // Stop initialization
         }
       }
-    } else {
-      /*
-      ** Send the init string for no flow control
-      */
-      if (ModemRegistry->Get_Modem_No_Flow_Control()) {
-        strcpy(&send_string[2], ModemRegistry->Get_Modem_No_Flow_Control());
-        status = Send_Modem_Command(send_string, '\r', buffer, 81,
-                                    DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (WWMessageBox().Process(TXT_NO_FLOW_CONTROL_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
-            return (false);
-        }
-      }
+      return true;  // Success or User clicked "Ignore"
+    };
+
+    // 1. Flow Control
+    const char *flowCmd = settings->HardwareFlowControl
+                              ? ModemRegistry->Get_Modem_Hardware_Flow_Control()
+                              : ModemRegistry->Get_Modem_No_Flow_Control();
+    int flowTimeout = settings->HardwareFlowControl ? 300 : DEFAULT_TIMEOUT;
+
+    if (!sendInitCommand(flowCmd, TXT_NO_FLOW_CONTROL_RESPONSE, flowTimeout)) {
+      return false;
     }
 
-    /*
-    ** Send the string for data compresseion
-    */
-    if (settings->Compression) {
-      if (ModemRegistry->Get_Modem_Compression_Enable()) {
-        strcpy(&send_string[2], ModemRegistry->Get_Modem_Compression_Enable());
-        Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (WWMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
-            return (false);
-        }
-      }
-    } else {
-      if (ModemRegistry->Get_Modem_Compression_Disable()) {
-        strcpy(&send_string[2], ModemRegistry->Get_Modem_Compression_Disable());
-        Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (WWMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
-                                     TXT_CANCEL))
-            return (false);
-        }
-      }
+    // 2. Compression
+    const char *compCmd = settings->Compression
+                              ? ModemRegistry->Get_Modem_Compression_Enable()
+                              : ModemRegistry->Get_Modem_Compression_Disable();
+
+    if (!sendInitCommand(compCmd, TXT_NO_COMPRESSION_RESPONSE)) {
+      return false;
     }
 
-    /*
-    ** Send the string for error correction
-    */
-    if (settings->ErrorCorrection) {
-      if (ModemRegistry->Get_Modem_Error_Correction_Enable()) {
-        strcpy(&send_string[2],
-               ModemRegistry->Get_Modem_Error_Correction_Enable());
-        Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (WWMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
-                                     TXT_IGNORE, TXT_CANCEL))
-            return (false);
-        }
-      }
-    } else {
-      if (ModemRegistry->Get_Modem_Error_Correction_Disable()) {
-        strcpy(&send_string[2],
-               ModemRegistry->Get_Modem_Error_Correction_Disable());
-        Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
-        if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
-          if (WWMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
-                                     TXT_IGNORE, TXT_CANCEL))
-            return (false);
-        }
-      }
+    // 3. Error Correction
+    const char *errCmd =
+        settings->ErrorCorrection
+            ? ModemRegistry->Get_Modem_Error_Correction_Enable()
+            : ModemRegistry->Get_Modem_Error_Correction_Disable();
+
+    if (!sendInitCommand(errCmd, TXT_NO_ERROR_CORRECTION_RESPONSE)) {
+      return false;
     }
   }
-
-#endif  // WIN32
 
   /*
   ** We require that auto-answer be disabled so turn it off now.
@@ -1693,7 +1641,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
  *   06/02/1995 DRD : Created.                                             *
  *   8/2/96      ST : Win32 support                                        *
  *=========================================================================*/
-DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
+DialStatusType NullModemClass::Dial_Modem(const char *string,
+                                          DialMethodType method,
                                           bool reconnect) {
   /*
   ** Get the resolution factor
@@ -1711,27 +1660,21 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   Dialog variables
   ------------------------------------------------------------------------*/
   bool process = true;  // process while true
-#ifndef WIN32
-  int status;
-#endif  // WIN32
   int delay;
   DialStatusType dialstatus;
 
   int x, y, width, height;  // dialog dimensions
-  char buffer[80 * 3];
-
   /*------------------------------------------------------------------------
   Determine the dimensions of the text to be used for the dialog box.
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
-  if (reconnect) {
-    strcpy(buffer, Text_String(TXT_MODEM_CONNERR_REDIALING));
-  } else {
-    strcpy(buffer, Text_String(TXT_DIALING));
-  }
+  const char *buffer_const =
+      Text_String(reconnect ? TXT_MODEM_CONNERR_REDIALING : TXT_DIALING);
+
+  std::string buffer(buffer_const);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
-  Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
+  Format_Window_String(buffer.data(), SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
   width = std::max(width, 90 * RESFACTOR);
@@ -1772,7 +1715,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, SeenBuff.Get_Width() / 2 - text_width / 2,
+  Fancy_Text_Print(buffer.c_str(), SeenBuff.Get_Width() / 2 - text_width / 2,
                    y + 25 * RESFACTOR, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_TEXT);
 
@@ -1782,22 +1725,15 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   /*
   ** Start waiting for connection response
   */
-#ifdef WIN32
   SerialPort->Set_Modem_Dial_Type((WinCommDialMethodType)method);
   /*
   ** Clear out any old modem results that might be hanging around
   */
-  SerialPort->Get_Modem_Result(60, buffer, 81);
+  SerialPort->Get_Modem_Result(60, buffer.c_str(), 81);
   /*
   ** Dial that sucker
   */
   SerialPort->Dial_Modem(string);
-
-#else  // WIN32
-  HMSetDialingMethod(Port, (int)method);
-  status = HMDial(Port, string);
-
-#endif  // WIN32
 
   /*
   ** Sets up the ability to abort modem commands when any input is in the
@@ -1822,7 +1758,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
       Commands->Draw_All();
     }
 
-    delay = SerialPort->Get_Modem_Result(delay, buffer, 81);
+    delay = SerialPort->Get_Modem_Result(delay, buffer.c_str(), 81);
 #else   // WIN32
     delay = HMInputLine(Port, delay, buffer, 81);
 #endif  // WIN32
@@ -1842,21 +1778,20 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
     }
 
     if (process) {
-      if (strncmp(buffer, "CON", 3) == 0) {
-        memset(ModemRXString, 0, 80);
-        strncpy(ModemRXString, buffer, 79);
+      if (buffer.starts_with("CON")) {
+        port::SafeCopy(ModemRXString, buffer.c_str());
         dialstatus = DIAL_CONNECTED;
         process = false;
-      } else if (strncmp(buffer, "BUSY", 4) == 0) {
+      } else if (buffer.starts_with("BUSY")) {
         dialstatus = DIAL_BUSY;
         process = false;
-      } else if (strncmp(buffer, "NO C", 4) == 0) {
+      } else if (buffer.starts_with("NO C")) {
         dialstatus = DIAL_NO_CARRIER;
         process = false;
-      } else if (strncmp(buffer, "NO D", 4) == 0) {
+      } else if (buffer.starts_with("NO D")) {
         dialstatus = DIAL_NO_DIAL_TONE;
         process = false;
-      } else if (strncmp(buffer, "ERRO", 4) == 0) {
+      } else if (buffer.starts_with("ERRO")) {
         dialstatus = DIAL_ERROR;
         process = false;
       }
@@ -1937,9 +1872,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
   if (reconnect) {
-    strcpy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
+    port::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
   } else {
-    strcpy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
+    port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
@@ -2056,7 +1991,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
     if (process) {
       if (strncmp(comm_buffer, "RING", 4) == 0) {
-        strcpy(text_buffer, Text_String(TXT_ANSWERING));
+        port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, TPF_TEXT);
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
@@ -2533,7 +2468,7 @@ int NullModemClass::Get_Modem_Status(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:09PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Send_Modem_Command(char *command, char terminator,
+int NullModemClass::Send_Modem_Command(const char *command, char terminator,
                                        char *buffer, int buflen, int delay,
                                        int retries) {
 #ifdef WIN32

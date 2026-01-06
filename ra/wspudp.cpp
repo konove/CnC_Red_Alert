@@ -49,10 +49,11 @@
 
 #include "ra/wspudp.h"
 
-#include <stdint.h>
 #include <sys/socket.h>
+
 #include <cassert>
 #include <cerrno>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
@@ -60,15 +61,15 @@
 #include "ra/jshell.h"
 
 #ifdef _WIN32
-#include <svcguid.h>
 #include <nspapi.h>
+#include <svcguid.h>
 
 typedef int socklen_t;
 #else
-#include <netdb.h>
-#include <unistd.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <unistd.h>
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1

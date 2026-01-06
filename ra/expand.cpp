@@ -42,6 +42,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/ccfile.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -376,16 +377,16 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   char* sbuffer = (char*)_ShapeBuffer;
   for (int index = 20; index < (36 + 18); index++) {
 #ifndef CS_DEBUG
-    strcpy(buffer, ExpandNames[index - 20]);
-    strcpy(buffer2, ExpandNames[index - 20]);
+    port::SafeCopy(buffer, ExpandNames[index - 20]);
+    port::SafeCopy(buffer2, ExpandNames[index - 20]);
 #else
-    strcpy(buffer, TestNames2[index]);
-    strcpy(buffer2, TestNames2[index]);
+    port::SafeCopy(buffer, TestNames2[index]);
+    port::SafeCopy(buffer2, TestNames2[index]);
 #endif
     if (buffer[0] == 0) break;
 
-    strcat(buffer, ".INI");
-    strcat(buffer2, ".INI");
+    port::SafeAppend(buffer, ".INI");
+    port::SafeAppend(buffer2, ".INI");
     Scen.Set_Scenario_Name(buffer);
     Scen.Scenario = index;
     file.Set_Name(buffer);
@@ -407,12 +408,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sizeof(buffer), sbuffer);
 #if defined(GERMAN) || defined(FRENCH)
-          strcpy(obj->Name, XlatNames[index - ARRAYOFFSET]);
+          port::SafeCopy(obj->Name, XlatNames[index - ARRAYOFFSET]);
 #else
-          strcpy(obj->Name, buffer);
+          port::SafeCopy(obj->Name, buffer);
 #endif
-          //			strcpy(obj->Name, buffer);
-          strcpy(obj->FullName, buffer2);
+          port::SafeCopy(obj->FullName, buffer2);
           obj->House = HOUSE_GOOD;
           obj->Scenario = index;
           list.Add_Object(obj);
@@ -427,12 +427,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sizeof(buffer), sbuffer);
 #if defined(GERMAN) || defined(FRENCH)
-          strcpy(obj->Name, XlatNames[index - ARRAYOFFSET]);
+          port::SafeCopy(obj->Name, XlatNames[index - ARRAYOFFSET]);
 #else
-          strcpy(obj->Name, buffer);
+          port::SafeCopy(obj->Name, buffer);
 #endif
-          //		     	strcpy(obj->Name, buffer);
-          strcpy(obj->FullName, buffer2);
+          port::SafeCopy(obj->FullName, buffer2);
           obj->House = HOUSE_BAD;
           obj->Scenario = index;
           list.Add_Object(obj);
@@ -490,7 +489,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       case 200 | KN_BUTTON:
         Whom = list.Current_Object()->House;
         Scen.Scenario = list.Current_Object()->Scenario;
-        strcpy(Scen.ScenarioName, list.Current_Object()->FullName);
+        port::SafeCopy(Scen.ScenarioName, list.Current_Object()->FullName);
         process = false;
         okval = true;
         break;
@@ -504,7 +503,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       case (KN_RETURN):
         Whom = list.Current_Object()->House;
         Scen.Scenario = list.Current_Object()->Scenario;
-        strcpy(Scen.ScenarioName, list.Current_Object()->FullName);
+        port::SafeCopy(Scen.ScenarioName, list.Current_Object()->FullName);
         process = false;
         okval = true;
         break;

@@ -64,10 +64,9 @@
 
 #include "ra/drive.h"
 
-#include <assert.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstring>
 
 #include "ra/building.h"
 #include "ra/ccptr.h"

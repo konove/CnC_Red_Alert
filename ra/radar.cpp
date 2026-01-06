@@ -77,12 +77,12 @@
 
 #include "ra/radar.h"
 
-#include <stdio.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/compat.h"
@@ -428,9 +428,9 @@ void RadarClass::Draw_It(bool forced) {
   if (PlayerPtr->ActLike != _house) {
     char name[_MAX_FNAME + _MAX_EXT];
 
-    //		strcpy(name, "NATORADR.SHP" );
+    //		port::SafeCopy(name, "NATORADR.SHP" );
     //		if (Session.Type == GAME_NORMAL) {
-    strcpy(name, _hiresradarnames[PlayerPtr->ActLike]);
+    port::SafeCopy(name, _hiresradarnames[PlayerPtr->ActLike]);
     //		}
 #ifndef NDEBUG
     RawFileClass file(name);
@@ -439,14 +439,14 @@ void RadarClass::Draw_It(bool forced) {
     } else {
       RadarAnim = MFCD::Retrieve(name);
     }
-    strcpy(name, "PULSE.SHP");
+    port::SafeCopy(name, "PULSE.SHP");
     RawFileClass file2(name);
     if (file2.Is_Available()) {
       RadarPulse = Load_Alloc_Data(file2);
     } else {
       RadarPulse = MFCD::Retrieve(name);
     }
-    strcpy(name, _frames[PlayerPtr->ActLike]);
+    port::SafeCopy(name, _frames[PlayerPtr->ActLike]);
     RawFileClass file3(name);
     if (file3.Is_Available()) {
       RadarFrame = Load_Alloc_Data(file3);
@@ -455,7 +455,7 @@ void RadarClass::Draw_It(bool forced) {
     }
 #else
     RadarAnim = MFCD::Retrieve(name);
-    strcpy(name, "PULSE.SHP");
+    port::SafeCopy(name, "PULSE.SHP");
     RawFileClass file3(name);
     if (file3.Is_Available()) {
       RadarPulse = Load_Alloc_Data(file3);
@@ -2349,7 +2349,7 @@ bool RadarClass::Draw_House_Info(void) {
       Fancy_Text_Print(txt, RadX + RadOffX + (6 * RESFACTOR), y, color, BLACK,
                        style);
     } else {
-      strcpy(txt, "________");
+      port::SafeCopy(txt, "________");
     }
     y += (6 * RESFACTOR) + 1;
 
@@ -2476,7 +2476,7 @@ void RadarClass::Draw_Names(void) {
     sprintf(txt, "%s", ptr->IsHuman ? ptr->IniName : Text_String(TXT_COMPUTER));
 
     if (strlen(txt) == 0) {
-      strcpy(txt, "________");
+      port::SafeCopy(txt, "________");
     }
 
     /*

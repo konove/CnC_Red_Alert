@@ -140,7 +140,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMInputLine
   */
-  virtual int Get_Modem_Result(int delay, char *buffer, int buffer_len);
+  virtual int Get_Modem_Result(int delay, const char *buffer, int buffer_len);
 
   /*
   ** Issue a dial command to the modem.
@@ -148,13 +148,13 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMDial
   */
-  virtual void Dial_Modem(char *dial_number);
+  virtual void Dial_Modem(const char *dial_number);
 
   /*
   ** Send a command to the modem. This is usually an 'AT' command.
   ** Function will optionally retry until 'OK' is received.
   */
-  virtual int Send_Command_To_Modem(char *command, char terminator,
+  virtual int Send_Command_To_Modem(const char *command, char terminator,
                                     char *buffer, int buflen, int delay,
                                     int retries);
 

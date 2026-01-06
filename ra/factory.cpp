@@ -58,9 +58,8 @@
 
 #include "ra/factory.h"
 
-#include <assert.h>
-
 #include <algorithm>
+#include <cassert>
 
 #include "ra/building.h"
 #include "ra/ccptr.h"

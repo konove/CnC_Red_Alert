@@ -157,10 +157,9 @@
 
 #include "ra/techno.h"
 
-#include <assert.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstring>
 
 #include "ra/abstract.h"
 #include "ra/aircraft.h"

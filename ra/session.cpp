@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -217,7 +218,7 @@ SessionClass::SessionClass(void) {
   SerialDefaults.DialMethod = DIAL_TOUCH_TONE;  // set from INI file
   SerialDefaults.InitStringIndex = 0;           // set from INI file
   SerialDefaults.CallWaitStringIndex = 0;       // set from INI file
-  strcpy(SerialDefaults.CallWaitString, "");
+  port::SafeCopy(SerialDefaults.CallWaitString, "");
   ModemType = MODEM_NULL_HOST;  // set from INI file
 
   TrapFrame = 0x7fffffff;        // frame to start trapping object values at
@@ -840,7 +841,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
     //	if no entries then have at least one
     if (initcount == 0) {
       entry = new char[INITSTRBUF_MAX];
-      strcpy(entry, "ATZ");
+      port::SafeCopy(entry, "ATZ", INITSTRBUF_MAX);
       InitStrings.Add(entry);
       SerialDefaults.InitStringIndex = 0;
     }
@@ -858,7 +859,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       //	Extract name, phone # & serial port settings
       tokenptr = strtok(buf, "|");
       if (tokenptr) {
-        strcpy(phone->Name, tokenptr);
+        port::SafeCopy(phone->Name, tokenptr);
         strupr(phone->Name);
       } else {
         phone->Name[0] = 0;
@@ -866,7 +867,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        strcpy(phone->Number, tokenptr);
+        port::SafeCopy(phone->Number, tokenptr);
         strupr(phone->Number);
       } else {
         phone->Number[0] = 0;
@@ -903,7 +904,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       */
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        strcpy(buf, tokenptr);
+        port::SafeCopy(buf, tokenptr);
 
         // find dial method
 
@@ -940,7 +941,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       }
 
       if (tokenptr) {
-        strcpy(buf, tokenptr);
+        port::SafeCopy(buf, tokenptr);
 
         //	find dial method
         for (i = 0; i < DIAL_METHODS; i++) {
@@ -974,7 +975,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
 
       tokenptr = strtok(nullptr, "|");
       if (tokenptr) {
-        strcpy(phone->Settings.CallWaitString, tokenptr);
+        port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
       } else {
         phone->Settings.CallWaitString[0] = 0;
       }
@@ -1230,7 +1231,7 @@ bool Is_Mission_Aftermath(char *file_name) {
   //	ajw added
   //	Must start with "scm".
   char szCopy[_MAX_PATH + 1];
-  strcpy(szCopy, file_name);
+  port::SafeCopy(szCopy, file_name);
   strlwr(szCopy);
   if (strstr(szCopy, "scm") != szCopy) return false;
 
@@ -1781,24 +1782,21 @@ void MultiMission::Draw_It(int, int x, int y, int width, int height,
 
 void MultiMission::Set_Description(char const *description) {
   if (description != nullptr) {
-    strncpy(ScenarioDescription, description, ARRAY_SIZE(ScenarioDescription));
-    ScenarioDescription[ARRAY_SIZE(ScenarioDescription) - 1] = '\0';
+    port::SafeCopy(ScenarioDescription, description);
   }
 }
 
 void MultiMission::Set_Filename(char const *filename) {
   if (filename != nullptr) {
-    strncpy(Filename, filename, ARRAY_SIZE(Filename));
-    Filename[ARRAY_SIZE(Filename) - 1] = '\0';
+    port::SafeCopy(Filename, filename);
   }
 }
 
 void MultiMission::Set_Digest(char const *digest) {
   if (digest != nullptr) {
-    strncpy(Digest, digest, ARRAY_SIZE(Digest));
-    Digest[ARRAY_SIZE(Digest) - 1] = '\0';
+    port::SafeCopy(Digest, digest);
   } else {
-    strcpy(Digest, "NODIGEST");
+    port::SafeCopy(Digest, "NODIGEST");
   }
 }
 

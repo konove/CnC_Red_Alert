@@ -42,9 +42,9 @@
 #ifndef __PACKET_H
 #define __PACKET_H
 
-#include "ra/field.h"
-
 #include <cstdint>
+
+#include "ra/field.h"
 
 class PacketClass {
  public:
@@ -99,7 +99,7 @@ class PacketClass {
   bool Get_Field(char const *id, unsigned short &data);
   bool Get_Field(char const *id, long &data);
   bool Get_Field(char const *id, unsigned long &data);
-  bool Get_Field(char const *id, char *data);
+  bool Get_Field(char const *id, char *data, std::size_t data_size);
   bool Get_Field(char const *id, void *data, int &length);
 
   char *Create_Comms_Packet(int &size);

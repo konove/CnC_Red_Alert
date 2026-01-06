@@ -46,10 +46,9 @@
 
 #include "ra/jshell.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "ra/ccfile.h"

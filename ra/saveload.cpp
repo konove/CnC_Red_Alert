@@ -59,6 +59,7 @@
 #include <new>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"
@@ -363,7 +364,7 @@ bool Save_Game(int id, char const *descr, bool) {
   ** network/modem game; otherwise, use 'id' as the file extension.
   */
   if (id == -1) {
-    strcpy(name, NET_SAVE_FILE_NAME);
+    port::SafeCopy(name, NET_SAVE_FILE_NAME);
     save_net = 1;
   } else {
     sprintf(name, "SAVEGAME.%03d", id);
@@ -501,7 +502,7 @@ bool Load_Game(int id) {
   ** network/modem game; otherwise, use 'id' as the file extension.
   */
   if (id == -1) {
-    strcpy(name, NET_SAVE_FILE_NAME);
+    port::SafeCopy(name, NET_SAVE_FILE_NAME);
     load_net = 1;
   } else {
     sprintf(name, "SAVEGAME.%03d", id);
@@ -1340,7 +1341,8 @@ void Decode_All_Pointers(void) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep) {
+bool Get_Savefile_Info(int id, char *buf, size_t buf_size, unsigned *scenp,
+                       HousesType *housep) {
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned long version;
   char descr_buf[DESCRIP_MAX];
@@ -1361,7 +1363,7 @@ bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep) {
   }
 
   descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
-  strcpy(buf, descr_buf);
+  port::SafeCopy(buf, descr_buf, buf_size);
 
   if (straw.Get(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
     return (false);
@@ -1498,7 +1500,7 @@ static int Reconcile_Players(void) {
       housep->IsStarted = true;
       //			housep->Smartness = IQ_MENSA;
       housep->IQ = Rule.MaxIQ;
-      strcpy(housep->IniName, Text_String(TXT_COMPUTER));
+      port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
       Session.NumPlayers--;
     }

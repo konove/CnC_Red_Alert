@@ -51,7 +51,7 @@
 
 #include "ra/event.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "ra/anim.h"
 #include "ra/building.h"

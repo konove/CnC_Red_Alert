@@ -141,16 +141,17 @@ void WinModemClass::Set_Serial_DTR(bool state) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-int WinModemClass::Get_Modem_Result(int delay, char *buffer, int buffer_len) {
+int WinModemClass::Get_Modem_Result(int delay, const char *buffer,
+                                    int buffer_len) {
   printf("WinModemClass::%s\n", __func__);
   return 0;
 }
 
-void WinModemClass::Dial_Modem(char *dial_number) {
+void WinModemClass::Dial_Modem(const char *dial_number) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-int WinModemClass::Send_Command_To_Modem(char *command, char terminator,
+int WinModemClass::Send_Command_To_Modem(const char *command, char terminator,
                                          char *buffer, int buflen, int delay,
                                          int retries) {
   printf("WinModemClass::%s\n", __func__);

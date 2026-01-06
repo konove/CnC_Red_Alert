@@ -45,18 +45,19 @@
 
 #include "ra/statbtn.h"
 
-#include <string.h>
+#include <cstring>
 #include <new>
 
+#include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/jshell.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
-#include "sdllib/include/wwstd.h"
-#include "ra/jshell.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.
@@ -188,12 +189,7 @@ void StaticButtonClass::Set_Text(char const* text, bool resize) {
     String = nullptr;
   }
 
-  if (text != nullptr) {
-    String = new char[strlen(text) + 1];
-    if (String != nullptr) {
-      strcpy(String, text);
-    }
-  }
+  String = port::CloneString(text);
 
   Flag_To_Redraw();
   if (resize && String != nullptr) {

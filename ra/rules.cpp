@@ -55,10 +55,9 @@
 
 #include "ra/rules.h"
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 
 #include "ra/anim.h"
 #include "ra/conquer.h"

@@ -102,12 +102,11 @@
 
 #include "ra/display.h"
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "ra/abstract.h"
 #include "ra/aircraft.h"

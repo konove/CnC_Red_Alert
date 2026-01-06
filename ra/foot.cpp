@@ -92,10 +92,9 @@
 
 #include "ra/foot.h"
 
-#include <assert.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstring>
 
 #include "ra/abstract.h"
 #include "ra/building.h"

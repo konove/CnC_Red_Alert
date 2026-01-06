@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdio.h"
+#include <cstdio>
 
 extern "C" {
 void func_1(void);
@@ -24,7 +24,7 @@ void func_1(void);
 
 void func_2(void) { printf("There\r"); }
 
-void main(void) {
+int main(void) {
   func_1();
   func_2();
 }

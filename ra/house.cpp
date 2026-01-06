@@ -150,14 +150,14 @@
 
 #include "ra/house.h"
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstdio>
+#include <cstring>
 #include <new>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/base.h"
@@ -809,7 +809,7 @@ HouseClass::HouseClass(HousesType house)
   memset(IQuantity, '\0', sizeof(IQuantity));
   memset(AQuantity, '\0', sizeof(AQuantity));
   memset(VQuantity, '\0', sizeof(VQuantity));
-  strcpy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
+  port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
   HouseTriggers[house].Clear();
   memset((void *)&Regions[0], 0x00, sizeof(Regions));
   Make_Ally(house);
@@ -3911,7 +3911,7 @@ void HouseClass::Tally_Score(void) {
       **	Initialize this new score entry
       */
       Session.Score[score_index].Wins = 0;
-      strcpy(Session.Score[score_index].Name, hptr->IniName);
+      port::SafeCopy(Session.Score[score_index].Name, hptr->IniName);
       for (j = 0; j < MAX_MULTI_GAMES; j++)
         Session.Score[score_index].Kills[j] = -1;
     }

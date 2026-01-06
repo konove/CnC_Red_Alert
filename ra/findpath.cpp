@@ -54,23 +54,23 @@
 
 #include "ra/findpath.h"
 
-#include <string.h>
 #include <algorithm>
+#include <cstring>
 
-#include "ra/foot.h"
-#include "ra/inline.h"
-#include "ra/team.h"
-#include "sdllib/include/memflag.h"
-#include "session.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
 #include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/foot.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
+#include "ra/team.h"
 #include "ra/teamtype.h"
+#include "sdllib/include/memflag.h"
 #include "sdllib/include/wwstd.h"
+#include "session.h"
 
 /*
 **	When an edge search is started, it can be performed CLOCKwise or
