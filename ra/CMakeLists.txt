@@ -54,6 +54,7 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/dibapi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/dibutil.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/key.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/keyframe.h"
@@ -76,8 +77,6 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/wolapi/wolapi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wspipx.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wspudp.h"
-
-        "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
 )
 
 target_sources(rasdl PRIVATE
