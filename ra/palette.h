@@ -5,7 +5,7 @@
 
 class PaletteClass {
  public:
-  PaletteClass();
+  PaletteClass() = default;
   PaletteClass(const RGBClass &);
 
   void Set(int fade = 0, void (*callback)() = nullptr);

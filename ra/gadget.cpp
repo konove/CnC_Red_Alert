@@ -128,31 +128,6 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky)
 }
 
 /***********************************************************************************************
- * GadgetClass::GadgetClass -- Constructor for the gadget object. *
- *                                                                                             *
- *    This is the copy constructor for the gadget object. It will try to
- *duplicate the         * righthand gadget. *
- *                                                                                             *
- * INPUT:   gadget   -- Reference to the initilization gadget. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/01/1996 JLB : Created. *
- *=============================================================================================*/
-GadgetClass::GadgetClass(GadgetClass const &gadget)
-    : LinkClass(gadget),
-      X(gadget.X),
-      Y(gadget.Y),
-      Width(gadget.Width),
-      Height(gadget.Height),
-      IsToRepaint(gadget.IsToRepaint),
-      IsSticky(gadget.IsSticky),
-      IsDisabled(gadget.IsDisabled),
-      Flags(gadget.Flags) {}
-
-/***********************************************************************************************
  * GadgetClass::~GadgetClass -- Destructor for gadget object. *
  *                                                                                             *
  *    This is the destructor for the gadget object. It will clear the focus from

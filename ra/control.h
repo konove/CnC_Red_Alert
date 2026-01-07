@@ -63,17 +63,18 @@
  *=========================================================================*/
 class ControlClass : public GadgetClass {
  public:
-  ControlClass(NoInitClass const& x) : GadgetClass(x) {};
+  ControlClass(NoInitClass const& x) : GadgetClass(x) {}
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = LEFTPRESS | RIGHTPRESS, int sticky = false);
-  ControlClass(ControlClass const& control);
+
+  ~ControlClass() override = default;
 
   virtual void Make_Peer(GadgetClass& gadget);
 
   /*
   **	Render support function.
   */
-  virtual int Draw_Me(int forced = false);
+  int Draw_Me(int forced = false) override;
 
   /*
   **	This is the ID number for this control gadget. This number is used to

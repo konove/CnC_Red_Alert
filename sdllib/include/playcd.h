@@ -58,8 +58,8 @@ class GetCDClass {
   int CDIndex;
 
  public:
-  GetCDClass(void);   // This is the default constructor
-  ~GetCDClass(void);  // This is the destructor
+  GetCDClass() = default;   // This is the default constructor
+  ~GetCDClass() = default;  // This is the destructor
 
   inline int Get_First_CD_Drive(void);
   inline int Get_Next_CD_Drive(void);

@@ -95,24 +95,6 @@ TriggerTypeClass::TriggerTypeClass(void)
       House(HOUSE_SPAIN) {}
 
 /***********************************************************************************************
- * TriggerTypeClass::~TriggerTypeClass -- Deleting a trigger type deletes
- *associated triggers. *
- *                                                                                             *
- *    When a trigger type is deleted, then all triggers that refer to that type
- *must also      * be deleted as well. There can be no 'orphan' triggers in
- *existence.                      *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
-TriggerTypeClass::~TriggerTypeClass(void) {}
-
-/***********************************************************************************************
  * TriggerTypeClass::operator new -- Allocates a trigger type class object. *
  *                                                                                             *
  *    This routine will allocate a block of memory from the special trigger type

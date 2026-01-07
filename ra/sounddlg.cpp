@@ -71,7 +71,7 @@ class MusicListClass : public ListClass {
       : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
                   MFCD::Retrieve("BTN-UP.SHP"),
                   MFCD::Retrieve("BTN-DN.SHP")) {};
-  ~MusicListClass(void) override {};
+  ~MusicListClass() override = default;
 
  protected:
   void Draw_Entry(int index, int x, int y, int width, int selected) override;

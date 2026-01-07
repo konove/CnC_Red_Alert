@@ -195,8 +195,8 @@ class GraphicViewPortClass {
   /*===================================================================*/
   GraphicViewPortClass(GraphicBufferClass *graphic_buff, int x, int y, int w,
                        int h);
-  GraphicViewPortClass();
-  ~GraphicViewPortClass();
+  GraphicViewPortClass() = default;
+  ~GraphicViewPortClass() = default;
 
   /*===================================================================*/
   /* define functions to get at the private data members

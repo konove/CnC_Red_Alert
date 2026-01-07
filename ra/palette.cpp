@@ -14,8 +14,6 @@ PaletteClass PaletteClass::CurrentPalette;
 
 unsigned char *CurrentPalette = PaletteClass::CurrentPalette;
 
-PaletteClass::PaletteClass() {}
-
 PaletteClass::PaletteClass(const RGBClass &col) {
   for (int i = 0; i < COLOR_COUNT; i++) data_[i] = col;
 }

@@ -902,10 +902,6 @@ GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *graphic_buff,
   Attach(graphic_buff, x, y, w, h);
 }
 
-GraphicViewPortClass::GraphicViewPortClass() {}
-
-GraphicViewPortClass::~GraphicViewPortClass() {}
-
 void GraphicViewPortClass::Draw_Rect(int sx, int sy, int dx, int dy,
                                      unsigned char color) {
   Lock();

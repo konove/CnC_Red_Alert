@@ -13,8 +13,6 @@ WinModemClass *SerialPort = nullptr;
 
 WinModemClass::WinModemClass(void) : PortHandle(nullptr) {}
 
-WinModemClass::~WinModemClass(void) {}
-
 HANDLE WinModemClass::Serial_Port_Open(char *device_name, int baud, int parity,
                                        int wordlen, int stopbits,
                                        int flowcontrol) {

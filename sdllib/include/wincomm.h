@@ -71,8 +71,8 @@ enum { CTS_SET = 0x10, DSR_SET = 0x20, RI_SET = 0x40, CD_SET = 0x80 };
 
 class WinModemClass {
  public:
-  WinModemClass(void);           // WinModemClass Contructor
-  virtual ~WinModemClass(void);  // WinModemClass Destructor
+  WinModemClass(void);                 // WinModemClass Contructor
+  virtual ~WinModemClass() = default;  // WinModemClass Destructor
 
   /*
   ** Serial port open should be called to get a handle to the COM port

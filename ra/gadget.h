@@ -107,8 +107,8 @@ class GadgetClass : public LinkClass {
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
   GadgetClass(NoInitClass const &x) : LinkClass(x) {};
-  GadgetClass(void) {};
-  GadgetClass(GadgetClass const &gadget);
+  GadgetClass() {};
+  GadgetClass(GadgetClass const &gadget) = default;
   virtual ~GadgetClass(void);
 
   /*

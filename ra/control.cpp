@@ -77,23 +77,6 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
     : GadgetClass(x, y, w, h, flags, sticky), ID(id), Peer(nullptr) {}
 
 /***********************************************************************************************
- * ControlClass::ControlClass -- Copy constructor for control gadget. *
- *                                                                                             *
- *    This copy constructor for a control gadget is used create a duplicate
- *gadget that        * is functionally similar. *
- *                                                                                             *
- * INPUT:   control  -- Reference to the gadget that is to be copied. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 12/05/1995 JLB : Created. *
- *=============================================================================================*/
-ControlClass::ControlClass(ControlClass const& control)
-    : GadgetClass(control), ID(control.ID), Peer(control.Peer) {}
-
-/***********************************************************************************************
  * ControlClass::Action -- Normal action for control gadget objects. *
  *                                                                                             *
  *    This function gets called when the input event that this control gadget is
