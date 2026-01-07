@@ -110,6 +110,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 
 /***********************************************************************************************
@@ -317,7 +318,7 @@ HouseClass::HouseClass(HousesType house)
   NewActiveAScan = 0;
   ActiveAScan = 0;
 
-  strcpy((char *)Name, "Computer");  // Default computer name.
+  port::SafeCopy(Name, "Computer");  // Default computer name.
   JustBuilt = STRUCT_NONE;
   AlertTime = 0;
   IsAlerted = false;
@@ -1679,8 +1680,8 @@ void HouseClass::Write_INI(char *buffer) {
       char sbuffer[100] = "";
       for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
         if (p->Is_Ally(house)) {
-          if (!first) strcat(sbuffer, ",");
-          strcat(sbuffer, As_Pointer(house)->Class->IniName);
+          if (!first) port::SafeAppend(sbuffer, ",");
+          port::SafeAppend(sbuffer, As_Pointer(house)->Class->IniName);
           first = false;
         }
       }
@@ -3108,8 +3109,8 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(
                   counter[((UnitTypeClass const *)(team->Class[subindex]))
                               ->Type] = 1;
                   //									counter[((UnitTypeClass
-                  //const *)(team->Class[subindex]))->Type] +=
-                  //team->DesiredNum[subindex]*2;
+                  // const *)(team->Class[subindex]))->Type] +=
+                  // team->DesiredNum[subindex]*2;
                 }
               }
             }
@@ -3728,7 +3729,7 @@ void HouseClass::MPlayer_Defeated(void) {
         Initialize this score entry
         ...............................................................*/
         MPlayerScore[score_index[i]].Wins = 0;
-        strcpy(MPlayerScore[score_index[i]].Name, MPlayerNames[i]);
+        port::SafeCopy(MPlayerScore[score_index[i]].Name, MPlayerNames[i]);
         for (j = 0; j < MAX_MULTI_GAMES; j++)
           MPlayerScore[score_index[i]].Kills[j] = -1;
       }

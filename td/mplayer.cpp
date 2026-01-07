@@ -47,6 +47,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #include "td/tcpip.h"
 
@@ -641,7 +642,7 @@ void Read_MultiPlayer_Settings(void) {
 
   if (tbuffer == (buffer + len)) {
     entry = new char[INITSTRBUF_MAX];
-    strcpy(entry, "ATZ");
+    port::SafeCopy(entry, "ATZ", INITSTRBUF_MAX);
     InitStrings.Add(entry);
     SerialDefaults.InitStringIndex = 0;
   } else {
@@ -680,7 +681,7 @@ void Read_MultiPlayer_Settings(void) {
     .....................................................................*/
     tokenptr = strtok(buf, "|");
     if (tokenptr) {
-      strcpy(phone->Name, tokenptr);
+      port::SafeCopy(phone->Name, tokenptr);
       strupr(phone->Name);
     } else {
       phone->Name[0] = 0;
@@ -688,7 +689,7 @@ void Read_MultiPlayer_Settings(void) {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      strcpy(phone->Number, tokenptr);
+      port::SafeCopy(phone->Number, tokenptr);
       strupr(phone->Number);
     } else {
       phone->Number[0] = 0;
@@ -738,7 +739,7 @@ void Read_MultiPlayer_Settings(void) {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      strcpy(buf, tokenptr);
+      port::SafeCopy(buf, tokenptr);
 
       // find dial method
 
@@ -774,7 +775,7 @@ void Read_MultiPlayer_Settings(void) {
 
     tokenptr = strtok(nullptr, "|");
     if (tokenptr) {
-      strcpy(phone->Settings.CallWaitString, tokenptr);
+      port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
     } else {
       phone->Settings.CallWaitString[0] = 0;
     }
@@ -1160,7 +1161,7 @@ static void Garble_Message(char *buf) {
       break;
     }
   }
-  strcpy(punct, p);
+  port::SafeCopy(punct, p);
   p[0] = 0;
 
   for (i = 0; i < 40; i++) {
@@ -1170,7 +1171,7 @@ static void Garble_Message(char *buf) {
   /*------------------------------------------------------------------------
   Copy the original buffer
   ------------------------------------------------------------------------*/
-  strcpy(txt, buf);
+  port::SafeCopy(txt, buf);
 
   /*------------------------------------------------------------------------
   Split it up into words
@@ -1195,11 +1196,11 @@ static void Garble_Message(char *buf) {
       i--;
       continue;
     }
-    strcat(buf, words[j]);
+    port::SafeAppend(buf, words[j], MAX_MESSAGE_LENGTH);
     words[j] = nullptr;
-    if (i < numwords - 1) strcat(buf, " ");
+    if (i < numwords - 1) port::SafeAppend(buf, " ", MAX_MESSAGE_LENGTH);
   }
-  strcat(buf, punct);
+  port::SafeAppend(buf, punct, MAX_MESSAGE_LENGTH);
 }
 
 /***************************************************************************

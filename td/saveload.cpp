@@ -49,6 +49,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 
 /*
@@ -994,7 +995,7 @@ bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep) {
     }
 
     descr_buf[strlen(descr_buf) - 2] = '\0';  // trim off CR/LF
-    strcpy(buf, descr_buf);
+    port::SafeCopy(buf, descr_buf, DESCRIP_MAX);
 
     if (file.Read(scenp, sizeof(unsigned)) != sizeof(unsigned)) {
       file.Close();

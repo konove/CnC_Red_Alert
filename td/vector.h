@@ -61,6 +61,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "tech/noinit.h"
+
 /**************************************************************************
 **	This is a general purpose vector class. A vector is defined by this
 **	class, as an array of arbitrary objects where the array can be

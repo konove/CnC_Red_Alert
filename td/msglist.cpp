@@ -45,6 +45,7 @@
  *   MessageListClass::Set_Width -- sets allowable width of messages       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 
 char MessageListClass::MessageBuffers[MAX_NUM_MESSAGES]
@@ -375,7 +376,7 @@ TextLabelClass *MessageListClass::Add_Message(char *txt, int color,
     if (BufferAvail[i]) {
       BufferAvail[i] = 0;
       memset(MessageBuffers[i], 0, MAX_MESSAGE_LENGTH + 30);
-      strcpy(MessageBuffers[i], txt);
+      port::SafeCopy(MessageBuffers[i], txt);
 
       /*
       ** If this is a segment from a larger message then put it in the right
@@ -399,6 +400,9 @@ TextLabelClass *MessageListClass::Add_Message(char *txt, int color,
                   dest_str + j * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
                   32, COMPAT_MESSAGE_LENGTH - 4);
             } else {
+              // This whole segment needs to be rewritten. Impossible to guess
+              // safe length.
+              // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
               strcpy(
                   dest_str + j * (COMPAT_MESSAGE_LENGTH - 4) /*+from_adjust*/,
                   raw_string);

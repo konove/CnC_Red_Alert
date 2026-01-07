@@ -52,7 +52,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
-#include "ra/packet.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
 #include "ra/special.h"
@@ -64,6 +63,7 @@
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "sdllib/include/timer.h"
+#include "tech/packet.h"
 
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"

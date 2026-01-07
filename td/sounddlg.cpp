@@ -46,12 +46,13 @@ class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
       : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
-                  Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP")){};
-  virtual ~MusicListClass(void){};
+                  Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP")) {}
+  ~MusicListClass() override = default;
 
  protected:
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 };
+
 int SoundControlsClass::Init(void) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   Option_Width = 292 * factor;
@@ -371,7 +372,7 @@ void SoundControlsClass::Process(void) {
 
       case BUTTON_LISTBOX | KN_BUTTON:
         //				Mono_Printf ("%d %s Listbox was
-        //pressed.\r",__LINE__, __FILE__);
+        // pressed.\r",__LINE__, __FILE__);
         break;
 
       /*

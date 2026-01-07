@@ -385,7 +385,7 @@ int RawFileClass::Is_Available(int forced) {
 #elif defined(WIN32)
     Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (Handle == NULL_HANDLE) {
+    if (Handle == nullptr) {
       return (false);
     }
     break;

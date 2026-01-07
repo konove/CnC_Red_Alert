@@ -84,7 +84,6 @@
 #include "jshell/rotbmp.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
-#include "ra/2keyfbuf.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/ccfile.h"
@@ -152,6 +151,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
+#include "tech/2keyfbuf.h"
 #include "tech/cdfile.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -4580,11 +4580,10 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 
     Theme.Stop();
 
-    //		if (ConquerMix) delete ConquerMix;
-    if (MoviesMix) delete MoviesMix;
-    if (GeneralMix) delete GeneralMix;
-    if (ScoreMix) delete ScoreMix;
-    if (MainMix) delete MainMix;
+    delete MoviesMix;
+    delete GeneralMix;
+    delete ScoreMix;
+    delete MainMix;
 
     MainMix = new MFCD("MAIN.MIX", &FastKey);
     assert(MainMix != nullptr);

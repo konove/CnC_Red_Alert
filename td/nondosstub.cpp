@@ -24,7 +24,7 @@
 #include "td/compat.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "ra/filepcx.h"
+// #include "ra/filepcx.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/iconcach.h"
 #include "td/interpal.h"
@@ -32,6 +32,31 @@
 #include "td/palette.h"
 #include "td/theme.h"
 #include "sdllib/include/wwstd.h"
+
+typedef struct {
+  char red;
+  char green;
+  char blue;
+} RGB;
+
+typedef struct {
+  char id;
+  char version;
+  char encoding;
+  char pixelsize;
+  short x;
+  short y;
+  short width;
+  short height;
+  short xres;
+  short yres;
+  RGB ega_palette[16];
+  char nothing;
+  char color_planes;
+  short byte_per_line;
+  short palette_type;
+  char filler[58];
+} PCX_HEADER;
 
 void output(short, short) {}
 

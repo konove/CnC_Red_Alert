@@ -5,9 +5,11 @@
 namespace port {
 
 void SafeCopy(char* dest, const char* src, const size_t dest_size) {
-  if (!dest || dest_size == 0) return;
+  if (dest == nullptr || dest_size == 0) {
+    return;
+  }
 
-  if (!src) {
+  if (src == nullptr) {
     dest[0] = '\0';
     return;
   }
@@ -20,7 +22,9 @@ void SafeCopy(char* dest, const char* src, const size_t dest_size) {
 }
 
 void SafeAppend(char* dest, const char* src, const size_t dest_size) {
-  if (!dest || dest_size == 0 || !src) return;
+  if (dest == nullptr || dest_size == 0 || src == nullptr) {
+    return;
+  }
 
   // Find where the current string ends.
   size_t current_len = 0;
@@ -45,12 +49,14 @@ void SafeAppend(char* dest, const char* src, const size_t dest_size) {
 }
 
 char* CloneString(const char* src) {
-  if (!src) return nullptr;
+  if (src == nullptr) {
+    return nullptr;
+  }
 
   // +1 for the null terminator.
   const size_t len = std::strlen(src) + 1;
   // Caller must delete[].
-  const auto dest = new char[len];
+  auto* const dest = new char[len];
 
   // We use memcpy here because we know the exact size and allocated it
   // ourselves. There is no risk of overflow.

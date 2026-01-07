@@ -1,5 +1,5 @@
 // re-implemented from assembly in 2keyfbuf.asm
-#include "ra/2keyfbuf.h"
+#include "tech/2keyfbuf.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -37,12 +37,7 @@ inline constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
 
 #define PRED_MASK 0xE
 
-#ifdef TD
-static bool UseOldShapeDraw = false;
-#else
 extern "C" bool UseOldShapeDraw;
-#endif
-
 extern "C" char *BigShapeBufferStart;
 extern "C" char *TheaterShapeBufferStart;
 extern "C" bool UseBigShapeBuffer;

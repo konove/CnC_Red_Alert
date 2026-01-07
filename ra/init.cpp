@@ -942,7 +942,7 @@ bool Select_Game(bool fade) {
 #endif
 #ifdef WINSOCK_IPX
 
-                  if (PacketTransport) delete PacketTransport;
+                  delete PacketTransport;
                   PacketTransport = new UDPInterfaceClass;
                   assert(PacketTransport != nullptr);
 
@@ -1173,7 +1173,7 @@ bool Select_Game(bool fade) {
               ** Init network system & remote-connect
               */
 #ifdef WINSOCK_IPX
-              if (PacketTransport) delete PacketTransport;
+              delete PacketTransport;
 #ifdef PORTABLE
               // we don't even have IPX
               PacketTransport = new UDPInterfaceClass;

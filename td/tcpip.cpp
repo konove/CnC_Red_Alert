@@ -58,6 +58,8 @@
 #include "td/function.h"
 #include "td/tcpip.h"
 
+#include "port/safe_string.h"
+
 #ifdef _WIN32
 typedef int socklen_t;
 #else
@@ -544,7 +546,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         ConnectStatus = CONNECTING;
         if (WSAGETASYNCERROR(lParam) == 0) {
           hentry = (struct hostent *)&HostBuff[0];
-          strcpy(&ClientName[0], hentry->h_name);
+          port::SafeCopy(&ClientName[0], hentry->h_name);
         }
         Async = 0;
         return;
@@ -556,7 +558,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         ConnectStatus = CONTACTING_SERVER;
         if (WSAGETASYNCERROR(lParam) == 0) {
           hentry = (struct hostent *)&HostBuff[0];
-          strcpy(Server.Name, hentry->h_name);
+          port::SafeCopy(Server.Name, hentry->h_name);
         } else {
           Server.Name[0] = 0;
         }
@@ -573,12 +575,12 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         hentry = (struct hostent *)&HostBuff[0];
         memcpy(&(Server.Addr.s_addr), hentry->h_addr, 4);
         memcpy(&UDPIPAddress, hentry->h_addr, 4);
-        strcpy(Server.DotAddr, inet_ntoa(Server.Addr));
+        port::SafeCopy(Server.DotAddr, inet_ntoa(Server.Addr));
         ConnectStatus = CONNECTED_OK;
         Connected = TRUE;
       } else {
         Server.Name[0] = 0;
-        strcpy(Server.DotAddr, "????");
+        port::SafeCopy(Server.DotAddr, "????");
         ConnectStatus = SERVER_ADDRESS_LOOKUP_FAILED;
       }
       Async = 0;
@@ -796,7 +798,7 @@ void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
  * HISTORY: * 3/20/96 3:19PM ST : Created *
  *=============================================================================================*/
 void TcpipManagerClass::Set_Host_Address(char *address) {
-  strcpy(HostAddress, address);
+  port::SafeCopy(HostAddress, address);
 }
 
 /***********************************************************************************************
@@ -899,7 +901,7 @@ void TcpipManagerClass::Start_Client(void) {
   Server.Addr.s_addr = inet_addr(PlanetWestwoodIPAddress);
   memcpy(&UDPIPAddress, &Server.Addr.s_addr, 4);
   if (Server.Addr.s_addr == INADDR_NONE) {
-    strcpy(Server.Name, PlanetWestwoodIPAddress);
+    port::SafeCopy(Server.Name, PlanetWestwoodIPAddress);
     Async = WSAAsyncGetHostByName(MainWindow, WM_HOSTBYNAME, Server.Name,
                                   HostBuff, MAXGETHOSTSTRUCT);
     ConnectStatus = RESOLVING_HOST_ADDRESS;

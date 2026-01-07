@@ -120,6 +120,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #include <ctime>
 #include "td/tcpip.h"
@@ -253,7 +254,7 @@ void Shutdown_Network(void) {
   memset(&GPacket, 0, sizeof(GlobalPacketType));
 
   GPacket.Command = NET_SIGN_OFF;
-  strcpy(GPacket.Name, MPlayerName);
+  port::SafeCopy(GPacket.Name, MPlayerName);
 
   Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
   Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
@@ -329,7 +330,7 @@ bool Process_Global_Packet(GlobalPacketType *packet, IPXAddressClass *address) {
       memset(packet, 0, sizeof(GlobalPacketType));
 
       mypacket.Command = NET_ANSWER_GAME;
-      strcpy(mypacket.Name, MPlayerGameName);
+      port::SafeCopy(mypacket.Name, MPlayerGameName);
 #ifdef PATCH
       if (IsV107) {
         mypacket.GameInfo.Version = 1;
@@ -354,7 +355,7 @@ bool Process_Global_Packet(GlobalPacketType *packet, IPXAddressClass *address) {
       memset(packet, 0, sizeof(GlobalPacketType));
 
       mypacket.Command = NET_ANSWER_PLAYER;
-      strcpy(mypacket.Name, MPlayerName);
+      port::SafeCopy(mypacket.Name, MPlayerName);
       mypacket.PlayerInfo.House = MPlayerHouse;
       mypacket.PlayerInfo.Color = MPlayerColorIdx;
       mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -429,7 +430,7 @@ void Destroy_Connection(int id, int error) {
       for (j = i; j < MPlayerCount - 1; j++) {
         MPlayerID[j] = MPlayerID[j + 1];
         MPlayerHouses[j] = MPlayerHouses[j + 1];
-        strcpy(MPlayerNames[j], MPlayerNames[j + 1]);
+        port::SafeCopy(MPlayerNames[j], MPlayerNames[j + 1]);
         TheirProcessTime[j] = TheirProcessTime[j + 1];
       }
     }
@@ -972,8 +973,8 @@ static int Net_Join_Dialog(void) {
   /*
   ----------------------------- Various Inits ------------------------------
   */
-  MPlayerColorIdx = MPlayerPrefColor;  // init my preferred color
-  strcpy(namebuf, MPlayerName);        // set my name
+  MPlayerColorIdx = MPlayerPrefColor;    // init my preferred color
+  port::SafeCopy(namebuf, MPlayerName);  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(MPlayerTColors[MPlayerColorIdx]);
 
@@ -1380,7 +1381,7 @@ static int Net_Join_Dialog(void) {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
-        strcpy(GPacket.Name, MPlayerName);
+        port::SafeCopy(GPacket.Name, MPlayerName);
 
         /*...............................................................
         If we're joined to a game, make extra sure the other players in
@@ -1468,8 +1469,8 @@ static int Net_Join_Dialog(void) {
         /*
         .................... Save player & game name ....................
         */
-        strcpy(MPlayerName, namebuf);
-        strcpy(MPlayerGameName, namebuf);
+        port::SafeCopy(MPlayerName, namebuf);
+        port::SafeCopy(MPlayerGameName, namebuf);
 
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
@@ -1490,7 +1491,7 @@ static int Net_Join_Dialog(void) {
               input == (BUTTON_SEND | KN_BUTTON) || input == KN_F4) {
             memset(txt, 0, 80);
 
-            strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+            port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
             Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -1556,7 +1557,7 @@ static int Net_Join_Dialog(void) {
 
               while (sent_so_far < message_length) {
                 GPacket.Command = NET_MESSAGE;
-                strcpy(GPacket.Name, namebuf);
+                port::SafeCopy(GPacket.Name, namebuf);
                 memcpy(GPacket.Message.Buf,
                        Messages.Get_Edit_Buf() + sent_so_far,
                        COMPAT_MESSAGE_LENGTH - 5);
@@ -1663,7 +1664,7 @@ static int Net_Join_Dialog(void) {
           playerlist.Add_Item(item, MPlayerTColors[MPlayerColorIdx]);
 
           who = new NodeNameType;
-          strcpy(who->Name, MPlayerName);
+          port::SafeCopy(who->Name, MPlayerName);
           who->Address = IPXAddressClass();
           who->Player.House = MPlayerHouse;
           who->Player.Color = MPlayerColorIdx;
@@ -1815,7 +1816,7 @@ static int Net_Join_Dialog(void) {
       memset(&GPacket, 0, sizeof(GlobalPacketType));
 
       GPacket.Command = NET_SIGN_OFF;
-      strcpy(GPacket.Name, MPlayerName);
+      port::SafeCopy(GPacket.Name, MPlayerName);
 
       for (i = 0; i < Players.Count(); i++) {
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
@@ -1894,9 +1895,9 @@ static int Net_Join_Dialog(void) {
       ..................................................................*/
       for (i = 0; i < MPlayerCount; i++) {
         if (MPlayerID[i] == MPlayerLocalID) {
-          strcpy(MPlayerNames[i], MPlayerName);
+          port::SafeCopy(MPlayerNames[i], MPlayerName);
         } else {
-          strcpy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
+          port::SafeCopy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
         }
       }
     }
@@ -2114,7 +2115,7 @@ static int Request_To_Join(char *playername, int join_index,
   /*
   ----------------------------- Save game name -----------------------------
   */
-  strcpy(MPlayerName, playername);
+  port::SafeCopy(MPlayerName, playername);
 
   /*
   ----------------------- Send packet to game's owner ----------------------
@@ -2122,7 +2123,7 @@ static int Request_To_Join(char *playername, int join_index,
   memset(&GPacket, 0, sizeof(GlobalPacketType));
 
   GPacket.Command = NET_QUERY_JOIN;
-  strcpy(GPacket.Name, MPlayerName);
+  port::SafeCopy(GPacket.Name, MPlayerName);
   GPacket.PlayerInfo.House = house;
   GPacket.PlayerInfo.Color = color;
 
@@ -2199,7 +2200,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
     memset(&GPacket, 0, sizeof(GlobalPacketType));
 
     GPacket.Command = NET_QUERY_PLAYER;
-    strcpy(GPacket.Name, Games[curgame]->Name);
+    port::SafeCopy(GPacket.Name, Games[curgame]->Name);
 
     Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
 
@@ -2329,7 +2330,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       Create a new node structure, fill it in, add it to 'Games'
       ..................................................................*/
       who = new NodeNameType;
-      strcpy(who->Name, GPacket.Name);
+      port::SafeCopy(who->Name, GPacket.Name);
       who->Address = GAddress;
       who->Game.Version = GPacket.GameInfo.Version;
       who->Game.IsOpen = GPacket.GameInfo.IsOpen;
@@ -2369,7 +2370,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       our knowledge; set the 'found' flag so we won't create a new entry.
       ..................................................................*/
       if (Players[i]->Address == GAddress) {
-        strcpy(Players[i]->Name, GPacket.Name);
+        port::SafeCopy(Players[i]->Name, GPacket.Name);
         Players[i]->Player.House = GPacket.PlayerInfo.House;
         Players[i]->Player.Color = GPacket.PlayerInfo.Color;
         playerlist->Colors[i] = MPlayerTColors[GPacket.PlayerInfo.Color];
@@ -2400,7 +2401,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       Create & add a node to the Vector
       ..................................................................*/
       who = new NodeNameType;
-      strcpy(who->Name, GPacket.Name);
+      port::SafeCopy(who->Name, GPacket.Name);
       who->Address = GAddress;
       who->Player.House = GPacket.PlayerInfo.House;
       who->Player.Color = GPacket.PlayerInfo.Color;
@@ -2427,7 +2428,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
   ------------------------------------------------------------------------*/
   else if (GPacket.Command == NET_CONFIRM_JOIN) {
     if ((*joinstate) != JOIN_CONFIRMED) {
-      strcpy(MPlayerGameName, GPacket.Name);
+      port::SafeCopy(MPlayerGameName, GPacket.Name);
       MPlayerHouse = GPacket.PlayerInfo.House;
       MPlayerColorIdx = GPacket.PlayerInfo.Color;
 
@@ -2447,7 +2448,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       memset(&GPacket, 0, sizeof(GlobalPacketType));
 
       GPacket.Command = NET_SIGN_OFF;
-      strcpy(GPacket.Name, MPlayerName);
+      port::SafeCopy(GPacket.Name, MPlayerName);
 
       Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
       Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, nullptr);
@@ -3422,7 +3423,7 @@ static int Net_New_Dialog(void) {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
-        strcpy(GPacket.Name, MPlayerName);
+        port::SafeCopy(GPacket.Name, MPlayerName);
 
         /*...............................................................
         Broadcast my sign-off over my network
@@ -3473,7 +3474,7 @@ static int Net_New_Dialog(void) {
               input == KN_F4) {
             memset(txt, 0, 80);
 
-            strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+            port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
             Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -3539,7 +3540,7 @@ static int Net_New_Dialog(void) {
           while (sent_so_far < message_length) {
             memset(&GPacket, 0, sizeof(GlobalPacketType));
             GPacket.Command = NET_MESSAGE;
-            strcpy(GPacket.Name, MPlayerName);
+            port::SafeCopy(GPacket.Name, MPlayerName);
             memcpy(GPacket.Message.Buf, Messages.Get_Edit_Buf() + sent_so_far,
                    COMPAT_MESSAGE_LENGTH - 5);
 
@@ -3752,9 +3753,9 @@ static int Net_New_Dialog(void) {
     .....................................................................*/
     for (i = 0; i < MPlayerCount; i++) {
       if (MPlayerID[i] == MPlayerLocalID) {
-        strcpy(MPlayerNames[i], MPlayerName);
+        port::SafeCopy(MPlayerNames[i], MPlayerName);
       } else {
-        strcpy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
+        port::SafeCopy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
       }
     }
   }
@@ -3885,7 +3886,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist) {
         Add node to the Vector list
         ..................................................................*/
         who = new NodeNameType;
-        strcpy(who->Name, GPacket.Name);
+        port::SafeCopy(who->Name, GPacket.Name);
         who->Address = GAddress;
         who->Player.House = GPacket.PlayerInfo.House;
         Players.Add(who);
@@ -3924,7 +3925,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist) {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_CONFIRM_JOIN;
-        strcpy(GPacket.Name, MPlayerName);
+        port::SafeCopy(GPacket.Name, MPlayerName);
         GPacket.PlayerInfo.House = who->Player.House;
         GPacket.PlayerInfo.Color = who->Player.Color;
 
@@ -4008,7 +4009,7 @@ unsigned long Compute_Name_CRC(char *name) {
   unsigned long crc = 0L;
   int i;
 
-  strcpy(buf, name);
+  port::SafeCopy(buf, name);
   strupr(buf);
 
   for (i = 0; i < strlen(buf); i++) {
@@ -4372,7 +4373,7 @@ static int Net_Fake_New_Dialog(void) {
   memset(&GPacket, 0, sizeof(GlobalPacketType));
 
   GPacket.Command = (NetCommandType)50;  // Invalid command
-  strcpy(GPacket.Name, MPlayerName);
+  port::SafeCopy(GPacket.Name, MPlayerName);
   Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 0, NULL);
 #endif  // VIRTUAL_SUBNET_SERVER
 
@@ -4446,7 +4447,7 @@ static int Net_Fake_New_Dialog(void) {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
-        strcpy(GPacket.Name, MPlayerName);
+        port::SafeCopy(GPacket.Name, MPlayerName);
 
         /*...............................................................
         Broadcast my sign-off over my network
@@ -4704,9 +4705,9 @@ static int Net_Fake_New_Dialog(void) {
     .....................................................................*/
     for (i = 0; i < MPlayerCount; i++) {
       if (MPlayerID[i] == MPlayerLocalID) {
-        strcpy(MPlayerNames[i], MPlayerName);
+        port::SafeCopy(MPlayerNames[i], MPlayerName);
       } else {
-        strcpy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
+        port::SafeCopy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
       }
     }
   }
@@ -5009,7 +5010,7 @@ static int Net_Fake_Join_Dialog(void) {
         memset(&GPacket, 0, sizeof(GlobalPacketType));
 
         GPacket.Command = NET_SIGN_OFF;
-        strcpy(GPacket.Name, MPlayerName);
+        port::SafeCopy(GPacket.Name, MPlayerName);
 
         /*...............................................................
         If we're joined to a game, make extra sure the other players in
@@ -5130,7 +5131,7 @@ static int Net_Fake_Join_Dialog(void) {
           playerlist.Add_Item(item, MPlayerTColors[MPlayerColorIdx]);
 
           who = new NodeNameType;
-          strcpy(who->Name, MPlayerName);
+          port::SafeCopy(who->Name, MPlayerName);
           who->Address = IPXAddressClass();
           who->Player.House = MPlayerHouse;
           who->Player.Color = MPlayerColorIdx;
@@ -5286,7 +5287,7 @@ static int Net_Fake_Join_Dialog(void) {
       memset(&GPacket, 0, sizeof(GlobalPacketType));
 
       GPacket.Command = NET_SIGN_OFF;
-      strcpy(GPacket.Name, MPlayerName);
+      port::SafeCopy(GPacket.Name, MPlayerName);
 
       for (i = 0; i < Players.Count(); i++) {
         Ipx.Send_Global_Message(&GPacket, sizeof(GlobalPacketType), 1,
@@ -5381,9 +5382,9 @@ static int Net_Fake_Join_Dialog(void) {
       ..................................................................*/
       for (i = 0; i < MPlayerCount; i++) {
         if (MPlayerID[i] == MPlayerLocalID) {
-          strcpy(MPlayerNames[i], MPlayerName);
+          port::SafeCopy(MPlayerNames[i], MPlayerName);
         } else {
-          strcpy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
+          port::SafeCopy(MPlayerNames[i], Ipx.Connection_Name(MPlayerID[i]));
         }
       }
     }

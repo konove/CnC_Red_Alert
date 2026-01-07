@@ -43,7 +43,7 @@
 
 #include "td/function.h"
 #include "td/tcpip.h"
-#include "ra/packet.h"
+#include "../tech/packet.h"
 #include "td/ccdde.h"
 
 #define FIELD_PACKET_TYPE "TYPE"

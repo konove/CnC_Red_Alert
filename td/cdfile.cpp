@@ -44,6 +44,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
+
 #include <cerrno>
 
 #include "sdllib/include/file.h"
@@ -170,8 +172,8 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
   ** Check for the case where RawPath was passed in.
   */
   if (pathlist != RawPath) {
-    strcat(RawPath, ";");
-    strcat(RawPath, pathlist);
+    port::SafeAppend(RawPath, ";");
+    port::SafeAppend(RawPath, pathlist);
   }
 
   char const *ptr = strtok(pathlist, ";");
@@ -185,14 +187,14 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
       *submitted to the *	file system. This means that it must have either
       *a trailing ':' or '\' *	character.
       */
-      strcpy(path, ptr);
+      port::SafeCopy(path, ptr);
       switch (path[strlen(path) - 1]) {
         case ':':
         case '\\':
           break;
 
         default:
-          strcat(path, "\\");
+          port::SafeAppend(path, "\\");
           break;
       }
 
@@ -374,8 +376,8 @@ char const *CDFileClass::Set_Name(char const *filename) {
     /*
     **	Build a pathname to search for.
     */
-    strcpy(path, srch->Path);
-    strcat(path, filename);
+    port::SafeCopy(path, srch->Path);
+    port::SafeAppend(path, filename);
 
     /*
     **	Check to see if the file could be found. The low level Is_Available

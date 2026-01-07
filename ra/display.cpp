@@ -405,9 +405,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 #endif
 
   if (Scen.Theater != LastTheater) {
-    if (TheaterData != nullptr) {
-      delete TheaterData;
-    }
+    delete TheaterData;
+
     TheaterData = new MFCD(fullname, &FastKey);
     assert(TheaterData != nullptr);
 

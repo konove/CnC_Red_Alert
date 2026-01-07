@@ -47,10 +47,10 @@
 #include "ra/interpal.h"
 
 #include "ra/externs.h"
-#include "sdllib/include/misc.h"
 #include "ra/ccfile.h"
 #include "ra/compat.h"
 #include "sdllib/include/gbuffer.h"
+#include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 

@@ -152,16 +152,12 @@ CommBufferClass::~CommBufferClass() {
   //------------------------------------------------------------------------
   for (i = 0; i < MaxSend; i++) {
     delete[] SendQueue[i].Buffer;
-    if (SendQueue[i].ExtraBuffer) {
-      delete[] SendQueue[i].ExtraBuffer;
-    }
+    delete[] SendQueue[i].ExtraBuffer;
   }
 
   for (i = 0; i < MaxReceive; i++) {
     delete[] ReceiveQueue[i].Buffer;
-    if (ReceiveQueue[i].ExtraBuffer) {
-      delete[] ReceiveQueue[i].ExtraBuffer;
-    }
+    delete[] ReceiveQueue[i].ExtraBuffer;
   }
 
   delete[] SendQueue;

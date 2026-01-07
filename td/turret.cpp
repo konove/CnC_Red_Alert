@@ -53,39 +53,6 @@
 #include "td/turret.h"
 
 /***********************************************************************************************
- * TurretClass::~TurretClass -- Default destructor for turret class objects. *
- *                                                                                             *
- *    This is the default destructor for turret class objects. It does nothing.
- **
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/13/1995 JLB : Created. *
- *=============================================================================================*/
-TurretClass::~TurretClass(void) {}
-
-/***********************************************************************************************
- * TurretClass::TurretClass -- The default constructor for turret class objects.
- **
- *                                                                                             *
- *    This is the default constructor for turret class objects. It does nothing.
- **
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/13/1995 JLB : Created. *
- *=============================================================================================*/
-TurretClass::TurretClass(void) {}
-
-/***********************************************************************************************
  * TurretClass::TurretClass -- Normal constructor for the turret class. *
  *                                                                                             *
  *    This is the normal constructor for the turret class. It merely sets the

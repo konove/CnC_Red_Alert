@@ -44,7 +44,6 @@
  *   Instance_Class::dde_callback -- processes DDE transactions            *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef WIN32
 #include <windows.h>
 #include "ra/dde.h"
 
@@ -56,10 +55,10 @@ DWORD Instance_Class::id_inst;       // instance identifier set by DdeInitialize
 BOOL Instance_Class::process_pokes;  // controls response to pokes
 char Instance_Class::ascii_name[32];  // name of server
 
-BOOL(CALLBACK *Instance_Class::callback)
-(LPBYTE pointer,  // pointer to received data
- long length      // length of received data or advisory flag
- ) = NULL;
+BOOL(CALLBACK *Instance_Class::callback)(
+    LPBYTE pointer,  // pointer to received data
+    long length      // length of received data or advisory flag
+    ) = NULL;
 
 /***************************************************************************
  * Instance_Class::InstanceClass -- class constructor *
@@ -452,5 +451,3 @@ HDDEDATA CALLBACK Instance_Class::dde_callback(
       return (HDDEDATA)NULL;
   }
 }
-
-#endif  // WIN32

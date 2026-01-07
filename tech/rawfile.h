@@ -50,9 +50,6 @@
 
 #include "tech/wwfile.h"
 
-#define NULL_HANDLE NULL
-#define HANDLE_TYPE void *
-
 #ifdef NEVER
 /*
 **	This is a duplicate of the error numbers. The error handler for the
@@ -164,7 +161,7 @@ EZERO,                 // Non-error.
 
   void Bias(int start, int length = -1);
 
-  HANDLE_TYPE Get_File_Handle(void) { return (Handle); };
+  void *Get_File_Handle(void) { return (Handle); };
 
   /*
   **	These bias values enable a sub-portion of a file to appear as if it
@@ -188,7 +185,7 @@ EZERO,                 // Non-error.
   /*
   **	This is the low level DOS handle. A -1 indicates an empty condition.
   */
-  HANDLE_TYPE Handle;
+  void *Handle;
 
   /*
   **	This points to the filename as a NULL terminated string. It may point to
@@ -259,16 +256,11 @@ inline RawFileClass::RawFileClass(void)
     : Rights(READ),
       BiasStart(0),
       BiasLength(-1),
-#ifdef WIN32
       Handle(nullptr),
-#else
-      Handle(-1),
-#endif
       Filename(nullptr),
       Date(0),
       Time(0),
-      Allocated(false) {
-}
+      Allocated(false) {}
 
 /***********************************************************************************************
  * RawFileClass::~RawFileClass -- Default deconstructor for a file object. *
@@ -309,12 +301,6 @@ inline RawFileClass::~RawFileClass(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline int RawFileClass::Is_Open(void) const {
-#ifdef WIN32
-  return (Handle != nullptr);
-#else
-  return (Handle >= 0);
-#endif
-}
+inline int RawFileClass::Is_Open(void) const { return (Handle != nullptr); }
 
-#endif
+#endif  // RAWFILE_Hx

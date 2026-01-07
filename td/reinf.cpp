@@ -40,6 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 
 /***********************************************************************************************
@@ -529,7 +530,7 @@ bool Create_Special_Reinforcement(HouseClass *house,
       /*
       **	Fill in the team characteristics.
       */
-      strcpy((char *)&team->IniName[0], "TEMP");
+      port::SafeCopy(team->IniName, "TEMP");
       team->IsReinforcable = false;
       team->IsTransient = true;
       team->ClassCount = 1;

@@ -63,11 +63,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
 #include "sdllib/include/memflag.h"
 #include "td/tcpip.h"
 #include "sdllib/include/ww_audio.h"
+#include "tech/2keyfbuf.h"
 
 #include <cstdlib>
 #include <cstdio>
@@ -98,6 +100,10 @@ static void Message_Input(KeyNumType &input);
 static bool Color_Cycle(void);
 bool Map_Edit_Loop(void);
 void Trap_Object(void);
+
+extern "C" {
+bool UseOldShapeDraw = false;
+}
 
 #ifdef CHEAT_KEYS
 void Heap_Dump_Check(char *string);
@@ -790,7 +796,7 @@ static void Message_Input(KeyNumType &input) {
     if (GameToPlay == GAME_NULL_MODEM || GameToPlay == GAME_MODEM) {
       //|| GameToPlay == GAME_INTERNET) {
       if (input == KN_F1 || input == (KN_F1 + MPlayerMax - 1)) {
-        strcpy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+        port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
@@ -807,8 +813,8 @@ static void Message_Input(KeyNumType &input) {
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         if (input == (KN_F1 + MPlayerMax - 1) &&
             Messages.Get_Edit_Buf() == nullptr) {
-          MessageAddress = IPXAddressClass();    // set to broadcast
-          strcpy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+          MessageAddress = IPXAddressClass();            // set to broadcast
+          port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
           Messages.Add_Edit(MPlayerTColors[MPlayerColorIdx],
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -874,7 +880,7 @@ static void Message_Input(KeyNumType &input) {
     us a version of it later.
     .....................................................................*/
     if (strlen(Messages.Get_Edit_Buf())) {
-      strcpy(LastMessage, Messages.Get_Edit_Buf());
+      port::SafeCopy(LastMessage, Messages.Get_Edit_Buf());
     }
 
     message_length = strlen(Messages.Get_Edit_Buf());
@@ -900,7 +906,7 @@ static void Message_Input(KeyNumType &input) {
         serial_packet = (SerialPacketType *)NullModem.BuildBuf;
 
         serial_packet->Command = SERIAL_MESSAGE;
-        strcpy(serial_packet->Name, MPlayerName);
+        port::SafeCopy(serial_packet->Name, MPlayerName);
         memcpy(serial_packet->Message, Messages.Get_Edit_Buf() + sent_so_far,
                COMPAT_MESSAGE_LENGTH - 5);
 
@@ -955,7 +961,7 @@ static void Message_Input(KeyNumType &input) {
 
         while (sent_so_far < message_length) {
           GPacket.Command = NET_MESSAGE;
-          strcpy(GPacket.Name, MPlayerName);
+          port::SafeCopy(GPacket.Name, MPlayerName);
           memcpy(GPacket.Message.Buf, Messages.Get_Edit_Buf() + sent_so_far,
                  COMPAT_MESSAGE_LENGTH - 5);
 
@@ -1226,7 +1232,7 @@ void Call_Back(void) {
                 **	Save this message in our last-message buffer
                 */
                 if (strlen(GPacket.Message.Buf)) {
-                  strcpy(LastMessage, GPacket.Message.Buf);
+                  port::SafeCopy(LastMessage, GPacket.Message.Buf);
                 }
               }
             } else {
@@ -2359,7 +2365,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
           ** If cd_index == 2 then its a covert CD
           */
           if (cd_index != 2) {
-            strcpy(palname, "OLDCC2T.VQP");
+            port::SafeCopy(palname, "OLDCC2T.VQP");
           }
         }
 #endif  //(FRENCH | GERMAN)
@@ -2375,7 +2381,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
           ** If cd_index == 2 then its a covert CD
           */
           if (cd_index == 2) {
-            strcpy(palname, "RETROGER.VQP");
+            port::SafeCopy(palname, "RETROGER.VQP");
           }
         }
 
@@ -3944,7 +3950,7 @@ void const *Hires_Retrieve(const char *name) {
   if (SeenBuff.Get_Width() != 320) {
     sprintf(filename, "H%s", name);
   } else {
-    strcpy(filename, name);
+    port::SafeCopy(filename, name);
   }
   return (MixFileClass::Retrieve(filename));
 }

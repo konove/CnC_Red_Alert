@@ -284,7 +284,7 @@ static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
   }
 
   if (transport == nullptr && object == nullptr) {
-    if (team != nullptr) delete team;
+    delete team;
     return (nullptr);
   }
 

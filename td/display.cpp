@@ -371,8 +371,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   ** Register the hi-res icons mix file now since it is theater specific
   */
   sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
-  strcpy(iconname, fullname);
-  strcpy(&iconname[4], "ICNH.MIX");
+  snprintf(iconname, sizeof(iconname), "%.4sICNH.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
     if (TheaterIcons) {
       delete TheaterIcons;

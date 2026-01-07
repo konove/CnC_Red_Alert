@@ -1226,9 +1226,9 @@ GameType Select_Serial_Dialog(void) {
             } else {
               settings = &(Session.PhoneBook[Session.CurPhoneIdx]->Settings);
             }
-            if (SerialPort) {
-              delete SerialPort;
-            }
+
+            delete SerialPort;
+
             SerialPort = new WinModemClass;
             if (Init_Null_Modem(settings)) {
               if (settings->CallWaitStringIndex == CALL_WAIT_CUSTOM) {
@@ -1273,9 +1273,7 @@ GameType Select_Serial_Dialog(void) {
             */
             settings = &Session.SerialDefaults;
 #ifdef WIN32
-            if (SerialPort) {
-              delete SerialPort;
-            }
+            delete SerialPort;
             SerialPort = new WinModemClass;
 #endif  // WIN32
             if (Init_Null_Modem(settings)) {
@@ -2086,9 +2084,8 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   *its just
   ** tough luck if the user has more than 10 modems attached!
   */
-  if (ModemRegistry) {
-    delete ModemRegistry;
-  }
+  delete ModemRegistry;
+
   int modems_found = 0;
   for (i = 0; i < 10; i++) {
     ModemRegistry = new ModemRegistryEntryClass(i);

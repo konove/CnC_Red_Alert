@@ -51,6 +51,7 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 
 /*
@@ -216,8 +217,8 @@ void TeamTypeClass::Read_INI(char *buffer) {
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
 
     /*
     .......................... Fill the team in ...........................
@@ -486,14 +487,14 @@ void TeamTypeClass::Write_INI(char *buffer, bool refresh) {
     }
 
     if (team->IsReinforcable) {
-      strcat(buf, ",1");
+      port::SafeAppend(buf, ",1");
     } else {
-      strcat(buf, ",0");
+      port::SafeAppend(buf, ",0");
     }
     if (team->IsPrebuilt) {
-      strcat(buf, ",1");
+      port::SafeAppend(buf, ",1");
     } else {
-      strcat(buf, ",0");
+      port::SafeAppend(buf, ",0");
     }
 
     WWWritePrivateProfileString(INI_Name(), team->IniName, buf, buffer);
@@ -542,8 +543,8 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
   /*------------------------------------------------------------------------
   Read all TeamType entry names into 'tbuffer'
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Teams", nullptr, nullptr, tbuffer, ShapeBufferSize - len,
-                            buffer);
+  WWGetPrivateProfileString("Teams", nullptr, nullptr, tbuffer,
+                            ShapeBufferSize - len, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------

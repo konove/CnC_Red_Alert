@@ -286,7 +286,8 @@ void ScoreTimeClass::Update(void) {
 #else
     Set_Logic_Page(PseudoSeenBuff);
 #endif
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
+                  nullptr, nullptr);
     Set_Logic_Page(oldpage);
   }
 }
@@ -319,7 +320,8 @@ void ScoreCredsClass::Update(void) {
         Play_Sample(CashTurn, 255, Options.Normalize_Sound(70));
       }
     }
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
+                  nullptr, nullptr);
     Set_Logic_Page(oldpage);
   }
 }
@@ -652,8 +654,8 @@ void ScoreClass::Presentation(void) {
   if (Special.IsJurassic && AreThingiesEnabled) return;
 
   PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
-  TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)nullptr);
+  TextPrintBuffer = new GraphicBufferClass(
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
   Disable_Uncompressed_Shapes();
@@ -806,7 +808,8 @@ void ScoreClass::Presentation(void) {
     ** load the logo
     */
     void const *logoptr = MixFileClass::Retrieve("LOGOS.SHP");
-    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
+                  nullptr);
 
     Bit_It_In_Scale(0, 0, 128, 104 - 16, &SysMemPage, PseudoSeenBuff, &SeenBuff,
                     1);
@@ -1006,7 +1009,7 @@ void ScoreClass::Presentation(void) {
       if (hallfame[i].level < 20) {
         sprintf(str + 16, "%d", hallfame[i].level);
       } else {
-        strcpy(str + 16, "**");
+        sprintf(str + 16, "**");
       }
       Alloc_Object(new ScorePrintClass(str + 16, HALLFAME_X + (6 * 12),
                                        HALLFAME_Y + (i * 8), _bluepal, BLACK));
@@ -1310,7 +1313,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   // Draw the white-flash shape on the hidpage
   Set_Logic_Page(SysMemPage);
   SysMemPage.Fill_Rect(0, 0, 124, 9, TBLACK);
-  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
+                nullptr);
 #ifdef LORES
   Set_Logic_Page(HidPage);
 #else
@@ -1322,7 +1326,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
 
   for (i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr, nullptr);
+      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
+                    nullptr, nullptr);
     } else {
 #ifdef LORES
       SysMemPage.Blit(HidPage, 0, 0, 172, ypos, 3 + gdikilled, 9);
@@ -1337,8 +1342,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
       Call_Back_Delay(2);
     }
   }
-  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
-                nullptr);
+  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
+                nullptr, nullptr);
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   if (!Check_Key()) Call_Back_Delay(40);
 
@@ -1346,8 +1351,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
                RESFACTOR * (ypos + 14), 5 * 12, 12);
   for (i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
-                    nullptr);
+      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
+                    nullptr, nullptr);
     } else {
 #ifdef LORES
       SysMemPage.Blit(HidPage, 0, 0, 172, ypos + 12, 3 + nodkilled, 9);
@@ -2098,8 +2103,8 @@ void Multi_Score_Presentation(void) {
   Theme.Queue_Song(THEME_WIN1);
 
   PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
-  TextPrintBuffer = new GraphicBufferClass(SeenBuff.Get_Width(),
-                                           SeenBuff.Get_Height(), (void *)nullptr);
+  TextPrintBuffer = new GraphicBufferClass(
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
   BlitList.Clear();
 
   SysMemPage.Clear();

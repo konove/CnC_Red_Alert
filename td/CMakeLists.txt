@@ -148,8 +148,6 @@ add_executable(tdsdl WIN32
 
         # these files are identical (or close enough) to RA
         noseqcon.cpp
-        ../ra/field.cpp
-        ../ra/packet.cpp
         rand.cpp
         utracker.cpp
 
@@ -157,9 +155,7 @@ add_executable(tdsdl WIN32
         face.cpp
 
         # also need these
-        #        ../ra/lcwuncmp.cpp
-        ../ra/2keyfbuf.cpp
-        ../ra/winasm.cpp
+        winasm.cpp
 
         ipxstub.cpp
         nondosstub.cpp
@@ -170,7 +166,7 @@ add_executable(tdsdl WIN32
 
 if (WIN32)
     target_sources(tdsdl PRIVATE
-            ../ra/dde.cpp
+            dde.cpp
             ccdde.cpp
             cc_icon.rc
     )
@@ -181,7 +177,7 @@ target_compile_definitions(tdsdl PRIVATE
         PORTABLE=1 # to indicate not windows or dos sometimes
         TD=1
 )
-target_link_libraries(tdsdl PRIVATE port sdllib vqa32)
+target_link_libraries(tdsdl PRIVATE tech port sdllib vqa32)
 
 install(TARGETS tdsdl)
 

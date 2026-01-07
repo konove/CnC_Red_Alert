@@ -42,8 +42,8 @@
 
 #include <cstdint>
 
-#include "td/special.h"
 #include "sdllib/include/wwstd.h"
+#include "td/special.h"
 
 /**********************************************************************
 **	If defined, then the advanced balancing features will be enabled
@@ -1519,7 +1519,7 @@ typedef enum RadioMessageType {
   // Hand to hand combat messages (yelled rather than radioed).
   RADIO_KICK,            // "Take this kick, you.. you.."
   RADIO_PUNCH,           // "Take this punch, you.. you.."
-  RADIO_PREPARE_TO_BOX,  //	"Fancy a little fisticuffs, eh?"
+  RADIO_PREPARE_TO_BOX,  // "Fancy a little fisticuffs, eh?"
 
   RADIO_COUNT
 } RadioMessageType;

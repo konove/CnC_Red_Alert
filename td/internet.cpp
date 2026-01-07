@@ -49,6 +49,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #include "td/tcpip.h"
 #include "td/ccdde.h"
@@ -143,7 +144,7 @@ void Check_From_WChat(char *wchat_name) {
       if (wchat_name) delete ini_file;
       return;
     }
-    strcpy(PlanetWestwoodIPAddress, key_string);
+    port::SafeCopy(PlanetWestwoodIPAddress, key_string);
 
     /*
     ** Get the port number
@@ -221,7 +222,7 @@ int Read_Game_Options(char *name) {
   char filename[256] = {"INVALID.123"};
 
   if (name) {
-    strcpy(filename, name);
+    port::SafeCopy(filename, name);
   }
 
   /*------------------------------------------------------------------------
@@ -249,7 +250,7 @@ int Read_Game_Options(char *name) {
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("Options", "Handle", "Noname", MPlayerName,
                             sizeof(MPlayerName), buffer);
-  strcpy(MPlayerGameName, MPlayerName);
+  port::SafeCopy(MPlayerGameName, MPlayerName);
   MPlayerColorIdx = WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   MPlayerPrefColor = MPlayerColorIdx;
   MPlayerHouse =
@@ -319,10 +320,10 @@ int Read_Game_Options(char *name) {
 extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
 #endif
 
-void Just_Path(char *path, char *destpath) {
+void Just_Path(char *path, char *destpath, size_t dest_size) {
   char *terminator = nullptr;  // He'll be back.
 
-  strcpy(destpath, path);
+  port::SafeCopy(destpath, path, dest_size);
   terminator = strrchr(destpath, '\\');
   if (terminator) {
     *terminator = 0;

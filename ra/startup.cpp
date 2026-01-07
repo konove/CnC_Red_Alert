@@ -413,7 +413,7 @@ int main(int argc, char *argv[])
       printf(TEXT_INSUFFICIENT);
       printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
       printf("\n");
-      if (WindowsTimer) delete WindowsTimer;
+      delete WindowsTimer;
       return (EXIT_FAILURE);
 #elif defined(WIN32)
       char disk_space_message[512];
@@ -779,7 +779,7 @@ bool InitDDraw(void) {
     MessageBox(MainWindow, TEXT_VIDEO_ERROR, TEXT_SHORT_TITLE,
                MB_ICONEXCLAMATION | MB_OK);
 #endif
-    if (WindowsTimer) delete WindowsTimer;
+    delete WindowsTimer;
 
     return false;
   }

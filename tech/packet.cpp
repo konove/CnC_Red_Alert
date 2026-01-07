@@ -35,7 +35,7 @@
  *   PacketClass::~PacketClass -- destroys a packet class be freeing list  *
  *   PacketClass::Add_Field -- Adds a FieldClass entry to head of packet li*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "ra/packet.h"
+#include "tech/packet.h"
 
 #include <algorithm>
 #include <cstring>

@@ -37,7 +37,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
+
+#include <cstring>
+#include <format>
+#include <string>
+
+// Creates a list item string with an integer index stored at the beginning.
+// The returned buffer layout is: [int index][null-terminated string]
+// Caller takes ownership and must delete[] the returned pointer.
+static char *CreateIndexedListItem(int index, const std::string &str) {
+  const auto data = new char[sizeof(int) + str.size() + 1];
+  std::memcpy(data, &index, sizeof(int));
+  std::memcpy(data + sizeof(int), str.c_str(), str.size() + 1);
+  return data;
+}
 
 #ifdef NEWMENU
 
@@ -51,10 +66,10 @@ class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              void const *up, void const *down)
-      : ListClass(id, x, y, w, h, flags, up, down){};
+      : ListClass(id, x, y, w, h, flags, up, down) {};
 
  protected:
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 };
 
 void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
@@ -126,7 +141,7 @@ bool Expansion_Dialog(void) {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    strcat(buffer, ".INI");
+    port::SafeAppend(buffer, ".INI");
     file.Set_Name(buffer);
     if (file.Is_Available()) {
       file.Read(sbuffer, 1000);
@@ -136,11 +151,8 @@ bool Expansion_Dialog(void) {
 
       WWGetPrivateProfileString("Basic", "Name", "x", buffer, sizeof(buffer),
                                 sbuffer);
-      char *data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
-      *((int *)&data[0]) = index;
-      strcpy(&data[sizeof(int)], "GDI: ");
-      strcat(&data[sizeof(int)], buffer);
-      list.Add_Item(data);
+      list.Add_Item(
+          CreateIndexedListItem(index, std::format("GDI: {}", buffer)));
     }
   }
 
@@ -150,7 +162,7 @@ bool Expansion_Dialog(void) {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    strcat(buffer, ".INI");
+    port::SafeAppend(buffer, ".INI");
     file.Set_Name(buffer);
     if (file.Is_Available()) {
       file.Read(sbuffer, 1000);
@@ -160,11 +172,8 @@ bool Expansion_Dialog(void) {
 
       WWGetPrivateProfileString("Basic", "Name", "x", buffer, sizeof(buffer),
                                 sbuffer);
-      char *data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
-      *((int *)&data[0]) = index;
-      strcpy(&data[sizeof(int)], "NOD: ");
-      strcat(&data[sizeof(int)], buffer);
-      list.Add_Item(data);
+      list.Add_Item(
+          CreateIndexedListItem(index, std::format("NOD: {}", buffer)));
     }
   }
 
@@ -306,16 +315,12 @@ bool Bonus_Dialog(void) {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    strcat(buffer, ".INI");
+    port::SafeAppend(buffer, ".INI");
     file.Set_Name(buffer);
     if (file.Is_Available()) {
-      memcpy(buffer, Text_String(gdi_scen_names[index - 60]),
-             1 + strlen(Text_String(gdi_scen_names[index - 60])));
-      char *data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
-      *((int *)&data[0]) = index;
-      strcpy(&data[sizeof(int)], "GDI: ");
-      strcat(&data[sizeof(int)], buffer);
-      list.Add_Item(data);
+      list.Add_Item(CreateIndexedListItem(
+          index,
+          std::format("GDI: {}", Text_String(gdi_scen_names[index - 60]))));
     }
   }
 
@@ -325,16 +330,12 @@ bool Bonus_Dialog(void) {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    strcat(buffer, ".INI");
+    port::SafeAppend(buffer, ".INI");
     file.Set_Name(buffer);
     if (file.Is_Available()) {
-      memcpy(buffer, Text_String(nod_scen_names[index - 60]),
-             1 + strlen(Text_String(nod_scen_names[index - 60])));
-      char *data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
-      *((int *)&data[0]) = index;
-      strcpy(&data[sizeof(int)], "NOD: ");
-      strcat(&data[sizeof(int)], buffer);
-      list.Add_Item(data);
+      list.Add_Item(CreateIndexedListItem(
+          index,
+          std::format("NOD: {}", Text_String(nod_scen_names[index - 60]))));
     }
   }
 

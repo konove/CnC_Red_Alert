@@ -51,6 +51,7 @@
  *   NullModemClass::Hangup_Modem -- hangs up the modem                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -1018,8 +1019,9 @@ void *NullModemClass::Oldest_Send(void) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -1168,7 +1170,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  strcpy(buffer, Text_String(TXT_INITIALIZING_MODEM));
+  port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
@@ -1257,14 +1259,15 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   if (settings->InitStringIndex == -1) {
     status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
   } else {
+    size_t str_length = 2 + strlen(InitStrings[settings->InitStringIndex]);
     /*
     ** Split up the init string into seperate strings if it contains one or more
     *'|' characters.
     ** This character acts as a carriage return/pause.
     */
-    char *istr = new char[2 + strlen(InitStrings[settings->InitStringIndex])];
+    char *istr = new char[str_length];
     char *tokenptr;
-    strcpy(istr, InitStrings[settings->InitStringIndex]);
+    port::SafeCopy(istr, InitStrings[settings->InitStringIndex], str_length);
 
     /*
     ** Tokenise the string and send it in chunks
@@ -1295,15 +1298,15 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
     /*
     ** Send the init strings from the registry if available
     */
-    char send_string[256] = {"AT"};
+    char send_string[256] = "AT";
 
     if (settings->HardwareFlowControl) {
       /*
       ** Send the init string for hardware flow control
       */
       if (ModemRegistry->Get_Modem_Hardware_Flow_Control()) {
-        strcpy(&send_string[2],
-               ModemRegistry->Get_Modem_Hardware_Flow_Control());
+        port::SafeAppend(send_string,
+                         ModemRegistry->Get_Modem_Hardware_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
                                     DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
@@ -1317,7 +1320,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
       ** Send the init string for no flow control
       */
       if (ModemRegistry->Get_Modem_No_Flow_Control()) {
-        strcpy(&send_string[2], ModemRegistry->Get_Modem_No_Flow_Control());
+        port::SafeAppend(send_string,
+                         ModemRegistry->Get_Modem_No_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
                                     DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
@@ -1333,7 +1337,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
     */
     if (settings->Compression) {
       if (ModemRegistry->Get_Modem_Compression_Enable()) {
-        strcpy(&send_string[2], ModemRegistry->Get_Modem_Compression_Enable());
+        port::SafeAppend(send_string,
+                         ModemRegistry->Get_Modem_Compression_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
@@ -1343,7 +1348,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
       }
     } else {
       if (ModemRegistry->Get_Modem_Compression_Disable()) {
-        strcpy(&send_string[2], ModemRegistry->Get_Modem_Compression_Disable());
+        port::SafeAppend(send_string,
+                         ModemRegistry->Get_Modem_Compression_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
@@ -1358,8 +1364,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
     */
     if (settings->ErrorCorrection) {
       if (ModemRegistry->Get_Modem_Error_Correction_Enable()) {
-        strcpy(&send_string[2],
-               ModemRegistry->Get_Modem_Error_Correction_Enable());
+        port::SafeAppend(send_string,
+                         ModemRegistry->Get_Modem_Error_Correction_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
@@ -1369,8 +1375,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
       }
     } else {
       if (ModemRegistry->Get_Modem_Error_Correction_Disable()) {
-        strcpy(&send_string[2],
-               ModemRegistry->Get_Modem_Error_Correction_Disable());
+        port::SafeAppend(send_string,
+                         ModemRegistry->Get_Modem_Error_Correction_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if (status != MODEM_CMD_OK && status != MODEM_CMD_0) {
           if (CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE,
@@ -1454,9 +1460,9 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   **	These dimensions will control how the dialog box looks.
   */
   if (reconnect) {
-    strcpy(buffer, Text_String(TXT_MODEM_CONNERR_REDIALING));
+    port::SafeCopy(buffer, Text_String(TXT_MODEM_CONNERR_REDIALING));
   } else {
-    strcpy(buffer, Text_String(TXT_DIALING));
+    port::SafeCopy(buffer, Text_String(TXT_DIALING));
   }
 
   // Timer_Test(__LINE__, __FILE__);
@@ -1605,8 +1611,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
 
     if (process) {
       if (strncmp(buffer, "CON", 3) == 0) {
-        memset(ModemRXString, 0, 80);
-        strncpy(ModemRXString, buffer, 79);
+        port::SafeCopy(ModemRXString, buffer);
         dialstatus = DIAL_CONNECTED;
         process = false;
       } else if (strncmp(buffer, "BUSY", 4) == 0) {
@@ -1697,9 +1702,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   **	These dimensions will control how the dialog box looks.
   */
   if (reconnect) {
-    strcpy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
+    port::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
   } else {
-    strcpy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
+    port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -1816,7 +1821,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
     if (process) {
       if (strncmp(comm_buffer, "RING", 4) == 0) {
-        strcpy(text_buffer, Text_String(TXT_ANSWERING));
+        port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                          TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -1841,8 +1846,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         delay = ModemWaitCarrier;
         display = REDRAW_ALL;
       } else if (strncmp(comm_buffer, "CON", 3) == 0) {
-        memset(ModemRXString, 0, 80);
-        strncpy(ModemRXString, comm_buffer, 79);
+        port::SafeCopy(ModemRXString, comm_buffer);
         dialstatus = DIAL_CONNECTED;
         process = false;
       } else if (strncmp(comm_buffer, "BUSY", 4) == 0) {

@@ -42,6 +42,7 @@
 #include "td/function.h"
 #include "td/confdlg.h"
 
+#include "port/safe_string.h"
 #include "sdllib/include/font.h"
 
 bool ConfirmationClass::Process(int text) {
@@ -74,7 +75,7 @@ bool ConfirmationClass::Process(char const *string) {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  strcpy(buffer, string);
+  port::SafeCopy(buffer, string);
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200 * factor, width, height);
   width += 60 * factor;

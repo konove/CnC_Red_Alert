@@ -48,6 +48,7 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #include "td/ipx95.h"
 #include "td/tcpip.h"
@@ -114,7 +115,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   ------------------------------------------------------------------------*/
   if (address) Address = (*address);
   ID = id;
-  strcpy(Name, name);
+  port::SafeCopy(Name, name);
 
   if (!Winsock.Get_Connected()) {
     /*------------------------------------------------------------------------
@@ -522,8 +523,9 @@ void IPXConnClass::Close_Socket(unsigned short socket) {
  *                                                                         *
  * The "ImmediateAddress" field of the SendECB must be filled in with the
  ** address of a bridge, or the node address of the destination if there
- ** is no bridge.  The NETX call to find this address will always crash * if NETX isn't loaded (ConnectionNum is 0), so this case is trapped &		*
- * prevented.
+ ** is no bridge.  The NETX call to find this address will always crash * if
+ * NETX isn't loaded (ConnectionNum is 0), so this case is trapped &
+ *	* prevented.
  ** Also, if the address of this IPX connection is known when the
  ** constructor is called, and Configure has been called, Get_Local_Target * is
  *called to precompute the ImmediateAddress; this case is detected & 	* if the

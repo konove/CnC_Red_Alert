@@ -50,6 +50,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #include "sdllib/include/memflag.h"
 
@@ -478,6 +479,8 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
                               (sizeof(BriefingText) - strlen(BriefingText)) - 1,
                               buffer);
     if (strlen(stage) == 0) break;
+    // Really old and ugly code - refactor.
+    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcat(stage, " ");
     stage += strlen(stage);
   }
@@ -507,6 +510,8 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
           root, buff, "", work,
           (sizeof(BriefingText) - strlen(BriefingText)) - 1, _ShapeBuffer);
       if (strlen(work) == 0) break;
+      // Really old and ugly code - refactor.
+      // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
       strcat(work, " ");
       work += strlen(work);
     }

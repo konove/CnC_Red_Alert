@@ -41,6 +41,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 
 /***************************************************************************
@@ -62,8 +63,8 @@ bool Read_Private_Config_Struct(char *profile, NewConfigType *config) {
   config->Channels = WWGetPrivateProfileInt("Sound", "Channels", 0, profile);
   config->Reverse = WWGetPrivateProfileInt("Sound", "Reverse", 0, profile);
   config->Speed = WWGetPrivateProfileInt("Sound", "Speed", 0, profile);
-  WWGetPrivateProfileString("Language", "Language", nullptr, config->Language, 3,
-                            profile);
+  WWGetPrivateProfileString("Language", "Language", nullptr, config->Language,
+                            3, profile);
 
   return ((config->DigitCard == 0) && (config->IRQ == 0) && (config->DMA == 0));
 }
@@ -217,7 +218,7 @@ char *WWGetPrivateProfileString(char const *section, char const *entry,
   */
   if (retbuffer) {
     if (def && retbuffer != def) {
-      strncpy(retbuffer, def, retlen);
+      port::SafeCopy(retbuffer, def, retlen);
     }
     retbuffer[retlen - 1] = '\0';
     orig_retbuf = retbuffer;
@@ -514,7 +515,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   **	buffer length. 'offset' will point to 1st entry in the section, NULL if
   **	section not found.
   */
-  offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
+  offset =
+      WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
 
   /*
   **	If the section could not be found, then add it to the end. Don't add
@@ -523,7 +525,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   */
   if (!offset && entry) {
     sprintf(buffer, "\r\n[%s]\r\n", section);
-    strcat(profile, buffer);
+    // TODO(konove): Why profile is initialized with SHAPE_BUFFER_SIZE?
+    port::SafeAppend(profile, buffer, SHAPE_BUFFER_SIZE);
   }
 
   /*
@@ -562,9 +565,9 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
       }
     }
 
-    /*
-    **	Remove the section
-    */
+    // Profile is initialized to be of size SHAPE_BUFFER_SIZE, which is big
+    // enough.
+    // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
     strcpy(offset, next);
 
     return (true);
@@ -575,7 +578,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
   **	with 0 length will just return the offset of the found entry, NULL if
   **	entry not found.
   */
-  offset = WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
+  offset =
+      WWGetPrivateProfileString(section, entry, nullptr, nullptr, 0, profile);
 
   /*
   **	Remove any existing entry
@@ -600,7 +604,8 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     **	Entry doesn't exist, so point 'offset' to the 1st entry position in
     **	the section.
     */
-    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0, profile);
+    offset = WWGetPrivateProfileString(section, nullptr, nullptr, nullptr, 0,
+                                       profile);
   }
 
   /*

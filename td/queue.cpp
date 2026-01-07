@@ -77,6 +77,7 @@
  *   Update_Queue_Mono -- updates mono display                             *
  *   Print_Framesync_Values -- displays frame-sync variables               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#include "port/safe_string.h"
 #include "td/function.h"
 #include "td/tcpip.h"
 
@@ -1781,7 +1782,7 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
     //	Save this message in our last-message buffer
     //.....................................................................
     if (strlen(serial_packet->Message)) {
-      strcpy(LastMessage, serial_packet->Message);
+      port::SafeCopy(LastMessage, serial_packet->Message);
     }
 
     //.....................................................................

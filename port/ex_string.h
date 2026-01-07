@@ -3,7 +3,6 @@
 
 #include <cstdio>
 
-// paths
 #define _MAX_PATH 260
 #define _MAX_FNAME 256
 #define _MAX_EXT 256

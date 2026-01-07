@@ -131,7 +131,7 @@ ChronalVortexClass::ChronalVortexClass(void) {
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
 ChronalVortexClass::~ChronalVortexClass(void) {
-  if (RenderBuffer) delete RenderBuffer;
+  delete RenderBuffer;
   Active = 0;
 }
 
@@ -306,7 +306,7 @@ void ChronalVortexClass::Load(Straw &file) {
   ** Delete the render buffer as we are going to lose the pointer anyway.
   ** It will be re-allocated when needed.
   */
-  if (RenderBuffer) delete RenderBuffer;
+  delete RenderBuffer;
 
   file.Get(this, sizeof(ChronalVortexClass));
 }

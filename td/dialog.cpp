@@ -48,6 +48,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
 
@@ -699,7 +700,7 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
   char buffer[512];
 
   if (text) {
-    strcpy(buffer, text);
+    port::SafeCopy(buffer, text);
 
     /*
     **	Set the font and spacing characteristics according to the flag

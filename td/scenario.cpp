@@ -48,6 +48,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "port/safe_string.h"
 #include "td/function.h"
 #include "td/interpal.h"
 
@@ -665,8 +666,8 @@ bool Restate_Mission(char const *name, int button1, int button2) {
   if (name) {
 #ifdef JAPANESE
     char fname[14];
-    strcpy(fname, name);
-    strcat(fname, ".CPS");
+    port::SafeCopy(fname, name);
+    port::SafeAppend(fname, ".CPS");
 
     if (CCFileClass(fname).Is_Available()) {
       CCMessageBox box(TXT_NONE, true);
@@ -698,8 +699,8 @@ bool Restate_Mission(char const *name, int button1, int button2) {
     if (strlen(BriefingText)) {
       static char _buff[512];
 
-      strcpy(_buff, BriefingText);
-      //			strcpy(_ShapeBuffer, BriefingText);
+      port::SafeCopy(_buff, BriefingText);
+      // port::SafeCopy(_ShapeBuffer, BriefingText);
 
       bool hidden = Get_Mouse_State();
       if (hidden) Show_Mouse();
