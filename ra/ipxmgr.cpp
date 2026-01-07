@@ -70,7 +70,6 @@
 #include "ra/ipxmgr.h"
 
 #include <cassert>
-#include <cstring>
 
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"

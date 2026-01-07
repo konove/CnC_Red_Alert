@@ -60,7 +60,6 @@
 #include "ra/trigtype.h"
 
 #include <cassert>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -68,7 +67,6 @@
 #include <utility>
 
 #include "port/ex_string.h"
-#include "port/safe_string.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"

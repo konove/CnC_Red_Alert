@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_SAVELOAD_H_
 #define CNC_RED_ALERT_RA_SAVELOAD_H_
 
+#include <cstddef>
+
 #include "ra/defines.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"

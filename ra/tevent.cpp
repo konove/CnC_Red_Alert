@@ -47,7 +47,6 @@
 
 #include "ra/tevent.h"
 
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <format>

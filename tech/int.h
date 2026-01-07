@@ -46,8 +46,6 @@
 #include "tech/mp.h"
 #include "tech/straw.h"
 
-#pragma warn - inl
-
 template <class T>
 T Generate_Prime(Straw &rng, int pbits, T const *);
 
@@ -399,8 +397,6 @@ T Gcd(const T &a, const T &n) {
   return g[(i - 1) % 3];
 }
 
-#pragma warning 604 9
-#pragma warning 595 9
 template <class T>
 T Generate_Prime(Straw &rng, int pbits, T const *) {
   T minQ = (T(1UL) << (unsigned short)(pbits - (unsigned short)2));

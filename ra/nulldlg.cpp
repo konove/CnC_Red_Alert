@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <string>
 
 #include "port/ex_string.h"
 #include "port/safe_string.h"

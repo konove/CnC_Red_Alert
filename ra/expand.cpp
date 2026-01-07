@@ -40,7 +40,6 @@
 #include "ra/expand.h"
 
 #include <cstdio>
-#include <cstring>
 
 #include "port/safe_string.h"
 #include "ra/ccfile.h"
@@ -268,14 +267,14 @@ class EListClass : public ListClass {
   }
 
  protected:
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
  private:
-  virtual int Add_Item(char const* text) {
+  int Add_Item(char const* text) override {
     return (ListClass::Add_Item(text));
   };
-  virtual int Add_Item(int text) { return (ListClass::Add_Item(text)); };
-  virtual char const* Current_Item(void) const {
+  int Add_Item(int text) override { return (ListClass::Add_Item(text)); };
+  char const* Current_Item(void) const override {
     return (ListClass::Current_Item());
   };
   virtual char const* Get_Item(int index) const {

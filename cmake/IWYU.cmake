@@ -27,7 +27,7 @@ if (ENABLE_IWYU)
             set(IWYU_COMMAND
                     "${IWYU_PATH}"
                     "-Xiwyu" "--mapping_file=${CMAKE_SOURCE_DIR}/.iwyu_mappings"
-                    #                    "-Xiwyu" "--error"
+                    "-Xiwyu" "--error"
                     "-Xiwyu" "--cxx17ns"
                     "-Xiwyu" "--no_fwd_decls"
                     "-Xiwyu" "--max_line_length=120"

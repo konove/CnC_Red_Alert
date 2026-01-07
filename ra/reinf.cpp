@@ -47,7 +47,6 @@
 #include "ra/reinf.h"
 
 #include <cassert>
-#include <cstring>
 
 #include "port/safe_string.h"
 #include "ra/aircraft.h"

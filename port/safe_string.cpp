@@ -1,6 +1,5 @@
 #include "port/safe_string.h"
 
-#include <algorithm>
 #include <cstring>
 
 namespace port {

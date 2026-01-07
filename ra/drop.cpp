@@ -39,8 +39,6 @@
 
 #include "ra/drop.h"
 
-#include <cstring>
-
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/dialog.h"

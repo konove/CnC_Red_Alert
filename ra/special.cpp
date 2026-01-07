@@ -266,7 +266,7 @@ class PWEditClass : public EditClass {
       : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC) {};
 
  protected:
-  virtual void Draw_Text(char const* text);
+  void Draw_Text(char const* text) override;
 };
 
 /***********************************************************************************************

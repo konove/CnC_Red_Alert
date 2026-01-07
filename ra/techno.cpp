@@ -4068,15 +4068,15 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
             Map.Player_Names(true);
           }
         }
-      } break;
-
+        break;
+      }
       case RTTI_AIRCRAFT:
         if (source != nullptr && Session.Type == GAME_INTERNET) {
           source->House->DestroyedAircraft->Increment_Unit_Total(
               ((AircraftClass *)this)->Class->Type);
           total_recorded++;
         }
-        // Fall through.....
+        [[fallthrough]];
       case RTTI_INFANTRY:
         if (source != nullptr && !total_recorded &&
             Session.Type == GAME_INTERNET) {
@@ -4084,7 +4084,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               ((InfantryClass *)this)->Class->Type);
           total_recorded++;
         }
-        // Fall through.....
+        [[fallthrough]];
       case RTTI_UNIT:
         if (source != nullptr && !total_recorded &&
             Session.Type == GAME_INTERNET) {
@@ -4092,7 +4092,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
               ((UnitClass *)this)->Class->Type);
           total_recorded++;
         }
-        // Fall through.....
+        [[fallthrough]];
       case RTTI_VESSEL:
         if (source != nullptr && !total_recorded &&
             Session.Type == GAME_INTERNET) {

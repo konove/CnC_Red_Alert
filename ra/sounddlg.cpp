@@ -71,10 +71,10 @@ class MusicListClass : public ListClass {
       : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
                   MFCD::Retrieve("BTN-UP.SHP"),
                   MFCD::Retrieve("BTN-DN.SHP")) {};
-  virtual ~MusicListClass(void) {};
+  ~MusicListClass(void) override {};
 
  protected:
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 };
 
 /***********************************************************************************************

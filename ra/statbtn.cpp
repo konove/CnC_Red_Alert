@@ -45,7 +45,6 @@
 
 #include "ra/statbtn.h"
 
-#include <cstring>
 #include <new>
 
 #include "port/safe_string.h"
