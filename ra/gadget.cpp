@@ -61,8 +61,8 @@
 
 #include "ra/gadget.h"
 
-#include "ra/externs.h"
 #include "ra/control.h"
+#include "ra/externs.h"
 #include "ra/jshell.h"
 #include "sdllib/include/ww_mouse.h"
 
@@ -142,7 +142,8 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky)
  * HISTORY: * 08/01/1996 JLB : Created. *
  *=============================================================================================*/
 GadgetClass::GadgetClass(GadgetClass const &gadget)
-    : X(gadget.X),
+    : LinkClass(gadget),
+      X(gadget.X),
       Y(gadget.Y),
       Width(gadget.Width),
       Height(gadget.Height),
