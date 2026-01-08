@@ -3770,9 +3770,9 @@ bool Force_CD_Available(int cd) {
     if (GeneralMix) delete GeneralMix;
     if (ScoreMix) delete ScoreMix;
 
-    MoviesMix = new MixFileClass("MOVIES.MIX");
-    GeneralMix = new MixFileClass("GENERAL.MIX");
-    ScoreMix = new MixFileClass("SCORES.MIX");
+    MoviesMix = MixFileClass::Register("MOVIES.MIX");
+    GeneralMix = MixFileClass::Register("GENERAL.MIX");
+    ScoreMix = MixFileClass::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 #endif

@@ -48,6 +48,8 @@
 #include "sdllib/include/file.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
+
+#include "absl/log/log.h"
 #include "td/loaddlg.h"
 #include "td/tcpip.h"
 #include "sdllib/include/ww_audio.h"
@@ -118,54 +120,54 @@ bool Init_Game(int, char *[]) {
   void const *temp_mouse_shapes;
 
 #ifndef PORTABLE
-  CCDebugString("C&C95 - About to load reslib.dll\n");
+  DLOG(INFO) << "C&C95 - About to load reslib.dll";
   hCCLibrary = LoadLibrary("reslib.dll");
 #endif
 
   /*
   **	Initialize the game object heaps.
   */
-  CCDebugString("C&C95 - About to enter Units.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Units.Set_Heap";
   Units.Set_Heap(UNIT_MAX);
-  CCDebugString("C&C95 - About to enter Factories.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Factories.Set_Heap";
   Factories.Set_Heap(FACTORY_MAX);
-  CCDebugString("C&C95 - About to enter Terrains.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Terrains.Set_Heap";
   Terrains.Set_Heap(TERRAIN_MAX);
-  CCDebugString("C&C95 - About to enter Templates.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Templates.Set_Heap";
   Templates.Set_Heap(TEMPLATE_MAX);
-  CCDebugString("C&C95 - About to enter Smudges.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Smudges.Set_Heap";
   Smudges.Set_Heap(SMUDGE_MAX);
-  CCDebugString("C&C95 - About to enter Overlays.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Overlays.Set_Heap";
   Overlays.Set_Heap(OVERLAY_MAX);
-  CCDebugString("C&C95 - About to enter Infantry.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Infantry.Set_Heap";
   Infantry.Set_Heap(INFANTRY_MAX);
-  CCDebugString("C&C95 - About to enter Bullets.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Bullets.Set_Heap";
   Bullets.Set_Heap(BULLET_MAX);
-  CCDebugString("C&C95 - About to enter Buildings.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Buildings.Set_Heap";
   Buildings.Set_Heap(BUILDING_MAX);
-  CCDebugString("C&C95 - About to enter Anims.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Anims.Set_Heap";
   Anims.Set_Heap(ANIM_MAX);
-  CCDebugString("C&C95 - About to enter Aircraft.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Aircraft.Set_Heap";
   Aircraft.Set_Heap(AIRCRAFT_MAX);
-  CCDebugString("C&C95 - About to enter Triggers.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Triggers.Set_Heap";
   Triggers.Set_Heap(TRIGGER_MAX);
-  CCDebugString("C&C95 - About to enter TeamTypes.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter TeamTypes.Set_Heap";
   TeamTypes.Set_Heap(TEAMTYPE_MAX);
-  CCDebugString("C&C95 - About to enter Teams.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Teams.Set_Heap";
   Teams.Set_Heap(TEAM_MAX);
-  CCDebugString("C&C95 - About to enter Houses.Set_Heap\n");
+  DLOG(INFO) << "C&C95 - About to enter Houses.Set_Heap";
   Houses.Set_Heap(HOUSE_MAX);
 
   /*
   **	Initialize all the waypoints to invalid values.
   */
-  CCDebugString("C&C95 - About to clear waypoints\n");
+  DLOG(INFO) << "C&C95 - About to clear waypoints";
   memset(Waypoint, 0xFF, sizeof(Waypoint));
 
   /*
   **	Setup the keyboard processor in preparation for the game.
   */
-  CCDebugString("C&C95 - About to do various keyboard inits\n");
+  DLOG(INFO) << "C&C95 - About to do various keyboard inits";
 #ifdef FIX_ME_LATER
   Keyboard_Attributes_Off(TRACKEXT | PAUSEON | BREAKON | SCROLLLOCKON |
                           CTRLSON | CTRLCON | PASSBREAKS | FILTERONLY |
@@ -180,16 +182,16 @@ bool Init_Game(int, char *[]) {
   **	and ShapeBufferSize to these values, so it can be accessed for other
   **	purposes.
   */
-  CCDebugString("C&C95 - About to call Set_Shape_Buffer\n");
+  DLOG(INFO) << "C&C95 - About to call Set_Shape_Buffer";
   Set_Shape_Buffer(new unsigned char[SHAPE_BUFFER_SIZE], SHAPE_BUFFER_SIZE);
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
   *sucessfully *	be displayed.
   */
-  CCDebugString("C&C95 - About to register CCLOCAL.MIX\n");
+  DLOG(INFO) << "C&C95 - About to register CCLOCAL.MIX";
 #ifdef DEMO
-  new MixFileClass("DEMOL.MIX");
+  MixFileClass::Register("DEMOL.MIX");
   MixFileClass::Cache("DEMOL.MIX");
 #else
   int temp = RequiredCD;
@@ -197,27 +199,27 @@ bool Init_Game(int, char *[]) {
 
 #ifdef LORES
   // has less fonts, but includes the title image
-  new MixFileClass("LOCAL.MIX");  // Cached.
+  MixFileClass::Register("LOCAL.MIX");
   MixFileClass::Cache("LOCAL.MIX");
 #else
-  new MixFileClass("CCLOCAL.MIX");  // Cached.
+  MixFileClass::Register("CCLOCAL.MIX");
   MixFileClass::Cache("CCLOCAL.MIX");
-  CCDebugString("C&C95 - About to register UPDATE.MIX\n");
-  new MixFileClass("UPDATE.MIX");  // Cached.
-  CCDebugString("C&C95 - About to register UPDATEC.MIX\n");
-  new MixFileClass("UPDATEC.MIX");  // Cached.
+  DLOG(INFO) << "C&C95 - About to register UPDATE.MIX";
+  MixFileClass::Register("UPDATE.MIX");
+  DLOG(INFO) << "C&C95 - About to register UPDATEC.MIX";
+  MixFileClass::Register("UPDATEC.MIX");
   MixFileClass::Cache("UPDATEC.MIX");
 #endif
 
 #ifdef JAPANESE
-  CCDebugString("C&C95 - About to register LANGUAGE.MIX\n");
-  new MixFileClass("LANGUAGE.MIX");
+  DLOG(INFO) << "C&C95 - About to register LANGUAGE.MIX";
+  MixFileClass::Register("LANGUAGE.MIX");
 #endif  // JAPANESE
 
   RequiredCD = temp;
 
 #endif
-  CCDebugString("C&C95 - About to load fonts\n");
+  DLOG(INFO) << "C&C95 - About to load fonts";
   CCFileClass f("12GREEN.FNT");
   Green12FontPtr = Load_Alloc_Data(f);
   f.Open("12GRNGRD.FNT");
@@ -251,19 +253,19 @@ bool Init_Game(int, char *[]) {
   WhitePalette = new (MEM_CLEAR | MEM_REAL) unsigned char[768];
   memset(WhitePalette, 63, 768);
 
-  CCDebugString("C&C95 - About to set palette\n");
+  DLOG(INFO) << "C&C95 - About to set palette";
   memset(BlackPalette, 0x01, 768);
   if (!Special.IsFromInstall) Set_Palette(BlackPalette);
   memset(BlackPalette, 0, 768);
   if (!Special.IsFromInstall) {
     Set_Palette(BlackPalette);
-    CCDebugString("C&C95 - About to clear visible page\n");
+    DLOG(INFO) << "C&C95 - About to clear visible page";
     VisiblePage.Clear();
   }
 
   Set_Palette(GamePalette);
 
-  CCDebugString("C&C95 - About to set the mouse shape\n");
+  DLOG(INFO) << "C&C95 - About to set the mouse shape";
   /*
   ** Since there is no mouse shape currently available we need'
   ** to set one of our own.
@@ -281,17 +283,17 @@ bool Init_Game(int, char *[]) {
     }
   }
 
-  CCDebugString("C&C95 - About to enter wait for focus loop\n");
+  DLOG(INFO) << "C&C95 - About to enter wait for focus loop";
   /*
   ** Process the message loop until we are in focus.
   */
   do {
-    CCDebugString("C&C95 - About to call Keyboard::Check\n");
+    DLOG(INFO) << "C&C95 - About to call Keyboard::Check";
     Keyboard::Check();
   } while (!GameInFocus);
   AllSurfaces.SurfacesRestored = false;
 
-  CCDebugString("C&C95 - About to load the language file\n");
+  DLOG(INFO) << "C&C95 - About to load the language file";
   /*
   **	Fetch the language text from the hard drive first. If it cannot be
   **	found on the hard drive, then look for it in the mixfile.
@@ -342,10 +344,10 @@ bool Init_Game(int, char *[]) {
 #endif
 
 #ifdef PORTABLE
-  CCFileClass::Set_Search_Drives(".");  // allow running without CD
+  CCFileClass::Add_Search_Drives(".");  // allow running without CD
 #endif
 
-  CCDebugString("C&C95 - About to search for CD drives\n");
+  DLOG(INFO) << "C&C95 - About to search for CD drives";
   /*
   **	Always try to look at the CD-ROM for data files.
   */
@@ -366,7 +368,7 @@ bool Init_Game(int, char *[]) {
       }
       CCFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
 
-      error = CCFileClass::Set_Search_Drives("?:\\");
+      error = CCFileClass::Add_Search_Drives("?:\\");
       switch (error) {
         case 1:
           Set_Palette(GamePalette);
@@ -410,7 +412,7 @@ bool Init_Game(int, char *[]) {
     RequiredCD = -2;
   }
 #ifndef DEMO
-  CCDebugString("C&C95 - About to register addon mixfiles\n");
+  DLOG(INFO) << "C&C95 - About to register addon mixfiles";
   /*
   **	Before all else, cache any additional mixfiles.
   */
@@ -422,7 +424,7 @@ bool Init_Game(int, char *[]) {
       if (stricmp(state.name, "scores.mix") == 0) continue;
 
       ptr = strdup(state.name);
-      new MixFileClass(ptr);
+      MixFileClass::Register(ptr);
       MixFileClass::Cache(ptr);
     } while (Find_Next_File(state));
   }
@@ -430,14 +432,14 @@ bool Init_Game(int, char *[]) {
     char *ptr;
     do {
       ptr = strdup(state.name);
-      new MixFileClass(ptr);
+      MixFileClass::Register(ptr);
     } while (Find_Next_File(state));
   }
 #endif  // DEMO
 
-  CCDebugString("C&C95 - About to register GENERAL.MIX\n");
-  if (GeneralMix) delete GeneralMix;
-  GeneralMix = new MixFileClass("GENERAL.MIX");
+  DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
+  MixFileClass::Unregister("GENERAL.MIX");
+  GeneralMix = MixFileClass::Register("GENERAL.MIX");
 
   //	if (!_dos_findfirst("SC*.MIX", _A_NORMAL, &ff)) {
   //		do {
@@ -450,28 +452,28 @@ bool Init_Game(int, char *[]) {
   **	Inform the file system of the various MIX files.
   */
 #ifdef DEMO
-  new MixFileClass("DEMO.MIX");
+  MixFileClass::Register("DEMO.MIX");
   if (CCFileClass("DEMOM.MIX").Is_Available()) {
-    if (!MoviesMix) MoviesMix = new MixFileClass("DEMOM.MIX");
+    if (!MoviesMix) MoviesMix = MixFileClass::Register("DEMOM.MIX");
     ScoresPresent = true;
     ThemeClass::Scan();
   }
 
 #else
-  CCDebugString("C&C95 - About to register CONQUER.MIX\n");
-  new MixFileClass("CONQUER.MIX");  // Cached.
-  CCDebugString("C&C95 - About to register TRANSIT.MIX\n");
-  new MixFileClass("TRANSIT.MIX");
+  DLOG(INFO) << "C&C95 - About to register CONQUER.MIX";
+  MixFileClass::Register("CONQUER.MIX");
+  DLOG(INFO) << "C&C95 - About to register TRANSIT.MIX";
+  MixFileClass::Register("TRANSIT.MIX");
 
-  CCDebugString("C&C95 - About to register GENERAL.MIX\n");
+  DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
   if (!GeneralMix)
-    GeneralMix = new MixFileClass("GENERAL.MIX");  // Never cached.
+    GeneralMix = MixFileClass::Register("GENERAL.MIX");  // Never cached.
 
   //	if (CCFileClass("MOVIES.MIX").Is_Available()) {
-  CCDebugString("C&C95 - About to register MOVIES.MIX\n");
+  DLOG(INFO) << "C&C95 - About to register MOVIES.MIX";
   if (!MoviesMix)
-    MoviesMix = new MixFileClass("MOVIES.MIX");  // Never cached.
-                                                 //	}
+    MoviesMix = MixFileClass::Register("MOVIES.MIX");  // Never cached.
+                                                       //	}
 
 #if (0)
 
@@ -510,12 +512,12 @@ bool Init_Game(int, char *[]) {
   /*
   **	Register the score mixfile.
   */
-  CCDebugString("C&C95 - About to register SCORES.MIX\n");
+  DLOG(INFO) << "C&C95 - About to register SCORES.MIX";
   ScoresPresent = false;
   //	if (CCFileClass("SCORES.MIX").Is_Available()) {
   ScoresPresent = true;
   if (!ScoreMix) {
-    ScoreMix = new MixFileClass("SCORES.MIX");
+    ScoreMix = MixFileClass::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 //	}
@@ -525,17 +527,17 @@ bool Init_Game(int, char *[]) {
   **	These are sound card specific, but the install program would have
   **	copied the coorect versions to the hard drive.
   */
-  CCDebugString("C&C95 - About to register SPEECH.MIX\n");
+  DLOG(INFO) << "C&C95 - About to register SPEECH.MIX";
   if (CCFileClass("SPEECH.MIX").Is_Available()) {
-    new MixFileClass("SPEECH.MIX");  // Never cached.
+    MixFileClass::Register("SPEECH.MIX");  // Never cached.
   }
-  CCDebugString("C&C95 - About to register SOUNDS.MIX\n");
-  new MixFileClass("SOUNDS.MIX");  // Cached.
+  DLOG(INFO) << "C&C95 - About to register SOUNDS.MIX";
+  MixFileClass::Register("SOUNDS.MIX");
 
   /*
   **	Initialize the animation system.
   */
-  CCDebugString("C&C95 - About to initialise the animation system\n");
+  DLOG(INFO) << "C&C95 - About to initialise the animation system";
   Anim_Init();
 
   if (SpawnedFromWChat) {
@@ -545,7 +547,7 @@ bool Init_Game(int, char *[]) {
   /*
   **	Play the introduction movies.
   */
-  CCDebugString("C&C95 - About to play the intro movie\n");
+  DLOG(INFO) << "C&C95 - About to play the intro movie";
   if (!Special.IsFromInstall && !Special.IsFromWChat) Play_Intro(true);
 
   /*
@@ -584,7 +586,7 @@ bool Init_Game(int, char *[]) {
   if (SampleType != 0 && !Debug_Quiet) {
     MixFileClass::Cache("SOUNDS.MIX");
     if (Special.IsJuvenile) {
-      new MixFileClass("ZOUNDS.MIX");  // Cached.
+      MixFileClass::Register("ZOUNDS.MIX");
       MixFileClass::Cache("ZOUNDS.MIX");
     }
   }
@@ -1021,10 +1023,10 @@ bool Select_Game(bool fade) {
           */
 #ifdef _WIN32
           if (!DDEServer.Get_MPlayer_Game_Info()) {
-            CCDebugString("C&C95 - About to call Internet Menu.\n");
+            DLOG(INFO) << "C&C95 - About to call Internet Menu.";
             if (Do_The_Internet_Menu_Thang() &&
                 DDEServer.Get_MPlayer_Game_Info()) {
-              CCDebugString("C&C95 - About to call Check_From_WChat.\n");
+              DLOG(INFO) << "C&C95 - About to call Check_From_WChat.";
               Check_From_WChat(NULL);
               selection = SEL_MULTIPLAYER_GAME;
               display = false;
@@ -1034,7 +1036,7 @@ bool Select_Game(bool fade) {
               display = true;
             }
           } else {
-            CCDebugString("C&C95 - About to call Check_From_WChat.\n");
+            DLOG(INFO) << "C&C95 - About to call Check_From_WChat.";
             Check_From_WChat(NULL);
             display = false;
             GameToPlay = GAME_INTERNET;
@@ -1239,28 +1241,27 @@ bool Select_Game(bool fade) {
             *now.
             */
             case GAME_INTERNET:
-              CCDebugString("C&C95 - case GAME_INTERNET:\n");
+              DLOG(INFO) << "C&C95 - case GAME_INTERNET:";
               if (Special.IsFromWChat) {
                 // MessageBox (NULL, "About to restore focus to C&C95", "C&C95",
                 // MB_OK);
-                CCDebugString("C&C95 - About to give myself focus.\n");
+                DLOG(INFO) << "C&C95 - About to give myself focus.";
 #ifndef PORTABLE
                 SetForegroundWindow(MainWindow);
                 ShowWindow(MainWindow, ShowCommand);
 #endif
 
-                CCDebugString("C&C95 - About to initialise Winsock.\n");
+                DLOG(INFO) << "C&C95 - About to initialise Winsock.";
                 if (Winsock.Init()) {
-                  CCDebugString(
-                      "C&C95 - About to read multiplayer settings.\n");
+                  DLOG(INFO) << "C&C95 - About to read multiplayer settings.";
                   Read_MultiPlayer_Settings();
                   Server = PlanetWestwoodIsHost;
 
-                  CCDebugString("C&C95 - About to set addresses.\n");
+                  DLOG(INFO) << "C&C95 - About to set addresses.";
                   Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
 
-                  CCDebugString(
-                      "C&C95 - About to call Start_Server or Start_Client.\n");
+                  DLOG(INFO)
+                      << "C&C95 - About to call Start_Server or Start_Client.";
                   if (Server) {
                     ModemGameToPlay = INTERNET_HOST;
                     Winsock.Start_Server();
@@ -1273,50 +1274,49 @@ bool Select_Game(bool fade) {
                   /*
                   ** Flush out any pending packets from a previous game.
                   */
-                  CCDebugString("C&C95 - About to flush packet queue.\n");
-                  CCDebugString("C&C95 - Allocating scrap memory.\n");
+                  DLOG(INFO) << "C&C95 - About to flush packet queue.";
+                  DLOG(INFO) << "C&C95 - Allocating scrap memory.";
                   char *temp_buffer = new char[1024];
 
-                  CCDebugString("C&C95 - Creating timer class instance.\n");
+                  DLOG(INFO) << "C&C95 - Creating timer class instance.";
                   CountDownTimerClass ptimer;
 
-                  CCDebugString("C&C95 - Entering read loop.\n");
+                  DLOG(INFO) << "C&C95 - Entering read loop.";
                   while (Winsock.Read(temp_buffer, 1024)) {
-                    CCDebugString("C&C95 - Discarding a packet.\n");
+                    DLOG(INFO) << "C&C95 - Discarding a packet.";
                     ptimer.Set(30, true);
                     while (ptimer.Time()) {
                     };
-                    CCDebugString("C&C95 - Ready to check for more packets.\n");
+                    DLOG(INFO) << "C&C95 - Ready to check for more packets.";
                   }
-                  CCDebugString("C&C95 - About to delete scrap memory.\n");
+                  DLOG(INFO) << "C&C95 - About to delete scrap memory.";
                   delete temp_buffer;
                   // #endif	//(0)
 
                 } else {
-                  CCDebugString("C&C95 - Winsock failed to initialise.\n");
+                  DLOG(INFO) << "C&C95 - Winsock failed to initialise.";
                   GameToPlay = GAME_NORMAL;
                   selection = SEL_EXIT;
                   Special.IsFromWChat = false;
                   break;
                 }
 
-                CCDebugString("C&C95 - About to call Init_Network.\n");
+                DLOG(INFO) << "C&C95 - About to call Init_Network.";
                 Init_Network();
 
 #ifdef _WIN32
                 if (DDEServer.Get_MPlayer_Game_Info()) {
-                  CCDebugString("C&C95 - About to call Read_Game_Options.\n");
+                  DLOG(INFO) << "C&C95 - About to call Read_Game_Options.";
                   Read_Game_Options(NULL);
                 } else
 #endif
                   Read_Game_Options("C&CSPAWN.INI");
 
                 if (Server) {
-                  CCDebugString(
-                      "C&C95 - About to call Server_Remote_Connect.\n");
+                  DLOG(INFO) << "C&C95 - About to call Server_Remote_Connect.";
                   if (Server_Remote_Connect()) {
-                    CCDebugString(
-                        "C&C95 - Server_Remote_Connect returned success.\n");
+                    DLOG(INFO)
+                        << "C&C95 - Server_Remote_Connect returned success.";
                     break;
                   } else {
                     /*
@@ -1337,11 +1337,10 @@ bool Select_Game(bool fade) {
                     break;
                   }
                 } else {
-                  CCDebugString(
-                      "C&C95 - About to call Client_Remote_Connect.\n");
+                  DLOG(INFO) << "C&C95 - About to call Client_Remote_Connect.";
                   if (Client_Remote_Connect()) {
-                    CCDebugString(
-                        "C&C95 - Client_Remote_Connect returned success.\n");
+                    DLOG(INFO)
+                        << "C&C95 - Client_Remote_Connect returned success.";
                     break;
                   } else {
                     /*
@@ -1573,7 +1572,7 @@ bool Select_Game(bool fade) {
       ScenDir = SCEN_DIR_EAST;
     }
   }
-  CCDebugString("C&C95 - About to start game initialisation.\n");
+  DLOG(INFO) << "C&C95 - About to start game initialisation.";
 #ifdef FORCE_WINSOCK
   if (GameToPlay == GAME_INTERNET) {
     CommProtocol = COMM_PROTOCOL_MULTI_E_COMP;
@@ -1686,11 +1685,11 @@ bool Select_Game(bool fade) {
     Show_Mouse();
 
     Special.IsFromInstall = 0;
-    CCDebugString("C&C95 - Starting scenario.\n");
+    DLOG(INFO) << "C&C95 - Starting scenario.";
     if (!Start_Scenario(ScenarioName)) {
       return (false);
     }
-    CCDebugString("C&C95 - Scenario started OK.\n");
+    DLOG(INFO) << "C&C95 - Scenario started OK.";
   }
 
   /*
@@ -1698,7 +1697,7 @@ bool Select_Game(bool fade) {
   **	Do this after loading the scenario, so the map's upper-left corner is
   **	properly set.
   */
-  CCDebugString("C&C95 - Initialising message system.\n");
+  DLOG(INFO) << "C&C95 - Initialising message system.";
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   Messages.Init(Map.TacPixelX, Map.TacPixelY, 6, MAX_MESSAGE_LENGTH,
                 6 * factor + 1);
@@ -1710,7 +1709,7 @@ bool Select_Game(bool fade) {
   **	started a scenario, Start_Scenario() will have played a couple of VQ
   **	movies, which will have cleared the screen to black already.)
   */
-  CCDebugString("C&C95 - About to call Call_Back.\n");
+  DLOG(INFO) << "C&C95 - About to call Call_Back.";
   Call_Back();
 
   /*
@@ -1942,8 +1941,8 @@ bool Parse_Command_Line(int argc, char *argv[]) {
   Debug_Unshroud = false;
 
   for (int index = 1; index < argc; index++) {
-    char *string;  // Pointer to argument.
-    long code = 0;
+    std::string original_arg = argv[index];  // Copy for preserving case.
+    char *string = strupr(argv[index]);      // Pointer to argument.
 
     string = strupr(argv[index]);
 
@@ -2176,7 +2175,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
     **	File search path override.
     */
     if (strstr(string, "-CD")) {
-      CCFileClass::Set_Search_Drives(&string[3]);
+      CCFileClass::Add_Search_Drives(original_arg.substr(3));
       continue;
     }
 #ifdef JAPANESE

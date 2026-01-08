@@ -42,7 +42,7 @@
 #define CCFILE_H
 
 #include "td/mixfile.h"
-#include "td/cdfile.h"
+#include "tech/cdfile.h"
 
 /*
 **	This derived class for file access knows about mixfiles (packed files).
@@ -53,8 +53,8 @@
 class CCFileClass : public CDFileClass {
  public:
   CCFileClass(char const *filename);
-  CCFileClass(void);
-  virtual ~CCFileClass(void) {};
+  CCFileClass();
+  ~CCFileClass() override = default;
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 

@@ -362,7 +362,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
     if (TheaterData) {
       delete TheaterData;
     }
-    TheaterData = new MixFileClass(fullname);
+    TheaterData = MixFileClass::Register(fullname);
     TheaterData->Cache();
   }
 
@@ -376,7 +376,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
     if (TheaterIcons) {
       delete TheaterIcons;
     }
-    TheaterIcons = new MixFileClass(iconname);
+    TheaterIcons = MixFileClass::Register(iconname);
     TheaterIcons->Cache();
   }
 

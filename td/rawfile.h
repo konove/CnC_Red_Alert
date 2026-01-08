@@ -47,7 +47,7 @@
 #include <cstdio>
 #include "td/compat.h"
 #include <climits>
-#include "td/wwfile.h"
+#include "tech/wwfile.h"
 
 #ifdef NEVER
 /*

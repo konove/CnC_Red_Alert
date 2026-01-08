@@ -2586,6 +2586,7 @@ static void Init_Expansion_Files(void) {
       // extracted
       if (stricmp(state.name, "scores.mix") == 0) continue;
       ptr = strdup(state.name);
+      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
       new MFCD(ptr, &FastKey);
       MFCD::Cache(ptr);
     } while (Find_Next_File(state));
@@ -2594,6 +2595,7 @@ static void Init_Expansion_Files(void) {
     char *ptr;
     do {
       ptr = strdup(state.name);
+      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
       new MFCD(ptr, &FastKey);
     } while (Find_Next_File(state));
   }
@@ -2787,6 +2789,7 @@ static void Init_Bootstrap_Mixfiles(void) {
 #ifdef WOLAPI_INTEGRATION
   CCFileClass fileWolapiMix("WOLAPI.MIX");
   if (fileWolapiMix.Is_Available()) {
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("WOLAPI.MIX", &FastKey);
     MFCD::Cache("WOLAPI.MIX");
   }
@@ -2794,15 +2797,18 @@ static void Init_Bootstrap_Mixfiles(void) {
 
   CCFileClass file2("EXPAND2.MIX");
   if (file2.Is_Available()) {
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("EXPAND2.MIX", &FastKey);
     bool ok = MFCD::Cache("EXPAND2.MIX");
     assert(ok);
 
 #if RESFACTOR == 2
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("HIRES1.MIX", &FastKey);
     ok = MFCD::Cache("HIRES1.MIX");
     assert(ok);
 #else
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("LORES1.MIX", &FastKey);
     ok = MFCD::Cache("LORES1.MIX");
     assert(ok);
@@ -2811,28 +2817,34 @@ static void Init_Bootstrap_Mixfiles(void) {
 
   CCFileClass file("EXPAND.MIX");
   if (file.Is_Available()) {
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("EXPAND.MIX", &FastKey);
     bool ok = MFCD::Cache("EXPAND.MIX");
     assert(ok);
   }
 
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("REDALERT.MIX", &FastKey);
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
   *successfully *	be displayed.
   */
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("LOCAL.MIX", &FastKey);  // Cached.
   bool ok = MFCD::Cache("LOCAL.MIX");
   assert(ok);
 
 #if RESFACTOR == 2
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("HIRES.MIX", &FastKey);
   ok = MFCD::Cache("HIRES.MIX");
   assert(ok);
 
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("NCHIRES.MIX", &FastKey);  // Non-cached hires stuff incl VQ palettes
 #else
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("LORES.MIX", &FastKey);
   ok = MFCD::Cache("LORES.MIX");
   assert(ok);
@@ -2881,11 +2893,15 @@ static void Init_Secondary_Mixfiles(void) {
     }
 
     // load the first two to get both movies
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("MAIN2.MIX", &FastKey);
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("MAIN1.MIX", &FastKey);
 
     // load extra missions
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("GENERAL4.MIX", &FastKey);
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
     new MFCD("GENERAL3.MIX", &FastKey);
   } else {
     // assume regular/TFD files
@@ -2953,9 +2969,13 @@ static void Init_Secondary_Mixfiles(void) {
   **	These are sound card specific, but the install program would have
   **	copied the correct versions to the hard drive.
   */
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("SPEECH.MIX", &FastKey);   // Never cached.
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("SOUNDS.MIX", &FastKey);   // Cached.
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("RUSSIAN.MIX", &FastKey);  // Cached.
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("ALLIES.MIX", &FastKey);   // Cached.
 }
 

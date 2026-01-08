@@ -437,6 +437,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           break;
 
         default:
+          delete obj;
           break;
       }
     }

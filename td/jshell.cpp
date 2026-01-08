@@ -49,7 +49,7 @@
 #include "td/function.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
-#include "td/wwfile.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

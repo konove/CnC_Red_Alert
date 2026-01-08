@@ -489,14 +489,26 @@ void Map_Selection(void) {
   scenario = Scenario + ((house == HOUSE_GOOD) ? 0 : 14);
   if (house == HOUSE_GOOD) {
     lastscenario = (Scenario == 14);
-    if (Scenario == 15) return;
+    if (Scenario == 15) {
+      delete[] progresspalette;
+      delete[] grey2palette;
+      return;
+    }
   } else {
     lastscenario = (Scenario == 12);
-    if (Scenario == 13) return;
+    if (Scenario == 13) {
+      delete[] progresspalette;
+      delete[] grey2palette;
+      return;
+    }
   }
 
   // Check if they're even entitled to map selection this time
-  if (CountryArray[scenario].Choices[ScenDir] == 0) return;
+  if (CountryArray[scenario].Choices[ScenDir] == 0) {
+    delete[] progresspalette;
+    delete[] grey2palette;
+    return;
+  }
 
   Theme.Queue_Song(THEME_MAP1);
 

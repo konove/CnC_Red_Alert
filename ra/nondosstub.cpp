@@ -197,10 +197,16 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
     i = Size / width;
     height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
-    if (!(pic && pic->Get_Buffer())) return nullptr;
+    if (!pic->Get_Buffer()) {
+      delete pic;
+      return nullptr;
+    }
   } else {
     pic = new GraphicBufferClass(width, height, nullptr, width * (height + 4));
-    if (!(pic && pic->Get_Buffer())) return nullptr;
+    if (!pic->Get_Buffer()) {
+      delete pic;
+      return nullptr;
+    }
   }
 
   buffer = (char *)pic->Get_Buffer();

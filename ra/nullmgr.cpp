@@ -61,6 +61,7 @@
 #include <sstream>
 #include <string>
 
+#include "absl/log/log.h"
 #include "port/safe_string.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
@@ -434,19 +435,20 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
       status = FastSetPortHardware(com, irq, port);
 
       if (status < ASSUCCESS) {
-        Mono_Printf("Unable to set Com port status %d\n", status);
-        Mono_Printf("Com port number %d with address %x, irq %d\n", com + 1,
-                    port, irq);
+        LOG(ERROR) << "Unable to set Com port status " << status;
+        LOG(ERROR) << "Com port number " << (com + 1) << " with address 0x"
+                   << std::hex << port << ", irq " << std::dec << irq;
       } else {
-        Mono_Printf("Changed Com port number %d to address %x, irq %d\n",
-                    com + 1, port, irq);
+        DLOG(INFO) << "Changed Com port number " << (com + 1) << " to address 0x"
+                   << std::hex << port << ", irq " << std::dec << irq;
       }
     } else {
-      Mono_Printf("No changes to Com port number %d with address %x, irq %d\n",
-                  com + 1, port, irq);
+      DLOG(INFO) << "No changes to Com port number " << (com + 1)
+                 << " with address 0x" << std::hex << port << ", irq "
+                 << std::dec << irq;
     }
   } else {
-    Mono_Printf("Com port number %d\n", com + 1);
+    DLOG(INFO) << "Com port number " << (com + 1);
   }
 
   if (status != ASSUCCESS) {
@@ -1360,41 +1362,11 @@ void NullModemClass::Mono_Debug_Print(int, int refresh) {
 
   Connection->Queue->Mono_Debug_Print(refresh);
 
-  if (refresh) {
-    Mono_Set_Cursor(31, 1);
-    Mono_Printf("Serial Port Queues");
-
-    Mono_Set_Cursor(9, 2);
-    Mono_Printf("Average Response Time:");
-
-    Mono_Set_Cursor(20, 3);
-    Mono_Printf("CRC Errors:");
-
-    Mono_Set_Cursor(43, 2);
-    Mono_Printf("Send Overflows:");
-
-    Mono_Set_Cursor(40, 3);
-    Mono_Printf("Receive Overflows:");
-  }
-
-  Mono_Set_Cursor(32, 2);
-  Mono_Printf("%d  ", Connection->Queue->Avg_Response_Time());
-
-  Mono_Set_Cursor(32, 3);
-  Mono_Printf("%d  ", CRCErrors);
-
-  Mono_Set_Cursor(59, 2);
-  Mono_Printf("%d  ", SendOverflows);
-
-  Mono_Set_Cursor(59, 3);
-  Mono_Printf("%d  ", ReceiveOverflows);
-
-  Mono_Set_Cursor(2, 5);
-  Mono_Printf("%d  ", Num_Send());
-
-  Mono_Set_Cursor(41, 5);
-  Mono_Printf("%d  ", Num_Receive());
-
+  DLOG(INFO) << "Serial Port Queues: "
+             << "AvgResponseTime=" << Connection->Queue->Avg_Response_Time()
+             << " CRCErrors=" << CRCErrors << " SendOverflows=" << SendOverflows
+             << " ReceiveOverflows=" << ReceiveOverflows
+             << " NumSend=" << Num_Send() << " NumReceive=" << Num_Receive();
 } /* end of Mono_Debug_Print */
 #endif
 

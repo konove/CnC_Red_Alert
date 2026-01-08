@@ -16,7 +16,7 @@ add_executable(tdsdl WIN32
         cargo.cpp
         ccfile.cpp
         cdata.cpp
-        cdfile.cpp
+        #        cdfile.cpp
         cell.cpp
         checkbox.cpp
         cheklist.cpp
@@ -144,7 +144,7 @@ add_executable(tdsdl WIN32
         visudlg.cpp
         stats.cpp
         monoc.cpp
-        rawfile.cpp
+        #        rawfile.cpp
 
         # these files are identical (or close enough) to RA
         noseqcon.cpp

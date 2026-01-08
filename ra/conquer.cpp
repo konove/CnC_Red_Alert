@@ -81,6 +81,7 @@
 #include <filesystem>
 #include <string>
 
+#include "absl/log/log.h"
 #include "jshell/rotbmp.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
@@ -3723,7 +3724,7 @@ long VQ_Call_Back(unsigned char *, long) {
   int key = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get();
-    fprintf(stderr, "[VQA] Key pressed: %d (ESC=%d)\n", key, KN_ESC);
+    DLOG(INFO) << "[VQA] Key pressed: " << key << " (ESC=" << KN_ESC << ")";
     Keyboard->Clear();
   }
   Check_VQ_Palette_Set();

@@ -41,7 +41,7 @@
 #ifndef TEAM_H
 #define TEAM_H
 
-#include "td/wwfile.h"
+#include "tech/wwfile.h"
 #include "td/teamtype.h"
 #include "td/abstract.h"
 
@@ -176,7 +176,7 @@ class TeamClass : public AbstractClass {
         Class(Class),
         House(House),
         SuspendTimer(x),
-        TimeOut(x){};
+        TimeOut(x) {};
   virtual ~TeamClass(void);
   virtual RTTIType What_Am_I(void) const { return RTTI_TEAM; };
   static void operator delete(void *ptr);

@@ -47,8 +47,11 @@ class MixFileClass : public LinkClass {
  public:
   char const *Filename;  // Filename of mixfile.
 
-  MixFileClass(char const *filename);
   ~MixFileClass(void);
+
+  // Factory methods - use these instead of direct construction
+  static MixFileClass *Register(char const *filename);
+  static bool Unregister(char const *filename);
 
   static bool Free(char const *filename);
   static void Free_All(void);
@@ -71,6 +74,8 @@ class MixFileClass : public LinkClass {
   };
 
  private:
+  MixFileClass(char const *filename);  // Use Register() factory instead
+
   static MixFileClass *Finder(char const *filename);
   long Offset(long crc, long *size = nullptr);
 

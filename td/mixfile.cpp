@@ -140,6 +140,55 @@ MixFileClass::~MixFileClass(void) {
 }
 
 /***********************************************************************************************
+ * MixFileClass::Register -- Factory method to create and register a mixfile. *
+ *                                                                                             *
+ *    Use this instead of direct construction. Creates a new MixFileClass and                  *
+ *    registers it in the global list. If already registered, returns existing.               *
+ *                                                                                             *
+ * INPUT:   filename -- Pointer to the filename of the mixfile.                                *
+ *                                                                                             *
+ * OUTPUT:  Pointer to the registered MixFileClass, or nullptr on failure.                     *
+ *                                                                                             *
+ *=============================================================================================*/
+MixFileClass *MixFileClass::Register(char const *filename) {
+  // Check if already registered
+  MixFileClass *existing = Finder(filename);
+  if (existing) {
+    return existing;
+  }
+
+  // Create new instance
+  MixFileClass *mix = new MixFileClass(filename);
+
+  // Register in linked list
+  if (!First) {
+    First = mix;
+  } else {
+    mix->Add_Tail(*First);
+  }
+  return mix;
+}
+
+/***********************************************************************************************
+ * MixFileClass::Unregister -- Unregister and delete a mixfile by name. *
+ *                                                                                             *
+ *    Finds the mixfile by name and deletes it (which also removes it from the list).          *
+ *                                                                                             *
+ * INPUT:   filename -- Pointer to the filename of the mixfile to unregister.                  *
+ *                                                                                             *
+ * OUTPUT:  true if found and deleted, false if not found.                                     *
+ *                                                                                             *
+ *=============================================================================================*/
+bool MixFileClass::Unregister(char const *filename) {
+  MixFileClass *mix = Finder(filename);
+  if (mix) {
+    delete mix;  // Destructor handles list removal
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
  * MixFileClass::MixFileClass -- Constructor for mixfile object. *
  *                                                                                             *
  *    This is the constructor for the mixfile object. It takes a filename and a
@@ -199,15 +248,8 @@ MixFileClass::MixFileClass(char const *filename) {
   */
   Data = nullptr;
 
-  /*
-  **	Attach to list of mixfiles.
-  */
+  // Initialize link pointers (registration happens in Register() factory)
   Zap();
-  if (!First) {
-    First = this;
-  } else {
-    Add_Tail(*First);
-  }
 }
 
 /***********************************************************************************************
