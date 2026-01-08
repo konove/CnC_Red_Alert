@@ -156,6 +156,9 @@ VectorClass<T>::VectorClass(VectorClass<T> const &vector) {
  *=============================================================================================*/
 template <class T>
 VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
+  if (this == &vector) {
+    return *this;
+  }
   Clear();
   VectorMax = vector.Length();
   if (VectorMax) {
@@ -170,7 +173,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
     Vector = nullptr;
     IsAllocated = false;
   }
-  return (*this);
+  return *this;
 }
 
 /***********************************************************************************************
@@ -454,7 +457,7 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
  *=============================================================================================*/
 template <class T>
 int DynamicVectorClass<T>::ID(T const &object) {
-  for (int index = 0; index < Count(); index++) {
+  for (size_t index = 0; index < Count(); index++) {
     if ((*this)[index] == object) return (index);
   }
   return (-1);
@@ -532,7 +535,8 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
   if (ActiveCount) {
     // We explicitly use NOLINT because we intend to move the raw pointers,
     // so sizeof(T) returning the pointer size is correct behavior.
-    memmove(&(*this)[1], &(*this)[0], ActiveCount * sizeof(T)); // NOLINT(bugprone-sizeof-expression)
+    memmove(&(*this)[1], &(*this)[0],
+            ActiveCount * sizeof(T));  // NOLINT(bugprone-sizeof-expression)
   }
   (*this)[0] = object;
   ActiveCount++;

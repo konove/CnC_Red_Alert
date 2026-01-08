@@ -136,7 +136,7 @@ class DynamicVectorClass : public VectorClass<T> {
   };
 
   // Fetch number of "allocated" vector objects.
-  int Count(void) const { return (ActiveCount); };
+  size_t Count(void) const { return (ActiveCount); };
 
   // Add object to vector (growing as necessary).
   int Add(T const &object);
@@ -166,7 +166,7 @@ class DynamicVectorClass : public VectorClass<T> {
   **	vector. The memory array often times is bigger than this
   **	value.
   */
-  int ActiveCount;
+  size_t ActiveCount;
 
   /*
   **	If there is insufficient room in the vector array for a new

@@ -264,7 +264,7 @@ int ListClass::Action(unsigned flags, KeyNumType &key) {
       int index = Get_Mouse_Y() - (Y + 1);
       index = index / LineHeight;
       SelectedIndex = CurrentTopIndex + index;
-      SelectedIndex = std::min(SelectedIndex, List.Count() - 1);
+      SelectedIndex = std::min<int>(SelectedIndex, List.Count() - 1);
     }
   }
   return (ControlClass::Action(flags, key));
@@ -389,7 +389,7 @@ void ListClass::Step(int up) {
 char const *ListClass::Get_Item(int index) const {
   if (List.Count() == 0) return (nullptr);
 
-  index = std::min(index, List.Count() - 1);
+  index = std::min<int>(index, List.Count() - 1);
   return (List[index]);
 }
 

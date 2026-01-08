@@ -153,9 +153,11 @@ void LinkClass::Zap(void) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass &LinkClass::operator=(LinkClass &link) {
-  Remove();
-  Add(link);
-  return (link);
+  if (this != &link) {
+    Remove();
+    Add(link);
+  }
+  return *this;
 }
 
 /***********************************************************************************************
