@@ -1248,8 +1248,8 @@ int MapClass::Validate(void) {
 
   BlubCell = &((*this)[797]);
 
-  if (BlubCell->Overlapper[1]) {
-    obj = BlubCell->Overlapper[1];
+  if (BlubCell->Overlappers[1]) {
+    obj = BlubCell->Overlappers[1];
     if (obj) {
       if (obj->IsInLimbo) obj = obj;
     }
@@ -1317,7 +1317,7 @@ int MapClass::Validate(void) {
     Validate Overlappers
     .....................................................................*/
     for (i = 0; i < 3; i++) {
-      obj = (*this)[cell].Overlapper[i];
+      obj = (*this)[cell].Overlappers[i];
       if (obj) {
         if (((uintptr_t)obj & 0xff000000) ||
             ((uintptr_t)obj->Next & 0xff000000) ||

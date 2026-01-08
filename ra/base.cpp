@@ -243,33 +243,57 @@ bool BaseClass::Is_Built(int index) const {
  *overlapper list length.                                 *
  *=============================================================================================*/
 BuildingClass *BaseClass::Get_Building(int index) const {
-  ObjectClass *obj[1 + ARRAY_SIZE(Map[(CELL)0].Overlapper)];
-
   /*
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  CELL cell = Nodes[index].Cell;
+  const auto &node = Nodes[index];
+  const CELL target_cell = node.Cell;
 
-  obj[0] = Map[cell].Cell_Building();
-  int count = 1;
-  for (int xindex = 0; xindex < ARRAY_SIZE(Map[cell].Overlapper); xindex++) {
-    if (Map[cell].Overlapper[xindex] != nullptr) {
-      obj[count++] = Map[cell].Overlapper[xindex];
+  // Create a reference to the map cell to avoid repeated lookups.
+  const auto &map_cell = Map[target_cell];
+
+  // Helper lambda to check if a candidate object matches our criteria.
+  // Returns the cast pointer if successful, nullptr otherwise.
+  auto check_candidate = [&](ObjectClass *candidate) -> BuildingClass * {
+    if (!candidate) return nullptr;
+
+    // 1. Fast RTTI Check: Is it actually a building?
+    if (candidate->What_Am_I() != RTTI_BUILDING) {
+      return nullptr;
+    }
+
+    // 2. Safe Cast: We verified the type above, so static_cast is safe and
+    // fast.
+    auto *building = static_cast<BuildingClass *>(candidate);
+
+    // 3. Logic Check: Does the Type matches?
+    if (building->Class->Type != node.Type) {
+      return nullptr;
+    }
+
+    // 4. Location Check: Ensure the building is actually AT this cell
+    // coordinate.
+    if (Coord_Cell(building->Coord) != target_cell) {
+      return nullptr;
+    }
+
+    return building;
+  };
+
+  // Check the primary occupant.
+  if (auto *match = check_candidate(map_cell.Cell_Building())) {
+    return match;
+  }
+
+  // Check the overlappers.
+  for (auto *overlapper : map_cell.Overlappers) {
+    if (auto *match = check_candidate(overlapper)) {
+      return match;
     }
   }
 
-  BuildingClass *bldg = nullptr;
-  for (int i = 0; i < count; i++) {
-    if (obj[i] && Coord_Cell(obj[i]->Coord) == Nodes[index].Cell &&
-        obj[i]->What_Am_I() == RTTI_BUILDING &&
-        ((BuildingClass *)obj[i])->Class->Type == Nodes[index].Type) {
-      bldg = (BuildingClass *)obj[i];
-      break;
-    }
-  }
-
-  return (bldg);
+  return nullptr;
 }
 
 /***********************************************************************************************

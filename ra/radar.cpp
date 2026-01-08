@@ -676,8 +676,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (lp = 0; lp < ARRAY_SIZE(Map[cell].Overlapper); lp++) {
-    obj = Map[cell].Overlapper[lp];
+  for (lp = 0; lp < ARRAY_SIZE(Map[cell].Overlappers); lp++) {
+    obj = Map[cell].Overlappers[lp];
     if (obj && obj->What_Am_I() == RTTI_TERRAIN)
       list[listidx++] = (TerrainClass *)obj;
   }
@@ -717,20 +717,9 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   for (lp = 0; lp < listidx; lp++) {
     unsigned char *icon = list[lp]->Radar_Icon(cell);
     if (!icon) continue;
-#ifdef WIN32
     Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
     _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, TRUE,
                      (char *)&FadingBrighten[0]);
-#else
-    for (int lpy = 0; lpy < 3; lpy++) {
-      for (int lpx = 0; lpx < 3; lpx++) {
-        if (*icon) {
-          LogicPage->Put_Pixel(x + lpx, y + lpy, FadingBrighten[*icon]);
-        }
-        icon++;
-      }
-    }
-#endif  // WIN32
   }
 }
 

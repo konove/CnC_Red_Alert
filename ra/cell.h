@@ -183,9 +183,9 @@ class CellClass {
 
  public:
 #ifdef SORTDRAW
-  ObjectClass *Overlapper[10];
+  ObjectClass *Overlappers[10];
 #else
-  ObjectClass *Overlapper[6];
+  ObjectClass *Overlappers[6];
 #endif
 
   /*

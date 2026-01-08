@@ -148,7 +148,7 @@ CellClass::CellClass(void)
       Owner(HOUSE_NONE),
       InfType(HOUSE_NONE),
       OccupierPtr(nullptr),
-      Overlapper{nullptr, nullptr, nullptr},
+      Overlappers{nullptr, nullptr, nullptr},
       Land(LAND_CLEAR) {
   Flag.Composite = 0;
 }
@@ -187,9 +187,9 @@ void CellClass::Reset() {
   Owner = HOUSE_NONE;
   InfType = HOUSE_NONE;
   OccupierPtr = nullptr;
-  Overlapper[0] = nullptr;
-  Overlapper[1] = nullptr;
-  Overlapper[2] = nullptr;
+  Overlappers[0] = nullptr;
+  Overlappers[1] = nullptr;
+  Overlappers[2] = nullptr;
   Flag.Composite = 0;
   Land = LAND_CLEAR;
 }
@@ -433,13 +433,13 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag any overlapping object in this cell to be redrawn.
     */
-    for (int index = 0; index < sizeof(Overlapper) / sizeof(Overlapper[0]);
+    for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
          index++) {
-      if (Overlapper[index]) {
-        if (!Overlapper[index]->IsActive) {
-          Overlapper[index] = nullptr;
+      if (Overlappers[index]) {
+        if (!Overlappers[index]->IsActive) {
+          Overlappers[index] = nullptr;
         } else {
-          Overlapper[index]->Mark(MARK_CHANGE);
+          Overlappers[index]->Mark(MARK_CHANGE);
         }
       }
     }
@@ -727,10 +727,10 @@ void CellClass::Overlap_Down(ObjectClass *object) {
   ObjectClass **ptr = nullptr;
 
   if (!object) return;
-  for (int index = 0; index < sizeof(Overlapper) / sizeof(Overlapper[0]);
+  for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
        index++) {
-    if (Overlapper[index] == object) return;
-    if (!Overlapper[index]) ptr = &Overlapper[index];
+    if (Overlappers[index] == object) return;
+    if (!Overlappers[index]) ptr = &Overlappers[index];
   }
 
   /*
@@ -738,16 +738,16 @@ void CellClass::Overlap_Down(ObjectClass *object) {
   *somebody *	else out in this case.
   */
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
-    for (int index = 0; index < sizeof(Overlapper) / sizeof(Overlapper[0]);
+    for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
          index++) {
-      switch (Overlapper[index]->What_Am_I()) {
+      switch (Overlappers[index]->What_Am_I()) {
         case RTTI_BUILDING:
         case RTTI_TERRAIN:
           break;
 
         default:
-          Overlapper[index] = object;
-          index = sizeof(Overlapper) / sizeof(Overlapper[0]);
+          Overlappers[index] = object;
+          index = sizeof(Overlappers) / sizeof(Overlappers[0]);
           break;
       }
     }
@@ -779,10 +779,10 @@ void CellClass::Overlap_Down(ObjectClass *object) {
  *=============================================================================================*/
 void CellClass::Overlap_Up(ObjectClass *object) {
   Validate();
-  for (int index = 0; index < sizeof(Overlapper) / sizeof(Overlapper[0]);
+  for (int index = 0; index < sizeof(Overlappers) / sizeof(Overlappers[0]);
        index++) {
-    if (Overlapper[index] == object) {
-      Overlapper[index] = nullptr;
+    if (Overlappers[index] == object) {
+      Overlappers[index] = nullptr;
       break;
     }
   }

@@ -147,7 +147,7 @@ class CellClass {
   **	this cell.
   */
   ObjectClass *OccupierPtr;
-  ObjectClass *Overlapper[3];
+  ObjectClass *Overlappers[3];
 
   /*
   **	This array of bit flags is used to indicate which sub positions

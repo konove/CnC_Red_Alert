@@ -255,9 +255,8 @@ int Dial8Class::Draw_Me(int forced) {
     **	Draw background & decorations.
     */
     Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
-    for (int i = 0; i < 8; i++) {
-      Draw_Box(FacePoint[i][0] - 1, FacePoint[i][1] - 1, 3, 3, BOXSTYLE_RAISED,
-               false);
+    for (const auto &point : FacePoint) {
+      Draw_Box(point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
     }
 
     /*

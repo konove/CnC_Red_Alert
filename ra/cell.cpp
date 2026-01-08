@@ -178,8 +178,8 @@ CellClass::CellClass(void)
     Zones[zone] = 0;
   }
   Flag.Composite = 0;
-  for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-    Overlapper[index] = nullptr;
+  for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    Overlappers[index] = nullptr;
   }
 }
 
@@ -437,13 +437,13 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag any overlapping object in this cell to be redrawn.
     */
-    for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-      if (Overlapper[index]) {
-        assert(Overlapper[index]->IsActive);
-        if (Overlapper[index]->Is_Techno() &&
-            ((TechnoClass *)Overlapper[index])->Visual_Character() !=
+    for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+      if (Overlappers[index]) {
+        assert(Overlappers[index]->IsActive);
+        if (Overlappers[index]->Is_Techno() &&
+            ((TechnoClass *)Overlappers[index])->Visual_Character() !=
                 VISUAL_NORMAL) {
-          Overlapper[index]->Mark(MARK_CHANGE);
+          Overlappers[index]->Mark(MARK_CHANGE);
         }
       }
     }
@@ -451,12 +451,12 @@ void CellClass::Redraw_Objects(bool forced) {
     /*
     **	Flag any overlapping object in this cell to be redrawn.
     */
-    for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-      if (Overlapper[index] != nullptr) {
-        if (!Overlapper[index]->IsActive) {
-          Overlapper[index] = nullptr;
+    for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+      if (Overlappers[index] != nullptr) {
+        if (!Overlappers[index]->IsActive) {
+          Overlappers[index] = nullptr;
         } else {
-          Overlapper[index]->Mark(MARK_CHANGE);
+          Overlappers[index]->Mark(MARK_CHANGE);
         }
       }
     }
@@ -766,9 +766,9 @@ void CellClass::Overlap_Down(ObjectClass *object) {
   if (!object) return;
 
   int index;
-  for (index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-    if (Overlapper[index] == object) return;
-    if (!Overlapper[index]) ptr = &Overlapper[index];
+  for (index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    if (Overlappers[index] == object) return;
+    if (!Overlappers[index]) ptr = &Overlappers[index];
   }
 
   /*
@@ -776,15 +776,15 @@ void CellClass::Overlap_Down(ObjectClass *object) {
   *somebody *	else out in this case.
   */
   if (!ptr && object->What_Am_I() == RTTI_BUILDING) {
-    for (index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-      switch (Overlapper[index]->What_Am_I()) {
+    for (index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+      switch (Overlappers[index]->What_Am_I()) {
         case RTTI_BUILDING:
         case RTTI_TERRAIN:
           break;
 
         default:
-          Overlapper[index] = object;
-          index = ARRAY_SIZE(Overlapper);
+          Overlappers[index] = object;
+          index = ARRAY_SIZE(Overlappers);
           break;
       }
     }
@@ -818,9 +818,9 @@ void CellClass::Overlap_Up(ObjectClass *object) {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
   assert(object != nullptr && object->IsActive);
 
-  for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-    if (Overlapper[index] == object) {
-      Overlapper[index] = nullptr;
+  for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+    if (Overlappers[index] == object) {
+      Overlappers[index] = nullptr;
       break;
     }
   }
@@ -1245,7 +1245,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     **	hack overpass after the cells are redrawn so that subs can be
     **	redrawn separately.
     */
-    ObjectClass *optr[20 + ARRAY_SIZE(Overlapper)];
+    ObjectClass *optr[20 + ARRAY_SIZE(Overlappers)];
     int count = 0;
     ObjectClass *object = Cell_Occupier();
     while (object != nullptr) {
@@ -1255,8 +1255,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       object = object->Next;
       count++;
     }
-    for (int index = 0; index < ARRAY_SIZE(Overlapper); index++) {
-      object = Overlapper[index];
+    for (int index = 0; index < ARRAY_SIZE(Overlappers); index++) {
+      object = Overlappers[index];
       if (object != nullptr && object->IsActive) {
         object->IsToDisplay = true;
         optr[count] = object;

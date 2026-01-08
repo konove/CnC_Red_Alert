@@ -89,8 +89,8 @@
 bool CellClass::Should_Save(void) const {
   return ((Smudge != SMUDGE_NONE) || (TType != TEMPLATE_NONE) ||
           (Overlay != OVERLAY_NONE) || IsMapped || IsVisible || IsTrigger ||
-          Flag.Composite || OccupierPtr || Overlapper[0] || Overlapper[1] ||
-          Overlapper[2]);
+          Flag.Composite || OccupierPtr || Overlappers[0] || Overlappers[1] ||
+          Overlappers[2]);
 }
 
 /***********************************************************************************************
@@ -180,20 +180,20 @@ void CellClass::Code_Pointers(void) {
     OccupierPtr = (ObjectClass *)OccupierPtr->As_Target();
   }
 
-  if (Overlapper[0] && Overlapper[0]->IsActive) {
-    Overlapper[0] = (ObjectClass *)Overlapper[0]->As_Target();
+  if (Overlappers[0] && Overlappers[0]->IsActive) {
+    Overlappers[0] = (ObjectClass *)Overlappers[0]->As_Target();
   } else
-    Overlapper[0] = nullptr;
+    Overlappers[0] = nullptr;
 
-  if (Overlapper[1] && Overlapper[1]->IsActive) {
-    Overlapper[1] = (ObjectClass *)Overlapper[1]->As_Target();
+  if (Overlappers[1] && Overlappers[1]->IsActive) {
+    Overlappers[1] = (ObjectClass *)Overlappers[1]->As_Target();
   } else
-    Overlapper[1] = nullptr;
+    Overlappers[1] = nullptr;
 
-  if (Overlapper[2] && Overlapper[2]->IsActive) {
-    Overlapper[2] = (ObjectClass *)Overlapper[2]->As_Target();
+  if (Overlappers[2] && Overlappers[2]->IsActive) {
+    Overlappers[2] = (ObjectClass *)Overlappers[2]->As_Target();
   } else
-    Overlapper[2] = nullptr;
+    Overlappers[2] = nullptr;
 
   /*
   ------------------------ Convert trigger pointer -------------------------
@@ -224,18 +224,18 @@ void CellClass::Decode_Pointers(void) {
     Check_Ptr((void *)OccupierPtr, __FILE__, __LINE__);
   }
 
-  if (Overlapper[0]) {
-    Overlapper[0] = As_Object((TARGET)(uintptr_t)Overlapper[0]);
+  if (Overlappers[0]) {
+    Overlappers[0] = As_Object((TARGET)(uintptr_t)Overlappers[0]);
     Check_Ptr((void *)Overlapper[0], __FILE__, __LINE__);
   }
 
-  if (Overlapper[1]) {
-    Overlapper[1] = As_Object((TARGET)(uintptr_t)Overlapper[1]);
+  if (Overlappers[1]) {
+    Overlappers[1] = As_Object((TARGET)(uintptr_t)Overlappers[1]);
     Check_Ptr((void *)Overlapper[1], __FILE__, __LINE__);
   }
 
-  if (Overlapper[2]) {
-    Overlapper[2] = As_Object((TARGET)(uintptr_t)Overlapper[2]);
+  if (Overlappers[2]) {
+    Overlappers[2] = As_Object((TARGET)(uintptr_t)Overlappers[2]);
     Check_Ptr((void *)Overlapper[2], __FILE__, __LINE__);
   }
 

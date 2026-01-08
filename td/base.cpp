@@ -345,9 +345,9 @@ BuildingClass *BaseClass::Get_Building(int index) {
   CELL cell = Coord_Cell(Nodes[index].Coord);
 
   obj[0] = Map[cell].Cell_Building();
-  obj[1] = Map[cell].Overlapper[0];
-  obj[2] = Map[cell].Overlapper[1];
-  obj[3] = Map[cell].Overlapper[2];
+  obj[1] = Map[cell].Overlappers[0];
+  obj[2] = Map[cell].Overlappers[1];
+  obj[3] = Map[cell].Overlappers[2];
 
   bldg = nullptr;
   for (int i = 0; i < 4; i++) {
