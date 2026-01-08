@@ -644,21 +644,25 @@ void Buffer_Draw_Line(void *thisptr, int sx, int sy, int dx, int dy,
   if (code0) {
     if (code0 & 0b1000)  // left
     {
-      sy = sy + (-sx * (dy - sy)) / (dx - sx);
+      if (dx != sx) {
+        sy += -sx * (dy - sy) / (dx - sx);
+      }
       sx = 0;
     } else if (code0 & 0b0100)  // right
     {
-      sy = sy + (((width - 1) - sx) * (dy - sy)) / (dx - sx);
+      if (dx != sx) {
+        sy += (width - 1 - sx) * (dy - sy) / (dx - sx);
+      }
       sx = width - 1;
     }
 
     if (code0 & 0b0010)  // top
     {
-      sx = sx + (-sy * (dx - sx)) / (dy - sy);
+      if (dy != sy) sx = sx + (-sy * (dx - sx)) / (dy - sy);
       sy = 0;
     } else if (code0 & 0b0001)  // bottom
     {
-      sx = sx + (((height - 1) - sy) * (dx - sx)) / (dy - sy);
+      if (dy != sy) sx = sx + (((height - 1) - sy) * (dx - sx)) / (dy - sy);
       sy = height - 1;
     }
   }
@@ -666,21 +670,21 @@ void Buffer_Draw_Line(void *thisptr, int sx, int sy, int dx, int dy,
   if (code1) {
     if (code1 & 0b1000)  // left
     {
-      dy = dy + (-dx * (sy - dy)) / (sx - dx);
+      if (sx != dx) dy = dy + (-dx * (sy - dy)) / (sx - dx);
       dx = 0;
     } else if (code1 & 0b0100)  // right
     {
-      dy = dy + (((width - 1) - dx) * (sy - dy)) / (sx - dx);
+      if (sx != dx) dy = dy + (((width - 1) - dx) * (sy - dy)) / (sx - dx);
       dx = width - 1;
     }
 
     if (code1 & 0b0010)  // top
     {
-      dx = dx + (-dy * (sx - dx)) / (sy - dy);
+      if (sy != dy) dx = dx + (-dy * (sx - dx)) / (sy - dy);
       dy = 0;
     } else if (code1 & 0b0001)  // bottom
     {
-      dx = dx + (((height - 1) - dy) * (sx - dx)) / (sy - dy);
+      if (sy != dy) dx = dx + (((height - 1) - dy) * (sx - dx)) / (sy - dy);
       dy = height - 1;
     }
   }

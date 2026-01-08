@@ -41,6 +41,8 @@
 
 #include "td/function.h"
 
+#include "absl/log/check.h"
+
 /***********************************************************************************************
  * Desired_Facing8 -- Determines facing from one coordinate to another. *
  *                                                                                             *
@@ -200,7 +202,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	is calculated as a ratio from 0 (matches orthogonal) to 31
   **	(matches diagonal).
   */
-  // lint -e414		Division by zero cannot occur here.
+  CHECK_NE(bigger, 0U);
   int frac = (smaller * 32U) / bigger;
 
   /*

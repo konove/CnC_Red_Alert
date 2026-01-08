@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "absl/log/check.h"
 #include "sdllib/include/timer.h"
 #include "sdllib/include/ww_win.h"
 
@@ -201,7 +202,7 @@ uint8_t Random() {
 static unsigned Divide_With_Round(unsigned num, unsigned den) {
   // return num/den + (0 ro 1).  1 if the remainder is more than half the
   // denominator.
-  return ((num / den) + (unsigned)((num % den) >= ((den + 1) >> 1)));
+  return ((num / den) + static_cast<unsigned>((num % den) >= ((den + 1) >> 1)));
 }
 
 #define HSV_BASE \
@@ -237,6 +238,7 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
 
   if (*s != 0) {
     tmp = *v - m;
+    CHECK_NE(tmp, 0U);
     r1 = Divide_With_Round((*v - r) * HSV_BASE, tmp);
     g1 = Divide_With_Round((*v - g) * HSV_BASE, tmp);
     b1 = Divide_With_Round((*v - b) * HSV_BASE, tmp);

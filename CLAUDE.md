@@ -97,6 +97,39 @@ Enabled automatically when `STRICT_CHECKS=ON` (default). Runs during compilation
 
 **Note:** Many modern checks are disabled because this is 1990s-era game code being modernized incrementally.
 
+### Abseil
+
+The project uses [Abseil](https://abseil.io/) (fetched automatically via CMake FetchContent). New code should prefer Abseil utilities over standard library alternatives or custom implementations when available.
+
+**Common Abseil libraries:**
+- `absl/log/check.h` - CHECK/DCHECK assertions
+- `absl/strings/` - String utilities (StrCat, StrSplit, StrFormat, etc.)
+- `absl/container/` - Containers (flat_hash_map, flat_hash_set, etc.)
+- `absl/types/` - Type utilities (optional, span, variant)
+- `absl/time/` - Time utilities
+
+**CHECK/DCHECK macros** ([Chromium style](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/checks.md)):
+```cpp
+#include "absl/log/check.h"
+
+CHECK(ptr != nullptr);           // Crashes in all builds if false
+CHECK_NE(divisor, 0);            // Crashes if divisor == 0
+CHECK_EQ(a, b);                  // Crashes if a != b
+CHECK_LT(index, size);           // Crashes if index >= size
+DCHECK(expensive_check());       // Only evaluated in debug builds
+```
+
+**When to use CHECK:**
+- Use `CHECK` for invariants that should never be violated (programmer errors)
+- Use `CHECK` to guard against impossible states (e.g., division by zero that "can't happen")
+- Use `DCHECK` for expensive checks only needed during development
+- Do NOT use for validating user input or external data (use normal error handling)
+
+**Linking:** Targets using Abseil must link to the appropriate targets:
+```cmake
+target_link_libraries(mytarget PRIVATE absl::check absl::log absl::strings)
+```
+
 ### Header Verification
 
 CMake can verify all headers compile standalone (following Google C++ Style Guide):
@@ -125,12 +158,13 @@ td/             - Tiberian Dawn game-specific code (~288 files)
 ### Dependency Graph
 
 ```
+abseil-cpp (fetched via FetchContent)
 port (standalone)
-  └─ sdllib (depends: port, SDL2)
+  └─ sdllib (depends: SDL2, abseil)
       ├─ tech (depends: sdllib, port, vqa32)
       ├─ jshell (depends: sdllib, port)
       └─ vqa32 (depends: port, SDL2)
-          ├─ rasdl (depends: tech, jshell, port, sdllib, vqa32)
+          ├─ rasdl (depends: tech, jshell, port, sdllib, vqa32, abseil)
           └─ tdsdl (depends: port, sdllib, vqa32)
                     └─ Note: TD doesn't use tech or jshell
 ```
@@ -281,6 +315,40 @@ This is 1990s game code being modernized. You will encounter:
 - Removing global variables
 
 The project is being modernized incrementally. Keep changes focused and don't over-engineer.
+
+### Code Style
+
+New code and rewritten code should closely follow these style guides:
+- [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)
+- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+
+If the two guides disagree on a particular point, ask the user which approach to follow, providing pros and cons of each option.
+
+### New Files
+
+When creating new files, do NOT add the Electronic Arts copyright header. That header only applies to original EA code.
+
+**Header guards:** Use `#ifndef` guards (not `#pragma once`) following [Google's naming convention](https://google.github.io/styleguide/cppguide.html#The__define_Guard). The format is `<PATH>_<FILE>_H_` based on the file's path from project root:
+
+```cpp
+// File: port/check.h
+#ifndef PORT_CHECK_H_
+#define PORT_CHECK_H_
+
+// ... content ...
+
+#endif  // PORT_CHECK_H_
+```
+
+```cpp
+// File: sdllib/include/gbuffer.h
+#ifndef SDLLIB_INCLUDE_GBUFFER_H_
+#define SDLLIB_INCLUDE_GBUFFER_H_
+
+// ... content ...
+
+#endif  // SDLLIB_INCLUDE_GBUFFER_H_
+```
 
 ### Safe String Replacement Pattern
 

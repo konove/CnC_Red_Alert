@@ -1,8 +1,19 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 project(CnCRedAlert)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Fetch Abseil for CHECK/DCHECK macros
+include(FetchContent)
+FetchContent_Declare(
+        abseil-cpp
+        GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+        GIT_TAG 20240722.0
+)
+set(ABSL_PROPAGATE_CXX_STD ON)
+set(ABSL_BUILD_TESTING OFF)
+FetchContent_MakeAvailable(abseil-cpp)
 
 # Option to enable strict checks (clang-tidy + extra warnings)
 # Disable for quick iteration: cmake -DSTRICT_CHECKS=OFF ..

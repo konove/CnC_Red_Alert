@@ -81,6 +81,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/ccptr.h"
@@ -985,6 +986,8 @@ void RadarClass::Zoom_Mode(CELL cell) {
  * HISTORY: * 09/16/1996 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Is_Zoomable(void) const {
+  CHECK_NE(MapCellWidth, 0);
+  CHECK_NE(MapCellHeight, 0);
   int xfactor = RadIWidth / MapCellWidth;
   int yfactor = RadIHeight / MapCellHeight;
   int factor = std::max(std::min(xfactor, yfactor), 1);
