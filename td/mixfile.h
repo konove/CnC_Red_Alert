@@ -97,7 +97,7 @@ class MixFileClass : public LinkClass {
   } FileHeader;
 #pragma pack(pop)
 
-  size_t Count;         // Number of sub-blocks in the index.
+  size_t Count;      // Number of sub-blocks in the index.
   long DataSize;     // Size of raw data section in bytes.
   SubBlock *Buffer;  // Index array of sub-blocks.
   void *Data;        // Cached raw data, or nullptr if not cached.
