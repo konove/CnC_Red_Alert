@@ -40,13 +40,11 @@ bool MixFileClass::Free(char const *filename) {
   return (false);
 }
 
-#ifndef NOMEMCHECK
 void MixFileClass::Free_All(void) {
   while (First) {
     delete First;
   }
 }
-#endif
 
 // Frees all allocated memory (filename, data, index buffer) and removes this
 // mixfile from the global linked list.

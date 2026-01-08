@@ -420,9 +420,7 @@ void Main_Game(int argc, char *argv[]) {
   Free_Scenario_Descriptions();
 #endif
 
-#ifndef NOMEMCHECK
   Uninit_Game();
-#endif
 }
 
 /***********************************************************************************************

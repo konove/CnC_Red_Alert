@@ -695,7 +695,6 @@ bool Init_Game(int, char *[]) {
   return (true);
 }
 
-#ifndef NOMEMCHECK
 void Uninit_Game(void) {
   delete Map.ShadowPage;
   Map.ShadowPage = NULL;
@@ -732,7 +731,6 @@ void Uninit_Game(void) {
   WWDOS_Shutdown();
   delete[] Palette;
 }
-#endif
 
 extern bool Do_The_Internet_Menu_Thang(void);
 extern int ShowCommand;

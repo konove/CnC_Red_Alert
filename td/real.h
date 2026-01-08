@@ -100,12 +100,6 @@ Map(screen) class heirarchy.
 #define WIN32  //_LEAN_AND_MEAN
 #include <windows.h>
 
-/**********************************************************************
-**	If the following define is enabled, then the memory checking code
-**	will be disabled.
-*/
-#define NOMEMCHECK
-
 #include "td/watcom.h"
 #define FILE_H
 #define WWMEM_H
@@ -1004,11 +998,6 @@ inline int Distance(CELL coord1, CELL coord2) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 inline CELL CellClass::Cell_Number(void) const { return (Map.ID(this)); }
-
-#ifndef NOMEMCHECK
-#define NO_INTERCEPT
-#include "td/memcheck.h"
-#endif
 
 void WWDOS_Shutdown(void);
 

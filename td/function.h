@@ -124,12 +124,6 @@ UnitTypeClass      │   BuildingTypeClass      │
 #include <windows.h>
 #endif
 
-/**********************************************************************
-**	If the following define is enabled, then the memory checking code
-**	will be disabled.
-*/
-#define NOMEMCHECK
-
 #ifdef PORTABLE
 #include "sdllib/include/keyboard.h"
 #endif
@@ -1067,12 +1061,6 @@ inline int Distance(CELL coord1, CELL coord2) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 inline CELL CellClass::Cell_Number(void) const { return (Map.ID(this)); }
-#if (0)
-#ifndef NOMEMCHECK
-#define NO_INTERCEPT
-#include "td/memcheck.h"
-#endif
-#endif
 
 void WWDOS_Shutdown(void);
 
