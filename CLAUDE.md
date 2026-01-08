@@ -1,565 +1,138 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+C++23 port of EA's Command & Conquer Red Alert and Tiberian Dawn using SDL2. Legacy 1990s game code being modernized
+incrementally.
 
-## Project Overview
+## Quick Reference
 
-This is a fork of EA's Command & Conquer Red Alert and Tiberian Dawn, ported to use SDL2 for cross-platform
-compatibility. The codebase is C++23 with legacy C code from the original 1990s games.
+| Target | Command | Output |
+|--------|---------|--------|
+| Both games | `cmake -Bbuild && cmake --build build` | `build/ra/rasdl`, `build/td/tdsdl` |
+| Red Alert only | `cmake --build build --target rasdl` | `build/ra/rasdl` |
+| Tiberian Dawn only | `cmake --build build --target tdsdl` | `build/td/tdsdl` |
+| Fast build (no checks) | `cmake -Bbuild -DSTRICT_CHECKS=OFF` | Disables clang-tidy, IWYU, warnings |
+| With ASan | `cmake -Bbuild -DENABLE_ASAN=ON` | Memory debugging |
+| Header verification | `cmake --build build --target all_verify_interface_header_sets` | Checks headers are self-contained |
+| Clean rebuild | `rm -rf build && cmake -Bbuild && cmake --build build` | |
 
-## Build Commands
+## Architecture
 
-### Standard Build
-
-```bash
-cmake -Bbuild
-cmake --build build
+```
+port/        → Portability layer (string utilities) [standalone]
+sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
+tech/        → Compression, encryption, Pipe/Straw pattern [depends: sdllib, port, vqa32]
+jshell/      → Sprite rendering, bitmap rotation [depends: sdllib, port]
+vqa32/       → VQA video codec [depends: port, SDL2]
+ra/          → Red Alert (~200 files) [uses: ALL libraries]
+td/          → Tiberian Dawn (~288 files) [uses: sdllib, vqa32, port only - NO tech/jshell]
 ```
 
-This produces two executables:
+**Class hierarchy:** `AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass`
+and `TechnoClass → BuildingClass`. Heavy virtual function usage.
 
-- `build/ra/rasdl` - Red Alert
-- `build/td/tdsdl` - Tiberian Dawn
+**Naming:** Classes end in `Class`, type definitions end in `Type` or `TypeClass`, enums often end in `Type`.
 
-### Build Modes
+## Code Style & Documentation
 
-**Quick iteration (disable strict checks and IWYU):**
+**Follow [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)** (primary) and
+[C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines). If they conflict, ask user.
 
-```bash
-cmake -Bbuild -DSTRICT_CHECKS=OFF -DENABLE_IWYU=OFF
-cmake --build build
-```
+### Includes
 
-**With AddressSanitizer for memory debugging:**
-
-```bash
-cmake -Bbuild -DENABLE_ASAN=ON
-cmake --build build
-```
-
-**Disable only IWYU (keep clang-tidy and warnings):**
-
-```bash
-cmake -Bbuild -DENABLE_IWYU=OFF
-cmake --build build
-```
-
-### Rebuild After CMake Changes
-
-```bash
-cmake --build build
-# or for clean rebuild:
-rm -rf build && cmake -Bbuild && cmake --build build
-```
-
-### Build Specific Targets
-
-```bash
-# Build only Red Alert
-cmake --build build --target rasdl
-
-# Build only Tiberian Dawn
-cmake --build build --target tdsdl
-
-# Build specific library
-cmake --build build --target tech
-cmake --build build --target sdllib
-
-# Build all header verification targets (checks headers are self-contained)
-cmake --build build --target all_verify_interface_header_sets
-
-# Build header verification for specific target
-cmake --build build --target rasdl_verify_interface_header_sets
-```
-
-## Code Quality Tools
-
-### Include What You Use (IWYU)
-
-IWYU analyzes C++ headers and suggests include changes. It runs automatically during builds when `ENABLE_IWYU=ON` (
-default with `STRICT_CHECKS=ON`).
-
-**Installation:**
-
-```bash
-# Linux
-sudo apt install iwyu
-
-# macOS
-brew install include-what-you-use
-```
-
-**Configuration:**
-
-- Settings: `cmake/IWYU.cmake`
-- Mappings: `.iwyu_mappings` (project-specific header rules)
-- Documentation: `docs/IWYU.md`
-
-**Known Issues:**
-
-- IWYU can segfault on complex headers (e.g., `ra/externs.h`)
-- Verification targets automatically disable IWYU to avoid crashes
-- IWYU warnings are informational and don't fail builds
-
-### clang-tidy
-
-Enabled automatically when `STRICT_CHECKS=ON` (default). Runs during compilation.
-
-**Configuration:** `.clang-tidy` (extensive suppression list for legacy code)
-
-**Note:** Many modern checks are disabled because this is 1990s-era game code being modernized incrementally.
-
-### Abseil
-
-The project uses [Abseil](https://abseil.io/) (fetched automatically via CMake FetchContent). New code should prefer
-Abseil utilities over standard library alternatives or custom implementations when available.
-
-**Common Abseil libraries:**
-
-- `absl/log/log.h` - LOG/DLOG/VLOG logging macros
-- `absl/log/check.h` - CHECK/DCHECK assertions
-- `absl/strings/` - String utilities (StrCat, StrSplit, StrFormat, etc.)
-- `absl/container/` - Containers (flat_hash_map, flat_hash_set, etc.)
-- `absl/types/` - Type utilities (optional, span, variant)
-- `absl/time/` - Time utilities
-
-**LOG macros** (replaces legacy `Mono_Printf`, `CCDebugString`, `printf` debugging):
+Chromium-style paths relative to project root:
 
 ```cpp
-#include "absl/log/log.h"
-
-// Debug-only (compiled out in release builds when NDEBUG defined)
-DLOG(INFO) << "Debug info - removed in release";
-DLOG(WARNING) << "Debug warning - removed in release";
-
-// Always present (use sparingly)
-LOG(ERROR) << "Error message";
-LOG(FATAL) << "Fatal error - terminates program";
-
-VLOG(1) << "Verbose logging (runtime-configurable level)";
-```
-
-**When to use LOG vs DLOG:**
-
-- Use `DLOG(INFO)` for debug/diagnostic messages (status, state changes, tracing)
-- Use `DLOG(WARNING)` for debug warnings during development
-- Use `LOG(ERROR)` for actual errors that should appear in release builds
-- Use `LOG(FATAL)` for unrecoverable errors (prefer CHECK macros instead)
-- The original game excluded almost all logging from release builds - follow this pattern
-
-**CHECK/DCHECK macros
-** ([Chromium style](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/checks.md)):
-
-```cpp
-#include "absl/log/check.h"
-
-CHECK(ptr != nullptr);           // Crashes in all builds if false
-CHECK_NE(divisor, 0);            // Crashes if divisor == 0
-CHECK_EQ(a, b);                  // Crashes if a != b
-CHECK_LT(index, size);           // Crashes if index >= size
-DCHECK(expensive_check());       // Only evaluated in debug builds
-```
-
-**When to use CHECK:**
-
-- Use `CHECK` for invariants that should never be violated (programmer errors)
-- Use `CHECK` to guard against impossible states (e.g., division by zero that "can't happen")
-- Use `DCHECK` for expensive checks only needed during development
-- Do NOT use for validating user input or external data (use normal error handling)
-
-**Linking:** Targets using Abseil must link to the appropriate targets:
-
-```cmake
-target_link_libraries(mytarget PRIVATE absl::log absl::check absl::strings)
-```
-
-### Header Verification
-
-CMake can verify all headers compile standalone (following Google C++ Style Guide):
-
-```bash
-# Verify all headers
-cmake --build build --target all_verify_interface_header_sets
-```
-
-**How it works:** For targets with `VERIFY_INTERFACE_HEADER_SETS` property enabled, CMake generates synthetic `.cxx`
-files that only include one header each, ensuring headers are self-contained.
-
-## High-Level Architecture
-
-### Component Structure
-
-```
-port/           - Minimal portability layer (string utilities)
-sdllib/         - SDL2 graphics/audio abstraction
-tech/           - Data transformation (compression, encryption, Pipe/Straw pattern)
-jshell/         - Sprite rendering and rotation
-winvq/vqa32/    - VQA video codec (Westwood proprietary format)
-ra/             - Red Alert game-specific code (~200+ files)
-td/             - Tiberian Dawn game-specific code (~288 files)
-```
-
-### Dependency Graph
-
-```
-abseil-cpp (fetched via FetchContent)
-port (standalone)
-  └─ sdllib (depends: SDL2, abseil)
-      ├─ tech (depends: sdllib, port, vqa32)
-      ├─ jshell (depends: sdllib, port)
-      └─ vqa32 (depends: port, SDL2)
-          ├─ rasdl (depends: tech, jshell, port, sdllib, vqa32, abseil)
-          └─ tdsdl (depends: port, sdllib, vqa32)
-                    └─ Note: TD doesn't use tech or jshell
-```
-
-### Shared Libraries
-
-**tech/** - Core utilities and data transformation:
-
-- **Pipe/Straw pattern**: Composable data transformation chains
-    - `Pipe`: Output-driven (push data through filters)
-    - `Straw`: Input-driven (pull data through filters)
-    - Implementations: LCW/LZO/LZW/PK compression, Blowfish encryption, Base64, CRC
-- File I/O: `WWFile`, `RAMFile`, `CDFile`
-- Containers: `Buffer`, `Rect`, color utilities
-- Math: Fixed-point arithmetic
-- Timers, random numbers, checksums
-
-**jshell/** - Graphics rendering:
-
-- `Rotate_Bitmap()`: Fast bitmap rotation using 256-entry sine/cosine lookup tables
-- Sprite manipulation
-
-**sdllib/** - SDL2 abstraction layer:
-
-- Graphics: `GraphicViewPortClass`, `GraphicBufferClass`, drawing functions
-- Audio: AUD file format support
-- Input: Keyboard and mouse handling
-- System: Palette, fonts, timers, file I/O, shape loading
-
-**vqa32/** - Video codec:
-
-- VQA (Westwood's proprietary video format) playback
-- Single-threaded and multi-threaded players
-- Audio/video synchronization
-
-### Game-Specific Code
-
-**ra/** (Red Alert):
-
-- Uses all libraries: tech, jshell, sdllib, vqa32, port
-- Defines: `ENGLISH=1`, `PORTABLE=1`
-- ~200+ source files
-
-**td/** (Tiberian Dawn):
-
-- Uses: sdllib, vqa32, port (no tech or jshell)
-- Defines: `PORTABLE=1`, `TD=1`
-- Imports some files from ra/ (`field.cpp`, `packet.cpp`, `2keyfbuf.cpp`, `winasm.cpp`, `face.cpp`)
-- More selective source list (explicit files vs. GLOB)
-
-### Include Path Convention
-
-**Chromium-style includes**: All paths are relative to project root.
-
-```cpp
-// Correct
-#include "ra/object.h"
+#include "ra/object.h"           // Correct
 #include "sdllib/include/gbuffer.h"
-#include "tech/pipe.h"
-
-// Incorrect
-#include "object.h"
-#include "../include/gbuffer.h"
-```
-
-This is enforced by `include_directories(${CMAKE_SOURCE_DIR})` in root CMakeLists.txt.
-
-### Class Hierarchy Pattern
-
-Game objects follow a deep inheritance hierarchy:
-
-```
-AbstractClass (base for all game objects)
-  └─ ObjectClass (placeable map objects)
-      ├─ TechnoClass (combat units/buildings)
-      │   ├─ FootClass (mobile units)
-      │   │   ├─ InfantryClass
-      │   │   ├─ AircraftClass
-      │   │   └─ DriveClass (ground vehicles → UnitClass)
-      │   └─ BuildingClass
-      ├─ AnimClass (animations)
-      ├─ TemplateClass (map terrain templates)
-      ├─ OverlayClass
-      ├─ TerrainClass
-      └─ [other object types]
-```
-
-Each class has heavy use of virtual functions for polymorphic behavior.
-
-### Naming Conventions
-
-- **Classes**: Suffix `Class` (e.g., `ObjectClass`, `GraphicBufferClass`)
-- **Type definitions**: Suffix `Type` or `TypeClass` (e.g., `BuildingTypeClass`)
-- **Enums**: Often suffix `Type` (e.g., `HousesType`, `MissionType`)
-
-### CMakeLists.txt Patterns
-
-**RA approach** (ra/CMakeLists.txt):
-
-```cmake
-# Use GLOB_RECURSE then exclude unwanted files
-file(GLOB_RECURSE RA_SOURCES CONFIGURE_DEPENDS "*.cpp")
-list(REMOVE_ITEM RA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/unwanted.cpp" ...)
-
-file(GLOB_RECURSE RA_HEADERS CONFIGURE_DEPENDS "*.h")
-list(REMOVE_ITEM RA_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/unwanted.h" ...)
-```
-
-**TD approach** (td/CMakeLists.txt):
-
-```cmake
-# Explicit file list
-add_executable(tdsdl WIN32
-        super.cpp
-        abstract.cpp
-        aircraft.cpp
-        ...
-)
-```
-
-**Header verification setup:**
-
-```cmake
-set_target_properties(rasdl PROPERTIES
-        ENABLE_EXPORTS ON
-        VERIFY_INTERFACE_HEADER_SETS ON
-)
-```
-
-## Common Code Patterns
-
-### Legacy Code Considerations
-
-This is 1990s game code being modernized. You will encounter:
-
-- **Old-style string functions**: `strcpy`, `strcat`, `sprintf` (being replaced with `strncpy`, `strncat`, `snprintf`)
-- **Raw pointers**: Extensive use of `new`/`delete` and pointer arithmetic
-- **C-style casts**: Legacy code uses C-style casts extensively
-- **Global variables**: Many globals in `ra/externs.h`
-- **No const-correctness**: Many functions should be const but aren't
-- **Platform #ifdefs**: `WIN32`, `PORTABLE`, conditional compilation
-
-### When Modernizing Code
-
-**Acceptable changes:**
-
-- Replace unsafe string functions with safe versions
-- Fix obvious buffer overflows or memory leaks
-- Add `override` to virtual functions
-- Fix include issues flagged by IWYU
-- Make headers self-contained
-
-**Avoid unless explicitly requested:**
-
-- Refactoring class hierarchies
-- Replacing raw pointers with smart pointers globally
-- Adding const everywhere
-- Modernizing to use STL containers
-- Removing global variables
-
-The project is being modernized incrementally. Keep changes focused and don't over-engineer.
-
-### Code Style
-
-New code and rewritten code should closely follow these style guides:
-
-- [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) - **primary reference**
-- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
-
-If the two guides disagree on a particular point, ask the user which approach to follow, providing pros and cons of each
-option.
-
-### Documentation Guidelines (Google C++ Style)
-
-**All new code MUST follow the
-[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#Comments) for documentation.**
-
-#### File Comments
-
-Files declaring multiple user-facing abstractions should include a brief comment describing the collection. Detailed
-documentation belongs with the specific abstractions themselves.
-
-```cpp
-// Compression utilities for game asset files.
-// Provides LCW, LZO, and LZW compression/decompression.
-```
-
-#### Class Comments
-
-Every non-obvious class or struct needs documentation explaining purpose and usage. Include small example code snippets
-for complex APIs.
-
-```cpp
-// Iterates over tiles in a map region, handling wraparound at map edges.
-//
-// Example:
-//   MapIterator it(map, start_cell, radius);
-//   while (it.Next()) {
-//     ProcessCell(it.Current());
-//   }
-class MapIterator {
-```
-
-#### Function Comments
-
-**At declarations (`.h`):** Describe what the function does and how to use it. Document inputs, outputs, null-pointer
-handling, and performance implications. Start with a verb phrase (implied subject is "This function").
-
-```cpp
-// Returns the cell at the given coordinates, or nullptr if out of bounds.
-// Coordinates are in world units, not cell indices.
-CellClass* Get_Cell_At(int x, int y);
-```
-
-**At definitions (`.cpp`):** Explain *how* the function works—coding tricks, step-by-step logic, or design rationale.
-Don't repeat declaration comments.
-
-#### Variable Comments
-
-Document class data members, especially sentinel values like `nullptr` or `-1`. Global variables require documentation
-describing their purpose.
-
-```cpp
-// Maximum units per player. -1 means unlimited (sandbox mode).
-int max_units_;
-
-// Currently selected object, or nullptr if nothing selected.
-ObjectClass* selected_;
-```
-
-#### Implementation Comments
-
-Explain *why* code exists, not *what* it does (the code shows that). Consider refactoring to self-documenting code
-instead of adding comments.
-
-```cpp
-// Use fixed-point math here because floating-point causes desync in multiplayer.
-int distance = IsqrtFixed(dx * dx + dy * dy);
-```
-
-#### TODO Comments
-
-Mark temporary solutions or incomplete work with `TODO` in all caps. Include a bug ID, contact info, or specific
-deadline.
-
-```cpp
-// TODO: bug 12345 - Remove this workaround after save format v2 migration.
-// TODO(username): Optimize this loop for large maps.
+#include "object.h"              // WRONG - no relative paths
 ```
 
 ### New Files
 
-When creating new files, do NOT add the Electronic Arts copyright header. That header only applies to original EA code.
+- NO Electronic Arts copyright header (only applies to original EA code)
+- Use `#ifndef` guards: `<PATH>_<FILE>_H_` (e.g., `PORT_CHECK_H_`, `SDLLIB_INCLUDE_GBUFFER_H_`)
 
-**Header guards:** Use `#ifndef` guards (not `#pragma once`)
-following [Google's naming convention](https://google.github.io/styleguide/cppguide.html#The__define_Guard). The format
-is `<PATH>_<FILE>_H_` based on the file's path from project root:
-
-```cpp
-// File: port/check.h
-#ifndef PORT_CHECK_H_
-#define PORT_CHECK_H_
-
-// ... content ...
-
-#endif  // PORT_CHECK_H_
-```
+### Documentation (Google Style - REQUIRED for new code)
 
 ```cpp
-// File: sdllib/include/gbuffer.h
-#ifndef SDLLIB_INCLUDE_GBUFFER_H_
-#define SDLLIB_INCLUDE_GBUFFER_H_
+// File: Brief description of the collection of abstractions.
 
-// ... content ...
+// Class: Purpose and usage. Include example for complex APIs.
+//
+// Example:
+//   MyClass obj(args);
+//   obj.DoThing();
+class MyClass {
 
-#endif  // SDLLIB_INCLUDE_GBUFFER_H_
+// Function declaration (.h): What it does, inputs, outputs, nullptr handling.
+// Returns the cell at coordinates, or nullptr if out of bounds.
+CellClass* Get_Cell_At(int x, int y);
+
+// Function definition (.cpp): HOW it works, not WHAT (don't repeat .h comment).
+
+// Variables: Document sentinel values.
+int max_units_;      // -1 means unlimited
+ObjectClass* sel_;   // nullptr if nothing selected
+
+// Implementation: Explain WHY, not WHAT.
+// Fixed-point math prevents multiplayer desync.
+int dist = IsqrtFixed(dx * dx + dy * dy);
+
+// TODO: bug 12345 - Remove after v2 migration.
 ```
 
-### Safe String Replacement Pattern
+### Safe String Pattern
 
 ```cpp
-// Old (unsafe)
-char buffer[128];
-strcpy(buffer, source);
-strcat(buffer, ".INI");
-
-// Better
-char buffer[128];
-strncpy(buffer, source, sizeof(buffer) - 1);
-buffer[sizeof(buffer) - 1] = '\0';
-strncat(buffer, ".INI", sizeof(buffer) - strlen(buffer) - 1);
-
-// Best
-char buffer[128];
-size_t len = strlen(source);
-snprintf(buffer, sizeof(buffer), "%s.INI", source);
+// Old (unsafe)           →  snprintf(buf, sizeof(buf), "%s.INI", src);
+// strcpy + strcat        →  Or: strncpy + null-terminate + strncat(dest, src, sizeof(dest)-strlen(dest)-1)
 ```
 
-For `strncat`: `strncat(dest, src, sizeof(dest) - strlen(dest) - 1)`
+## Abseil
 
-### IWYU Segfaults
+Auto-fetched via CMake. Prefer Abseil over std/custom implementations.
 
-If IWYU crashes during header verification builds:
+| Header | Usage |
+|--------|-------|
+| `absl/log/log.h` | `DLOG(INFO)`, `DLOG(WARNING)` (debug-only), `LOG(ERROR)`, `LOG(FATAL)` |
+| `absl/log/check.h` | `CHECK(x)`, `CHECK_EQ/NE/LT/GT`, `DCHECK` (debug-only) |
+| `absl/strings/` | `StrCat`, `StrSplit`, `StrFormat` |
+| `absl/container/` | `flat_hash_map`, `flat_hash_set` |
 
-1. This is a known issue with complex headers (e.g., `ra/externs.h`)
-2. Verification targets automatically disable IWYU
-3. IWYU still runs on actual source files (not synthetic verification files)
-4. The crashes don't affect normal builds
+**Logging rule:** Use `DLOG` for debug messages (compiled out in release). Original game excluded most logging from
+release builds—follow this pattern. Use `CHECK` for programmer errors/invariants, NOT for user input validation.
 
-## Platform-Specific Notes
+**CMake linking:** `target_link_libraries(mytarget PRIVATE absl::log absl::check absl::strings)`
 
-### Windows
+## Legacy Code
 
-- Links `wsock32` library
-- Includes platform-specific files: `dde.cpp`, `ccdde.cpp`, `cc_icon.rc`
-- MSVC disables specific warnings for legacy code (see root CMakeLists.txt)
+You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style casts, globals in `ra/externs.h`,
+missing const, `WIN32`/`PORTABLE` ifdefs.
 
-### Linux/macOS
+**Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes, self-contained headers.
 
-- Primary development platform
-- Requires SDL2: `sudo apt install libsdl2-dev` (Linux) or `brew install sdl2` (macOS)
-- Uses GCC or Clang
+**Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, const everywhere, STL containers
+everywhere, removing globals.
 
-### Emscripten (Experimental)
+## Tools Configuration
 
-- WebAssembly builds with special linker flags
-- See `EMSCRIPTEN` conditionals in ra/CMakeLists.txt
+| Tool | Config File | Notes |
+|------|-------------|-------|
+| clang-tidy | `.clang-tidy` | Many checks disabled for legacy code |
+| IWYU | `cmake/IWYU.cmake`, `.iwyu_mappings` | Can segfault on `ra/externs.h`; warnings don't fail builds |
 
-## Compiler Flags
+## Key Files
 
-**With STRICT_CHECKS=ON** (default):
+| Purpose | File(s) |
+|---------|---------|
+| Build config | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt` |
+| Global state | `ra/externs.h` |
+| Pipe/Straw | `tech/pipe.h`, `tech/straw.h` |
+| Graphics | `sdllib/include/gbuffer.h`, `sdllib/include/drawbuff.h` |
+| Video | `winvq/vqa32/vqaplay.h` |
 
-- Extensive warning flags: `-Wall -Wextra -Wpedantic -Wshadow -Wconversion ...` (20+ warning flags)
-- clang-tidy enabled
-- IWYU enabled
+## Platform Notes
 
-**With STRICT_CHECKS=OFF**:
-
-- All warnings disabled: `-w`
-- No clang-tidy
-- No IWYU
-- Fast iteration builds
-
-## Key Files Reference
-
-- **Root build**: `CMakeLists.txt`
-- **RA build**: `ra/CMakeLists.txt`
-- **TD build**: `td/CMakeLists.txt`
-- **IWYU config**: `cmake/IWYU.cmake`, `.iwyu_mappings`
-- **clang-tidy config**: `.clang-tidy`
-- **Global externs**: `ra/externs.h` (massive header with all game globals)
-- **Pipe/Straw pattern**: `tech/pipe.h`, `tech/straw.h`
-- **Graphics core**: `sdllib/include/gbuffer.h`, `sdllib/include/drawbuff.h`
-- **Video codec**: `winvq/vqa32/vqaplay.h`
+- **Linux/macOS:** Primary platforms. Requires `libsdl2-dev` (apt) or `sdl2` (brew).
+- **Windows:** Links `wsock32`, includes `dde.cpp`, `ccdde.cpp`, `cc_icon.rc`.
+- **Emscripten:** Experimental WebAssembly support.
