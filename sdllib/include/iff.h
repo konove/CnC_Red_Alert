@@ -37,6 +37,7 @@
 #ifndef IFF_H
 #define IFF_H
 
+#include <cstddef>
 #include <cstdint>
 
 typedef enum {
@@ -74,7 +75,7 @@ typedef struct {
 } CompHeaderType;
 #pragma pack(pop)
 
-unsigned long Uncompress_Data(void const *src, void *dst);
+size_t Uncompress_Data(void *src, void *dst);
 
 /*========================= Assembly Functions ============================*/
 

@@ -57,8 +57,8 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
-                          long nbytes);
+static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
+                             int64_t nbytes);
 
 /****************************************************************************
  *
@@ -109,10 +109,10 @@ void VQA_InitAsDOS(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
-                          long nbytes) {
+static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
+                             int64_t nbytes) {
   long fh;
-  long error;
+  int64_t error;
 
   fh = vqa->VQAio;
 

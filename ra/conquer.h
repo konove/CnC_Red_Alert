@@ -627,7 +627,8 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
                    void const *ghostdata = nullptr, DirType rotation = DIR_N,
                    long scale = 0x0100);
 void Go_Editor(bool flag);
-long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes);
+int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+                       int64_t nbytes);
 char *CC_Get_Shape_Filename(void const *shapeptr);
 void CC_Add_Shape_To_Global(void const *shapeptr, char *filename, char code);
 void Bubba_Print(char *format, ...);

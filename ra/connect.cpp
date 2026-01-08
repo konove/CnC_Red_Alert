@@ -47,7 +47,7 @@
 
 #include "ra/connect.h"
 
-#include <bits/types/struct_timeb.h>
+#include <chrono>
 #include <sys/timeb.h>
 
 #include <cstring>

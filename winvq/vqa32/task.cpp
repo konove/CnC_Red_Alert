@@ -216,7 +216,7 @@ int VQAMovieDone;
  *
  ****************************************************************************/
 
-int64_t VQA_Play(VQAHandle *vqa, int64_t mode) {
+long VQA_Play(VQAHandle *vqa, long mode) {
   VQAData *vqabuf;
   VQAConfig *config;
   VQADrawer *drawer;

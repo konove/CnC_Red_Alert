@@ -15,6 +15,25 @@ incrementally.
 | Header verification | `cmake --build build --target all_verify_interface_header_sets` | Checks headers are self-contained |
 | Clean rebuild | `rm -rf build && cmake -Bbuild && cmake --build build` | |
 
+## Setup
+
+### Required Dependencies
+
+**All platforms:** SDL2, C++23 compiler
+
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt update
+sudo apt install libsdl2-dev clang-tidy
+```
+
+**macOS:**
+```bash
+brew install sdl2 llvm
+```
+
+**Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable static analysis.
+
 ## Architecture
 
 ```
@@ -50,7 +69,7 @@ Chromium-style paths relative to project root:
 ### New Files
 
 - NO Electronic Arts copyright header (only applies to original EA code)
-- Use `#ifndef` guards: `<PATH>_<FILE>_H_` (e.g., `PORT_CHECK_H_`, `SDLLIB_INCLUDE_GBUFFER_H_`)
+- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_PORT_CHECK_H_`, `CNC_RED_ALERT_SDLLIB_INCLUDE_GBUFFER_H_`)
 
 ### Documentation (Google Style - REQUIRED for new code)
 

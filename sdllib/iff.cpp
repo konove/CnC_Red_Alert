@@ -1,47 +1,51 @@
 #include "sdllib/include/iff.h"
 
-#include <cstdio>
+#include <cstddef>
+#include <cstring>
 
-#include "sdllib/include/memflag.h"
+#include "absl/log/log.h"
 
-unsigned long Uncompress_Data(void const *src, void *dst) {
-  unsigned int skip;       // Number of leading data to skip.
-  CompressionType method;  // Compression method used.
-  unsigned long uncomp_size;
+[[nodiscard]] size_t Uncompress_Data(void *src, void *dst) {
+  if (src == nullptr || dst == nullptr) {
+    return 0;
+  }
 
-  if (!src || !dst) return 0;
+  // Interpret the data block header structure to determine
+  // compression method, size, and skip data amount.
+  CompHeaderType header;
+  std::memcpy(&header, src, sizeof(header));
 
-  auto head = (CompHeaderType *)src;
+  const size_t uncompressed_size = header.Size;
+  // Number of leading data to skip.
+  const size_t skip = static_cast<size_t>(header.Skip);
+  // Compression method used.
+  const auto method = static_cast<CompressionType>(header.Method);
 
-  /*
-  **	Interpret the data block header structure to determine
-  **	compression method, size, and skip data amount.
-  */
-  uncomp_size = ((CompHeaderType *)src)->Size;
-  skip = ((CompHeaderType *)src)->Skip;
-
-  method = (CompressionType)((CompHeaderType *)src)->Method;
-  src = Add_Long_To_Pointer((void *)src,
-                            (long)sizeof(CompHeaderType) + (long)skip);
+  // Advance past header and skip data.
+  auto *payload_src =
+      static_cast<std::byte *>(src) + sizeof(CompHeaderType) + skip;
+  auto *payload_dst = static_cast<std::byte *>(dst);
 
   switch (method) {
-    default:
-    case NOCOMPRESS:
-      Mem_Copy((void *)src, dst, uncomp_size);
-      break;
-
     case HORIZONTAL:
       break;
-
     case LCW:
-      LCW_Uncompress((void *)src, (void *)dst, (unsigned long)uncomp_size);
+      LCW_Uncompress(payload_src, payload_dst, uncompressed_size);
+      break;
+    // Unsupported compression methods - treat as uncompressed.
+    case LZW12:
+    case LZW14:
+    case NOCOMPRESS:
+    [[unlikely]] default:
+      std::memcpy(payload_src, payload_dst, uncompressed_size);
       break;
   }
 
-  return 0;
+  return uncompressed_size;
 }
 
-extern "C" int LCW_Comp(void const *source, void *dest, int length) {
-  printf("%s\n", __func__);
+extern "C" int LCW_Comp(const void * /*source*/, void * /*dest*/,
+                        int /*length*/) {
+  DLOG(INFO) << "LCW compression not implemented";
   return 0;
 }

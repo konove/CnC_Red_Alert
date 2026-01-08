@@ -46,8 +46,8 @@
 
 extern unsigned short primeTable[3511];
 
-#define digit uint32_t
-#define signeddigit int32_t
+// #define uint32_t uint32_t
+// #define signeddigit int32_t
 #define LOG_UNITSIZE 5
 #define UNITSIZE 32
 #define UPPER_MOST_BIT 0x80000000L
@@ -59,78 +59,82 @@ extern unsigned short primeTable[3511];
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #endif
 
-int XMP_Significance(const digit* r, int precision);
-void XMP_Inc(digit* r, int precision);
-void XMP_Dec(digit* r, int precision);
-void XMP_Neg(digit* r, int precision);
-void XMP_Abs(digit* r, int precision);
-void XMP_Shift_Right_Bits(digit* r1, int bits, int precision);
-void XMP_Shift_Left_Bits(digit* r1, int bits, int precision);
-bool XMP_Rotate_Left(digit* r1, bool carry, int precision);
-void XMP_Not(digit* digit_ptr, int precision);
-void XMP_Init(digit* r, digit value, int precision);
-unsigned XMP_Count_Bits(const digit* r, int precision);
-int XMP_Count_Bytes(const digit* r, int precision);
-void XMP_Move(digit* dest, digit const* source, int precision);
-int XMP_Compare(const digit* r1, const digit* r2, int precision);
-bool XMP_Add(digit* result, const digit* r1, const digit* r2, bool carry,
-             int precision);
-bool XMP_Add_Int(digit* result, const digit* r1, digit r2, bool carry,
+int XMP_Significance(const uint32_t* r, int precision);
+void XMP_Inc(uint32_t* r, int precision);
+void XMP_Dec(uint32_t* r, int precision);
+void XMP_Neg(uint32_t* r, int precision);
+void XMP_Abs(uint32_t* r, int precision);
+void XMP_Shift_Right_Bits(uint32_t* r1, int bits, int precision);
+void XMP_Shift_Left_Bits(uint32_t* r1, int bits, int precision);
+bool XMP_Rotate_Left(uint32_t* r1, bool carry, int precision);
+void XMP_Not(uint32_t* digit_ptr, int precision);
+void XMP_Init(uint32_t* r, uint32_t value, int precision);
+unsigned XMP_Count_Bits(const uint32_t* r, int precision);
+int XMP_Count_Bytes(const uint32_t* r, int precision);
+void XMP_Move(uint32_t* dest, uint32_t const* source, int precision);
+int XMP_Compare(const uint32_t* r1, const uint32_t* r2, int precision);
+bool XMP_Add(uint32_t* result, const uint32_t* r1, const uint32_t* r2,
+             bool carry, int precision);
+bool XMP_Add_Int(uint32_t* result, const uint32_t* r1, uint32_t r2, bool carry,
                  int precision);
-bool XMP_Sub(digit* result, const digit* r1, const digit* r2, bool borrow,
-             int precision);
-bool XMP_Sub_Int(digit* result, const digit* r1, unsigned short r2, bool borrow,
-                 int precision);
-int XMP_Unsigned_Mult(digit* prod, const digit* multiplicand,
-                      const digit* multiplier, int precision);
-int XMP_Unsigned_Mult_Int(digit* prod, const digit* multiplicand,
+bool XMP_Sub(uint32_t* result, const uint32_t* r1, const uint32_t* r2,
+             bool borrow, int precision);
+bool XMP_Sub_Int(uint32_t* result, const uint32_t* r1, unsigned short r2,
+                 bool borrow, int precision);
+int XMP_Unsigned_Mult(uint32_t* prod, const uint32_t* multiplicand,
+                      const uint32_t* multiplier, int precision);
+int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                           short multiplier, int precision);
-int XMP_Signed_Mult_Int(digit* prod, const digit* multiplicand,
+int XMP_Signed_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
                         signed short multiplier, int precision);
-int XMP_Signed_Mult(digit* prod, const digit* multiplicand,
-                    const digit* multiplier, int precision);
-unsigned short XMP_Unsigned_Div_Int(digit* quotient, digit const* dividend,
+int XMP_Signed_Mult(uint32_t* prod, const uint32_t* multiplicand,
+                    const uint32_t* multiplier, int precision);
+unsigned short XMP_Unsigned_Div_Int(uint32_t* quotient,
+                                    uint32_t const* dividend,
                                     unsigned short divisor, int precision);
-int XMP_Unsigned_Div(digit* remainder, digit* quotient, digit const* dividend,
-                     digit const* divisor, int precision);
-void XMP_Signed_Div(digit* remainder, digit* quotient, digit const* dividend,
-                    digit const* divisor, int precision);
-int XMP_Reciprocal(digit* quotient, const digit* divisor, int precision);
-void XMP_Decode_ASCII(char const* str, digit* mpn, int precision);
+int XMP_Unsigned_Div(uint32_t* remainder, uint32_t* quotient,
+                     uint32_t const* dividend, uint32_t const* divisor,
+                     int precision);
+void XMP_Signed_Div(uint32_t* remainder, uint32_t* quotient,
+                    uint32_t const* dividend, uint32_t const* divisor,
+                    int precision);
+int XMP_Reciprocal(uint32_t* quotient, const uint32_t* divisor, int precision);
+void XMP_Decode_ASCII(char const* str, uint32_t* mpn, int precision);
 void xmp_single_mul(unsigned short* prod, unsigned short* multiplicand,
                     unsigned short multiplier, int precision);
-void XMP_Double_Mul(digit* prod, const digit* multiplicand,
-                    const digit* multiplier, int precision);
-int xmp_stage_modulus(const digit* n_modulus, int precision);
-int XMP_Mod_Mult(digit* prod, const digit* multiplicand,
-                 const digit* multiplier, int precision);
+void XMP_Double_Mul(uint32_t* prod, const uint32_t* multiplicand,
+                    const uint32_t* multiplier, int precision);
+int xmp_stage_modulus(const uint32_t* n_modulus, int precision);
+int XMP_Mod_Mult(uint32_t* prod, const uint32_t* multiplicand,
+                 const uint32_t* multiplier, int precision);
 void XMP_Mod_Mult_Clear(int precision);
 unsigned short mp_quo_digit(unsigned short* dividend);
-int xmp_exponent_mod(digit* expout, const digit* expin,
-                     const digit* exponent_ptr, const digit* modulus,
+int xmp_exponent_mod(uint32_t* expout, const uint32_t* expin,
+                     const uint32_t* exponent_ptr, const uint32_t* modulus,
                      int precision);
-bool XMP_Is_Small_Prime(const digit* candidate, int precision);
-bool XMP_Small_Divisors_Test(const digit* candidate, int precision);
-bool XMP_Fermat_Test(const digit* candidate_prime, unsigned rounds,
+bool XMP_Is_Small_Prime(const uint32_t* candidate, int precision);
+bool XMP_Small_Divisors_Test(const uint32_t* candidate, int precision);
+bool XMP_Fermat_Test(const uint32_t* candidate_prime, unsigned rounds,
                      int precision);
-void XMP_Inverse_A_Mod_B(digit* result, digit const* number,
-                         digit const* modulus, int precision);
-void XMP_Signed_Decode(digit* result, const unsigned char* from, int frombytes,
-                       int precision);
-void XMP_Unsigned_Decode(digit* result, const unsigned char* from,
+void XMP_Inverse_A_Mod_B(uint32_t* result, uint32_t const* number,
+                         uint32_t const* modulus, int precision);
+void XMP_Signed_Decode(uint32_t* result, const unsigned char* from,
+                       int frombytes, int precision);
+void XMP_Unsigned_Decode(uint32_t* result, const unsigned char* from,
                          int frombytes, int precision);
-unsigned XMP_Encode(unsigned char* to, digit const* from, int precision);
-unsigned XMP_Encode(unsigned char* to, unsigned tobytes, digit const* from,
+unsigned XMP_Encode(unsigned char* to, uint32_t const* from, int precision);
+unsigned XMP_Encode(unsigned char* to, unsigned tobytes, uint32_t const* from,
                     int precision);
-void XMP_Randomize(digit* result, Straw& rng, int nbits, int precision);
-void XMP_Randomize(digit* result, Straw& rng, digit const* min,
-                   digit const* max, int precision);
-bool XMP_Is_Prime(digit const* prime, int precision);
-bool XMP_Rabin_Miller_Test(Straw& rng, digit const* w, int rounds,
+void XMP_Randomize(uint32_t* result, Straw& rng, int nbits, int precision);
+void XMP_Randomize(uint32_t* result, Straw& rng, uint32_t const* min,
+                   uint32_t const* max, int precision);
+bool XMP_Is_Prime(uint32_t const* prime, int precision);
+bool XMP_Rabin_Miller_Test(Straw& rng, uint32_t const* w, int rounds,
                            int precision);
 int XMP_DER_Length_Encode(unsigned long length, unsigned char* output);
-int XMP_DER_Encode(digit const* from, unsigned char* output, int precision);
-void XMP_DER_Decode(digit* result, unsigned char const* input, int precision);
+int XMP_DER_Encode(uint32_t const* from, unsigned char* output, int precision);
+void XMP_DER_Decode(uint32_t* result, unsigned char const* input,
+                    int precision);
 
 inline int XMP_Digits_To_Bits(int digits) { return (digits << LOG_UNITSIZE); }
 
@@ -138,25 +142,25 @@ inline int XMP_Bits_To_Digits(int bits) {
   return ((bits + (UNITSIZE - 1)) / UNITSIZE);
 }
 
-inline digit XMP_Bits_To_Mask(int bits) {
+inline uint32_t XMP_Bits_To_Mask(int bits) {
   if (!bits) return (0);
   return (1 << ((bits - 1) % UNITSIZE));
 }
 
-inline bool XMP_Is_Negative(const digit* r, int precision) {
-  return ((signeddigit) * (r + (precision - 1)) < 0);
+inline bool XMP_Is_Negative(const uint32_t* r, int precision) {
+  return (static_cast<int32_t>(*(r + (precision - 1))) < 0);
 }
 
-inline bool XMP_Test_Eq_Int(digit const* r, int i, int p) {
+inline bool XMP_Test_Eq_Int(uint32_t const* r, int i, int p) {
   return ((*r == i) && XMP_Significance(r, p) <= 1);
 }
 
-inline void XMP_Set_Bit(digit* r, unsigned bit) {
-  r[bit >> LOG_UNITSIZE] |= ((digit)1 << (bit & (UNITSIZE - 1)));
+inline void XMP_Set_Bit(uint32_t* r, unsigned bit) {
+  r[bit >> LOG_UNITSIZE] |= ((uint32_t)1 << (bit & (UNITSIZE - 1)));
 }
 
-inline bool XMP_Test_Bit(const digit* r, unsigned bit) {
-  return (r[bit >> LOG_UNITSIZE] & ((digit)1 << (bit & (UNITSIZE - 1))));
+inline bool XMP_Test_Bit(const uint32_t* r, unsigned bit) {
+  return (r[bit >> LOG_UNITSIZE] & ((uint32_t)1 << (bit & (UNITSIZE - 1))));
 }
 
 // Misc functions.

@@ -240,7 +240,7 @@ void Send_Statistics_Packet(void) {
     /*
     ** Tech level.
     */
-    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<uint64_t>(BuildLevel));
+    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<unsigned long>(BuildLevel));
 
     CCDebugString("C&C95 - Adding stats field for scenario.\n");
     /*

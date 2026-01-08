@@ -1,7 +1,7 @@
 #include "sdllib/include/file.h"
 
 #include <cctype>
-#include <cstdint>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

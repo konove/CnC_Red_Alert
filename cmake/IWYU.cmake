@@ -27,12 +27,27 @@ if (ENABLE_IWYU)
             set(IWYU_COMMAND
                     "${IWYU_PATH}"
                     "-Xiwyu" "--mapping_file=${CMAKE_SOURCE_DIR}/.iwyu_mappings"
-                    #                    "-Xiwyu" "--error"
+                    "-Xiwyu" "--error"
                     "-Xiwyu" "--cxx17ns"
                     "-Xiwyu" "--no_fwd_decls"
                     "-Xiwyu" "--max_line_length=120"
                     "-Xiwyu" "--no_comments"
             )
+
+            # Add macOS SDK path for proper system header resolution
+            if (APPLE)
+                execute_process(
+                    COMMAND xcrun --sdk macosx --show-sdk-path
+                    OUTPUT_VARIABLE MACOS_SDK_PATH
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET
+                )
+                if (MACOS_SDK_PATH)
+                    list(APPEND IWYU_COMMAND "-isysroot" "${MACOS_SDK_PATH}")
+                    message(STATUS "IWYU using macOS SDK: ${MACOS_SDK_PATH}")
+                endif ()
+            endif ()
+
             message(STATUS "IWYU enabled for all targets")
         else ()
             message(WARNING "IWYU requires Clang or GCC. Current compiler: ${CMAKE_CXX_COMPILER_ID}")

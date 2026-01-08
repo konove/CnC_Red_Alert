@@ -51,8 +51,6 @@
 #include "td/target.h"
 #include "td/defines.h"
 
-#pragma warn - inl
-
 /*
 **	This class implements a classic FIFO queue (also known as - standing in
 *line). Objects *	are added to the end (tail) of the line. Objects are

@@ -291,8 +291,9 @@ VQAHandle *VQA_Alloc(void);
 void VQA_Free(VQAHandle *vqa);
 void VQA_Reset(VQAHandle *vqa);
 void VQA_InitAsDOS(VQAHandle *vqa);
-void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
-                                                void *buffer, long nbytes));
+void VQA_Init(VQAHandle *vqa,
+              int64_t (*iohandler)(VQAHandle *vqa, int64_t action, void *buffer,
+                                   int64_t nbytes));
 unsigned char *VQA_GetPalette(VQAHandle *vqa);
 long VQA_GetPaletteSize(VQAHandle *vqa);
 void VQA_Set_DrawBuffer(VQAHandle *vqa, unsigned char *buffer,

@@ -8,6 +8,14 @@
   { "include": ["<bits/move.h>", "private", "<utility>", "public"] },
   { "include": ["<bits/types/struct_tm.h>", "private", "<ctime>", "public"] },
 
+  # macOS private implementation headers
+  { "include": ["<__cstddef/byte.h>", "private", "<cstddef>", "public"] },
+  { "include": ["<_ctype.h>", "private", "<cctype>", "public"] },
+  { "include": ["<_stdlib.h>", "private", "<cstdlib>", "public"] },
+  { "include": ["<_string.h>", "private", "<cstring>", "public"] },
+  { "include": ["<_time.h>", "private", "<ctime>", "public"] },
+  { "include": ["<sys/_select.h>", "private", "<sys/select.h>", "public"] },
+
   # Legacy code - allow old-style C headers in legacy codebase
   { "symbol": ["NULL", "private", "<cstddef>", "public"] },
 

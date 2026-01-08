@@ -2618,9 +2618,10 @@ void Go_Editor(bool flag) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-long MixFileHandler(VQAHandle *vqa, long action, void *buffer, long nbytes) {
+int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+                       int64_t nbytes) {
   CCFileClass *file;
-  long error;
+  int64_t error;
 
   file = (CCFileClass *)vqa->VQAio;
 

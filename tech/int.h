@@ -74,8 +74,8 @@ class Int {
   **	integers. Big number math is basically manipulation of arbitrary
   **	length arrays.
   */
-  operator digit *() { return &reg[0]; }
-  operator const digit *() const { return &reg[0]; }
+  operator uint32_t *() { return &reg[0]; }
+  operator const uint32_t *() const { return &reg[0]; }
 
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.
@@ -111,7 +111,7 @@ class Int {
   int BitCount(void) const { return (XMP_Count_Bits(&reg[0], PRECISION)); }
   bool Is_Negative(void) const { return (XMP_Is_Negative(&reg[0], PRECISION)); }
   unsigned MaxBitPrecision() const {
-    return PRECISION * (sizeof(digit) * CHAR_BIT);
+    return PRECISION * (sizeof(uint32_t) * CHAR_BIT);
   }
   bool IsSmallPrime(void) const {
     return (XMP_Is_Small_Prime(&reg[0], PRECISION));
@@ -350,7 +350,7 @@ class Int {
   static Int Remainder;
 
  private:
-  digit reg[PRECISION];
+  uint32_t reg[PRECISION];
 
   struct RemainderTable {
     RemainderTable(const Int<PRECISION> &p) : HasZeroEntry(false) {

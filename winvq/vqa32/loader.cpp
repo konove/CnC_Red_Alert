@@ -390,7 +390,7 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
  ****************************************************************************/
 
 void VQA_Close(VQAHandle *vqa) {
-  long (*iohandler)(VQAHandle *, long, void *, long);
+  int64_t (*iohandler)(VQAHandle *, int64_t, void *, int64_t);
 
   /* Shutdown audio/timing system. */
   if (((VQAHandleP *)vqa)->Config.OptionFlags & VQAOPTF_AUDIO) {

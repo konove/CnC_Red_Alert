@@ -434,7 +434,8 @@ typedef struct _VQAData {
  * vocfh     - Override audiotrack file handle.
  */
 struct VQAHandleP : VQAHandle {
-  long (*IOHandler)(VQAHandle *vqa, long action, void *buffer, long nbytes);
+  int64_t (*IOHandler)(VQAHandle *vqa, int64_t action, void *buffer,
+                       int64_t nbytes);
   VQAData *VQABuf;
   VQAConfig Config;
   VQAHeader Header;
@@ -448,7 +449,7 @@ struct VQAHandleP : VQAHandle {
 /* Loader/Drawer system. */
 long VQA_LoadFrame(VQAHandle *vqa);
 void VQA_Configure_Drawer(VQAHandleP *vqap);
-long User_Update(VQAHandle *vqa);
+int64_t User_Update(VQAHandle *vqa);
 
 /* Timer system. */
 long VQA_StartTimerInt(VQAHandleP *vqap, long init);
