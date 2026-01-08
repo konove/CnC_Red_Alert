@@ -16,51 +16,59 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\mixfile.h_v   2.18   16 Oct 1995 16:47:22
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : MIXFILE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : October 18, 1994 *
- *                                                                                             *
- *                  Last Update : October 18, 1994   [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
-#ifndef MIXFILE_H
-#define MIXFILE_H
+#ifndef TD_MIXFILE_H_
+#define TD_MIXFILE_H_
 
 #include "td/link.h"
 
+// Manages MIX archive files (Westwood's packed game asset format).
+//
+// MIX files contain multiple sub-files indexed by CRC. Files are looked up by
+// computing the CRC of the filename and binary searching the index. The raw
+// data can be cached in RAM or read on-demand from disk.
+//
+// Example:
+//   MixFileClass::Register("general.mix");
+//   MixFileClass::Cache("general.mix");
+//   void* data = MixFileClass::Retrieve("sounds.aud");
 class MixFileClass : public LinkClass {
  public:
   char const *Filename;  // Filename of mixfile.
 
   ~MixFileClass(void);
 
-  // Factory methods - use these instead of direct construction
+  // Creates and registers a mixfile. Returns existing instance if already
+  // registered, or nullptr on failure.
   static MixFileClass *Register(char const *filename);
+
+  // Removes and deletes a mixfile by name. Returns true if found.
   static bool Unregister(char const *filename);
 
+  // Frees cached data for the named mixfile. Returns true if found.
   static bool Free(char const *filename);
+
+  // Frees all registered mixfiles.
   static void Free_All(void);
+
+  // Frees this mixfile's cached data. Keeps index for re-caching.
   void Free(void);
+
+  // Loads this mixfile's raw data into RAM. Returns true on success.
   bool Cache(void);
+
+  // Loads the named mixfile's raw data into RAM. Returns true on success.
   static bool Cache(char const *filename);
+
+  // Finds a file across all registered mixfiles. On success, outputs are set:
+  // - realptr: pointer to data if cached, nullptr if on disk
+  // - mixfile: the containing mixfile
+  // - offset: byte offset from mixfile start (disk) or data block start (RAM)
+  // - size: file size in bytes
   static bool Offset(char const *filename, void **realptr = nullptr,
                      MixFileClass **mixfile = nullptr, long *offset = nullptr,
                      long *size = nullptr);
+
+  // Returns pointer to file data if cached in RAM, nullptr otherwise.
   static void const *Retrieve(char const *filename);
 
   struct SubBlock {
@@ -74,9 +82,12 @@ class MixFileClass : public LinkClass {
   };
 
  private:
-  MixFileClass(char const *filename);  // Use Register() factory instead
+  // Use Register() factory instead of direct construction.
+  MixFileClass(char const *filename);
 
+  // Searches registered mixfiles for one matching the filename suffix.
   static MixFileClass *Finder(char const *filename);
+
   long Offset(long crc, long *size = nullptr);
 
 #pragma pack(push, 1)
@@ -86,12 +97,12 @@ class MixFileClass : public LinkClass {
   } FileHeader;
 #pragma pack(pop)
 
-  int Count;         // Number of sub-blocks.
-  long DataSize;     // Size of raw data.
-  SubBlock *Buffer;  // Array of sub blocks (could be in EMS).
-  void *Data;        // Pointer to raw data.
+  size_t Count;         // Number of sub-blocks in the index.
+  long DataSize;     // Size of raw data section in bytes.
+  SubBlock *Buffer;  // Index array of sub-blocks.
+  void *Data;        // Cached raw data, or nullptr if not cached.
 
-  static MixFileClass *First;
+  static MixFileClass *First;  // Head of registered mixfile linked list.
 };
 
-#endif
+#endif  // TD_MIXFILE_H_
