@@ -930,7 +930,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType *path,
   FacingType newdir;  // Direction of facing before surrounding cell check.
   CELL oldcell,       // Current cell.
       newcell;        // Tentative new cell.
-  int cost;           // Working cost value.
+  int cost = 0;       // Working cost value.
   int startx;
   int starty;
   int online = true;
@@ -1078,16 +1078,17 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType *path,
       /*
       **	If we found a passable position, this is where we should move.
       */
-      if (!forcefail &&
-          ((cost = Passable_Cell(newcell, newdir, threat, threshhold)) != 0)) {
-        Draw_Cell_Point(newcell, true, threat_stage);
-        break;
-      } else {
-        Draw_Cell_Point(newcell, false, threat_stage, (forcefail) ? BROWN : 0);
-        if (newcell == target) {
-          forceout = true;
+      if (!forcefail) {
+        cost = Passable_Cell(newcell, newdir, threat, threshhold);
+        if (cost != 0) {
+          Draw_Cell_Point(newcell, true, threat_stage);
           break;
         }
+      }
+      Draw_Cell_Point(newcell, false, threat_stage, (forcefail) ? BROWN : 0);
+      if (newcell == target) {
+        forceout = true;
+        break;
       }
     }
 

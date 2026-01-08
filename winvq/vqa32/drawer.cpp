@@ -607,7 +607,6 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
   VQADrawer *drawer;
   VQAFrameNode *curframe;
   VQAConfig *config;
-  long rc;
   unsigned char *pal;
   long palsize;
   long slowpal;
@@ -621,8 +620,9 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
   /* Check our "sleep" state */
   if (!(vqabuf->Flags & VQADATF_DSLEEP)) {
     /* Find the frame to draw */
-    if ((rc = Select_Frame((VQAHandleP *)vqa)) != 0) {
-      return (rc);
+    const long result = Select_Frame(static_cast<VQAHandleP *>(vqa));
+    if (result != 0) {
+      return result;
     }
 
     /* Uncompress the frame data */

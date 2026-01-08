@@ -272,7 +272,8 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
         /*-------------------------------------------------------------------
          * ALLOCATE THE BUFFERS THAT WE NEED TO PLAY THE VQA.
          *-----------------------------------------------------------------*/
-        if ((vqap->VQABuf = AllocBuffers(header, config)) == nullptr) {
+        vqap->VQABuf = AllocBuffers(header, config);
+        if (vqap->VQABuf == nullptr) {
           VQA_Close(vqa);
           return (VQAERR_NOMEM);
         }
@@ -960,12 +961,12 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
           audio->TempBufLen = 0;
 
           /* Load the frame. */
-          if ((rc = VQA_LoadFrame(vqa)) != 0) {
-            if ((rc != VQAERR_NOBUFFER) && (rc != VQAERR_SLEEPING)) {
+          rc = VQA_LoadFrame(vqa);
+          if (rc != 0) {
+            if (rc != VQAERR_NOBUFFER && rc != VQAERR_SLEEPING) {
               break;
-            } else {
-              rc = 0;
             }
+            rc = 0;
           }
         }
 
@@ -1055,7 +1056,8 @@ static VQAData *AllocBuffers(VQAHeader *header, VQAConfig *config) {
   }
 
   /* Allocate the master structure */
-  if ((vqa = (VQAData *)malloc(sizeof(VQAData))) == nullptr) {
+  vqa = (VQAData *)malloc(sizeof(VQAData));
+  if (vqa == nullptr) {
     return (nullptr);
   }
 
@@ -1471,10 +1473,11 @@ long PrimeBuffers(VQAHandle *vqa) {
 
   /* Pre-load the buffers */
   for (i = 0; i < config->NumFrameBufs; i++) {
-    if ((rc = VQA_LoadFrame(vqa)) == 0) {
+    rc = VQA_LoadFrame(vqa);
+    if (rc == 0) {
       vqabuf->LoadedFrames++;
-    } else if ((rc != VQAERR_NOBUFFER) && (rc != VQAERR_SLEEPING)) {
-      return (rc);
+    } else if (rc != VQAERR_NOBUFFER && rc != VQAERR_SLEEPING) {
+      return rc;
     }
   }
 

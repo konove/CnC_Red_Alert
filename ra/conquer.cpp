@@ -2923,7 +2923,8 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if ((vqa = VQA_Alloc()) != nullptr) {
+    vqa = VQA_Alloc();
+    if (vqa != nullptr) {
       VQA_Init(vqa, MixFileHandler);
 
       if (VQA_Open(vqa, fullname.c_str(), &AnimControl) == 0) {
@@ -3291,8 +3292,8 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
     if ((ptr = (void *)(Build_Frame(shapefile, shapenum + framelp,
                                     HiddenPage.Get_Buffer()))) != nullptr) {
 #else
-    if ((ptr = (void *)(Build_Frame(shapefile, shapenum + framelp,
-                                    SysMemPage.Get_Buffer()))) != nullptr) {
+    ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
+    if (ptr != nullptr) {
 #endif
       ptr = Get_Shape_Header_Data(ptr);
 #else   // WIN32

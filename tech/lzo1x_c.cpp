@@ -124,6 +124,7 @@ static int do_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
     m_pos = dict[dindex];
     UPDATE_I(dict, cycle, dindex, ip);
 
+    // NOLINTNEXTLINE(bugprone-assignment-in-if-condition)
     if (LZO_CHECK_MPOS_NON_DET(m_pos, m_off, in, ip, M4_MAX_OFFSET)) {
     }
 #if defined(LZO_UNALIGNED_OK_2)
