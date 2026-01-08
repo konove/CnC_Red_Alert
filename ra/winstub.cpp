@@ -69,9 +69,9 @@ void Focus_Restore(void);
 
 BOOL Any_Locked(void) {
   if (SeenBuff.Get_LockCount() || HidPage.Get_LockCount()) {
-    return (TRUE);
+    return (true);
   } else {
-    return (FALSE);
+    return (false);
   }
 }
 
@@ -137,7 +137,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   int low_param = LOWORD(wParam);
 
   if (message == CCFocusMessage) {
-    Start_Primary_Sound_Buffer(TRUE);
+    Start_Primary_Sound_Buffer(true);
     if (!InMovie) {
       Theme.Stop();
       Theme.Queue_Song(THEME_PICK_ANOTHER);
@@ -189,7 +189,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //		case WM_RBUTTONUP:
       //		case WM_RBUTTONDBLCLK:
       //	 		Keyboard->Message_Handler(hwnd, message, wParam,
-      //lParam); 			return(0);
+      // lParam); 			return(0);
 
       /*
       ** Windoze message says we have to shut down. Try and do it cleanly.
@@ -257,14 +257,14 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //			if (GameInFocus) {
       //				Restore_Cached_Icons();
       //				Map.Flag_To_Redraw(true);
-      //				Start_Primary_Sound_Buffer(TRUE);
+      //				Start_Primary_Sound_Buffer(true);
       //				if (WWMouse) WWMouse->Set_Cursor_Clip();
       //			}
       return (0);
 #ifdef NEVER
     case WM_ACTIVATE:
       if (low_param == WA_INACTIVE) {
-        GameInFocus = FALSE;
+        GameInFocus = false;
         Focus_Loss();
       }
       return (0);
@@ -442,7 +442,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** for it.
   */
   Hide_Mouse();
-  ShowCursor(TRUE);
+  ShowCursor(true);
 
   /*
   ** Pop up the dialog box and then run a standard message handler
@@ -460,7 +460,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** because it is now time to restore back to the westwood way of
   ** doing things.
   */
-  ShowCursor(FALSE);
+  ShowCursor(false);
   Show_Mouse();
 }
 

@@ -3960,7 +3960,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
     */
     if (Class->IsFixedWing) {
       int diff = PrimaryFacing.Difference(Direction(TarCom));
-      if (ABS(diff) > (fudge ? 16 : 8)) {
+      if (std::abs(diff) > (fudge ? 16 : 8)) {
         return (FIRE_FACING);
       }
     }

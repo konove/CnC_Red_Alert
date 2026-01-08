@@ -23,14 +23,6 @@
 extern "C" {
 #endif
 
-/*
-**	This should be located in the wwlib32.h file, but is located here for
-**	test purposes.
-*/
-#ifdef __FLAT__
-#define PRIVATE static
-#endif
-
 typedef enum MemoryFlagType {
   MEM_NORMAL = 0x0000,   // Default memory (normal).
   MEM_PUBLIC = 0x0000,   // Default memory (normal).

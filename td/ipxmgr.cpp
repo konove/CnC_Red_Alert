@@ -924,9 +924,9 @@ int IPXManagerClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
 #endif  // VIRTUAL_SUBNET_SERVER
     CurConnection = 0;
 
-    /*------------------------------------------------------------------------
-    Scan all connections for a received packet, starting with 'CurConnection'
-    ------------------------------------------------------------------------*/
+  /*------------------------------------------------------------------------
+  Scan all connections for a received packet, starting with 'CurConnection'
+  ------------------------------------------------------------------------*/
 #ifdef VIRTUAL_SUBNET_SERVER
   for (i = 0; i < NumConnections - vss; i++) {
 #else   // VIRTUAL_SUBNET_SERVER
@@ -1620,8 +1620,9 @@ void IPXManagerClass::Set_Bridge(NetNumType bridge) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -1915,7 +1916,7 @@ int IPXManagerClass::Alloc_RealMode_Mem(void) {
   }
 #else  // NOT_FOR_WIN95
 
-  return (TRUE);
+  return (true);
 
 #endif  // NOT_FOR_WIN95
 }

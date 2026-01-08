@@ -474,7 +474,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
     pan_value = Cell_X(cell_pos);
     pan_value -= Coord_XCell(Map.TacticalCoord) +
                  (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
-    if (ABS(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
+    if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
       pan_value /= (MAP_CELL_W >> 2);
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
@@ -548,7 +548,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
       *always *	use the vehicle response table.
       */
       if (variation < 0) {
-        if (ABS(variation) % 2) {
+        if (std::abs(variation) % 2) {
           ext = ".V00";
         } else {
           ext = ".V02";
@@ -562,7 +562,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
       }
     } else {
       if (variation < 0) {
-        if (ABS(variation) % 2) {
+        if (std::abs(variation) % 2) {
           ext = ".R00";
         } else {
           ext = ".R02";

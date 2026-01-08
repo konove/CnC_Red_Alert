@@ -249,9 +249,9 @@ bool Read_Scenario_INI_Write_INB(char *root, bool fresh) {
 
     int carryover;
     if (Scen.CarryOverCap != -1) {
-      carryover =
-          MIN(Fixed_To_Cardinal(Scen.CarryOverMoney, Scen.CarryOverPercent),
-              (Scen.CarryOverCap * 100));
+      carryover = std::min(
+          Fixed_To_Cardinal(Scen.CarryOverMoney, Scen.CarryOverPercent),
+          (Scen.CarryOverCap * 100));
     } else {
       carryover = Fixed_To_Cardinal(Scen.CarryOverMoney, Scen.CarryOverPercent);
     }

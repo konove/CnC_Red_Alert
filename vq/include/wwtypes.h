@@ -35,11 +35,7 @@
  *
  ****************************************************************************/
 
-#define TRUE 1
-#define FALSE 0
-
 #define VOID void
-#define PRIVATE static
 #define PUBLIC
 
 #define BOOL short

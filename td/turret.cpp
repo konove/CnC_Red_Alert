@@ -279,7 +279,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     } else {
       diff = PrimaryFacing.Difference(dir);
     }
-    diff = ABS(diff);
+    diff = std::abs(diff);
 
     /*
     **	Special flame tank logic.
@@ -435,11 +435,11 @@ DirType TurretClass::Fire_Direction(void) const {
     if (*this == UNIT_MSAM) {
       int diff1 = SecondaryFacing.Difference(DIR_E);
       int diff2 = SecondaryFacing.Difference(DIR_W);
-      diff1 = ABS(diff1);
-      diff2 = ABS(diff2);
-      int diff = MIN(diff1, diff2);
-      int adj =
-          Fixed_To_Cardinal(ABS(SecondaryFacing.Difference(DIR_N)), 64 - diff);
+      diff1 = std::abs(diff1);
+      diff2 = std::abs(diff2);
+      int diff = std::min(diff1, diff2);
+      int adj = Fixed_To_Cardinal(std::abs(SecondaryFacing.Difference(DIR_N)),
+                                  64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return (DirType)(SecondaryFacing - (DirType)adj);
       } else {

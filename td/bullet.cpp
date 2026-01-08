@@ -645,11 +645,11 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       */
       if (Class->IsHoming || Class->IsArcing) {
         int scatterdist = ::Distance(coord, tcoord) / 3;
-        scatterdist = MIN(scatterdist, 0x0200);
+        scatterdist = std::min(scatterdist, 0x0200);
 
         if (*this == BULLET_GRENADE) {
           scatterdist = ::Distance(coord, tcoord) / 4;
-          scatterdist = MIN(scatterdist, 0x0080);
+          scatterdist = std::min(scatterdist, 0x0080);
         }
 
         dir = (DirType)((dir + (Random_Pick(0, 10) - 5)) & 0x00FF);
@@ -663,8 +663,9 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       */
       if (Payback) {
         if (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1)) {
-          tcoord = Coord_Move(tcoord, ::Direction(tcoord, Coord),
-                              Distance(tcoord) - MAX(Payback->Weapon_Range(0),
+          tcoord =
+              Coord_Move(tcoord, ::Direction(tcoord, Coord),
+                         Distance(tcoord) - std::max(Payback->Weapon_Range(0),
                                                      Payback->Weapon_Range(1)));
         }
       }
@@ -705,7 +706,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.
       */
-      speed = MAX(speed, 25);
+      speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
       Fly_Speed(255, (MPHType)speed);
@@ -732,7 +733,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     if (Class->IsArcing) {
       Altitude = 1;
       Riser = ((Distance(tcoord) / 2) / (speed + 1)) * GRAVITY;
-      Riser = MAX(Riser, 10);
+      Riser = std::max<int>(Riser, 10);
     }
     if (Class->IsDropping) {
       Altitude = Pixel_To_Lepton(24);

@@ -120,20 +120,20 @@ void ScrollClass::AI(KeyNumType &input, int x, int y) {
           */
           int altx = x;
           if (altx < 50) altx -= (50 - altx) * 2;
-          altx = MAX(altx, 0);
+          altx = std::max(altx, 0);
           if (altx > (SeenBuff.Get_Width() - 50))
             altx += (altx - (SeenBuff.Get_Width() - 50)) * 2;
-          altx = MIN(altx, SeenBuff.Get_Width());
+          altx = std::min(altx, SeenBuff.Get_Width());
           if (altx > 50 && altx < (SeenBuff.Get_Width() - 50)) {
             altx += ((SeenBuff.Get_Width() / 2) - altx) / 2;
           }
 
           int alty = y;
           if (alty < 50) alty -= (50 - alty);
-          alty = MAX(alty, 0);
+          alty = std::max(alty, 0);
           if (alty > (SeenBuff.Get_Height() - 50))
             alty += ((alty - (SeenBuff.Get_Height() - 50)));
-          alty = MIN(alty, SeenBuff.Get_Height());
+          alty = std::min(alty, SeenBuff.Get_Height());
 
           direction = (DirType)Desired_Facing256((SeenBuff.Get_Width()) / 2,
                                                  (SeenBuff.Get_Height()) / 2,

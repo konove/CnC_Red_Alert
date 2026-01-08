@@ -337,7 +337,7 @@ int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
   // strupr(filename);
 
   fh = Open_File(filename, READ);
-  if (fh == WW_ERROR) return (FALSE);
+  if (fh == kInvalidHandle) return (FALSE);
   Read_File(fh, &ifftype, 4L);
   Close_File(fh);
 
@@ -346,7 +346,7 @@ int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
             8000);
   } else {
     fh = Open_Iff_File(filename);  // Opens and checks for IFF form.
-    if (fh == WW_ERROR) return (FALSE);
+    if (fh == kInvalidHandle) return (FALSE);
 
     Read_File(fh, &ifftype, 4L);
     if (ifftype == ID_ILBM) {

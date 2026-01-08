@@ -732,6 +732,35 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2);
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty);
 //
 
+// Extracts the lower 16 bits (low word) from an integer.
+template <std::integral T>
+[[nodiscard]] constexpr uint16_t LowWord(T value) {
+  return static_cast<uint16_t>(value);
+}
+
+// Extracts the upper 16 bits (high word) from a 32-bit integer view.
+//
+// Note: This casts the input to uint32_t before shifting, mirroring the
+// original macro's behavior of discarding bits > 32.
+template <std::integral T>
+[[nodiscard]] constexpr uint16_t HighWord(T value) {
+  return static_cast<uint16_t>(static_cast<uint32_t>(value) >> 16);
+}
+
+// Combines two 16-bit words into a 32-bit integer.
+//
+// Replacement for: MAKE_LONG(a, b)
+// WARNING: The original macro defined the order as (High, Low), which is
+// opposite to the standard Windows MAKELONG(Low, High).
+//
+// We explicitly name parameters 'high' and 'low' to prevent confusion.
+[[nodiscard]] constexpr int32_t MakeLong(uint16_t high, uint16_t low) {
+  // Use unsigned math for the shift to prevent Undefined Behavior,
+  // then cast back to the legacy int32_t type.
+  return static_cast<int32_t>((static_cast<uint32_t>(high) << 16) |
+                              static_cast<uint32_t>(low));
+}
+
 /*
 **	Inline miscellaneous functions.
 */
@@ -750,10 +779,10 @@ inline int Lepton_To_Cell(int lepton) {
 }
 inline CELL XY_Cell(int x, int y) { return ((CELL)(((y) << 6) | (x))); }
 inline COORDINATE XY_Coord(int x, int y) {
-  return ((COORDINATE)MAKE_LONG(y, x));
+  return ((COORDINATE)MakeLong(y, x));
 }
-inline int Coord_X(COORDINATE coord) { return (short)(LOW_WORD(coord)); }
-inline int Coord_Y(COORDINATE coord) { return (short)(HIGH_WORD(coord)); }
+inline int Coord_X(COORDINATE coord) { return (short)(LowWord(coord)); }
+inline int Coord_Y(COORDINATE coord) { return (short)(HighWord(coord)); }
 inline int Cell_X(CELL cell) { return (int)(((unsigned)cell) & 0x3F); }
 inline int Cell_Y(CELL cell) { return (int)(((unsigned)cell) >> 6); }
 inline int Dir_Diff(DirType dir1, DirType dir2) {
@@ -768,37 +797,36 @@ inline CELL Coord_YLepton(COORDINATE coord) {
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
 inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
-  return (COORDINATE)MAKE_LONG(
+  return (COORDINATE)MakeLong(
       (*((short *)(&coord1) + 1) + *((short *)(&coord2) + 1)),
       (*((short *)(&coord1)) + *((short *)(&coord2))));
 }
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
-  return (COORDINATE)MAKE_LONG(
+  return (COORDINATE)MakeLong(
       (*((short *)(&coord1) + 1) - *((short *)(&coord2) + 1)),
       (*((short *)(&coord1)) - *((short *)(&coord2))));
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
-  return (COORDINATE)MAKE_LONG(
+  return (COORDINATE)MakeLong(
       (((*(((unsigned short *)&coord) + 1)) & 0xFF00) | 0x80),
       (((*((unsigned short *)&coord)) & 0xFF00) | 0x80));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
-  return (COORDINATE)MAKE_LONG(
+  return (COORDINATE)MakeLong(
       (*((unsigned short *)(&coord1) + 1) +
        *((unsigned short *)(&coord2) + 1)) >>
           1,
       (*((unsigned short *)(&coord1)) + *((unsigned short *)(&coord2))) >> 1);
 }
 inline COORDINATE Cell_Coord(CELL cell) {
-  return (COORDINATE)MAKE_LONG((((cell & 0x0FC0) << 2) | 0x80),
-                               ((((cell & 0x003F) << 1) + 1) << 7));
+  return (COORDINATE)MakeLong((((cell & 0x0FC0) << 2) | 0x80),
+                              ((((cell & 0x003F) << 1) + 1) << 7));
 }
 inline COORDINATE XYPixel_Coord(int x, int y) {
-  return (
-      (COORDINATE)MAKE_LONG((int)(((long)y * (long)ICON_LEPTON_H) /
-                                  (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-                            (int)(((long)x * (long)ICON_LEPTON_W) /
-                                  (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
+  return ((COORDINATE)MakeLong((int)(((long)y * (long)ICON_LEPTON_H) /
+                                     (long)ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
+                               (int)(((long)x * (long)ICON_LEPTON_W) /
+                                     (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
 // inline int Facing_To_16(int facing) {return Facing16[facing];}
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }

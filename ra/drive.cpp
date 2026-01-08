@@ -1468,14 +1468,14 @@ void DriveClass::Fixup_Path(PathType *path) {
   if (!facediff) return;
 
   if (Dir_Facing(PrimaryFacing) & FACING_NE) {
-    ptr = &_dpath[(FacingType)ABS((int)facediff) - FACING_NE]
+    ptr = &_dpath[(FacingType)std::abs((int)facediff) - FACING_NE]
                  [1];  // Pointer to path adjust list.
-    counter = (int)_dpath[(FacingType)ABS((int)facediff) - FACING_NE]
+    counter = (int)_dpath[(FacingType)std::abs((int)facediff) - FACING_NE]
                          [0];  // Number of path adjusts.
   } else {
-    ptr = &_path[(FacingType)ABS((int)facediff) - FACING_NE]
+    ptr = &_path[(FacingType)std::abs((int)facediff) - FACING_NE]
                 [1];  // Pointer to path adjust list.
-    counter = (int)_path[(FacingType)ABS((int)facediff) - FACING_NE]
+    counter = (int)_path[(FacingType)std::abs((int)facediff) - FACING_NE]
                         [0];  // Number of path adjusts.
   }
   ptr2 = ptr;
@@ -1513,7 +1513,7 @@ void DriveClass::Fixup_Path(PathType *path) {
   **	to the right. This only makes sense if the vehicle is trying
   **	to turn 180 degrees.
   */
-  if (!ok && ABS(facediff) == 4) {
+  if (!ok && std::abs(facediff) == 4) {
     ptr = ptr2;  // Pointer to path adjust list.
     facediff = -facediff;
     ok = true;                             // Presume adjustment is all ok.

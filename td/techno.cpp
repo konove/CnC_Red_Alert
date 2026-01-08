@@ -651,11 +651,11 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass *from,
         int cost = Techno_Type_Class()->Repair_Cost();
         //				int cost =
         // Fixed_To_Cardinal(Techno_Type_Class()->Repair_Cost(), param);
-        cost = MAX(cost, 1);
+        cost = std::max(cost, 1);
         int step = Techno_Type_Class()->Repair_Step();
         //				int step =
         // Fixed_To_Cardinal(Techno_Type_Class()->Repair_Step(), param);
-        step = MAX(step, 1);
+        step = std::max(step, 1);
         if (House->Available_Money() >= cost) {
 #ifdef OBSOLETE
           if (Health_Ratio() >= 0x0100) {
@@ -1183,10 +1183,10 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
             (((dist / ICON_LEPTON_W) * (dist / ICON_LEPTON_W)) + 1);
 
     // value = Fixed_To_Cardinal(value, Cardinal_To_Fixed(MAP_CELL_W*2,
-    // (MAP_CELL_W*2) - (dist/ICON_LEPTON_W))); value = MAX(value, 2);
+    // (MAP_CELL_W*2) - (dist/ICON_LEPTON_W))); value = std::max(value, 2);
 
     if (value < MAP_CELL_W * 2) value = dist / ICON_LEPTON_W;
-    value = MAX(value, 1);
+    value = std::max(value, 1);
     return (true);
   }
   value = 0;
@@ -1202,7 +1202,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   if (crange) modifier /= crange;
   if (modifier) value /= modifier;
   if (rawval) {
-    value = MAX(value, 2);
+    value = std::max(value, 2);
   }
   return (true);
 #endif
@@ -1312,13 +1312,13 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
   if (method & (THREAT_AREA | THREAT_RANGE)) {
     int range = Threat_Range((method & THREAT_RANGE) ? 0 : 1);
 
-    //		int range = MAX(Weapon_Range(0), Weapon_Range(1));
+    //		int range = std::max(Weapon_Range(0), Weapon_Range(1));
     //		if (!(method & THREAT_RANGE)) range *= 2;
     //		range = Bound(range, 0x0100, 0x1400);			// Limit
     // maximum scan distance.
     int crange = range / ICON_LEPTON_W;
     if (range == 0) {
-      crange = MAX(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
+      crange = std::max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
       crange++;
     }
     CELL cell = Coord_Cell(Fire_Coord(0));
@@ -3108,7 +3108,7 @@ int TechnoClass::Threat_Range(int control) const {
   if (control == -1) return (-1);
   if (control == 0) return (0);
 
-  int range = MAX(Weapon_Range(0), Weapon_Range(1));
+  int range = std::max(Weapon_Range(0), Weapon_Range(1));
   range *= 2;
   range = Bound(range, 0x0000, 0x0A00);
   return (range);

@@ -80,7 +80,6 @@
 #undef VOID
 #endif
 
-#define PRIVATE static
 #define PUBLIC /* Routines & data don't have a specifier */
 
 #ifdef __cplusplus
@@ -168,9 +167,6 @@ typedef void VOID;
 //		typedef signed long		LONG;
 //		typedef unsigned long	ULONG;
 //==================================================
-#ifndef PRIVATE
-#define PRIVATE static
-#endif
 
 // The purpose of the INT and UINT is for efficiency.  It says that while a
 // short int (16 bit) has enough precision, it is more efficient to pass in an

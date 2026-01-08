@@ -133,7 +133,7 @@ void *Load_Icon_Set(char const *filename, void *iconsetptr, long buffsize) {
   **	data file, then abort.
   */
   fh = Open_Iff_File(filename);
-  if (fh != WW_ERROR) {
+  if (fh != kInvalidHandle) {
     Read_File(fh, &id, sizeof(long));
     if (id == FORM_ICON) {
       /*

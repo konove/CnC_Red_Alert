@@ -940,7 +940,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     // background then we need to redraw.
     //
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 

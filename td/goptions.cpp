@@ -161,7 +161,7 @@ void GameOptionsClass::Process(void) {
   */
   GadgetClass *g = buttons;
   while (g) {
-    g->Width = MAX(maxwidth, 90 * resfactor);
+    g->Width = std::max(maxwidth, 90 * resfactor);
     g->X = OptionX + (OptionWidth - g->Width) / 2;
     g = g->Get_Next();
   }
@@ -214,8 +214,8 @@ void GameOptionsClass::Process(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
-      display = TRUE;
+      AllSurfaces.SurfacesRestored = false;
+      display = true;
     }
 
     /*

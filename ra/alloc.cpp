@@ -64,7 +64,7 @@ extern "C" unsigned long Largest_Mem_Block(void);
 #define DPMI_INT 0x0031
 #define DPMI_LOCK_MEM 0x0600
 #define DPMI_UNLOCK_MEM 0x0601
-#define LOGGING FALSE
+#define LOGGING false
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
@@ -205,7 +205,7 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
     largestblock &= 0xffff0000;  // forcing to 64K boundary
 
     if (largestblock) {
-      LargestRamBlock = MIN(largestblock, RequestedSystemRam);
+      LargestRamBlock = std::min(largestblock, RequestedSystemRam);
       unsigned char *lptr = (unsigned char *)malloc(LargestRamBlock);
       if (lptr) {
         free((void *)lptr);

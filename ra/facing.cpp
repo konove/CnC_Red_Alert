@@ -156,7 +156,7 @@ int FacingClass::Rotation_Adjust(int rate) {
     **	the current facing and the desired facing, then just snap the
     **	facing to the new value.
     */
-    if (ABS(diff) < rate) {
+    if (std::abs(diff) < rate) {
       CurrentFacing = DesiredFacing;
     } else {
       /*

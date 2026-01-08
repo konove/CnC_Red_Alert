@@ -151,7 +151,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   enum {
     BUTTON_DISCONNECT =
         100,  //	Note: standard WOL button IDs must match values in
-              //WolapiObject::PrepareButtonsAndIcons().
+              // WolapiObject::PrepareButtonsAndIcons().
     BUTTON_LEAVE,
     BUTTON_REFRESH,
     BUTTON_SQUELCH,
@@ -372,7 +372,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     chatlist.Add_Item(pWO->pChatSink->szMotd, NULL, NULL, ICON_SHAPE);
   } else {
     //	We have returned to the chat dialog after being in either game setup or
-    //an actual game.
+    // an actual game.
     pWO->RestoreChat();
     pWO->DeleteSavedChat();
 
@@ -397,7 +397,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           iChannelLobbyNumber((unsigned char*)szChannelToJoin));
     } else
       //	Will never happen presumably, if games are always entered via a
-      //lobby chat channel.
+      // lobby chat channel.
       pWO->EnterLevel_Top();
 
     pWO->iLobbyReturnAfterGame = -1;
@@ -542,7 +542,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pWO->UpdateChannels(0, CHANNELFILTER_UNOFFICIAL, false);
           break;
         case WOL_LEVEL_LOBBIES:  //	Overkill in this case to update so
-                                 //often...
+                                 // often...
           pWO->UpdateChannels(0, CHANNELFILTER_LOBBIES, false);
           break;
         case WOL_LEVEL_INLOBBY:
@@ -559,7 +559,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -576,7 +576,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
       } else {
         //	Could not find name of a lobby for some reason. Go to top
-        //instead.
+        // instead.
         pWO->EnterLevel_Top();
       }
       pWO->bChatShownBefore = true;
@@ -635,7 +635,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
-    //disappearing cursors.
+    // disappearing cursors.
     while (Get_Mouse_State()) Show_Mouse();
     //	Be nice to other apps.
     Sleep(50);
@@ -653,7 +653,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     }
 
     //	If anything currently on the controls list is set to redraw, hide
-    //tooltip.
+    // tooltip.
     if (pToolTipHitLast && pToolTipHitLast->bShowing &&
         commands->Is_List_To_Redraw()) {
       pToolTipHitLast->Unshow();
@@ -662,11 +662,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     input = commands->Input();
 
     //	This hack, used elsewhere in this form, appears to be the standard dodge
-    //around GadgetClass::Input's 	tendency to remove any focus the first time it
-    //runs for a 'commands' list.
+    // around GadgetClass::Input's 	tendency to remove any focus the first
+    // time it runs for a 'commands' list.
 
     //	ajw - Perhaps I could try doing this every cycle regardless - would
-    //avoid stupid non-focused editbox key reactions bug.
+    // avoid stupid non-focused editbox key reactions bug.
     if (bHackFocus) {
       sendedit.Set_Focus();
       sendedit.Flag_To_Redraw();
@@ -680,7 +680,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       if (pToolTipHit == pToolTipHitLast) {
         if (pToolTipHit &&
             bLinkInList(commands, pToolTipHit->pGadget))  //	(Gadget must be
-                                                          //in controls list.)
+                                                          // in controls list.)
         {
           if (!pToolTipHit->bShowing && ::timeGetTime() > timeToolTipAppear &&
               !((::GetAsyncKeyState(KN_LMOUSE) & 0x8000) ||
@@ -823,8 +823,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
       case (BUTTON_JOIN | KN_BUTTON):
         //	Pressing the join button is exactly like doubleclicking on the
-        //selected index in chanlist, except: 		if the first item is selected,
-        //ignore, unless we are at the top level
+        // selected index in chanlist, except: 		if the first item is
+        // selected, ignore, unless we are at the top level
         if (pWO->CurrentLevel == WOL_LEVEL_TOP ||
             chanlist.Current_Index() != 0) {
           if (ProcessChannelListSelection(pWO, chatlist, chanlist,
@@ -846,7 +846,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         switch (pWO->CurrentLevel) {
           case WOL_LEVEL_INCHATCHANNEL:
             //					debugprint( "%s\n",
-            //TXT_WOL_CANTCREATEINCHANNEL );
+            // TXT_WOL_CANTCREATEINCHANNEL );
             WOL_PrintMessage(chatlist, TXT_WOL_CANTCREATEINCHANNEL,
                              WOLCOLORREMAP_LOCALMACHINEMESS);
             Sound_Effect(WOLSOUND_ERROR);
@@ -880,8 +880,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
       case (BUTTON_LEAVE | KN_BUTTON):
         //	Because of the way things are set up, this is exactly like
-        //selecting the first item in chanlist. 	(Button is disabled when this is
-        //not appropriate.)
+        // selecting the first item in chanlist. 	(Button is disabled when
+        // this is not appropriate.)
         ProcessChannelListSelection(pWO, chatlist, chanlist, 0);
         display = REDRAW_ALL;
         break;
@@ -918,11 +918,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
       case (KN_ESC):
         //				break;			ajw
-        //Put back in?
+        // Put back in?
 
       case (BUTTON_BACK | KN_BUTTON):
         //	Pressing the back button is exactly like doubleclicking on the
-        //top item in chanlist, except 	when we're at the top level.
+        // top item in chanlist, except 	when we're at the top level.
         if (pWO->CurrentLevel != WOL_LEVEL_TOP) {
           ProcessChannelListSelection(pWO, chatlist, chanlist, 0);
           display = REDRAW_ALL;
@@ -1035,7 +1035,7 @@ void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
 bool OnExpandChannelList(IconListClass& chanlist, IconListClass& userlist) {
   //	Expand channel list button was pressed.
   //	Returns true if userlist controls are to be hidden, false if they are to
-  //be shown.
+  // be shown.
   switch (lesCurrent) {
     case LES_NORMAL:
       ResizeChannelList(chanlist, true);
@@ -1058,7 +1058,7 @@ bool OnExpandChannelList(IconListClass& chanlist, IconListClass& userlist) {
 bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist) {
   //	Expand user list button was pressed.
   //	Returns true if chanlist controls are to be hidden, false if they are to
-  //be shown.
+  // be shown.
   switch (lesCurrent) {
     case LES_NORMAL:
       ResizeUserList(userlist, true);
@@ -1119,7 +1119,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   if (!pChannel) {
     if (!szChannelName) {
       //			debugprint( "pChannel and szChannelName null in
-      //EnterChannel" );
+      // EnterChannel" );
       pWO->bSelfDestruct = true;
       return false;
     }
@@ -1138,7 +1138,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
 
   if (bGame) {
     //	It is possible to enter a game channel while currently in a chat
-    //channel. (A lobby, presumably.)
+    // channel. (A lobby, presumably.)
     if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
         pWO->CurrentLevel == WOL_LEVEL_INLOBBY)
       if (!pWO->ExitChatChannelForGameChannel()) {
@@ -1178,7 +1178,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       case CHAT_E_BADCHANNELPASSWORD: {
         Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                          TPF_TEXT);  //	Required before String_Pixel_Width()
-                                     //call, for god's sake.
+                                     // call, for god's sake.
 #ifdef ENGLISH
         SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass(
             300, TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
@@ -1251,7 +1251,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     if (hRes == S_OK) {
       *pWO->szChannelReturnOnGameEnterFail = 0;
       //	Return later to the lobby of the channel creator - which was
-      //saved in the channel itself.
+      // saved in the channel itself.
       pWO->iLobbyReturnAfterGame = pChannel->reserved & 0x00FFFFFF;
       if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF)
         pWO->iLobbyReturnAfterGame = -1;
@@ -1316,7 +1316,7 @@ void CreateChatChannel(WolapiObject* pWO) {
   {
     Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                      TPF_TEXT);  //	Required before String_Pixel_Width()
-                                 //call, for god's sake.
+                                 // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(
         350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,
         WOL_CHANNAME_LEN_MAX, TXT_WOL_OPTIONALPASSPROMPT, WOL_CHANKEY_LEN_MAX);
@@ -1349,7 +1349,7 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
     if (!pWO->ExitChatChannelForGameChannel()) {
       *pWO->szChannelReturnOnGameEnterFail = 0;
       //			debugprint( "ExitChatChannelForGameChannel in
-      //CreateGameChannel() error" );
+      // CreateGameChannel() error" );
       pWO->bSelfDestruct = true;
       return false;
     }
@@ -1377,7 +1377,8 @@ bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
 bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
                                  IconListClass& chanlist, int iIndex) {
   //	Takes whatever action necessary due to user selecting iIndex from
-  //chanlist. 	Returns true if user selected to enter a game channel, else false.
+  // chanlist. 	Returns true if user selected to enter a game channel, else
+  // false.
   if (iIndex < 0) return false;
 
   //	debugprint( "iIndex %i\n", iIndex );
@@ -1433,7 +1434,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
         //				debugprint( "Trying to jump from channel
-        //to channel?!\n" );
+        // to channel?!\n" );
         pWO->bSelfDestruct = true;
         return false;
       }
@@ -1444,7 +1445,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
         //				debugprint( "Trying to jump from channel
-        //to channel?!\n" );
+        // to channel?!\n" );
         pWO->bSelfDestruct = true;
         return false;
       }
@@ -1475,7 +1476,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
             break;
           default:
             //					debugprint( "Illegal value for
-            //GameKind channel reserved field: %s\n", (char*)pChannel->name );
+            // GameKind channel reserved field: %s\n", (char*)pChannel->name );
             Sound_Effect(WOLSOUND_ERROR);
             return false;
         }
@@ -1493,7 +1494,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
         //	Not currently possible.
         //				debugprint( "Chat channel to lobbies
-        //level?!\n" );
+        // level?!\n" );
         pWO->bSelfDestruct = true;
         return false;
       }
@@ -1509,7 +1510,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
           pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
         //	Not currently possible.
         //				debugprint( "Chat or lobby channel to
-        //lobby channel?!\n" );
+        // lobby channel?!\n" );
         pWO->bSelfDestruct = true;
         return false;
       }
@@ -1517,10 +1518,10 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       EnterChannel(pWO, chatlist, chanlist, iIndex, false);  //	Can fail.
     } else if (strcmp(szChannelType, CHANNELTYPE_LOADING) == 0) {
       //	User clicked on the channel list loading notification - do
-      //nothing.
+      // nothing.
     } else {
       //			debugprint( "Item selected in channel list
-      //unidentifiable from extradata field\n" );
+      // unidentifiable from extradata field\n" );
       pWO->bSelfDestruct = true;
       return false;
     }

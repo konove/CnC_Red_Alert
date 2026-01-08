@@ -107,11 +107,11 @@ DDEServerClass::DDEServerClass(void) {
 
   DDE_Class = new Instance_Class("CONQUER", "WCHAT");
 
-  DDE_Class->Enable_Callback(TRUE);
-  IsEnabled = TRUE;
+  DDE_Class->Enable_Callback(true);
+  IsEnabled = true;
 
   if (DDE_Class->Test_Server_Running(DDE_Class->local_name)) {
-    CC95AlreadyRunning = TRUE;
+    CC95AlreadyRunning = true;
   } else {
     DDE_Class->Register_Server(DDE_Callback);
   }
@@ -119,8 +119,8 @@ DDEServerClass::DDEServerClass(void) {
 
 void DDEServerClass::Enable(void) {
   if (!IsEnabled) {
-    DDE_Class->Enable_Callback(TRUE);
-    IsEnabled = TRUE;
+    DDE_Class->Enable_Callback(true);
+    IsEnabled = true;
   }
 }
 
@@ -184,11 +184,11 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
     switch (length) {
       case DDE_ADVISE_CONNECT:
         CCDebugString("C&C95 - DDE advisory: client connect detected.");
-        return TRUE;
+        return true;
 
       case DDE_ADVISE_DISCONNECT:
         CCDebugString("C&C95 - DDE advisory: client disconnect detected.");
-        return TRUE;
+        return true;
 
       default:
         CCDebugString("C&C95 - DDE advisory: Unknown DDE advise type.");
@@ -260,7 +260,7 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
     }
   }
 
-  return (TRUE);
+  return (true);
 }
 
 /***********************************************************************************************
@@ -336,7 +336,7 @@ BOOL Send_Data_To_DDE_Server(char *data, int length, int packet_type) {
 
   app_exists = DDE_Class->Test_Server_Running(DDE_Class->remote_name);
 
-  if (app_exists != TRUE) {
+  if (app_exists != true) {
     CCDebugString("Connection to server failed!");
     return (FALSE);
   }
@@ -368,5 +368,5 @@ BOOL Send_Data_To_DDE_Server(char *data, int length, int packet_type) {
 
   delete poke_data;
 
-  return (TRUE);
+  return (true);
 }

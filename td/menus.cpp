@@ -47,16 +47,16 @@
 
 #ifdef SCENARIO_EDITOR
 
-PRIVATE int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
-                                  int iny2);
-PRIVATE int Select_To_Entry(int select, unsigned long bitfield, int index);
-PRIVATE void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
-                        unsigned hfgc, unsigned bgc);
+static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
+                                 int iny2);
+static int Select_To_Entry(int select, unsigned long bitfield, int index);
+static void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
+                       unsigned hfgc, unsigned bgc);
 
 int UnknownKey;
 
-PRIVATE int MenuUpdate = 1;
-PRIVATE int MenuSkip;
+static int MenuUpdate = 1;
+static int MenuSkip;
 
 /*=========================================================================*/
 /*	SELECT_TO_ENTRY:
@@ -76,7 +76,7 @@ PRIVATE int MenuSkip;
 /*	RETURNS:	int the index into the table of entries
  */
 /*=========================================================================*/
-PRIVATE int Select_To_Entry(int select, unsigned long bitfield, int index) {
+static int Select_To_Entry(int select, unsigned long bitfield, int index) {
   int placement;
 
   if (bitfield == 0xFFFFFFFFL) /* if all bits are set	*/
@@ -113,8 +113,8 @@ PRIVATE int Select_To_Entry(int select, unsigned long bitfield, int index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-PRIVATE void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
-                        unsigned hfgc, unsigned bgc) {
+static void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
+                       unsigned hfgc, unsigned bgc) {
   int loop;
 
   for (loop = 0; loop < 3; loop++) {
@@ -143,8 +143,8 @@ PRIVATE void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-PRIVATE int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
-                                  int iny2) {
+static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
+                                 int iny2) {
   return ((x >= inx1) && (x <= inx2) && (y >= iny1) && (y <= iny2));
 }
 
@@ -252,13 +252,12 @@ int Check_Menu(int menu, char const *text[], char *, long field, int index) {
   // selection++;
   // /* get rid of warning	*/
 
-  menuptr = &MenuList[menu][0];     /* get pointer to menu	*/
-  maxitem = menuptr[ITEMSHIGH] - 1; /* find max items			*/
-  newitem = item =
-      menuptr[MSELECTED] % (maxitem + 1); /* find selected */
-  select = -1;                            /* no selection made		*/
-  menuskip = FontHeight + MenuSkip;       /* calc new font height	*/
-  halfskip = MenuSkip >> 1;               /* adjustment for menus	*/
+  menuptr = &MenuList[menu][0];                        /* get pointer to menu	*/
+  maxitem = menuptr[ITEMSHIGH] - 1;                    /* find max items			*/
+  newitem = item = menuptr[MSELECTED] % (maxitem + 1); /* find selected */
+  select = -1;                                         /* no selection made		*/
+  menuskip = FontHeight + MenuSkip; /* calc new font height	*/
+  halfskip = MenuSkip >> 1;         /* adjustment for menus	*/
 
   menuy = WinY + menuptr[MENUY]; /* get the absolute 		*/
   menux = (WinX + menuptr[MENUX])
@@ -442,7 +441,7 @@ int Do_Menu(char const **strings, bool blue) {
   length = 0;
   ptr = strings;
   while (*ptr) {
-    length = MAX(length, (int)String_Pixel_Width(*ptr));
+    length = std::max(length, (int)String_Pixel_Width(*ptr));
     ptr++;
   }
   length += 7;
@@ -801,8 +800,8 @@ int Main_Menu(unsigned long timeout) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
-      display = TRUE;
+      AllSurfaces.SurfacesRestored = false;
+      display = true;
     }
 
     /*
@@ -846,8 +845,9 @@ int Main_Menu(unsigned long timeout) {
                        Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
 #endif
 //			Fancy_Text_Print("V.%d%s%02d", D_DIALOG_X+D_DIALOG_W-5,
-//D_DIALOG_Y+D_DIALOG_H-10, DKGREY, TBLACK, TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT,
-//Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
+// D_DIALOG_Y+D_DIALOG_H-10, DKGREY, TBLACK,
+// TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT, Version_Number(), VersionText,
+// FOREIGN_VERSION_NUMBER);
 #else
 #ifdef DEMO
       Version_Number();

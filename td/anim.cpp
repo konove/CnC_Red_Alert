@@ -601,8 +601,8 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   */
   Delay = timedelay;
 
-  Loops = (unsigned char)(MAX(loop, 1) * Class->Loops);
-  Loops = (unsigned char)MAX(Loops, 1);
+  Loops = (unsigned char)(std::max<int>(loop, 1) * Class->Loops);
+  Loops = (unsigned char)std::max<int>(Loops, 1);
 
   IsToDelete = false;
   IsBrandNew = true;
@@ -802,7 +802,7 @@ void AnimClass::AI(void) {
           */
           if (Class->ChainTo != ANIM_NONE) {
             //						AnimTypeClass const *
-            //aptr = &AnimTypeClass::As_Reference(Class->ChainTo);
+            // aptr = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             ((AnimTypeClass const *&)Class) =
                 &AnimTypeClass::As_Reference(Class->ChainTo);
@@ -997,7 +997,7 @@ void AnimClass::Middle(void) {
         CELL tcell = XY_Cell(xpos, ypos);
         if (!Map.In_Radar(tcell)) continue;
 
-        int damage = rawdamage / ((ABS(radius) / 2) + 1);
+        int damage = rawdamage / ((std::abs(radius) / 2) + 1);
         Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
         new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
                         Cell_Coord(tcell));

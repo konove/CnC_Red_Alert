@@ -231,7 +231,8 @@ void FootClass::Debug_Dump(MonoClass *mono) const {
   static char const *_p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
   for (int index = 0; index < min(12, ARRAY_SIZE(Path)); index++) {
     mono->Set_Cursor(54 + index, 3);
-    mono->Printf("%s", _p2c[((ABS((int)Path[index] + 1)) % ARRAY_SIZE(_p2c))]);
+    mono->Printf("%s",
+                 _p2c[((std::abs((int)Path[index] + 1)) % ARRAY_SIZE(_p2c))]);
   }
   mono->Set_Cursor(54, 5);
   mono->Printf("%2d", PathThreshhold);
@@ -1909,7 +1910,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     */
     speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
 
-    int ratio = (speed > 0) ? Max(dist / speed, 1) : 1;
+    int ratio = (speed > 0) ? std::max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.

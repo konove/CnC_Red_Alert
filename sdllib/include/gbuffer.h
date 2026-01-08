@@ -232,17 +232,17 @@ class GraphicViewPortClass {
   long To_Buffer(int x, int y, int w, int h, BufferClass *buff);
   long To_Buffer(BufferClass *buff);
   int Blit(GraphicViewPortClass &dest, int x_pixel, int y_pixel, int dx_pixel,
-           int dy_pixel, int pixel_width, int pixel_height, bool trans = FALSE);
-  int Blit(GraphicViewPortClass &dest, int dx, int dy, bool trans = FALSE);
-  int Blit(GraphicViewPortClass &dest, bool trans = FALSE);
+           int dy_pixel, int pixel_width, int pixel_height, bool trans = false);
+  int Blit(GraphicViewPortClass &dest, int dx, int dy, bool trans = false);
+  int Blit(GraphicViewPortClass &dest, bool trans = false);
 
   bool Scale(GraphicViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
-             bool trans = FALSE, char *remap = nullptr);
+             bool trans = false, char *remap = nullptr);
   bool Scale(GraphicViewPortClass &dest, int src_x, int src_y, int dst_x,
              int dst_y, int src_w, int src_h, int dst_w, int dst_h,
              char *remap);
-  bool Scale(GraphicViewPortClass &dest, bool trans = FALSE,
+  bool Scale(GraphicViewPortClass &dest, bool trans = false,
              char *remap = nullptr);
   bool Scale(GraphicViewPortClass &dest, char *remap);
 
@@ -388,12 +388,12 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw(void) {
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Lock(void) {
   bool lock = GraphicBuff->Lock();
-  if (!lock) return (FALSE);
+  if (!lock) return (false);
 
   if (this != GraphicBuff) {
     Attach(GraphicBuff, XPos, YPos, Width, Height);
   }
-  return (TRUE);
+  return true;
 }
 
 /***********************************************************************************************
@@ -412,9 +412,9 @@ inline bool GraphicViewPortClass::Lock(void) {
  *=============================================================================================*/
 inline bool GraphicViewPortClass::Unlock(void) {
   bool unlock = GraphicBuff->Unlock();
-  if (!unlock) return (FALSE);
+  if (!unlock) return (false);
 
-  return (TRUE);
+  return true;
 }
 
 /***************************************************************************
@@ -600,7 +600,7 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass &dest, int src_x,
                                         int src_w, int src_h, int dst_w,
                                         int dst_h, char *remap) {
   return Scale(dest, src_x, src_y, dst_x, dst_y, src_w, src_h, dst_w, dst_h,
-               FALSE, remap);
+               false, remap);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass &dest, bool trans,
@@ -612,7 +612,7 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass &dest, bool trans,
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass &dest,
                                         char *remap) {
   return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
-               dest.Get_Height(), FALSE, remap);
+               dest.Get_Height(), false, remap);
 }
 
 inline unsigned long GraphicViewPortClass::Print(char const *str, int x, int y,

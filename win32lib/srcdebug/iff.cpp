@@ -99,7 +99,7 @@ int __cdecl Open_Iff_File(char const *filename) {
     // This is NOT an IFF file.  Close the source file and return with
     //	the error code.
     Close_File(fh);
-    fh = WW_ERROR;
+    fh = kInvalidHandle;
   }
   return fh;
 }
@@ -121,7 +121,7 @@ int __cdecl Open_Iff_File(char const *filename) {
  *   04/19/1994 SKB : Update to 32 bit library.                            *
  *=========================================================================*/
 void __cdecl Close_Iff_File(int fh) {
-  if (fh != WW_ERROR) Close_File(fh);
+  if (fh != kInvalidHandle) Close_File(fh);
 }
 
 /***************************************************************************

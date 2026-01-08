@@ -367,8 +367,8 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
     PlayerPtr->IsHuman = true;
     int carryover;
     if (CarryOverCap != -1) {
-      carryover = MIN(Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent),
-                      CarryOverCap);
+      carryover = std::min(Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent),
+                           static_cast<uint32_t>(CarryOverCap));
     } else {
       carryover = Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent);
     }
@@ -989,7 +989,7 @@ static void Create_Units(void) {
   Compute allowed # units
   ........................................................................*/
   tot_units = (MPlayerUnitCount * 2) / 3;
-  //	tot_units = MAX(tot_units, 1);
+  //	tot_units = std::max(tot_units, 1);
 
   /*........................................................................
   Init # of each category to 0

@@ -320,8 +320,8 @@ int LoadOptionsClass::Process(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
-      display = TRUE;
+      AllSurfaces.SurfacesRestored = false;
+      display = true;
     }
 
     /*

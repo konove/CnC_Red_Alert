@@ -6038,7 +6038,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    * INPUT:   incremental -- This parameter can enable a more efficient map
    *reveal logic.        * If it is absolutely known that the object has only
    *moved one        * cell from its previous location that it performed a
-   *Look() at,      * then set this parameter to TRUE. It will only perform the
+   *Look() at,      * then set this parameter to true. It will only perform the
    *look      * check on the perimeter cells. *
    *                                                                                             *
    * OUTPUT:  none *

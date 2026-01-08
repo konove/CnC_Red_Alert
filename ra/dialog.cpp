@@ -176,7 +176,7 @@ void Dialog_Box(int x, int y, int w, int h) {
 #ifdef WIN32
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, x, y, x, y, w, h, false);
-  WWMouse->Erase_Mouse(&HidPage, FALSE);
+  WWMouse->Erase_Mouse(&HidPage, false);
 #else
   //	Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage,
   // Map.ShadowPage->Get_Buffer());

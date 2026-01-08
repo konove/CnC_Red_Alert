@@ -144,7 +144,7 @@ void CreditClass::AI(bool forced) {
   /*
   **	Make sure that the credit counter doesn't drop below zero.
   */
-  Credits = MAX(Credits, 0L);
+  Credits = std::max(Credits, 0L);
 
   if (Current == Credits) return;
 
@@ -160,7 +160,7 @@ void CreditClass::AI(bool forced) {
     **	desired value.
     */
     long adder = Credits - Current;
-    adder = ABS(adder);
+    adder = std::abs(adder);
     adder >>= 5;
     adder = Bound(adder, 1L, 71 + 72);
     if (Current > Credits) adder = -adder;

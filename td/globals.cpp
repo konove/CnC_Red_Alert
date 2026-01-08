@@ -424,14 +424,15 @@ int AllowAttract = 0;  // 1 = allow attract mode
 ** perform any allocations;
 ** the class itself is ?? bytes.
 */
-bool ModemService = true;  // When false disable servicing modem.
-NullModemClass NullModem(
-    16,  // number of send entries
-    64,  // number of receive entries
-         //	sizeof (EventClass) * MAX_EVENTS,	// maxlen of entry buffer
-    (200 / sizeof(EventClass)) * sizeof(EventClass) + sizeof(CommHeaderType),
-    0x1234);  // Magic number must have each digit unique
-              // and different from the queue magic number
+bool ModemService = true;     // When false disable servicing modem.
+NullModemClass NullModem(16,  // number of send entries
+                         64,  // number of receive entries
+                              //	sizeof (EventClass) * MAX_EVENTS,
+                              //// maxlen of entry buffer
+                         (200 / sizeof(EventClass)) * sizeof(EventClass) +
+                             sizeof(CommHeaderType),
+                         0x1234);  // Magic number must have each digit unique
+                                   // and different from the queue magic number
 
 DynamicVectorClass<PhoneEntryClass *> PhoneBook;
 int CurPhoneIdx;  // current phonebook index, for dialing
@@ -713,13 +714,13 @@ char *SerialPacketNames[] = {
 /***************************************************************************
 **	These variables are just to help find sync bugs.
 */
-long TrapFrame = 0x7fffffff;         // frame to start trapping object values at
-RTTIType TrapObjType = RTTI_NONE;    // type of object to trap
+long TrapFrame = 0x7fffffff;       // frame to start trapping object values at
+RTTIType TrapObjType = RTTI_NONE;  // type of object to trap
 TrapObjectType TrapObject = {nullptr};  // ptr to object being trapped
-COORDINATE TrapCoord = 0;            // COORD of object to trap
+COORDINATE TrapCoord = 0;               // COORD of object to trap
 void *TrapThis = nullptr;               // 'this' ptr of object to trap
 CellClass *TrapCell = nullptr;          // for trapping a cell
-int TrapCheckHeap = 0;               // start checking the Heap
+int TrapCheckHeap = 0;                  // start checking the Heap
 
 /***************************************************************************
 **	This is the network IPX manager class.  It handles multiple remote
@@ -944,7 +945,7 @@ WWMouseClass *WWMouse = nullptr;
 HANDLE hInstance;
 #endif
 int AllDone;
-bool InMovie = FALSE;       // Are we currently playing a VQ movie?
+bool InMovie = false;       // Are we currently playing a VQ movie?
 bool MMXAvailable = false;  // Does this CPU support MMX extensions?
 GetCDClass CDList;
 bool GameStatisticsPacketSent;

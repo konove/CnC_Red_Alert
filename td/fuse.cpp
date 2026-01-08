@@ -91,9 +91,9 @@ FuseClass::FuseClass(void) {
  *=============================================================================================*/
 void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
                          int arming) {
-  timeto = MAX(timeto, arming);
-  Timer = MIN(timeto, 0xFF);
-  Arming = MIN(arming, 0xFF);
+  timeto = std::max(timeto, arming);
+  Timer = std::min(timeto, 0xFF);
+  Arming = std::min(arming, 0xFF);
   HeadTo = target;
   Proximity = Distance(location, target);
 }

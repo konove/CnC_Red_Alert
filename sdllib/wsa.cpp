@@ -1,5 +1,6 @@
 #include "sdllib/include/wsa.h"
 
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -436,7 +437,7 @@ bool Animate_Frame(void *handle, GraphicViewPortClass &view, int frame_number,
   curr_frame = sys_header->current_frame;
 
   // Get absoulte distance from our current frame to the target frame
-  distance = ABS(curr_frame - frame_number);
+  distance = std::abs(curr_frame - frame_number);
 
   // Assume we are searching right
   search_dir = 1;

@@ -80,7 +80,7 @@ int LCW_Uncomp(void const* source, void* dest, unsigned long) {
   source_ptr = (unsigned char*)source;
   dest_ptr = (unsigned char*)dest;
 
-  while (1 /*TRUE*/) {
+  while (true) {
     /* Read in the operation code. */
     op_code = *source_ptr++;
 

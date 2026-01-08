@@ -839,7 +839,7 @@ long RawFileClass::Write(void const *buffer, long size) {
     unsigned actual;   // Actual number of bytes written.
 
     Hard_Error_Occured = 0;
-    //		desired = (unsigned)MIN(size, Transfer_Block_Size());
+    //		desired = (unsigned)std::min(size, Transfer_Block_Size());
     desired = size;
     writeresult = _dos_write(Handle, buffer, desired, &actual);
 

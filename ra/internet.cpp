@@ -470,7 +470,7 @@ void Just_Path(char *path, char *destpath, size_t dest_size) {
  *                                                                                             *
  * INPUT:  Nothing *
  *                                                                                             *
- * OUTPUT:   TRUE if users wchat entry was found in the registry *
+ * OUTPUT:   true if users wchat entry was found in the registry *
  *                                                                                             *
  * WARNINGS: None *
  *                                                                                             *
@@ -487,10 +487,10 @@ bool Is_User_WChat_Registered(char *buffer, int buffer_len) {
   /*
   ** Check HKEY_CLASSES_ROOT first. Old versions of Wchat register there
   */
-  key = Get_Registry_Sub_Key(HKEY_CLASSES_ROOT, "Wchat", FALSE);
+  key = Get_Registry_Sub_Key(HKEY_CLASSES_ROOT, "Wchat", false);
 
   if (key) {
-    key = Get_Registry_Sub_Key(key, "Nick1", TRUE);
+    key = Get_Registry_Sub_Key(key, "Nick1", true);
     if (key) {
       if (RegQueryValue(key, "Nick", user_handle, (long *)&user_handle_size) ==
           ERROR_SUCCESS) {
@@ -503,7 +503,7 @@ bool Is_User_WChat_Registered(char *buffer, int buffer_len) {
           */
           if ((user_handle[0] < '0' || user_handle[0] > '9') && user_pword[0]) {
             RegCloseKey(key);
-            return (TRUE);
+            return (true);
           }
         }
       }
@@ -517,19 +517,19 @@ bool Is_User_WChat_Registered(char *buffer, int buffer_len) {
   */
   user_handle_size = sizeof(user_handle);
 
-  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", FALSE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
+  if (!key) return (false);
 
-  key = Get_Registry_Sub_Key(key, "Westwood", TRUE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(key, "Westwood", true);
+  if (!key) return (false);
 
-  key = Get_Registry_Sub_Key(key, "InetReg", TRUE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(key, "InetReg", true);
+  if (!key) return (false);
 
   if (RegQueryValueEx(key, "UserName", NULL, NULL, (unsigned char *)user_handle,
                       &user_handle_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
-    return (FALSE);
+    return (false);
   }
 
   RegCloseKey(key);
@@ -539,9 +539,9 @@ bool Is_User_WChat_Registered(char *buffer, int buffer_len) {
   ** If the first char of the users name is non-numeric then return success
   */
   if (user_handle[0] < '0' || user_handle[0] > '9') {
-    return (TRUE);
+    return (true);
   } else {
-    return (FALSE);
+    return (false);
   }
 #else
   return false;
@@ -633,26 +633,26 @@ bool Spawn_WChat(bool can_launch) {
   char wchat_loc[256];
   DWORD wchat_loc_size = 256;
 
-  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", FALSE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
+  if (!key) return (false);
 
-  key = Get_Registry_Sub_Key(key, "Westwood", TRUE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(key, "Westwood", true);
+  if (!key) return (false);
 
-  key = Get_Registry_Sub_Key(key, "WChat", TRUE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(key, "WChat", true);
+  if (!key) return (false);
 
-  // key = Get_Registry_Sub_Key (key, "UserName", TRUE);
-  // if (!key) return (FALSE);
+  // key = Get_Registry_Sub_Key (key, "UserName", true);
+  // if (!key) return (false);
 
-  // key = Get_Registry_Sub_Key (key, "Nick", TRUE);
-  // if (!key) return (FALSE);
+  // key = Get_Registry_Sub_Key (key, "Nick", true);
+  // if (!key) return (false);
 
   if (RegQueryValueEx(key, "InstallPath", NULL, NULL,
                       (unsigned char *)wchat_loc,
                       &wchat_loc_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
-    return (FALSE);
+    return (false);
   }
 
   RegCloseKey(key);
@@ -726,20 +726,20 @@ bool Spawn_Registration_App(void) {
   char inetreg_loc[256];
   DWORD inetreg_loc_size = 256;
 
-  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", FALSE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(HKEY_LOCAL_MACHINE, "SOFTWARE", false);
+  if (!key) return (false);
 
-  key = Get_Registry_Sub_Key(key, "Westwood", TRUE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(key, "Westwood", true);
+  if (!key) return (false);
 
-  key = Get_Registry_Sub_Key(key, "InetReg", TRUE);
-  if (!key) return (FALSE);
+  key = Get_Registry_Sub_Key(key, "InetReg", true);
+  if (!key) return (false);
 
   if (RegQueryValueEx(key, "InstallPath", NULL, NULL,
                       (unsigned char *)inetreg_loc,
                       &inetreg_loc_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
-    return (FALSE);
+    return (false);
   }
 
   RegCloseKey(key);
@@ -896,7 +896,7 @@ bool Do_The_Internet_Menu_Thang(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 

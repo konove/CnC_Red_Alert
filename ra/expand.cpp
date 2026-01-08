@@ -456,7 +456,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 #endif

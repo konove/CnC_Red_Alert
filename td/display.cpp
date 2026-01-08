@@ -904,16 +904,16 @@ void DisplayClass::Get_Occupy_Dimensions(int &w, int &h, short const *list) {
       x = (*list) % MAP_CELL_W;
       y = (*list) / MAP_CELL_H;
 
-      max_x = MAX(max_x, x);
-      min_x = MIN(min_x, x);
-      max_y = MAX(max_y, y);
-      min_y = MIN(min_y, y);
+      max_x = std::max(max_x, x);
+      min_x = std::min(min_x, x);
+      max_y = std::max(max_y, y);
+      min_y = std::min(min_y, y);
 
       list++;
     }
 
-    w = MAX(1, max_x - min_x + 1);
-    h = MAX(1, max_y - min_y + 1);
+    w = std::max(1, max_x - min_x + 1);
+    h = std::max(1, max_y - min_y + 1);
   }
 }
 
@@ -1798,10 +1798,10 @@ void DisplayClass::Draw_It(bool forced) {
                  xmod;  // Old relative offset.
       int oldy = Lepton_To_Pixel(Coord_Y(TacticalCoord)) - ymod;
 
-      int oldw =
-          Lepton_To_Pixel(TacLeptonWidth) - ABS(oldx);  // Replicable width.
-      int oldh =
-          Lepton_To_Pixel(TacLeptonHeight) - ABS(oldy);  // Replicable height.
+      int oldw = Lepton_To_Pixel(TacLeptonWidth) -
+                 std::abs(oldx);  // Replicable width.
+      int oldh = Lepton_To_Pixel(TacLeptonHeight) -
+                 std::abs(oldy);  // Replicable height.
 
       if (oldw < 1) forced = true;
       if (oldh < 1) forced = true;
@@ -1809,10 +1809,10 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       ** Work out which map edges need to be redrawn
       */
-      bool redraw_right = (oldx < 0) ? TRUE : FALSE;   // Right hand edge
-      bool redraw_left = (oldx > 0) ? TRUE : FALSE;    // Left hand edge
-      bool redraw_bottom = (oldy < 0) ? TRUE : FALSE;  // Bottom edge
-      bool redraw_top = (oldy > 0) ? TRUE : FALSE;     // Top edge
+      bool redraw_right = (oldx < 0) ? true : false;   // Right hand edge
+      bool redraw_left = (oldx > 0) ? true : false;    // Left hand edge
+      bool redraw_bottom = (oldy < 0) ? true : false;  // Bottom edge
+      bool redraw_top = (oldy > 0) ? true : false;     // Top edge
 
       // Colour_Debug(2);
       /*
@@ -3440,7 +3440,7 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
       **	The mouse must have moved a minimum distance before rubber band
       *mode can be *	initiated.
       */
-      if (ABS(x - BandX) > 4 || ABS(y - BandY) > 4) {
+      if (std::abs(x - BandX) > 4 || std::abs(y - BandY) > 4) {
         IsRubberBand = true;
         x = Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1);
         y = Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1);

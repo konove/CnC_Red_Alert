@@ -3716,8 +3716,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass *passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -=
-        (int)ABS((int)(signed char)Facing_Dir(face) - (int)(signed char)faceto);
+    value -= (int)std::abs((int)(signed char)Facing_Dir(face) -
+                           (int)(signed char)faceto);
     if (face == FACING_S) {
       value -= 100;
     }
@@ -3997,11 +3997,11 @@ DirType UnitClass::Fire_Direction(void) const {
     if (*this == UNIT_V2_LAUNCHER) {
       int diff1 = SecondaryFacing.Difference(DIR_E);
       int diff2 = SecondaryFacing.Difference(DIR_W);
-      diff1 = ABS(diff1);
-      diff2 = ABS(diff2);
+      diff1 = std::abs(diff1);
+      diff2 = std::abs(diff2);
       int diff = std::min(diff1, diff2);
-      int adj =
-          Fixed_To_Cardinal(ABS(SecondaryFacing.Difference(DIR_N)), 64 - diff);
+      int adj = Fixed_To_Cardinal(std::abs(SecondaryFacing.Difference(DIR_N)),
+                                  64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return (DirType)(SecondaryFacing - (DirType)adj);
       } else {
@@ -4105,7 +4105,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     } else {
       diff = PrimaryFacing.Difference(dir);
     }
-    diff = ABS(diff);
+    diff = std::abs(diff);
 
     if (weapon->Bullet->ROT != 0) {
       diff >>= 2;

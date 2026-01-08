@@ -251,7 +251,7 @@ void InfantryClass::Debug_Dump(MonoClass *mono) const {
 #endif
 
 InfantryClass::InfantryClass(void)
-    : Class(nullptr){};  // Default constructor does nothing.
+    : Class(nullptr) {};  // Default constructor does nothing.
 
 /***********************************************************************************************
  * InfantryClass::InfantryClass -- The constructor for infantry objects. *
@@ -410,7 +410,7 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
   */
   if (IsProne && damage) {
     damage >>= 1;
-    //		damage = MAX(damage, 1);
+    //		damage = std::max(damage, 1);
   }
 
   // Mono_Printf("Infantry Take_Damage(%d, %d, %d, %p)\r", damage, distance,
@@ -426,7 +426,7 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
     damage = 5;
     ResultType newres =
         FootClass::Take_Damage(damage, distance, warhead, source);
-    res = MAX(res, newres);
+    res = std::max(res, newres);
   }
 
   if (res == RESULT_NONE) return (res);
@@ -559,7 +559,7 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
       } else {
         int morefear = FEAR_ANXIOUS;
         if (Health_Ratio() > 0x0080) morefear /= 4;
-        Fear = MIN((int)Fear + morefear, FEAR_MAXIMUM);
+        Fear = std::min((int)Fear + morefear, FEAR_MAXIMUM);
       }
 #ifdef BOXING
     }
@@ -620,7 +620,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   if (doit == DO_NOTHING) doit = DO_STAND_READY;
 
   shapenum = Class->DoControls[doit].Count;
-  shapenum = Fetch_Stage() % MAX(shapenum, 1);
+  shapenum = Fetch_Stage() % std::max(shapenum, 1);
   if (Class->DoControls[doit].Jump) {
     shapenum += facenum * Class->DoControls[doit].Jump;
   }
@@ -636,8 +636,8 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   */
   Techno_Draw_Object(shapefile, shapenum, x, y, window);
   //	CC_Draw_Shape(shapefile, shapenum, x, y, window,
-  //SHAPE_FADING|SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_GHOST,
-  //House->Remap_Table(IsBlushing, true), Map.UnitShadow);
+  // SHAPE_FADING|SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_GHOST,
+  // House->Remap_Table(IsBlushing, true), Map.UnitShadow);
 
   FootClass::Draw_It(x, y, window);
 }
@@ -1815,7 +1815,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   */
   if (!Special.IsDefenderAdvantage && IsDriving) {
     int diff = PrimaryFacing.Difference(Direction(TarCom));
-    if (ABS(diff) >= 32) {
+    if (std::abs(diff) >= 32) {
       return (FIRE_MOVING);
     }
   }
@@ -2863,8 +2863,8 @@ void InfantryClass::Read_INI(char *buffer) {
     /*
     **	Get an infantry entry
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
 
     /*
     **	1st token: house name.
@@ -2901,7 +2901,8 @@ void InfantryClass::Read_INI(char *buffer) {
           MissionType mission =
               MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
           DirType dir = (DirType)atoi(strtok(nullptr, ",\n\r"));
-          infantry->Trigger = TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
+          infantry->Trigger =
+              TriggerClass::As_Pointer(strtok(nullptr, ",\n\r"));
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;
           }

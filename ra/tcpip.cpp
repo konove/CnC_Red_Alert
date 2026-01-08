@@ -92,9 +92,9 @@ TcpipManagerClass Winsock;  // The object for interfacing with Winsock
  * HISTORY: * 3/20/96 2:51PM ST : Created *
  *=============================================================================================*/
 TcpipManagerClass::TcpipManagerClass(void) {
-  WinsockInitialised = FALSE;
-  Connected = FALSE;
-  UseUDP = TRUE;
+  WinsockInitialised = false;
+  Connected = false;
+  UseUDP = true;
   SocketReceiveBuffer = 4096;
   SocketSendBuffer = 4096;
 }
@@ -168,8 +168,8 @@ void TcpipManagerClass::Close(void) {
   WSACleanup();
 #endif
 
-  WinsockInitialised = FALSE;
-  Connected = FALSE;
+  WinsockInitialised = false;
+  Connected = false;
 }
 
 /***********************************************************************************************
@@ -179,7 +179,7 @@ void TcpipManagerClass::Close(void) {
  *                                                                                             *
  * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   TRUE if Winsock is available and was initialised *
+ * OUTPUT:   true if Winsock is available and was initialised *
  *                                                                                             *
  * WARNINGS: None *
  *                                                                                             *
@@ -224,7 +224,7 @@ bool TcpipManagerClass::Init(void) {
   /*
   ** Everything is OK so return success
   */
-  WinsockInitialised = TRUE;
+  WinsockInitialised = true;
   return (true);
 }
 
@@ -268,8 +268,8 @@ void TcpipManagerClass::Start_Server(void) {
   /*
   ** Flag that we are the server side not the client
   */
-  IsServer = TRUE;
-  UseUDP = TRUE;
+  IsServer = true;
+  UseUDP = true;
   ConnectStatus = CONNECTING;
 }
 
@@ -303,10 +303,11 @@ int TcpipManagerClass::Read(void *buffer, int buffer_len) {
   */
   if (ReceiveBuffers[RXBufferTail].InUse) {
     memcpy(buffer, ReceiveBuffers[RXBufferTail].Buffer,
-           MIN(ReceiveBuffers[RXBufferTail].DataLength, buffer_len));
+           std::min(ReceiveBuffers[RXBufferTail].DataLength, buffer_len));
     ReceiveBuffers[RXBufferTail].InUse = false;
 
-    bytes_copied = MIN(ReceiveBuffers[RXBufferTail++].DataLength, buffer_len);
+    bytes_copied =
+        std::min(ReceiveBuffers[RXBufferTail++].DataLength, buffer_len);
 
     RXBufferTail &= WS_NUM_RX_BUFFERS - 1;
   }
@@ -336,10 +337,10 @@ void TcpipManagerClass::Write(void *buffer, int buffer_len) {
   */
   if (!TransmitBuffers[TXBufferHead].InUse) {
     memcpy(TransmitBuffers[TXBufferHead].Buffer, buffer,
-           MIN(buffer_len, WS_INTERNET_BUFFER_LEN));
+           std::min(buffer_len, WS_INTERNET_BUFFER_LEN));
     TransmitBuffers[TXBufferHead].InUse = true;
     TransmitBuffers[TXBufferHead++].DataLength =
-        MIN(buffer_len, WS_INTERNET_BUFFER_LEN);
+        std::min(buffer_len, WS_INTERNET_BUFFER_LEN);
     TXBufferHead &= WS_NUM_TX_BUFFERS - 1;
   }
 
@@ -369,7 +370,7 @@ void TcpipManagerClass::Write(void *buffer, int buffer_len) {
  *                                                                                             *
  * INPUT:    Nothing *
  *                                                                                             *
- * OUTPUT:   TRUE if client was successfully connected *
+ * OUTPUT:   true if client was successfully connected *
  *                                                                                             *
  * WARNINGS: None *
  *                                                                                             *
@@ -379,7 +380,7 @@ void TcpipManagerClass::Write(void *buffer, int buffer_len) {
 bool TcpipManagerClass::Add_Client(void) {
   struct sockaddr_in addr;
   socklen_t addrsize;
-  bool delay = TRUE;
+  bool delay = true;
 
   /*
   ** Accept the connection. If there is an error then dont do anything else
@@ -388,7 +389,7 @@ bool TcpipManagerClass::Add_Client(void) {
   ConnectSocket = accept(ListenSocket, (sockaddr *)&addr, &addrsize);
   if (ConnectSocket == INVALID_SOCKET) {
     // Show_Error("accept", WSAGetLastError());
-    return (FALSE);
+    return (false);
   }
 
   /*
@@ -423,7 +424,7 @@ bool TcpipManagerClass::Add_Client(void) {
                      FD_READ | FD_WRITE | FD_CLOSE) == SOCKET_ERROR) {
     WSACancelAsyncRequest(Async);
     Close_Socket(ConnectSocket);
-    return (FALSE);
+    return (false);
   }
 #endif
   /*
@@ -431,7 +432,7 @@ bool TcpipManagerClass::Add_Client(void) {
   */
   UDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
   if (UDPSocket == INVALID_SOCKET) {
-    return (FALSE);
+    return (false);
   }
 
   /*
@@ -444,7 +445,7 @@ bool TcpipManagerClass::Add_Client(void) {
   if (bind(UDPSocket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket(UDPSocket);
     ConnectStatus = NOT_CONNECTING;
-    return (FALSE);
+    return (false);
   }
 
   /*
@@ -462,11 +463,11 @@ bool TcpipManagerClass::Add_Client(void) {
     WSACancelAsyncRequest(Async);
     Close_Socket(UDPSocket);
     Close_Socket(ConnectSocket);
-    return (FALSE);
+    return (false);
   }
 #endif
 
-  return (TRUE);
+  return (true);
 }
 
 /***********************************************************************************************
@@ -535,7 +536,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         memcpy(&UDPIPAddress, hentry->h_addr, 4);
         strcpy(Server.DotAddr, inet_ntoa(Server.Addr));
         ConnectStatus = CONNECTED_OK;
-        Connected = TRUE;
+        Connected = true;
       } else {
         Server.Name[0] = 0;
         strcpy(Server.DotAddr, "????");
@@ -555,7 +556,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
       }
       if (Add_Client()) {
         ConnectStatus = CONNECTED_OK;
-        Connected = TRUE;
+        Connected = true;
       } else {
         ConnectStatus = UNABLE_TO_ACCEPT_CLIENT;
       }
@@ -642,7 +643,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
           WSAAsyncSelect(ConnectSocket, MainWindow, WM_ASYNCEVENT, 0);
           Close_Socket(ConnectSocket);
           ConnectSocket = INVALID_SOCKET;
-          // Connected = FALSE;
+          // Connected = false;
           ConnectStatus = CONNECTION_LOST;
           break;
 
@@ -657,7 +658,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
           }
 
           ConnectStatus = CONNECTED_OK;
-          Connected = TRUE;
+          Connected = true;
           return;
       }
   }
@@ -681,10 +682,10 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
 void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
   if (!ReceiveBuffers[RXBufferHead].InUse) {
     memcpy(ReceiveBuffers[RXBufferHead].Buffer, ReceiveBuffer,
-           MIN(bytes, WS_INTERNET_BUFFER_LEN));
+           std::min(bytes, WS_INTERNET_BUFFER_LEN));
     ReceiveBuffers[RXBufferHead].InUse = true;
     ReceiveBuffers[RXBufferHead++].DataLength =
-        MIN(bytes, WS_INTERNET_BUFFER_LEN);
+        std::min(bytes, WS_INTERNET_BUFFER_LEN);
     RXBufferHead &= WS_NUM_RX_BUFFERS - 1;
   }
 }
@@ -746,12 +747,12 @@ void TcpipManagerClass::Start_Client(void) {
     ReceiveBuffers[i].InUse = false;
   }
 
-  Connected = FALSE;
+  Connected = false;
   /*
   ** Flag that we are the client side not the server
   */
-  IsServer = FALSE;
-  UseUDP = TRUE;
+  IsServer = false;
+  UseUDP = true;
 
   /*
   ** Create our UDP socket
@@ -808,7 +809,7 @@ void TcpipManagerClass::Start_Client(void) {
     ConnectStatus = RESOLVING_HOST_ADDRESS;
   } else {
     ConnectStatus = CONNECTED_OK;
-    Connected = TRUE;
+    Connected = true;
   }
 #endif
 }

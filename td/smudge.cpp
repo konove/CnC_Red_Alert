@@ -223,7 +223,8 @@ bool SmudgeClass::Mark(MarkType mark) {
                 if (Class->IsCrater && cell->Smudge != SMUDGE_NONE &&
                     SmudgeTypeClass::As_Reference(cell->Smudge).IsCrater) {
                   cell->SmudgeData++;
-                  cell->SmudgeData = (int)MIN((int)cell->SmudgeData, (int)4);
+                  cell->SmudgeData =
+                      (int)std::min((int)cell->SmudgeData, (int)4);
                 }
 
                 if (cell->Smudge == SMUDGE_NONE) {
@@ -289,8 +290,8 @@ void SmudgeClass::Read_INI(char *buffer) {
   while (*tbuffer != '\0') {
     SmudgeType smudge;  // Smudge type.
 
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
       char *ptr = strtok(nullptr, ",");

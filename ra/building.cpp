@@ -2925,8 +2925,8 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
     if (Class->IsTurretEquipped) {
       int diff = PrimaryFacing.Difference(Direction(TarCom));
       diff = abs(diff);
-      if (ABS(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
-        //			if (ABS(diff) > 8) {
+      if (std::abs(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
+        //			if (std::abs(diff) > 8) {
         return (FIRE_FACING);
       }
 
@@ -5425,7 +5425,7 @@ void BuildingClass::Repair_AI(void) {
     /*
     **	Possibly start repair process if the building is below half strength.
     */
-    //		unsigned ratio = MIN(House->Smartness, 0x00F0);
+    //		unsigned ratio = std::min(House->Smartness, 0x00F0);
     if (Can_Repair()) {
       if (House->Available_Money() >= Rule.RepairThreshhold) {
         if (!House->DidRepair) {

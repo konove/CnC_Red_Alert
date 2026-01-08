@@ -170,9 +170,9 @@ void GameControlsClass::Process(void) {
   **	Init button states
   **	For sliders, the thumb ranges from 0 - (maxval-1), so to convert the
   **	thumb value to a real-world value:
-  **		val = (MAX - slider.Get_Value()) - 1;
+  **		val = (std::max - slider.Get_Value()) - 1;
   **	and,
-  **		slider.Set_Value(-(val + 1 - MAX));
+  **		slider.Set_Value(-(val + 1 - std::max));
   */
   gspeed_btn.Set_Maximum(OptionsClass::MAX_SPEED_SETTING);  // varies from 0 - 7
   gspeed_btn.Set_Thumb_Size(1);
@@ -216,8 +216,8 @@ void GameControlsClass::Process(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
-      display = TRUE;
+      AllSurfaces.SurfacesRestored = false;
+      display = true;
     }
 
     /*

@@ -579,7 +579,7 @@ void Keyboard_Process(KeyNumType &input) {
 #ifdef WIN32
   /*
   **	The VK_BIT must be stripped from the "plain" value of the key so that a
-  *comparison to *	KN_1, for example, will yield TRUE if in fact the "1"
+  *comparison to *	KN_1, for example, will yield true if in fact the "1"
   *key was pressed.
   */
 
@@ -2127,7 +2127,7 @@ static void Sync_Delay(void) {
 
     if (SpecialDialog == SDLG_NONE) {
 #ifdef WIN32
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
       KeyNumType input = KN_NONE;
       int x, y;
@@ -2254,7 +2254,7 @@ bool Main_Loop() {
   if (!Session.Play) {
 #ifdef WIN32
     if (SpecialDialog == SDLG_NONE && GameInFocus) {
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
 #else
     if (SpecialDialog == SDLG_NONE) {
 #endif
@@ -2339,7 +2339,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();  //	Player just won.
     }
 
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
     PlayerLoses = false;
     PlayerWins = false;
@@ -2358,7 +2358,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();  //	Player just lost.
     }
 
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
     PlayerWins = false;
     PlayerLoses = false;
@@ -2369,7 +2369,7 @@ bool Main_Loop() {
   }
   if (PlayerRestarts) {
 #ifdef WIN32
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
     PlayerWins = false;
     PlayerLoses = false;
@@ -2387,7 +2387,7 @@ bool Main_Loop() {
       Register_Game_End_Time();
       Send_Statistics_Packet();
     }
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
     Map.Help_Text(TXT_NONE);
     Do_Draw();
     return (!GameActive);
@@ -2495,7 +2495,7 @@ bool Map_Edit_Loop(void) {
   KeyNumType input;
 
 #ifdef WIN32
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
 
   int x;
@@ -2748,7 +2748,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
   int i;
   int start_palette;
 
-  PalettesRead = FALSE;
+  PalettesRead = false;
   CCFileClass file(filename);
 
   if (!add) {
@@ -2785,7 +2785,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
       Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
     }
 
-    PalettesRead = TRUE;
+    PalettesRead = true;
     file.Close();
   }
   PaletteCounter = 0;
@@ -2949,7 +2949,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
         VQA_Close(vqa);
 #ifdef WIN32
         // Resume_Audio_Thread();
-        InMovie = FALSE;
+        InMovie = false;
 #ifdef MOVIE640
         if (!IsVQ640) {
           Free_Interpolated_Palettes();
@@ -4543,7 +4543,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
 
       while (Get_Mouse_State()) Show_Mouse();
 
-      if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, TRUE) ==
+      if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
         Set_Logic_Page(oldpage);
         while (hidden--) Hide_Mouse();

@@ -285,7 +285,7 @@ void HelpClass::Draw_It(bool forced) {
         LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
                              DrawY + FontHeight + FontHeight - 1, Color);
         LogicPage->Draw_Line(DrawX, DrawY + FontHeight,
-                             DrawX + MIN(width + 1, Width) - 1,
+                             DrawX + std::min(width + 1, Width) - 1,
                              DrawY + FontHeight, BLACK);
       }
 

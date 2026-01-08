@@ -741,11 +741,12 @@ static void Queue_AI_Multiplayer(void) {
   //------------------------------------------------------------------------
   //	Frame-sync'ing: wait until it's OK to advance to the next frame.
   //------------------------------------------------------------------------
-  rc = Wait_For_Players(
-      0, net, (MPlayerMaxAhead << 3),
-      MAX(net->Response_Time() * 3, FRAMESYNC_DLG_TIME * timeout_factor),
-      FRAMESYNC_TIMEOUT * (timeout_factor * 2), multi_packet_buf, my_sent,
-      their_frame, their_sent, their_recv);
+  rc = Wait_For_Players(0, net, (MPlayerMaxAhead << 3),
+                        std::max<int>(net->Response_Time() * 3,
+                                      FRAMESYNC_DLG_TIME * timeout_factor),
+                        FRAMESYNC_TIMEOUT * (timeout_factor * 2),
+                        multi_packet_buf, my_sent, their_frame, their_sent,
+                        their_recv);
 
   if (rc != RC_NORMAL) {
     if (rc == RC_NOT_RESPONDING) {
@@ -1057,7 +1058,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
     //---------------------------------------------------------------------
     Call_Back();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
       Map.Input(input, x, y);
       if (input) Keyboard_Process(input);
       Map.Render();
@@ -1133,10 +1134,10 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent) {
       // multiple of the FrameSendRate.
       //..................................................................
       if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-        ev.Data.FrameInfo.Delay =
-            MAX(((((resp_time / 8) + (FrameSendRate - 1)) / FrameSendRate) *
-                 FrameSendRate),
-                (FrameSendRate * 2));
+        ev.Data.FrameInfo.Delay = std::max(
+            ((((resp_time / 8) + (FrameSendRate - 1)) / FrameSendRate) *
+             FrameSendRate),
+            (FrameSendRate * 2));
         char flip[128];
         sprintf(flip,
                 "C&C95 - Generating timing packet - MaxAhead = %d frames\n",
@@ -1151,9 +1152,11 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent) {
       else {
         if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
           //|| GameToPlay == GAME_INTERNET) {
-          ev.Data.FrameInfo.Delay = MAX((resp_time / 8), MODEM_MIN_MAX_AHEAD);
+          ev.Data.FrameInfo.Delay =
+              std::max<int>((resp_time / 8), MODEM_MIN_MAX_AHEAD);
         } else if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
-          ev.Data.FrameInfo.Delay = MAX((resp_time / 8), NETWORK_MIN_MAX_AHEAD);
+          ev.Data.FrameInfo.Delay =
+              std::max<int>((resp_time / 8), NETWORK_MIN_MAX_AHEAD);
         }
       }
       OutList.Add(ev);
@@ -1230,7 +1233,7 @@ static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent) {
     specified_frame_rate = 60 / Options.GameSpeed;
   }
 
-  DesiredFrameRate = MIN(DesiredFrameRate, specified_frame_rate);
+  DesiredFrameRate = std::min(DesiredFrameRate, specified_frame_rate);
 
   //
   // Measure the current connection response time.  This time will be in
@@ -1258,7 +1261,7 @@ static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent) {
   // (Isn't "thrice" a cool word?)
   //
   maxahead = ((maxahead + FrameSendRate - 1) / FrameSendRate) * FrameSendRate;
-  maxahead = MAX(maxahead, FrameSendRate * 3);
+  maxahead = std::max<int>(maxahead, FrameSendRate * 3);
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate = DesiredFrameRate;
@@ -1944,7 +1947,7 @@ static int Process_Reconnect_Dialog(CountDownTimerClass *timeout_timer,
   // then we need to redraw the whole dialog.
   //--------------------------------------------------------------------------------
   if (AllSurfaces.SurfacesRestored) {
-    AllSurfaces.SurfacesRestored = FALSE;
+    AllSurfaces.SurfacesRestored = false;
     fresh = true;
   }
 

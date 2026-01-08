@@ -92,7 +92,7 @@ void Focus_Loss(void) {
 void Focus_Restore(void) {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
-  Start_Primary_Sound_Buffer(TRUE);
+  Start_Primary_Sound_Buffer(true);
 
   if (!InMovie) {
     Theme.Queue_Song(OldTheme);
@@ -214,7 +214,7 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
 
 GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
                                   long Size) {
-  unsigned i, j;
+  int i, j;
   unsigned rle;
   unsigned color;
   unsigned scan_pos;
@@ -244,7 +244,7 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
   if (Buff) {
     buffer = (char *)Buff;
     i = Size / width;
-    height = MIN(i - 1, height);
+    height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
     if (!(pic && pic->Get_Buffer())) return nullptr;
   } else {

@@ -135,7 +135,7 @@ static void StartAddr(void) {}
  *
  * INPUTS
  *     VQA  - Pointer to private VQAHandle structure.
- *     Init - Initialize HMI timer system flag. (TRUE = Initialize)
+ *     Init - Initialize HMI timer system flag. (true = Initialize)
  *
  * RESULT
  *     Error - 0 if successful, -1 if error.

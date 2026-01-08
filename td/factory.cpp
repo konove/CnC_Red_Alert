@@ -247,7 +247,7 @@ void FactoryClass::AI(void) {
           stages = House->BuildingFactories;
           break;
       }
-      stages = MAX(stages, 1);
+      stages = std::max(stages, 1);
     }
 
     for (int index = 0; index < stages; index++) {
@@ -256,7 +256,7 @@ void FactoryClass::AI(void) {
 
         int cost = Cost_Per_Tick();
 
-        cost = MIN(cost, Balance);
+        cost = std::min(cost, Balance);
 
         /*
         **	Enough time has expired so that another production step can

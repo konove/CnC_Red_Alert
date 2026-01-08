@@ -251,7 +251,7 @@ void CreditClass::AI(bool forced) {
       Countdown = 3;
     }
 
-    adder = ABS(adder);
+    adder = std::abs(adder);
     adder >>= 3;
     //		adder >>= 4;
     //		adder >>= 5;

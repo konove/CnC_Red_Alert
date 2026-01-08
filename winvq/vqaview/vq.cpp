@@ -300,7 +300,7 @@ long Disk_VQA_Stream_Handler(VQAHandle *vqa_handle, long action, void *buffer,
     //
     case VQACMD_OPEN:
       error = Open_File((char const *)buffer, READ);
-      if (error != WW_ERROR) {
+      if (error != kInvalidHandle) {
         vqa_handle->VQAio = error;
         error = 0;
       } else {

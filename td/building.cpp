@@ -612,13 +612,13 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
                             Class->Anims[BSTATE_IDLE].Count;
                 int last2 = Class->Anims[BSTATE_ACTIVE].Start +
                             Class->Anims[BSTATE_ACTIVE].Count;
-                int largest = MAX(last1, last2);
+                int largest = std::max(last1, last2);
                 last2 = Class->Anims[BSTATE_AUX1].Start +
                         Class->Anims[BSTATE_AUX1].Count;
-                largest = MAX(largest, last2);
+                largest = std::max(largest, last2);
                 last2 = Class->Anims[BSTATE_AUX2].Start +
                         Class->Anims[BSTATE_AUX2].Count;
-                largest = MAX(largest, last2);
+                largest = std::max(largest, last2);
 
                 shapenum += largest;
               } else {
@@ -2970,7 +2970,7 @@ void BuildingClass::Read_INI(char *buffer) {
       b = new BuildingClass(classid, bhouse);
       if (b) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
-          strength = MIN(strength, 0x100);
+          strength = std::min(strength, 0x100);
           strength = Fixed_To_Cardinal(b->Class->MaxStrength, strength);
           b->Strength = strength;
           b->IsALemon = false;
@@ -3131,7 +3131,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
       }
 
       int diff = PrimaryFacing.Difference(Direction(TarCom));
-      if (ABS(diff) > 8) {
+      if (std::abs(diff) > 8) {
         return (FIRE_FACING);
       }
     }

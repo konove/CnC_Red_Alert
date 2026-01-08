@@ -367,7 +367,7 @@ long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
  *     Data     - Pointer to data to analyze.
  *     TreeNode - Pointer to array of nodes.
  *     Length   - Length of data to analyze.
- *     Zero     - Zero any previous counts flag. (TRUE = zero counts)
+ *     Zero     - Zero any previous counts flag. (true = zero counts)
  *
  * RESULT
  *     Size - Amount of buffer used to hold counts.

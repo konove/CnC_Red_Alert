@@ -156,7 +156,7 @@ void Focus_Loss(void) {
 void Focus_Restore(void) {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
-  Start_Primary_Sound_Buffer(TRUE);
+  Start_Primary_Sound_Buffer(true);
   if (WWMouse) WWMouse->Set_Cursor_Clip();
   VisiblePage.Clear();
   HiddenPage.Clear();
@@ -224,7 +224,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   int low_param = LOWORD(wParam);
 
   if (message == CCFocusMessage) {
-    Start_Primary_Sound_Buffer(TRUE);
+    Start_Primary_Sound_Buffer(true);
     if (!InMovie) {
       Theme.Queue_Song(OldTheme);
       OldTheme = THEME_NONE;
@@ -302,7 +302,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //			if (GameInFocus){
       //				Restore_Cached_Icons();
       //				Map.Flag_To_Redraw(true);
-      //				Start_Primary_Sound_Buffer(TRUE);
+      //				Start_Primary_Sound_Buffer(true);
       //				if (WWMouse) WWMouse->Set_Cursor_Clip();
       //			}
       return (0);
@@ -421,7 +421,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** for it.
   */
   Hide_Mouse();
-  ShowCursor(TRUE);
+  ShowCursor(true);
 
   /*
   ** Pop up the dialog box and then run a standard message handler
@@ -476,7 +476,7 @@ void Colour_Debug(int call_number) {
 
 BOOL Any_Locked(void) {
   if (SeenBuff.Get_LockCount() || HidPage.Get_LockCount()) {
-    return (TRUE);
+    return (true);
   } else {
     return (FALSE);
   }
@@ -701,9 +701,10 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
  *					 the pcx file will be place in the
  *memory block pointed	   * by palette.
  ** Buff is optinal, if Buff == NULL a new memory Buffer
- ** will be allocated, otherwise the file will be placed 		* at location pointd by Buffer;										*
- *			Size is the size in bytes of the memory block pointed by
- *Buff		* is also optional;
+ ** will be allocated, otherwise the file will be placed 		* at
+ * location pointd by Buffer;
+ *			* Size is the size in bytes of the memory block pointed
+ * by Buff		* is also optional;
  *                                                                         *
  * OUTPUT: on succes a pointer to a GraphicBufferClass cointaining the     *
  *         pcx file, NULL othewise.                                        *
@@ -756,7 +757,7 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
   if (Buff) {
     buffer = (char *)Buff;
     i = Size / width;
-    height = MIN(i - 1, height);
+    height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
     if (!(pic && pic->Get_Buffer())) return NULL;
   } else {

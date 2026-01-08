@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
   CCDebugString("C&C95 - Starting up.\n");
 
-  // WindowsTimer = new WinTimerClass(60,FALSE);
+  // WindowsTimer = new WinTimerClass(60,false);
   // CD_Test();
 
   /*
@@ -257,10 +257,10 @@ int main(int argc, char *argv[])
 #endif
   if (Parse_Command_Line(argc, argv)) {
 #ifdef PORTABLE
-    WindowsTimer = new WinTimerClass(60, FALSE);
+    WindowsTimer = new WinTimerClass(60, false);
     TickCount.Start();
 #else
-    WindowsTimer = new WinTimerClass(60, FALSE);
+    WindowsTimer = new WinTimerClass(60, false);
 
     int time_test = WindowsTimer->Get_System_Tick_Count();
     Sleep(1000);
@@ -389,23 +389,23 @@ int main(int argc, char *argv[])
 
       Palette = new (MEM_CLEAR) unsigned char[768];
 
-      bool video_success = FALSE;
+      bool video_success = false;
       CCDebugString("C&C95 - Setting video mode.\n");
       /*
       ** Set 640x400 video mode. If its not available then try for 640x480
       */
       if (ScreenHeight == 400) {
         if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = TRUE;
+          video_success = true;
         } else {
           if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8)) {
-            video_success = TRUE;
+            video_success = true;
             ScreenHeight = 480;
           }
         }
       } else {
         if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = TRUE;
+          video_success = true;
         }
       }
 
@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
       CCDebugString("C&C95 - Creating mouse class.\n");
       WWMouse = new WWMouseClass(&SeenBuff, 32, 32);
       //			MouseInstalled = Install_Mouse(32,24,320,200);
-      MouseInstalled = TRUE;
+      MouseInstalled = true;
 
       /*
       ** See if we should run the intro
@@ -803,8 +803,8 @@ void Read_Setup_Options(RawFileClass *config_file) {
     */
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
-    char *netptr = WWGetPrivateProfileString("Options", "DestNet", nullptr, netbuf,
-                                             sizeof(netbuf), buffer);
+    char *netptr = WWGetPrivateProfileString("Options", "DestNet", nullptr,
+                                             netbuf, sizeof(netbuf), buffer);
 
     if (netptr && strlen(netbuf)) {
       NetNumType net;

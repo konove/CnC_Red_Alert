@@ -1338,7 +1338,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
       ptr = MixFileClass::Retrieve(fullname.c_str());
       ((void const *&)tplate.ImageData) = ptr;
       Register_Icon_Set((void *)ptr,
-                        TRUE);  // Register icon set for video memory caching
+                        true);  // Register icon set for video memory caching
     }
   }
 }

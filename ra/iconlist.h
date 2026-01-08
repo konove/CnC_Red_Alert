@@ -42,7 +42,7 @@ enum ICONKIND {
 };
 
 struct FIXEDICON  //	For putting icons in list entries at a specific fixed
-                  //offset.
+                  // offset.
 {
   void* pIcon;
   ICONKIND IconKind;
@@ -69,14 +69,14 @@ struct IconList_ItemExtras {
   bool bMultiSelected;  //	True if selected when bMultiSelect is on.
   void* pIcon[3];       //	Icon that appears before an item.
   ICONKIND
-      IconKind[3];    //	Specifies what kind of image data pIcon points to.
+  IconKind[3];        //	Specifies what kind of image data pIcon points to.
   char* szHelp;       //	Tooltip help string that can be associated with item.
-                      //Allocated and deleted here.
+                      // Allocated and deleted here.
   char* szExtraData;  //	Extra string that can be associated with item.
-                      //Allocated and deleted here.
+                      // Allocated and deleted here.
   void* pvExtraData;  //	Hidden pointer that can be associated with item.
   RemapControlType* pColorRemap;  //	Pointer to a color remap, or null for
-                                  //default colored text.
+                                  // default colored text.
   FIXEDICON FixedIcon;
 };
 
@@ -84,7 +84,7 @@ class IconListClass : public ListClass {
  public:
   IconListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                 void const* up, void const* down,
-                bool bResponsibleForStringAlloc = FALSE, int iSelectionType = 1,
+                bool bResponsibleForStringAlloc = false, int iSelectionType = 1,
                 int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
   virtual ~IconListClass(void);
@@ -122,7 +122,7 @@ class IconListClass : public ListClass {
   //		virtual void Flag_To_Redraw(void);
 
   //		virtual void Peer_To_Peer(unsigned flags, KeyNumType & key,
-  //ControlClass & whom);
+  // ControlClass & whom);
   virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int);
   //		virtual int  Remove_Scroll_Bar(void);
@@ -174,7 +174,7 @@ class IconListClass : public ListClass {
 
   virtual int SetSelectType(int iSelectTypeNew) {
     //	Provided to enable horrible hacks, mainly involved with dealing with
-    //ListClass's inability 	to have no item selected...
+    // ListClass's inability 	to have no item selected...
     int iSelectTypeOld = iSelectType;
     iSelectType = iSelectTypeNew;
     return iSelectTypeOld;
@@ -199,12 +199,12 @@ class IconListClass : public ListClass {
   // creates hellacious linking problems
   DynamicVectorClass<void*> ExtrasList;
 
-  bool bDoAlloc;    //	True if I am responsible for mem. allocation/deletion of
-                    //strings.
-                    //		bool bMultiSelect;	//	True if we are using the
-                    //multiple item selection feature.
+  bool bDoAlloc;  //	True if I am responsible for mem. allocation/deletion of
+                  // strings.
+                  //		bool bMultiSelect;	//	True if we are
+                  //using the multiple item selection feature.
   int iSelectType;  //	0 for no selection shown, 1 for normal ListClass
-                    //selection, 2 for n multiple selections
+                    // selection, 2 for n multiple selections
   int iMaxItems;    //	Number of items to limit list to, if bDoAlloc is true.
 };
 

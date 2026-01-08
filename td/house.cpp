@@ -791,8 +791,8 @@ void HouseClass::AI(void) {
   *zero.
   */
   if (GameToPlay == GAME_NORMAL) {
-    Power = MAX(Power, 0);
-    Drain = MAX(Drain, 0);
+    Power = std::max(Power, 0);
+    Drain = std::max(Drain, 0);
   }
 
   /*
@@ -1526,7 +1526,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
   int retval = 0;
 
   Capacity += adjust;
-  Capacity = MAX(Capacity, 0L);
+  Capacity = std::max(Capacity, 0L);
   if (Tiberium > Capacity) {
     retval = Tiberium - Capacity;
     Tiberium = Capacity;
@@ -1601,12 +1601,12 @@ void HouseClass::Read_INI(char *buffer) {
     int maxunit =
         WWGetPrivateProfileInt(hname, "MaxUnit", EACH_UNIT_MAX, buffer);
 
-    maxunit = MAX(maxunit, 150);
+    maxunit = std::max(maxunit, 150);
 
     int maxbuilding =
         WWGetPrivateProfileInt(hname, "MaxBuilding", EACH_BUILDING_MAX, buffer);
 
-    maxbuilding = MAX(maxbuilding, 150);
+    maxbuilding = std::max(maxbuilding, 150);
 
     int credits = WWGetPrivateProfileInt(hname, "Credits", 0, buffer);
 
@@ -3131,8 +3131,8 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(
                 if (team->Class[subindex]->What_Am_I() == RTTI_UNITTYPE) {
                   int subtype =
                       ((UnitTypeClass const *)(team->Class[subindex]))->Type;
-                  counter[subtype] =
-                      MAX(counter[subtype], team->DesiredNum[subindex]);
+                  counter[subtype] = std::max<int>(counter[subtype],
+                                                   team->DesiredNum[subindex]);
                 }
               }
             }
@@ -3245,9 +3245,9 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(
                           ->Type;
                   //									counter[subtype]
                   //= 1;
-                  counter[subtype] =
-                      MAX(counter[subtype], team->DesiredNum[subindex]);
-                  counter[subtype] = MIN(counter[subtype], 5);
+                  counter[subtype] = std::max<int>(counter[subtype],
+                                                   team->DesiredNum[subindex]);
+                  counter[subtype] = std::min(counter[subtype], 5);
                 }
               }
             }

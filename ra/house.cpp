@@ -7286,7 +7286,7 @@ void HouseClass::Write_INI(CCINIClass &ini) {
  *                                                                                             *
  *    This routine will examine the current yak and mig situation verses
  *airfields. If there   * are equal aircraft to airfields, then this routine
- *will return TRUE.                     *
+ *will return true.                     *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *

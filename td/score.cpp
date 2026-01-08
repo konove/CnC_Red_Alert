@@ -668,7 +668,7 @@ void ScoreClass::Presentation(void) {
   VisiblePage.Clear();
   PseudoSeenBuff->Clear();
   SysMemPage.Clear();
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
   HiddenPage.Clear();
   Set_Palette(BlackPalette);
 
@@ -764,7 +764,7 @@ void ScoreClass::Presentation(void) {
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
 
   InterpolationPalette = Palette;
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   Read_Interpolation_Palette(inter_pal);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, inter_pal);
 #endif
@@ -832,7 +832,7 @@ void ScoreClass::Presentation(void) {
   Play_Sample(sfx4, 255, Options.Normalize_Sound(120));
   Call_Back_Delay(13);
 
-  max = MAX((long)leadership, (long)efficiency);
+  max = std::max((long)leadership, (long)efficiency);
   int scorecounter = 0;
   Keyboard::Clear();
 
@@ -1257,14 +1257,14 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
     HidPage.Blit(SeenBuff);
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
     if (!Check_Key()) Call_Back_Delay(1);
   }
 
-  int i = MAX(GBKilled, NBKilled);
-  i = MAX(i, CBKilled);
+  int i = std::max(GBKilled, NBKilled);
+  i = std::max(i, CBKilled);
 
   for (int q = 0; q <= i; q++) {
     Count_Up_Print("%d", q, GBKilled, BUILDING_X + 8, BUILDING_Y);
@@ -1297,7 +1297,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
   int i, max;
   int gdikilled = gkilled, nodkilled = nkilled;
 
-  max = MAX(gdikilled, nodkilled);
+  max = std::max(gdikilled, nodkilled);
   if (!max) max = 1;
 
   gdikilled = (gdikilled * SIZEGBAR) / max;
@@ -1307,7 +1307,7 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
     nodkilled = nkilled * 5;
   }
 
-  max = MAX(gdikilled, nodkilled);
+  max = std::max(gdikilled, nodkilled);
   if (!max) max = 1;
 
   // Draw the white-flash shape on the hidpage
@@ -1388,8 +1388,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
   gdikilled = GKilled;
   nodkilled = NKilled;
   civkilled = CKilled;
-  max = MAX(gdikilled, nodkilled);
-  max = MAX(max, civkilled);
+  max = std::max(gdikilled, nodkilled);
+  max = std::max(max, civkilled);
 
   if (!max) max = 1;
   if ((gdikilled > (MAX_BAR_X - BARGRAPH_X)) ||
@@ -1400,8 +1400,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
     civkilled = (civkilled * (MAX_BAR_X - BARGRAPH_X)) / max;
   }
 
-  max = MAX(gdikilled, nodkilled);
-  max = MAX(max, civkilled);
+  max = std::max(gdikilled, nodkilled);
+  max = std::max(max, civkilled);
   if (!max) max = 1;
 
   /*
@@ -1450,7 +1450,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
   BlitList.Update();
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff);
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
 
   Call_Back_Delay(40);
 
@@ -1915,10 +1915,11 @@ void New_Infantry_Anim(int index, int anim) {
  *=========================================================================*/
 void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 4, 0 + MIN(i, gkilled), 0 + 5, LTCYAN);
-    LogicPage->Draw_Line(0 + 1, 0 + 6, 0 + MIN(i, gkilled) + 1, 0 + 6, TBLACK);
-    LogicPage->Draw_Line(0 + MIN(i, gkilled) + 1, 0 + 5,
-                         0 + MIN(i, gkilled) + 1, 0 + 5, TBLACK);
+    LogicPage->Fill_Rect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, LTCYAN);
+    LogicPage->Draw_Line(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
+                         TBLACK);
+    LogicPage->Draw_Line(0 + std::min(i, gkilled) + 1, 0 + 5,
+                         0 + std::min(i, gkilled) + 1, 0 + 5, TBLACK);
     if (i <= gkilled) {
       int anim = InfantryMan[i / 11].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
@@ -1933,11 +1934,11 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     }
   }
   if (nkilled) {
-    LogicPage->Fill_Rect(0, 0 + 16, 0 + MIN(i, nkilled), 0 + 17, RED);
-    LogicPage->Draw_Line(0 + 1, 0 + 18, 0 + MIN(i, nkilled) + 1, 0 + 18,
+    LogicPage->Fill_Rect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, RED);
+    LogicPage->Draw_Line(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
                          TBLACK);
-    LogicPage->Draw_Line(0 + MIN(i, nkilled) + 1, 0 + 17,
-                         0 + MIN(i, nkilled) + 1, 0 + 17, TBLACK);
+    LogicPage->Draw_Line(0 + std::min(i, nkilled) + 1, 0 + 17,
+                         0 + std::min(i, nkilled) + 1, 0 + 17, TBLACK);
     if (i <= nkilled) {
       int anim = InfantryMan[(NUMINFANTRYMEN / 3) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
@@ -1954,11 +1955,11 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   }
 
   if (ckilled) {
-    LogicPage->Fill_Rect(0, 0 + 28, 0 + MIN(i, ckilled), 0 + 29, RED);
-    LogicPage->Draw_Line(0 + 1, 0 + 30, 0 + MIN(i, ckilled) + 1, 0 + 30,
+    LogicPage->Fill_Rect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, RED);
+    LogicPage->Draw_Line(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
                          TBLACK);
-    LogicPage->Draw_Line(0 + MIN(i, ckilled) + 1, 0 + 29,
-                         0 + MIN(i, ckilled) + 1, 0 + 29, TBLACK);
+    LogicPage->Draw_Line(0 + std::min(i, ckilled) + 1, 0 + 29,
+                         0 + std::min(i, ckilled) + 1, 0 + 29, TBLACK);
     if (i <= ckilled) {
       int anim = InfantryMan[((NUMINFANTRYMEN * 2) / 3) + (i / 11)].anim;
       if (anim != -1 && anim < DO_GUN_DEATH) {
@@ -2019,7 +2020,7 @@ void Call_Back_Delay(int time) {
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
     HidPage.Blit(SeenBuff);
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
     //}
   } while (cd.Time());
   StreamLowImpact = false;
@@ -2124,7 +2125,7 @@ void Multi_Score_Presentation(void) {
   */
   VisiblePage.Clear();
 #ifndef LORES
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
   Animate_Frame(anim, *PseudoSeenBuff, 1);
@@ -2169,7 +2170,7 @@ void Multi_Score_Presentation(void) {
           new ScorePrintClass(Int_Print(MPlayerScore[i].Wins), 118, y, pal));
       Call_Back_Delay(6);
 
-      for (k = 0; k <= MIN(MPlayerCurGame, MAX_MULTI_GAMES - 2); k++) {
+      for (k = 0; k <= std::min(MPlayerCurGame, MAX_MULTI_GAMES - 2); k++) {
         if (MPlayerScore[i].Kills[k] >= 0) {
           Alloc_Object(new ScorePrintClass(Int_Print(MPlayerScore[i].Kills[k]),
                                            225 + (24 * k), y, pal));

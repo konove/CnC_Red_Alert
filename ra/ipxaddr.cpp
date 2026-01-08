@@ -420,7 +420,7 @@ int IPXAddressClass::operator!=(IPXAddressClass &addr) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE = greater, FALSE = not
+ *		true = greater, FALSE = not
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -443,7 +443,7 @@ int IPXAddressClass::operator>(IPXAddressClass &addr) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE = less, FALSE = not
+ *		true = less, FALSE = not
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -466,7 +466,7 @@ int IPXAddressClass::operator<(IPXAddressClass &addr) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE = greater or equal, FALSE = not
+ *		true = greater or equal, FALSE = not
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -489,7 +489,7 @@ int IPXAddressClass::operator>=(IPXAddressClass &addr) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE = less or equal, FALSE = not
+ *		true = less or equal, FALSE = not
  **
  *                                                                         *
  * WARNINGS:                                                               *

@@ -868,7 +868,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
           */
           if (object->Is_Infantry() && object->Unlimbo(Coord, DIR_N)) {
             //					object->Strength =
-            //Random_Pick(5,
+            // Random_Pick(5,
             //(int)((InfantryClass*)object)->Class->MaxStrength/2);
             object->Scatter(0, true);
             if (select) object->Select();
@@ -2129,7 +2129,7 @@ bool UnitClass::Harvesting(void) {
     */
     int reducer = (ptr->OverlayData % 6) + 1;
     reducer = ptr->Reduce_Tiberium(
-        MIN(reducer, UnitTypeClass::STEP_COUNT - Tiberium));
+        std::min(reducer, UnitTypeClass::STEP_COUNT - Tiberium));
     Tiberium += reducer;
     Set_Stage(0);
     Set_Rate(2);
@@ -3338,8 +3338,8 @@ void UnitClass::Read_INI(char *buffer) {
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
     if (inhouse != HOUSE_NONE) {
       classid = UnitTypeClass::From_Name(strtok(nullptr, ","));
@@ -3646,7 +3646,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass *passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= (int)ABS(Dir_Diff(Facing_Dir(face), faceto));
+    value -= (int)std::abs(Dir_Diff(Facing_Dir(face), faceto));
     if (face == FACING_S) {
       value -= 100;
     }

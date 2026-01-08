@@ -633,11 +633,11 @@ void Keyboard_Process(KeyNumType &input) {
       break;
 #if (0)
     case VK_F11:
-      Winsock.Set_Protocol_UDP(FALSE);
+      Winsock.Set_Protocol_UDP(false);
       break;
 
     case VK_F12:
-      Winsock.Set_Protocol_UDP(TRUE);
+      Winsock.Set_Protocol_UDP(true);
       break;
 #endif  //(0)
 
@@ -1432,10 +1432,10 @@ static void Sync_Delay(void) {
     Call_Back();
 
     if (SpecialDialog == SDLG_NONE) {
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
       KeyNumType input = KN_NONE;
       int x, y;
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1538,7 +1538,7 @@ bool Main_Loop() {
   */
   if (!PlaybackGame) {
     if (SpecialDialog == SDLG_NONE && GameInFocus) {
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
       Map.Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1623,7 +1623,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
     PlayerLoses = false;
     PlayerWins = false;
     PlayerRestarts = false;
@@ -1636,7 +1636,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -1644,7 +1644,7 @@ bool Main_Loop() {
     Do_Lose();
   }
   if (PlayerRestarts) {
-    WWMouse->Erase_Mouse(&HidPage, TRUE);
+    WWMouse->Erase_Mouse(&HidPage, true);
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -1846,7 +1846,7 @@ unsigned long __stdcall Thread_Read(void *file) {
 
   CCFileClass *ccfile = (CCFileClass *)file;
 
-  bytes_to_read = MIN(VQBytesLeft, VQ_THREAD_BUFFER_CHUNK);
+  bytes_to_read = std::min(VQBytesLeft, VQ_THREAD_BUFFER_CHUNK);
 
   if (!bytes_to_read) {
     ThreadReading = false;
@@ -1856,7 +1856,7 @@ unsigned long __stdcall Thread_Read(void *file) {
   left_to_read = bytes_to_read;
 
   while (left_to_read) {
-    read_this_time = MIN(8 * 1024, left_to_read);
+    read_this_time = std::min(8 * 1024, left_to_read);
     // if (read_this_time & 3){
     ccfile->Read(VQThreadBuffer + VQThreadBlockHead, read_this_time);
     //}else{
@@ -1905,10 +1905,10 @@ int VQ_Thread_Read(CCFileClass *file, void *buffer, long bytes) {
 
   do {
     if (VQThreadBlockHead > VQThreadBlockTail) {
-      bytes_to_read = MIN(bytes, VQThreadBlockHead - VQThreadBlockTail);
+      bytes_to_read = std::min(bytes, VQThreadBlockHead - VQThreadBlockTail);
 
     } else {
-      bytes_to_read = MIN(
+      bytes_to_read = std::min(
           bytes, VQThreadBlockHead + VQ_THREAD_BUFFER_SIZE - VQThreadBlockTail);
     }
 
@@ -2212,7 +2212,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
   int i;
   int start_palette;
 
-  PalettesRead = FALSE;
+  PalettesRead = false;
   CCFileClass file(filename);
 
   //	RawFileClass	*palette_file;
@@ -2245,7 +2245,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
     Rebuild_Interpolated_Palette(InterpolatedPalettes[i + start_palette]);
   }
 
-  PalettesRead = TRUE;
+  PalettesRead = true;
   file.Close();
   //	}
   PaletteCounter = 0;
@@ -2394,11 +2394,11 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
 #else
         SysMemPage.Clear();
 #endif
-        InMovie = TRUE;
+        InMovie = true;
         VQA_Play(vqa, VQAMODE_RUN);
         VQA_Close(vqa);
         // Resume_Audio_Thread();
-        InMovie = FALSE;
+        InMovie = false;
         Free_Interpolated_Palettes();
 #ifndef PORTABLE
         Set_Primary_Buffer_Format();
@@ -2679,7 +2679,7 @@ void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos, int ypos,
 void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    void const *fadingdata, void const *ghostdata) {
-#if (TRUE)
+#if (true)
   int predoffset;
   char *shape_pointer;
   void *shape_size;
@@ -3735,7 +3735,7 @@ bool Force_CD_Available(int cd) {
 
       while (Get_Mouse_State()) Show_Mouse();
 
-      if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, TRUE) ==
+      if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
         Set_Logic_Page(oldpage);
         Hide_Mouse();

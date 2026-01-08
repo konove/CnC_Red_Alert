@@ -229,7 +229,7 @@ int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
  *               destx    - the dest x position for this path segment      *
  *               desty    - the dest y position for this path segment      *
  *                                                                         *
- * OUTPUT:      TRUE    - loop has been sucessfully unravelled             *
+ * OUTPUT:      true    - loop has been sucessfully unravelled             *
  *               FALSE  - loop can not be unravelled so abort follow edge  *
  *                                                                         *
  * WARNINGS:   none                                                        *
@@ -321,7 +321,7 @@ bool FootClass::Unravel_Loop(PathType *path, CELL &cell, FacingType &dir,
  * INPUT:      long   * list - the list to set the overlap bit for         *
  *               CELL  cell    - the cell to mark on the overlap list      *
  *                                                                         *
- * OUTPUT:     BOOL - TRUE if bit has been set, FALSE if bit already set   *
+ * OUTPUT:     BOOL - true if bit has been set, FALSE if bit already set   *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/23/1995 PWG : Created.                                             *
@@ -742,7 +742,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
         // threshhold);
 
         if (left) {
-          follow_len = MIN(maxlen, pleft.Length + (pleft.Length >> 1));
+          follow_len = std::min(maxlen, pleft.Length + (pleft.Length >> 1));
         }
 
         /*
@@ -858,7 +858,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
       **	this may not be the end of the find path logic.
       */
       len = which->Length;
-      len = MIN(len, maxlen);
+      len = std::min(len, maxlen);
       if (len > 0) {
         memcpy(&path.Overlap[0], &which->Overlap[0], sizeof(LeftOverlap));
         memcpy(&path.Command[0], &which->Command[0], len);
@@ -1303,7 +1303,7 @@ int FootClass::Optimize_Moves(PathType *path, MoveType threshhold)
           **	Diagonal 90 degree changes can be smoothed, although
           **	the path isn't any shorter.
           */
-          if (ABS((int)newcmd) == 1) {
+          if (std::abs((int)newcmd) == 1) {
             if (Passable_Cell(Adjacent_Cell(cell, newdir), newdir, -1,
                               threshhold)) {
               *cmd2 = newdir;

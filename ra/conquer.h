@@ -636,7 +636,7 @@ void Dump_Heap_Pointers(void);
 void *Hires_Load(char *name);
 void Shake_The_Screen(int shakes);
 void Rebuild_Interpolated_Palette(unsigned char *interpal);
-int Load_Interpolated_Palettes(char const *filename, bool add = FALSE);
+int Load_Interpolated_Palettes(char const *filename, bool add = false);
 void Free_Interpolated_Palettes(void);
 
 // Denzil 5/18/98 - Mpeg movie playback

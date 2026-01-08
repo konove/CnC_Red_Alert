@@ -631,7 +631,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass *house,
     */
     if ((unsigned)newcell >= MAP_CELL_TOTAL) continue;
     xdiff = Cell_X(newcell) - xx;
-    xdiff = ABS(xdiff);
+    xdiff = std::abs(xdiff);
     if (xdiff > sightrange) continue;
     if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
         (sightrange * CELL_LEPTON_W))
@@ -705,7 +705,7 @@ void MapClass::Shroud_From(CELL cell, int sightrange) {
     */
     if ((unsigned)newcell >= MAP_CELL_TOTAL) continue;
     xdiff = Cell_X(newcell) - xx;
-    xdiff = ABS(xdiff);
+    xdiff = std::abs(xdiff);
     if (xdiff > sightrange) continue;
     if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
         (sightrange * CELL_LEPTON_W))
@@ -773,7 +773,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass *house) {
     */
     if ((unsigned)newcell >= MAP_CELL_TOTAL) continue;
     xdiff = Cell_X(newcell) - xx;
-    xdiff = ABS(xdiff);
+    xdiff = std::abs(xdiff);
     if (xdiff > jamrange) continue;
     if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
         (jamrange * CELL_LEPTON_W))
@@ -913,7 +913,7 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass *house) {
     */
     if ((unsigned)newcell >= MAP_CELL_TOTAL) continue;
     xdiff = Cell_X(newcell) - xx;
-    xdiff = ABS(xdiff);
+    xdiff = std::abs(xdiff);
     if (xdiff > jamrange) continue;
     if (Distance(Cell_Coord(newcell), Cell_Coord(cell)) >
         (jamrange * CELL_LEPTON_W))

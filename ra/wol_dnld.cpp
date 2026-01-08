@@ -30,7 +30,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
                          RADownloadEventSink* pDownloadSink,
                          const char* szTitle) {
   //	This dialog is presented for each file that is to be downloaded during a
-  //WOLAPI patch.
+  // WOLAPI patch.
 
   bool bReturn = true;
   DWORD dwTimeNextPump = ::timeGetTime() + WOLAPIPUMPWAIT;
@@ -136,7 +136,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -158,9 +158,10 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         //				Fancy_Text_Print(info_string,
-        //d_dialog_cx-width/2, d_dialog_y + 25*RESFACTOR,
+        // d_dialog_cx-width/2, d_dialog_y + 25*RESFACTOR,
         //									GadgetClass::Get_Color_Scheme(),
-        //TBLACK, 									TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        // TBLACK,
+        // TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Show_Mouse();
       }
@@ -236,7 +237,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
           default:
             //					debugprint( "Unknown status
-            //update!\n" );
+            // update!\n" );
             break;
         }
         if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;

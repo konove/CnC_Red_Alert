@@ -112,12 +112,14 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
     **	Build the button list.
     */
     bheight = FontHeight + FontYSpacing + (2 * factor);
-    bwidth = MAX((String_Pixel_Width(b1txt) + (8 * factor)), 30 * factor);
+    bwidth =
+        std::max<int>((String_Pixel_Width(b1txt) + (8 * factor)), 30 * factor);
 
     if (b2txt) {
       numbuttons = 2;
       b2char = toupper(b2txt[0]);
-      bwidth = MAX((String_Pixel_Width(b2txt) + (8 * factor)), bwidth);
+      bwidth =
+          std::max<int>((String_Pixel_Width(b2txt) + (8 * factor)), bwidth);
 
       if (b3txt) {
         numbuttons = 3;
@@ -149,7 +151,7 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   // BG #ifdef JAPANESE
   // BG 	if(!IsPicture) {
   // BG #else
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   // BG #endif
   // BG #ifdef JAPANESE
@@ -219,7 +221,7 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
     back = new char[width * height];
     SeenBuff.To_Buffer(x, y, width, height, back, width * height);
   }
-  // display = TRUE;
+  // display = true;
 #ifdef JAPANESE
   if (IsPicture) {
     Load_Uncompress(CCFileClass(msg), SysMemPage, SysMemPage);
@@ -258,13 +260,13 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
       ** we need to redraw.
       */
       if (AllSurfaces.SurfacesRestored) {
-        AllSurfaces.SurfacesRestored = FALSE;
+        AllSurfaces.SurfacesRestored = false;
         seen_buff_save.Blit(VisiblePage);
-        display = TRUE;
+        display = true;
       }
 
       if (display) {
-        display = FALSE;
+        display = false;
 
         Hide_Mouse();
 

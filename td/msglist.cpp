@@ -504,7 +504,7 @@ char *MessageListClass::Get_Edit_Buf(void) {
 /***************************************************************************
  * MessageListClass::Manage -- Manages multiplayer messages                *
  *                                                                         *
- * If this routine returns TRUE, the caller should update the display.     *
+ * If this routine returns true, the caller should update the display.     *
  *                                                                         *
  * INPUT:                                                                  *
  *      none.                                                              *

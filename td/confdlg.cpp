@@ -90,7 +90,7 @@ bool ConfirmationClass::Process(char const *string) {
   */
 
   bheight = FontHeight + FontYSpacing + 2;
-  bwidth = MAX((String_Pixel_Width(Text_String(TXT_YES)) + 8), 30);
+  bwidth = std::max<int>((String_Pixel_Width(Text_String(TXT_YES)) + 8), 30);
 
   TextButtonClass yesbtn(
       BUTTON_YES, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -149,8 +149,8 @@ bool ConfirmationClass::Process(char const *string) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
-      display = TRUE;
+      AllSurfaces.SurfacesRestored = false;
+      display = true;
     }
 
     /*

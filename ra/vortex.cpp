@@ -1035,8 +1035,8 @@ void ChronalVortexClass::Set_Redraw(void) {
 
     CELL cell;
 
-    for (int y = MAX(0, yc - 1); y < yc + 4; y++) {
-      for (int x = MAX(0, xc - 1); x < xc + 4; x++) {
+    for (int y = std::max(0, yc - 1); y < yc + 4; y++) {
+      for (int x = std::max(0, xc - 1); x < xc + 4; x++) {
         cell = XY_Cell(x, y);
         if (cell != -1) {
           Map[cell].Redraw_Objects();

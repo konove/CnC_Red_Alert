@@ -1805,7 +1805,7 @@ static int Net_Join_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -4483,7 +4483,7 @@ static int Net_New_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -4771,7 +4771,7 @@ static int Net_New_Dialog(void) {
         break;
 
       //..................................................................
-      //	OK: exit loop with TRUE status
+      //	OK: exit loop with true status
       //..................................................................
       case (BUTTON_LOAD | KN_BUTTON):
       case (BUTTON_OK | KN_BUTTON):
@@ -4792,8 +4792,8 @@ static int Net_New_Dialog(void) {
         if (Session.Players.Count() > 1) {
           //				if (Session.Players.Count() +
           // Session.Options.AIPlayers > 1 ) {
-          rc = TRUE;
-          process = FALSE;
+          rc = true;
+          process = false;
         } else {
           Session.Messages.Add_Message(nullptr, 0,
                                        (char *)Text_String(TXT_ONLY_ONE),
@@ -5646,7 +5646,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
   ** we need to redraw.
   */
   if (AllSurfaces.SurfacesRestored) {
-    AllSurfaces.SurfacesRestored = FALSE;
+    AllSurfaces.SurfacesRestored = false;
     fresh = true;
   }
 #endif
@@ -7725,7 +7725,7 @@ static int Net_Fake_New_Dialog(void) {
         focus_timer = 5 * 60;
       }
     } while (!GameInFocus);
-    AllSurfaces.SurfacesRestored = FALSE;
+    AllSurfaces.SurfacesRestored = false;
   }
 
   who = new NodeNameType;
@@ -7756,7 +7756,7 @@ static int Net_Fake_New_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -7866,7 +7866,7 @@ static int Net_Fake_New_Dialog(void) {
           //	an OK; force a wait longer than 1 second (to give all players
           //	a chance to know about this new guy)
           //...............................................................
-          i = MAX(Ipx.Global_Response_Time() * 2, 60 * 2);
+          i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
           while (TickCount - ok_timer < i) {
             Ipx.Service();
           }
@@ -7877,8 +7877,8 @@ static int Net_Fake_New_Dialog(void) {
           //...............................................................
           if (Session.Solo || Session.Players.Count() > 1 ||
               Session.Options.Ghosts) {
-            rc = TRUE;
-            process = FALSE;
+            rc = true;
+            process = false;
           } else {
             WWMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
             display = REDRAW_ALL;
@@ -8098,14 +8098,14 @@ static int Net_Fake_New_Dialog(void) {
     // 1-way 	  value, 4 more to convert from ticks to frames)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      Session.MaxAhead = MAX(
+      Session.MaxAhead = std::max(
           ((((Ipx.Global_Response_Time() / 8) + (Session.FrameSendRate - 1)) /
             Session.FrameSendRate) *
            Session.FrameSendRate),
           (Session.FrameSendRate * 2));
     } else {
-      Session.MaxAhead =
-          MAX((Ipx.Global_Response_Time() / 8), NETWORK_MIN_MAX_AHEAD);
+      Session.MaxAhead = std::max<int>((Ipx.Global_Response_Time() / 8),
+                                       NETWORK_MIN_MAX_AHEAD);
     }
 
     //.....................................................................
@@ -8193,7 +8193,7 @@ static int Net_Fake_New_Dialog(void) {
   //	a chance to get to the other system.  If he doesn't get our ACK,
   // he'll be waiting the whole time we load MIX files.
   //.....................................................................
-  i = MAX(Ipx.Global_Response_Time() * 2, 60 * 2);
+  i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
   int starttime = TickCount;
   while (TickCount - starttime < i) {
     Ipx.Service();
@@ -8534,7 +8534,7 @@ static int Net_Fake_Join_Dialog(void) {
         focus_timer = 5 * 60;
       }
     } while (!GameInFocus);
-    AllSurfaces.SurfacesRestored = FALSE;
+    AllSurfaces.SurfacesRestored = false;
   }
 
   if (LogicPage != &SeenBuff && LogicPage != &HidPage) {
@@ -8555,7 +8555,7 @@ static int Net_Fake_Join_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -9062,7 +9062,7 @@ static int Net_Fake_Join_Dialog(void) {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    i = MAX(Ipx.Global_Response_Time() * 2, 60 * 2);
+    i = std::max<int>(Ipx.Global_Response_Time() * 2, 60 * 2);
     starttime = TickCount;
     while (TickCount - starttime < i) {
       Ipx.Service();

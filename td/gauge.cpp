@@ -115,8 +115,8 @@ int GaugeClass::Set_Maximum(int value) {
  *=============================================================================================*/
 int GaugeClass::Set_Value(int value) {
   value = Bound(value, 0, MaxValue);
-  //	value = MIN(value, MaxValue);
-  //	value = MAX(value, 0);
+  //	value = std::min(value, MaxValue);
+  //	value = std::max(value, 0);
   if (value != CurValue) {
     CurValue = value;
     Flag_To_Redraw();
@@ -152,8 +152,8 @@ int GaugeClass::Pixel_To_Value(int pixel) {
   }
   maximum -= 2;
   pixel = Bound(pixel, 0, maximum);
-  //	pixel = MIN(pixel, maximum);
-  //	pixel = MAX(pixel, 0);
+  //	pixel = std::min(pixel, maximum);
+  //	pixel = std::max(pixel, 0);
   return (Fixed_To_Cardinal(MaxValue, Cardinal_To_Fixed(maximum, pixel)));
 }
 

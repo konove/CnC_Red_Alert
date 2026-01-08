@@ -248,7 +248,7 @@ int Test_Null_Modem(void) {
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200 * factor, width, height);
 
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
@@ -411,7 +411,7 @@ int Test_Null_Modem(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       commands->Draw_All();
     }
 
@@ -603,7 +603,7 @@ static int Reconnect_Null_Modem(void) {
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200, width, height);
 
-  width = MAX(width, 50);
+  width = std::max(width, 50);
   width += 40;
   height += 60;
 
@@ -654,7 +654,7 @@ static int Reconnect_Null_Modem(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       commands->Draw_All();
     }
 
@@ -1048,7 +1048,7 @@ GameType Select_Serial_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -1484,7 +1484,7 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -2298,7 +2298,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -3509,7 +3509,7 @@ int Com_Scenario_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -4441,7 +4441,7 @@ int Com_Scenario_Dialog(void) {
     // calculated one way delay for a packet and overall delay to execute
     // a packet
     //
-    MPlayerMaxAhead = MAX((SendPacket.ResponseTime / 8), 2);
+    MPlayerMaxAhead = std::max<int>((SendPacket.ResponseTime / 8), 2);
     char flip[128];
     sprintf(flip, "C&C95 - MaxAhead set to %d frames\n", MPlayerMaxAhead);
     CCDebugString(flip);
@@ -4794,7 +4794,7 @@ int Com_Show_Scenario_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -5520,7 +5520,8 @@ int Com_Show_Scenario_Dialog(void) {
             // calculated one way delay for a packet and overall delay
             // to execute a packet
             //
-            MPlayerMaxAhead = MAX((ReceivePacket.ResponseTime / 8), 2);
+            MPlayerMaxAhead =
+                std::max<int>((ReceivePacket.ResponseTime / 8), 2);
             char flip[128];
             sprintf(flip, "C&C95 - MaxAhead set to %d frames\n",
                     MPlayerMaxAhead);
@@ -5901,7 +5902,7 @@ static int Phone_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -6516,7 +6517,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -7190,7 +7191,7 @@ int Com_Fake_Scenario_Dialog(void) {
 
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
@@ -7239,7 +7240,7 @@ int Com_Fake_Scenario_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 
@@ -7545,7 +7546,7 @@ int Com_Fake_Scenario_Dialog(void) {
     // calculated one way delay for a packet and overall delay to execute
     // a packet
     //
-    ////////MPlayerMaxAhead = MAX( (SendPacket.ResponseTime / 8), 2);
+    ////////MPlayerMaxAhead = std::max( (SendPacket.ResponseTime / 8), 2);
     SendPacket.ID = ModemGameToPlay;
 
     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
@@ -7674,7 +7675,7 @@ int Com_Show_Fake_Scenario_Dialog(void) {
 
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
@@ -7710,7 +7711,7 @@ int Com_Show_Fake_Scenario_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 
@@ -7951,7 +7952,8 @@ int Com_Show_Fake_Scenario_Dialog(void) {
             // calculated one way delay for a packet and overall delay
             // to execute a packet
             //
-            ////////MPlayerMaxAhead = MAX( (ReceivePacket.ResponseTime / 8), 2);
+            ////////MPlayerMaxAhead = std::max( (ReceivePacket.ResponseTime /
+            /// 8), 2);
 
             process = false;
             rc = true;

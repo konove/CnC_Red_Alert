@@ -896,15 +896,16 @@ static void Queue_AI_Multiplayer(void) {
 
   rc = Wait_For_Players(
       0, net, (Session.MaxAhead << 3),
-      MAX(net->Response_Time() * 3, FRAMESYNC_DLG_TIME * timeout_factor),
+      std::max(net->Response_Time() * 3, FRAMESYNC_DLG_TIME * timeout_factor),
       iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
       their_frame, their_sent, their_recv);
 #else
-  rc = Wait_For_Players(
-      0, net, (Session.MaxAhead << 3),
-      MAX(net->Response_Time() * 3, FRAMESYNC_DLG_TIME * timeout_factor),
-      FRAMESYNC_TIMEOUT * (2 * timeout_factor), multi_packet_buf, my_sent,
-      their_frame, their_sent, their_recv);
+  rc = Wait_For_Players(0, net, (Session.MaxAhead << 3),
+                        std::max<int>(net->Response_Time() * 3,
+                                      FRAMESYNC_DLG_TIME * timeout_factor),
+                        FRAMESYNC_TIMEOUT * (2 * timeout_factor),
+                        multi_packet_buf, my_sent, their_frame, their_sent,
+                        their_recv);
 #endif
 
   if (rc != RC_NORMAL) {
@@ -1319,7 +1320,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
     Call_Back();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
 #ifdef WIN32
-      WWMouse->Erase_Mouse(&HidPage, TRUE);
+      WWMouse->Erase_Mouse(&HidPage, true);
 #endif  // WIN32
       Map.Input(input, x, y);
       if (input) Keyboard_Process(input);
@@ -1501,7 +1502,7 @@ static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent) {
   }
 
   Session.DesiredFrameRate =
-      MIN(Session.DesiredFrameRate, specified_frame_rate);
+      std::min(Session.DesiredFrameRate, specified_frame_rate);
 
   //
   // Measure the current connection response time.  This time will be in
@@ -1530,7 +1531,7 @@ static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent) {
   //
   maxahead = ((maxahead + Session.FrameSendRate - 1) / Session.FrameSendRate) *
              Session.FrameSendRate;
-  maxahead = MAX(maxahead, Session.FrameSendRate * 3);
+  maxahead = std::max<int>(maxahead, Session.FrameSendRate * 3);
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate = Session.DesiredFrameRate;

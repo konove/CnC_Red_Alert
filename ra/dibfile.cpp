@@ -426,8 +426,8 @@ OKExit:
 
    Purpose:  Routine to read files greater than 64K in size.
 
-   Returns:  TRUE if successful.
-             FALSE if an error occurs.
+   Returns:  true if successful.
+             false if an error occurs.
 
 
   History:   Date      Author       Reason
@@ -446,11 +446,11 @@ BOOL MyRead(int hFile, LPSTR lpBuffer, DWORD dwSize) {
 
   while (dwSize) {
     nBytes = (int)(dwSize > (DWORD)32767 ? 32767 : LOWORD(dwSize));
-    if (_lread(hFile, (LPSTR)lpInBuf, nBytes) != (WORD)nBytes) return FALSE;
+    if (_lread(hFile, (LPSTR)lpInBuf, nBytes) != (WORD)nBytes) return false;
     dwSize -= nBytes;
     lpInBuf += nBytes;
   }
-  return TRUE;
+  return true;
 }
 
 /****************************************************************************

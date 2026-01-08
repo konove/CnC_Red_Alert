@@ -83,12 +83,12 @@ long FAR PASCAL _export Start_Game_Proc(HWND hwnd, UINT message, UINT wParam,
       break;
 
     case WM_COMMAND:
-      EndDialog(hwnd, TRUE);
-      AllDone = TRUE;
+      EndDialog(hwnd, true);
+      AllDone = true;
       break;
 
     case WM_DESTROY:
-      EndDialog(hwnd, TRUE);
+      EndDialog(hwnd, true);
       break;
   }
   return (DefWindowProc(hwnd, message, wParam, lParam));
@@ -269,7 +269,7 @@ bool Init_Game(int, char *[]) {
   ** to set one of our own.
   */
 #ifndef PORTABLE
-  ShowCursor(FALSE);
+  ShowCursor(false);
 #endif
   if (MouseInstalled) {
     temp_mouse_shapes = MixFileClass::Retrieve("MOUSE.SHP");
@@ -289,7 +289,7 @@ bool Init_Game(int, char *[]) {
     CCDebugString("C&C95 - About to call Keyboard::Check\n");
     Keyboard::Check();
   } while (!GameInFocus);
-  AllSurfaces.SurfacesRestored = FALSE;
+  AllSurfaces.SurfacesRestored = false;
 
   CCDebugString("C&C95 - About to load the language file\n");
   /*
@@ -493,9 +493,9 @@ bool Init_Game(int, char *[]) {
     SetFilePointer(sfile, 0, NULL, FILE_END);
 
     do {
-      whatever.Read(file_ptr, MIN(len, 1024 * 64));
-      WriteFile(sfile, file_ptr, MIN(len, 1024 * 64), &actual, NULL);
-      len -= MIN(len, 1024 * 64);
+      whatever.Read(file_ptr, std::min(len, 1024 * 64));
+      WriteFile(sfile, file_ptr, std::min(len, 1024 * 64), &actual, NULL);
+      len -= std::min(len, 1024 * 64);
     } while (len > 0);
 
     CloseHandle(sfile);
@@ -918,8 +918,8 @@ bool Select_Game(bool fade) {
       ** we need to redraw.
       */
       if (AllSurfaces.SurfacesRestored) {
-        AllSurfaces.SurfacesRestored = FALSE;
-        display = TRUE;
+        AllSurfaces.SurfacesRestored = false;
+        display = true;
       }
 
       /*
@@ -1720,7 +1720,7 @@ bool Select_Game(bool fade) {
   Hide_Mouse();
   Hide_Mouse();
   Hide_Mouse();
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
 
   Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
   HiddenPage.Clear();

@@ -64,7 +64,7 @@ DDEServerClass DDEServer;  // Instance of the DDE Server class
 Instance_Class *DDE_Class = NULL;  // pointer for client callback
                                    // this *must* be called DDE_Class
 
-BOOL RA95AlreadyRunning = FALSE;  // Was there an instance of Red Alert 95
+BOOL RA95AlreadyRunning = false;  // Was there an instance of Red Alert 95
                                   // already running when we started?
 
 /*
@@ -112,11 +112,11 @@ DDEServerClass::DDEServerClass(void) {
   // DDE_Class = new Instance_Class ("CONQUER", "WCHAT");
   DDE_Class = new Instance_Class("REDALERT", "WCHAT");
 
-  DDE_Class->Enable_Callback(TRUE);
-  IsEnabled = TRUE;
+  DDE_Class->Enable_Callback(true);
+  IsEnabled = true;
 
   if (DDE_Class->Test_Server_Running(DDE_Class->local_name)) {
-    RA95AlreadyRunning = TRUE;
+    RA95AlreadyRunning = true;
   } else {
     DDE_Class->Register_Server(DDE_Callback);
   }
@@ -137,8 +137,8 @@ DDEServerClass::DDEServerClass(void) {
  *=============================================================================================*/
 void DDEServerClass::Enable(void) {
   if (!IsEnabled) {
-    DDE_Class->Enable_Callback(TRUE);
-    IsEnabled = TRUE;
+    DDE_Class->Enable_Callback(true);
+    IsEnabled = true;
   }
 }
 
@@ -157,8 +157,8 @@ void DDEServerClass::Enable(void) {
  *=============================================================================================*/
 void DDEServerClass::Disable(void) {
   if (IsEnabled) {
-    DDE_Class->Enable_Callback(FALSE);
-    IsEnabled = FALSE;
+    DDE_Class->Enable_Callback(false);
+    IsEnabled = false;
   }
 }
 
@@ -202,15 +202,15 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
     switch (length) {
       case DDE_ADVISE_CONNECT:
         WWDebugString("RA95 - DDE advisory: client connect detected.");
-        return TRUE;
+        return true;
 
       case DDE_ADVISE_DISCONNECT:
         WWDebugString("RA95 - DDE advisory: client disconnect detected.");
-        return TRUE;
+        return true;
 
       default:
         WWDebugString("RA95 - DDE advisory: Unknown DDE advise type.");
-        return FALSE;
+        return false;
     }
 
   } else {
@@ -220,7 +220,7 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
     */
     if (length < 2 * sizeof(int)) {
       WWDebugString("RA95 - Received invalid packet.");
-      return (FALSE);
+      return (false);
     }
 
     /*
@@ -278,7 +278,7 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
     }
   }
 
-  return (TRUE);
+  return (true);
 }
 
 /***********************************************************************************************
@@ -349,9 +349,9 @@ int DDEServerClass::Time_Since_Heartbeat(void) {
  * HISTORY: * 6/9/96 11:07PM ST : Created *
  *=============================================================================================*/
 BOOL Send_Data_To_DDE_Server(char *data, int length, int packet_type) {
-  if (DDE_Class->Open_Poke_Connection(DDE_Class->remote_name) == FALSE) {
+  if (DDE_Class->Open_Poke_Connection(DDE_Class->remote_name) == false) {
     WWDebugString("RA95 - Failed to connect for POKE!");
-    return (FALSE);
+    return (false);
   }
 
   char *poke_data = new char[length + 2 * sizeof(int)];
@@ -364,18 +364,18 @@ BOOL Send_Data_To_DDE_Server(char *data, int length, int packet_type) {
   memcpy(poke_data + 8, data, length);
 
   if (DDE_Class->Poke_Server((LPBYTE)poke_data, ntohl(*poke_data_int)) ==
-      FALSE) {
+      false) {
     WWDebugString("RA95 - POKE failed!\n");
     DDE_Class->Close_Poke_Connection();  // close down the link
     delete poke_data;
-    return (FALSE);
+    return (false);
   }
 
   DDE_Class->Close_Poke_Connection();  // close down the link
 
   delete poke_data;
 
-  return (TRUE);
+  return (true);
 }
 
 #endif  // WIN32

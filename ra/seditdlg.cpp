@@ -19,9 +19,10 @@
 #ifdef WOLAPI_INTEGRATION
 
 //	SEditDlg.cpp - "SimpleEditDlgClass": An ok/cancel type dialog with 1 or
-//2 edit boxes. 					Mostly a hack for what I need right now - not necessarily very
-//flexible. 					Still - I can't believe there isn't a set of dialog classes in here
-//already. 	ajw 07/21/98
+// 2 edit boxes. 					Mostly a hack for what I
+// need right now - not necessarily very flexible.
+// Still - I can't believe there isn't a set of dialog classes in here already.
+// ajw 07/21/98
 
 #include "SEditDlg.h"
 #include "WOLEdit.h"
@@ -56,7 +57,7 @@ SimpleEditDlgClass::SimpleEditDlgClass(int iDialogWidth, const char* szTitle,
     strcpy(this->szPrompt2, szPrompt2);
   } else
     this->szPrompt2 = NULL;  //	This is the flag for whether or not there is a
-                             //second edit box.
+                             // second edit box.
 
   *szEdit = 0;
   *szEdit2 = 0;
@@ -85,7 +86,7 @@ void SimpleEditDlgClass::SetButtons(const char* szOk, const char* szCancel,
 const char* SimpleEditDlgClass::Show() {
   //	Shows dialog, returns text of button pressed.
   //	Unless SetButtons() is used, value will be TXT_OK or TXT_CANCEL string
-  //values.
+  // values.
 
   bool bEscapeDown = false;
   bool bReturnDown = false;
@@ -248,7 +249,7 @@ const char* SimpleEditDlgClass::Show() {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 #endif
@@ -302,7 +303,7 @@ const char* SimpleEditDlgClass::Show() {
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
-    //the key up, 	though this dialog handled the key down. ajw
+    // the key up, 	though this dialog handled the key down. ajw
     if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
@@ -326,8 +327,8 @@ const char* SimpleEditDlgClass::Show() {
       disable_current_msgbox = false;
       EditBox.Disable();
       //	These do not actually draw. I am actually clearing the "draw"
-      //flag! 	Problem is Disable sets them to redraw, and I don't want to, and
-      //there is no Flag_To_Redraw( false ).
+      // flag! 	Problem is Disable sets them to redraw, and I don't want to, and
+      // there is no Flag_To_Redraw( false ).
       EditBox.GadgetClass::Draw_Me(true);
       if (szPrompt2) {
         EditBox2.Disable();

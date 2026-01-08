@@ -265,7 +265,7 @@ char const *Map_Selection(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       CopyType = 1;
 #if RESFACTOR == 2
       Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);

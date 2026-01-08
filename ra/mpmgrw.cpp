@@ -36,7 +36,6 @@ extern "C" {
 
 #define BROADCAST_ADDR 0
 
-#define PRIVATE 0
 #define PUBLIC 1
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))

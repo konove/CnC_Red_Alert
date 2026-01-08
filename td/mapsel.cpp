@@ -577,7 +577,7 @@ void Map_Selection(void) {
 #ifndef LORES
   PseudoSeenBuff->Clear();
 #endif
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
   HiddenPage.Clear();
 
 #ifdef LORES
@@ -587,7 +587,7 @@ void Map_Selection(void) {
   SeenBuff.Put_Pixel(237, 92, TBLACK);
   SeenBuff.Put_Pixel(237, 93, TBLACK);
 #else
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("MAP1.PAL");
@@ -601,7 +601,7 @@ void Map_Selection(void) {
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MAP1.PAL");
 
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = localpalette;
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("MAP_LOCL.PAL");
@@ -631,7 +631,7 @@ void Map_Selection(void) {
   SysMemPage.Clear();
   Animate_Frame(greyearth2, SysMemPage, 0);
 
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = grey2palette;
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("MAP_GRY2.PAL");
@@ -831,7 +831,7 @@ void Map_Selection(void) {
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = progresspalette;
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("MAP_PROG.PAL");
@@ -1000,7 +1000,7 @@ void Map_Selection(void) {
   */
   if (lastscenario) {
 #ifndef LORES
-    InterpolationPaletteChanged = TRUE;
+    InterpolationPaletteChanged = true;
     InterpolationPalette = CurrentPalette;
     if (house == HOUSE_GOOD) {
       Read_Interpolation_Palette("LASTSCNG.PAL");
@@ -1246,7 +1246,7 @@ void Map_Selection(void) {
     CCFileClass("DARK_E.PAL").Read(localpalette, 768);
 //		Load_Data("DARK_E.PAL", localpalette, 768);
 #ifndef LORES
-    InterpolationPaletteChanged = TRUE;
+    InterpolationPaletteChanged = true;
     InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Read_Interpolation_Palette("MAP_LOC2.PAL");
@@ -1261,7 +1261,7 @@ void Map_Selection(void) {
     CCFileClass(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
         .Read(localpalette, 768);
 #ifndef LORES
-    InterpolationPaletteChanged = TRUE;
+    InterpolationPaletteChanged = true;
     InterpolationPalette = localpalette;
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Read_Interpolation_Palette("MAP_LOC3.PAL");

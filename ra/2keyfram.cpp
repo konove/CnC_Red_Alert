@@ -74,7 +74,7 @@ unsigned TheaterShapeBufferLength = THEATER_BIG_SHAPE_BUFFER_SIZE;
 extern "C" {
 char *BigShapeBufferStart = nullptr;
 char *TheaterShapeBufferStart = nullptr;
-bool UseBigShapeBuffer = FALSE;
+bool UseBigShapeBuffer = false;
 bool IsTheaterShape = false;
 }
 /*
@@ -84,7 +84,7 @@ bool IsTheaterShape = false;
 bool OriginalUseBigShapeBuffer = false;
 char *BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
-bool ReallocShapeBufferFlag = FALSE;
+bool ReallocShapeBufferFlag = false;
 
 char *TheaterShapeBufferPtr = nullptr;
 int TotalTheaterShapes = 0;
@@ -148,7 +148,7 @@ void Reallocate_Big_Shape_Buffer(void) {
       return;
     }
     BigShapeBufferPtr += (uintptr_t)BigShapeBufferStart;
-    ReallocShapeBufferFlag = FALSE;
+    ReallocShapeBufferFlag = false;
   }
 }
 
@@ -195,7 +195,7 @@ void Check_Use_Compressed_Shapes(void) {
   mem_info.dwLength = sizeof(mem_info);
   GlobalMemoryStatus(&mem_info);
 
-  UseBigShapeBuffer = (mem_info.dwTotalPhys > 16 * 1024 * 1024) ? TRUE : FALSE;
+  UseBigShapeBuffer = (mem_info.dwTotalPhys > 16 * 1024 * 1024) ? true : false;
 #endif
   /*
   ** Keep track of our original decision about whether to use cached shapes.
@@ -258,7 +258,7 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
     if (((uintptr_t)BigShapeBufferStart + BigShapeBufferLength) -
             (uintptr_t)BigShapeBufferPtr <
         128000) {
-      ReallocShapeBufferFlag = TRUE;
+      ReallocShapeBufferFlag = true;
     }
 
     /*

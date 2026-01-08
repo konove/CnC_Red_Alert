@@ -548,7 +548,7 @@ HBITMAP FAR DIBToBitmap(HDIB hDIB, HPALETTE hPal) {
   }
 
   /* select and realize palette */
-  if (hPal) hOldPal = SelectPalette(hDC, hPal, FALSE);
+  if (hPal) hOldPal = SelectPalette(hDC, hPal, false);
   RealizePalette(hDC);
 
   /* create bitmap from DIB info. and bits */
@@ -556,7 +556,7 @@ HBITMAP FAR DIBToBitmap(HDIB hDIB, HPALETTE hPal) {
                            lpDIBBits, (LPBITMAPINFO)lpDIBHdr, DIB_RGB_COLORS);
 
   /* restore previous palette */
-  if (hOldPal) SelectPalette(hDC, hOldPal, FALSE);
+  if (hOldPal) SelectPalette(hDC, hOldPal, false);
 
   /* clean up */
   ReleaseDC(NULL, hDC);
@@ -644,7 +644,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
   hDC = GetDC(NULL);
 
   /* select and realize our palette */
-  hPal = SelectPalette(hDC, hPal, FALSE);
+  hPal = SelectPalette(hDC, hPal, false);
   RealizePalette(hDC);
 
   /* alloc memory block to store our bitmap */
@@ -653,7 +653,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
   /* if we couldn't get memory block */
   if (!hDIB) {
     /* clean up and return NULL */
-    SelectPalette(hDC, hPal, TRUE);
+    SelectPalette(hDC, hPal, true);
     RealizePalette(hDC);
     ReleaseDC(NULL, hDC);
     return NULL;
@@ -688,7 +688,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
     /* clean up and return NULL */
     GlobalFree(hDIB);
     hDIB = NULL;
-    SelectPalette(hDC, hPal, TRUE);
+    SelectPalette(hDC, hPal, true);
     RealizePalette(hDC);
     ReleaseDC(NULL, hDC);
     return NULL;
@@ -706,7 +706,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
     /* clean up and return NULL */
     GlobalUnlock(hDIB);
     hDIB = NULL;
-    SelectPalette(hDC, hPal, TRUE);
+    SelectPalette(hDC, hPal, true);
     RealizePalette(hDC);
     ReleaseDC(NULL, hDC);
     return NULL;
@@ -715,7 +715,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
 
   /* clean up */
   GlobalUnlock(hDIB);
-  SelectPalette(hDC, hPal, TRUE);
+  SelectPalette(hDC, hPal, true);
   RealizePalette(hDC);
   ReleaseDC(NULL, hDC);
 
@@ -1045,7 +1045,7 @@ HDIB FAR ChangeDIBFormat(HDIB hDIB, WORD wBitCount, DWORD dwCompression) {
 
   /* Get a DC and select/realize our palette in it */
   hDC = GetDC(NULL);
-  hOldPal = SelectPalette(hDC, hPal, FALSE);
+  hOldPal = SelectPalette(hDC, hPal, false);
   RealizePalette(hDC);
 
   /* Call GetDIBits and get the new DIB bits */
@@ -1058,7 +1058,7 @@ HDIB FAR ChangeDIBFormat(HDIB hDIB, WORD wBitCount, DWORD dwCompression) {
   }
 
   /* Clean up and return */
-  SelectPalette(hDC, hOldPal, TRUE);
+  SelectPalette(hDC, hOldPal, true);
   RealizePalette(hDC);
   ReleaseDC(NULL, hDC);
 
@@ -1185,7 +1185,7 @@ HDIB FAR ChangeBitmapFormat(HBITMAP hBitmap, WORD wBitCount,
   /* If we have a palette, get a DC and select/realize it */
   if (hPal) {
     hDC = GetDC(NULL);
-    hOldPal = SelectPalette(hDC, hPal, FALSE);
+    hOldPal = SelectPalette(hDC, hPal, false);
     RealizePalette(hDC);
   }
 
@@ -1200,7 +1200,7 @@ HDIB FAR ChangeBitmapFormat(HBITMAP hBitmap, WORD wBitCount,
 
   /* Clean up and return */
   if (hOldPal) {
-    SelectPalette(hDC, hOldPal, TRUE);
+    SelectPalette(hDC, hOldPal, true);
     RealizePalette(hDC);
     ReleaseDC(NULL, hDC);
   }

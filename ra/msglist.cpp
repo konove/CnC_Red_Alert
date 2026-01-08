@@ -892,7 +892,7 @@ void MessageListClass::Set_Edit_Color(PlayerColorType color) {
 /***************************************************************************
  * MessageListClass::Manage -- Manages multiplayer messages                *
  *                                                                         *
- * If this routine returns TRUE, the caller should update the display.     *
+ * If this routine returns true, the caller should update the display.     *
  *                                                                         *
  * INPUT:                                                                  *
  *    none. *

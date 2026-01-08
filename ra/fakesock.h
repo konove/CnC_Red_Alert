@@ -44,7 +44,7 @@
 
 class TcpipManagerClass {
  public:
-  inline BOOL Get_Connected(void) { return (FALSE); }
+  inline BOOL Get_Connected(void) { return (false); }
 };
 
 extern TcpipManagerClass Winsock;

@@ -140,8 +140,8 @@ int SliderClass::Set_Maximum(int value) {
  *01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void SliderClass::Set_Thumb_Size(int value) {
-  Thumb = MIN(value, MaxValue);
-  Thumb = MAX(Thumb, 1);
+  Thumb = std::min(value, MaxValue);
+  Thumb = std::max(Thumb, 1);
   Flag_To_Redraw();
   Recalc_Thumb();
 }
@@ -158,7 +158,7 @@ void SliderClass::Set_Thumb_Size(int value) {
  ** HISTORY:   01/15/1995 JLB : Created. *
  *=============================================================================================*/
 int SliderClass::Set_Value(int value) {
-  value = MIN(value, MaxValue - Thumb);
+  value = std::min(value, MaxValue - Thumb);
 
   if (GaugeClass::Set_Value(value)) {
     Recalc_Thumb();
@@ -181,9 +181,9 @@ int SliderClass::Set_Value(int value) {
 void SliderClass::Recalc_Thumb(void) {
   int length = IsHorizontal ? Width : Height;
   int size = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, Thumb));
-  ThumbSize = MAX(size, 4);
+  ThumbSize = std::max(size, 4);
   int start = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, CurValue));
-  ThumbStart = MIN(start, length - ThumbSize);
+  ThumbStart = std::min(start, length - ThumbSize);
 }
 
 /***********************************************************************************************
@@ -329,13 +329,15 @@ int SliderClass::Draw_Me(int forced) {
       Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
       //			if (IsHorizontal) {
       //				LogicPage->Fill_Rect(X, Y+1, X+Width-1,
-      //Y+Height-2, 141); 				LogicPage->Draw_Line(X, Y, X+Width-1, Y,  140);  //
-      //top 				LogicPage->Draw_Line(X, Y+Height, X+Width, Y+Height, 159); // bottom
-      //			} else {
-      //				LogicPage->Fill_Rect(X+1, Y, X+Width-2,
-      //Y+Height-1, 141); 				LogicPage->Draw_Line(X, Y, X, Y+Height, 140);  // left
+      // Y+Height-2, 141); 				LogicPage->Draw_Line(X,
+      // Y, X+Width-1, Y,  140);  // top
+      // LogicPage->Draw_Line(X, Y+Height, X+Width, Y+Height, 159); // bottom
+      // }
+      // else { 				LogicPage->Fill_Rect(X+1, Y,
+      // X+Width-2, Y+Height-1, 141);
+      // LogicPage->Draw_Line(X, Y, X, Y+Height, 140);  // left
       //				LogicPage->Draw_Line(X+Width-1,  Y,
-      //X+Width-1, Y+Height, 159);	// right
+      // X+Width-1, Y+Height, 159);	// right
       //			}
       Draw_Thumb();
 

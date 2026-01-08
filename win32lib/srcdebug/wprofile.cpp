@@ -262,7 +262,7 @@ void __cdecl Stop_Profiler(void) {
     Profile_End();
 
     int handle = Open_File("profile.bin", WRITE);
-    if (handle != WW_ERROR) {
+    if (handle != kInvalidHandle) {
       Write_File(handle, &ProfileList[0], ProfilePtr * 4);
       Close_File(handle);
     }

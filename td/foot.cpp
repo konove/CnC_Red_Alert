@@ -200,7 +200,7 @@ FootClass::FootClass(HousesType house) : TechnoClass(house), Speed(0) {
  *=============================================================================================*/
 void FootClass::Debug_Dump(MonoClass *mono) const {
   static char const *_p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
-#define Path_To_String(a) _p2c[((ABS((int)a + 1)) % 9)]
+#define Path_To_String(a) _p2c[((std::abs((int)a + 1)) % 9)]
 
   /*
   **	Display the common data for all objects that inherity from FootClass.
@@ -441,7 +441,7 @@ bool FootClass::Basic_Path(void) {
         */
         path = Find_Path(cell, &workpath2[0], sizeof(workpath2), MOVE_CLOAK);
         if (path && path->Cost &&
-            path->Cost < MAX((path1.Cost + (path1.Cost / 2)), 3)) {
+            path->Cost < std::max((path1.Cost + (path1.Cost / 2)), 3)) {
           memcpy(&path1, path, sizeof(path1));
           memcpy(workpath1, workpath2, sizeof(workpath1));
         } else {
@@ -453,7 +453,7 @@ bool FootClass::Basic_Path(void) {
           for (MoveType move = MOVE_MOVING_BLOCK; move < maxtype; move++) {
             path = Find_Path(cell, &workpath2[0], sizeof(workpath2), move);
             if (path && path->Cost &&
-                path->Cost < MAX((path1.Cost + (path1.Cost / 2)), 3)) {
+                path->Cost < std::max((path1.Cost + (path1.Cost / 2)), 3)) {
               memcpy(&path1, path, sizeof(path1));
               memcpy(workpath1, workpath2, sizeof(workpath1));
             }
@@ -489,7 +489,8 @@ bool FootClass::Basic_Path(void) {
       */
       if (found1) {
         Fixup_Path(&path1);
-        memcpy(&Path[0], &workpath1[0], MIN(path1.Length, (int)sizeof(Path)));
+        memcpy(&Path[0], &workpath1[0],
+               std::min(path1.Length, (int)sizeof(Path)));
       }
 
       Mark(MARK_DOWN);
@@ -857,7 +858,7 @@ void FootClass::Approach_Target(void) {
     /*
     **	If the target is too far away then head toward it.
     */
-    int maxrange = MAX(Weapon_Range(0), Weapon_Range(1));
+    int maxrange = std::max(Weapon_Range(0), Weapon_Range(1));
 
     if (!Target_Legal(NavCom) && (!In_Range(TarCom) || !IsLocked)) {
       //		if (!Target_Legal(NavCom) && (Distance(TarCom) >
@@ -886,7 +887,7 @@ void FootClass::Approach_Target(void) {
         maxrange -= 0x00B7;
       }
 #endif
-      maxrange = MAX(maxrange, 0);
+      maxrange = std::max(maxrange, 0);
 
       COORDINATE tcoord = ::As_Coord(TarCom);
       COORDINATE trycoord = 0;
@@ -970,7 +971,7 @@ int FootClass::Mission_Guard_Area(void) {
   **	Make sure that the unit has not strayed too far from the home position.
   **	If it has, then race back to it.
   */
-  int maxrange = MAX(Weapon_Range(0), Weapon_Range(1)) + 0x0100;
+  int maxrange = std::max(Weapon_Range(0), Weapon_Range(1)) + 0x0100;
   if (!Target_Legal(NavCom) &&
       (Distance(ArchiveTarget) > maxrange ||
        (!Target_Legal(TarCom) && Distance(ArchiveTarget) > 0x0200))) {
@@ -1678,14 +1679,14 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = Max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
+    speed = std::max((unsigned)Techno_Type_Class()->MaxSpeed, (unsigned)1);
 
-    int ratio = (speed > 0) ? Max(dist / speed, 1) : 1;
+    int ratio = (speed > 0) ? std::max(dist / speed, 1) : 1;
 
     /*
     ** Finally modify the threat by the distance the unit is away.
     */
-    threat = Max(threat / ratio, 1);
+    threat = std::max(threat / ratio, 1);
   }
   return (threat);
 }

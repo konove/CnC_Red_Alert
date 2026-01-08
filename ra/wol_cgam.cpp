@@ -207,7 +207,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 #endif
@@ -223,16 +223,16 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
-      //d_gaugeplayers_x - 2*RESFACTOR, d_gaugeplayers_y,
+      // d_gaugeplayers_x - 2*RESFACTOR, d_gaugeplayers_y,
       //								GadgetClass::Get_Color_Scheme(),
-      //TBLACK, TPF_TEXT | TPF_RIGHT );
+      // TBLACK, TPF_TEXT | TPF_RIGHT );
       commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
-    //disappearing cursors.
+    // disappearing cursors.
     while (Get_Mouse_State()) Show_Mouse();
     //	Be nice to other apps.
     Sleep(50);
@@ -244,7 +244,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
-    //the key up, 	though this dialog handled the key down. ajw
+    // the key up, 	though this dialog handled the key down. ajw
     if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
@@ -342,7 +342,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     //	Get a password for the channel.
     Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                      TPF_TEXT);  //	Required before String_Pixel_Width()
-                                 //call, for god's sake.
+                                 // call, for god's sake.
     SimpleEditDlgClass* pEditDlg =
         new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,
                                TXT_WOL_PASSPROMPT, WOL_CHANKEY_LEN_MAX);

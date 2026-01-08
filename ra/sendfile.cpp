@@ -350,7 +350,7 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -686,7 +686,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif
@@ -741,7 +741,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
         if (NullModem.Num_Send() < 2) {
           send_packet.Command = SERIAL_FILE_CHUNK;
           send_packet.BlockNumber = block_number;
-          send_packet.BlockLength = MIN(file_length, max_chunk_size);
+          send_packet.BlockLength = std::min(file_length, max_chunk_size);
 
           file_length -= send_packet.BlockLength;
 
@@ -779,7 +779,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
         if (Ipx.Global_Num_Send() == 0) {
           send_packet.Command = SERIAL_FILE_CHUNK;
           send_packet.BlockNumber = block_number;
-          send_packet.BlockLength = MIN(file_length, max_chunk_size);
+          send_packet.BlockLength = std::min(file_length, max_chunk_size);
 
           file_length -= send_packet.BlockLength;
 

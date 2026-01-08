@@ -71,7 +71,7 @@ void Show_Internet_Connection_Progress(void);
  *=============================================================================================*/
 GameType Select_MPlayer_Game(void) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
-  bool ipx_avail = FALSE;
+  bool ipx_avail = false;
   int number_of_buttons;
   /*........................................................................
   Dialog & button dimensions
@@ -153,7 +153,7 @@ GameType Select_MPlayer_Game(void) {
   // If neither IPX or winsock are active then do only the modem serial dialog
   //
   if (Ipx.Is_IPX()) {
-    ipx_avail = TRUE;
+    ipx_avail = true;
   }
 
   TextButtonClass modemserialbtn(
@@ -229,7 +229,7 @@ GameType Select_MPlayer_Game(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -1307,7 +1307,7 @@ int Surrender_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 

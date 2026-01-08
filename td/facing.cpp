@@ -142,7 +142,7 @@ int FacingClass::Rotation_Adjust(int rate) {
   **	same as the current facing.
   */
   if (Is_Rotating()) {
-    rate = MIN(rate, 127);
+    rate = std::min(rate, 127);
 
     DirType oldfacing = CurrentFacing;
     int diff = Difference();
@@ -152,7 +152,7 @@ int FacingClass::Rotation_Adjust(int rate) {
     **	the current facing and the desired facing, then just snap the
     **	facing to the new value.
     */
-    if (ABS(diff) < rate) {
+    if (std::abs(diff) < rate) {
       CurrentFacing = DesiredFacing;
     } else {
       /*

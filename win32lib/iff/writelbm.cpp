@@ -67,7 +67,7 @@ typedef struct {
 // All values in LocalHeader are always the same except planes.  This is set in
 // Write_BMHD the short values must be in low-high order for compatibility.
 
-PRIVATE BitMapHeaderType
+static BitMapHeaderType
     LocalHeader = {0x4001, 0xc800, 0,
                    0,      0,      0,  // width, height, x, y, planes, mask
                    1,      0,      0xFF00,

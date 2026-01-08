@@ -163,7 +163,7 @@ void Choose_Side(void) {
   Call_Back();
 
 #ifndef LORES
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
   Read_Interpolation_Palette("SIDES.PAL");
 #endif
@@ -175,10 +175,10 @@ void Choose_Side(void) {
   Call_Back();
   gdibrief = Open_Movie("GDI1.VQA");
 #ifndef LORES
-  Load_Interpolated_Palettes("GDI1.VQP", TRUE);
+  Load_Interpolated_Palettes("GDI1.VQP", true);
 #endif
 
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
   HiddenPage.Clear();
 #ifndef LORES
   PseudoSeenBuff->Clear();

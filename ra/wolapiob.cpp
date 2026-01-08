@@ -140,7 +140,7 @@ WolapiObject::WolapiObject()
   *szWebBrowser = 0;
   char szFile[] =
       "\\name_unlikely_to_conflict_77.html";  //"\\it is really dumb for me to
-                                              //have to create this file.html";
+                                              // have to create this file.html";
   HANDLE hFile = ::CreateFile(szFile, GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS,
                               FILE_ATTRIBUTE_NORMAL, NULL);
   if (hFile != INVALID_HANDLE_VALUE) {
@@ -229,7 +229,7 @@ bool WolapiObject::bSetupCOMStuff() {
   pNetUtilSink->AddRef();
 
   //	If we could use ATL stuff, this would be different. (We'd use
-  //AtlAdvise.)
+  // AtlAdvise.)
 
   IConnectionPoint* pConnectionPoint = NULL;
   IConnectionPointContainer* pContainer = NULL;
@@ -238,13 +238,14 @@ bool WolapiObject::bSetupCOMStuff() {
   //	debugprint( "QueryInterface\n" );
   hRes =
       pChat->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer);
-  if (!SUCCEEDED(hRes)) return false;  //	Severe, essentially fatal.
-                                       //	debugprint( "FindConnectionPoint\n" );
+  if (!SUCCEEDED(hRes))
+    return false;  //	Severe, essentially fatal.
+                   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_IChatEvent, &pConnectionPoint);
   if (!SUCCEEDED(hRes)) return false;  //	Severe, essentially fatal.
   //	Connect chat to chatsink.
   //	debugprint( "Advise. pChatSink = %i, pConnectionPoint = %i\n",
-  //pChatSink, pConnectionPoint );
+  // pChatSink, pConnectionPoint );
   hRes = pConnectionPoint->Advise((IChatEvent*)pChatSink, &dwChatAdvise);
   if (!SUCCEEDED(hRes)) return false;  //	Severe, essentially fatal.
 
@@ -257,13 +258,14 @@ bool WolapiObject::bSetupCOMStuff() {
   //	debugprint( "QueryInterface\n" );
   hRes = pNetUtil->QueryInterface(IID_IConnectionPointContainer,
                                   (void**)&pContainer);
-  if (!SUCCEEDED(hRes)) return false;  //	Severe, essentially fatal.
-                                       //	debugprint( "FindConnectionPoint\n" );
+  if (!SUCCEEDED(hRes))
+    return false;  //	Severe, essentially fatal.
+                   //	debugprint( "FindConnectionPoint\n" );
   hRes = pContainer->FindConnectionPoint(IID_INetUtilEvent, &pConnectionPoint);
   if (!SUCCEEDED(hRes)) return false;  //	Severe, essentially fatal.
   //	Connect netutil to netutilsink.
   //	debugprint( "Advise. pChatSink = %i, pConnectionPoint = %i\n",
-  //pChatSink, pConnectionPoint );
+  // pChatSink, pConnectionPoint );
   hRes =
       pConnectionPoint->Advise((INetUtilEvent*)pNetUtilSink, &dwNetUtilAdvise);
   if (!SUCCEEDED(hRes)) return false;  //	Severe, essentially fatal.
@@ -282,7 +284,7 @@ void WolapiObject::UnsetupCOMStuff() {
   HRESULT hRes;
 
   //	If we could use ATL stuff, this would be different. (We'd use
-  //AtlUnadvise.)
+  // AtlUnadvise.)
 
   //	Unsetup RAChatEventSink and RANetUtilEventSink, release IChat.
   IConnectionPoint* pConnectionPoint = NULL;
@@ -320,8 +322,8 @@ void WolapiObject::UnsetupCOMStuff() {
   pChat->Release();
 
   //	debugprint( "pChatSink->Release\n" );
-  pChatSink
-      ->Release();  //	This results in pChatSink deleting itself for us.
+  pChatSink->Release();  //	This results in pChatSink deleting itself for
+                         //us.
   pChatSink = NULL;
 
   //	debugprint( "pNetUtil->Release\n" );
@@ -353,7 +355,7 @@ void WolapiObject::LinkToChatDlg(IconListClass* pILChat,
 //***********************************************************************************************
 void WolapiObject::ClearListPtrs() {
   //	Called to clear list pointers when chat or gamesetup dialog goes away,
-  //for safety.
+  // for safety.
   pILChat = NULL;
   pILChannels = NULL;
   pILUsers = NULL;
@@ -389,7 +391,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
   pShpHelp = (char*)MFCD::Retrieve("help.shp");
 
   //	Set up standard wol buttons, used by both main dialogs. Note hardcoded
-  //ID values: must match values in dialog.
+  // ID values: must match values in dialog.
   int iWolButtons_x = 34;
   int iWolButtons_y = 20;
   int iWolButtons_dx = 53;
@@ -468,11 +470,11 @@ void WolapiObject::PrepareButtonsAndIcons() {
       }
       //			else
       //				debugprint( "LoadDIB_FromMemory
-      //failed!\n" );
+      // failed!\n" );
     }
     //		else
     //			debugprint( "Couldn't find %s in mix.\n", DibIconInfos[
-    //iDibIcon ].szFile );
+    // iDibIcon ].szFile );
   }
 
   if (DibIconInfos[DIBICON_LATENCY].pDIB)
@@ -501,7 +503,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
       token = strtok(NULL, seps);
     }
     //	There are actually 2 additional game types available in wolapi - 0 (ws
-    //icon) and -1 (wwonline icon).
+    // icon) and -1 (wwonline icon).
     nGameTypeInfos += 2;
     //	Create structs to hold infos.
     //		debugprint( "Creating %i gametypeinfos\n", nGameTypeInfos );
@@ -561,7 +563,7 @@ void WolapiObject::GetGameTypeInfo(int iGameType,
   GameTypeInfo.pDIB = (const char*)GlobalLock(GameTypeInfo.hDIB);
 
   //	debugprint( "@@@@@ Created gametypeinfo #%i: name %s, pDIB = %i\n",
-  //iIndex, GameTypeInfo.szName, GameTypeInfo.pDIB );
+  // iIndex, GameTypeInfo.szName, GameTypeInfo.pDIB );
 
   LPBITMAPINFOHEADER lpbi = (LPBITMAPINFOHEADER)GameTypeInfo.pDIB;
   if (lpbi->biBitCount != 8) {
@@ -580,8 +582,8 @@ void WolapiObject::GetGameTypeInfo(int iGameType,
 //***********************************************************************************************
 void* WolapiObject::IconForGameType(int iGameType) {
   //	Returns a GameTypeInfos entry by gametype, instead of our (potentially
-  //arbitrary) index. 	Returns NULL if type not found in list, which will of
-  //course never happen...
+  // arbitrary) index. 	Returns NULL if type not found in list, which will of
+  // course never happen...
   for (int i = 0; i != nGameTypeInfos; i++) {
     if (GameTypeInfos[i].iGameType == iGameType)
       return (void*)GameTypeInfos[i].pDIB;
@@ -592,8 +594,8 @@ void* WolapiObject::IconForGameType(int iGameType) {
 //***********************************************************************************************
 const char* WolapiObject::NameOfGameType(int iGameType) const {
   //	Returns the name of a sku by gametype, instead of our (potentially
-  //arbitrary) index. 	Returns NULL if type not found in list, which will of
-  //course never happen...
+  // arbitrary) index. 	Returns NULL if type not found in list, which will of
+  // course never happen...
   for (int i = 0; i != nGameTypeInfos; i++) {
     if (GameTypeInfos[i].iGameType == iGameType) return GameTypeInfos[i].szName;
   }
@@ -603,7 +605,7 @@ const char* WolapiObject::NameOfGameType(int iGameType) const {
 //***********************************************************************************************
 const char* WolapiObject::URLForGameType(int iGameType) const {
   //	Returns NULL if type not found in list, which will of course never
-  //happen...
+  // happen...
   for (int i = 0; i != nGameTypeInfos; i++) {
     if (GameTypeInfos[i].iGameType == iGameType) return GameTypeInfos[i].szURL;
   }
@@ -641,7 +643,7 @@ HRESULT WolapiObject::GetChatServer() {
     return E_FAIL;
   }
   DWORD dwTimeLimit = timeGetTime();  //	ajw My own extra timeout at one
-                                      //minute, in case wolapi chokes.
+                                      // minute, in case wolapi chokes.
   //	debugprint( "Called RequestServerList...\n" );
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   ::GetAsyncKeyState(VK_ESCAPE);  //	Set up for escape key checking.
@@ -662,8 +664,8 @@ HRESULT WolapiObject::GetChatServer() {
     //        Sleep( PUMPSLEEPDURATION );	//	Can't do because we want
     //        to Call_Back()
     //	If an "update list" of patches has been received, instead of a server
-    //list, this flag will have been set 	for us describing the results. We'll
-    //either cancel log in or trigger game exit.
+    // list, this flag will have been set 	for us describing the results.
+    // We'll either cancel log in or trigger game exit.
     if (hresPatchResults) {
       pChatSink->bRequestServerListWait = false;
       return hresPatchResults;
@@ -704,7 +706,7 @@ HRESULT WolapiObject::GetChatServer() {
 HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
                                    bool bPassIsMangled) {
   //	If RequestConnection() succeeds, sets pChatSink->bConnected true and
-  //returns S_OK. 	Else returns RequestConnection() error result.
+  // returns S_OK. 	Else returns RequestConnection() error result.
   WWMessageBox().Process(TXT_WOL_ATTEMPTLOGIN, TXT_NONE);
 
   //	debugprint( "~1\n" );
@@ -770,7 +772,7 @@ bool WolapiObject::bLoggedIn() { return pChatSink->bConnected; }
 //***********************************************************************************************
 void WolapiObject::Logout() {
   //	Requests logout from wolapi. Doesn't return any error values, as what we
-  //would do if it 	failed - force the user to stay connected?
+  // would do if it 	failed - force the user to stay connected?
 
   if (bSelfDestruct)
     WWMessageBox().Process(TXT_WOL_ERRORLOGOUT, TXT_NONE);
@@ -814,7 +816,7 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
   pChatSink->ChannelFilter = ChannelFilter;
 
   //	debugprint( "RequestChannelList(), iChannelType = %i, filter = %i\n",
-  //iChannelType, ChannelFilter );
+  // iChannelType, ChannelFilter );
   if (!SUCCEEDED(pChat->RequestChannelList(iChannelType, bAutoping))) {
     //		debugprint( "RequestChannelList() call failed\n" );
     return false;
@@ -842,12 +844,13 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
 //***********************************************************************************************
 void WolapiObject::OnChannelList() {
   //	The chatsink calls this when its OnChannelList() is called, and it has
-  //remade its internal channel list. 	The question here is: should we display
-  //the values now in the chatsink? 	As UpdateChannels() is now non-modal, there
-  //is the danger that we have moved away from the place in 	the channel
-  //heirarchy where we originally called RequestChannelList(). 	To help ensure
-  //we're getting this where we expect to get it, we check the value of
-  //CurrentLevel against 	what it was when we called UpdateChannels().
+  // remade its internal channel list. 	The question here is: should we display
+  // the values now in the chatsink? 	As UpdateChannels() is now non-modal,
+  // there is the danger that we have moved away from the place in 	the
+  // channel heirarchy where we originally called RequestChannelList().
+  // To help ensure we're getting this where we expect to get it, we check the
+  // value of CurrentLevel against 	what it was when we called
+  // UpdateChannels().
   if (CurrentLevel == LastUpdateChannelCallLevel) ListChannels();
 }
 
@@ -855,9 +858,9 @@ void WolapiObject::OnChannelList() {
 void WolapiObject::ListChannels() {
   //	Show pChatSink's pChannelList in pILChannels.
   //	The extra data ptr hidden in each list item will hold a void pointer to
-  //the channel described.
+  // the channel described.
   //	debugprint( "ListChannels(), pChannelList = %i\n",
-  //pChatSink->pChannelList );
+  // pChatSink->pChannelList );
 
   static WOL_LEVEL LevelLastListed = WOL_LEVEL_INVALID;
 
@@ -918,7 +921,7 @@ void WolapiObject::ListChannels() {
         pILChannels->Add_Item(pShow, szHelp, IconForGameType(-1), ICON_DIB,
                               CHANNELTYPE_LOBBYCHANNEL, (void*)pChannel);
         //				debugprint( ":::::added pChannel %i,
-        //name %s, as %s\n", pChannel, pChannel->name, pShow );
+        // name %s, as %s\n", pChannel, pChannel->name, pShow );
       }
       delete[] pShow;
     } else {
@@ -951,7 +954,7 @@ void WolapiObject::ListChannels() {
             break;
           default:
             //					debugprint( "Illegal value for
-            //GameKind channel reserved field: %s\n", (char*)pChannel->name );
+            // GameKind channel reserved field: %s\n", (char*)pChannel->name );
             pGameKindIcon = NULL;
             break;
         }
@@ -996,7 +999,7 @@ void WolapiObject::ListChannels() {
   if (iListViewIndex)
     pILChannels->Set_View_Index(
         iListViewIndex);  //	Not perfect but should keep list pretty stable
-                          //on updates.
+                          // on updates.
 }
 
 //***********************************************************************************************
@@ -1013,7 +1016,7 @@ HRESULT WolapiObject::ChannelJoin(const char* szChannelName,
 //***********************************************************************************************
 HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   //	Returns an HRESULT, the meaning of which is totally customized for my
-  //own uses.
+  // own uses.
 
   WWMessageBox().Process(TXT_WOL_WAIT, TXT_NONE);
 
@@ -1028,8 +1031,8 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
     DebugChatDef(hRes);
     return E_FAIL;
   }
-  pChatSink->bIgnoreChannelLists =
-      true;  //	Turn off response to channel lists.
+  pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
+                                          //lists.
   DWORD dwTimeStart = timeGetTime();
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelJoinWait &&
@@ -1069,8 +1072,8 @@ bool WolapiObject::ChannelLeave() {
     //		debugprint( "RequestChannelLeave() call failed\n" );
     return false;
   }
-  pChatSink->bIgnoreChannelLists =
-      true;  //	Turn off response to channel lists.
+  pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
+                                          //lists.
   DWORD dwTimeStart = timeGetTime();
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelLeaveWait &&
@@ -1142,22 +1145,22 @@ struct CHANNELUSERINFO {
 //***********************************************************************************************
 bool WolapiObject::ListChannelUsers() {
   //	Show pChatSink's pUserList in pILUsers or pILPlayers (depending on
-  //CurrentLevel), after clearing it. 	The extra data ptr hidden in each list
-  //item will hold a void pointer to the user described. 	For simplicity, I
-  //destroy the old list and write a new one, even though possibly only one item
-  //	may have changed.
-  //	In order for the multiselect flags in the list to persist, I record the
-  //names that are flagged 	before clearing the list, then reset them (if found)
-  //in the new list. 	This is inefficient, but should be fine in this
-  //non-time-critical situation. 	(I also save item color here, and save all
-  //items. Now it's really inefficient.) 	(Oh, boy. Now I've added the
-  //persistence of house info when this is a game channel...) 	The idea was to
-  //avoid duplication of player data, and not have any dependence on the
-  //integrity of the chatsink's 	players list. Now it is a case of it working
-  //"well enough" to not require time to elegantize it.
+  // CurrentLevel), after clearing it. 	The extra data ptr hidden in each list
+  // item will hold a void pointer to the user described. 	For simplicity,
+  // I destroy the old list and write a new one, even though possibly only one
+  // item 	may have changed. 	In order for the multiselect flags in the list to
+  //persist, I record the names that are flagged 	before clearing the
+  // list, then reset them (if found) in the new list. 	This is inefficient, but
+  // should be fine in this non-time-critical situation. 	(I also save
+  // item color here, and save all items. Now it's really inefficient.)
+  // (Oh, boy. Now I've added the persistence of house info when this is a game
+  // channel...) 	The idea was to avoid duplication of player data, and
+  // not have any dependence on the integrity of the chatsink's 	players
+  // list. Now it is a case of it working "well enough" to not require time to
+  //elegantize it.
 
   //	Extra bonus, if useful: returns true if an operator (channel owner) is
-  //found in the channel, false otherwise.
+  // found in the channel, false otherwise.
 
   bool bChannelOwnerFound = false;
 
@@ -1173,7 +1176,7 @@ bool WolapiObject::ListChannelUsers() {
   }
 
   if (pListToUse &&  //	Fails in rare cases when list draw is triggered before
-                     //it is fully set up.
+                     // it is fully set up.
       *szChannelNameCurrent)  //	No users to list if not in a channel.
   {
     //	If redrawing the same list as before, preserve the view position.
@@ -1253,16 +1256,16 @@ bool WolapiObject::ListChannelUsers() {
                                   5 - 16;
 
         //	If we have had a chance to request pings to the player, there'll
-        //be some avg. results waiting for us.
+        // be some avg. results waiting for us.
         int iLatencyBarWidth = 0;
         int iLatency;
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
           unsigned long UserIP = pChatSink->GetUserIP((char*)pUser->name);
           //					debugprint( "player %s ip
-          //address %i\n", szNameToShow, UserIP );
+          // address %i\n", szNameToShow, UserIP );
           if (UserIP && pNetUtil->GetAvgPing(UserIP, &iLatency) == S_OK) {
             //						debugprint( "player %s
-            //latency %i\n", szNameToShow, iLatency );
+            // latency %i\n", szNameToShow, iLatency );
             if (iLatency == -1) iLatency = 0;
             iLatencyBarWidth = iLatency * fLatencyToIconWidth;
           }
@@ -1294,7 +1297,7 @@ bool WolapiObject::ListChannelUsers() {
         if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
           if (pUsersSaved[iUser].House != HOUSE_NONE) {
             //	Append house text to item string, as we found a valid house name
-            //after the name, above.
+            // after the name, above.
             char szItem[120];
             WritePlayerListItem(szItem, pUsersSaved[iUser].szName,
                                 pUsersSaved[iUser].House);
@@ -1302,8 +1305,8 @@ bool WolapiObject::ListChannelUsers() {
           }
           if (pUsersSaved[iUser].bAccept) {
             //	Player was marked "accepted" before. If he has one now, it's
-            //because he is the host. 	Else it was an accepted icon before, so
-            //put one in again now. (a-hacking-we-will-go)
+            // because he is the host. 	Else it was an accepted icon before, so
+            // put one in again now. (a-hacking-we-will-go)
             if (!bItemMarkedAccepted(iFind)) MarkItemAccepted(iFind, true);
           }
           if (*pUsersSaved[iUser].szExtra)
@@ -1318,13 +1321,13 @@ bool WolapiObject::ListChannelUsers() {
       }
       //			else
       //				debugprint( "ListChannelUsers() -
-      //Couldn't find %s!\n", pUsersSaved[ iUser ].szName );
+      // Couldn't find %s!\n", pUsersSaved[ iUser ].szName );
     }
     delete[] pUsersSaved;
     if (iListViewIndex)
       pListToUse->Set_View_Index(
           iListViewIndex);  //	Not perfect but should keep list pretty stable
-                            //on updates.
+                            // on updates.
   }
   return bChannelOwnerFound;
 }
@@ -1332,7 +1335,7 @@ bool WolapiObject::ListChannelUsers() {
 //***********************************************************************************************
 bool WolapiObject::bItemMarkedAccepted(int iIndex) {
   //	Returns true if the iIndex'th entry in pILPlayers has an icon pointer in
-  //position 0 that 	is either the host icon or the accepted icon.
+  // position 0 that 	is either the host icon or the accepted icon.
   const IconList_ItemExtras* pItemExtras = pILPlayers->Get_ItemExtras(iIndex);
   return (pItemExtras->pIcon[0] == (void*)DibIconInfos[DIBICON_OWNER].pDIB ||
           pItemExtras->pIcon[0] == (void*)DibIconInfos[DIBICON_ACCEPT].pDIB);
@@ -1354,7 +1357,7 @@ bool WolapiObject::MarkItemAccepted(int iIndex, bool bAccept) {
 bool WolapiObject::bItemMarkedReadyToGo(int iIndex) {
   //	Returns true if the iIndex'th entry in pILPlayers marks the player as
   //"ready to go". 	This is true if the player is marked as "ready" or "need
-  //scenario".
+  // scenario".
   const char* szItem = pILPlayers->Get_Item_ExtraDataString(iIndex);
   if (!szItem) return false;
   //	debugprint( "szItem is %s\n", szItem );
@@ -1372,7 +1375,7 @@ void WolapiObject::MarkItemReadyToGo(int iIndex, const char* szReadyState) {
 //***********************************************************************************************
 bool WolapiObject::bItemMarkedNeedScenario(int iIndex) {
   //	Returns true if the iIndex'th entry in pILPlayers marks the player as
-  //ready to go, but needing scenario download.
+  // ready to go, but needing scenario download.
   const char* szItem = pILPlayers->Get_Item_ExtraDataString(iIndex);
   if (!szItem) return false;
   return (strcmp(szItem, "need scenario") == 0);
@@ -1383,8 +1386,8 @@ void WolapiObject::PullPlayerName_Into_From(char* szDest,
                                             const char* szSource) {
   //	Sets szDest to the "player name" found in szSource.
   //	Called "player" name because this is mainly designed for use in game
-  //channels. 	Player name appears first in item, separated by a space from
-  //anything later.
+  // channels. 	Player name appears first in item, separated by a space from
+  // anything later.
 
   char* pSpace = strstr(szSource, " ");
   if (!pSpace) {
@@ -1396,7 +1399,7 @@ void WolapiObject::PullPlayerName_Into_From(char* szDest,
     szDest[iSpacePosition] = 0;  //	terminate
   }
   //	debugprint( "PullPlayerName_Into_From: '%s' from '%s', ok?\n", szDest,
-  //szSource );
+  // szSource );
 }
 
 //***********************************************************************************************
@@ -1404,11 +1407,11 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
   //	Pulls the house value out of a player list item in a game channel.
   //	House appears as the last word, and it's in <>.
   //	char* pChar = strrchr( szSource, ' ' );		//	Last space
-  //character.		was failing on roy. uni cause of space 	if( !pChar )
+  // character.		was failing on roy. uni cause of space 	if( !pChar )
   //		return HOUSE_NONE;
   //	++pChar;
   //	if( *pChar++ != '<' )		//	We know house has to be last, so
-  //if not the case, no house in item. 		return HOUSE_NONE;
+  // if not the case, no house in item. 		return HOUSE_NONE;
   char* pChar = strrchr(szSource, '<');  //	Last < character.
   if (!pChar) return HOUSE_NONE;
   ++pChar;
@@ -1418,12 +1421,12 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
   strcpy(szHouse, pChar);
   *(szHouse + iLen - 1) = 0;  //	Terminate to remove ">"
 //	debugprint( "PullPlayerHouse_From: '%s' from '%s', ok?\n", szHouse,
-//szSource ); 	pChar is now a valid house name.
+// szSource ); 	pChar is now a valid house name.
 
 //	return HouseTypeClass::From_Name( szHouse );
 #ifdef ENGLISH
   //	Bloody bloody hell I can't believe there are bugs in RA like the one I
-  //deal with here...
+  // deal with here...
   if (strcmp(szHouse, "Russia") == 0)
     return HOUSE_USSR;
   else
@@ -1449,7 +1452,7 @@ void WolapiObject::WritePlayerListItem(char* szDest, const char* szName,
 
   int iRank = pNetUtilSink->GetUserRank(
       szName, bShowRankRA);  //	Horrendous inefficiency here, when called for
-                             //relisting players...
+                             // relisting players...
   if (iRank)
     sprintf(szDest, TXT_WOL_USERRANKHOUSE, szName, iRank, szHouse);
   else
@@ -1470,7 +1473,7 @@ void WolapiObject::RequestPlayerPings() {
         inaddrUser.s_addr = UserIP;
         char* szIP = inet_ntoa(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
-        //of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
+        // of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
         pNetUtil->RequestPing(szIP, 1000, &iUnused);
       }
     }
@@ -1497,8 +1500,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   }
 
   //	Iterate through ILUsers looking for selected entries. Build up a users
-  //list of selected 	items. If the list turns out to be blank, send message
-  //publicly.
+  // list of selected 	items. If the list turns out to be blank, send message
+  // publicly.
   User* pUserListSend = NULL;
   User* pUserNew;
   User* pUserTail = NULL;
@@ -1509,7 +1512,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       pUserNew = new User;
       *pUserNew = *((User*)ILUsers.Get_Item_ExtraDataPtr(i));
       //			debugprint( "Copied %s for sendmessage.\n",
-      //pUserNew->name );
+      // pUserNew->name );
       pUserNew->next =
           NULL;  //	(We don't want the value that was just copied!)
       if (!pUserTail) {
@@ -1532,7 +1535,7 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
     char* szPrint = 0;
     if (iPrivatePrintLen > 50) {
       //	Too many users specified to print out. Just say "multiple
-      //users".
+      // users".
       if (!bAction) {
         szPrint = new char[strlen(szMessage) + 135];
         sprintf(szPrint, "%s %s", TXT_WOL_PRIVATETOMULTIPLE, szMessage);
@@ -1594,13 +1597,13 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
       HRESULT hRes = pChat->RequestPublicMessage(szMessage);
       if (hRes != S_OK) {
         //				debugprint( " RequestPublicMessage()
-        //failed with: " ); 				DebugChatDef( hRes );
+        // failed with: " ); 				DebugChatDef( hRes );
       }
     } else {
       HRESULT hRes = pChat->RequestPublicAction(szMessage);
       if (hRes != S_OK) {
         //				debugprint( " RequestPublicAction()
-        //failed with: " ); 				DebugChatDef( hRes );
+        // failed with: " ); 				DebugChatDef( hRes );
       }
     }
     char* szPrint = new char[strlen(szMessage) + strlen(szMyName) + 10];
@@ -1623,17 +1626,17 @@ bool WolapiObject::ChannelCreate(
     int iLobby /* = 0 */, CREATEGAMEINFO::GAMEKIND GameKind /* = red alert */) {
   //	Create a channel.
   //	szKey is NULL if a public channel is to be created, else channel
-  //password.
+  // password.
 
   //	Returns true if everything goes okay.
 
   if (pChatSink->bJoined) {
     //	This never happens. Here just in case.
     //		debugprint( "WolapiObject::ChannelCreate called when bJoined is
-    //true!\n" );
+    // true!\n" );
     return false;
     //		Fatal( "WolapiObject::ChannelCreate called when bJoined is
-    //true!" );
+    // true!" );
   }
 
   Channel ChannelNew;
@@ -1651,13 +1654,13 @@ bool WolapiObject::ChannelCreate(
     //	Channel 'reserved' stores GameKind in the highest byte, and
     //	lobby number to return to in the lower three bytes.
     //	Note: If lobby number is -1 (no lobby to return to), it's encoded as
-    //0x00FFFFFF
+    // 0x00FFFFFF
     ChannelNew.reserved = (iLobby & 0x00FFFFFF) | GameKind;
     strcpy((char*)ChannelNew.name, szChannelName);
   }
 
   //	debugprint( "RequestChannelCreate(), channel name: '%s'\n",
-  //szChannelName );
+  // szChannelName );
 
   if (szKey) strcpy((char*)ChannelNew.key, szKey);
 
@@ -1671,8 +1674,8 @@ bool WolapiObject::ChannelCreate(
     DebugChatDef(hRes);
     return false;
   }
-  pChatSink->bIgnoreChannelLists =
-      true;  //	Turn off response to channel lists.
+  pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
+                                          //lists.
   DWORD dwTimeStart = timeGetTime();
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelCreateWait &&
@@ -1699,7 +1702,7 @@ void WolapiObject::DoFindPage() {
   //	Ask user for user desired.
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                    TPF_TEXT);  //	Required before String_Pixel_Width()
-                               //call, for god's sake.
+                               // call, for god's sake.
   pFindPageDlg = new SimpleEditDlgClass(
       400, TXT_WOL_PAGELOCATE, TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);
   pFindPageDlg->SetButtons(TXT_WOL_LOCATE, Text_String(TXT_CANCEL),
@@ -1939,9 +1942,11 @@ void WolapiObject::DoSquelch(IconListClass* pILUsersOrPlayers) {
           //					char szMess[ 150 ];
           //					if( Squelch( pUser ) )
           //						sprintf( szMess,
-          //TXT_WOL_USERISSQUELCHED, (char*)pUser->name ); 					else 						sprintf( szMess,
-          //TXT_WOL_USERISNOTSQUELCHED, (char*)pUser->name ); 					WOL_PrintMessage(
-          //chatlist, szMess, WOLCOLORREMAP_LOCALMACHINEMESS );
+          // TXT_WOL_USERISSQUELCHED, (char*)pUser->name );
+          // else 						sprintf( szMess,
+          // TXT_WOL_USERISNOTSQUELCHED, (char*)pUser->name );
+          // WOL_PrintMessage( chatlist, szMess, WOLCOLORREMAP_LOCALMACHINEMESS
+          // );
 
           bFound = true;
           pILUsersOrPlayers->Flag_To_Redraw();
@@ -1961,7 +1966,7 @@ bool WolapiObject::Squelch(User* pUserToSquelch) {
   //	Returns true if user is now squelched, false if not squelched.
   //	Sets User pointer flags value.
   //	debugprint( "Squelch:: pUser is %i, flags is %i\n", pUserToSquelch,
-  //pUserToSquelch->flags );
+  // pUserToSquelch->flags );
 
   if (pUserToSquelch->flags & CHAT_USER_SQUELCHED) {
     pChat->SetSquelch(pUserToSquelch, false);
@@ -1980,7 +1985,7 @@ void WolapiObject::DoOptions() {
   WOL_Options_Dialog(this, false);
   bPump_In_Call_Back = false;
   //	Set trigger for an immediate channel list update, in case local lobby
-  //games filter was changed.
+  // games filter was changed.
   dwTimeNextChannelUpdate = ::timeGetTime();
 }
 
@@ -2083,7 +2088,7 @@ bool WolapiObject::DoGameAdvertising(const Channel* pChannel) {
 //***********************************************************************************************
 bool WolapiObject::SpawnBrowser(const char* szURL) {
   //	Attempts to launch user's web browser, and monitors it, waiting for user
-  //to close it, at which 	point we bring focus back to the game.
+  // to close it, at which 	point we bring focus back to the game.
 
   //	Loosely based on Dune2000 example.
 
@@ -2107,16 +2112,16 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
             szCommandLine,  //	Command line.
             NULL,           //	Process handle not inheritable.
             NULL,           //	Thread handle not inheritable.
-            FALSE,          //	Set handle inheritance to FALSE.
+            false,          //	Set handle inheritance to false.
             0,              //	No creation flags.
-            NULL,           //	Use parent’s environment block.
-            NULL,           //	Use parent’s starting directory.
+            NULL,           //	Use parentï¿½s environment block.
+            NULL,           //	Use parentï¿½s starting directory.
             &si,            //	Pointer to STARTUPINFO structure.
             &pi))           //	Pointer to PROCESS_INFORMATION structure.
     {
       if (pi.hProcess) {
         //				debugprint( "CreateProcess: '%s'\n",
-        //szCommandLine );
+        // szCommandLine );
         bSuccess = true;
         ::WaitForInputIdle(pi.hProcess, 5000);
         bPump_In_Call_Back = true;
@@ -2127,7 +2132,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
           ::GetExitCodeProcess(pi.hProcess, &dwActive);
           if (dwActive != STILL_ACTIVE || cancel_current_msgbox) {
             //	Either user closed the browser app, or game is starting and we
-            //should return focus to game.
+            // should return focus to game.
             cancel_current_msgbox = false;
             ::SetForegroundWindow(MainWindow);
             ::ShowWindow(MainWindow, SW_RESTORE);
@@ -2221,7 +2226,7 @@ bool WolapiObject::EnterLevel_OfficialChat() {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING, NULL,
                         ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate = ::timeGetTime();  //	Set trigger for an
-                                              //immediate channel list update.
+                                              // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2251,7 +2256,7 @@ bool WolapiObject::EnterLevel_UserChat() {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING, NULL,
                         ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate = ::timeGetTime();  //	Set trigger for an
-                                              //immediate channel list update.
+                                              // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2294,23 +2299,23 @@ bool WolapiObject::EnterLevel_Games() {
   }
   if (!bFound) {
     //	In the production version, this should never happen, as there should
-    //always be a gametypeinfo created that matches 	our game type. It depends on
-    //the recentness of the WOR file accompanying the wolapi.dll.
+    // always be a gametypeinfo created that matches 	our game type. It
+    // depends on the recentness of the WOR file accompanying the wolapi.dll.
     pILChannels->Add_Item(TXT_WOL_REDALERTLOBBIES, CHANNELTYPE_LOBBIES,
                           (void*)OldRAGameTypeInfos[0].pDIB, ICON_DIB,
                           CHANNELTYPE_LOBBIES);
   }
 
   //	A pointer to the GameTypeInfos entry is stored in the item for
-  //convenience later.
+  // convenience later.
   for (i = 0; i < nGameTypeInfos - 2; i++) {
     int iType = GameTypeInfos[i].iGameType;
     if (iType != GAME_TYPE)  //	Else it is our game - skip it here since we put
-                             //it at the top.
+                             // it at the top.
     {
       if (iType != 2 && iType != 3 &&
           iType != 4)  //	Hack needed for the time being, to prevent the
-                       //old ra games from being seen.
+                       // old ra games from being seen.
       {
         char szHelp[200];
         sprintf(szHelp, TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE,
@@ -2335,11 +2340,11 @@ bool WolapiObject::EnterLevel_Games() {
 //***********************************************************************************************
 bool WolapiObject::EnterLevel_GamesOfType(WOL_GAMETYPEINFO* pGameTypeInfo) {
   //	<Showing current game channels of a specific type - not our own game
-  //type.>
+  // type.>
 
   //	debugprint( "*** EnterLevel_GamesOfType: pGameTypeInfo->szName %s,
-  //iGameType %i, URL %s\n", pGameTypeInfo->szName, pGameTypeInfo->iGameType,
-  //pGameTypeInfo->szURL );
+  // iGameType %i, URL %s\n", pGameTypeInfo->szName, pGameTypeInfo->iGameType,
+  // pGameTypeInfo->szURL );
 
   CurrentLevel = WOL_LEVEL_GAMESOFTYPE;
   if (!UpdateChannels(pGameTypeInfo->iGameType, CHANNELFILTER_NO, true)) {
@@ -2352,7 +2357,7 @@ bool WolapiObject::EnterLevel_GamesOfType(WOL_GAMETYPEINFO* pGameTypeInfo) {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING, NULL,
                         ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate = ::timeGetTime();  //	Set trigger for an
-                                              //immediate channel list update.
+                                              // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2381,7 +2386,7 @@ bool WolapiObject::EnterLevel_Lobbies() {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING, NULL,
                         ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate = ::timeGetTime();  //	Set trigger for an
-                                              //immediate channel list update.
+                                              // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2400,7 +2405,8 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
   //	debugprint( "*** OnEnteringChatChannel '%s'\n", szChannelName );
 
   //	//	Block until we have a userlist.		- Not necessary - always
-  //comes immediately following OnJoin. 	if( !UserList() ) 		return false;
+  // comes immediately following OnJoin. 	if( !UserList() )
+  // return false;
 
   //	Request ladders if this is a lobby.
   if (iLobby != -1) RequestLadders(NULL);
@@ -2408,7 +2414,7 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
   //	Set channels list.
   pILChannels->Clear();
   //	Add a "return" choice at the top of the channel list, based on where we
-  //want to go 'back' to...
+  // want to go 'back' to...
   if (iLobby == -1) {
     switch (CurrentLevel) {
       case WOL_LEVEL_OFFICIALCHAT:
@@ -2421,9 +2427,9 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
         break;
       default:
         //	If entering a channel from anywhere else, user must have created
-        //the channel. 	Make "back" take them to user channels list.
+        // the channel. 	Make "back" take them to user channels list.
         //			if( bICreatedChannel )		//	ajw just
-        //verifying
+        // verifying
         pILChannels->Add_Item(TXT_WOL_CHANNEL_BACK, CHANNELTYPE_USERCHAT, NULL,
                               ICON_SHAPE, CHANNELTYPE_USERCHAT);
         /*			else
@@ -2456,8 +2462,9 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
     sprintf(szMess, TXT_WOL_YOUJOINEDLOBBY, szLobbyName);
     ChannelListTitle(szLobbyName);
     iLobbyLast = iLobby;
-    dwTimeNextChannelUpdate = ::timeGetTime();  //	Set trigger for an
-                                                //immediate channel list update.
+    dwTimeNextChannelUpdate =
+        ::timeGetTime();  //	Set trigger for an
+                          // immediate channel list update.
   }
 
   strcpy(szChannelNameCurrent, szChannelName);
@@ -2493,14 +2500,14 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
 //***********************************************************************************************
 void WolapiObject::OnExitingChatChannel() {
   //	Called when we successfully ExitChannel, or we get kicked out. (Lobbies
-  //included.)
+  // included.)
 
   //	Clear users list.
   pILUsers->Clear();
   if (pStaticUsers) pStaticUsers->Set_Text(TXT_WOL_NOUSERLIST);
 
   //	debugprint( "*** OnExitingChatChannel() - szChannelNameCurrent '%s',
-  //CurrentLevel %i\n", szChannelNameCurrent, CurrentLevel );
+  // CurrentLevel %i\n", szChannelNameCurrent, CurrentLevel );
   int iLobby = iChannelLobbyNumber((unsigned char*)szChannelNameCurrent);
   char* szMess;
   if (iLobby == -1) {
@@ -2527,10 +2534,10 @@ void WolapiObject::OnExitingChatChannel() {
 //***********************************************************************************************
 bool WolapiObject::ExitChatChannelForGameChannel() {
   //	We are about to try and join/create a game channel, and are currently in
-  //a chat channel.
+  // a chat channel.
 
   //	Save this channel name, so we can come back to it if game channel
-  //join/create fails.
+  // join/create fails.
   strcpy(szChannelReturnOnGameEnterFail, szChannelNameCurrent);
 
   if (!ChannelLeave()) {
@@ -2545,9 +2552,9 @@ bool WolapiObject::OnEnteringGameChannel(const char* szChannelName,
                                          bool bICreatedChannel,
                                          const CREATEGAMEINFO& CreateGameInfo) {
   //	Called when a game channel has been successfully joined, while still in
-  //chat dialog, 	before game dialog has been created. 	CreateGameInfo is copied
-  //to GameInfoCurrent, so that we know what kind of a game we're in during
-  //setup.
+  // chat dialog, 	before game dialog has been created. 	CreateGameInfo
+  // is copied to GameInfoCurrent, so that we know what kind of a game we're in
+  // during setup.
 
   //	debugprint( "*** OnEnteringGameChannel() - %s\n", szChannelName );
 
@@ -2605,13 +2612,14 @@ bool WolapiObject::OnEnteringGameChannel(const char* szChannelName,
 //***********************************************************************************************
 bool WolapiObject::OnEnteringGameSetup() {
   //	Called when entering the game setup screen. Controls are initialized.
-  //OnEnteringGameChannel 	has just been called earlier.
+  // OnEnteringGameChannel 	has just been called earlier.
 
   //	Returns false only if we find there is not host - he must have
-  //simultaneously left.
+  // simultaneously left.
 
   //	//	Block until we have a userlist.		- Not necessary - always
-  //comes immediately following OnJoin. 	if( !UserList() ) 		return false;
+  // comes immediately following OnJoin. 	if( !UserList() )
+  // return false;
 
   //	Request ladders.
   RequestLadders(NULL);
@@ -2647,7 +2655,7 @@ void WolapiObject::OnFailedToEnterGameChannel() {
   *szChannelNameCurrent = 0;
 
   //	Because we don't save the channel key as well, assume the usual lobby
-  //password. If we fail, we'll return to top level.
+  // password. If we fail, we'll return to top level.
   HRESULT hRes = ChannelJoin(szChannelReturnOnGameEnterFail, LOBBYPASSWORD);
   switch (hRes) {
     case S_OK:
@@ -2658,10 +2666,10 @@ void WolapiObject::OnFailedToEnterGameChannel() {
     default:
       //	ChannelJoin returned fail value.
       //	(Now only applies if you could ever enter a game channel from a
-      //non-lobby.) 	There is the possibility that the channel we were in
-      //disappeared in the instant between leaving it and 	failing to join the
-      //game channel. <sigh> Or, the channel has a password, that we didn't
-      //record. In either 	case, go back to the top level.
+      // non-lobby.) 	There is the possibility that the channel we were in
+      // disappeared in the instant between leaving it and 	failing to join
+      // the game channel. <sigh> Or, the channel has a password, that we didn't
+      // record. In either 	case, go back to the top level.
       GenericErrorMessage();
       EnterLevel_Top();
   }
@@ -2670,7 +2678,7 @@ void WolapiObject::OnFailedToEnterGameChannel() {
 //***********************************************************************************************
 void WolapiObject::OnExitingGameChannel() {
   //	This is called after we leave a game channel, while still in the game
-  //setup dialog.
+  // setup dialog.
 
   //	Remove shared buttons from wolgsup's command list.
   pShpBtnDiscon->Zap();
@@ -2696,7 +2704,7 @@ void WolapiObject::RejoinLobbyAfterGame() {
 
   if (iLobbyReturnAfterGame == -1) {
     //	Will never happen presumably, if games are always entered via a lobby
-    //chat channel. 	We will naturally reenter the top level.
+    // chat channel. 	We will naturally reenter the top level.
   } else {
     char szChannelToJoin[WOL_CHANNAME_LEN_MAX];
     // sprintf( szChannelToJoin, "Lob_%i_%i", GAME_TYPE, iLobbyReturnAfterGame
@@ -2713,7 +2721,7 @@ void WolapiObject::RejoinLobbyAfterGame() {
       default:
         //	Something went wrong when trying to rejoin the lobby we were in.
         //	We'll go back to the top level instead, which happens
-        //automatically if we do this...
+        // automatically if we do this...
         iLobbyReturnAfterGame = -1;
         break;
     }
@@ -2723,10 +2731,11 @@ void WolapiObject::RejoinLobbyAfterGame() {
 //***********************************************************************************************
 bool WolapiObject::RequestLadders(const char* szName) {
   //	If szName is NULL, calls RequestLadderList() until all ladder structs
-  //for all users in pChatSink's current 	list have been asked for. Does not wait
-  //for results - these come in asynchronously. The previous list is 	erased
-  //before new results come in. 	If szName is valid, asks for specific name only.
-  //Result is appended to current ladder list. 	This function does not block.
+  // for all users in pChatSink's current 	list have been asked for. Does
+  // not wait for results - these come in asynchronously. The previous list is
+  // erased before new results come in. 	If szName is valid, asks for
+  // specific name only. Result is appended to current ladder list. 	This
+  // function does not block.
 
   if (szName && *szName) {
     //		debugprint( "RequestLadderList( %s )\n", szName );
@@ -2747,15 +2756,15 @@ bool WolapiObject::RequestLadders(const char* szName) {
     return true;
   }
 
-  char
-      szNames[(WOL_NAME_LEN_MAX + 1) * 30];  //	Neal says max is actually 25
-                                             //names requested at once. Do 24...
+  char szNames[(WOL_NAME_LEN_MAX + 1) *
+               30];  //	Neal says max is actually 25
+                     // names requested at once. Do 24...
 
   pNetUtilSink->DeleteLadderList();
 
   //	Do not request more than this number of times, to prevent overloads to
-  //ladder server. 	If we have that many people in the channel, forget about
-  //doing ladders for all of them. 	Probably this will never come into play
+  // ladder server. 	If we have that many people in the channel, forget about
+  // doing ladders for all of them. 	Probably this will never come into play
   //(except while testing), because lobbies will be limited in # of users.
   int iCallLimit = 4;
 
@@ -2796,10 +2805,11 @@ bool WolapiObject::RequestLadders(const char* szName) {
 //***********************************************************************************************
 bool WolapiObject::RequestIPs(const char* szName) {
   //	If szName is NULL, calls RequestUserIP() until IPs for all users in
-  //pChatSink's current 	list have been asked for. Does not wait for results -
-  //these come in asynchronously. The previous list is 	erased before new results
-  //come in. 	If szName is valid, asks for specific name only. Result is appended
-  //to current IP list. 	This function does not block.
+  // pChatSink's current 	list have been asked for. Does not wait for
+  // results - these come in asynchronously. The previous list is 	erased
+  // before new results come in. 	If szName is valid, asks for specific
+  // name only. Result is appended to current IP list. 	This function does not
+  // block.
 
   if (szName && *szName) {
     User user;
@@ -2816,14 +2826,14 @@ bool WolapiObject::RequestIPs(const char* szName) {
 
   pChatSink
       ->DeleteUserIPList();  //	Clear old user IPs. (To keep searches fast, if
-                             //we go in and out of game channels a lot.)
+                             // we go in and out of game channels a lot.)
 
   User* pUser = pChatSink->pUserList;
   while (pUser) {
     if (!(pUser->flags & CHAT_USER_MYSELF)) {
       if (!SUCCEEDED(pChat->RequestUserIP(pUser))) {
         //				debugprint( "RequestUserIP() call
-        //failed\n" );
+        // failed\n" );
         return false;
       }
     }
@@ -2835,10 +2845,10 @@ bool WolapiObject::RequestIPs(const char* szName) {
 //***********************************************************************************************
 void WolapiObject::SaveChat() {
   //	Basically, a big hack to avoiding restructuring things so that the
-  //dialogs are persistent 	objects. Save the contents of the chat list in the
-  //chat dialog so that we can refresh it 	after returning from the game setup
-  //dialog (if necessary). 	This turns out to be the easiest and most
-  //straightforward way to implement this.
+  // dialogs are persistent 	objects. Save the contents of the chat list in
+  // the chat dialog so that we can refresh it 	after returning from the game
+  // setup dialog (if necessary). 	This turns out to be the easiest and
+  // most straightforward way to implement this.
   pChatSaveLast = pChatSaveList = NULL;
   CHATSAVE* pChatSaveNew;
 
@@ -2920,7 +2930,7 @@ void WolapiObject::GenericErrorMessage() {
 //***********************************************************************************************
 bool WolapiObject::GetNameOfBeginningLobby(char* szNameToSet) {
   //	Checks for game lobbies, sets szNameToSet to the channel name that the
-  //new user should enter and returns true if succeeds.
+  // new user should enter and returns true if succeeds.
   if (!GetLobbyChannels()) return false;
 
   //	Chatsink should now have a list of lobbies.
@@ -2955,7 +2965,7 @@ bool WolapiObject::GetLobbyChannels() {
   //	Modal version of UpdateChannels, for fetching lobby names.
 
   //	//	Returns false upon total failure.	ajxxx do same for other
-  //calls 	WWMessageBox().Process( TXT_WOL_WAIT, TXT_NONE );
+  // calls 	WWMessageBox().Process( TXT_WOL_WAIT, TXT_NONE );
 
   pChatSink->bRequestChannelListForLobbiesWait = true;
   pChatSink->ChannelFilter = CHANNELFILTER_LOBBIES;
@@ -2983,8 +2993,8 @@ bool WolapiObject::GetLobbyChannels() {
 //***********************************************************************************************
 const char* WolapiObject::pGameHostName() {
   //	Returns a POINTER (careful - temporary!) to the name of the creator of
-  //the game channel we're in, or null. 	Uses players' list as its means of
-  //reference.
+  // the game channel we're in, or null. 	Uses players' list as its means
+  // of reference.
   if (pILPlayers) {
     for (int i = 0; i != pILPlayers->Count(); i++) {
       User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
@@ -2998,7 +3008,8 @@ const char* WolapiObject::pGameHostName() {
 //***********************************************************************************************
 User* WolapiObject::pGameHost() {
   //	Returns a POINTER (careful - temporary!) to the creator of the game
-  //channel we're in, or null. 	Uses players' list as its means of reference.
+  // channel we're in, or null. 	Uses players' list as its means of
+  // reference.
   if (pILPlayers) {
     for (int i = 0; i != pILPlayers->Count(); i++) {
       User* pUser = (User*)pILPlayers->Get_Item_ExtraDataPtr(i);
@@ -3016,7 +3027,7 @@ bool WolapiObject::SendGameOpt(const char* szSend, User* pUserPriv) {
     //		debugprint( "Send public game opt: '%s'\n", szSend );
     if (!SUCCEEDED(pChat->RequestPublicGameOptions(szSend))) {
       //			debugprint( "RequestPublicGameOptions() call
-      //failed\n" );
+      // failed\n" );
       return false;
     }
   } else {
@@ -3024,7 +3035,7 @@ bool WolapiObject::SendGameOpt(const char* szSend, User* pUserPriv) {
     //(char*)pUserPriv->name, szSend );
     if (!SUCCEEDED(pChat->RequestPrivateGameOptions(pUserPriv, szSend))) {
       //			debugprint( "RequestPrivateGameOptions() call
-      //failed\n" );
+      // failed\n" );
       return false;
     }
   }
@@ -3074,21 +3085,21 @@ bool WolapiObject::RequestGameStart() {
 //***********************************************************************************************
 bool WolapiObject::SendGo(const char* szSend) {
   //	Send a "GO" message to all players included in the list that came back
-  //from OnGameStart. 	(Don't just broadcast it. We don't want to include any
-  //users that may have joined the channel 	in the last microsecond.)
+  // from OnGameStart. 	(Don't just broadcast it. We don't want to include any
+  // users that may have joined the channel 	in the last microsecond.)
   //	debugprint( "SendGo()\n" );
 
   User* pUser = pChatSink->pGameUserList;
 
   while (pUser) {
     //		if( !( pUser->flags & CHAT_USER_MYSELF ) )
-    //Method changed. I now wait for go message to bounce back to me.
+    // Method changed. I now wait for go message to bounce back to me.
     //		{
     //			debugprint( "Send private game opt to %s: '%s'\n",
     //(char*)pUser->name, szSend );
     if (!SUCCEEDED(pChat->RequestPrivateGameOptions(pUser, szSend))) {
       //				debugprint( "RequestPrivateGameOptions()
-      //call failed\n" );
+      // call failed\n" );
       return false;
     }
     //		}
@@ -3100,10 +3111,10 @@ bool WolapiObject::SendGo(const char* szSend) {
 //***********************************************************************************************
 void WolapiObject::Init_DisconnectPinging() {
   //	Sets us up to begin "disconnect pinging" - the pinging that occurs when
-  //connection is broken 	during a tournament game. The idea is to try and figure
-  //out who is responsible for the connection 	going down. We do this by
-  //repeatedly pinging the opponent and the game results server. The number 	of
-  //successful pings is sent in the game results package.
+  // connection is broken 	during a tournament game. The idea is to try and
+  // figure out who is responsible for the connection 	going down. We do this
+  // by repeatedly pinging the opponent and the game results server. The number
+  // of successful pings is sent in the game results package.
   iDisconnectPingCurrent = 0;
   for (int i = 0; i != DISCONNECT_PING_COUNT; ++i) {
     DisconnectPingResult_Server[i] = PING_UNSTARTED;
@@ -3116,9 +3127,9 @@ void WolapiObject::Init_DisconnectPinging() {
 //***********************************************************************************************
 bool WolapiObject::Pump_DisconnectPinging() {
   //	Called repeatedly and continuously when it seems a tournament game
-  //connection with the opponent 	has been broken. Does PumpMessages() and
-  //requests new pings when previous results have been received. 	Returns true
-  //when the required number of pings have been completed.
+  // connection with the opponent 	has been broken. Does PumpMessages() and
+  // requests new pings when previous results have been received. 	Returns
+  // true when the required number of pings have been completed.
 
   if (::timeGetTime() > dwTimeNextWolapiPump) {
     pChat->PumpMessages();
@@ -3137,13 +3148,13 @@ bool WolapiObject::Pump_DisconnectPinging() {
         if (pNetUtil->RequestPing(szGameResServerHost1, 1000, &iUnused) !=
             S_OK) {
           //				debugprint( "RequestPing() ( gameres
-          //server ) failed\n" );
+          // server ) failed\n" );
           DisconnectPingResult_Server[iDisconnectPingCurrent] = PING_BAD;
         }
         DisconnectPingResult_Server[iDisconnectPingCurrent] = PING_WAITING;
       } else
         //	We never got an address for the gameresults server. Fake fail
-        //result.
+        // result.
         DisconnectPingResult_Server[iDisconnectPingCurrent] = PING_BAD;
 
       //	Ping opponent.
@@ -3154,14 +3165,14 @@ bool WolapiObject::Pump_DisconnectPinging() {
       //		debugprint( "RequestPing ( opponent )\n" );
       if (pNetUtil->RequestPing(szIP, 1000, &iUnused) != S_OK) {
         //			debugprint( "RequestPing() ( opponent )
-        //failed\n" );
+        // failed\n" );
         DisconnectPingResult_Opponent[iDisconnectPingCurrent] = PING_BAD;
       } else
         DisconnectPingResult_Opponent[iDisconnectPingCurrent] = PING_WAITING;
       break;
     case PING_WAITING:
       //	Ping results still pending. (Callback will set vars when results
-      //arrive.)
+      // arrive.)
       break;
     default:
       //	Ping result for server is in.
@@ -3307,11 +3318,11 @@ void RemapDIBToPalette(
     const char* pDIB)  //	Note: pDIB is treated as non-const.
 {
   //	Converts pDIB's actual pixel data to proper values for a different
-  //palette (hPal). 	Obeys convention that index 0 in the DIB's palette should
-  //map to transparent. For our purposes, make it black.
+  // palette (hPal). 	Obeys convention that index 0 in the DIB's palette
+  // should map to transparent. For our purposes, make it black.
 
   //	Set the values of the qNewPalette array to hold the new destination
-  //palette index we want 	a bmp palette entry to map to.
+  // palette index we want 	a bmp palette entry to map to.
   unsigned char qNewPalette[256];
 
   LPBITMAPINFOHEADER lpbi = (LPBITMAPINFOHEADER)pDIB;
@@ -3319,12 +3330,12 @@ void RemapDIBToPalette(
   RGBQUAD* pRGBEntry =
       (RGBQUAD*)((char*)lpbi +
                  lpbi->biSize);  //	This now points to the first entry in
-                                 //the bmp's palette table.
+                                 // the bmp's palette table.
 
   //	debugprint( "Starting rgbquads at %i\n", pRGBEntry );
 
   //	Index zero is supposed to be transparent. In our case, that means make
-  //it black.
+  // it black.
   qNewPalette[0] = GetNearestPaletteIndex(hPal, RGB(0, 0, 0));
   pRGBEntry++;
 
@@ -3333,7 +3344,7 @@ void RemapDIBToPalette(
         hPal, RGB(pRGBEntry->rgbRed, pRGBEntry->rgbGreen, pRGBEntry->rgbBlue));
     //		if( iIndex == 1 )
     //			debugprint( "Remapping bmp %03u to new %03u\n", i,
-    //qNewPalette[i] );
+    // qNewPalette[i] );
     pRGBEntry++;
   }
 
@@ -3344,7 +3355,7 @@ void RemapDIBToPalette(
   int iLength = iSrcPitch * iHeight;
   unsigned char* pBits = (unsigned char*)FindDIBBits(pDIB);
   //	debugprint( "First Byte value %03u will become %03u\n", *pBits,
-  //qNewPalette[ *pBits ] );
+  // qNewPalette[ *pBits ] );
   for (i = 0; i != iLength; i++) {
     *pBits++ = qNewPalette[*pBits];
   }

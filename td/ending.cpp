@@ -180,7 +180,7 @@ void Nod_Ending(void) {
   SysMemPage.Blit(SeenBuff);
   SysMemPage.Blit(HidPage);
 #else
-  InterpolationPaletteChanged = TRUE;
+  InterpolationPaletteChanged = true;
   InterpolationPalette = (unsigned char *)localpal;
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("SATSELIN.PAL");

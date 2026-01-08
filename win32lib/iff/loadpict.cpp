@@ -100,11 +100,11 @@ typedef struct {
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-PRIVATE void __cdecl ILBM_To_MCGA(BufferClass &src, BufferClass &dest,
+static void __cdecl ILBM_To_MCGA(BufferClass &src, BufferClass &dest,
                                   int planes);
-PRIVATE void __cdecl ILBM_To_Amiga(BufferClass &src, BufferClass &dest,
+static void __cdecl ILBM_To_Amiga(BufferClass &src, BufferClass &dest,
                                    int planes);
-PRIVATE void __cdecl PBM_To_Amiga(BufferClass &src, BufferClass &dest,
+static void __cdecl PBM_To_Amiga(BufferClass &src, BufferClass &dest,
                                   int planes);
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
@@ -133,7 +133,7 @@ PRIVATE void __cdecl PBM_To_Amiga(BufferClass &src, BufferClass &dest,
  *   05/16/1991 JLB : Created.                                             *
  *   04/20/1994 SKB : Update to 32 bit library and make private.           *
  *=========================================================================*/
-PRIVATE void __cdecl ILBM_To_MCGA(BufferClass &src, BufferClass &dest,
+static void __cdecl ILBM_To_MCGA(BufferClass &src, BufferClass &dest,
                                   int planes) {
   char *source;       // Source pointer.
   char *destination;  // Destination pointer.
@@ -204,7 +204,7 @@ PRIVATE void __cdecl ILBM_To_MCGA(BufferClass &src, BufferClass &dest,
  *   04/20/1994 SKB : #if out for main library.  Only used in utils maybe. *
  *=========================================================================*/
 #if MAKE_AMIGA_ART
-PRIVATE void __cdecl ILBM_To_Amiga(BufferClass &src, BufferClass &dest,
+static void __cdecl ILBM_To_Amiga(BufferClass &src, BufferClass &dest,
                                    int planes) {
   int row;       // Working row counter.
   int bp;        // Working bitplane counter.
@@ -249,7 +249,7 @@ PRIVATE void __cdecl ILBM_To_Amiga(BufferClass &src, BufferClass &dest,
  *   04/20/1994 SKB : #if out for main library.  Only used in utils maybe. *
  *=========================================================================*/
 #if MAKE_AMIGA_ART
-PRIVATE void __cdecl PBM_To_Amiga(BufferClass &src, BufferClass &dest,
+static void __cdecl PBM_To_Amiga(BufferClass &src, BufferClass &dest,
                                   int planes) {
   int row,                 // Working row counter.
       col,                 // Working column (by byte) counter.
@@ -337,7 +337,7 @@ int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
   // strupr(filename);
 
   fh = Open_File(filename, READ);
-  if (fh == WW_ERROR) return (FALSE);
+  if (fh == kInvalidHandle) return (FALSE);
   Read_File(fh, &ifftype, 4L);
   Close_File(fh);
 
@@ -346,7 +346,7 @@ int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
             8000);
   } else {
     fh = Open_Iff_File(filename);  // Opens and checks for IFF form.
-    if (fh == WW_ERROR) return (FALSE);
+    if (fh == kInvalidHandle) return (FALSE);
 
     Read_File(fh, &ifftype, 4L);
     if (ifftype == ID_ILBM) {

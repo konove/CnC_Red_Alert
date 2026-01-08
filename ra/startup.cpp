@@ -107,7 +107,7 @@ void Check_Use_Compressed_Shapes(void);
 void Read_Setup_Options(RawFileClass *config_file);
 bool VideoBackBufferAllowed = true;
 #else
-BOOL Init_Timer_System(unsigned int freq, int partial = FALSE);
+BOOL Init_Timer_System(unsigned int freq, int partial = false);
 BOOL Remove_Timer_System(VOID);
 #endif  // WIN32
 
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
 #ifdef PORTABLE
     WindowsTimer = new WinTimerClass(60, false);
 #elif defined(WIN32)
-    WindowsTimer = new WinTimerClass(60, FALSE);
+    WindowsTimer = new WinTimerClass(60, false);
 
     int time_test = WindowsTimer->Get_System_Tick_Count();
     Sleep(1000);
@@ -484,22 +484,22 @@ int main(int argc, char *argv[])
 #if defined(MPEGMOVIE) || defined(PORTABLE)  // Denzil 6/10/98
       if (!InitDDraw()) return (EXIT_FAILURE);
 #else
-      BOOL video_success = FALSE;
+      BOOL video_success = false;
       /*
       ** Set 640x400 video mode. If its not available then try for 640x480
       */
       if (ScreenHeight == 400) {
         if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = TRUE;
+          video_success = true;
         } else {
           if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8)) {
-            video_success = TRUE;
+            video_success = true;
             ScreenHeight = 480;
           }
         }
       } else {
         if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = TRUE;
+          video_success = true;
         }
       }
 
@@ -607,7 +607,7 @@ int main(int argc, char *argv[])
       WindowList[WINDOW_EDITOR][WINDOWHEIGHT] = SeenBuff.Get_Height();
 
       WWMouse = new WWMouseClass(&SeenBuff, 48, 48);
-      MouseInstalled = TRUE;
+      MouseInstalled = true;
 
       CDFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
 

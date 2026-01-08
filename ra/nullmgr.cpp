@@ -1754,7 +1754,7 @@ DialStatusType NullModemClass::Dial_Modem(const char *string,
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       Commands->Draw_All();
     }
 
@@ -1930,7 +1930,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 #endif  // WIN32
@@ -2109,9 +2109,9 @@ bool NullModemClass::Hangup_Modem(void) {
   ** Toggle DTR low then high
   */
 #ifdef WIN32
-  SerialPort->Set_Serial_DTR(FALSE);
+  SerialPort->Set_Serial_DTR(false);
   Delay(3200 / 60);
-  SerialPort->Set_Serial_DTR(TRUE);
+  SerialPort->Set_Serial_DTR(true);
 #else   // WIN32
 
   SetDtr(Port, 0);

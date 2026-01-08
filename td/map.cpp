@@ -599,7 +599,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     */
     if ((unsigned)newcell >= MAP_CELL_TOTAL) continue;
     xdiff = Cell_X(newcell) - xx;
-    xdiff = ABS(xdiff);
+    xdiff = std::abs(xdiff);
     if (xdiff > sightrange) continue;
     if (Distance(newcell, cell) > sightrange) continue;
 

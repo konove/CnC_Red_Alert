@@ -133,7 +133,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass *group, TechnoClass *object) {
  * _Need_To_Take -- Examines unit to determine if it should be confiscated. *
  *                                                                                             *
  *    The unit is examined and if the owning house needs to confiscate it, then
- *this routine   * will return TRUE. In other cases, the unit should be left to
+ *this routine   * will return true. In other cases, the unit should be left to
  *its own devices.            *
  *                                                                                             *
  * INPUT:   unit  -- Pointer to the object to examine. *

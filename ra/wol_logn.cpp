@@ -49,7 +49,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   if (pWO->bLoggedIn()) {
     pWO->bReturningAfterGame = true;  //	Set trigger for chat dialog.
     return 1;  //	We are already logged in, and have just come back from a
-               //game.
+               // game.
   }
 
   /*
@@ -179,7 +179,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                          d_pass_w, -1, EditClass::ALPHANUMERIC);
 
   //	Just making sure globals are set right before String_Pixel_Width()
-  //call... sigh
+  // call... sigh
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int iSaveTextWidth = String_Pixel_Width(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
@@ -202,7 +202,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     //	Offer user the chance to go to web site now to get a nick.
     if (pWO->DoWebRegistration()) {
       //	User chose to go to web page. Leave function so that we'll
-      //re-read nicks when they return.
+      // re-read nicks when they return.
       return 0;
     }
   }
@@ -241,7 +241,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 #endif
@@ -283,7 +283,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
-    //disappearing cursors.
+    // disappearing cursors.
     while (Get_Mouse_State()) Show_Mouse();
     //	Be nice to other apps.
     Sleep(50);
@@ -309,7 +309,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
     //		/*
     //		**	If the <RETURN> key was pressed, then default to the
-    //appropriate
+    // appropriate
     //		**	action button according to the style of this dialog box.
     //		*/
     /*		if (input == KN_RETURN || input == (BUTTON_CONNECT|KN_BUTTON)) {
@@ -435,7 +435,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               break;
             case CHAT_E_CON_ERROR:
               //	This error value I pass back myself, when the emergency
-              //timeout is hit.
+              // timeout is hit.
               WWMessageBox().Process(TXT_WOL_TIMEOUT);
               break;
           }
@@ -469,10 +469,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         NameEdit.Flag_To_Redraw();
         PassEdit.Flag_To_Redraw();
         //	Because the password is mangled, if the user begins to edit it
-        //now, we clear it. 	Otherwise we could get a half-mangled,
-        //half-unmangled password field. 	PassEdit.bClearOnNextSetFocus also acts
-        //as a flag telling us whether or not the 	password field is mangled or
-        //not.
+        // now, we clear it. 	Otherwise we could get a half-mangled,
+        // half-unmangled password field. 	PassEdit.bClearOnNextSetFocus
+        // also acts as a flag telling us whether or not the 	password field
+        // is mangled or not.
         PassEdit.bClearOnNextSetFocus = true;
         //				display = true;
         break;
@@ -508,7 +508,7 @@ bool ReadSavedNicks(WolapiObject* pWO, IconListClass& NickList,
   //	Copy the first nick into the nick/password edits.
 
   //	Returns true if edits are set with a default nick/pass because a nick
-  //was found.
+  // was found.
 
   LPCSTR szNick;
   LPCSTR szPass;
@@ -546,7 +546,7 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
   switch (pWO->pChat->GetNick(1, &szNick, &szPass)) {
     case E_FAIL:
       //	Assume that this is because there is no registry entry. We can
-      //use this slot.
+      // use this slot.
       bPushSlot1 = false;
       break;
     case S_OK:
@@ -608,7 +608,7 @@ bool bSaveNick(WolapiObject* pWO, const char* szNickToSave,
 void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete) {
   //	Delete a nick from the registry via wolapi SetNick.
   //	If nick to delete is in position one, and there is a second nick, move
-  //the second nick into position one.
+  // the second nick into position one.
   if (iOneBasedEntryToDelete == 1) {
     //	Check for nick 2.
     LPCSTR szNick;
@@ -616,7 +616,7 @@ void DeleteNick(WolapiObject* pWO, int iOneBasedEntryToDelete) {
     if (pWO->pChat->GetNick(2, &szNick, &szPass) == S_OK && *szNick != 0) {
       //	Copy nick in slot 2 to slot 1.
       pWO->pChat->SetNick(1, szNick, szPass, false);  //	(Already
-                                                      //mangled.)
+                                                      // mangled.)
       //	Delete slot 2.
       HRESULT hRes = pWO->pChat->SetNick(2, "", "", false);
       DebugChatDef(hRes);

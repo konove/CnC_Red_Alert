@@ -66,11 +66,11 @@ typedef struct {
 unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
 extern "C" {
 char *BigShapeBufferStart = nullptr;
-bool UseBigShapeBuffer = FALSE;
+bool UseBigShapeBuffer = false;
 }
 char *BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
-bool ReallocShapeBufferFlag = FALSE;
+bool ReallocShapeBufferFlag = false;
 
 char **KeyFrameSlots[1000];
 int TotalSlotsUsed = 0;
@@ -100,7 +100,7 @@ void Reallocate_Big_Shape_Buffer(void) {
     BigShapeBufferStart =
         (char *)Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength);
     BigShapeBufferPtr += (unsigned)BigShapeBufferStart;
-    ReallocShapeBufferFlag = FALSE;
+    ReallocShapeBufferFlag = false;
   }
 }
 
@@ -110,7 +110,7 @@ void Check_Use_Compressed_Shapes(void) {
   mem_info.dwLength = sizeof(mem_info);
   GlobalMemoryStatus(&mem_info);
 
-  UseBigShapeBuffer = (mem_info.dwTotalPhys > 12 * 1024 * 1024) ? TRUE : FALSE;
+  UseBigShapeBuffer = (mem_info.dwTotalPhys > 12 * 1024 * 1024) ? true : false;
 }
 
 #endif

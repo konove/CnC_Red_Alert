@@ -240,7 +240,7 @@ void Connect_MPATH(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = 1;
     }
 #endif
@@ -249,7 +249,7 @@ void Connect_MPATH(void) {
       Fancy_Text_Print("", 0, 0, 0, 0, TPF_TEXT);
       buf1 = Text_String(TXT_WAITING_FOR_CONNECTIONS);
       buf2 = Text_String(TXT_PRESS_ESC);
-      w = MAX(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
+      w = std::max(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
       w += (D_MARGIN * 2);
       h = (D_TXT6_H * 2) + (D_MARGIN * 7);
       x = 160 - (w / 2);

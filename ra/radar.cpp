@@ -718,7 +718,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
     unsigned char *icon = list[lp]->Radar_Icon(cell);
     if (!icon) continue;
     Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
-    _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, TRUE,
+    _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                      (char *)&FadingBrighten[0]);
   }
 }
@@ -823,15 +823,15 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
           LogicPage->Put_Pixel(x, y, DKGREY);
 
           //					_IconStage.Scale(*LogicPage, 0,
-          // 0, x, y, 3, 3, size, size, TRUE, (char *)&FadingShade[0]);
+          // 0, x, y, 3, 3, size, size, true, (char *)&FadingShade[0]);
         } else {
-          _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, TRUE,
+          _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
                            (char *)&FadingYellow[0]);
         }
         //				_IconStage.Scale(*LogicPage, 0, 0, x, y,
-        // 3, 3, size, size, TRUE, (char *)&FadingGreen[0]);
+        // 3, 3, size, size, true, (char *)&FadingGreen[0]);
         // } else { 				_IconStage.Scale(*LogicPage, 0,
-        // 0, x, y, 3, 3, size, size, TRUE, (char *)&FadingBrighten[0]);
+        // 0, x, y, 3, 3, size, size, true, (char *)&FadingBrighten[0]);
       }
 
 #else
@@ -1108,7 +1108,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         unsigned char *data = (unsigned char *)icondata + icon * (24 * 24);
         Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
         _TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
-                         TRUE);
+                         true);
       } else {
         //				LogicPage->Fill_Rect(x, y,
         // x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));
@@ -1282,7 +1282,7 @@ void RadarClass::Cursor_Cell(CELL cell, int value) {
       /*
       **	If we are erasing then erase the cell.
       */
-      if (value == FALSE) {
+      if (value == false) {
         Plot_Radar_Pixel(cell);
       }
     }
@@ -1486,7 +1486,7 @@ void RadarClass::Radar_Cursor(int forced) {
     ** Finally mark the map (actually remove the marks that indicate the radar
     *cursor was there
     */
-    Mark_Radar(x1, y1, x2, y2, FALSE, barlen);
+    Mark_Radar(x1, y1, x2, y2, false, barlen);
   }
 
   /*
@@ -1509,7 +1509,7 @@ void RadarClass::Radar_Cursor(int forced) {
   x2 += SpecialRadarFrame;
   y2 += SpecialRadarFrame;
 
-  Mark_Radar(x1, y1, x2, y2, TRUE, barlen);
+  Mark_Radar(x1, y1, x2, y2, true, barlen);
 
   /*
   ** setup a graphic view port class so we can write all the pixels relative
@@ -1539,7 +1539,7 @@ void RadarClass::Radar_Cursor(int forced) {
   Set_Logic_Page(oldpage);
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
-  RadarCursorRedraw = FALSE;
+  RadarCursorRedraw = false;
 }
 
 /***************************************************************************
@@ -1612,9 +1612,9 @@ void RadarClass::AI(KeyNumType &input, int x, int y) {
   */
   if (IsRadarActive && Map.IsSidebarActive && SpecialRadarFrame) {
     SpecialRadarFrame--;
-    RadarCursorRedraw = TRUE;
-    IsToRedraw = TRUE;
-    Flag_To_Redraw(FALSE);
+    RadarCursorRedraw = true;
+    IsToRedraw = true;
+    Flag_To_Redraw(false);
   }
 
   /*
@@ -1952,7 +1952,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
   newcell = XY_Cell(newx, newy);
 
   if (RadarCell != newcell) {
-    int forced = FALSE;
+    int forced = false;
     int xmod = newx;
     int ymod = newy;
 
@@ -1964,8 +1964,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     RadarCell = newcell;
 
     if (Map.IsSidebarActive && Map.IsRadarActive) {
-      int radw = RadarCellWidth - ABS(radx);   // Replicable width.
-      int radh = RadarCellHeight - ABS(rady);  // Replicable height.
+      int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
+      int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
 
       if (radw < 1) forced = true;
       if (radh < 1) forced = true;
@@ -2027,7 +2027,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           int max;
           if (radx < 0) {  // this mean regen the right edge
             min = radw;
-            max = radw + ABS(radx);
+            max = radw + std::abs(radx);
           } else {  //	this mean regen the left edge
             min = 0;
             max = radx;
@@ -2043,7 +2043,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           int max;
           if (rady < 0) {  // this mean regen the bottom edge
             min = radh;
-            max = radh + ABS(rady);
+            max = radh + std::abs(rady);
           } else {  // this mean regen the top edge
             min = 0;
             max = rady;

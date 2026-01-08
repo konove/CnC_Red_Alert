@@ -168,7 +168,7 @@ int RAMFileClass::Delete(void) {
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  TRUE *
+ * OUTPUT:  true *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *

@@ -76,16 +76,16 @@
 **	Function prototypes
 ******************************/
 
-PRIVATE int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
-                                  int iny2);
-PRIVATE int Select_To_Entry(int select, unsigned long bitfield, int index);
-PRIVATE void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
-                        unsigned hfgc, unsigned bgc);
+static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
+                                 int iny2);
+static int Select_To_Entry(int select, unsigned long bitfield, int index);
+static void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
+                       unsigned hfgc, unsigned bgc);
 
 int UnknownKey;
 
-PRIVATE int MenuUpdate = 1;
-PRIVATE int MenuSkip;
+static int MenuUpdate = 1;
+static int MenuSkip;
 
 /*=========================================================================*/
 /*	SELECT_TO_ENTRY:
@@ -105,7 +105,7 @@ PRIVATE int MenuSkip;
 /*	RETURNS:	int the index into the table of entries
  */
 /*=========================================================================*/
-PRIVATE int Select_To_Entry(int select, unsigned long bitfield, int index) {
+static int Select_To_Entry(int select, unsigned long bitfield, int index) {
   int placement;
 
   if (bitfield == 0xFFFFFFFFL) /* if all bits are set	*/
@@ -142,8 +142,8 @@ PRIVATE int Select_To_Entry(int select, unsigned long bitfield, int index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-PRIVATE void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
-                        unsigned hfgc, unsigned bgc) {
+static void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
+                       unsigned hfgc, unsigned bgc) {
   int loop;
 
   for (loop = 0; loop < 3; loop++) {
@@ -172,8 +172,8 @@ PRIVATE void Flash_Line(char const *text, int xpix, int ypix, unsigned nfgc,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-PRIVATE int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
-                                  int iny2) {
+static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
+                                 int iny2) {
   return ((x >= inx1) && (x <= inx2) && (y >= iny1) && (y <= iny2));
 }
 
@@ -717,7 +717,7 @@ int Main_Menu(unsigned long) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 #endif

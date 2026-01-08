@@ -91,7 +91,7 @@ GraphicBufferClass* Read_PCX_File(char* name, char* Palette, void* Buff,
 
   // Open file name
   file_handle = Open_File(name, READ);
-  if (file_handle == WW_ERROR) return nullptr;
+  if (file_handle == kInvalidHandle) return nullptr;
 
   Read_File(file_handle, &header, sizeof(PCX_HEADER));
   if (header.id != 10 && header.version != 5 && header.pixelsize != 8)

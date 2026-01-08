@@ -1020,7 +1020,7 @@ static int Net_Join_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -1906,7 +1906,7 @@ static int Net_Join_Dialog(void) {
     a chance to get to the other system.  If he doesn't get our ACK, he'll
     be waiting the whole time we load MIX files.
     ---------------------------------------------------------------------*/
-    i = MAX(Ipx.Global_Response_Time() * 2, 60);
+    i = std::max<int>(Ipx.Global_Response_Time() * 2, 60);
     starttime = TickCount.Time();
     while (TickCount.Time() - starttime < i) {
       Ipx.Service();
@@ -3074,7 +3074,7 @@ static int Net_New_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -3387,7 +3387,7 @@ static int Net_New_Dialog(void) {
         break;
 
       /*------------------------------------------------------------------
-      OK: exit loop with TRUE status
+      OK: exit loop with true status
       ------------------------------------------------------------------*/
       case (BUTTON_OK | KN_BUTTON):
         /*...............................................................
@@ -3395,15 +3395,15 @@ static int Net_New_Dialog(void) {
         an OK; force a wait longer than 1 second (to give all players
         a chance to know about this new guy)
         ...............................................................*/
-        i = MAX(Ipx.Global_Response_Time() * 2, 60);
+        i = std::max<int>(Ipx.Global_Response_Time() * 2, 60);
         while (TickCount.Time() - ok_timer < i) Ipx.Service();
 
         /*...............................................................
         If there are at least 2 players, go ahead & play; error otherwise
         ...............................................................*/
         if (MPlayerSolo || Players.Count() > 0) {
-          rc = TRUE;
-          process = FALSE;
+          rc = true;
+          process = false;
         } else {
           CCMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
           display = REDRAW_ALL;
@@ -3698,7 +3698,7 @@ static int Net_New_Dialog(void) {
     - Divide global channel's response time by 8 (2 to convert to 1-way
       value, 4 more to convert from ticks to frames)
     .....................................................................*/
-    MPlayerMaxAhead = MAX((Ipx.Global_Response_Time() / 8), 2);
+    MPlayerMaxAhead = std::max<int>((Ipx.Global_Response_Time() / 8), 2);
 
     /*.....................................................................
     Send all players the NET_GO packet.  Wait until all ACK's have been
@@ -4070,8 +4070,8 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
     sprintf(buf2, Text_String(TXT_TIME_ALLOWED), timeval + 1);
     buf3 = Text_String(TXT_PRESS_ESC);
 
-    w = MAX(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
-    w = MAX(String_Pixel_Width(buf3), w);
+    w = std::max<int>(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
+    w = std::max<int>(String_Pixel_Width(buf3), w);
     w += (d_margin * 4);
     h = (d_txt6_h * 3) + (d_margin * 6);
     x = 160 * factor - (w / 2);
@@ -4156,7 +4156,7 @@ void Wait_For_Focus(void) {
 
     } while (!GameInFocus);
     CCDebugString("\n");
-    AllSurfaces.SurfacesRestored = FALSE;
+    AllSurfaces.SurfacesRestored = false;
   }
 }
 
@@ -4391,7 +4391,7 @@ static int Net_Fake_New_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -4487,7 +4487,7 @@ static int Net_Fake_New_Dialog(void) {
         break;
 
       /*------------------------------------------------------------------
-      default: exit loop with TRUE status
+      default: exit loop with true status
       ------------------------------------------------------------------*/
       default:
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -4520,15 +4520,15 @@ static int Net_Fake_New_Dialog(void) {
           an OK; force a wait longer than 2 seconds (to give all players
           a chance to know about this new guy)
           ...............................................................*/
-          i = MAX(Ipx.Global_Response_Time() * 2, 120);
+          i = std::max<int>(Ipx.Global_Response_Time() * 2, 120);
           while (TickCount.Time() - ok_timer < i) Ipx.Service();
 
           /*...............................................................
           If there are at least 2 players, go ahead & play; error otherwise
           ...............................................................*/
           if (MPlayerSolo || Players.Count() > 0) {
-            rc = TRUE;
-            process = FALSE;
+            rc = true;
+            process = false;
           } else {
             CCMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
             display = REDRAW_ALL;
@@ -4628,7 +4628,7 @@ static int Net_Fake_New_Dialog(void) {
     - Divide global channel's response time by 8 (2 to convert to 1-way
       value, 4 more to convert from ticks to frames)
     .....................................................................*/
-    MPlayerMaxAhead = MAX((Ipx.Global_Response_Time() / 8), 2);
+    MPlayerMaxAhead = std::max<int>((Ipx.Global_Response_Time() / 8), 2);
 
     /*.....................................................................
     Send all players the NET_GO packet.  Wait until all ACK's have been
@@ -4943,7 +4943,7 @@ static int Net_Fake_Join_Dialog(void) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -5393,7 +5393,7 @@ static int Net_Fake_Join_Dialog(void) {
     a chance to get to the other system.  If he doesn't get our ACK, he'll
     be waiting the whole time we load MIX files.
     ---------------------------------------------------------------------*/
-    i = MAX(Ipx.Global_Response_Time() * 2, 120);
+    i = std::max<int>(Ipx.Global_Response_Time() * 2, 120);
     starttime = TickCount.Time();
     while (TickCount.Time() - starttime < i) {
       Ipx.Service();

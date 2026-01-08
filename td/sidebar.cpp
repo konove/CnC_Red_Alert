@@ -303,9 +303,10 @@ void SidebarClass::Init_IO(void) {
     Repair.Height = Upgrade.Height = Zoom.Height = 9;
 #else
     int maxwidth = String_Pixel_Width(Text_String(TXT_REPAIR_BUTTON)) + 8;
+    maxwidth = std::max<int>(
+        maxwidth, String_Pixel_Width(Text_String(TXT_BUTTON_SELL)) + 8);
     maxwidth =
-        MAX(maxwidth, String_Pixel_Width(Text_String(TXT_BUTTON_SELL)) + 8);
-    maxwidth = MAX(maxwidth, String_Pixel_Width(Text_String(TXT_MAP)) + 8);
+        std::max<int>(maxwidth, String_Pixel_Width(Text_String(TXT_MAP)) + 8);
     Repair.Width = maxwidth;
     Upgrade.Width = maxwidth;
     Zoom.Width = maxwidth;

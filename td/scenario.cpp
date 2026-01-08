@@ -455,7 +455,7 @@ void Do_Win(void) {
     if (!Special.IsJurassic || !AreThingiesEnabled) {
       Keyboard::Clear();
 #ifndef LORES
-      InterpolationPaletteChanged = TRUE;
+      InterpolationPaletteChanged = true;
       InterpolationPalette = Palette;
 #endif
       Score.Presentation();

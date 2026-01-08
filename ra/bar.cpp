@@ -96,7 +96,7 @@ ProgressBarClass::ProgressBarClass(int x, int y, int width, int height,
  *or not.         *
  *                                                                                             *
  *    If the bargraph is oriented horizontally, then this function will return
- *TRUE.           *
+ *true.           *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *

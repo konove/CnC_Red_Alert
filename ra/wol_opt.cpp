@@ -34,7 +34,7 @@ extern bool cancel_current_msgbox;
 //***********************************************************************************************
 bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   //	Returns true only if called from inside game, and the game ended on us
-  //unexpectedly.
+  // unexpectedly.
   bool bReturn = false;
 
   bool bEscapeDown = false;
@@ -44,7 +44,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   if ((::GetAsyncKeyState(VK_RETURN) & 0x8000)) {
     //	The return key is already down, as we enter the dialog.
     //	Until it comes up again, ignore this fact, so that we don't act on a
-    //return press that's not valid.
+    // return press that's not valid.
     bIgnoreReturnDown = true;
   }
 
@@ -166,7 +166,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = true;
     }
 #endif
@@ -187,7 +187,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
-    //disappearing cursors.
+    // disappearing cursors.
     while (Get_Mouse_State()) Show_Mouse();
     //	Be nice to other apps.
     Sleep(50);
@@ -199,7 +199,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
-    //the key up, 	though this dialog handled the key down. ajw
+    // the key up, 	though this dialog handled the key down. ajw
     if ((::GetAsyncKeyState(VK_ESCAPE) & 0x8000)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {

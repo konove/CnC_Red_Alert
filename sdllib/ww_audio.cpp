@@ -636,17 +636,18 @@ AudioCallback *Get_Audio_Callback_Ptr() { return &ExtraCallback; }
 
 // TD
 // used for nod ending
-static long Sample_Read(int fh, void *buffer, long size) {
+static long Sample_Read(int fh, void *buffer, size_t size) {
   AUDHeaderType RawHeader;
   void *outbuffer;         // Pointer to start of raw data.
   long actual_bytes_read;  // Actual bytes read in, including header
 
-  if (!buffer || fh == WW_ERROR || size <= sizeof(RawHeader)) return 0;
+  if (!buffer || fh == kInvalidHandle || size <= sizeof(RawHeader)) return 0;
 
   size -= sizeof(RawHeader);
   outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
   actual_bytes_read = Read_File(fh, &RawHeader, sizeof(RawHeader));
-  actual_bytes_read += Read_File(fh, outbuffer, MIN(size, RawHeader.Size));
+  actual_bytes_read +=
+      Read_File(fh, outbuffer, std::min<size_t>(size, RawHeader.Size));
   Mem_Copy(&RawHeader, buffer, sizeof(RawHeader));
   return actual_bytes_read;
 }
@@ -659,7 +660,7 @@ void *Load_Sample(char const *filename) {
   if (!filename || !Find_File(filename)) return nullptr;
 
   fh = Open_File(filename, READ);
-  if (fh != WW_ERROR) {
+  if (fh != kInvalidHandle) {
     size = File_Size(fh) + sizeof(AUDHeaderType);
     buffer = Alloc(size, MEM_NORMAL);
 

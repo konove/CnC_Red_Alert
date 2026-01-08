@@ -721,7 +721,7 @@ int NullModemClass::Service(void) {
   // CCDebugString (port);
   //	}
 
-  bool enabled = FALSE;
+  bool enabled = false;
 
 #if (0)
   if (SerialPort->FramingErrors || SerialPort->IOErrors ||
@@ -729,10 +729,10 @@ int NullModemClass::Service(void) {
       SerialPort->InBufferOverflows || SerialPort->OutBufferOverflows) {
     if (!MonoClass::Is_Enabled()) {
       MonoClass::Enable();
-      enabled = TRUE;
+      enabled = true;
     }
-    Special.IsMonoEnabled = TRUE;
-    Debug_Smart_Print = TRUE;
+    Special.IsMonoEnabled = true;
+    Debug_Smart_Print = true;
     Mono_Set_Cursor(0, 0);
     Smart_Printf("            In Queue: %5d  \n", SerialPort->InQueue);
     Smart_Printf("           Out Queue: %5d  \n", SerialPort->OutQueue);
@@ -747,7 +747,7 @@ int NullModemClass::Service(void) {
                  SerialPort->OutBufferOverflows);
 
     MonoClass::Disable();
-    Debug_Smart_Print = FALSE;
+    Debug_Smart_Print = false;
   }
 #endif  //(0)
 
@@ -1175,7 +1175,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
@@ -1471,7 +1471,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   Format_Window_String(buffer, SeenBuff.Get_Height(), width, height);
 
   int text_width = width;
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
@@ -1576,7 +1576,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
     */
     if (AllSurfaces.SurfacesRestored) {
       CCDebugString("C&C95 - About to restore video surfaces.\n");
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       Commands->Draw_All();
     }
 
@@ -1711,7 +1711,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
   text_width = width;
-  width = MAX(width, 50 * factor);
+  width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
@@ -1765,7 +1765,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ** we need to redraw.
     */
     if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = FALSE;
+      AllSurfaces.SurfacesRestored = false;
       display = REDRAW_ALL;
     }
 
@@ -1828,7 +1828,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         Format_Window_String(text_buffer, SeenBuff.Get_Height(), width, height);
 
         text_width = width;
-        width = MAX(width, 50 * factor);
+        width = std::max(width, 50 * factor);
         width += 40 * factor;
         height += 60 * factor;
 
@@ -1924,9 +1924,9 @@ bool NullModemClass::Hangup_Modem(void) {
     return (true);
   }
 
-  SerialPort->Set_Serial_DTR(FALSE);
+  SerialPort->Set_Serial_DTR(false);
   Delay(3200 / 60);
-  SerialPort->Set_Serial_DTR(TRUE);
+  SerialPort->Set_Serial_DTR(true);
 
   // SetDtr( Port, 0 );
   // PortKillTime( Port, 3200 );

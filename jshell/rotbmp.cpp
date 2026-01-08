@@ -40,7 +40,7 @@
 #include "jshell/rotbmp.h"
 
 #include "sdllib/include/gbuffer.h"
-#include "sdllib/include/wwstd.h"
+#include <cmath>
 
 int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
                   int angle);
@@ -217,7 +217,8 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
   // ok now the hard part
 
   // make them 16.16
-  if (ABS(Deltax) < ABS(Deltay)) {  // ok this means we want to walk in y
+  if (std::abs(Deltax) <
+      std::abs(Deltay)) {  // ok this means we want to walk in y
 
     // walk in  + x in the src and
     // walk in  + y in the dest
@@ -276,7 +277,7 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
 
       // length of line
 
-      int diff = ABS(y2 - ry);
+      int diff = std::abs(y2 - ry);
 
       // if walking backwards reveres diff to reflect sign
 

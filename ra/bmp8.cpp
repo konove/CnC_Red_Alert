@@ -140,7 +140,7 @@ bit8 BMP8::drawBmp(void) {
   char string[128];
 
   InvalidateRect(WindowHandle_, NULL,
-                 FALSE);  // keep windows from screwing up the
+                 false);  // keep windows from screwing up the
                           //  redrawing (as much).
   hdc = BeginPaint(WindowHandle_, &ps);
 
@@ -172,5 +172,5 @@ bit8 BMP8::drawBmp(void) {
 
   DeleteDC(hdcMem);
   EndPaint(WindowHandle_, &ps);
-  return (TRUE);
+  return (true);
 }

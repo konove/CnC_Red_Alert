@@ -126,7 +126,7 @@ short const *Coord_Spillage_List(COORDINATE coord, int maxsize) {
   *cell unnecessarily.
   */
   if (maxsize > ICON_PIXEL_W) {
-    maxsize = MIN(maxsize, (ICON_PIXEL_W * 2)) / 2;
+    maxsize = std::min(maxsize, (ICON_PIXEL_W * 2)) / 2;
 
     x = Fixed_To_Cardinal(ICON_PIXEL_W, Coord_XLepton(coord));
     y = Fixed_To_Cardinal(ICON_PIXEL_H, Coord_YLepton(coord));

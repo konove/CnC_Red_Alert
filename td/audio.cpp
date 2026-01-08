@@ -320,23 +320,24 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
     distance = Map.Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));
-    distance = (unsigned int)MIN((int)distance, (int)MAP_CELL_W);
+    distance = (unsigned int)std::min((int)distance, (int)MAP_CELL_W);
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
-    distance = MIN(distance, 0xFFu);
+    distance = std::min(distance, 0xFFu);
     distance ^= 0xFF;
 
     distance /= 2;
-    distance = MAX(distance, 25);
+    distance = std::max<int>(distance, 25);
 
     pan_value = Cell_X(cell_pos);
     pan_value -= Coord_XCell(Map.TacticalCoord) +
                  (Lepton_To_Cell(Map.TacLeptonWidth) >> 1);
-    if (ABS(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth >> 1)) {
+    if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth >> 1)) {
       pan_value *= 0x8000;
       pan_value /= (MAP_CELL_W >> 2);
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
-      //			pan_value  = MAX((int)pan_value, (int)-0x7FFF);
-      //			pan_value  = MIN((int)pan_value, 0x7FFF);
+      //			pan_value  = std::max((int)pan_value,
+      //(int)-0x7FFF); 			pan_value  = std::min((int)pan_value,
+      // 0x7FFF);
     } else {
       pan_value = 0;
     }
@@ -385,7 +386,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
       *always *	use the vehicle response table.
       */
       if (variation < 0) {
-        if (ABS(variation) % 2) {
+        if (std::abs(variation) % 2) {
           ext = ".V00";
         } else {
           ext = ".V02";

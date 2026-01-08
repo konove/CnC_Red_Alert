@@ -96,17 +96,6 @@ Map(screen) class heirarchy.
                    � InfantryTypeClass AircraftTypeClass
 #endif
 
-          /*
-          **	The "bool" integral type was defined by the C++ comittee in
-          **	November of '94. Until the compiler supports this, use the
-          *following *	definition.
-          */
-          enum {
-            false = 0,
-            true = 1
-          };
-typedef int bool;
-
 #define _WIN32
 #define WIN32  //_LEAN_AND_MEAN
 #include <windows.h>
@@ -911,7 +900,7 @@ extern unsigned char *InterpolationPalette;
 }
 
 extern void Free_Interpolated_Palettes(void);
-extern int Load_Interpolated_Palettes(char const *filename, BOOL add = FALSE);
+extern int Load_Interpolated_Palettes(char const *filename, bool add = false);
 
 #define CELL_BLIT_ONLY 1
 #define CELL_DRAW_ONLY 2

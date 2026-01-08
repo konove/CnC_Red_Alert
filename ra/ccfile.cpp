@@ -195,7 +195,7 @@ long CCFileClass::Read(void *buffer, long size) {
     long maximum = Data.Get_Size() - Position;
 
     size = maximum < size ? maximum : size;
-    //		size = MIN(maximum, size);
+    //		size = std::min(maximum, size);
     if (size) {
       memmove(buffer, (char *)Data + Position, size);
       //			Mem_Copy((char *)Pointer + Position, buffer,

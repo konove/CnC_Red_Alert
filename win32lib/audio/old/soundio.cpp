@@ -213,7 +213,7 @@ static BOOL File_Callback(short id, short *odd, void **buffer, long *size) {
       if (st->FilePending < (StreamLowImpact
                                  ? (LockedData.StreamBufferCount >> 1)
                                  : ((LockedData.StreamBufferCount - 3))) &&
-          st->FileHandle != WW_ERROR) {
+          st->FileHandle != kInvalidHandle) {
         int num_empty_buffers;
 
 #ifdef SIMPLE_FILLING
@@ -234,7 +234,7 @@ static BOOL File_Callback(short id, short *odd, void **buffer, long *size) {
         }
 #endif
 
-        while (num_empty_buffers && (st->FileHandle != WW_ERROR)) {
+        while (num_empty_buffers && (st->FileHandle != kInvalidHandle)) {
           int tofill;
           long psize;
 
@@ -251,7 +251,7 @@ static BOOL File_Callback(short id, short *odd, void **buffer, long *size) {
           */
           if (psize != LockedData.StreamBufferSize) {
             Close_File(st->FileHandle);
-            st->FileHandle = WW_ERROR;
+            st->FileHandle = kInvalidHandle;
           }
 
           /*
@@ -516,7 +516,7 @@ void File_Stream_Preload(int handle) {
       */
       if (st->FilePendingSize != LockedData.StreamBufferSize) {
         Close_File(fh);
-        st->FileHandle = WW_ERROR;
+        st->FileHandle = kInvalidHandle;
       }
 
       /*
@@ -675,7 +675,7 @@ void __cdecl Sound_Callback(void) {
              */
 
             if ((!st->QueueBuffer ||
-                 (st->FileHandle != WW_ERROR &&
+                 (st->FileHandle != kInvalidHandle &&
                   st->FilePending < LockedData.StreamBufferCount - 3)) &&
                 st->Callback) {
               if (!st->Callback((short)index, (short int *)&st->Odd,
@@ -693,10 +693,10 @@ void __cdecl Sound_Callback(void) {
           ** sample will be flagged as inactive, but the file handle
           ** will not have been closed.
           */
-          if (st->FileHandle != WW_ERROR) {
+          if (st->FileHandle != kInvalidHandle) {
             // EnterCriticalSection(&GlobalAudioCriticalSection);
             Close_File(st->FileHandle);
-            st->FileHandle = WW_ERROR;
+            st->FileHandle = kInvalidHandle;
             // LeaveCriticalSection(&GlobalAudioCriticalSection);
           }
         }
@@ -735,7 +735,7 @@ void *Load_Sample(char const *filename) {
   }
 
   fh = Open_File(filename, READ);
-  if (fh != WW_ERROR) {
+  if (fh != kInvalidHandle) {
     size = File_Size(fh) + sizeof(AUDHeaderType);
     buffer = Alloc(size, MEM_NORMAL);
 
@@ -780,7 +780,7 @@ long Load_Sample_Into_Buffer(char const *filename, void *buffer, long size) {
   }
 
   fh = Open_File(filename, READ);
-  if (fh != WW_ERROR) {
+  if (fh != kInvalidHandle) {
     size = Sample_Read(fh, buffer, size);
     Close_File(fh);
   } else {
@@ -820,7 +820,7 @@ long Sample_Read(int fh, void *buffer, long size) {
   ** rate = 1m / (256-TC)
   */
 
-  if (!buffer || fh == WW_ERROR || size <= sizeof(RawHeader)) return (NULL);
+  if (!buffer || fh == kInvalidHandle || size <= sizeof(RawHeader)) return (NULL);
 
   size -= sizeof(RawHeader);
   outbuffer = Add_Long_To_Pointer(buffer, sizeof(RawHeader));
@@ -1139,7 +1139,7 @@ BOOL Audio_Init(HWND window, int bits_per_sample, BOOL stereo, int rate,
       LockedData.SampleTracker[index].Stereo = (stereo) ? AUD_FLAG_STEREO : 0;
       LockedData.SampleTracker[index].BitSize =
           (bits_per_sample == 16) ? AUD_FLAG_16BIT : 0;
-      LockedData.SampleTracker[index].FileHandle = WW_ERROR;
+      LockedData.SampleTracker[index].FileHandle = kInvalidHandle;
       LockedData.SampleTracker[index].QueueBuffer = NULL;
       InitializeCriticalSection(
           &LockedData.SampleTracker[index].AudioCriticalSection);
@@ -1266,9 +1266,9 @@ void Stop_Sample(int handle) {
       /*
        **  If this is a streaming sample, then close the source file.
        */
-      if (LockedData.SampleTracker[handle].FileHandle != WW_ERROR) {
+      if (LockedData.SampleTracker[handle].FileHandle != kInvalidHandle) {
         Close_File(LockedData.SampleTracker[handle].FileHandle);
-        LockedData.SampleTracker[handle].FileHandle = WW_ERROR;
+        LockedData.SampleTracker[handle].FileHandle = kInvalidHandle;
       }
 
       LockedData.SampleTracker[handle].QueueBuffer = NULL;
@@ -1432,9 +1432,9 @@ int Get_Free_Sample_Handle(int priority) {
     return -1;
   }
 
-  if (LockedData.SampleTracker[id].FileHandle != WW_ERROR) {
+  if (LockedData.SampleTracker[id].FileHandle != kInvalidHandle) {
     Close_File(LockedData.SampleTracker[id].FileHandle);
-    LockedData.SampleTracker[id].FileHandle = WW_ERROR;
+    LockedData.SampleTracker[id].FileHandle = kInvalidHandle;
   }
 
   if (LockedData.SampleTracker[id].Original &&

@@ -101,7 +101,7 @@ void Read_Interpolation_Palette(char const* palette_file_name) {
     palette_file.Open(READ);
     palette_file.Read(&PaletteInterpolationTable[0][0], 256 * 256);
     palette_file.Close();
-    InterpolationPaletteChanged = FALSE;
+    InterpolationPaletteChanged = false;
   }
 }
 
@@ -231,7 +231,7 @@ void Create_Palette_Interpolation_Table(void) {
   }
 
 #endif
-  InterpolationPaletteChanged = FALSE;
+  InterpolationPaletteChanged = false;
   return;
 }
 
@@ -258,7 +258,7 @@ void Create_Palette_Interpolation_Table(void) {
 
 void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
                                 int green_percentage, int blue_percentage,
-                                int cap) {
+                                unsigned cap) {
   unsigned int red;
   unsigned int green;
   unsigned int blue;
@@ -271,9 +271,9 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
     green += green * green_percentage / 100;
     blue += blue * blue_percentage / 100;
 
-    red = MIN(cap, red);
-    green = MIN(cap, green);
-    blue = MIN(cap, blue);
+    red = std::min(cap, red);
+    green = std::min(cap, green);
+    blue = std::min(cap, blue);
 
     *(palette + i) = (unsigned char)red;
     *(palette + i + 1) = (unsigned char)green;
@@ -340,7 +340,7 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
       if (dest == &SeenBuff) Show_Mouse();
       return;
     }
-    source_locked = TRUE;
+    source_locked = true;
   }
   if (dest->Get_IsDirectDraw()) {
     if (!dest->Lock()) {
@@ -350,7 +350,7 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
       if (dest == &SeenBuff) Show_Mouse();
       return;
     }
-    dest_locked = TRUE;
+    dest_locked = true;
   }
 
   //

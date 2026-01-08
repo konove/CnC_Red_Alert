@@ -69,7 +69,7 @@ BOOL(CALLBACK *Instance_Class::callback)(
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		dde_error = TRUE if error occurs when initializing DDE
+ *		dde_error = true if error occurs when initializing DDE
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -81,8 +81,8 @@ BOOL(CALLBACK *Instance_Class::callback)(
  *=========================================================================*/
 
 Instance_Class::Instance_Class(LPSTR name1, LPSTR name2) {
-  dde_error = FALSE;      // no errors
-  process_pokes = FALSE;  // disable pokes in callback
+  dde_error = false;      // no errors
+  process_pokes = false;  // disable pokes in callback
 
   id_inst = 0;      // set to 0 for first time through
   conv_handle = 0;  // conversation handle reset
@@ -95,7 +95,7 @@ Instance_Class::Instance_Class(LPSTR name1, LPSTR name2) {
           APPCLASS_STANDARD |            // filter server messages
               CBF_FAIL_SELFCONNECTIONS,  // prevent from connecting with self
           0) != DMLERR_NO_ERROR) {       // reserved
-    dde_error = TRUE;                    // flag an error
+    dde_error = true;                    // flag an error
   }
 
   local_name = DdeCreateStringHandle(id_inst,      // instance identifier
@@ -144,8 +144,8 @@ Instance_Class::~Instance_Class() { DdeUninitialize(id_inst); }
  **
  *                                                                         *
  * INPUT:                                                                  *
- *    TRUE = enable poke processing
- ** FALSE = disable poke processing
+ *    true = enable poke processing
+ ** false = disable poke processing
  **
  *                                                                         *
  * OUTPUT:                                                                 *
@@ -172,8 +172,8 @@ BOOL Instance_Class::Enable_Callback(BOOL flag)  // enable or disable callback
  *    BOOL CALLBACK ( *callback_fnc) ( LPBYTE, DWORD) = user poke callbacl *
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == success
- ** FALSE == failed
+ *		true == success
+ ** false == failed
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -188,9 +188,9 @@ BOOL Instance_Class::Register_Server(BOOL(CALLBACK *callback_fnc)(LPBYTE,
                                                                   long)) {
   if (DdeNameService(id_inst, local_name, 0L, DNS_REGISTER) != 0L) {
     callback = callback_fnc;
-    return (TRUE);
+    return (true);
   } else {
-    return (FALSE);
+    return (false);
   }
 }
 
@@ -202,8 +202,8 @@ BOOL Instance_Class::Register_Server(BOOL(CALLBACK *callback_fnc)(LPBYTE,
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully connected to remote
- ** FALSE == failed to connect
+ *		true == successfully connected to remote
+ ** false == failed to connect
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -218,11 +218,11 @@ BOOL Instance_Class::Register_Server(BOOL(CALLBACK *callback_fnc)(LPBYTE,
  *=========================================================================*/
 
 BOOL Instance_Class::Test_Server_Running(HSZ name) {
-  if (Open_Poke_Connection(name) == TRUE) {
+  if (Open_Poke_Connection(name) == true) {
     Close_Poke_Connection();
-    return (TRUE);
+    return (true);
   } else {
-    return (FALSE);
+    return (false);
   }
 }
 
@@ -235,8 +235,8 @@ BOOL Instance_Class::Test_Server_Running(HSZ name) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully opened connection
- ** FALSE == failed to connect
+ *		true == successfully opened connection
+ ** false == failed to connect
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -255,9 +255,9 @@ BOOL Instance_Class::Open_Poke_Connection(HSZ name) {
                            (PCONVCONTEXT)NULL);  // use default context
 
   if (conv_handle == NULL) {
-    return FALSE;
+    return false;
   } else {
-    return TRUE;
+    return true;
   }
 }
 
@@ -270,8 +270,8 @@ BOOL Instance_Class::Open_Poke_Connection(HSZ name) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully closed connection
- ** FALSE == failed to close connection for some reason
+ *		true == successfully closed connection
+ ** false == failed to close connection for some reason
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -288,7 +288,7 @@ BOOL Instance_Class::Close_Poke_Connection(void) {
     conv_handle = NULL;
     return (DdeDisconnect(temp_handle));
   } else {
-    return (TRUE);
+    return (true);
   }
 }
 
@@ -302,8 +302,8 @@ BOOL Instance_Class::Close_Poke_Connection(void) {
  **
  *                                                                         *
  * OUTPUT:                                                                 *
- *		TRUE == successfully poked the data
- ** FALSE == failed to connect
+ *		true == successfully poked the data
+ ** false == failed to connect
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -328,9 +328,9 @@ BOOL Instance_Class::Poke_Server(LPBYTE poke_data, DWORD poke_length) {
           POKE_TIMEOUT,  // time-out duration (millisecs)
           (LPDWORD)NULL  // address of transaction result (don't check)
           ) == 0) {
-    return (FALSE);
+    return (false);
   } else {
-    return (TRUE);
+    return (true);
   }
 }
 
@@ -410,12 +410,12 @@ HDDEDATA CALLBACK Instance_Class::dde_callback(
       }
 
       Instance_Class::callback(NULL, DDE_ADVISE_CONNECT);
-      return (HDDEDATA)TRUE;
+      return (HDDEDATA) true;
     }
 
     case XTYP_POKE:
 
-      if (Instance_Class::process_pokes == FALSE) {
+      if (Instance_Class::process_pokes == false) {
         return (HDDEDATA)DDE_FNOTPROCESSED;  // processing disabled
       } else {
         char buffer[32];
@@ -439,7 +439,7 @@ HDDEDATA CALLBACK Instance_Class::dde_callback(
 
           DdeUnaccessData(hdata);
 
-          if (processed == TRUE) {
+          if (processed == true) {
             return (HDDEDATA)DDE_FACK;
           } else {
             return (HDDEDATA)NULL;

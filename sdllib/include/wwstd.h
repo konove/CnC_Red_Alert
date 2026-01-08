@@ -37,99 +37,25 @@
 #ifndef WWSTD_H
 #define WWSTD_H
 
-/*
-**	Common constants used in normal code.
-*/
-#define WW_ERROR -1
+inline constexpr int kInvalidHandle = -1;
 
-#define PRIVATE static
-
-#define TRUE true
-#define FALSE false
-
-// Returns the absolute value of the number.
-#ifdef ABS
-#undef ABS
-#endif
-template <class T>
-T ABS(T a) {
-  return (a < 0) ? -a : a;
-}
-
-// Returns the minimum of the two numbers.
-#ifdef MIN
-#undef MIN
-#endif
-template <class T>
-T MIN(T a, T b) {
-  return (b < a) ? b : a;
+enum ColorType : int {
+  TBLACK = 0,
+  PURPLE = 1,
+  CYAN = 2,
+  GREEN = 3,
+  LTGREEN = 4,
+  YELLOW = 5,
+  PINK = 6,
+  BROWN = 7,
+  RED = 8,
+  LTCYAN = 9,
+  LTBLUE = 10,
+  BLUE = 11,
+  BLACK = 12,
+  GREY = 13,
+  LTGREY = 14,
+  WHITE = 15,
 };
-inline int MIN(int a, int b) { return MIN<int>(a, b); }
-
-// Returns the maximum of the two numbers.
-#ifdef MAX
-#undef MAX
-#endif
-template <class T>
-T MAX(T a, T b) {
-  return (b > a) ? b : a;
-};
-inline int MAX(int a, int b) { return MAX<int>(a, b); }
-
-// Inline Routines
-// ════════════════
-//
-// These Template functions are generally used
-// by classes when they havce over loaded > and <.
-//
-#ifdef __cplusplus
-template <class T>
-T Min(T a, T b) {
-  return (a < b ? a : b);
-}
-
-template <class T>
-inline T Max(T a, T b) {
-  return (a > b ? a : b);
-}
-
-template <class T>
-T Abs(T a) {
-  return ((a < 0) ? -(a) : a);
-}
-
-#endif
-
-typedef enum {
-  TBLACK,
-  PURPLE,
-  CYAN,
-  GREEN,
-  LTGREEN,
-  YELLOW,
-  PINK,
-  BROWN,
-  RED,
-  LTCYAN,
-  LTBLUE,
-  BLUE,
-  BLACK,
-  GREY,
-  LTGREY,
-  WHITE,
-  COLOR_PADDING = 0x1000
-} ColorType;
-
-// for TD
-#ifdef TD
-// Returns the low word of a long
-#define LOW_WORD(a) ((unsigned short)((int32_t)(a) & 0x0000FFFFL))
-
-// Returns the high word of a long
-#define HIGH_WORD(a) ((uint32_t)(a) >> 16)
-
-// Merges to shorts to become a long
-#define MAKE_LONG(a, b) (((int32_t)(a) << 16) | (int32_t)((b) & 0x0000FFFFL))
-#endif
 
 #endif

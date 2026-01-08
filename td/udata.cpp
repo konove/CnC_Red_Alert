@@ -1456,12 +1456,12 @@ void UnitTypeClass::One_Time(void) {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
       } else {
-        largest = MAX(largest, (int)Get_Build_Frame_Width(ptr));
-        largest = MAX(largest, (int)Get_Build_Frame_Height(ptr));
+        largest = std::max(largest, (int)Get_Build_Frame_Width(ptr));
+        largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
       }
     }
 
-    ((int &)uclass.MaxSize) = MAX(largest, 8);
+    ((int &)uclass.MaxSize) = std::max(largest, 8);
   }
 
   /*

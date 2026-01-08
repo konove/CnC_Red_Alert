@@ -17,27 +17,29 @@
 */
 
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S               ***
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ *             ***
  ***********************************************************************************************
  *                                                                                             *
- *                 Project Name : Command & Conquer Red Alert                                 *
+ *                 Project Name : Command & Conquer Red Alert               *
  *                                                                                             *
- *                    File Name : INTERPAL.H                                                  *
+ *                    File Name : INTERPAL.H               *
  *                                                                                             *
- *                   Programmer : Steve Tall                                                  *
+ *                   Programmer : Steve Tall               *
  *                                                                                             *
- *                   Start Date : December 7th 1995                                           *
+ *                   Start Date : December 7th 1995               *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Overview:                                                                                   *
- *   Header file for palette interpolation functionality used for scaling 320x200 animations  *
- *   to 640x400 screen resolution.                                                            *
+ * Overview:                * Header file for palette interpolation
+ * functionality used for scaling 320x200 animations  * to 640x400 screen
+ * resolution.                                                            *
  *                                                                                             *
- * Functions:                                                                                  *
- *   Read_Interpolation_Palette -- reads an interpolation palette table from disk             *
- *   Write_Interpolation_Palette -- writes an interpolation palette to disk                   *
- *   Increase_Palette_Luminance -- increase the contrast of a palette                         *
- *   Interpolate_2X_Scale -- Stretch a 320x200 graphic buffer into 640x400                    *
+ * Functions:                * Read_Interpolation_Palette -- reads an
+ * interpolation palette table from disk             *
+ *   Write_Interpolation_Palette -- writes an interpolation palette to disk
+ *              * Increase_Palette_Luminance -- increase the contrast of a
+ * palette                         * Interpolate_2X_Scale -- Stretch a 320x200
+ * graphic buffer into 640x400                    *
  *                                                                                             *
  *=============================================================================================*/
 
@@ -56,10 +58,10 @@ void Read_Interpolation_Palette(char const *palette_file_name);
 void Write_Interpolation_Palette(char const *palette_file_name);
 void Increase_Palette_Luminance(unsigned char *InterpolationPalette,
                                 int RedPercentage, int GreenPercentage,
-                                int BluePercentage, int cap);
+                                int BluePercentage, unsigned cap);
 void Interpolate_2X_Scale(GraphicBufferClass *source,
-                         GraphicViewPortClass *dest,
-                         char const *palette_file_name);
+                          GraphicViewPortClass *dest,
+                          char const *palette_file_name);
 
 // C linkage for assembly functions and global data
 extern "C" {

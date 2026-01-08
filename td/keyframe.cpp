@@ -69,12 +69,12 @@ unsigned TheaterShapeBufferLength = THEATER_BIG_SHAPE_BUFFER_SIZE;
 extern "C" {
 char *BigShapeBufferStart = nullptr;
 char *TheaterShapeBufferStart = nullptr;
-bool UseBigShapeBuffer = FALSE;
+bool UseBigShapeBuffer = false;
 bool IsTheaterShape = false;
 }
 char *BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
-bool ReallocShapeBufferFlag = FALSE;
+bool ReallocShapeBufferFlag = false;
 bool OriginalUseBigShapeBuffer = false;
 
 char *TheaterShapeBufferPtr = nullptr;
@@ -140,7 +140,7 @@ void Reallocate_Big_Shape_Buffer(void) {
       return;
     }
     BigShapeBufferPtr += (uintptr_t)BigShapeBufferStart;
-    ReallocShapeBufferFlag = FALSE;
+    ReallocShapeBufferFlag = false;
   }
 }
 
@@ -154,7 +154,7 @@ void Check_Use_Compressed_Shapes(void) {
   mem_info.dwLength = sizeof(mem_info);
   GlobalMemoryStatus(&mem_info);
 
-  UseBigShapeBuffer = (mem_info.dwTotalPhys > 16 * 1024 * 1024) ? TRUE : FALSE;
+  UseBigShapeBuffer = (mem_info.dwTotalPhys > 16 * 1024 * 1024) ? true : FALSE;
   OriginalUseBigShapeBuffer = UseBigShapeBuffer;
 
   // UseBigShapeBuffer = false;
@@ -273,7 +273,7 @@ void *Build_Frame(void const *dataptr, unsigned short framenumber,
     */
     if ((BigShapeBufferStart + BigShapeBufferLength) - BigShapeBufferPtr <
         128 * 1024) {
-      ReallocShapeBufferFlag = TRUE;
+      ReallocShapeBufferFlag = true;
     }
 
     /*

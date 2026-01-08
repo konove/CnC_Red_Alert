@@ -89,7 +89,7 @@ void Stop_Profiler(void) {
     ProfilerEvent = NULL;
 
     int handle = Open_File("profile.bin", WRITE);
-    if (handle != WW_ERROR) {
+    if (handle != kInvalidHandle) {
       Write_File(handle, &ProfileList[0], ProfilePtr * 4);
       Close_File(handle);
     }

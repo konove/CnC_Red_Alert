@@ -2228,7 +2228,7 @@ bool XMP_Small_Divisors_Test(const digit *candidate, int precision) {
  *          precision   -- The precision of the MP number. *
  *                                                                                             *
  * OUTPUT:  bool; Was the number not proven to be not prime. A FALSE means that
- *it is not      * prime. A TRUE means that it might be prime. *
+ *it is not      * prime. A true means that it might be prime. *
  *                                                                                             *
  * WARNINGS:   This takes a bit of time. The time it takes is directly
  *controlled by the       * number of rounds specified. Keep the number of
@@ -2275,7 +2275,7 @@ bool XMP_Fermat_Test(const digit *candidate_prime, unsigned rounds,
  *          precision-- The precision of the MP number specified. *
  *                                                                                             *
  * OUTPUT:  bool; Was the number not proven to be not prime? A FALSE means that
- *the number is  * not prime. A TRUE means that it might be. *
+ *the number is  * not prime. A true means that it might be. *
  *                                                                                             *
  * WARNINGS:   This routine takes a long time. Use as few rounds as possible. *
  *                                                                                             *
@@ -2416,7 +2416,7 @@ void XMP_Randomize(digit *result, Straw &rng, digit const *minval,
  *          precision-- The precision of the MP number specified. *
  *                                                                                             *
  * OUTPUT:  bool; Was the number not proven to be not prime? If FALSE, then the
- *number is      * not prime. If TRUE, then it might be. *
+ *number is      * not prime. If true, then it might be. *
  *                                                                                             *
  * WARNINGS:   This can take a very very very very very long time. Especially
  *for the larger   * numbers. *

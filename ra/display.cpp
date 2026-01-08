@@ -1724,10 +1724,10 @@ void DisplayClass::Draw_It(bool forced) {
                  xmod;  // Old relative offset.
       int oldy = Lepton_To_Pixel(Coord_Y(TacticalCoord)) - ymod;
 
-      int oldw =
-          Lepton_To_Pixel(TacLeptonWidth) - ABS(oldx);  // Replicable width.
-      int oldh =
-          Lepton_To_Pixel(TacLeptonHeight) - ABS(oldy);  // Replicable height.
+      int oldw = Lepton_To_Pixel(TacLeptonWidth) -
+                 std::abs(oldx);  // Replicable width.
+      int oldh = Lepton_To_Pixel(TacLeptonHeight) -
+                 std::abs(oldy);  // Replicable height.
 
       if (oldw < 1) forced = true;
       if (oldh < 1) forced = true;
@@ -3748,7 +3748,7 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
       **	The mouse must have moved a minimum distance before rubber band
       *mode can be *	initiated.
       */
-      if (ABS(x - BandX) > 4 || ABS(y - BandY) > 4) {
+      if (std::abs(x - BandX) > 4 || std::abs(y - BandY) > 4) {
         IsRubberBand = true;
         x = Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1);
         y = Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1);

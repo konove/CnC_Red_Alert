@@ -62,7 +62,7 @@
 
 #include "td/function.h"
 
-DriveClass::DriveClass(void) : Class(nullptr){};
+DriveClass::DriveClass(void) : Class(nullptr) {};
 
 /***********************************************************************************************
  * DriveClass::Do_Turn -- Tries to turn the vehicle to the specified direction.
@@ -674,7 +674,7 @@ bool DriveClass::While_Moving(void) {
                 track = newtrack;
 
                 //			Mono_Printf("**Jumping from track %d to
-                //track %d. **\n", tracknum, track->Track);Keyboard::Get();
+                // track %d. **\n", tracknum, track->Track);Keyboard::Get();
 
                 tracknum = track->Track;
                 TrackIndex =
@@ -1337,14 +1337,14 @@ void DriveClass::Fixup_Path(PathType *path) {
   if (!facediff) return;
 
   if (Dir_Facing(PrimaryFacing) & FACING_NE) {
-    ptr = &_dpath[(FacingType)ABS((int)facediff) - FACING_NE]
+    ptr = &_dpath[(FacingType)std::abs((int)facediff) - FACING_NE]
                  [1];  // Pointer to path adjust list.
-    counter = (int)_dpath[(FacingType)ABS((int)facediff) - FACING_NE]
+    counter = (int)_dpath[(FacingType)std::abs((int)facediff) - FACING_NE]
                          [0];  // Number of path adjusts.
   } else {
-    ptr = &_path[(FacingType)ABS((int)facediff) - FACING_NE]
+    ptr = &_path[(FacingType)std::abs((int)facediff) - FACING_NE]
                 [1];  // Pointer to path adjust list.
-    counter = (int)_path[(FacingType)ABS((int)facediff) - FACING_NE]
+    counter = (int)_path[(FacingType)std::abs((int)facediff) - FACING_NE]
                         [0];  // Number of path adjusts.
   }
   ptr2 = ptr;
@@ -1382,7 +1382,7 @@ void DriveClass::Fixup_Path(PathType *path) {
   **	to the right. This only makes sense if the vehicle is trying
   **	to turn 180 degrees.
   */
-  if (!ok && ABS(facediff) == 4) {
+  if (!ok && std::abs(facediff) == 4) {
     ptr = ptr2;  // Pointer to path adjust list.
     facediff = -facediff;
     ok = true;                             // Presume adjustment is all ok.
@@ -1420,7 +1420,7 @@ void DriveClass::Fixup_Path(PathType *path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      movmem(&stage[0], path->Command, MAX(counter, 1));
+      movmem(&stage[0], path->Command, std::max(counter, 1));
       path->Length = counter;
     } else {
       /*

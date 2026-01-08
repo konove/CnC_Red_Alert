@@ -454,7 +454,7 @@ void ScoreClass::Presentation(void) {
 #ifdef WIN32
   VisiblePage.Clear();
   // SysMemPage.Clear();
-  WWMouse->Erase_Mouse(&HidPage, TRUE);
+  WWMouse->Erase_Mouse(&HidPage, true);
   HiddenPage.Clear();
   // Set_Logic_Page(SysMemPage);
 #else
@@ -1738,7 +1738,7 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled) {
                          (0 + std::min(i, gkilled) + 1) * RESFACTOR,
                          0 + 6 * RESFACTOR, TBLACK);
     LogicPage->Draw_Line(
-        (0 + MIN(i, gkilled) + 1) * RESFACTOR, 0 + 5 * RESFACTOR,
+        (0 + std::min(i, gkilled) + 1) * RESFACTOR, 0 + 5 * RESFACTOR,
         (0 + std::min(i, gkilled) + 1) * RESFACTOR, 0 + 5 * RESFACTOR, TBLACK);
     if (i <= gkilled) {
       int anim = InfantryMan[i / 11].anim;
@@ -1837,7 +1837,7 @@ void Animate_Score_Objs() {
   ** we need to redraw.
   */
   if (AllSurfaces.SurfacesRestored) {
-    AllSurfaces.SurfacesRestored = FALSE;
+    AllSurfaces.SurfacesRestored = false;
     PseudoSeenBuff->Blit(SeenPage);
   }
 #endif

@@ -58,7 +58,7 @@ void Read_Interpolation_Palette(char const *palette_file_name);
 void Write_Interpolation_Palette(char const *palette_file_name);
 void Increase_Palette_Luminance(unsigned char *InterpolationPalette,
                                 int RedPercentage, int GreenPercentage,
-                                int BluePercentage, int cap);
+                                int BluePercentage, unsigned cap);
 void Interpolate_2X_Scale(GraphicBufferClass *source,
                           GraphicViewPortClass *dest,
                           char const *palette_file_name);

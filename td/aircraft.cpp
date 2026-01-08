@@ -387,8 +387,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   */
   Techno_Draw_Object(shapefile, shapenum, x, (y - Altitude) + jitter, window);
   //	CC_Draw_Shape(shapefile, shapenum, x, (y-Altitude)+jitter, window,
-  //SHAPE_FADING|SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_GHOST,
-  //House->Remap_Table(IsBlushing, true), Map.UnitShadow);
+  // SHAPE_FADING|SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_GHOST,
+  // House->Remap_Table(IsBlushing, true), Map.UnitShadow);
 
   /*
   **	Draw rotor effects. The rotor art can be either generic or custom.
@@ -468,8 +468,8 @@ void AircraftClass::Read_INI(char *buffer) {
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
   while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
     if (inhouse != HOUSE_NONE) {
       classid = AircraftTypeClass::From_Name(strtok(nullptr, ","));
@@ -1092,7 +1092,9 @@ int AircraftClass::Mission_Unload(void) {
               }
 
               //							if
-              //(Is_Something_Attached()) { 								Status = PICK_AIRSTRIP; 							} else {
+              //(Is_Something_Attached()) {
+              //Status = PICK_AIRSTRIP;
+              //} else {
               Status = BUG_OUT;
               //							}
             } else {
@@ -1850,7 +1852,7 @@ int AircraftClass::Process_Fly_To(bool slowdown) {
   PrimaryFacing.Set_Desired(Direction(coord));
 
   if (slowdown) {
-    int speed = MIN(distance, 0x0300);
+    int speed = std::min(distance, 0x0300);
     speed = Bound(speed / 3, 0x0020, 0x00FF);
     if (Speed != speed) {
       Set_Speed(speed);

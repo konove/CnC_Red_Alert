@@ -275,7 +275,7 @@ int ScreenWidth = 640;
 int ScreenHeight = 400;
 #endif
 GraphicBufferClass ModeXBuff;
-bool InMovie = FALSE;  // Are we currently playing a VQ movie?
+bool InMovie = false;  // Are we currently playing a VQ movie?
 #ifndef PORTABLE
 HANDLE hInstance;
 #endif
@@ -682,7 +682,7 @@ NullModemClass NullModem(16,  // number of send entries
 ** the class itself is 140 bytes.
 */
 // IPXManagerClass Ipx (
-//	MAX (sizeof (GlobalPacketType), sizeof(RemoteFileTransferType)),
+//	std::max (sizeof (GlobalPacketType), sizeof(RemoteFileTransferType)),
 //// size of Global Channel packets
 //	((546 - sizeof(CommHeaderType)) / sizeof(EventClass) ) *
 // sizeof(EventClass), 	10,
@@ -692,8 +692,8 @@ NullModemClass NullModem(16,  // number of send entries
 /// #
 
 IPXManagerClass Ipx(
-    MAX(sizeof(GlobalPacketType),
-        sizeof(RemoteFileTransferType)),  // size of Global Channel packets
+    std::max(sizeof(GlobalPacketType),
+             sizeof(RemoteFileTransferType)),  // size of Global Channel packets
     ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass),
     160,                                        // # entries in Global Queue
     32,                                         // # entries in Private Queues

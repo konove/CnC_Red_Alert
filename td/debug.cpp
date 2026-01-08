@@ -390,8 +390,8 @@ void Debug_Key(unsigned input) {
           if (input == KA_ESC) break;
           input -= KA_0;
           input = Bound(input, 0, 7);
-          //						input = MAX(input, 0);
-          //						input = MIN(input, 7);
+          //						input = std::max(input,
+          //0); 						input = std::min(input, 7);
           f1 = input;
           Int_Print(f1, 100, 0, WHITE, BLACK);
 
@@ -401,8 +401,8 @@ void Debug_Key(unsigned input) {
           if (input == KA_ESC) break;
           input -= KA_0;
           input = Bound(input, 0, 7);
-          //						input = MAX(input, 0);
-          //						input = MIN(input, 7);
+          //						input = std::max(input,
+          //0); 						input = std::min(input, 7);
           f2 = input;
           Int_Print(f2, 100, 10, WHITE, BLACK);
 
@@ -474,8 +474,8 @@ void Debug_Key(unsigned input) {
               for (x = -MAX_RADIUS; x <= MAX_RADIUS; x++) {
                 int xd, yd, dist;
 
-                xd = ABS(x);
-                yd = ABS(y);
+                xd = std::abs(x);
+                yd = std::abs(y);
                 if (xd > yd) {
                   dist = yd / 2 + xd;
                 } else {
@@ -486,11 +486,11 @@ void Debug_Key(unsigned input) {
 
                   if (y) {
                     if (y < 0) {
-                      fprintf(fh, "(-MCW*%d)", ABS(y));
+                      fprintf(fh, "(-MCW*%d)", std::abs(y));
                     } else {
-                      fprintf(fh, "(MCW*%d)", ABS(y));
+                      fprintf(fh, "(MCW*%d)", std::abs(y));
                     }
-                    fprintf(fh, "%c%d,", (x < 0) ? '-' : '+', ABS(x));
+                    fprintf(fh, "%c%d,", (x < 0) ? '-' : '+', std::abs(x));
                   } else {
                     fprintf(fh, "%d,", x);
                   }
