@@ -56,6 +56,8 @@
  *                                                                                             *
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/credits.h"
+
 #include <algorithm>
 #include <cstdlib>
 
@@ -63,7 +65,6 @@
 #include "sdllib/include/wwstd.h"
 #include "td/audio.h"
 #include "td/conquer.h"
-#include "td/credits.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"

@@ -56,6 +56,7 @@
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
 #include "td/door.h"
+
 #include "td/stage.h"
 
 DoorClass::DoorClass(void) {

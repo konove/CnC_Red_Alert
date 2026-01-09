@@ -16,10 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <string.h>
 #include <algorithm>
+#include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 /* $Header:   F:\projects\c&c\vcs\code\display.cpv   2.16   16 Oct 1995 16:48:24
  * JOE_BOSTIC  $ */
@@ -95,17 +95,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 #include "rand.h"
-#include "support.h"
-#include "sdllib/include/font.h"
-#include "sdllib/include/memflag.h"
 #include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
+#include "support.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/ccfile.h"

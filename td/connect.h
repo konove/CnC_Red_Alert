@@ -73,11 +73,15 @@
  *                                                                         *
  * NOTES ON ACK/RETRY:
  ** The packet's ID is used to check for re-sends.  The ID is set to the *
- * Queue's total Send Count; if the receiving system checks this value, * and it's less than that system's Receive Count, this is a resend.  		*
- * (ie packet 0 will be the 1st packet sent, since the Send Queue's count * is 0
- *when it's sent;  as soon as it's received, the Receive Count goes 	* up to 1, and an ID of 0 then means a resend.)  This scheme keeps the 	*
+ * Queue's total Send Count; if the receiving system checks this value, * and
+ * it's less than that system's Receive Count, this is a resend. 	* (ie
+ * packet 0 will be the 1st packet sent, since the Send Queue's count * is 0
+ *when it's sent;  as soon as it's received, the Receive Count goes 	* up to
+ * 1, and an ID of 0 then means a resend.)  This scheme keeps the 	*
  * application from seeing the same packet twice.  All the Connection * Manager
- *has to do is mark the resent packet as non-ACK'd.  Of course, 	* the Manager doesn't have to use this value at all.								*
+ *has to do is mark the resent packet as non-ACK'd.  Of course, 	* the
+ * Manager doesn't have to use this value at all.
+ *				*
  *                                                                         *
  * Both DATA_ACK packets and DATA_NOACK packets must go through the Send
  ** Queue when "sent", so that the SendTotal value for this system

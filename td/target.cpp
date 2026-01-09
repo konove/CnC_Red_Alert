@@ -54,6 +54,7 @@
  *- - - - - - - */
 
 #include "td/target.h"
+
 #include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -107,7 +108,8 @@ TriggerClass *As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass *As_Team(TARGET target) {
-  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr);
+  return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target))
+                                 : nullptr);
 }
 
 /***********************************************************************************************
@@ -304,7 +306,8 @@ ObjectClass *As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass *As_Unit(TARGET target) {
-  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr);
+  return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target))
+                                 : nullptr);
 }
 
 /***********************************************************************************************

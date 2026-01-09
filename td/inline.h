@@ -1,12 +1,13 @@
 #ifndef CNC_RED_ALERT_TD_INLINE_H_
 #define CNC_RED_ALERT_TD_INLINE_H_
 
-#include "td/display_constants.h"
-// #include "td/externs.h"
-#include "td/const.h"
-#include "td/face.h"
-
 #include <concepts>
+#include <cstdint>
+
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/face.h"
 
 // Extracts the lower 16 bits (low word) from an integer.
 template <std::integral T>

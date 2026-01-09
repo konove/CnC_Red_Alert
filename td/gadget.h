@@ -85,8 +85,8 @@
 #ifndef GADGET_H
 #define GADGET_H
 
-#include "td/link.h"
 #include "sdllib/include/keyboard.h"
+#include "td/link.h"
 
 class ControlClass;
 

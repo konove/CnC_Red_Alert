@@ -42,12 +42,15 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <mem.h>
-#include <dos.h>
-#include "winvq/vqm32/video.h"
-#include "winvq/vqm32/vesavid.h"
 #include "winvq/vqm32/vesablit.h"
+
+#include <dos.h>
+#include <mem.h>
+
+#include <cstdio>
+
+#include "winvq/vqm32/vesavid.h"
+#include "winvq/vqm32/video.h"
 
 /****************************************************************************
  *

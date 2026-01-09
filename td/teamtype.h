@@ -37,13 +37,13 @@
 #ifndef TEAMTYPE_H
 #define TEAMTYPE_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "tech/noinit.h"
 #include "td/defines.h"
-#include "td/type.h"
 #include "td/house.h"
 #include "td/target.h"
+#include "td/type.h"
+#include "tech/noinit.h"
 #include "tech/wwfile.h"
 
 /*

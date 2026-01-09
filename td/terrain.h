@@ -41,14 +41,14 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/object.h"
-#include "td/type.h"
 #include "td/defines.h"
 #include "td/inline.h"
+#include "td/object.h"
 #include "td/stage.h"
 #include "td/techno.h"
+#include "td/type.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
 
@@ -70,7 +70,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   TerrainClass(void);
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const &x)
-      : ObjectClass(x), Class(Class), StageClass(x){};
+      : ObjectClass(x), Class(Class), StageClass(x) {};
   virtual ~TerrainClass(void);
   virtual RTTIType What_Am_I(void) const { return RTTI_TERRAIN; };
 

@@ -67,17 +67,18 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/ipx95.h"
-#include "td/tcpip.h"
+#include "td/ipxmgr.h"
+
 #include "td/combuf.h"
 #include "td/connect.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/ipx.h"
+#include "td/ipx95.h"
 #include "td/ipxaddr.h"
 #include "td/ipxconn.h"
 #include "td/ipxgconn.h"
-#include "td/ipxmgr.h"
+#include "td/tcpip.h"
 
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *

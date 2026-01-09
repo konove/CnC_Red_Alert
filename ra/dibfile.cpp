@@ -46,15 +46,17 @@
 //
 //*******************************************************************
 
-#include <windows.h>
-#include <cstring>
-#include <cstdio>
-#include <math.h>
-#include <io.h>
 #include <direct.h>
+#include <io.h>
+#include <math.h>
+#include <windows.h>
+
+#include <cstdio>
 #include <cstdlib>
-#include "ra/dibutil.h"
+#include <cstring>
+
 #include "ra/dibapi.h"
+#include "ra/dibutil.h"
 
 // #include "WolDebug.h"
 

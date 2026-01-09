@@ -49,8 +49,8 @@
 ********************************* Includes **********************************
 */
 #include "ra/connect.h"
-#include "ra/ipxaddr.h"
 #include "ra/ipx.h"
+#include "ra/ipxaddr.h"
 
 /*
 ***************************** Class Declaration *****************************
@@ -72,7 +72,7 @@ class IPXConnClass : public ConnectionClass {
   .....................................................................*/
   IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
                IPXAddressClass *address, int id, char *name, int extralen = 0);
-  virtual ~IPXConnClass(){};
+  virtual ~IPXConnClass() {};
 
   /*.....................................................................
   Initialization.

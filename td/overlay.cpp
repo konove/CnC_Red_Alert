@@ -47,11 +47,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "td/overlay.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "td/abstract.h"
 #include "td/cell.h"
 #include "td/compat.h"
@@ -366,8 +367,8 @@ void OverlayClass::Read_INI(char *buffer) {
     OverlayType classid;
 
     cell = atoi(tbuffer);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
     classid = OverlayTypeClass::From_Name(strtok(buf, ",\n\r"));
 
     /*

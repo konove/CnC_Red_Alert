@@ -1,8 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_GLOBALS_H_
 #define CNC_RED_ALERT_TD_GLOBALS_H_
 
-#include "td/special.h"
 #include "sdllib/include/gbuffer.h"
+#include "td/special.h"
 
 extern long Frame;
 //  True if we are currently in focus windows app

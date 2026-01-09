@@ -34,11 +34,13 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  *                                                                         *
- * This class is a special type of IPX Connection.  It can talk to more * than one system at a time.  It can Broadcast packets to all systems,		*
- * or send a packet to one individual system.  The packets it sends to *
+ * This class is a special type of IPX Connection.  It can talk to more * than
+ * one system at a time.  It can Broadcast packets to all systems,
+ *	* or send a packet to one individual system.  The packets it sends to *
  * individual systems can be DATA_NOACK or DATA_ACK packets, but the
- ** packets broadcast have to be DATA_NOACK packets.  This class is for * only the crudest "Who-are-you" type of network communications.  Once		*
- * the IPX Address of another system is identified, a "real" IPX
+ ** packets broadcast have to be DATA_NOACK packets.  This class is for * only
+ * the crudest "Who-are-you" type of network communications.  Once
+ *	* the IPX Address of another system is identified, a "real" IPX
  ** Connection should be created, & further communications done through it.
  **
  *																									*
@@ -52,10 +54,10 @@
 #ifndef IPXGLOBALCONN_H
 #define IPXGLOBALCONN_H
 
-#include "td/ipxconn.h"
 #include "td/connect.h"
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
+#include "td/ipxconn.h"
 
 /*
 ********************************** Defines **********************************
@@ -106,7 +108,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   .....................................................................*/
   IPXGlobalConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short product_id);
-  virtual ~IPXGlobalConnClass(){};
+  virtual ~IPXGlobalConnClass() {};
 
   /*.....................................................................
   Send/Receive routines.

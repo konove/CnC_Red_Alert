@@ -47,12 +47,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <algorithm>
-
 #include "td/smudge.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "td/abstract.h"
 #include "td/cell.h"
 #include "td/compat.h"

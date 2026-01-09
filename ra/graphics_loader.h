@@ -28,10 +28,9 @@
 class GraphicViewPortClass;
 
 // Loads a PCX title screen image into a graphics viewport.
-// Reads the PCX file, extracts the palette, and blits the image to the viewport.
-// The palette parameter is updated with the image's palette data.
-void Load_Title_Screen(std::string_view name,
-                       GraphicViewPortClass* video_page,
+// Reads the PCX file, extracts the palette, and blits the image to the
+// viewport. The palette parameter is updated with the image's palette data.
+void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
                        unsigned char* palette);
 
 #endif  // GRAPHICS_LOADER_H

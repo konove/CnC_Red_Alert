@@ -52,7 +52,6 @@
 
 #include <filesystem>
 
-#include "td/type.h"
 #include "port/ex_string.h"
 #include "sdllib/include/shape.h"
 #include "td/conquer.h"
@@ -65,6 +64,7 @@
 #include "td/mixfile.h"
 #include "td/object.h"
 #include "td/smudge.h"
+#include "td/type.h"
 
 static SmudgeTypeClass const Crater1(
 

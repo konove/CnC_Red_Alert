@@ -20,26 +20,25 @@
 
 //	rawolapi.cpp - Core WOLAPI interface functions stuff.
 //	Definitions for RAChatEventSink, RADownloadEventSink,
-//RANetUtilEventSink. 	ajw 07/10/98
+// RANetUtilEventSink. 	ajw 07/10/98
 
 #include "RAWolapi.h"
 #define IID_DEFINED
-#include "wolapi\wolapi_i.c"
-#include "WolapiOb.h"
+#include "WolDebug.h"
 #include "WolStrng.h"
 #include "Wol_gsup.h"
+#include "WolapiOb.h"
 #include "wolapi\netutildefs.h"
-
-#include "WolDebug.h"
+#include "wolapi\wolapi_i.c"
 
 bool operator<(const User& u1, const User& u2);
 
 const char* Game_Registry_Key();
 
 //	The definitions of QueryInterface, AddRef, and Release are needed
-//because we are not including 	files that ordinarily (under MSVC) would define
-//these for us, as part of CComObjectRoot, I believe. 	This Watcom has no
-//equivalent we can use, so we do it manually...
+// because we are not including 	files that ordinarily (under MSVC) would
+// define these for us, as part of CComObjectRoot, I believe. 	This Watcom has
+// no equivalent we can use, so we do it manually...
 
 //***********************************************************************************************
 RAChatEventSink::RAChatEventSink(WolapiObject* pOwnerIn)
@@ -127,7 +126,7 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
   if (SUCCEEDED(hRes)) {
     while (pServerHead) {
       //	Copy the first IRC Server to use in the RequestConnection()
-      //call.
+      // call.
       if (!pServer && (strcmp((char*)pServerHead->connlabel, "IRC") == 0)) {
         pServer = new Server;
         *pServer = *pServerHead;
@@ -240,7 +239,8 @@ STDMETHODIMP RAChatEventSink::OnLogout(HRESULT hRes, User* pUser) {
     //	Someone has been logged out by the chat server due to inactivity.
     //	Fake a call to OnChannelLeave(), as the processing is identical.
     //		debugprint( "OnLogout calling OnChannelLeave for %s,
-    //owner=%i\n", (char*)pUser->name, ( pUser->flags & CHAT_USER_CHANNELOWNER )
+    // owner=%i\n", (char*)pUser->name, ( pUser->flags & CHAT_USER_CHANNELOWNER
+    // )
     //);
     OnChannelLeave(S_OK, NULL, pUser);
   }
@@ -315,8 +315,8 @@ STDMETHODIMP RAChatEventSink::OnChannelCreate(HRESULT hRes, Channel*) {
   //	if( bJoined )
   //	{
   //		WWMessageBox().Process( "RAChatEventSink::OnChannelCreate called
-  //when bJoined is true!" ); 		Fatal( "RAChatEventSink::OnChannelCreate called
-  //when bJoined is true!" );
+  // when bJoined is true!" ); 		Fatal( "RAChatEventSink::OnChannelCreate
+  // called when bJoined is true!" );
   //	}
 
   if (SUCCEEDED(hRes)) {
@@ -336,8 +336,8 @@ STDMETHODIMP RAChatEventSink::OnChannelJoin(HRESULT hRes, Channel* /*pChannel*/,
                                             User* pUser) {
   //	if( SUCCEEDED( hRes ) )
   //		debugprint( ">>> OnChannelJoin got: channel '%s', user '%s', %i
-  //", (char*)pChannel->name, (char*)pUser->name, hRes ); 	else 		debugprint( ">>>
-  //OnChannelJoin got: %i ", hRes );
+  //", (char*)pChannel->name, (char*)pUser->name, hRes ); 	else
+  //debugprint( ">>> OnChannelJoin got: %i ", hRes );
   DebugChatDef(hRes);
 
   //	//	Special case - ignore OnChannelJoin when waiting for a UserList.
@@ -365,24 +365,24 @@ STDMETHODIMP RAChatEventSink::OnChannelJoin(HRESULT hRes, Channel* /*pChannel*/,
              pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
              pOwner->pGSupDlg->bExitForGameTrigger || iGameID)) {
           //	A game has this moment entered the "must start" phase. We can
-          //ignore the fact that others are leaving the channel.
+          // ignore the fact that others are leaving the channel.
           //					debugprint( "Ignoring leave
-          //because game is starting.\n" );
+          // because game is starting.\n" );
           return S_OK;
         }
       }
       //	Add user to our current channel users list.
       if (!pUserList) {
         //				debugprint( "pUserList is null in
-        //OnChannelJoin - ignoring %s join... \n", (char*)pUser->name );
+        // OnChannelJoin - ignoring %s join... \n", (char*)pUser->name );
         return S_OK;
       }
       //			if( !pUserList )
       //			{
       //				//	There has to be at least one
-      //user there - you. 				debugprint( "pUserList is null in OnChannelJoin!!!
-      //users: %s\n", (char*)pUser->name ); 				Fatal( "pUserList is null in
-      //OnChannelJoin!!!\n" );
+      // user there - you. 				debugprint( "pUserList
+      // is null in OnChannelJoin!!! users: %s\n", (char*)pUser->name );
+      // Fatal( "pUserList is null in OnChannelJoin!!!\n" );
       //			}
 
       User* pUserNew = new User;
@@ -464,13 +464,13 @@ bool operator<(const User& u1, const User& u2) {
 STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
                                              User* pUser) {
   //	Note: This is also called directly from OnUserKick(), below, when
-  //someone is kicked from a channel. 	Also now from OnLogout().
+  // someone is kicked from a channel. 	Also now from OnLogout().
 
   //	debugprint( ">>> OnChannelLeave got %s: ", (char*)pUser->name );
   DebugChatDef(hRes);
 
   //	//	Special case - ignore OnChannelLeave when waiting for a
-  //UserList. 	if( bRequestUserListWait )
+  // UserList. 	if( bRequestUserListWait )
   //	{
   //		debugprint( "bRequestUserListWait is true - ignoring leave.\n"
   //); 		return S_OK;
@@ -484,7 +484,7 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
       //	Remove user from our current channel users list.
       if (!pUserList) {
         //				debugprint( "pUserList is null in
-        //OnChannelLeave - ignoring %s leave... \n", (char*)pUser->name );
+        // OnChannelLeave - ignoring %s leave... \n", (char*)pUser->name );
         return S_OK;
       }
       if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
@@ -493,9 +493,9 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
              pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
              pOwner->pGSupDlg->bExitForGameTrigger || iGameID)) {
           //	A game has this moment entered the "must start" phase. We must
-          //ignore the fact that others are leaving the channel.
+          // ignore the fact that others are leaving the channel.
           //					debugprint( "Ignoring leave
-          //because game is starting.\n" );
+          // because game is starting.\n" );
           return S_OK;
         }
       }
@@ -510,10 +510,10 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
             pUserList = pUserSearch->next;
             if (!pUserList) {
               //	This means all entries were removed. Can't happen, as
-              //you are still there.
+              // you are still there.
               //							debugprint(
               //"This means all entries were removed. Can't happen, as you are
-              //still there. (OnChannelLeave)\n" );
+              // still there. (OnChannelLeave)\n" );
               Fatal(
                   "This means all entries were removed. Can't happen, as you "
                   "are still there. (OnChannelLeave)\n");
@@ -534,13 +534,13 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel*,
       if (!bFound) {
         //	User has to be found. This should not happen.
         //				debugprint( "User not found for removal
-        //in OnChannelLeave!!!\n" );
+        // in OnChannelLeave!!!\n" );
         return S_OK;
       }
 
       if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
         //	Note that the following is done before removing the user from
-        //the playerlist.
+        // the playerlist.
         char* szPrint = new char[strlen(TXT_WOL_PLAYERLEFTGAME) +
                                  strlen((char*)pUser->name) + 5];
         sprintf(szPrint, TXT_WOL_PLAYERLEFTGAME, (char*)pUser->name);
@@ -675,7 +675,7 @@ STDMETHODIMP RAChatEventSink::OnNetStatus(HRESULT hRes) {
 
   if (!SUCCEEDED(hRes)) {
     //	If we are waiting for a server list, this error might indicate that
-    //we're not going to 	get one, so bail out of waiting for it.
+    // we're not going to 	get one, so bail out of waiting for it.
     bRequestServerListWait = false;
     //	Same for logout.
     bRequestLogoutWait = false;
@@ -689,7 +689,7 @@ STDMETHODIMP RAChatEventSink::OnNetStatus(HRESULT hRes) {
       //	Uh oh. We got disconnected unexpectedly.
       if (pOwner->bInGame)
         //	Set flag for wolapi destruction if connection is lost during
-        //game.
+        // game.
         pOwner->bConnectionDown = true;
       else {
         if (!pOwner->bSelfDestruct) {
@@ -707,34 +707,34 @@ STDMETHODIMP RAChatEventSink::OnNetStatus(HRESULT hRes) {
 //***********************************************************************************************
 STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
   if (bIgnoreChannelLists)  //	Response to channel lists has been temporarily
-                            //turned off.
+                            // turned off.
   {
     //		debugprint( ">>> IGNORED OnChannelList, filter = %i, WO's
-    //LastUpdateChannelCallLevel = %i \n", ChannelFilter,
-    //pOwner->LastUpdateChannelCallLevel );
+    // LastUpdateChannelCallLevel = %i \n", ChannelFilter,
+    // pOwner->LastUpdateChannelCallLevel );
     return S_OK;
   }
 
   //	Special case for modal GetLobbyChannels(). Because we want to be sure
-  //this OnChannelList is one that was caused 	by a Request for gametype 0, and
-  //not one arriving from an earlier Request for games. 	This OnChannelList might
-  //not actually match the Request in GetLobbyChannels(), but as long as it's
-  //type 0 it'll do.
+  // this OnChannelList is one that was caused 	by a Request for gametype 0, and
+  // not one arriving from an earlier Request for games. 	This
+  // OnChannelList might not actually match the Request in GetLobbyChannels(),
+  // but as long as it's type 0 it'll do.
   if (bRequestChannelListForLobbiesWait) {
     if (pChannelListIn && pChannelListIn->type != 0) {
       //			debugprint( ">>> IGNORED OnChannelList,
-      //bRequestChannelListForLobbiesWait if\n" );
+      // bRequestChannelListForLobbiesWait if\n" );
       return S_OK;
     }
     //	Note: if no channels in list, can't tell what kind of Request call gave
-    //us this list. 	(In our case assume it was the one asking for lobbies and
-    //allow to fail later naturally due to no lobbies available.)
+    // us this list. 	(In our case assume it was the one asking for lobbies
+    // and allow to fail later naturally due to no lobbies available.)
   }
 
   DeleteChannelList();
   //	debugprint( ">>> OnChannelList, filter = %i, WO's
-  //LastUpdateChannelCallLevel = %i \n", ChannelFilter,
-  //pOwner->LastUpdateChannelCallLevel );
+  // LastUpdateChannelCallLevel = %i \n", ChannelFilter,
+  // pOwner->LastUpdateChannelCallLevel );
 
   int iLobbyCur =
       iChannelLobbyNumber((unsigned char*)pOwner->szChannelNameCurrent);
@@ -749,7 +749,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
         if (pChannelListIn->official != 1 ||
             iChannelLobbyNumber(pChannelListIn->name) != -1) {
           //				debugprint( "(OnChannelList filtered
-          //this one.)\n", pChannelListIn->name );
+          // this one.)\n", pChannelListIn->name );
           pChannelListIn = pChannelListIn->next;
           continue;
         }
@@ -758,7 +758,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
         if (pChannelListIn->official == 1 ||
             iChannelLobbyNumber(pChannelListIn->name) != -1) {
           //				debugprint( "(OnChannelList filtered
-          //this one.)\n", pChannelListIn->name );
+          // this one.)\n", pChannelListIn->name );
           pChannelListIn = pChannelListIn->next;
           continue;
         }
@@ -767,7 +767,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
         int iLobby = iChannelLobbyNumber(pChannelListIn->name);
         if (iLobby == -1) {
           //				debugprint( "(OnChannelList filtered
-          //this one.)\n", pChannelListIn->name );
+          // this one.)\n", pChannelListIn->name );
           pChannelListIn = pChannelListIn->next;
           continue;
         }
@@ -775,7 +775,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
       }
       case CHANNELFILTER_LOCALLOBBYGAMES:
         //	We are listing games of our type, and may have to filter out
-        //non-local-lobby games.
+        // non-local-lobby games.
         if (!pOwner->bAllGamesShown) {
           int iGameSourceLobby = pChannelListIn->reserved & 0x00FFFFFF;
           if (iLobbyCur == -1 || iGameSourceLobby != iLobbyCur) {
@@ -814,7 +814,7 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT, Channel* pChannelListIn) {
 void RAChatEventSink::DeleteChannelList() {
   //	Delete all channels allocated on the heap.
   //	pChannelList points to the head element of a linked list of channels,
-  //copied during OnChannelList().
+  // copied during OnChannelList().
   //	debugprint( "DeleteChannelList\n" );
   while (pChannelList) {
     Channel* pChannelHead = pChannelList;
@@ -854,7 +854,7 @@ STDMETHODIMP RAChatEventSink::OnUserList(HRESULT, Channel*, User* pUserListIn) {
 void RAChatEventSink::DeleteUserList() {
   //	Delete all Users allocated on the heap.
   //	pUserList points to the head element of a linked list of Users, copied
-  //during OnUserList().
+  // during OnUserList().
   //	debugprint( "DeleteUserList\n" );
   while (pUserList) {
     User* pUserHead = pUserList;
@@ -904,7 +904,7 @@ extern bool WOL_Download_Dialog(IDownload* pDownload,
 //***********************************************************************************************
 bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   //	First we create a Download and Download Sink interface object, like Chat
-  //and ChatSink.
+  // and ChatSink.
   bool bReturn = true;
   //	This is all like WolapiObject::bSetupCOMStuff().
   // debugprint( "Do all the COM crap.\n" );
@@ -926,7 +926,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
                                   &dwDownloadAdvise);
   _ASSERTE(SUCCEEDED(hRes));
   //	Presumably the above calls will succeed, because they did so when we did
-  //bSetupComStuff().
+  // bSetupComStuff().
 
   pContainer->Release();
   pConnectionPoint->Release();
@@ -944,7 +944,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
     sprintf(fullpath, "%s\\%s", pUpdate->patchpath, pUpdate->patchfile);
     //	Downloading in WOLAPI is in a state of disarray somewhat.
     //	Make sure the destination directory exists, and make it the current
-    //directory during the download.
+    // directory during the download.
     // debugprint( "Switching to %s dir.\n", (char*)pUpdate->localpath );
     if (!::SetCurrentDirectory((char*)pUpdate->localpath)) {
       //	Create the destination directory.
@@ -1245,16 +1245,16 @@ STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel*, User* pUserIn,
   DebugChatDef(hRes);
 
   //	if( bRequestGameStartWait )		//	Implies user is the host
-  //that did RequestGameStart().
+  // that did RequestGameStart().
   //	{
 
   //	Create the list of users that are actually involved in a game.
   //	Most likely will always match pUserList, but there is a chance of
-  //someone leaving or joining 	at the wrong moment, so from this point on, the
-  //pGameUserList is used.
+  // someone leaving or joining 	at the wrong moment, so from this point
+  // on, the pGameUserList is used.
 
   //	Note: pUserIPList was added later, for pre-start pinging. It duplicates
-  //pGameUserList ip information, 	strictly speaking.
+  // pGameUserList ip information, 	strictly speaking.
 
   //	Delete any existing list.
   while (pGameUserList) {
@@ -1313,7 +1313,7 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel*,
     OnChannelLeave(S_OK, NULL, pUserKicked);
     if (pUserKicked->flags & CHAT_USER_MYSELF) {
       //	Trigger a channel exit later on, when we have left this
-      //callback.
+      // callback.
       bGotKickedTrigger = true;
       char* szPrint = new char[strlen((char*)pUserKicker->name) +
                                strlen(TXT_WOL_USERKICKEDYOU) + 5];
@@ -1357,11 +1357,11 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel*,
 //***********************************************************************************************
 STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
   //	A list of users is kept, separate from other user lists, to preserve the
-  //ipaddr's we've found through this 	callback. OnUserList (for some dumb
-  //reason) doesn't hold valid ipaddr's, so we have to go through 	all this
-  //rigamarole... 	(List is cleared when entering game channel. Users are added
-  //initially and on joins, not removed on leaves.)
-  //	debugprint( ">>> OnUserIP got: " );
+  // ipaddr's we've found through this 	callback. OnUserList (for some dumb
+  // reason) doesn't hold valid ipaddr's, so we have to go through 	all this
+  // rigamarole... 	(List is cleared when entering game channel. Users are
+  // added initially and on joins, not removed on leaves.) 	debugprint( ">>>
+  //OnUserIP got: " );
   DebugChatDef(hRes);
 
   if (SUCCEEDED(hRes)) {
@@ -1370,7 +1370,7 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
     while (pUserSearch) {
       if (_stricmp((char*)pUserSearch->name, (char*)pUser->name) == 0) {
         //	Found matching user. Replace it's ipaddr value, in case it
-        //changed.(?)
+        // changed.(?)
         pUserSearch->ipaddr = pUser->ipaddr;
         return S_OK;
       }
@@ -1409,9 +1409,9 @@ unsigned long RAChatEventSink::GetUserIP(const char* szName) const {
   //	Looks in pUserIPList for the ipaddr of user with name szName.
   //	This is used only while in game channels.
   //	This is for step 2 in acquiring fellow player ping times. To get the IP
-  //addresses into pUserIPList 	we had to go through request/callbacks. Now pings
-  //are requested on these addresses, and the results 	tallied in NetUtilSink for
-  //our retrieval later. 	Returns 0 if not found.
+  // addresses into pUserIPList 	we had to go through request/callbacks.
+  // Now pings are requested on these addresses, and the results 	tallied
+  // in NetUtilSink for our retrieval later. 	Returns 0 if not found.
 
   //	Find szName in list.
   User* pUser = pUserIPList;
@@ -1442,9 +1442,9 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
          pOwner->pGSupDlg->bHostWaitingForGoTrigger ||
          pOwner->pGSupDlg->bExitForGameTrigger || iGameID)) {
       //	A game has this moment entered the "must start" phase. We must
-      //ignore the fact that others are leaving the channel.
+      // ignore the fact that others are leaving the channel.
       //			debugprint( "Ignoring OnUserFlags because game
-      //is starting.\n" );		//	(Shouldn't ever happen.)
+      // is starting.\n" );		//	(Shouldn't ever happen.)
       return S_OK;
     }
   }
@@ -1675,7 +1675,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
                                               int /*keyRung*/) {
   //	Maintenance of ladders list is like that for channels list above.
   //	DeleteLadderList();		-> This is done once, before a set of
-  //RequestLadderList() calls are made.
+  // RequestLadderList() calls are made.
   //	debugprint( ">>> OnLadderList got: " );
   DebugChatDef(hRes);
 
@@ -1684,7 +1684,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
     //	Copy ladder list to our own list.
     while (pLadderListIn) {
       //			debugprint( "OnLadderList got %s, rung %u\n",
-      //pLadderListIn->login_name, pLadderListIn->rung );
+      // pLadderListIn->login_name, pLadderListIn->rung );
       if (*pLadderListIn->login_name != 0 && pLadderListIn->rung != -1) {
         Ladder* pLadderNew = new Ladder;
         *pLadderNew = *pLadderListIn;
@@ -1693,8 +1693,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
         if (pLadderNew->sku == LADDER_CODE_RA) {
           if (!pLadderTail) {
             //	First Ladder in list.
-            pLadderList =
-                pLadderNew;  //	This is the head of our Ladder list.
+            pLadderList = pLadderNew;  //	This is the head of our Ladder
+                                       //list.
             pLadderTail = pLadderNew;
           } else {
             pLadderTail->next = pLadderNew;
@@ -1711,8 +1711,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
         {
           if (!pLadderTailAM) {
             //	First Ladder in list.
-            pLadderListAM =
-                pLadderNew;  //	This is the head of our Ladder list.
+            pLadderListAM = pLadderNew;  //	This is the head of our Ladder
+                                         //list.
             pLadderTailAM = pLadderNew;
           } else {
             pLadderTailAM->next = pLadderNew;
@@ -1752,7 +1752,7 @@ STDMETHODIMP RANetUtilEventSink::OnPing(HRESULT hRes, int time,
         pOwner->DisconnectPingResult_Opponent[pOwner->iDisconnectPingCurrent] =
             PING_BAD;
       //			debugprint( "Set ping #%i for Opponent\n",
-      //pOwner->iDisconnectPingCurrent );
+      // pOwner->iDisconnectPingCurrent );
     } else {
       //	This is the result of the game server ping.
       if (time != -1)
@@ -1762,7 +1762,7 @@ STDMETHODIMP RANetUtilEventSink::OnPing(HRESULT hRes, int time,
         pOwner->DisconnectPingResult_Server[pOwner->iDisconnectPingCurrent] =
             PING_BAD;
       //			debugprint( "Set ping #%i for Server\n",
-      //pOwner->iDisconnectPingCurrent );
+      // pOwner->iDisconnectPingCurrent );
     }
   }
   return S_OK;
@@ -1783,8 +1783,8 @@ void RANetUtilEventSink::DeleteLadderList() {
 //***********************************************************************************************
 unsigned int RANetUtilEventSink::GetUserRank(const char* szName, bool bRankRA) {
   //	Searches for szName in ladder list, returns player rank if found, else
-  //0. 	Slow linear search. 	If bRankRA, returns RA rank, else returns AM rank.
-  //	debugprint( "GetUserRank: Asked for %s, ", szName );
+  // 0. 	Slow linear search. 	If bRankRA, returns RA rank, else
+  // returns AM rank. 	debugprint( "GetUserRank: Asked for %s, ", szName );
   Ladder* pLad;
   if (bRankRA)
     pLad = pLadderList;
@@ -1959,7 +1959,7 @@ int iChannelLobbyNumber(const unsigned char* szChannelName) {
     char szNum[10];
     strcpy(szNum, (char*)szChannelName + strlen(LOB_PREFIX));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
-    //szNum );
+    // szNum );
     return atoi(szNum);
   } else
     return -1;

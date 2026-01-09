@@ -49,10 +49,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/turret.h"
+
 #include <algorithm>
 #include <cstdlib>
 
-#include "td/turret.h"
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/inline.h"

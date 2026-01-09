@@ -80,7 +80,7 @@ class GameOptionsClass : public OptionsClass {
   };
 
  public:
-  GameOptionsClass(void) : OptionsClass(){};
+  GameOptionsClass(void) : OptionsClass() {};
   void Adjust_Variables_For_Resolution(void);
   void Process(void);
 

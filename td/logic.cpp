@@ -40,6 +40,7 @@
  *- - - - - - - */
 
 #include "td/logic.h"
+
 #include "rand.h"
 #include "td/aircraft.h"
 #include "td/building.h"

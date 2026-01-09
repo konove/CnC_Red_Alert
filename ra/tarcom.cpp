@@ -129,7 +129,7 @@ void TarComClass::AI(void) {
 
         if (TurretClass::Fire_At(TarCom, primary)) {
           //					Sound_Effect(weapon->Sound,
-          //Coord);
+          // Coord);
         }
         break;
 
@@ -151,7 +151,7 @@ void TarComClass::AI(void) {
           SecondaryFacing.Set_Desired(Direction(TarCom));
 #endif
           //					SecondaryFacing.Set_Desired(Direction256(Center_Coord(),
-          //As_Coord(TarCom)));
+          // As_Coord(TarCom)));
         }
         break;
 

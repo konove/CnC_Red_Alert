@@ -38,8 +38,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/descdlg.h"
+
+#include "ra/function.h"
 
 /***********************************************************************************************
  * DescriptionClass::Process -- Handles all the options graphic interface. *

@@ -48,14 +48,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "td/dialog.h"
+
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
 
 #include "port/safe_string.h"
-#include "sdllib/include/font.h"
-#include "td/dialog.h"
 #include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"

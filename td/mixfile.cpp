@@ -16,10 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "td/mixfile.h"
+
+#include <cstdlib>
+#include <cstring>
+
 #include "port/ex_string.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"

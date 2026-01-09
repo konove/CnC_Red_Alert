@@ -58,7 +58,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <string.h>
+#include "td/team.h"
+
+#include <cstring>
 
 #include "rand.h"
 #include "td/abstract.h"
@@ -76,7 +78,6 @@
 #include "td/jshell.h"
 #include "td/mouse.h"
 #include "td/target.h"
-#include "td/team.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
 #include "td/type.h"

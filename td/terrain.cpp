@@ -66,11 +66,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "td/terrain.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "rand.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/shape.h"

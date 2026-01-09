@@ -41,7 +41,7 @@
 #ifndef INFANTRY_H
 #define INFANTRY_H
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "td/bullet.h"
 #include "td/cell.h"
@@ -131,7 +131,7 @@ class InfantryClass : public FootClass {
   InfantryClass(void);
   InfantryClass(InfantryType classid, HousesType house);
   InfantryClass(NoInitClass const &x)
-      : FootClass(x), Class(Class), Comment(x){};
+      : FootClass(x), Class(Class), Comment(x) {};
   virtual ~InfantryClass(void);
   virtual RTTIType What_Am_I(void) const;
 

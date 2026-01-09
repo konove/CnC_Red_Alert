@@ -40,11 +40,11 @@
 #ifndef DROP_H
 #define DROP_H
 
-#include "ra/list.h"
-#include "ra/edit.h"
 #include "ra/control.h"
 #include "ra/defines.h"
+#include "ra/edit.h"
 #include "ra/link.h"
+#include "ra/list.h"
 #include "ra/shapebtn.h"
 #include "sdllib/include/keyboard.h"
 
@@ -52,7 +52,7 @@ class DropListClass : public EditClass {
  public:
   DropListClass(int id, char *text, int max_len, TextPrintType flags, int x,
                 int y, int w, int h, void const *up, void const *down);
-  virtual ~DropListClass(void){};
+  virtual ~DropListClass(void) {};
 
   virtual DropListClass &Add(LinkClass &object);
   virtual DropListClass &Add_Tail(LinkClass &object);
@@ -112,7 +112,7 @@ class TDropListClass : public EditClass {
   TDropListClass(int id, char *text, int max_len, TextPrintType flags, int x,
                  int y, int w, int h, void const *up, void const *down);
   TDropListClass(TDropListClass<T> const &list);
-  virtual ~TDropListClass(void){};
+  virtual ~TDropListClass(void) {};
 
   T operator[](int index) const { return (List[index]); };
   T &operator[](int index) { return (List[index]); };

@@ -21,12 +21,11 @@
 //	Wol_Opt.cpp - WW online options dialog.
 //	ajw 09/1/98
 
-#include "ra/function.h"
-
-#include "IconList.h"
-#include "WolapiOb.h"
-#include "WolStrng.h"
 #include "BigCheck.h"
+#include "IconList.h"
+#include "WolStrng.h"
+#include "WolapiOb.h"
+#include "ra/function.h"
 // #include "WolDebug.h"
 
 extern bool cancel_current_msgbox;

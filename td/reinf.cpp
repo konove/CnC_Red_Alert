@@ -40,9 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/rand.h"
-#include "port/safe_string.h"
 #include "td/reinf.h"
+
+#include "port/safe_string.h"
 #include "td/aircraft.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -52,6 +52,7 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mouse.h"
+#include "td/rand.h"
 #include "td/target.h"
 #include "td/team.h"
 #include "td/techno.h"

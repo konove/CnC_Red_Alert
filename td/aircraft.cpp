@@ -102,15 +102,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "td/aircraft.h"
+
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "rand.h"
 #include "sdllib/include/shape.h"
 #include "td/abstract.h"
-#include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"

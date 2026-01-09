@@ -52,16 +52,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "td/function.h"
 #ifndef PORTABLE
 #include <direct.h>
+#include <dos.h>
 #include <fcntl.h>
 #include <io.h>
-#include <dos.h>
 #include <share.h>
 #endif
 

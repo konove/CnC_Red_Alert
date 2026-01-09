@@ -38,27 +38,28 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
+#include "td/ending.h"
+
+#include <cstdio>
 
 #include "sdllib/include/font.h"
-#include "td/textblit.h"
-#include "td/interpal.h"
-#include "sdllib/include/ww_audio.h"
-#include "td/ending.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/timer.h"
+#include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/score.h"
 #include "td/text.h"
+#include "td/textblit.h"
 
 void GDI_Ending(void) {
 #ifdef DEMO

@@ -19,9 +19,9 @@
 #include "ra/function.h"
 
 extern "C" {
-#include "winvq/vqm32/soscomp.h"
-#include "itable.cpp"
 #include "dtable.cpp"
+#include "itable.cpp"
+#include "winvq/vqm32/soscomp.h"
 
 void sosCODECInitStream(_SOS_COMPRESS_INFO *info) {
   info->dwSampleIndex = 0;

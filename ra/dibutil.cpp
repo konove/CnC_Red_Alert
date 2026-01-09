@@ -59,11 +59,14 @@
 //**********************************************************************
 
 /* header files */
-#include <windows.h>
-#include <cassert>
-#include "ra/dibapi.h"
 #include "ra/dibutil.h"
+
+#include <windows.h>
+
+#include <cassert>
 #include <cstdio>
+
+#include "ra/dibapi.h"
 
 /*************************************************************************
  *

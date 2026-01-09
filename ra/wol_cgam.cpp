@@ -21,13 +21,12 @@
 //	Wol_CGam.cpp - Create game dialog.
 //	ajw 09/9/98
 
-#include "ra/function.h"
-
-#include "IconList.h"
-#include "WolapiOb.h"
-#include "WolStrng.h"
-#include "SEditDlg.h"
 #include "BigCheck.h"
+#include "IconList.h"
+#include "SEditDlg.h"
+#include "WolStrng.h"
+#include "WolapiOb.h"
+#include "ra/function.h"
 
 // extern char* LoadShpFile( const char* szShpFile );
 void SetPlayerCountList(IconListClass& PlayerCountList, int iPlayerMax,

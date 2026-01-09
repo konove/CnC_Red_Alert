@@ -42,8 +42,8 @@
 #define MAP_H
 
 #include "td/defines.h"
-#include "td/object.h"
 #include "td/gscreen.h"
+#include "td/object.h"
 #include "tech/noinit.h"
 
 #define BIGMAP 0

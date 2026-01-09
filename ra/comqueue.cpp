@@ -674,8 +674,9 @@ void CommQueueClass::Reset_Response_Time(void) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *

@@ -43,7 +43,7 @@
 
 class GameControlsClass {
  public:
-  GameControlsClass(void){};
+  GameControlsClass(void) {};
   void Process(void);
 };
 

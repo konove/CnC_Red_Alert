@@ -47,9 +47,9 @@
 /*
 ** Define host to network to host functions for DOS
 */
-#include <string.h>
-
 #include "td/utracker.h"
+
+#include <cstring>
 #ifdef WIN32
 #ifdef _WIN32
 #include <winsock.h>

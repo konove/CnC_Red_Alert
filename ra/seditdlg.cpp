@@ -25,6 +25,7 @@
 // ajw 07/21/98
 
 #include "SEditDlg.h"
+
 #include "WOLEdit.h"
 
 extern bool cancel_current_msgbox;

@@ -50,10 +50,10 @@
 
 #include <filesystem>
 
+#include "port/ex_string.h"
 #include "sdllib/include/iconcach.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
-#include "port/ex_string.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"

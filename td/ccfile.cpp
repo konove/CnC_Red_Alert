@@ -46,18 +46,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <cerrno>
 #include <algorithm>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 // #include	<direct.h>
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
-#include "sdllib/include/memflag.h"
 #include "sdllib/include/file.h"
+#include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/wwstd.h"
 #include "td/ccfile.h"

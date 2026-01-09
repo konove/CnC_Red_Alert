@@ -21,18 +21,20 @@
 //	Iconlist.cpp - created by ajw 07/07/98
 
 //	IconListClass is ListClass plus the option to include an icon on each
-//line entry, 	the option to have the class maintain its own copies of strings
-//passed to it 	for display, and the option to limit the maximum number of these
-//strings that are 	kept (entries are removed from the top when this maximum is
-//reached). 	Also added: multiple item selection capability. Note that the old
-//selection code 	runs as normal, but it simply not used when it comes time to
-//display. 	Also added: if mem. allocation is being done by this, the ability to
-//break new items 	into multiple lines of text is enabled. 	Also added: extra data
-//can be invisibly stored with each item, if memory allocation is 	being done by
-//this. 	Extra data included 3 item preceding icons, 1 fixed position icon, an
-//extra string, 	an extra void pointer, and a color remapping value.
+// line entry, 	the option to have the class maintain its own copies of strings
+// passed to it 	for display, and the option to limit the maximum number
+// of these strings that are 	kept (entries are removed from the top when this
+// maximum is reached). 	Also added: multiple item selection capability.
+// Note that the old selection code 	runs as normal, but it simply not used
+// when it comes time to display. 	Also added: if mem. allocation is being
+// done by this, the ability to break new items 	into multiple lines of
+// text is enabled. 	Also added: extra data can be invisibly stored with each
+// item, if memory allocation is 	being done by this. 	Extra data
+// included 3 item preceding icons, 1 fixed position icon, an extra string,
+// an extra void pointer, and a color remapping value.
 
 #include "ra/iconlist.h"
+
 #include "ra/dibapi.h"
 
 int Format_Window_String_New(const char* string, int maxlinelen, int& width,
@@ -47,24 +49,24 @@ IconListClass::IconListClass(int id, int x, int y, int w, int h,
                              int iSelectionType, int iMaxItemsSaved)
     : ListClass(id, x, y, w, h, flags, up, down) {
   //	If bResponsibleForStringAlloc, COPIES of strings are stored in the list.
-  //Deletion is 	handled by this class. Icons are different - the caller is
-  //responsible for what's on 	the other end of the pointer.
+  // Deletion is 	handled by this class. Icons are different - the caller
+  // is responsible for what's on 	the other end of the pointer.
   bDoAlloc = bResponsibleForStringAlloc;
   //	iSelectionType = 0 for no selection shown, 1 for normal ListClass
-  //selection, 2 for n multiple selections
+  // selection, 2 for n multiple selections
   if (iSelectionType < 0 || iSelectionType > 2) iSelectionType = 1;
   iSelectType = iSelectionType;
   //	If iMaxItemsSaved is 0, there is no limit to the number of text lines.
-  //The list can grow forever. 	Otherwise items are deleted from the head of the
-  //list when the maximum is passed. 	iMaxItemsSaved only applies when
-  //bResponsibleForStringAlloc.
+  // The list can grow forever. 	Otherwise items are deleted from the
+  // head of the list when the maximum is passed. 	iMaxItemsSaved only
+  // applies when bResponsibleForStringAlloc.
   iMaxItems = iMaxItemsSaved;
 }
 
 //***********************************************************************************************
 IconListClass::~IconListClass(void) {
   //	Delete the IconList_ItemExtras structs created to hold extra info on
-  //each item.
+  // each item.
   for (int i = 0; i < ExtrasList.Count(); i++)
     delete (IconList_ItemExtras*)ExtrasList[i];
 
@@ -120,7 +122,7 @@ int IconListClass::Add_Item(
 
         int iWidthToClipAt = IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
-        //should occur.
+        // should occur.
         Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
                                  szText, 50);
 
@@ -129,11 +131,11 @@ int IconListClass::Add_Item(
             FontXSpacingBefore;  //	Just in case it matters... Doubt it.
       } else {
         //	Currently never called. Test well if you use IconList with a
-        //font other than TPF_TYPE, 	as the character spacing globals get set
-        //weirdly, I've found.
+        // font other than TPF_TYPE, 	as the character spacing globals get set
+        // weirdly, I've found.
         int iWidthToClipAt = IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
-        //should occur.
+        // should occur.
         Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
                                  szText, 50);
       }
@@ -146,9 +148,10 @@ int IconListClass::Add_Item(
       while (szToken) {
         while (szNextChar < szToken) {
           //	We expected szToken to begin at szNextChar. Since it doesn't,
-          //extra break 	characters must have been removed by strtok as they were
-          //adjacent. We want 	a line break for every break character, so add
-          //lines for each space that 	szNextChar is off by.
+          // extra break 	characters must have been removed by strtok as
+          // they were adjacent. We want 	a line break for every break
+          // character, so add lines for each space that 	szNextChar is
+          // off by.
           szNextChar++;
           Add_Item_Detail(" ", szHelp, pIcon0, IconKind0, szExtraDataString,
                           pvExtraDataPtr, pColorRemap, pIcon1, IconKind1,
@@ -204,8 +207,8 @@ int IconListClass::Add_Item(
     //	(no text for new item)
     if (pIcon0 || pIcon1 || pIcon2) {
       //	Note: Cannot add an entry without text unless string allocation
-      //is being handled by me. 	Otherwise, because we want the icon to show up,
-      //create a blank entry for the ListClass.
+      // is being handled by me. 	Otherwise, because we want the icon to
+      // show up, create a blank entry for the ListClass.
       if (bDoAlloc) {
         IconList_ItemExtras* pItemExtra = new IconList_ItemExtras;
         pItemExtra->bMultiSelected = false;
@@ -244,7 +247,7 @@ int IconListClass::Add_Item(
         return ListClass::Add_Item(szText);
       } else
         //	Cannot add entry, as text is blank and ListClass::Add_Item will
-        //do nothing. 	The Icon we want will not show up.
+        // do nothing. 	The Icon we want will not show up.
         return List.Count() - 1;
     } else
       return ListClass::Add_Item(text);
@@ -270,7 +273,7 @@ int IconListClass::Add_Item_Detail(
   IconList_ItemExtras* pItemExtra = new IconList_ItemExtras;
   pItemExtra->bMultiSelected = false;
   pItemExtra->pIcon[0] = pIcon0;  //	ajw - Question: repeat the icon for each
-                                  //entry? make it optional?
+                                  // entry? make it optional?
   pItemExtra->IconKind[0] = IconKind0;
   pItemExtra->pIcon[1] = pIcon1;
   pItemExtra->IconKind[1] = IconKind1;
@@ -338,8 +341,9 @@ void IconListClass::Remove_Item(int index) {
     ListClass::Remove_Item(index);
 
     //	I should probably put this in ListClass:Remove_Item(), as it seems
-    //clearly to be 	missing, but I want to only affect my own new code, to not
-    //introduce possible bugs. 	Shift the selected index if appropriate...
+    // clearly to be 	missing, but I want to only affect my own new code, to
+    // not introduce possible bugs. 	Shift the selected index if
+    // appropriate...
     if (SelectedIndex >= index) {
       SelectedIndex--;
       if (SelectedIndex < 0) SelectedIndex = 0;
@@ -376,7 +380,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 
   int xText = x;
   //	ajw If I end up needing to use SHAPEs for icons, figure out shape width
-  //here and offset x.
+  // here and offset x.
   bool bIconsPresent = false;
   for (int iIcon = 0; iIcon != 3; iIcon++)
     if (pExtras->pIcon[iIcon] && pExtras->IconKind[iIcon] == ICON_DIB) {
@@ -394,8 +398,9 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
   RemapControlType* pRemap = pExtras->pColorRemap;
   if (!pRemap) {
     //	Tabs hack. If there are icons, and a tab, push back the FIRST tab
-    //appropriately. 	(Ignore others. This is a hack because having more than one
-    //tab will now break this.) 	See local version of this same hack, below.
+    // appropriately. 	(Ignore others. This is a hack because having more than
+    // one tab will now break this.) 	See local version of this same hack,
+    // below.
     int TempTabs;
     const int* TabsSave;
     if (Tabs) {
@@ -406,7 +411,7 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     switch (iSelectType) {
       case 0:
         //	Don't draw any items selected (even if they are, really, in
-        //ListClass).
+        // ListClass).
         ListClass::Draw_Entry(index, xText, y, width, false);
         break;
       case 1:
@@ -449,8 +454,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
     //	Tabs hack. If there are icons, and a tab, push back the FIRST tab
-    //appropriately. 	(Ignore others. This is a hack because having more than one
-    //tab will now break this.)
+    // appropriately. 	(Ignore others. This is a hack because having more than
+    // one tab will now break this.)
     if (Tabs) {
       int tab = *Tabs - (xText - x);
       Conquer_Clip_Text_Print(List[index], xText, y, pRemap, TBLACK, flags,
@@ -537,7 +542,8 @@ void IconListClass::MultiSelect(int index, bool bSelect) {
 //***********************************************************************************************
 const char* IconListClass::Get_Item_ExtraDataString(int index) const {
   //	Returns const pointer to the hidden "extra data" string that can be
-  //associated with each item. 	This is NULL if no extra data was assigned.
+  // associated with each item. 	This is NULL if no extra data was
+  // assigned.
   if (index < ExtrasList.Count() && index > -1) {
     return ((IconList_ItemExtras*)ExtrasList[index])->szExtraData;
   }
@@ -565,7 +571,7 @@ void IconListClass::Set_Item_ExtraDataString(int index,
 //***********************************************************************************************
 void* IconListClass::Get_Item_ExtraDataPtr(int index) const {
   //	Returns the hidden "extra data" void pointer that can be associated with
-  //each item. 	This is NULL if no value was assigned.
+  // each item. 	This is NULL if no value was assigned.
   if (index < ExtrasList.Count() && index > -1)
     return ((IconList_ItemExtras*)ExtrasList[index])->pvExtraData;
   else
@@ -575,7 +581,7 @@ void* IconListClass::Get_Item_ExtraDataPtr(int index) const {
 //***********************************************************************************************
 void IconListClass::Set_Item_ExtraDataPtr(int index, void* pNewValue) {
   //	Sets the hidden "extra data" void pointer that can be associated with
-  //each item.
+  // each item.
   if (index < ExtrasList.Count() && index > -1)
     ((IconList_ItemExtras*)ExtrasList[index])->pvExtraData = pNewValue;
 }
@@ -602,7 +608,7 @@ void IconListClass::Clear() {
   //	Removes all items from list.
 
   //	Delete the IconList_ItemExtras structs created to hold extra info on
-  //each item.
+  // each item.
   for (int i = 0; i < ExtrasList.Count(); i++)
     delete (IconList_ItemExtras*)ExtrasList[i];
   ExtrasList.Clear();
@@ -634,7 +640,7 @@ void IconListClass::Set_Item_Color(int index, RemapControlType* pColorRemap) {
 //***********************************************************************************************
 int IconListClass::Find(const char* szItemToFind) {
   //	Returns -1 if szItemToFind is not found as the text BEGINNING one of the
-  //list entries, else index of item. 	Compare is case-sensitive.
+  // list entries, else index of item. 	Compare is case-sensitive.
   for (int i = 0; i < List.Count(); i++) {
     if (strncmp(List[i], szItemToFind, strlen(szItemToFind)) == 0) return i;
   }
@@ -644,7 +650,7 @@ int IconListClass::Find(const char* szItemToFind) {
 //***********************************************************************************************
 int IconListClass::FindColor(RemapControlType* pColorRemap) {
   //	Returns -1 if no items of specified color are found, else first index.
-  //Assumes colorptr == colorptr is a valid equality test.
+  // Assumes colorptr == colorptr is a valid equality test.
   for (int i = 0; i < List.Count(); i++) {
     if (Get_Item_Color(i) == pColorRemap) return i;
   }
@@ -710,8 +716,8 @@ void IconListClass::Resize(int x, int y, int w, int h) {
 //***********************************************************************************************
 int IconListClass::IndexUnderMouse() {
   //	Returns index of line that mouse is currently over, or -1 for mouse not
-  //hitting valid index. 	Assumes that x position of mouse is already known to be
-  //over the iconlist.
+  // hitting valid index. 	Assumes that x position of mouse is already
+  // known to be over the iconlist.
   int index = Get_Mouse_Y() - (Y + 1);
   index = index / LineHeight + CurrentTopIndex;
   if (index > List.Count() - 1 || index < 0) return -1;
@@ -721,7 +727,7 @@ int IconListClass::IndexUnderMouse() {
 //***********************************************************************************************
 int IconListClass::OffsetToIndex(int iIndex, int y) {
   //	Finds the current offset of item iIndex from the current top view index,
-  //in pixels, and add it to y.
+  // in pixels, and add it to y.
   return y + (iIndex - CurrentTopIndex) * LineHeight;
 }
 
@@ -729,13 +735,13 @@ int IconListClass::OffsetToIndex(int iIndex, int y) {
 //***********************************************************************************************
 //	* Format_Window_String_New
 //	Functions like Format_Window_String except it fixes an infinite loop bug
-//that occurred when strings 	lacked suitable break points, eliminates the '@' as
-//an escape character, and operates differently 	in that it leaves the original
-//string along, writing results instead to a second string parameter, 	that is
-//iExtraChars longer than the original string. This is all a big hack so that I
-//can insert 	extra break characters when a break in a long single word has to be
-//made. 	Hey - it's better than an infinite loop that forces you to reset your
-//machine, as in the original code...
+// that occurred when strings 	lacked suitable break points, eliminates the '@'
+// as an escape character, and operates differently 	in that it leaves the
+// original string along, writing results instead to a second string parameter,
+// that is iExtraChars longer than the original string. This is all a big hack
+// so that I can insert 	extra break characters when a break in a long
+// single word has to be made. 	Hey - it's better than an infinite loop that
+// forces you to reset your machine, as in the original code...
 
 int Format_Window_String_New(const char* string, int maxlinelen, int& width,
                              int& height, char* szReturn, int iExtraChars) {
@@ -774,7 +780,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
       if (linelen <= 0) {
         //	We could not find a nice break point.
         //	Go back one char from over-the-end point and add in a break
-        //there.
+        // there.
         string = stringOverEnd - 1;
         if (iExtraChars > 0)
           iExtraChars--;  //	One less to make use of later.
@@ -810,8 +816,8 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
 void CC_Draw_DIB(const char* pDIB, int xDest, int yDest, int iWidth,
                  WindowNumberType window) {
   //	A very basic DIB drawing routine. No clipping. No edge of window overrun
-  //checking. 	If iWidth is too large, default width of dib is used. 	If iWidth is
-  //negative, dib isn't drawn.
+  // checking. 	If iWidth is too large, default width of dib is used. 	If
+  // iWidth is negative, dib isn't drawn.
   if (pDIB && iWidth >= 0) {
     int iWidthDIB = DIBWidth(pDIB);
     int iHeight = DIBHeight(pDIB);
@@ -830,7 +836,7 @@ void CC_Draw_DIB(const char* pDIB, int xDest, int yDest, int iWidth,
       int iDestPitch =
           draw_window.Get_Pitch() +
           draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
-                                    //to mean the eol skip.
+                                    // to mean the eol skip.
       char* pLineDest = (char*)draw_window.Get_Offset() + xDest +
                         (yDest + iHeight - 1) * iDestPitch;
 

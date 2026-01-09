@@ -32,8 +32,9 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include <cstring>
 #include "tech/field.h"
+
+#include <cstring>
 
 // htons/htonl
 #ifdef _WIN32

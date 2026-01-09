@@ -1,25 +1,26 @@
 // more portable replacements for winstub
 
-#include "sdllib/include/ww_win.h"
 #include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
 #include "td/globals.h"
 
 #undef WIN32
 #include <SDL_events.h>
 #include <SDL_video.h>
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 
-#include "td/rand.h"
-#include "td/externs.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
+#include "td/externs.h"
 #include "td/msgbox.h"
 #include "td/nullconn.h"
 #include "td/palette.h"
-#include "sdllib/include/timer.h"
+#include "td/rand.h"
 
 bool ReadyToQuit = 0;
 

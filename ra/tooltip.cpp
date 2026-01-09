@@ -18,8 +18,9 @@
 
 //	ToolTip.cpp
 
-#include "ra/function.h"
 #include "ra/tooltip.h"
+
+#include "ra/function.h"
 #include "ra/iconlist.h"
 
 // #include "WolDebug.h"
@@ -53,7 +54,7 @@ ToolTipClass::ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow,
   Set_Font(TypeFontPtr);
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                    TPF_TYPE);  //	Required before String_Pixel_Width()
-                               //call, for god's sake.
+                               // call, for god's sake.
   wShow = String_Pixel_Width(szTip) + 2;
   hShow = 11;
 
@@ -65,15 +66,15 @@ ToolTipClass::ToolTipClass(GadgetClass* pGadget, const char* szText, int xShow,
     pSaveRect = NULL;
 
   //	bIconList is true if tooltips appear for individual line items in an
-  //iconlist. 	szText in this case is ignored. 	yShow is the y position of the top
-  //row's tooltip - other rows will be offset from here.
+  // iconlist. 	szText in this case is ignored. 	yShow is the y position
+  // of the top row's tooltip - other rows will be offset from here.
 }
 
 //***********************************************************************************************
 ToolTipClass* ToolTipClass::GetToolTipHit() {
   //	Returns 'this' if the mouse is over gadget bound to tooltip.
   //	Otherwise calls the same function in the next tooltip in the list of
-  //which *this is a part.
+  // which *this is a part.
   if (bGadgetHit())
     return this;
   else if (next)
@@ -85,7 +86,7 @@ ToolTipClass* ToolTipClass::GetToolTipHit() {
 //***********************************************************************************************
 bool ToolTipClass::bGadgetHit() const {
   //	Returns true if the mouse is currently over the gadget to which *this is
-  //bound.
+  // bound.
   int x = Get_Mouse_X();
   int y = Get_Mouse_Y();
   return (x > pGadget->X && x < pGadget->X + pGadget->Width && y > pGadget->Y &&
@@ -135,7 +136,7 @@ void ToolTipClass::Show() {
       }
       Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK,
                        TPF_TYPE);  //	Required before String_Pixel_Width()
-                                   //call, for god's sake.
+                                   // call, for god's sake.
       wShowUse = String_Pixel_Width(szTipUse) + 2;
       if (bRightAlign) xShowUse -= wShowUse;
       delete[] pSaveRect;
@@ -159,7 +160,7 @@ void ToolTipClass::Show() {
                       TPF_TYPE);  // TPF_DROPSHADOW );
     //	Draw bounding rect.
     //		LogicPage->Draw_Rect( xShowUse, yShowUse, xShowUse + wShowUse -
-    //1, yShowUse + hShow - 1, ColorRemaps[ PCOLOR_GOLD ].Color );
+    // 1, yShowUse + hShow - 1, ColorRemaps[ PCOLOR_GOLD ].Color );
     Draw_Box(xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
     Show_Mouse();
     bShowing = true;
@@ -182,20 +183,19 @@ void ToolTipClass::Unshow() {
       }
       //	(Can't rely on iconlist being the same as when Show() occurred.)
       //			IconListClass* pIconList =
-      //(IconListClass*)pGadget; 			yShowUse = pIconList->OffsetToIndex(
-      //iLastIconListIndex, yShow ); 			const char* szTipUsed =
-      //pIconList->Get_Item_Help( iLastIconListIndex ); 			if( !szTipUsed ||
-      //*szTipUsed == 0 )
+      //(IconListClass*)pGadget; 			yShowUse =
+      //pIconList->OffsetToIndex( iLastIconListIndex, yShow );
+      // const char* szTipUsed = pIconList->Get_Item_Help( iLastIconListIndex );
+      // if( !szTipUsed || *szTipUsed == 0 )
       //			{
       //				//	Nothing to restore.
       //				bShowing = false;
       //				return;
       //			}
       //			Fancy_Text_Print( TXT_NONE, 0, 0, TBLACK,
-      //TBLACK, TPF_TYPE );	//	Required before String_Pixel_Width()
-      //call, for god's sake. 			wShowUse = String_Pixel_Width( szTipUsed ) + 2;
-      //			if( bRightAlign )
-      //				xShowUse -= wShowUse;
+      // TBLACK, TPF_TYPE );	//	Required before String_Pixel_Width()
+      // call, for god's sake. 			wShowUse = String_Pixel_Width(
+      // szTipUsed ) + 2; 			if( bRightAlign ) 				xShowUse -= wShowUse;
       xShowUse = xLastShow;
       yShowUse = yLastShow;
       wShowUse = wLastShow;
@@ -212,7 +212,7 @@ void ToolTipClass::Unshow() {
 bool ToolTipClass::bOverDifferentLine() const {
   //	bIconList must be true if this is being used.
   //	Returns true if the iconlist line that the mouse is over is different
-  //than the last time Show() was called.
+  // than the last time Show() was called.
   return (((IconListClass*)pGadget)->IndexUnderMouse() != iLastIconListIndex);
 }
 
@@ -235,7 +235,7 @@ bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect, char* pBits,
     int iPitchSurf =
         draw_window.Get_Pitch() +
         draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
-                                  //to mean the eol skip.
+                                  // to mean the eol skip.
     const char* pLineSurf =
         (char*)draw_window.Get_Offset() + xRect + yRect * iPitchSurf;
     char* pLineSave = pBits;
@@ -270,7 +270,7 @@ bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
     int iPitchSurf =
         draw_window.Get_Pitch() +
         draw_window.Get_Width();  //	Meaning of "Pitch" in this class seems
-                                  //to mean the eol skip.
+                                  // to mean the eol skip.
     char* pLineSurf =
         (char*)draw_window.Get_Offset() + xRect + yRect * iPitchSurf;
     const char* pLineSave = pBits;

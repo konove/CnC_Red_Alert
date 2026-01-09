@@ -73,11 +73,12 @@
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-#include <string.h>
+#include "td/noseqcon.h"
+
+#include <cstring>
 
 #include "td/combuf.h"
 #include "td/connect.h"
-#include "td/noseqcon.h"
 
 NonSequencedConnClass::NonSequencedConnClass(
     int numsend, int numreceive, int maxlen, unsigned short magicnum,

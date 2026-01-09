@@ -56,24 +56,25 @@
 // INCLUDES
 //==========================================================================
 
-#include <windows.h>
-#include <windowsx.h>
-#include <westwood.h>
 #include <file.h>
-#include <cstdio>
-#include <memflag.h>
-#include <vq.h>
-#include <mainwind.h>
-#include <pal.h>
-#include <wwstd.h>
+#include <gametime.h>
 #include <gbuffer.h>
 #include <main.h>
+#include <mainwind.h>
+#include <memflag.h>
 #include <monochrm.h>
-#include <vidmode.h>
 #include <movies.h>
-#include <gametime.h>
-#include <dialogs.rh>
+#include <pal.h>
+#include <vidmode.h>
+#include <vq.h>
 #include <vqm32\compress.h>
+#include <westwood.h>
+#include <windows.h>
+#include <windowsx.h>
+#include <wwstd.h>
+
+#include <cstdio>
+#include <dialogs.rh>
 
 //==========================================================================
 // PRIVATE DEFINES

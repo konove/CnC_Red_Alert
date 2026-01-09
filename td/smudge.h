@@ -41,12 +41,12 @@
 #ifndef SMUDGE_H
 #define SMUDGE_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/object.h"
-#include "td/type.h"
 #include "td/defines.h"
 #include "td/globals.h"
+#include "td/object.h"
+#include "td/type.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
 
@@ -66,8 +66,8 @@ class SmudgeClass : public ObjectClass {
   static void operator delete(void *ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const &x) : ObjectClass(x), Class(Class){};
-  SmudgeClass(void) : Class(nullptr){};
+  SmudgeClass(NoInitClass const &x) : ObjectClass(x), Class(Class) {};
+  SmudgeClass(void) : Class(nullptr) {};
   operator SmudgeType(void) const { return Class->Type; };
   virtual ~SmudgeClass(void) {
     if (GameActive) SmudgeClass::Limbo();

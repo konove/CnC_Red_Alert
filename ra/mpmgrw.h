@@ -19,9 +19,10 @@
 #ifndef mpmgr_h
 #define mpmgr_h
 
-#include "ra/connmgr.h"
-#include "mplayer.h"
 #include <windows.h>
+
+#include "mplayer.h"
+#include "ra/connmgr.h"
 
 // maximum number of connections
 #define CONNECT_MAX 7

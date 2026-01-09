@@ -64,11 +64,12 @@
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/mission.h"
+
 #include "port/ex_string.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
-#include "td/mission.h"
 #include "td/object.h"
 
 MissionClass::MissionClass(void) {

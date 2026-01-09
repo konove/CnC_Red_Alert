@@ -53,8 +53,8 @@
 #ifdef WINSOCK_IPX
 #include "WSProto.h"
 #else  // WINSOCK_IPX
-#include "ra/tcpip.h"
 #include "ra/ipx95.h"
+#include "ra/tcpip.h"
 #endif  // WINSOCK_IPX
 
 unsigned long CCFocusMessage =

@@ -41,9 +41,9 @@
 #ifndef TURRET_H
 #define TURRET_H
 
-#include "td/drive.h"
 #include "td/bullet.h"
 #include "td/defines.h"
+#include "td/drive.h"
 #include "td/facing.h"
 #include "td/ftimer.h"
 #include "tech/noinit.h"

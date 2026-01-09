@@ -44,10 +44,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "port/safe_string.h"
-
 #include <cerrno>
 
+#include "port/safe_string.h"
 #include "sdllib/include/file.h"
 #include "td/function.h"
 

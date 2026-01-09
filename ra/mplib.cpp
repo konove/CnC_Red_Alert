@@ -16,14 +16,17 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "types.h"
-#include "mgenord.h"
-#include "magic.h"
-#include "rtq.h"
-#include <mem.h>
-#include <i86.h>
-#include <cassert>
 #include "mplib.h"
+
+#include <i86.h>
+#include <mem.h>
+
+#include <cassert>
+
+#include "magic.h"
+#include "mgenord.h"
+#include "rtq.h"
+#include "types.h"
 
 #define CHUNNEL_INT 0x48
 

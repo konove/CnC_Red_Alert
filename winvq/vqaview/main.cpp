@@ -41,19 +41,18 @@
 //	INCLUDES
 //---------------------------------------------------------------------------------------------
 
-#include <windows.h>
-#include <windowsx.h>
-#include <gbuffer.h>
 #include <ddraw.h>
 #include <file.h>
-#include <wwmem.h>
-
-#include <westwood.h>
+#include <gbuffer.h>
 #include <main.h>
-#include <vidmode.h>
 #include <mainwind.h>
 #include <monochrm.h>
 #include <movies.h>
+#include <vidmode.h>
+#include <westwood.h>
+#include <windows.h>
+#include <windowsx.h>
+#include <wwmem.h>
 
 extern void VQA_Test(char *filename);
 

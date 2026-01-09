@@ -40,11 +40,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
-#include "td/textblit.h"
-#include "td/interpal.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
@@ -64,11 +62,13 @@
 #include "td/externs.h"
 #include "td/goptions.h"
 #include "td/house.h"
+#include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/mixfile.h"
 #include "td/palette.h"
 #include "td/score.h"
 #include "td/text.h"
+#include "td/textblit.h"
 #include "td/theme.h"
 #include "td/type.h"
 

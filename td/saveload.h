@@ -2,8 +2,8 @@
 #define CNC_RED_ALERT_TD_SAVELOAD_H_
 
 #include "td/defines.h"
-#include "tech/wwfile.h"
 #include "td/type.h"
+#include "tech/wwfile.h"
 
 bool Load_Misc_Values(FileClass &file);
 bool Save_Misc_Values(FileClass &file);

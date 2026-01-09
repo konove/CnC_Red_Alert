@@ -56,9 +56,10 @@ void WOLEditClass::Draw_Text(char const* text) {
 
 //***********************************************************************************************
 //	Override of EditClass::Action, because the base class does not behave
-//correctly in certain circumstances. 	(Escape key is being processed as enter
-//key.) 	Again, I'm not about to change the base class directly, as I'm trying to
-//have as minimal an affect as possible on 	the current game code. -ajw
+// correctly in certain circumstances. 	(Escape key is being processed as enter
+// key.) 	Again, I'm not about to change the base class directly, as I'm
+// trying to have as minimal an affect as possible on 	the current game code.
+// -ajw
 int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
   //	(Mostly duplicated from base class ::Action)
   /*	For some painful reason, IsReadOnly is private in the base class, so I
@@ -77,8 +78,8 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
   // flags, key );
   //
   //	If the left mouse button is pressed over this gadget, then set the focus
-  //to 	this gadget. The event flag is cleared so that no button ID number is
-  //returned.
+  // to 	this gadget. The event flag is cleared so that no button ID
+  // number is returned.
   //
   if ((flags & LEFTPRESS)) {
     flags &= ~LEFTPRESS;
@@ -88,13 +89,13 @@ int WOLEditClass::Action(unsigned flags, KeyNumType& key) {
 
   //
   //	Handle keyboard events here. Normally, the key is added to the string,
-  //but if the 	RETURN key is pressed, then the button ID number is returned from
-  //the Input() 	function.
+  // but if the 	RETURN key is pressed, then the button ID number is
+  // returned from the Input() 	function.
   //
   if ((flags & KEYBOARD) && Has_Focus()) {
     //
     //	Process the keyboard character. If indicated, consume this keyboard
-    //event 	so that the edit gadget ID number is not returned.
+    // event 	so that the edit gadget ID number is not returned.
     //
     if (key == KN_ESC) {
       Clear_Focus();

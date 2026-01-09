@@ -55,11 +55,13 @@
  * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <string.h>
-#include <sys/socket.h>
-#include <algorithm>
-
 #include "td/tcpip.h"
+
+#include <sys/socket.h>
+
+#include <algorithm>
+#include <cstring>
+
 #include "port/safe_string.h"
 #include "td/jshell.h"
 

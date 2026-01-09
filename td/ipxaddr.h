@@ -37,7 +37,8 @@
  * compare addresses, copy addresses to & from the IPX header, etc.
  **
  *                                                                         *
- * The class has no virtual functions, so you can treat this class just * like a data structure; it can be loaded & saved, and even transmitted	* across
+ * The class has no virtual functions, so you can treat this class just * like a
+ * data structure; it can be loaded & saved, and even transmitted	* across
  *the net.
  **
  *                                                                         *

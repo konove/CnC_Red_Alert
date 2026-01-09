@@ -88,7 +88,7 @@ int TextLabelClass::Draw_Me(int forced) {
     if (PixWidth == -1) {
       Simple_Text_Print(Text, X, Y, Color, TBLACK, Style);
       //			Fancy_Text_Print(Text, X, Y, Color, TBLACK,
-      //Style);
+      // Style);
     } else {
       Conquer_Clip_Text_Print(Text, X, Y, Color, TBLACK, Style, PixWidth);
     }

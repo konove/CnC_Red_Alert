@@ -19,8 +19,8 @@
 #ifndef TD_MIXFILE_H_
 #define TD_MIXFILE_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "td/link.h"
 

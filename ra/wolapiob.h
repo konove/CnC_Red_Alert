@@ -22,17 +22,17 @@
 //	ajw 07/10/98
 
 //	Class WolapiObject is mainly a container so I can avoid globals and keep
-//things clean. 	All WOLAPI interfacing will be done through this object. It's
-//lifetime will begin when 	API functions are first needed and end when we are
-//finished with the API - this will 	presumably parallel the duration of the
-//user's connection to WOL.
+// things clean. 	All WOLAPI interfacing will be done through this object.
+// It's lifetime will begin when 	API functions are first needed and end
+// when we are finished with the API - this will 	presumably parallel the
+// duration of the user's connection to WOL.
 
 #ifndef WOLAPI_H
 #define WOLAPI_H
 
+#include "IconList.h"
 #include "RAWolapi.h"
 #include "ra/dibapi.h"
-#include "IconList.h"
 
 //***********************************************************************************************
 class IconListClass;
@@ -43,7 +43,7 @@ class ToolTipClass;
   300  //	Milliseconds between PumpMessages() calls.
 #define EMERGENCY_TIMEOUT \
   40000  //	Longest we wait for a wolapi response before terminating
-         //everything.
+         // everything.
 
 //	Milliseconds between automatic behaviors.
 #define WOLAPIPUMPWAIT 300
@@ -103,23 +103,23 @@ struct WOL_GAMETYPEINFO {
 enum WOL_GAMEOPT {
   WOL_GAMEOPT_REQCOLOR = 1,  //	REQuest = guest asks game host for a color
   WOL_GAMEOPT_INFCOLOR,      //	INForm = game host tells guests color of a
-                             //single player (not "accept-canceling")
+                             // single player (not "accept-canceling")
   WOL_GAMEOPT_INFPARAMS,     //	host tells guests all common game params
   WOL_GAMEOPT_REQHOUSE,      //	guest tells host he's changed house (REQ because
-                             //it's guest->host)
+                             // it's guest->host)
   WOL_GAMEOPT_INFHOUSE,      //	host tells guests about new house of a single
-                             //player
+                             // player
   WOL_GAMEOPT_REQACCEPT,     //	guest tells host he accepts current params
   WOL_GAMEOPT_INFACCEPT,     //	host tells guests that a player accepted
   WOL_GAMEOPT_INFSTART,      //	host tell guests to go into wait for start mode
   WOL_GAMEOPT_REQSTART,      //	guest acknowledges WOL_GAMEOPT_INFSTART
   WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO,  //	guests acks WOL_GAMEOPT_INFSTART
-                                         //and asks for scenario download
+                                         // and asks for scenario download
   WOL_GAMEOPT_INFCANCELSTART,  //	host tells guests to cancel game start,
-                               //as a change arrived or player joined/left
+                               // as a change arrived or player joined/left
   WOL_GAMEOPT_INFGO,           //	host tells everyone to start
   WOL_GAMEOPT_INFNEWGUESTPLAYERINFO,  //	host tells new guest a lot of
-                                      //stuff about everyone that's in the game
+                                      // stuff about everyone that's in the game
 };
 enum DIBICON {
   DIBICON_OWNER,
@@ -152,7 +152,7 @@ struct CHATSAVE  //	What we save about each individual list item.
 
 struct CREATEGAMEINFO {
   enum GAMEKIND  //	Gets or'ed with lobby number in channel 'reserved'
-                 //field.
+                 // field.
   {
     RAGAME = 0x01000000,
     CSGAME = 0x02000000,
@@ -161,14 +161,14 @@ struct CREATEGAMEINFO {
 
   bool bCreateGame;  //	True if user confirms game creation.
   int iPlayerMax;    //	NOT number of players, but maximum number allowed into
-                     //game channel.
+                     // game channel.
   int iPlayerCount;  //	Number of initial human players in game. Set at game
-                     //launch, used for stats.
+                     // launch, used for stats.
   bool bTournament;
   bool bPrivate;
   GAMEKIND GameKind;
   char szPassword[WOL_CHANKEY_LEN_MAX];  //	If not blank, key for private
-                                         //game.
+                                         // game.
 };
 
 //***********************************************************************************************
@@ -189,7 +189,7 @@ class WolapiObject {
   IDownload* pDownload;
   INetUtil* pNetUtil;
   DWORD dwChatAdvise;  //	Value that identifies the "connection" from chat
-                       //to chatsink.
+                       // to chatsink.
   DWORD dwDownloadAdvise;
   DWORD dwNetUtilAdvise;
 
@@ -207,24 +207,24 @@ class WolapiObject {
   int iGameResServerPort2;
 
   bool bFindEnabled;  //	I have to maintain these, though wolapi should
-                      //do it for me...
+                      // do it for me...
   bool bPageEnabled;  //	Note they are initialized true, as is currently
-                      //the case in wol.
+                      // the case in wol.
   bool bLangFilter;   //
   bool bAllGamesShown;
 
   bool bEggSounds;   //	Easter egg related. True = user actions trigger sounds.
   bool bEgg8Player;  //	True = 8 player games can be created. This is hidden so
-                     //that we don't really have to support the feature...
+                     // that we don't really have to support the feature...
 
   WOL_LEVEL CurrentLevel;
   WOL_LEVEL LastUpdateChannelCallLevel;
   char szMyName[WOL_NAME_LEN_MAX];  //	Local user's name, valid while
-                                    //connected.
+                                    // connected.
   char szMyRecord[WOL_NAME_LEN_MAX + 80];
   char szMyRecordAM[WOL_NAME_LEN_MAX + 80];
   bool bMyRecordUpdated;  //	True when szMyRecord has changed and not yet
-                          //recognized by chat dialog.
+                          // recognized by chat dialog.
   char szChannelListTitle[100];
   bool bChannelListTitleUpdated;
   char szChannelNameCurrent[WOL_CHANNAME_LEN_MAX];
@@ -232,7 +232,7 @@ class WolapiObject {
   char szChannelReturnOnGameEnterFail[WOL_CHANNAME_LEN_MAX];
 
   int iLobbyReturnAfterGame;  //	When in game channel, part of the value
-                              //of the channel's 'reserved' field.
+                              // of the channel's 'reserved' field.
 
   bool bReturningAfterGame;
 
@@ -241,10 +241,10 @@ class WolapiObject {
   //	CREATEGAMEINFO::GAMEKIND GameKindCurrent;	//	Kind of game
   //(Red Alert, CS, AM) we are in game setup for.
   CREATEGAMEINFO
-      GameInfoCurrent;  //	Kind of game (Red Alert, CS, AM, tournament,
-                        //private) we are in game setup for.
+  GameInfoCurrent;  //	Kind of game (Red Alert, CS, AM, tournament,
+                    // private) we are in game setup for.
   bool bEnableNewAftermathUnits;  //	Used to pass game parameter back to init
-                                  //only.
+                                  // only.
 
   DWORD dwTimeNextWolapiPump;
   DWORD dwTimeNextChannelUpdate;
@@ -252,24 +252,24 @@ class WolapiObject {
   DIBICONINFO DibIconInfos[NUMDIBICONS];
 
   HRESULT hresPatchResults;  //	Used when a patch has been downloaded or
-                             //cancelled.
+                             // cancelled.
 
   WOL_GameSetupDialog* pGSupDlg;  //	When in a game channel, setting up a
-                                  //game; ptr to the dialog.
+                                  // game; ptr to the dialog.
 
   bool bInGame;          //	True while playing a game.
   bool bConnectionDown;  //	Flag used while in a game, set to true if
-                         //connection goes down.
+                         // connection goes down.
   bool bGameServer;  //	Flag used while in a game, true if game server (host).
 
   unsigned long TournamentOpponentIP;  //	Valid while playing a tournament
-                                       //game. IP address of opponent.
+                                       // game. IP address of opponent.
 
   bool bPump_In_Call_Back;  //	Used to enable PumpMessages during Call_Back(),
-                            //for when we're in a modal dialog.
+                            // for when we're in a modal dialog.
 
   bool bSelfDestruct;  //	If set true, causes logout and deletion of
-                       //wolapi object.
+                       // wolapi object.
 
   char szWebBrowser[_MAX_PATH + 1];
 
@@ -281,9 +281,9 @@ class WolapiObject {
   DISCONNECT_PING_STATUS DisconnectPingResult_Opponent[DISCONNECT_PING_COUNT];
 
   //	Used for in-game paging and responding.
-  char
-      szExternalPager[WOL_NAME_LEN_MAX];  //	Last person to page me from
-                                          //outside the game, or blank for none.
+  char szExternalPager[WOL_NAME_LEN_MAX];  //	Last person to page me from
+                                           // outside the game, or blank for
+                                           // none.
   bool bFreezeExternalPager;
 
   bool bShowRankRA;       //	true = view RA rankings, false = view AM rankings
@@ -322,7 +322,7 @@ class WolapiObject {
   ToolTipClass* pTTipHelp;
 
   WOL_GAMETYPEINFO OldRAGameTypeInfos[3];  //	Used for storing old red alert
-                                           //icons only.
+                                           // icons only.
 
  public:
   bool bLoggedIn();
@@ -445,11 +445,11 @@ class WolapiObject {
   IconListClass* pILUsers;     //	Users list.
 
   //	IconListClass*			pILDisc;			//
-  //Main messages list.		(pILChat is used.)
+  // Main messages list.		(pILChat is used.)
   IconListClass* pILPlayers;  //	Players list.
 
   StaticButtonClass* pStaticUsers;  //	Title for a users list. Used by main
-                                    //chat dialog only, not by game setup.
+                                    // chat dialog only, not by game setup.
 
   WOL_GAMETYPEINFO* GameTypeInfos;
   unsigned int nGameTypeInfos;

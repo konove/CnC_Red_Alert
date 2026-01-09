@@ -29,8 +29,8 @@
 #include "rpc.h"
 #include "rpcndr.h"
 #ifndef COM_NO_WINDOWS_H
-#include "windows.h"
 #include "ole2.h"
+#include "windows.h"
 #endif /*COM_NO_WINDOWS_H*/
 
 #ifndef __WOLAPI_h__
@@ -186,7 +186,7 @@ typedef struct IRTPatcherVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IRTPatcher __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IRTPatcher __RPC_FAR *This);
 
@@ -274,7 +274,7 @@ typedef struct IRTPatcherEventVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IRTPatcherEvent __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IRTPatcherEvent __RPC_FAR *This);
 
@@ -522,7 +522,7 @@ interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetGametypeInfo(
       unsigned int gtype, int icon_size,
-      unsigned char __RPC_FAR *__RPC_FAR *bitmap, int __RPC_FAR *bmp_bytes,
+      unsigned char __RPC_FAR * __RPC_FAR * bitmap, int __RPC_FAR *bmp_bytes,
       LPCSTR __RPC_FAR *name, LPCSTR __RPC_FAR *URL) = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestFind(
@@ -592,7 +592,7 @@ typedef struct IChatVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IChat __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IChat __RPC_FAR *This);
 
@@ -688,7 +688,7 @@ typedef struct IChatVtbl {
 
   /* [helpstring] */ HRESULT(STDMETHODCALLTYPE __RPC_FAR *GetGametypeInfo)(
       IChat __RPC_FAR *This, unsigned int gtype, int icon_size,
-      unsigned char __RPC_FAR *__RPC_FAR *bitmap, int __RPC_FAR *bmp_bytes,
+      unsigned char __RPC_FAR * __RPC_FAR * bitmap, int __RPC_FAR *bmp_bytes,
       LPCSTR __RPC_FAR *name, LPCSTR __RPC_FAR *URL);
 
   /* [helpstring] */ HRESULT(STDMETHODCALLTYPE __RPC_FAR *RequestFind)(
@@ -1059,7 +1059,7 @@ void __RPC_STUB IChat_RequestUserIP_Stub(IRpcStubBuffer *This,
 
 /* [helpstring] */ HRESULT STDMETHODCALLTYPE IChat_GetGametypeInfo_Proxy(
     IChat __RPC_FAR *This, unsigned int gtype, int icon_size,
-    unsigned char __RPC_FAR *__RPC_FAR *bitmap, int __RPC_FAR *bmp_bytes,
+    unsigned char __RPC_FAR * __RPC_FAR * bitmap, int __RPC_FAR *bmp_bytes,
     LPCSTR __RPC_FAR *name, LPCSTR __RPC_FAR *URL);
 
 void __RPC_STUB IChat_GetGametypeInfo_Stub(
@@ -1373,7 +1373,7 @@ typedef struct IChatEventVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IChatEvent __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IChatEvent __RPC_FAR *This);
 
@@ -1939,7 +1939,7 @@ typedef struct IDownloadVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IDownload __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IDownload __RPC_FAR *This);
 
@@ -2045,7 +2045,7 @@ typedef struct IDownloadEventVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IDownloadEvent __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IDownloadEvent __RPC_FAR *This);
 
@@ -2187,7 +2187,7 @@ typedef struct INetUtilVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (INetUtil __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(INetUtil __RPC_FAR *This);
 
@@ -2347,7 +2347,7 @@ typedef struct INetUtilEventVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (INetUtilEvent __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(INetUtilEvent __RPC_FAR *This);
 
@@ -2487,7 +2487,7 @@ typedef struct IChat2Vtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IChat2 __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IChat2 __RPC_FAR *This);
 
@@ -2707,7 +2707,7 @@ typedef struct IChat2EventVtbl {
   HRESULT(STDMETHODCALLTYPE __RPC_FAR *QueryInterface)
   (IChat2Event __RPC_FAR *This,
    /* [in] */ REFIID riid,
-   /* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);
+   /* [iid_is][out] */ void __RPC_FAR * __RPC_FAR * ppvObject);
 
   ULONG(STDMETHODCALLTYPE __RPC_FAR *AddRef)(IChat2Event __RPC_FAR *This);
 

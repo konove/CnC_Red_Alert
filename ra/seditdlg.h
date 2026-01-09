@@ -19,7 +19,7 @@
 #ifdef WOLAPI_INTEGRATION
 
 //	SEditDlg.h - "SimpleEditDlgClass": An ok/cancel type dialog with a
-//single edit box. 	ajw 07/21/98
+// single edit box. 	ajw 07/21/98
 
 #include "ra/function.h"
 
@@ -32,7 +32,7 @@ class SimpleEditDlgClass {
 
   const char* Show();  //	Shows dialog, returns text of button pressed.
                        //	Unless SetButtons() is used, value will be
-                       //TXT_OK or TXT_CANCEL string values.
+                       // TXT_OK or TXT_CANCEL string values.
 
   void SetButtons(const char* szOk, const char* szCancel,
                   const char* szMiddle = NULL);
@@ -46,17 +46,17 @@ class SimpleEditDlgClass {
 
   char* szPrompt;        //	Text appearing to the left of edit box.
   int iEditCharsAccept;  //	Max length of string allowed in edit, includes
-                         //null-terminator.
+                         // null-terminator.
 
   char* szPrompt2;
   int iEditCharsAccept2;
 
   const char* szOkButton;      //	Text of button that acts like an Ok button.
-                               //Appears on left.
+                               // Appears on left.
   const char* szCancelButton;  //	Text of button that acts like an Cancel
-                               //button. Appears on right.
+                               // button. Appears on right.
   const char* szMiddleButton;  //	Optional middle button text. Null = no
-                               //middle button.
+                               // middle button.
 };
 
 #endif

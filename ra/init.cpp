@@ -2586,7 +2586,8 @@ static void Init_Expansion_Files(void) {
       // extracted
       if (stricmp(state.name, "scores.mix") == 0) continue;
       ptr = strdup(state.name);
-      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
+      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+      // self-registering
       new MFCD(ptr, &FastKey);
       MFCD::Cache(ptr);
     } while (Find_Next_File(state));
@@ -2595,7 +2596,8 @@ static void Init_Expansion_Files(void) {
     char *ptr;
     do {
       ptr = strdup(state.name);
-      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
+      // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+      // self-registering
       new MFCD(ptr, &FastKey);
     } while (Find_Next_File(state));
   }
@@ -2970,13 +2972,13 @@ static void Init_Secondary_Mixfiles(void) {
   **	copied the correct versions to the hard drive.
   */
   // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("SPEECH.MIX", &FastKey);   // Never cached.
+  new MFCD("SPEECH.MIX", &FastKey);  // Never cached.
   // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("SOUNDS.MIX", &FastKey);   // Cached.
+  new MFCD("SOUNDS.MIX", &FastKey);  // Cached.
   // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
   new MFCD("RUSSIAN.MIX", &FastKey);  // Cached.
   // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks) self-registering
-  new MFCD("ALLIES.MIX", &FastKey);   // Cached.
+  new MFCD("ALLIES.MIX", &FastKey);  // Cached.
 }
 
 /***********************************************************************************************

@@ -44,8 +44,6 @@
  *   MapEditClass::Change_House -- changes CurrentObject's house           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************
@@ -474,7 +472,7 @@ int MapEditClass::Move_Grabbed_Object(void) {
       //			Map[Coord_Cell(GrabbedObject->Coord)].Flag.Composite
       //&=
       //				~(1 <<
-      //CellClass::Spot_Index(GrabbedObject->Coord));
+      // CellClass::Spot_Index(GrabbedObject->Coord));
     } else {
       new_coord = NULL;
     }

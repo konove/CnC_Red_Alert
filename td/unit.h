@@ -41,12 +41,12 @@
 #ifndef UNIT_H
 #define UNIT_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/tarcom.h"
-#include "td/radio.h"
 #include "td/defines.h"
 #include "td/object.h"
+#include "td/radio.h"
+#include "td/tarcom.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "tech/noinit.h"
@@ -70,9 +70,9 @@ class UnitClass : public TarComClass {
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
-  UnitClass(void){};
+  UnitClass(void) {};
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(NoInitClass const &x) : TarComClass(x){};
+  UnitClass(NoInitClass const &x) : TarComClass(x) {};
   operator UnitType(void) const { return Class->Type; };
   virtual ~UnitClass(void);
   virtual RTTIType What_Am_I(void) const;
@@ -183,7 +183,7 @@ class UnitClass : public TarComClass {
   virtual void Scatter(COORDINATE threat, bool forced = false);
   void Exit_Repair(void);
   //		MoveType Blocking_Object(TechnoClass const *techno, CELL cell)
-  //const;
+  // const;
 
   /*
   **	File I/O.

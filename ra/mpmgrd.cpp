@@ -19,13 +19,14 @@
 #include "ra/mpmgrd.h"
 
 extern "C" {
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
-#include "types.h"
+
 #include "rtq.h"
 #include "services.h"
+#include "types.h"
 }
 #include "mplib.h"
 #include "mplpc.h"

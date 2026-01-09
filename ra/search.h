@@ -202,7 +202,11 @@ class IndexClass {
  *=============================================================================================*/
 template <class T>
 IndexClass<T>::IndexClass(void)
-    : IndexTable(nullptr), IndexCount(0), IndexSize(0), IsSorted(false), Archive(nullptr) {
+    : IndexTable(nullptr),
+      IndexCount(0),
+      IndexSize(0),
+      IsSorted(false),
+      Archive(nullptr) {
   Invalidate_Archive();
 }
 

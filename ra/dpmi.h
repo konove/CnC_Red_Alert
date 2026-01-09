@@ -41,9 +41,10 @@
 #ifndef DPMI_Hx
 #define DPMI_Hx
 #include <dos.h>
-#include <cstdlib>
-#include <cstdio>
 #include <mem.h>
+
+#include <cstdio>
+#include <cstdlib>
 
 extern void output(short port, short data);
 

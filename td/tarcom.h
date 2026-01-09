@@ -41,8 +41,8 @@
 #ifndef TARCOM_H
 #define TARCOM_H
 
-#include "td/turret.h"
 #include "td/defines.h"
+#include "td/turret.h"
 #include "tech/noinit.h"
 
 /****************************************************************************
@@ -55,9 +55,9 @@ class TarComClass : public TurretClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  TarComClass(void){};
+  TarComClass(void) {};
   TarComClass(UnitType classid, HousesType house)
-      : TurretClass(classid, house){};
+      : TurretClass(classid, house) {};
   TarComClass(NoInitClass const &x) : TurretClass(x) {}
   virtual ~TarComClass(void);
 
@@ -69,7 +69,7 @@ class TarComClass : public TurretClass {
 #endif
   virtual void AI(void);
   //		virtual bool Target_Something_Nearby(ThreatType
-  //rangmatters=THREAT_NORMAL);
+  // rangmatters=THREAT_NORMAL);
 
   /*
   **	File I/O.

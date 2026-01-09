@@ -21,9 +21,9 @@
 //	Wol_Dnld.cpp - WW online patch download dialog.
 //	ajw 10/12/98
 
-#include "ra/function.h"
-#include "WolapiOb.h"
 #include "WolStrng.h"
+#include "WolapiOb.h"
+#include "ra/function.h"
 
 //***********************************************************************************************
 bool WOL_Download_Dialog(IDownload* pDownload,

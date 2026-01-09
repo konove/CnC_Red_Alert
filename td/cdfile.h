@@ -41,6 +41,7 @@
 #ifndef CDFILE_H
 #define CDFILE_H
 
+#include "td/compat.h"
 #include "td/rawfile.h"
 
 /*

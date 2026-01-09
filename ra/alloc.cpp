@@ -40,12 +40,13 @@
  *   Total_Ram_Free -- Total amount of free RAM.                           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <malloc.h>
-#include <cstring>
-#include <cstdlib>
-#include <dos.h>
 #include <bios.h>
+#include <dos.h>
+#include <malloc.h>
+
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #ifndef WWMEM_H
 #include "wwmem.h"

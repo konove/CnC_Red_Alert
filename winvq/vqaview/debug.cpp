@@ -47,8 +47,9 @@
  *   Debug_Mono_Print_Whose_Turn -- Displays current turn on MONO display  *
  *   Build_Debug_Log_File_Name -- Based on the date and time of system     *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "ra/function.h"
 #include "debug.rh"
+
+#include "ra/function.h"
 #include "strings.rh"
 
 #if (RIG_ROLL_FOR_PLAYTEST)
@@ -416,7 +417,7 @@ VOID Debug_Shape_Test(VOID) {
       Refresh_Board_BMP_On_Hid();
       if (shape_ptr[i]) {
         //				Draw_Shape( HidBuff_Class_Ptr,
-        //shape_ptr[ i ], x, 71, SHAPE_NORMAL );
+        // shape_ptr[ i ], x, 71, SHAPE_NORMAL );
         Draw_Shape(HidBuff_Class_Ptr, shape_ptr[i], x, 0, SHAPE_SCALING, 340,
                    340);
         HidBuff_Class_Ptr->Put_Pixel(x, 100, 3);
@@ -429,7 +430,7 @@ VOID Debug_Shape_Test(VOID) {
   if (shape_ptr[0]) {
     Refresh_Board_BMP_On_Hid();
     //		Draw_Shape( HidBuff_Class_Ptr, shape_ptr[ 0 ], x, 71,
-    //SHAPE_NORMAL );
+    // SHAPE_NORMAL );
     Draw_Shape(HidBuff_Class_Ptr, shape_ptr[0], x, 0, SHAPE_SCALING, 340, 340);
     HidBuff_Class_Ptr->Put_Pixel(x, 100, 3);
     WinGBitBlt(Screen_DC, x, 0, 200, 200, WinG_DC, x, 0);
@@ -541,18 +542,19 @@ VOID Debug_Print_Game_Stats(VOID) {
       TextOut(Screen_DC, x, y, Text_String, strlen(Text_String));
       //			y += DEBUG_TEXT_SPACING;
       //			sprintf( Text_String, "   Tradable Assets: $%u
-      //", Players[ i ].Get_Tradable_Assets() ); 			TextOut( Screen_DC, 						x, 						y,
-      //						Text_String,
-      //						strlen( Text_String ) );
+      //", Players[ i ].Get_Tradable_Assets() ); 			TextOut(
+      //Screen_DC, 						x,
+      //y, 						Text_String, 						strlen( Text_String ) );
       y += DEBUG_TEXT_SPACING;
       sprintf(Text_String, "     Total Assets: $%u       ",
               Players[i].Get_Total_Assets(FALSE));
       TextOut(Screen_DC, x, y, Text_String, strlen(Text_String));
       y += DEBUG_TEXT_SPACING;
       //			sprintf( Text_String, "     Monopolies: %u ",
-      //Players[ i ].Get_Monopolies() ); 			TextOut( Screen_DC, 						x, 						y, 						Text_String,
-      //						strlen( Text_String ) );
-      //			y += DEBUG_TEXT_SPACING;
+      // Players[ i ].Get_Monopolies() ); 			TextOut(
+      // Screen_DC, 						x,
+      // y, 						Text_String, 						strlen(
+      //Text_String ) ); 			y += DEBUG_TEXT_SPACING;
     }
   }
 
@@ -1117,7 +1119,8 @@ VOID Build_Debug_Log_File_Name(BYTE *name_string_buffer,
   //	#if( DEBUG_CODE )
   //		sprintf( Text_String,
   //					"Log file name for this session:
-  //%s\r\n", 					name_string ); 		Debug_Mono_Message( Text_String ); 	#endif
+  //%s\r\n", 					name_string );
+  //Debug_Mono_Message( Text_String ); 	#endif
 
   /*
           build .INI file name (with directory path) in Text_String_2
@@ -1152,7 +1155,8 @@ VOID Build_Debug_Log_File_Name(BYTE *name_string_buffer,
   //	#if( DEBUG_CODE )
   //		sprintf( Text_String,
   //					"Legal DebugSystemName for this session:
-  //%s\r\n", 					Text_String_3 ); 		Debug_Mono_Message( Text_String ); 	#endif
+  //%s\r\n", 					Text_String_3 );
+  //Debug_Mono_Message( Text_String ); 	#endif
 
   /*
           open and write header to the log file
@@ -1237,10 +1241,10 @@ BOOL Get_Windows_System_Info(VOID) {
   //	WINDEBUGINFO current_windows_debug_info;
   //	GetWinDebugInfo( &current_windows_debug_info,
   //						  WDI_OPTIONS | WDI_FILTER |
-  //WDI_ALLOC_BREAK ); 	sprintf( Text_String, 				"Debug info:\r\nflags = %d, options
-  //= %d, filter = %d, alloc module = %s, \r\nalloc break = %ld, alloc count =
-  //%ld.\r\n", 				current_windows_debug_info.flags,
-  //				current_windows_debug_info.dwOptions,
+  // WDI_ALLOC_BREAK ); 	sprintf( Text_String,
+  // "Debug info:\r\nflags = %d, options = %d, filter = %d, alloc module = %s,
+  //\r\nalloc break = %ld, alloc count = %ld.\r\n",
+  //current_windows_debug_info.flags, 				current_windows_debug_info.dwOptions,
   //				current_windows_debug_info.dwFilter,
   //				current_windows_debug_info.achAllocModule,
   //				current_windows_debug_info.dwAllocBreak,
@@ -1277,7 +1281,8 @@ BOOL Get_Windows_System_Info(VOID) {
       //&& minor < REQUIRED_WIN32S_MINOR_VERSION ) ) {
       //							Real_Error_Window_Message(
       //"Win32s version 1.25 or greater is required. Run SETUP.EXE from the
-      //Monopoly CD-ROM CD." ); 							return( FALSE );
+      // Monopoly CD-ROM CD." );
+      // return( FALSE );
       //			}
       if (float_version < REQUIRED_WIN32S_FLOAT_VERSION) {
         /*
@@ -1292,7 +1297,7 @@ BOOL Get_Windows_System_Info(VOID) {
 
     }
     //		else if ( version_info.dwPlatformId ==
-    //VER_PLATFORM_WIN32_WINDOWS ) { // 1
+    // VER_PLATFORM_WIN32_WINDOWS ) { // 1
     else if (version_info.dwPlatformId == 1) {  // 1
 #if (DEBUG_CODE)
       Debug_Mono_Message("Windows OS Platform: Win32 on Chicago\r\n");
@@ -1377,7 +1382,8 @@ BOOL Get_Windows_System_Info(VOID) {
 //		if ( buffer == NULL ) {
 //			Close_File( fh );
 //			Generic_Window_Message( "Unable to alloc buffer in
-//Debug_Broadcast_Save_Game_Data_To_Other_Sites()", " " ); 			return;
+// Debug_Broadcast_Save_Game_Data_To_Other_Sites()", " " );
+// return;
 //		}
 //		Read_File( fh, buffer, file_size );
 //		Close_File( fh );
@@ -1386,10 +1392,10 @@ BOOL Get_Windows_System_Info(VOID) {
 //	#if( COMPILE_WINSOCK )
 //		/*
 //			send a system command that the save game data is coming
-//over
+// over
 //		*/
 //		WinSock_Broadcast_Command( CMD_HERE_COMES_MY_GAME_STATUS_BUFFER,
-//1, (INT) file_size );
+// 1, (INT) file_size );
 //		/*
 //			now blast the data over!
 //		*/
@@ -1398,15 +1404,16 @@ BOOL Get_Windows_System_Info(VOID) {
 //			/* send the command to all the "waiter links" */
 //			for ( i = 0; i <= Waiting_Socket_Index; i ++ ) {
 //				temp_socket = Hosts_Waiting_Sockets[ i
-//].accepted_connection_waiting_socket; 				if ( temp_socket != INVALID_SOCKET ) {
-//					status = WINSOCK_SEND( temp_socket,
-//buffer, file_size, 0 ); 					if ( status == SOCKET_ERROR ) {
-//						Generic_Window_Message( "Bad
-//send() of save game data", " " );
+//].accepted_connection_waiting_socket; 				if (
+//temp_socket != INVALID_SOCKET ) { 					status = WINSOCK_SEND( temp_socket, buffer,
+// file_size, 0 ); 					if ( status ==
+// SOCKET_ERROR ) { 						Generic_Window_Message( "Bad send() of save game data", " "
+// );
 //					}
 //					else {
 //						sprintf( Text_String, "%d size
-//save game data buffer sent\r\n", status ); 						Debug_Mono_Message( Text_String );
+// save game data buffer sent\r\n", status );
+// Debug_Mono_Message( Text_String );
 //					}
 //				}
 //			}
@@ -1416,24 +1423,28 @@ BOOL Get_Windows_System_Info(VOID) {
 //			/* send the command to the original host */
 //			if ( WC_Temp_Waiter_Socket != INVALID_SOCKET ) {
 //				status = WINSOCK_SEND( WC_Temp_Waiter_Socket,
-//buffer, file_size, 0 ); 				if ( status == SOCKET_ERROR ) {
-//					Generic_Window_Message( "Bad send() of
-//save game data", " " );
+// buffer, file_size, 0 ); 				if ( status ==
+// SOCKET_ERROR ) { 					Generic_Window_Message( "Bad send() of save game data", " "
+// );
 //				}
 //				else {
 //					sprintf( Text_String, "%d size save game
-//data buffer sent\r\n", status ); 					Debug_Mono_Message( Text_String );
+// data buffer sent\r\n", status );
+// Debug_Mono_Message( Text_String );
 //				}
 //			}
 //			/* then send the command to all other connected webbees
-//*/ 			for ( i = 0; i <= Web_Accepted_Socket_Index; i ++ ) { 				temp_socket =
-//Web_Accepted_Sockets[ i ]; 				if ( temp_socket != INVALID_SOCKET ) { 					status =
-//WINSOCK_SEND( temp_socket, buffer, file_size, 0 ); 					if ( status == SOCKET_ERROR
-//) { 						Generic_Window_Message( "Bad send() of save game data", " " );
+//*/ 			for ( i = 0; i <= Web_Accepted_Socket_Index; i ++ ) {
+//temp_socket = Web_Accepted_Sockets[ i ]; 				if (
+// temp_socket != INVALID_SOCKET ) { 					status =
+// WINSOCK_SEND( temp_socket, buffer, file_size, 0 );
+// if ( status == SOCKET_ERROR ) {
+//Generic_Window_Message( "Bad send() of save game data", " " );
 //					}
 //					else {
 //						sprintf( Text_String, "%d size
-//save game data buffer sent\r\n", status ); 						Debug_Mono_Message( Text_String );
+// save game data buffer sent\r\n", status );
+// Debug_Mono_Message( Text_String );
 //					}
 //				}
 //			}
@@ -1453,18 +1464,19 @@ BOOL Get_Windows_System_Info(VOID) {
 //{
 //	if ( Incoming_Save_Game_Data ) {
 //		Generic_Window_Message( "Incoming_Save_Game_Data already
-//allocated!", " " ); 		Free( Incoming_Save_Game_Data ); 		Incoming_Save_Game_Data =
-//NULL;
+// allocated!", " " ); 		Free( Incoming_Save_Game_Data );
+// Incoming_Save_Game_Data = NULL;
 //	}
 //
 //	Incoming_Save_Game_Data = (BYTE *) Alloc( (buffer_size) + 10, MEM_NORMAL
-//); 	Incoming_Save_Game_Data_Size = buffer_size; 	if ( ! Incoming_Save_Game_Data
-//) { 		Generic_Window_Message( "Unable to allocate Incoming_Save_Game_Data\r\n",
-//" " ); 		Incoming_Save_Game_Data_Size = 0;
+//); 	Incoming_Save_Game_Data_Size = buffer_size; 	if ( !
+//Incoming_Save_Game_Data ) { 		Generic_Window_Message( "Unable to
+//allocate Incoming_Save_Game_Data\r\n", " " );
+//Incoming_Save_Game_Data_Size = 0;
 //	}
 //	else {
 //		Debug_Mono_Message( "Incoming_Save_Game_Data allocated and ready
-//for receive...\r\n" );
+// for receive...\r\n" );
 //	}
 // }
 // #endif /* DEBUG_VERIFY_ALL_SITE_DATA */
@@ -1483,8 +1495,8 @@ BOOL Get_Windows_System_Info(VOID) {
 //
 //	sprintf( Text_String,
 //				"Save game data rec'd for verify, expected %d,
-//actual %d\r\n", 				Incoming_Save_Game_Data_Size, 				bytes_actually_received );
-//	Debug_Mono_Message( Text_String );
+// actual %d\r\n", 				Incoming_Save_Game_Data_Size,
+// bytes_actually_received ); 	Debug_Mono_Message( Text_String );
 //
 //	/*
 //		temp save the "just received save game" buffer out
@@ -1492,11 +1504,11 @@ BOOL Get_Windows_System_Info(VOID) {
 //	fh = Open_File( "TEMPRECV.MNO", WRITE );
 //	if ( fh != -1 ) {
 //		Write_File( fh, (BYTE *) Incoming_Save_Game_Data,
-//Incoming_Save_Game_Data_Size ); 		Close_File( fh );
+// Incoming_Save_Game_Data_Size ); 		Close_File( fh );
 //	}
 //	else {
 //		Generic_Window_Message( "Unable to save out temporary rec'd save
-//game", " " );
+// game", " " );
 //	}
 //
 //	/*
@@ -1514,14 +1526,15 @@ BOOL Get_Windows_System_Info(VOID) {
 //	file_compare = Debug_Compare_Two_Files( file_name, "TEMPRECV.MNO" );
 //	switch( file_compare ) {
 //		case -4L: Debug_Mono_Message( "Received game status data
-//fine!\r\n" ); break; 		case -3L: Debug_Mono_Message( "Memory error occured w/
-//file compare!\r\n" ); break; 		case -2L: Debug_Mono_Message( "File error occured
-//w/ file compare!\r\n" ); break; 		case -1L: Generic_Window_Message( "Error! Data
-//verification file sizes different!", " " ); 		default: 			sprintf( Text_String,
-//						"Error! Data verification files
-//differ at byte %ld", 						file_compare ); 			Generic_Window_Message( Text_String, " "
-//); 			sprintf( Text_String, 						"Compare %s (our system) and TEMPRECV.MNO (rec'd)!",
-//						file_name );
+// fine!\r\n" ); break; 		case -3L: Debug_Mono_Message( "Memory
+// error occured w/ file compare!\r\n" ); break; 		case -2L:
+// Debug_Mono_Message( "File error occured w/ file compare!\r\n" ); break;
+// case -1L: Generic_Window_Message( "Error! Data verification file sizes
+// different!", " " ); 		default: 			sprintf(
+// Text_String, 						"Error! Data verification files differ at byte %ld",
+// file_compare ); 			Generic_Window_Message( Text_String, " "
+//); 			sprintf( Text_String,
+//"Compare %s (our system) and TEMPRECV.MNO (rec'd)!", 						file_name );
 //			Generic_Window_Message( Text_String, " " );
 //	}
 //
@@ -1593,8 +1606,9 @@ BOOL Get_Windows_System_Info(VOID) {
 //
 //	sprintf( Text_String,
 //				"File_Size() of %s = %d bytes, File_Size() of %s
-//= %d bytes\r\n", 				file_name_1, 				file_size_1, 				file_name_2, 				file_size_2 );
-//	Debug_Mono_Message( Text_String );
+//= %d bytes\r\n", 				file_name_1,
+//file_size_1, 				file_name_2,
+//file_size_2 ); 	Debug_Mono_Message( Text_String );
 //
 //	if ( file_size_1 != file_size_2 ) {
 ////		Debug_Mono_Message( "About to call Close_File()\r\n" );
@@ -1635,8 +1649,9 @@ BOOL Get_Windows_System_Info(VOID) {
 //
 //	sprintf( Text_String,
 //				"Bytes read of %s = %d bytes, bytes read of %s =
-//%d bytes\r\n", 				file_name_1, 				bytes_read_1, 				file_name_2, 				bytes_read_2 );
-//	Debug_Mono_Message( Text_String );
+//%d bytes\r\n", 				file_name_1,
+//bytes_read_1, 				file_name_2,
+//bytes_read_2 ); 	Debug_Mono_Message( Text_String );
 //
 //	if ( bytes_read_1 != bytes_read_2 ) {
 ////		Debug_Mono_Message( "Error, About to call Free()\r\n" );
@@ -1673,7 +1688,8 @@ BOOL Get_Windows_System_Info(VOID) {
 //
 //		sprintf( Text_String,
 //					"Error, files are different at byte
-//#%d\r\n", 					error_byte_index ); 		Debug_Mono_Message( Text_String );
+// #%d\r\n", 					error_byte_index );
+// Debug_Mono_Message( Text_String );
 //
 //		return( (LONG) error_byte_index ); // ERROR!
 //	}
@@ -1786,7 +1802,7 @@ VOID Debug_Rig_Roll(WindowHandle window_handle) {
   //		WinSock_Broadcast_Cmd_String( CMD_SEND_YELL_MESSAGE_STRING,
   //												Game_Status.Get_Whos_Turn_Is_It_Now(),
   //												"The
-  //next dice roll has been rigged!\r\n" );
+  // next dice roll has been rigged!\r\n" );
   // }
 #endif
 }

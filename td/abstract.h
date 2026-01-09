@@ -41,9 +41,9 @@
 #ifndef ABSTRACT_H
 #define ABSTRACT_H
 
+#include "td/defines.h"
 #include "td/inline.h"
 #include "tech/noinit.h"
-#include "td/defines.h"
 
 DirType Direction(CELL cell1, CELL cell2);
 DirType Direction(COORDINATE coord1, COORDINATE coord2);

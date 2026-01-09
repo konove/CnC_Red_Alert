@@ -94,8 +94,8 @@ class ConnManClass {
   /*.....................................................................
   Constructor/Destructor.  These currently do nothing.
   .....................................................................*/
-  ConnManClass(void){};
-  virtual ~ConnManClass(){};
+  ConnManClass(void) {};
+  virtual ~ConnManClass() {};
 
   /*.....................................................................
   The Service routine:

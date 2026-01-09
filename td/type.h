@@ -41,10 +41,10 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include <cstring>
+
 #include "td/mission.h"
 #include "td/target.h"
-
-#include <cstring>
 
 class MapEditClass;
 class HouseClass;

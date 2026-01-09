@@ -34,8 +34,8 @@
  *
  ****************************************************************************/
 
-#include <windows.h>
 #include <ddraw.h>
+#include <windows.h>
 
 #ifdef __GNUC__
 #define DLLCALL

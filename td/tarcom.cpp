@@ -54,12 +54,13 @@
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/tarcom.h"
+
 #include "td/audio.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/facing.h"
 #include "td/inline.h"
-#include "td/tarcom.h"
 #include "td/target.h"
 #include "td/turret.h"
 #include "td/type.h"
@@ -151,7 +152,7 @@ void TarComClass::AI(void) {
             SecondaryFacing.Set_Desired(Direction(TarCom));
           }
           //					SecondaryFacing.Set_Desired(Direction256(Center_Coord(),
-          //As_Coord(TarCom)));
+          // As_Coord(TarCom)));
         }
         break;
 

@@ -120,15 +120,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <algorithm>
-
-#include "port/safe_string.h"
-#include "td/tcpip.h"
 #include "td/netdlg.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
@@ -163,6 +163,7 @@
 #include "td/palette.h"
 #include "td/queue.h"
 #include "td/special.h"
+#include "td/tcpip.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"

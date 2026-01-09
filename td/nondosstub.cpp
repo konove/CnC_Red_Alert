@@ -17,9 +17,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
-#include <algorithm>
 
 #include "td/ccfile.h"
 #include "td/compat.h"
@@ -28,13 +28,13 @@
 // #include "ra/filepcx.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/iconcach.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/conquer.h"
 #include "td/interpal.h"
 #include "td/mouse.h"
 #include "td/palette.h"
 #include "td/theme.h"
-#include "sdllib/include/ww_audio.h"
-#include "sdllib/include/ww_mouse.h"
-#include "td/conquer.h"
 
 typedef struct {
   char red;

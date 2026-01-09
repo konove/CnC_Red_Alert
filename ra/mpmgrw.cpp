@@ -23,10 +23,10 @@
 #include "ra/mpmgrw.h"
 
 extern "C" {
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 }
 
 #include <windows.h>

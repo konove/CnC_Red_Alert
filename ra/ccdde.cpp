@@ -54,10 +54,12 @@
 
 #ifdef WIN32
 
-#include <WINDOWS.H>
 #include "ra/ccdde.h"
-#include <cstdio>
+
+#include <WINDOWS.H>
 #include <timer.h>
+
+#include <cstdio>
 
 DDEServerClass DDEServer;  // Instance of the DDE Server class
 

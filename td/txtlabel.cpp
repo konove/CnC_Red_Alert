@@ -53,11 +53,12 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
+#include "td/txtlabel.h"
+
 #include "sdllib/include/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
-#include "td/txtlabel.h"
 
 TextLabelClass::TextLabelClass(char *txt, int x, int y, int color,
                                TextPrintType style)

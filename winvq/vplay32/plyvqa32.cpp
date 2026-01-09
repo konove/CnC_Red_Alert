@@ -54,20 +54,20 @@
 
 #define CAPTIONS 0
 
+#include <conio.h>
+#include <dos.h>
+#include <io.h>
+#include <mem.h>
+#include <process.h>
+#include <sys\timeb.h>
+#include <vqa32\vqafile.h>
+#include <vqa32\vqaplay.h>
+#include <vqm32\all.h>
+
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <conio.h>
-#include <sys\timeb.h>
-#include <mem.h>
-#include <io.h>
-#include <cctype>
-#include <process.h>
-#include <dos.h>
-
-#include <vqa32\vqaplay.h>
-#include <vqa32\vqafile.h>
-#include <vqm32\all.h>
 
 #if (CAPTIONS)
 #include <vqm32\font.h>

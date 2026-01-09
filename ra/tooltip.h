@@ -49,7 +49,7 @@ class ToolTipClass {
 
   bool bShowing;
   bool bIconList;  //	True if gadget is iconlist and line-specific tooltips
-                   //are to be used.
+                   // are to be used.
 
  protected:
   bool bGadgetHit() const;

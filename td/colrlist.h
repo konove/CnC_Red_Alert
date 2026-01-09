@@ -41,9 +41,9 @@
 #ifndef COLORLIST_H
 #define COLORLIST_H
 
-#include "td/list.h"
 #include "sdllib/include/wwstd.h"
 #include "td/defines.h"
+#include "td/list.h"
 #include "td/vector.h"
 
 /***************************************************************************

@@ -22,13 +22,13 @@
 //	ajw 07/10/98
 
 #include "WolapiOb.h"
+
 #include "RAWolapi.h"
-#include "WolStrng.h"
 #include "SEditDlg.h"
 #include "ToolTip.h"
-#include "Wol_GSup.h"
-
 #include "WolDebug.h"
+#include "WolStrng.h"
+#include "Wol_GSup.h"
 
 extern void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                              PlayerColorType iColorRemap = PCOLOR_NONE);
@@ -323,7 +323,7 @@ void WolapiObject::UnsetupCOMStuff() {
 
   //	debugprint( "pChatSink->Release\n" );
   pChatSink->Release();  //	This results in pChatSink deleting itself for
-                         //us.
+                         // us.
   pChatSink = NULL;
 
   //	debugprint( "pNetUtil->Release\n" );
@@ -1032,7 +1032,7 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
     return E_FAIL;
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
-                                          //lists.
+                                          // lists.
   DWORD dwTimeStart = timeGetTime();
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelJoinWait &&
@@ -1073,7 +1073,7 @@ bool WolapiObject::ChannelLeave() {
     return false;
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
-                                          //lists.
+                                          // lists.
   DWORD dwTimeStart = timeGetTime();
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelLeaveWait &&
@@ -1148,8 +1148,9 @@ bool WolapiObject::ListChannelUsers() {
   // CurrentLevel), after clearing it. 	The extra data ptr hidden in each list
   // item will hold a void pointer to the user described. 	For simplicity,
   // I destroy the old list and write a new one, even though possibly only one
-  // item 	may have changed. 	In order for the multiselect flags in the list to
-  //persist, I record the names that are flagged 	before clearing the
+  // item 	may have changed. 	In order for the multiselect flags in
+  // the list to
+  // persist, I record the names that are flagged 	before clearing the
   // list, then reset them (if found) in the new list. 	This is inefficient, but
   // should be fine in this non-time-critical situation. 	(I also save
   // item color here, and save all items. Now it's really inefficient.)
@@ -1157,7 +1158,7 @@ bool WolapiObject::ListChannelUsers() {
   // channel...) 	The idea was to avoid duplication of player data, and
   // not have any dependence on the integrity of the chatsink's 	players
   // list. Now it is a case of it working "well enough" to not require time to
-  //elegantize it.
+  // elegantize it.
 
   //	Extra bonus, if useful: returns true if an operator (channel owner) is
   // found in the channel, false otherwise.
@@ -1675,7 +1676,7 @@ bool WolapiObject::ChannelCreate(
     return false;
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
-                                          //lists.
+                                          // lists.
   DWORD dwTimeStart = timeGetTime();
   DWORD dwTimeNextPump = timeGetTime() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelCreateWait &&

@@ -2787,7 +2787,7 @@ int MapEditClass::Edit_Trigger(void) {
   //	static char data_enabled[EVENT_COUNT] = {0,0,0,0,0,0,0,0,0,1,1,1,1,0,0};
   //	static char house_enabled[EVENT_COUNT] =
   //{1,0,0,0,0,1,1,1,1,1,1,1,1,1,1}; 	static char
-  //team_enabled[TriggerClass::ACTION_COUNT] = {0,0,0,1,1,0,1,0,0,0,0,0,0,0};
+  // team_enabled[TriggerClass::ACTION_COUNT] = {0,0,0,1,1,0,1,0,0,0,0,0,0,0};
 
   /*........................................................................
   Buttons

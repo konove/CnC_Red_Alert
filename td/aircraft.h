@@ -41,16 +41,16 @@
 #ifndef AIRCRAFT_H
 #define AIRCRAFT_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/radio.h"
-#include "td/fly.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/facing.h"
+#include "td/fly.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/object.h"
+#include "td/radio.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "tech/noinit.h"
@@ -68,13 +68,13 @@ class AircraftClass : public FootClass, public FlyClass {
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   void operator delete(void *);
   operator AircraftType(void) const { return Class->Type; };
-  AircraftClass(void) : Class(nullptr){};
+  AircraftClass(void) : Class(nullptr) {};
   AircraftClass(NoInitClass const &x)
       : FootClass(x),
         FlyClass(x),
         Class(Class),
         SecondaryFacing(x),
-        SightTimer(x){};
+        SightTimer(x) {};
   AircraftClass(AircraftType classid, HousesType house);
   virtual ~AircraftClass(void);
   virtual RTTIType What_Am_I(void) const { return RTTI_AIRCRAFT; };
@@ -162,7 +162,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Combat related.
   */
   //		virtual bool Target_Something_Nearby(ThreatType
-  //threat=THREAT_NORMAL);
+  // threat=THREAT_NORMAL);
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
                                  TechnoClass *source);
   virtual BulletClass *Fire_At(TARGET target, int which);

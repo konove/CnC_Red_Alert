@@ -41,15 +41,15 @@
 #ifndef BUILDING_H
 #define BUILDING_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/radio.h"
 #include "td/bullet.h"
-#include "td/factory.h"
 #include "td/defines.h"
+#include "td/factory.h"
 #include "td/ftimer.h"
 #include "td/house.h"
 #include "td/object.h"
+#include "td/radio.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "tech/noinit.h"
@@ -175,10 +175,10 @@ class BuildingClass : public TechnoClass {
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
-  BuildingClass(void) : Class(nullptr){};
+  BuildingClass(void) : Class(nullptr) {};
   BuildingClass(StructType type, HousesType house);
   BuildingClass(NoInitClass const &x)
-      : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x){};
+      : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {};
   virtual ~BuildingClass(void);
   virtual RTTIType What_Am_I(void) const { return RTTI_BUILDING; };
 

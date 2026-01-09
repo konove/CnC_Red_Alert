@@ -41,12 +41,12 @@
 #ifndef FOOT_H
 #define FOOT_H
 
-#include "td/target.h"
-#include "td/techno.h"
-#include "td/ftimer.h"
 #include "td/defines.h"
+#include "td/ftimer.h"
 #include "td/object.h"
 #include "td/radio.h"
+#include "td/target.h"
+#include "td/techno.h"
 #include "tech/noinit.h"
 
 /****************************************************************************
@@ -201,7 +201,7 @@ class FootClass : public TechnoClass {
   FootClass(void);
   virtual ~FootClass(void);
   FootClass(NoInitClass const &x)
-      : TechnoClass(x), PathDelay(x), BaseAttackTimer(x){};
+      : TechnoClass(x), PathDelay(x), BaseAttackTimer(x) {};
   FootClass(HousesType house);
 
   /*---------------------------------------------------------------------

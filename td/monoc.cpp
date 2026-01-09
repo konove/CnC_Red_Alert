@@ -54,8 +54,8 @@
 // #pragma inline
 #include "td/monoc.h"
 
-#include <cstdio>
 #include <cstdarg>
+#include <cstdio>
 #include <cstring>
 
 // extern void output(short port, short data);

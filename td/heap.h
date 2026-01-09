@@ -63,7 +63,7 @@
 **	This is a block memory managment handler. It is used when memory is to
 **	be treated as a series of blocks of fixed size. This is similar to an
 **	array of integral types, but unlike such an array, the memory blocks
-**	are annonymous. This facilitates the use of this class when overloading
+**	are anonymous. This facilitates the use of this class when overloading
 **	the new and delete operators for a normal class object.
 */
 class FixedHeapClass {

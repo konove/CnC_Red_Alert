@@ -41,7 +41,8 @@
  *																									*
  * Use the Global Channel to query systems for their names, ID's, &
  ** IPX addresses.  Then, create a Private Connection with each system * that
- *joins your game, and use the Private Channel to send game packets	* (the private channel will perform somewhat faster, & gives you better	*
+ *joins your game, and use the Private Channel to send game packets	* (the
+ * private channel will perform somewhat faster, & gives you better	*
  * control than the Global Channel; it can detect retries, and the Global
  ** Channel can't).
  **
@@ -51,9 +52,11 @@
  *So, it uses DPMI to allocate & lock a chunk of DOS memory;		* this
  *memory is used for all incoming packet buffers, the outgoing * packet buffer,
  *and the actual code for the event handler.  The real-		* mode handler
- *code & this class share a portion of memory that's mapped	* into a "RealModeDataType" structure.  As packets come in, the handler	* points
- *IPX to the next available packet buffer & restarts listening;		* it sets a flag to tell this class that a packet is present at that		*
- * buffer slot.  This class must read all the packets & determine which *
+ *code & this class share a portion of memory that's mapped	* into a
+ * "RealModeDataType" structure.  As packets come in, the handler	* points
+ *IPX to the next available packet buffer & restarts listening;		* it
+ * sets a flag to tell this class that a packet is present at that
+ *	* buffer slot.  This class must read all the packets & determine which *
  * connection they go with (the Global Channel, or one of the Private *
  * Channels).  This parsing is done in the Service routine for this class.
  **
@@ -131,11 +134,11 @@
 /*
 ********************************* Includes **********************************
 */
-#include "ra/ipxconn.h"
-#include "ra/ipxgconn.h"
-#include "ra/ipxaddr.h"
 #include "ra/connmgr.h"
 #include "ra/ipx.h"
+#include "ra/ipxaddr.h"
+#include "ra/ipxconn.h"
+#include "ra/ipxgconn.h"
 
 /*
 ********************************** Defines **********************************

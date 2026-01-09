@@ -22,12 +22,12 @@
 //	ajw 08/06/98
 
 //	Class WOL_GameSetupDialog is a move away from doing dialogs purely in C,
-//a format that I've maintained in the login and 	chat dialogs, mimicking how
-//dialogs are done elsewhere in the code, but became frustrated with. 	Though
-//I'll follow the same pattern as before, things will be centralized a little
-//cleaner through the use of this object. 	Why a standard dialog class that would
-//handle common input behavior and so forth (one that this class could derive
-//from) 	wasn't written 5 years ago, I don't know...
+// a format that I've maintained in the login and 	chat dialogs, mimicking
+// how dialogs are done elsewhere in the code, but became frustrated with.
+// Though I'll follow the same pattern as before, things will be centralized a
+// little cleaner through the use of this object. 	Why a standard dialog
+// class that would handle common input behavior and so forth (one that this
+// class could derive from) 	wasn't written 5 years ago, I don't know...
 
 #include "WolapiOb.h"
 // class WolapiObject;
@@ -73,9 +73,9 @@ class WOL_GameSetupDialog {
 
   bool bHostSayGo;  //	Trigger host instructing all to start game immediately.
   bool bHostWaitingForGoTrigger;  //	True while host is waiting for go
-                                  //message to bounce back to him and trigger
-                                  //start.
-  bool bExitForGameTrigger;       //	Trigger exiting dialog for game.
+                                  // message to bounce back to him and trigger
+                                  // start.
+  bool bExitForGameTrigger;  //	Trigger exiting dialog for game.
 
   void ProcessGuestRequest(User* pUser, const char* szRequest);
   void ProcessInform(char* szRequest);
@@ -269,10 +269,10 @@ class WOL_GameSetupDialog {
   WolapiObject* pWO;
 
   GAMEPARAMS GParamsLastSent;  //	Used merely as a handy container for the
-                               //vars I need to set.
+                               // vars I need to set.
 
   DWORD dwTimeNextParamRefresh;  //	Param changes are sent by host at
-                                 //certain interval.
+                                 // certain interval.
 
   HousesType HousePrevious;
 
@@ -285,10 +285,10 @@ class WOL_GameSetupDialog {
   bool bProcess;                //	True means continue doing input loop.
   RESULT_WOLGSUP ResultReturn;  //	Value that will be returned from Show().
   char szNameOfHostWhoJustBailedOnUs[WOL_NAME_LEN_MAX];  //	If set, triggers
-                                                         //setup cancellation.
+                                                         // setup cancellation.
 
   bool bParamsReceived;  //	True after any WOL_GAMEOPT_INFPARAMS messages
-                         //have been received from a host.
+                         // have been received from a host.
 
   bool bLeaveDueToRulesMismatchTrigger;
 
@@ -305,16 +305,16 @@ class WOL_GameSetupDialog {
 
   //	Extra game params...
   bool bAftermathUnits;  //	True if aftermath units are to be used in the
-                         //game.
+                         // game.
   bool bSlowUnitBuildRate;
 
   SCENARIO_GAMEKIND ScenKindCurrent;  //	Describes what gamekind of
-                                      //scenarios we are viewing, if host.
+                                      // scenarios we are viewing, if host.
   DynamicVectorClass<const char*>
       ar_szScenarios[4];  //	Lists of scenarios, by SCENARIO_GAMEKIND.
   //	ar_szScenIndexes parallels ar_szScenarios, holds ScenarioIndex. It's
-  //actually an int, but I'm using void* to avoid 	template instantiation
-  //problems and the need to change defines.h.
+  // actually an int, but I'm using void* to avoid 	template instantiation
+  // problems and the need to change defines.h.
   DynamicVectorClass<void*> ar_szScenIndexes[4];
 
   //------------------------------------------------------------------------
@@ -323,7 +323,7 @@ class WOL_GameSetupDialog {
   enum {
     BUTTON_DISCONNECT =
         100,  //	Note: standard WOL button IDs must match values in
-              //WolapiObject::PrepareButtonsAndIcons().
+              // WolapiObject::PrepareButtonsAndIcons().
     BUTTON_LEAVE,
     BUTTON_REFRESH,
     BUTTON_SQUELCH,

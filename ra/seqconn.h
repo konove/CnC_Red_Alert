@@ -53,8 +53,8 @@
 #ifndef SEQCONN_H
 #define SEQCONN_H
 
-#include "ra/connect.h"
 #include "ra/comqueue.h"
+#include "ra/connect.h"
 
 /*
 ***************************** Class Declaration *****************************

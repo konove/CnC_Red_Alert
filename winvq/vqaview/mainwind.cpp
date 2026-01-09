@@ -34,13 +34,12 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <windows.h>
-
-#include <westwood.h>
 #include <mainwind.h>
-#include <vidmode.h>
-#include <wm.h>
 #include <misc.h>
+#include <vidmode.h>
+#include <westwood.h>
+#include <windows.h>
+#include <wm.h>
 #include <wwlib.h>
 
 //==========================================================================

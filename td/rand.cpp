@@ -36,8 +36,9 @@
  *   Sim_IRandom -- Returns minval to maxval, inclusive                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/jshell.h"
 #include "td/rand.h"
+
+#include "td/jshell.h"
 
 int SimRandIndex = 0;
 
@@ -114,6 +115,7 @@ different every time it's run.
 ---------------------------------------------------------------------------*/
 #if 0
 #include <conio.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>

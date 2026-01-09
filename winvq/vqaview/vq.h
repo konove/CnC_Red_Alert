@@ -38,8 +38,8 @@
 // INCLUDES
 //==========================================================================
 
-#include <vqa32\vqaplay.h>
 #include <vidmode.h>
+#include <vqa32\vqaplay.h>
 #define bool BOOL
 #define true 1
 #define false 0

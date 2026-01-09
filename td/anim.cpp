@@ -57,6 +57,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/anim.h"
+
 #include <algorithm>
 #include <cstdlib>
 
@@ -64,7 +66,6 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/shape.h"
 #include "td/abstract.h"
-#include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

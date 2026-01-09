@@ -47,9 +47,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/slider.h"
+
 #include <algorithm>
 
-#include "td/slider.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_mouse.h"

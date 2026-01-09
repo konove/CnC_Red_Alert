@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 
 void main(void) { printf("Run C&C.COM.\n"); }

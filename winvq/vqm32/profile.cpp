@@ -44,10 +44,11 @@
  *
  ****************************************************************************/
 
+#include "winvq/vqm32/profile.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "winvq/vqm32/profile.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

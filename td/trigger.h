@@ -41,7 +41,7 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
-#include <string.h>
+#include <cstring>
 
 #include "td/defines.h"
 #include "td/object.h"
@@ -128,7 +128,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass(void);
-  TriggerClass(NoInitClass const &x){};
+  TriggerClass(NoInitClass const &x) {};
   ~TriggerClass(void);
 
   /*

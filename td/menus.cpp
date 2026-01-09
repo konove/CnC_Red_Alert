@@ -42,6 +42,8 @@
 **	Function prototypes
 ******************************/
 
+#include "td/menus.h"
+
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/misc.h"
@@ -58,7 +60,6 @@
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
-#include "td/menus.h"
 #include "td/textbtn.h"
 #ifdef SCENARIO_EDITOR
 

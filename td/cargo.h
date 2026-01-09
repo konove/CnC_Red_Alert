@@ -57,7 +57,7 @@ class CargoClass {
     Quantity = 0;
     CargoHold = nullptr;
   };
-  CargoClass(NoInitClass const &){};
+  CargoClass(NoInitClass const &) {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

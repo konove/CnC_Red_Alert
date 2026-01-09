@@ -38,20 +38,20 @@
  *
  ****************************************************************************/
 
+#include "winvq/vqm32/compress.h"
+#include "winvq/vqm32/crc.h"
+#include "winvq/vqm32/graphics.h"
+#include "winvq/vqm32/huffman.h"
 #include "winvq/vqm32/iff.h"
+#include "winvq/vqm32/mem.h"
+#include "winvq/vqm32/mixfile.h"
 #include "winvq/vqm32/mono.h"
+#include "winvq/vqm32/palette.h"
 #include "winvq/vqm32/portio.h"
 #include "winvq/vqm32/profile.h"
 #include "winvq/vqm32/targa.h"
-#include "winvq/vqm32/compress.h"
-#include "winvq/vqm32/video.h"
-#include "winvq/vqm32/palette.h"
-#include "winvq/vqm32/vesavid.h"
 #include "winvq/vqm32/vesablit.h"
-#include "winvq/vqm32/graphics.h"
-#include "winvq/vqm32/mixfile.h"
-#include "winvq/vqm32/crc.h"
-#include "winvq/vqm32/huffman.h"
-#include "winvq/vqm32/mem.h"
+#include "winvq/vqm32/vesavid.h"
+#include "winvq/vqm32/video.h"
 
 #endif /* VQMALL_H */

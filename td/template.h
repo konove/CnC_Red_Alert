@@ -41,12 +41,12 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/object.h"
-#include "td/type.h"
 #include "td/defines.h"
 #include "td/globals.h"
+#include "td/object.h"
+#include "td/type.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
 
@@ -65,7 +65,7 @@ class TemplateClass : public ObjectClass {
   static void operator delete(void *ptr);
   TemplateClass(void);
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(Class){};
+  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(Class) {};
   virtual ~TemplateClass(void) {
     if (GameActive) TemplateClass::Limbo();
   };

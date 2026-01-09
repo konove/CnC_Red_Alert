@@ -48,13 +48,15 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
+#include "winvq/vqm32/targa.h"
+
+#include <fcntl.h>
+#include <io.h>
 #include <malloc.h>
 #include <mem.h>
-#include <io.h>
-#include <fcntl.h>
 #include <sys\stat.h>
-#include "winvq/vqm32/targa.h"
+
+#include <cstdio>
 
 /* Private data declerations. */
 static long DecodeImageData(TGAHandle *, char *);

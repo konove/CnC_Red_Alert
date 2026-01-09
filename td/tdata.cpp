@@ -48,8 +48,6 @@
 
 #include <filesystem>
 
-#include "td/terrain.h"
-#include "td/type.h"
 #include "port/ex_string.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -60,6 +58,8 @@
 #include "td/jshell.h"
 #include "td/mixfile.h"
 #include "td/object.h"
+#include "td/terrain.h"
+#include "td/type.h"
 
 #define TREE_NORMAL 600
 #define TREE_WEAK 400

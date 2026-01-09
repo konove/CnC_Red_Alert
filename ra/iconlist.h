@@ -199,10 +199,10 @@ class IconListClass : public ListClass {
   // creates hellacious linking problems
   DynamicVectorClass<void*> ExtrasList;
 
-  bool bDoAlloc;  //	True if I am responsible for mem. allocation/deletion of
-                  // strings.
-                  //		bool bMultiSelect;	//	True if we are
-                  //using the multiple item selection feature.
+  bool bDoAlloc;    //	True if I am responsible for mem. allocation/deletion of
+                    // strings.
+                    //		bool bMultiSelect;	//	True if we are
+                    // using the multiple item selection feature.
   int iSelectType;  //	0 for no selection shown, 1 for normal ListClass
                     // selection, 2 for n multiple selections
   int iMaxItems;    //	Number of items to limit list to, if bDoAlloc is true.

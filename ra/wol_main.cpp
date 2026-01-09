@@ -21,10 +21,10 @@
 //	Wol_Main.cpp - Bottom level wolapi-stuff function.
 //	ajw 07/16/98
 
-#include "ra/function.h"
-#include "WolapiOb.h"
-#include "ra/wol_gsup.h"
 #include "WolStrng.h"
+#include "WolapiOb.h"
+#include "ra/function.h"
+#include "ra/wol_gsup.h"
 
 int WOL_Login_Dialog(WolapiObject* pWolapi);
 int WOL_Chat_Dialog(WolapiObject* pWolapi);
@@ -39,12 +39,12 @@ WolapiObject* pWolapi = NULL;
 
 //***********************************************************************************************
 //	The first time through, pWolapi is NULL thus wolapi gets set up.
-//WOL_Login_Dialog presents the user 	with the login dialog and attempts to log
-//us on to the server. If the user continues on all the 	way to a game start, we
-//will drop out of here with pWolapi still pointing to a valid WolapiObject, 	and
-//with pWolapi's iLobbyReturnAfterGame set to the number of the lobby to return
-//to automatically 	after the game ends. 	Init() automatically brings us here if
-//pWolapi is non-null.
+// WOL_Login_Dialog presents the user 	with the login dialog and attempts to
+// log us on to the server. If the user continues on all the 	way to a game
+// start, we will drop out of here with pWolapi still pointing to a valid
+// WolapiObject, 	and with pWolapi's iLobbyReturnAfterGame set to the
+// number of the lobby to return to automatically 	after the game ends.
+// Init() automatically brings us here if pWolapi is non-null.
 //***********************************************************************************************
 int WOL_Main() {
   //	Return values:
@@ -60,10 +60,10 @@ int WOL_Main() {
     Theme.Play_Song(THEME_INTRO);
 
     //	Verify that we are still connected. If we aren't, kill WolapiObject and
-    //start over. 	(This will likely occur during the game, if connection is
-    //lost. Ensure that it is done here.)
+    // start over. 	(This will likely occur during the game, if connection
+    // is lost. Ensure that it is done here.)
     pWolapi->pChat->PumpMessages();  //	Causes OnNetStatus() call if no longer
-                                     //connected.
+                                     // connected.
     if (pWolapi->bConnectionDown) {
       // debugprint( "Re-entering WOL_Main(), pWolapi->bConnectionDown is true.
       // Deleting old WolapiObject...\n" );
@@ -82,12 +82,13 @@ int WOL_Main() {
       //	Things are really bad if this happens. A COM call failed.
 
       //	We first assume that their wolapi.dll failed to register during
-      //wolsetup.exe, part of the patch process. 	This happens if they have an
-      //outdated oleaut32.dll, such as the one that comes with original 	version
-      //of Windows 95.
+      // wolsetup.exe, part of the patch process. 	This happens if they
+      // have an outdated oleaut32.dll, such as the one that comes with original
+      // version of Windows 95.
 
       //			debugprint( "bSetupCOMStuff failed. Attemping to
-      //reregister wolapi.dll...\n" ); 	Attempt to re-register wolapi.dll...
+      // reregister wolapi.dll...\n" ); 	Attempt to re-register
+      // wolapi.dll...
       if (ReregisterWolapiDLL()) {
         if (!pWolapi->bSetupCOMStuff()) {
           //	Still failed after reregistering seemed to work.
@@ -152,8 +153,8 @@ int WOL_Main() {
             break;
           case RESULT_WOLGSUP_FATALERROR:
             //					debugprint(
-            //"RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" ); 					Fatal(
             //"RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
+            //Fatal( "RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
             if (pWolapi->pChatSink->bConnected) pWolapi->Logout();
             bKeepGoing = false;
             break;
@@ -204,7 +205,7 @@ bool ReregisterWolapiDLL() {
       HINSTANCE hLib = LoadLibrary(szInstallPath);
       if (!hLib) {
         //				debugprint( "LoadLibrary failed,
-        //GetLastError is %i\n", GetLastError() );
+        // GetLastError is %i\n", GetLastError() );
         ::RegCloseKey(hKey);
         return false;
       }
@@ -218,9 +219,9 @@ bool ReregisterWolapiDLL() {
         return false;
       }
       //	There is a bug in wolapi.dll that makes the following delay
-      //necessary. 	Something about Neal's extra threads only getting half-way
-      //set up before they get deleted. 	(The extra threads shouldn't really be
-      //created in this case, anyway...)
+      // necessary. 	Something about Neal's extra threads only getting
+      // half-way set up before they get deleted. 	(The extra threads
+      // shouldn't really be created in this case, anyway...)
       ::Sleep(1000);
       FreeLibrary(hLib);
       FindClose(handle);
@@ -238,9 +239,9 @@ bool ReregisterWolapiDLL() {
 //***********************************************************************************************
 void HandleDLLFail() {
   //	The DLL failed to load. Either we failed to reregister it, or we think
-  //we succeeded at this but it 	still is not working. Show an error message and
-  //delete pWolapi. 	We show either "call tech support" or "download IE3",
-  //depending on whether oleaut32.dll looks out of date.
+  // we succeeded at this but it 	still is not working. Show an error
+  // message and delete pWolapi. 	We show either "call tech support" or
+  // "download IE3", depending on whether oleaut32.dll looks out of date.
 
   char szPath[_MAX_PATH + 1];
   ::GetSystemDirectory(szPath, _MAX_PATH);
@@ -252,7 +253,7 @@ void HandleDLLFail() {
   HANDLE handle = FindFirstFile(szPath, &wfd);
 
   //	debugprint( "HandleDLLFail(): filesize of oleaut32 is %i\n",
-  //wfd.nFileSizeLow );
+  // wfd.nFileSizeLow );
   if (handle != INVALID_HANDLE_VALUE && wfd.nFileSizeLow <= 232720)
     WWMessageBox().Process(TXT_WOL_DLLERROR_GETIE3);
   else

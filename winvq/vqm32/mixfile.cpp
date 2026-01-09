@@ -62,13 +62,16 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <cstdlib>
+#include "winvq/vqm32/mixfile.h"
+
 #include <fcntl.h>
 #include <io.h>
 #include <mem.h>
+
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
-#include "winvq/vqm32/mixfile.h"
+
 #include "winvq/vqm32/crc.h"
 
 /*---------------------------------------------------------------------------

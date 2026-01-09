@@ -49,15 +49,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "port/safe_string.h"
-#include "td/scenario.h"
 #include "td/saveload.h"
+
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "sdllib/include/misc.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -78,6 +78,7 @@
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/overlay.h"
+#include "td/scenario.h"
 #include "td/score.h"
 #include "td/smudge.h"
 #include "td/support.h"

@@ -128,8 +128,8 @@ class WinTimerClass {
 
  private:
   std::int32_t TimerHandle;  // Handle for windows timer event
-  std::uint64_t SysTicks;     // Tick count of timer.
-  std::uint64_t UserTicks;    // Tick count of timer.
+  std::uint64_t SysTicks;    // Tick count of timer.
+  std::uint64_t UserTicks;   // Tick count of timer.
 };
 
 uint32_t Get_Time_Ms();

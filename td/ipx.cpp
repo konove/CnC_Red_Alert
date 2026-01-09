@@ -62,8 +62,9 @@
  *   Let_IPX_Breath -- gives IPX some CPU time                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/ipx95.h"
 #include "td/ipx.h"
+
+#include "td/ipx95.h"
 
 /***************************************************************************
  * IPX_SPX_Installed -- checks for installation of IPX/SPX                 *
@@ -289,7 +290,9 @@ int IPX_Close_Socket(unsigned short socket) {
  *                                                                         *
  * This Novell call will the return the user's local "Connection Number".
  ** This value will be 0 if the user isn't logged into Novell, so this * routine
- *can be used to detect if other calls (such as Get_Local_Target)	* will be OK.																					*
+ *can be used to detect if other calls (such as Get_Local_Target)	* will
+ * be OK.
+ *												*
  *                                                                         *
  * INPUT:                                                                  *
  *		none.
@@ -348,7 +351,9 @@ int IPX_Get_Connection_Number(void) {
  * IPX_Get_1st_Connection_Num -- gets 1st Connect Number for given user    *
  *                                                                         *
  * This gets the Connection Number for the given User ID.  Since a user * may be
- *logged in more than once, this just returns the first connection	* found and ignores the others.															*
+ *logged in more than once, this just returns the first connection	* found
+ * and ignores the others.
+ *								*
  *                                                                         *
  * INPUT:                                                                  *
  *		username		name of the user to get the Connection

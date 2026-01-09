@@ -59,16 +59,17 @@
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
+#include "td/dial8.h"
+
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_mouse.h"
 #include "td/control.h"
 #include "td/defines.h"
-#include "td/dial8.h"
 #include "td/dialog.h"
-#include "td/globals.h"
 #include "td/face.h"
+#include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
 

@@ -20,10 +20,11 @@
 // For building targets, adjusts the distance by subtracting the building's
 // average radius to get the distance to the building edge rather than center.
 // Typically used for weapon range checks.
-#include <string.h>
-#include <algorithm>
-
 #include "td/abstract.h"
+
+#include <algorithm>
+#include <cstring>
+
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/target.h"

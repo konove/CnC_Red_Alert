@@ -35,9 +35,12 @@
  *-------------------------------------------------------------------------*
  *                                                                         *
  * This class's job is to queue up outgoing messages & incoming messages, * and
- *serves as a storage area for various flags for ACK & Retry logic.	* It allows the application to keep track of how many messages have 		*
- * passed through this queue, in & out, so packets can use this as a * unique
- *ID.  (If packets have a unique ID, the application can use this 	* to detect re-sends.)																		*
+ *serves as a storage area for various flags for ACK & Retry logic.	* It
+ * allows the application to keep track of how many messages have 	* passed
+ * through this queue, in & out, so packets can use this as a * unique ID.  (If
+ * packets have a unique ID, the application can use this 	* to detect
+ * re-sends.)
+ *									*
  *                                                                         *
  * The queues act as FIFO buffers (First-In, First-Out).  The first entry
  ** placed in a queue is the first one read from it, and so on.  The
@@ -53,8 +56,10 @@
  **
  *                                                                         *
  * The class also contains routines to maintain a cumulative response time
- ** for this queue.  It's up to the caller to call Add_Delay() whenever * it detects that an outgoing message has been ACK'd; this class adds		*
- * that delay into a computed average delay over the last few message * delays.
+ ** for this queue.  It's up to the caller to call Add_Delay() whenever * it
+ * detects that an outgoing message has been ACK'd; this class adds
+ *	* that delay into a computed average delay over the last few message *
+ * delays.
  **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */

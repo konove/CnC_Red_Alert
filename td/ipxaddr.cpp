@@ -68,10 +68,11 @@
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-#include <string.h>
+#include "td/ipxaddr.h"
+
+#include <cstring>
 
 #include "td/ipx.h"
-#include "td/ipxaddr.h"
 
 IPXAddressClass::IPXAddressClass(void) {
   NetworkNumber[0] = 0xff;

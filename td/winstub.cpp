@@ -41,9 +41,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/winstub.h"
+
 #include "td/function.h"
 #include "td/tcpip.h"
-#include "td/winstub.h"
 
 void output(short, short) {}
 

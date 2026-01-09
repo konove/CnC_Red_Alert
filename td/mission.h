@@ -41,9 +41,9 @@
 #ifndef MISSION_H
 #define MISSION_H
 
-#include "td/object.h"
-#include "td/ftimer.h"
 #include "td/defines.h"
+#include "td/ftimer.h"
+#include "td/object.h"
 #include "tech/noinit.h"
 
 /****************************************************************************

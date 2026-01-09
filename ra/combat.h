@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_COMBAT_H_
 #define CNC_RED_ALERT_RA_COMBAT_H_
-#include "ra/techno.h"
 #include "ra/defines.h"
+#include "ra/techno.h"
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
                   int distance);

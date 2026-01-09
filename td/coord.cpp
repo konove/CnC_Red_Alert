@@ -48,14 +48,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/coord.h"
+
 #include <algorithm>
 
-#include "td/rand.h"
-#include "td/coord.h"
 #include "td/const.h"
 #include "td/display_constants.h"
 #include "td/inline.h"
 #include "td/jshell.h"
+#include "td/rand.h"
 
 /***********************************************************************************************
  * Coord_Spillage_List -- Determines the offset list for cell

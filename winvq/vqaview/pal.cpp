@@ -36,17 +36,16 @@
  * Update_Full_Palette -- Modifies the Windows palette                     *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <windows.h>
-
-#include <westwood.h>
-#include <vidmode.h>
-#include <pal.h>
 #include <gbuffer.h>
 #include <main.h>
-#include <monochrm.h>
-#include <wwlib.h>
 #include <memflag.h>
+#include <monochrm.h>
+#include <pal.h>
+#include <vidmode.h>
 #include <vq.h>
+#include <westwood.h>
+#include <windows.h>
+#include <wwlib.h>
 
 //---------------------------------------------------------------------------------------------
 //	PUBLIC DATA

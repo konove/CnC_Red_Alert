@@ -17,12 +17,14 @@
 */
 
 extern "C" {
-#include "lpc.h"
-#include "types.h"
-#include "services.h"
-#include "rtq.h"
-#include <cstdio>
 #include <mem.h>
+
+#include <cstdio>
+
+#include "lpc.h"
+#include "rtq.h"
+#include "services.h"
+#include "types.h"
 };
 #include "mplib.h"
 

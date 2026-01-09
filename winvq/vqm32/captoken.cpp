@@ -36,12 +36,13 @@
  *
  ****************************************************************************/
 
-#include <cstdlib>
-#include <cstdio>
-#include <cerrno>
-#include <cstring>
-#include <cctype>
 #include "winvq/vqm32/captoken.h"
+
+#include <cctype>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

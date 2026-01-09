@@ -60,7 +60,7 @@
 #endif
 
 #ifdef GERMAN
-#define TEXT_ERROR_TIMER                                                       \
+#define TEXT_ERROR_TIMER                                                      \
   "Fehler - das Timer-System konnte aufgrund einer Instabilität des Systems " \
   "nicht initialisiert werden. Bitte starten Sie Windows neu."
 #define TEXT_SHORT_TITLE "C&C:AR"
@@ -73,12 +73,12 @@
 #define TEXT_INSUFFICIENT \
   "Nicht genug Festplattenplatz für Command & Conquer:AR.\n"
 #define TEXT_MUST_HAVE "Sie brauchen %d MByte freien Platz auf der Festplatte."
-#define TEXT_CRITICALLY_LOW                                                   \
+#define TEXT_CRITICALLY_LOW                                                  \
   "Nicht genug Festplattenplatz für Command & Conquer:AR.\nSie brauchen %d " \
   "MByte freien Platz auf der Festplatte."
 #define TEXT_NO_RAM "Zuwenig Hauptspeicher verfügbar.\n"
-#define TEXT_USE_START_MENU                                                    \
-  "\n\rWenn auf Ihrem Rechner Windows 95 lõuft,\n\rstarten Sie die "          \
+#define TEXT_USE_START_MENU                                                  \
+  "\n\rWenn auf Ihrem Rechner Windows 95 lõuft,\n\rstarten Sie die "         \
   "DOS-Version von Alarmstufe Rot\n\rbitte ³ber das Start-Men³ von Windows " \
   "95.\n\rZum Weitermachen beliebige Taste dr³cken.\n\r"
 #define TEXT_SETUP_FIRST "Bitte erst das SETUP-Programm starten.\n"
@@ -103,7 +103,7 @@
 #endif
 
 #ifdef FRENCH
-#define TEXT_ERROR_TIMER                                              \
+#define TEXT_ERROR_TIMER                                             \
   "Error - L'horloge systÞme n'a pas pu s'initialiser en raison de " \
   "l'instabilité du sytÞme. Vous devez redémarrer Windows."
 #define TEXT_SHORT_TITLE "Alerte Rouge"
@@ -121,9 +121,9 @@
   "Espace disque insuffisant pour lancer Command & Conquer.\nVous devez " \
   "disposer de %d Mo d'espace disponsible sur le disque dur."
 #define TEXT_NO_RAM "Mémoire vive (RAM) insuffisante.\n"
-#define TEXT_USE_START_MENU                                                     \
+#define TEXT_USE_START_MENU                                                   \
   "\n\rSi vous êtes dans Windows 95 vous devez lancer Alerte Rouge\r\nDOS à " \
-  "partir du menu Démarrer de Windows 95.\n\rAppuyez sur n'importe quelle "    \
+  "partir du menu Démarrer de Windows 95.\n\rAppuyez sur n'importe quelle "   \
   "touche.\n\r"
 #define TEXT_SETUP_FIRST "Lancez d'abord le programme de configuration SETUP.\n"
 #define TEXT_NO_MOUSE \
@@ -136,14 +136,14 @@
 #define TEXT_MAP_ERROR "Erreur de carte!"
 #define TEXT_STOP "Stop"
 #define TEXT_CONTINUE "Continuer"
-#define TEXT_OPTIONS                                                              \
-  "Alerte Rouge (c) 1996, Westwood Studios\r\n"                                   \
-  "ParamÞtres:\r\n"                                                              \
+#define TEXT_OPTIONS                                                          \
+  "Alerte Rouge (c) 1996, Westwood Studios\r\n"                               \
+  "ParamÞtres:\r\n"                                                           \
   "  -DESTNET  = Spécifier le numéro de réseau du système de destination\r\n" \
-  "              (Syntaxe: DESTNETxx.xx.xx.xx)\r\n"                               \
-  "  -SOCKET   = ID Socket réseau (0  16383)\r\n"                               \
-  "  -STEALTH  = Cacher les noms en mode multijoueurs (\"Mode Boss\")\r\n"        \
-  "  -MESSAGES = Autorise les messages extérieurs à ce jeu.\r\n"                \
+  "              (Syntaxe: DESTNETxx.xx.xx.xx)\r\n"                           \
+  "  -SOCKET   = ID Socket réseau (0  16383)\r\n"                           \
+  "  -STEALTH  = Cacher les noms en mode multijoueurs (\"Mode Boss\")\r\n"    \
+  "  -MESSAGES = Autorise les messages extérieurs à ce jeu.\r\n"              \
   "\r\n"
 #endif
 

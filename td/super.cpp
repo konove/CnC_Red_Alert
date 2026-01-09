@@ -68,11 +68,12 @@
  *                                                                                             *
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/super.h"
+
 #include "td/audio.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"
-#include "td/super.h"
 
 SuperClass::SuperClass(int recharge, VoxType ready, VoxType charging,
                        VoxType impatient, VoxType suspend) {

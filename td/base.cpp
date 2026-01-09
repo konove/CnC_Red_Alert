@@ -61,11 +61,12 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "td/base.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/defines.h"

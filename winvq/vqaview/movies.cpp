@@ -38,13 +38,13 @@
 // INCLUDES
 //==========================================================================
 
-#include <windows.h>
-#include <westwood.h>
-#include <vq.h>
-#include <movies.h>
-#include <mainwind.h>
 #include <main.h>
+#include <mainwind.h>
+#include <movies.h>
 #include <pal.h>
+#include <vq.h>
+#include <westwood.h>
+#include <windows.h>
 
 //==========================================================================
 // PRIVATE FUNCTIONS

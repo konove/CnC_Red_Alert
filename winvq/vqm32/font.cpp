@@ -43,12 +43,14 @@
  *
  ****************************************************************************/
 
-#include <cstdlib>
+#include "winvq/vqm32/font.h"
+
 #include <fcntl.h>
 #include <io.h>
-#include <cstring>
 #include <malloc.h>
-#include "winvq/vqm32/font.h"
+
+#include <cstdlib>
+#include <cstring>
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS

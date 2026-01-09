@@ -57,12 +57,12 @@
 
 #include <algorithm>
 
-#include "ra/inline.h"
-#include "ra/target.h"
 #include "ra/abstract.h"
 #include "ra/const.h"
 #include "ra/display.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/target.h"
 
 /***********************************************************************************************
  * Coord_Cell -- Convert a coordinate into a cell number. *

@@ -52,7 +52,7 @@ class DDEServerClass {
   char *Get_MPlayer_Game_Info(void);  // Returns pointer to game info
   int Get_MPlayer_Game_Info_Length() {
     return (MPlayerGameInfoLength);
-  };                                                // Len of game info
+  };  // Len of game info
   BOOL Callback(unsigned char *data, long length);  // DDE callback function
   void Delete_MPlayer_Game_Info(void);  // release the game info memory
   void Enable(void);                    // Enable the DDE callback
@@ -66,10 +66,10 @@ class DDEServerClass {
   enum {
     DDE_PACKET_START_MPLAYER_GAME,  // Start game packet. This includes game
                                     // options
-    DDE_PACKET_GAME_RESULTS,  // Game results packet. The game statistics.
-    DDE_PACKET_HEART_BEAT,    // Heart beat packet so we know WChat is still
+    DDE_PACKET_GAME_RESULTS,        // Game results packet. The game statistics.
+    DDE_PACKET_HEART_BEAT,  // Heart beat packet so we know WChat is still
                             // there.
-    DDE_TICKLE,  // Message to prompt other app to take focus.
+    DDE_TICKLE,             // Message to prompt other app to take focus.
     DDE_CONNECTION_FAILED
   };
 

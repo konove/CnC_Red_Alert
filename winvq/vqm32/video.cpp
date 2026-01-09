@@ -43,9 +43,10 @@
  *
  ****************************************************************************/
 
-#include <cstdlib>
-#include <dos.h>
 #include <conio.h>
+#include <dos.h>
+
+#include <cstdlib>
 
 #ifndef __WATCOMC__
 #include <pharlap.h>

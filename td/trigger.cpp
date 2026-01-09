@@ -62,12 +62,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "td/trigger.h"
 
-#include "reinf.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "port/ex_string.h"
+#include "reinf.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -89,7 +91,6 @@
 #include "td/teamtype.h"
 #include "td/techno.h"
 #include "td/terrain.h"
-#include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"

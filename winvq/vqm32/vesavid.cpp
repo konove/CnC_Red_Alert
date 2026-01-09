@@ -45,13 +45,14 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <mem.h>
 #include <dos.h>
+#include <mem.h>
+
+#include <cstdio>
 
 #ifndef __WATCOMC__
-#include <pldos32.h>
 #include <pharlap.h>
+#include <pldos32.h>
 #else
 #include "winvq/vqm32/realmode.h"
 #endif

@@ -40,8 +40,8 @@
 #ifndef TEXTBTN_H
 #define TEXTBTN_H
 
-#include "ra/toggle.h"
 #include "ra/defines.h"
+#include "ra/toggle.h"
 
 class TextButtonClass : public ToggleClass {
  public:

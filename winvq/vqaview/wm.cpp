@@ -38,17 +38,16 @@
 // INCLUDES
 //==========================================================================
 
-#include <windows.h>
-
-#include <westwood.h>
-#include <wm.h>
 #include <gbuffer.h>
 #include <main.h>
 #include <mainwind.h>
-#include <menus.rh>
-
 #include <movies.h>
 #include <vq.h>
+#include <westwood.h>
+#include <windows.h>
+#include <wm.h>
+
+#include <menus.rh>
 
 //==========================================================================
 // PUBLIC FUNCTIONS

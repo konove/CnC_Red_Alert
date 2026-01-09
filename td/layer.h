@@ -41,8 +41,8 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "td/vector.h"
 #include "td/object.h"
+#include "td/vector.h"
 #include "tech/wwfile.h"
 
 class LayerClass : public DynamicVectorClass<ObjectClass *> {

@@ -53,13 +53,15 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <malloc.h>
-#include <io.h>
-#include <fcntl.h>
-#include <sys\stat.h>
-#include <mem.h>
 #include "winvq/vqm32/iff.h"
+
+#include <fcntl.h>
+#include <io.h>
+#include <malloc.h>
+#include <mem.h>
+#include <sys\stat.h>
+
+#include <cstdio>
 
 /****************************************************************************
  *

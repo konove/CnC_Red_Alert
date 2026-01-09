@@ -55,7 +55,6 @@
 #include <filesystem>
 #include <string>
 
-#include "td/type.h"
 #include "port/ex_string.h"
 #include "sdllib/include/shape.h"
 #include "td/conquer.h"
@@ -69,6 +68,7 @@
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/overlay.h"
+#include "td/type.h"
 
 static OverlayTypeClass const Road(
     OVERLAY_ROAD,  // Overlay type number.

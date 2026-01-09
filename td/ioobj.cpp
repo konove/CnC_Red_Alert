@@ -136,9 +136,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdint.h>
+#include <cstdint>
 
-#include "td/saveload.h"
 #include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -162,6 +161,7 @@
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/radio.h"
+#include "td/saveload.h"
 #include "td/score.h"
 #include "td/smudge.h"
 #include "td/stage.h"

@@ -40,8 +40,8 @@
 #ifndef CSTRAW_H
 #define CSTRAW_H
 
-#include "ra/straw.h"
 #include "ra/buff.h"
+#include "ra/straw.h"
 
 /*
 **	This class handles transfer of data by perform regulated requests for

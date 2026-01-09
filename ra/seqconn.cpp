@@ -45,9 +45,8 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/function.h"
-
 #include "WolDebug.h"
+#include "ra/function.h"
 
 /***************************************************************************
  * SequencedConnClass::SequencedConnClass -- class constructor             *

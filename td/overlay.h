@@ -41,12 +41,12 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/object.h"
-#include "td/type.h"
 #include "td/defines.h"
 #include "td/globals.h"
+#include "td/object.h"
+#include "td/type.h"
 #include "tech/noinit.h"
 #include "tech/wwfile.h"
 
@@ -65,7 +65,7 @@ class OverlayClass : public ObjectClass {
   static void operator delete(void *ptr);
   OverlayClass(void);
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(Class){};
+  OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(Class) {};
   virtual ~OverlayClass(void) {
     if (GameActive) OverlayClass::Limbo();
   };

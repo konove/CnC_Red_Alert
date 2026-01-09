@@ -41,13 +41,13 @@
 #ifndef SUPER_H
 #define SUPER_H
 
-#include "td/ftimer.h"
 #include "td/defines.h"
+#include "td/ftimer.h"
 #include "tech/noinit.h"
 
 class SuperClass {
  public:
-  SuperClass(NoInitClass const& x) : Control(x){};
+  SuperClass(NoInitClass const& x) : Control(x) {};
   SuperClass(int recharge = 0, VoxType charging = VOX_NONE,
              VoxType ready = VOX_NONE, VoxType impatient = VOX_NONE,
              VoxType suspend = VOX_NONE);

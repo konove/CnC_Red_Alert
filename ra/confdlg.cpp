@@ -39,8 +39,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/function.h"
 #include "ra/confdlg.h"
+
+#include "ra/function.h"
 
 bool ConfirmationClass::Process(int text) {
   return (Process(Text_String(text)));

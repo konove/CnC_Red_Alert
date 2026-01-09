@@ -54,8 +54,8 @@
 #else
 #include "td/noseqcon.h"
 #endif
-#include "td/ipxaddr.h"
 #include "td/ipx.h"
+#include "td/ipxaddr.h"
 
 /*
 ***************************** Class Declaration *****************************
@@ -83,7 +83,7 @@ class IPXConnClass : public NonSequencedConnClass
   .....................................................................*/
   IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
                IPXAddressClass *address, int id, char *name);
-  virtual ~IPXConnClass(){};
+  virtual ~IPXConnClass() {};
 
   /*.....................................................................
   Initialization.

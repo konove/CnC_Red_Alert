@@ -41,10 +41,10 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
-#include <stddef.h>
+#include <cstddef>
 
-#include "td/stage.h"
 #include "td/house.h"
+#include "td/stage.h"
 #include "td/techno.h"
 #include "td/type.h"
 #include "tech/noinit.h"
@@ -53,7 +53,7 @@
 class FactoryClass : private StageClass {
  public:
   FactoryClass(void);
-  FactoryClass(NoInitClass const &x) : StageClass(x){};
+  FactoryClass(NoInitClass const &x) : StageClass(x) {};
   ~FactoryClass(void);
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };

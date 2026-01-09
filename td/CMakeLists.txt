@@ -16,6 +16,7 @@ file(GLOB_RECURSE TD_HEADERS
 )
 list(REMOVE_ITEM TD_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/phone.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/session.h"

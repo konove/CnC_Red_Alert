@@ -52,11 +52,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "td/template.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "sdllib/include/tile.h"
 #include "td/abstract.h"
 #include "td/cell.h"

@@ -41,7 +41,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <string.h>
+#include <cstring>
 
 #include "td/defines.h"
 #include "td/special.h"
@@ -86,8 +86,8 @@ class EventClass {
                 // frame # Used to initiate game connection phase & to
                 // reconnect; When one of these is received, the receiver knows
                 // there are no associated commands in this packet.
-    MESSAGE,        // Message to another player (The message is the 40 bytes
-                    // after the event class).
+    MESSAGE,    // Message to another player (The message is the 40 bytes
+                // after the event class).
     RESPONSE_TIME,  // use a new propogation delay value
     FRAMEINFO,      // Game-heartbeat packet; includes Game CRC & command count
                 // All packets sent for a frame are prefixed with one of these

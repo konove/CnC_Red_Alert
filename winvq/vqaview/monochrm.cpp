@@ -38,11 +38,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <mem.h>
+#include <monochrm.h>
+#include <westwood.h>
+
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
-#include <monochrm.h>
-#include <westwood.h>
 
 typedef struct {
   char ch;

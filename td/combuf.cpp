@@ -70,10 +70,9 @@
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-#include <string.h>
-
 #include "td/combuf.h"
-// #include "td/externs.h"
+
+#include <cstring>
 
 CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen) {
   int i;

@@ -44,8 +44,9 @@
  *   Instance_Class::dde_callback -- processes DDE transactions            *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <windows.h>
 #include "ra/dde.h"
+
+#include <windows.h>
 
 /***************************************************************************
  * These are static members of Instance_Class
