@@ -41,6 +41,9 @@
 #ifndef ABSTRACT_H
 #define ABSTRACT_H
 
+#include "td/inline.h"
+#include "tech/noinit.h"
+
 DirType Direction(CELL cell1, CELL cell2);
 DirType Direction(COORDINATE coord1, COORDINATE coord2);
 int Distance(COORDINATE coord1, COORDINATE coord2);

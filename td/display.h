@@ -44,19 +44,6 @@
 #include "td/map.h"
 #include "td/layer.h"
 
-#define ICON_PIXEL_W 24
-#define ICON_PIXEL_H 24
-#define ICON_LEPTON_W 256
-#define ICON_LEPTON_H 256
-#define CELL_PIXEL_W ICON_PIXEL_W
-#define CELL_PIXEL_H ICON_PIXEL_H
-#define CELL_LEPTON_W ICON_LEPTON_W
-#define CELL_LEPTON_H ICON_LEPTON_H
-
-//	-----------------------------------------------------------
-#define PIXEL_LEPTON_W (ICON_LEPTON_W / ICON_PIXEL_W)
-#define PIXEL_LEPTON_H (ICON_LEPTON_H / ICON_PIXEL_H)
-
 extern COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2);
 
 class DisplayClass : public MapClass {
@@ -323,5 +310,8 @@ class DisplayClass : public MapClass {
   */
   static BooleanVectorClass CellRedraw;
 };
+
+#define CELL_BLIT_ONLY 1
+#define CELL_DRAW_ONLY 2
 
 #endif

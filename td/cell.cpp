@@ -82,6 +82,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/rand.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
 
@@ -156,18 +157,19 @@ CellClass::CellClass(void)
 /***********************************************************************************************
  * CellClass::Reset -- Resets the cell to its default initial state. *
  *                                                                                             *
- *    This method resets all cell properties to their default values, equivalent to a         *
- *    freshly constructed cell. This is more efficient than destructor + placement new        *
- *    when re-initializing cells.                                                             *
+ *    This method resets all cell properties to their default values, equivalent
+ * to a         * freshly constructed cell. This is more efficient than
+ * destructor + placement new        * when re-initializing cells.
+ *                                               *
  *                                                                                             *
- * INPUT:   none                                                                               *
+ * INPUT:   none                *
  *                                                                                             *
- * OUTPUT:  none                                                                               *
+ * OUTPUT:  none                *
  *                                                                                             *
- * WARNINGS:   none                                                                            *
+ * WARNINGS:   none                *
  *                                                                                             *
- * HISTORY:                                                                                    *
- *   01/02/2026 : Created.                                                                     *
+ * HISTORY:                * 01/02/2026 : Created.
+ *                                       *
  *=============================================================================================*/
 void CellClass::Reset() {
   IsPlot = false;
@@ -2331,3 +2333,20 @@ ObjectClass *CellClass::Cell_Occupier(void) const {
 
   return (ptr);
 }
+
+/***********************************************************************************************
+ * CellClass::Cell_Number -- Returns the cell ID number for this cell object. *
+ *                                                                                             *
+ *    Call this routine if you wish to determine what the cell number ID is for
+ *the currrent   * cell object. This ID number is the index number into the cell
+ *array.                     *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cell number for this cell object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/19/1995 JLB : Created. *
+ *=============================================================================================*/
+CELL CellClass::Cell_Number(void) const { return (Map.ID(this)); }

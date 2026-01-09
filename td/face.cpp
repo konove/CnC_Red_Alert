@@ -38,6 +38,7 @@
  *one coordinate to another.                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "td/face.h"
 
 #include "td/function.h"
 

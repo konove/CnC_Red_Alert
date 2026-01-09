@@ -51,6 +51,7 @@
 #include "port/safe_string.h"
 #include "td/function.h"
 #include "td/interpal.h"
+#include "td/scenario.h"
 
 extern int PreserveVQAScreen;
 

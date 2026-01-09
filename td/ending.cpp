@@ -43,6 +43,7 @@
 #include "td/textblit.h"
 #include "td/interpal.h"
 #include "sdllib/include/ww_audio.h"
+#include "td/ending.h"
 
 void GDI_Ending(void) {
 #ifdef DEMO

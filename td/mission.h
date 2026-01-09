@@ -43,6 +43,7 @@
 
 #include "td/object.h"
 #include "td/monoc.h"
+#include "td/ftimer.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide
@@ -71,8 +72,8 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(void);
-  MissionClass(NoInitClass const &x) : ObjectClass(x), Timer(x){};
-  virtual ~MissionClass(void){};
+  MissionClass(NoInitClass const &x) : ObjectClass(x), Timer(x) {};
+  virtual ~MissionClass(void) {};
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.

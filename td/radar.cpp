@@ -73,6 +73,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "support.h"
 #include "td/function.h"
 
 #include <filesystem>

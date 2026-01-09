@@ -89,6 +89,8 @@
  *object on the map.                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "rand.h"
+#include "support.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
 #include "sdllib/include/memflag.h"

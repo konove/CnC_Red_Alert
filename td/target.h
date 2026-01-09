@@ -187,4 +187,21 @@ class TargetClass {
 };
 #endif
 
+COORDINATE As_Movement_Coord(TARGET target);
+AircraftClass *As_Aircraft(TARGET target);
+AnimClass *As_Animation(TARGET target);
+BuildingClass *As_Building(TARGET target);
+BulletClass *As_Bullet(TARGET target);
+CELL As_Cell(TARGET target);
+COORDINATE As_Coord(TARGET target);
+InfantryClass *As_Infantry(TARGET target);
+TeamClass *As_Team(TARGET target);
+TeamTypeClass *As_TeamType(TARGET target);
+TechnoClass *As_Techno(TARGET target);
+// TerrainClass * As_Terrain(TARGET target);
+TriggerClass *As_Trigger(TARGET target);
+UnitClass *As_Unit(TARGET target);
+inline bool Target_Legal(TARGET target) { return (target != TARGET_NONE); };
+ObjectClass *As_Object(TARGET target);
+
 #endif

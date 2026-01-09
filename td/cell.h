@@ -166,15 +166,15 @@ class CellClass {
       unsigned SE : 1;
       unsigned Vehicle : 1;   // Reserved for vehicle occupation.
       unsigned Monolith : 1;  // Some immovable blockage is in cell.
-      unsigned
-          Building : 1;  // A building of some time (usually blocks movement).
+      unsigned Building
+          : 1;  // A building of some time (usually blocks movement).
     } Occupy;
     unsigned char Composite;
   } Flag;
 
   //----------------------------------------------------------------
   CellClass(void);
-  ~CellClass(void){};
+  ~CellClass(void) {};
 
   // Resets the cell to its default initial state.
   void Reset(void);
@@ -256,7 +256,7 @@ class CellClass {
   int Validate(void) const;
 
  private:
-  CellClass(CellClass const &){};
+  CellClass(CellClass const &) {};
 
   LandType Land;  // The land type of this cell.
 };

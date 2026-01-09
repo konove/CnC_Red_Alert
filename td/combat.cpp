@@ -40,6 +40,7 @@
  *- - - - - - - */
 
 #include "td/function.h"
+#include "td/combat.h"
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
 void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass *source,
@@ -87,7 +88,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   */
   if (damage) {
     //		if (distance < 0x0010) damage *= 2;			//
-    //Double damage for direct hits.
+    // Double damage for direct hits.
     distance >>= whead->SpreadFactor;
     distance = Bound(distance, 0, 16);
     damage >>= distance;

@@ -266,4 +266,14 @@ inline T &QueueClass<T, size>::First(void) {
   return Array[Head];
 }
 
+bool Queue_Target(TARGET whom, TARGET target);
+bool Queue_Destination(TARGET whom, TARGET target);
+bool Queue_Mission(TARGET whom, MissionType mission);
+bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
+                   TARGET destination);
+bool Queue_Options(void);
+bool Queue_Exit(void);
+void Queue_AI(void);
+void Add_CRC(unsigned long *crc, unsigned long val);
+
 #endif

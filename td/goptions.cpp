@@ -49,7 +49,7 @@
 #include "td/gamedlg.h"
 #include "td/textbtn.h"
 #include "td/confdlg.h"
-#include "ra/descdlg.h"
+#include "td/scenario.h"
 #include "sdllib/include/font.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution(void) {

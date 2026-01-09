@@ -51,6 +51,7 @@
 #include "port/safe_string.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
+#include "td/dialog.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

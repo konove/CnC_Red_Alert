@@ -102,6 +102,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "rand.h"
 #include "td/function.h"
 
 /*
@@ -1093,7 +1094,7 @@ int AircraftClass::Mission_Unload(void) {
 
               //							if
               //(Is_Something_Attached()) {
-              //Status = PICK_AIRSTRIP;
+              // Status = PICK_AIRSTRIP;
               //} else {
               Status = BUG_OUT;
               //							}

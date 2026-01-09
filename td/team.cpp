@@ -58,6 +58,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "rand.h"
 #include "td/function.h"
 #include "td/mission.h"
 

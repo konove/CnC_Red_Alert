@@ -39,6 +39,7 @@
 #ifndef ENDING_H
 #define ENDING_H
 
+void GDI_Ending(void);
 void Nod_Ending(void);
 
 #endif

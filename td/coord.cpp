@@ -48,7 +48,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/rand.h"
 #include "td/function.h"
+#include "td/coord.h"
 
 /***********************************************************************************************
  * Coord_Spillage_List -- Determines the offset list for cell

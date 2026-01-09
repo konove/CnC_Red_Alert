@@ -52,6 +52,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "rand.h"
 #include "td/function.h"
 
 #define GRAVITY 3

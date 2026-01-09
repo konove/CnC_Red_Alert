@@ -43,6 +43,8 @@
 
 #include "port/safe_string.h"
 #include "td/function.h"
+#include "tech/readline.h"
+#include "td/profile.h"
 
 /***************************************************************************
  * Read_Private_Config_Struct -- Fetches override integer value.           *

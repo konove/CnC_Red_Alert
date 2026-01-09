@@ -56,6 +56,8 @@
 
 #include "td/theme.h"
 
+#include "td/rand.h"
+
 #include <filesystem>
 
 /*

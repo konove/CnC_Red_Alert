@@ -53,6 +53,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "support.h"
 #include "td/function.h"
 #include "sdllib/include/memflag.h"
 // #include	<string.h>

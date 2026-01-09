@@ -257,4 +257,31 @@ unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
                                 "div	ebx"     \
                                 "fini:"
 
+extern void Fatal(char const *message, ...);
+
+class BufferClass;
+class FileClass;
+
+typedef struct {
+  unsigned char SourceColor;
+  unsigned char DestColor;
+  unsigned char Fading;
+  unsigned char reserved;
+} TLucentType;
+
+int Load_Picture(char const *filename, BufferClass &scratchbuf,
+                 BufferClass &destbuf, unsigned char *palette,
+                 PicturePlaneType format);
+void *Small_Icon(void const *iconptr, int iconnum);
+void Set_Window(int window, int x, int y, int w, int h);
+void *Load_Alloc_Data(FileClass &file);
+long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
+                     BuffType &dest_buff, void *reserved_data);
+long Translucent_Table_Size(int count);
+void *Build_Translucent_Table(void const *palette, TLucentType const *control,
+                              int count, void *buffer);
+void *Conquer_Build_Translucent_Table(void const *palette,
+                                      TLucentType const *control, int count,
+                                      void *buffer);
+
 #endif

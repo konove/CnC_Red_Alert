@@ -54,6 +54,7 @@
 #include "sdllib/include/wincomm.h"
 #include "sdllib/include/modemreg.h"
 #include "td/tcpip.h"
+#include "td/nulldlg.h"
 
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 

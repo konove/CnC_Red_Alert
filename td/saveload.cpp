@@ -50,7 +50,9 @@
  *- - - - - - - */
 
 #include "port/safe_string.h"
+#include "td/scenario.h"
 #include "td/function.h"
+#include "td/saveload.h"
 
 /*
 ********************************** Defines **********************************

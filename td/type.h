@@ -44,6 +44,8 @@
 #include "td/mission.h"
 #include "td/target.h"
 
+#include <cstring>
+
 class MapEditClass;
 class HouseClass;
 
@@ -227,9 +229,9 @@ class AbstractTypeClass {
   */
   int Name;
 
-  AbstractTypeClass(void){};
+  AbstractTypeClass(void) {};
   AbstractTypeClass(int name, char const *ini);
-  AbstractTypeClass(NoInitClass const &){};
+  AbstractTypeClass(NoInitClass const &) {};
   virtual RTTIType What_Am_I(void) const;
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;

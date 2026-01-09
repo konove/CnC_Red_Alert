@@ -39,6 +39,8 @@
 
 #include "td/function.h"
 
+#include "td/globals.h"
+
 #ifdef JAPANESE
 bool ForceEnglish = false;
 #endif

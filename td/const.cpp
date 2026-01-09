@@ -38,7 +38,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/const.h"
+
+#include "td/compat.h"
+#include "td/defines.h"
+#include "td/type.h"
 
 char const* SourceName[SOURCE_COUNT] = {
     "North", "East",    "South",     "West",     "Shipping", "Beach",
@@ -118,51 +122,51 @@ WarheadTypeClass const Warheads[WARHEAD_COUNT] = {
      false,
      false,
      {0xFF, 0x80, 0x90, 0x40, 0x40}},  //	WARHEAD_SA
-                                       //Small arms -- good against infantry.
+                                       // Small arms -- good against infantry.
     {6,
      true,
      true,
      true,
      {0xE0, 0xC0, 0x90, 0x40,
       0xFF}},  //	WARHEAD_HE					High
-               //explosive -- good against buildings & infantry.
+               // explosive -- good against buildings & infantry.
     {6,
      true,
      true,
      false,
      {0x40, 0xC0, 0xC0, 0xFF, 0x80}},  //	WARHEAD_AP
-                                       //Armor piercing -- good against armor.
+                                       // Armor piercing -- good against armor.
     {8,
      false,
      true,
      true,
      {0xE0, 0xFF, 0xB0, 0x40, 0x80}},  //	WARHEAD_FIRE
-                                       //Incendiary -- Good against flammables.
+                                       // Incendiary -- Good against flammables.
     {4,
      false,
      false,
      false,
      {0xFF, 0xFF, 0xFF, 0xFF,
       0xFF}},  //	WARHEAD_LASER				Light
-               //Amplification of Stimulated Emission by Radiation.
+               // Amplification of Stimulated Emission by Radiation.
     {7,
      true,
      true,
      true,
      {0xFF, 0xFF, 0xC0, 0xC0, 0xC0}},  //	WARHEAD_PB
-                                       //Particle beam (neutron beam).
+                                       // Particle beam (neutron beam).
     {4,
      false,
      false,
      false,
      {0xFF, 0x20, 0x20, 0x10, 0x10}},  //	WARHEAD_FIST
-                                       //Punching in hand-to-hand combat.
+                                       // Punching in hand-to-hand combat.
     {4,
      false,
      false,
      false,
      {0xFF, 0x20, 0x20, 0x10, 0x10}},  //	WARHEAD_FOOT
-                                       //Kicking in hand-to-hand combat.
+                                       // Kicking in hand-to-hand combat.
     {4,
      false,
      false,
@@ -292,19 +296,19 @@ unsigned char const Facing32[256] = {
 #define S4 0xA0
 #define S5 0xC0
 #define S6 0xFF
-GroundType const Ground[LAND_COUNT] = {
+GroundType Ground[LAND_COUNT] = {
     //						Foot
     //						|		Tracked
     //						|		|
-    //Harvester
+    // Harvester
     //						|		| |
-    //Wheeled
+    // Wheeled
     //						|		| | |
-    //Winged
+    // Winged
     //						|		| | | |
-    //Hover
+    // Hover
     //						|		| | | | |
-    //float  build
+    // float  build
     {66, {S3, S3, S3, S4, S6, S5, S1}, true},       // LAND_CLEAR
     {68, {S5, S4, S4, S4, S6, S5, S1}, true},       // LAND_ROAD
     {BLUE, {S1, S1, S1, S1, S6, S5, S6}, false},    // LAND_WATER

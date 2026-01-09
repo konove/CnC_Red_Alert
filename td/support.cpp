@@ -6,6 +6,7 @@
 #include "sdllib/include/gbuffer.h"
 
 #include <string>
+#include "td/support.h"
 
 void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
                                  int frac) {

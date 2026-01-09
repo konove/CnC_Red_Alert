@@ -15,6 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef CNC_RED_ALERT_TD_DEBUG_H_
+#define CNC_RED_ALERT_TD_DEBUG_H_
 
 #define TXT_NONE_DEBUG 0x3e8         //
 #define TXTED_BLANK 0x3e9            // ____
@@ -40,3 +42,5 @@
 #define TXT_RADIO_15 0x3fd           // Are you a refinery and are
 #define TXT_RADIO_16 0x3fe           // Take this kick! You...
 #define TXT_RADIO_17 0x3ff           // Take this punch! You...
+
+#endif  // CNC_RED_ALERT_TD_DEBUG_H_

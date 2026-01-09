@@ -57,6 +57,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "rand.h"
 #include "td/function.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"

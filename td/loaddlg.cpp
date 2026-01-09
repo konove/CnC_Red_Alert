@@ -44,6 +44,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 #include "port/safe_string.h"
+#include "td/saveload.h"
 #include "sdllib/include/file.h"
 
 #include <filesystem>

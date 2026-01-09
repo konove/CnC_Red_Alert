@@ -41,7 +41,7 @@
 
 #include "td/function.h"
 #include <cstdarg>
-// #include "ra/filepcx.h"
+#include "td/debug.h"
 #include <cstdio>
 #ifdef CHEAT_KEYS
 
@@ -391,7 +391,8 @@ void Debug_Key(unsigned input) {
           input -= KA_0;
           input = Bound(input, 0, 7);
           //						input = std::max(input,
-          //0); 						input = std::min(input, 7);
+          // 0); 						input =
+          // std::min(input, 7);
           f1 = input;
           Int_Print(f1, 100, 0, WHITE, BLACK);
 
@@ -402,7 +403,8 @@ void Debug_Key(unsigned input) {
           input -= KA_0;
           input = Bound(input, 0, 7);
           //						input = std::max(input,
-          //0); 						input = std::min(input, 7);
+          // 0); 						input =
+          // std::min(input, 7);
           f2 = input;
           Int_Print(f2, 100, 10, WHITE, BLACK);
 

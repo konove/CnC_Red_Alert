@@ -99,4 +99,6 @@ class GameOptionsClass : public OptionsClass {
   int ButtonResumeY;
 };
 
+void Draw_Caption(int text, int x, int y, int w);
+
 #endif

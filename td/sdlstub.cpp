@@ -5,6 +5,8 @@
 #include "sdllib/include/ww_win.h"
 
 #undef WIN32
+#include "td/rand.h"
+
 #include <SDL_events.h>
 #include <SDL_video.h>
 #include <cstdint>

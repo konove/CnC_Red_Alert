@@ -37,6 +37,10 @@
 #ifndef TEAMTYPE_H
 #define TEAMTYPE_H
 
+#include "tech/noinit.h"
+#include "td/defines.h"
+#include "td/type.h"
+
 /*
 ********************************** Defines **********************************
 */
@@ -53,15 +57,15 @@ typedef enum TeamMissionType {
   TMISSION_ATTACKCIVILIANS,  // Attack all civilians
   TMISSION_RAMPAGE,          // attack & destroy anything that's not mine
   TMISSION_DEFENDBASE,       // Protect my base.
-                             //	TMISSION_HARVEST,					// stake out a
-                             //Tiberium claim, defend & harvest it
-  TMISSION_MOVE,             // moves to waypoint specified.
-  TMISSION_MOVECELL,         // moves to cell # specified.
-  TMISSION_RETREAT,          // order given by superior team, for coordinating
-  TMISSION_GUARD,            // works like an infantry's guard mission
-  TMISSION_LOOP,             // loop back to start of mission list
-  TMISSION_ATTACKTARCOM,     // attack tarcom
-  TMISSION_UNLOAD,           // Unload at current location.
+                             //	TMISSION_HARVEST,
+  //// stake out a Tiberium claim, defend & harvest it
+  TMISSION_MOVE,          // moves to waypoint specified.
+  TMISSION_MOVECELL,      // moves to cell # specified.
+  TMISSION_RETREAT,       // order given by superior team, for coordinating
+  TMISSION_GUARD,         // works like an infantry's guard mission
+  TMISSION_LOOP,          // loop back to start of mission list
+  TMISSION_ATTACKTARCOM,  // attack tarcom
+  TMISSION_UNLOAD,        // Unload at current location.
   TMISSION_COUNT,
   TMISSION_FIRST = 0
 } TeamMissionType;
@@ -70,6 +74,9 @@ typedef enum TeamMissionType {
 ** Forward declarations.
 */
 class TechnoTypeClass;
+class FileClass;
+class TeamClass;
+class HouseClass;
 
 /*
 **	This structure contains one team mission value & its argument.
@@ -90,8 +97,8 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass(void);
-  TeamTypeClass(NoInitClass const &x) : AbstractTypeClass(x){};
-  virtual ~TeamTypeClass(void){};
+  TeamTypeClass(NoInitClass const &x) : AbstractTypeClass(x) {};
+  virtual ~TeamTypeClass(void) {};
 
   /*
   **	Initialization: clears all team types in preparation for new scenario

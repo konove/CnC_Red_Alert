@@ -62,6 +62,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "reinf.h"
 #include "td/function.h"
 
 static void Do_All_To_Hunt(void);
@@ -998,8 +999,8 @@ void TriggerClass::Read_INI(char *buffer) {
     /*
     **	Get the trigger entry.
     */
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
 
     /*
     **	Fill in the trigger.
@@ -1010,8 +1011,8 @@ void TriggerClass::Read_INI(char *buffer) {
     **	Add 'trigger' to the House's list.
     */
     //		if (trigger->House != HOUSE_NONE && trigger->Event !=
-    //EVENT_PLAYER_ENTERED) { 		if (Event_Need_House(trigger->Event) &&
-    //!Event_Need_Object(trigger->Event)) {
+    // EVENT_PLAYER_ENTERED) { 		if (Event_Need_House(trigger->Event) &&
+    //! Event_Need_Object(trigger->Event)) {
     if (trigger->House != HOUSE_NONE) {
       if (trigger->Action == ACTION_ALLOWWIN)
         HouseClass::As_Pointer(trigger->House)->Blockage++;

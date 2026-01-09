@@ -38,6 +38,7 @@
 
 #include "td/function.h"
 #include "td/jshell.h"
+#include "td/rand.h"
 
 int SimRandIndex = 0;
 

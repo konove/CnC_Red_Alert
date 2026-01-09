@@ -116,4 +116,6 @@ class CCFileClass : public CDFileClass {
   CCFileClass(CCFileClass const &) {};
 };
 
+void WWDOS_Shutdown(void);
+
 #endif

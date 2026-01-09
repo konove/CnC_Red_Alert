@@ -69,6 +69,8 @@
 #include "td/function.h"
 #include "td/terrain.h"
 
+#include "rand.h"
+
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
 #define FIRST_SPORABLE_LEVEL 7
@@ -788,8 +790,8 @@ void TerrainClass::Read_INI(char *buffer) {
     CELL cell;
 
     cell = atoi(tbuffer);
-    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf, sizeof(buf) - 1,
-                              buffer);
+    WWGetPrivateProfileString(INI_Name(), tbuffer, nullptr, buf,
+                              sizeof(buf) - 1, buffer);
     terrain = TerrainTypeClass::From_Name(strtok(buf, ","));
     if (terrain != TERRAIN_NONE) {
       tptr = new TerrainClass(terrain, cell);

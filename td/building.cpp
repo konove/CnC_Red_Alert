@@ -109,6 +109,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "rand.h"
+#include "reinf.h"
 #include "td/function.h"
 
 enum SAMState {

@@ -43,6 +43,7 @@
  *- - - - - - - */
 
 #include "td/function.h"
+#include "td/audio.h"
 
 #include "sdllib/include/ww_audio.h"
 

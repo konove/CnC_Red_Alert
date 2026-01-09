@@ -2,6 +2,7 @@
 #include <cstdio>
 
 #include "sdllib/include/gbuffer.h"
+#include "td/winasm.h"
 
 #ifndef LORES
 

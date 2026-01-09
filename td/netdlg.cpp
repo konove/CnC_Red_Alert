@@ -125,6 +125,7 @@
 #include <ctime>
 #include "td/tcpip.h"
 #include "td/ccdde.h"
+#include "td/netdlg.h"
 #define SHOW_MONO 0
 
 #ifndef DEMO

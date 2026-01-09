@@ -41,6 +41,8 @@
 #ifndef FTIMER_H
 #define FTIMER_H
 
+#include "td/globals.h"
+
 /*
 **	This timer class is based around an external tick system. As such, it is
 *inherently *	in sync with any connected system (through network or modem)

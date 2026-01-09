@@ -64,6 +64,7 @@
  *- - - - - - - */
 
 #include "port/safe_string.h"
+#include "td/scenario.h"
 #include "sdllib/include/font.h"
 #include "td/function.h"
 #include "sdllib/include/memflag.h"

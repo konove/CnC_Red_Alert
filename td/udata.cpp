@@ -51,6 +51,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "rand.h"
 #include "td/function.h"
 
 #include <filesystem>

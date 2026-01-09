@@ -241,4 +241,6 @@ class SpecialClass {
   unsigned IsFromWChat : 1;
 };
 
+void Special_Dialog(void);
+
 #endif

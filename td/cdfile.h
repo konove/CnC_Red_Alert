@@ -59,7 +59,7 @@ class CDFileClass : public RawFileClass {
  public:
   CDFileClass(char const *filename);
   CDFileClass(void);
-  virtual ~CDFileClass(void){};
+  virtual ~CDFileClass(void) {};
 
   virtual char const *Set_Name(char const *filename);
   virtual int Open(char const *filename, int rights = READ);
@@ -111,5 +111,7 @@ class CDFileClass : public RawFileClass {
   */
   static int last_cd_drive_;
 };
+
+extern int Get_CD_Drive(void);
 
 #endif

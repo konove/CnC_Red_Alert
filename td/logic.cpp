@@ -42,6 +42,8 @@
 #include "td/function.h"
 #include "td/logic.h"
 
+#include "rand.h"
+
 static unsigned FramesPerSecond = 0;
 
 #ifdef CHEAT_KEYS
