@@ -43,11 +43,9 @@
 
 #include <cstring>
 
-#include "td/mission.h"
-#include "td/target.h"
-
-class MapEditClass;
-class HouseClass;
+#include "td/defines.h"
+#include "td/object.h"
+#include "tech/noinit.h"
 
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects

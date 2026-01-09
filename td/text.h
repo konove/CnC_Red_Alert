@@ -7,7 +7,6 @@ extern char const *SystemStrings;
 char *Extract_String(void const *data, int string);
 
 inline char const *Text_String(int string) {
-#ifdef PORTABLE
   // can't find a conquer.eng that contains these
   switch (string) {
     case TXT_READING_IMAGE_DATA:
@@ -37,7 +36,6 @@ inline char const *Text_String(int string) {
     case TXT_BONUS_MISSION_5:
       return "Bonus Mission 5";
   }
-#endif
   return (Extract_String(SystemStrings, string));
 }
 

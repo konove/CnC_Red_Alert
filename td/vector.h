@@ -58,15 +58,14 @@
 #define VECTOR_H
 
 #include <cstddef>
-#include <new>
 
-#include "td/cell.h"
 #include "td/jshell.h"
-#include "td/nodename.h"
-#include "td/object.h"
-#include "td/phone.h"
-#include "td/trigger.h"
 #include "tech/noinit.h"
+
+// IWYU pragma: no_include "td/cell.h"
+// IWYU pragma: no_include "td/nodename.h"
+// IWYU pragma: no_include "td/object.h"
+// IWYU pragma: no_include "td/phone.h"
 
 /**************************************************************************
 **	This is a general purpose vector class. A vector is defined by this

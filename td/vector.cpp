@@ -51,10 +51,13 @@
 #include "td/vector.h"
 
 #include <cstring>
+#include <new>
 
 #include "td/base.h"
 #include "td/cell.h"
 #include "td/loaddlg.h"
+#include "td/nodename.h"
+#include "td/phone.h"
 
 /*
 **	The following template function can be located here ONLY if all the

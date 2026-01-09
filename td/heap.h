@@ -41,31 +41,28 @@
 #ifndef HEAP_H
 #define HEAP_H
 
-#include "td/aircraft.h"
-#include "td/anim.h"
-#include "td/building.h"
-#include "td/bullet.h"
-#include "td/factory.h"
-#include "td/house.h"
-#include "td/infantry.h"
-#include "td/overlay.h"
-#include "td/smudge.h"
-#include "td/team.h"
-#include "td/teamtype.h"
-#include "td/template.h"
-#include "td/terrain.h"
-#include "td/trigger.h"
-#include "td/unit.h"
 #include "td/vector.h"
 #include "tech/wwfile.h"
 
-/**************************************************************************
-**	This is a block memory managment handler. It is used when memory is to
-**	be treated as a series of blocks of fixed size. This is similar to an
-**	array of integral types, but unlike such an array, the memory blocks
-**	are anonymous. This facilitates the use of this class when overloading
-**	the new and delete operators for a normal class object.
-*/
+// Heap templates are generic - users must include type headers themselves.
+// IWYU pragma: no_include "td/aircraft.h"
+// IWYU pragma: no_include "td/anim.h"
+// IWYU pragma: no_include "td/building.h"
+// IWYU pragma: no_include "td/bullet.h"
+// IWYU pragma: no_include "td/factory.h"
+// IWYU pragma: no_include "td/house.h"
+// IWYU pragma: no_include "td/infantry.h"
+// IWYU pragma: no_include "td/overlay.h"
+// IWYU pragma: no_include "td/smudge.h"
+// IWYU pragma: no_include "td/team.h"
+// IWYU pragma: no_include "td/teamtype.h"
+// IWYU pragma: no_include "td/template.h"
+// IWYU pragma: no_include "td/terrain.h"
+// IWYU pragma: no_include "td/trigger.h"
+// IWYU pragma: no_include "td/unit.h"
+
+// Fixed-size block allocator. Manages a pool of same-sized memory blocks
+// without type information, making it suitable for overloading new/delete.
 class FixedHeapClass {
  public:
   FixedHeapClass(int size);

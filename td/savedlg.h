@@ -41,8 +41,6 @@
 #ifndef SAVEDLG_H
 #define SAVEDLG_H
 
-#include "td/gadget.h"
-
 class SaveOptionsClass {
  private:
   enum SaveOptionsClassEnums {
