@@ -1,167 +1,39 @@
-add_executable(tdsdl WIN32
-        super.cpp
-        aadata.cpp
-        #winstub.cpp
-        #winasm.asm
-        abstract.cpp
-        adata.cpp
-        aircraft.cpp
-        anim.cpp
-        audio.cpp
-        base.cpp
-        bbdata.cpp
-        bdata.cpp
-        building.cpp
-        bullet.cpp
-        cargo.cpp
-        ccfile.cpp
-        cdata.cpp
-        #        cdfile.cpp
-        cell.cpp
-        checkbox.cpp
-        cheklist.cpp
-        colrlist.cpp
-        combat.cpp
-        combuf.cpp
-        confdlg.cpp
-        connect.cpp
-        conquer.cpp
-        const.cpp
-        control.cpp
-        coord.cpp
-        credits.cpp
-        crew.cpp
-        debug.cpp
-        dial8.cpp
-        dialog.cpp
-        display.cpp
-        door.cpp
-        drive.cpp
-        edit.cpp
-        event.cpp
-        ending.cpp
-        expand.cpp
-        facing.cpp
-        factory.cpp
-        findpath.cpp
-        flasher.cpp
-        fly.cpp
-        foot.cpp
-        fuse.cpp
-        gadget.cpp
-        gamedlg.cpp
-        gauge.cpp
-        globals.cpp
-        goptions.cpp
-        gscreen.cpp
-        hdata.cpp
-        heap.cpp
-        help.cpp
-        house.cpp
-        idata.cpp
-        infantry.cpp
-        ini.cpp
-        init.cpp
-        internet.cpp
-        interpal.cpp
-        intro.cpp
-        iomap.cpp
-        ioobj.cpp
-        ipx.cpp
-        ipxaddr.cpp
-        ipxconn.cpp
-        ipxgconn.cpp
-        ipxmgr.cpp
-        ipx95.cpp
-        jshell.cpp
-        #keyfbuff.asm
-        keyframe.cpp
-        layer.cpp
-        link.cpp
-        list.cpp
-        loaddlg.cpp
-        logic.cpp
-        map.cpp
-        mapeddlg.cpp
-        mapedit.cpp
-        mapedplc.cpp
-        mapedtm.cpp
-        mapsel.cpp
-        menus.cpp
-        mission.cpp
-        mixfile.cpp
-        mouse.cpp
-        mplayer.cpp
-        msgbox.cpp
-        msglist.cpp
-        netdlg.cpp
-        nullconn.cpp
-        nulldlg.cpp
-        nullmgr.cpp
-        object.cpp
-        odata.cpp
-        options.cpp
-        overlay.cpp
-        power.cpp
-        profile.cpp
-        queue.cpp
-        radar.cpp
-        radio.cpp
-        reinf.cpp
-        saveload.cpp
-        scenario.cpp
-        score.cpp
-        scroll.cpp
-        sdata.cpp
-        shapebtn.cpp
-        sidebar.cpp
-        slider.cpp
-        smudge.cpp
-        sounddlg.cpp
-        special.cpp
-        startup.cpp
-        #support.asm
-        tab.cpp
-        tarcom.cpp
-        target.cpp
-        tcpip.cpp
-        tdata.cpp
-        team.cpp
-        teamtype.cpp
-        techno.cpp
-        template.cpp
-        terrain.cpp
-        textbtn.cpp
-        theme.cpp
-        toggle.cpp
-        trigger.cpp
-        turret.cpp
-        txtlabel.cpp
-        #txtprnt.asm
-        udata.cpp
-        unit.cpp
-        vector.cpp
-        visudlg.cpp
-        stats.cpp
-        monoc.cpp
-        #        rawfile.cpp
+add_executable(tdsdl WIN32)
 
-        # these files are identical (or close enough) to RA
-        noseqcon.cpp
-        rand.cpp
-        utracker.cpp
+file(GLOB_RECURSE TD_SOURCES
+        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+list(REMOVE_ITEM TD_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cdfile.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/rawfile.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cpp"
+)
 
-        # this one was copied from RA
-        face.cpp
+file(GLOB_RECURSE TD_HEADERS
+        CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+list(REMOVE_ITEM TD_HEADERS
+        "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/phone.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/screen.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/session.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wwfile.h"
+)
 
-        # also need these
-        winasm.cpp
+target_sources(tdsdl PRIVATE
+        ${TD_SOURCES}
+)
 
-        ipxstub.cpp
-        nondosstub.cpp
-        palette.cpp
-        sdlstub.cpp
-        support.cpp
+target_sources(tdsdl PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        FILES ${TD_HEADERS}
+)
+
+set_target_properties(tdsdl PROPERTIES
+        ENABLE_EXPORTS ON
 )
 
 if (WIN32)

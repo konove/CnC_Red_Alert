@@ -51,10 +51,6 @@
 #include "td/gadget.h"
 #include "td/nullconn.h"
 
-#ifndef PORTABLE
-#include "commlib.h"
-#endif
-
 /*
 ***************************** Class Declaration *****************************
 */

@@ -110,7 +110,6 @@ class WWKeyboardClass {
   long Tail;                   // the tail position in keyboard buffer
 };
 
-#ifdef TD
 extern WWKeyboardClass *_Kbd;
 
 inline int Check_Key() { return _Kbd->Check(); }
@@ -121,7 +120,6 @@ inline bool Key_Down(int key) { return _Kbd->Down(key); }
 inline void Clear_KeyBuffer() { _Kbd->Clear(); }
 inline int KN_To_KA(int key) { return _Kbd->To_ASCII(key); }
 inline int KN_To_VK(int key) { return key; }
-#endif
 
 // these are (mostly) SDL_SCANCODE_x values
 #define VK_NONE 0

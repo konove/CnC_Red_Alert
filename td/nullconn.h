@@ -50,11 +50,8 @@
 ********************************* Includes **********************************
 */
 #include "td/noseqcon.h"
-#ifdef PORTABLE
+
 typedef void *HANDLE;
-#else
-#include "commlib.h"
-#endif
 
 /*
 ********************************** Defines **********************************
