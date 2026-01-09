@@ -61,7 +61,6 @@
 #include <sstream>
 #include <string>
 
-#include "absl/log/log.h"
 #include "port/safe_string.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
@@ -439,8 +438,9 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
         LOG(ERROR) << "Com port number " << (com + 1) << " with address 0x"
                    << std::hex << port << ", irq " << std::dec << irq;
       } else {
-        DLOG(INFO) << "Changed Com port number " << (com + 1) << " to address 0x"
-                   << std::hex << port << ", irq " << std::dec << irq;
+        DLOG(INFO) << "Changed Com port number " << (com + 1)
+                   << " to address 0x" << std::hex << port << ", irq "
+                   << std::dec << irq;
       }
     } else {
       DLOG(INFO) << "No changes to Com port number " << (com + 1)

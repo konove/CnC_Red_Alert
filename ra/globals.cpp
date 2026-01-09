@@ -38,6 +38,8 @@
 
 #include "ra/globals.h"
 
+#include <algorithm>
+
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/base.h"

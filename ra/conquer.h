@@ -18,6 +18,15 @@
 #ifndef CNC_RED_ALERT_RA_CONQUER_H_
 #define CNC_RED_ALERT_RA_CONQUER_H_
 
+#include <cstdint>
+
+#include "ra/defines.h"
+#include "ra/face.h"
+#include "ra/type.h"
+#include "sdllib/include/shape.h"
+#include "tech/rect.h"
+#include "winvq/vqa32/vqaplay.h"
+
 #define TXT_NONE 0                            //
 #define TXT_CREDIT_FORMAT 1                   // %3d.%02d
 #define TXT_TIME_FORMAT_HOURS 2               // Temps:%02d:%02d:%02d
@@ -573,14 +582,6 @@
 #define TXT_THEME_TRACTION 552                     // Traction
 #define TXT_THEME_WASTELND 553                     // Chaos
 #define TXT_CARRIER 554                            // Héliport Mobile
-
-#include "ra/defines.h"
-#include "ra/face.h"
-#include "ra/type.h"
-#include "sdllib/include/shape.h"
-#include "sdllib/include/wwstd.h"
-#include "tech/rect.h"
-#include "winvq/vqa32/vqaplay.h"
 
 void List_Copy(short const *source, int len, short *dest);
 int Get_CD_Index(int cd_drive, int timeout);

@@ -37,10 +37,10 @@ if (ENABLE_IWYU)
             # Add macOS SDK path for proper system header resolution
             if (APPLE)
                 execute_process(
-                    COMMAND xcrun --sdk macosx --show-sdk-path
-                    OUTPUT_VARIABLE MACOS_SDK_PATH
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                    ERROR_QUIET
+                        COMMAND xcrun --sdk macosx --show-sdk-path
+                        OUTPUT_VARIABLE MACOS_SDK_PATH
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                        ERROR_QUIET
                 )
                 if (MACOS_SDK_PATH)
                     list(APPEND IWYU_COMMAND "-isysroot" "${MACOS_SDK_PATH}")

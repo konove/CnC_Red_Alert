@@ -47,7 +47,6 @@
 
 #include "ra/connect.h"
 
-#include <chrono>
 #include <sys/timeb.h>
 
 #include <cstring>

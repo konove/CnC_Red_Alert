@@ -55,6 +55,7 @@
 #include "ra/findpath.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstring>
 
 #include "ra/abstract.h"
@@ -69,7 +70,6 @@
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "sdllib/include/memflag.h"
-#include "sdllib/include/wwstd.h"
 #include "session.h"
 
 /*

@@ -63,7 +63,6 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/house.h"
-#include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/monoc.h"
 #include "ra/mouse.h"

@@ -121,7 +121,6 @@
 #include "ra/ww_audio.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/ww_mouse.h"
-#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *

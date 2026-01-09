@@ -4,9 +4,22 @@
   { "include": ["@<SDL2/.*>", "public", "<SDL.h>", "public"] },
 
   # Standard library mappings (common C++11 issues)
+  { "include": ["<bits/chrono.h>", "private", "<chrono>", "public"] },
   { "include": ["<bits/std_abs.h>", "private", "<cstdlib>", "public"] },
   { "include": ["<bits/move.h>", "private", "<utility>", "public"] },
   { "include": ["<bits/types/struct_tm.h>", "private", "<ctime>", "public"] },
+  { "include": ["<bits/types/struct_timeb.h>", "private", "<sys/timeb.h>", "public"] },
+
+  # Per Google style, use int64_t etc. without std:: prefix (see Integer_Types)
+  { "symbol": ["int8_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["int16_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["int32_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["int64_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["uint8_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["uint16_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["uint32_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["uint64_t", "private", "<cstdint>", "public"] },
+  { "symbol": ["size_t", "private", "<cstddef>", "public"] },
 
   # macOS private implementation headers
   { "include": ["<__cstddef/byte.h>", "private", "<cstddef>", "public"] },

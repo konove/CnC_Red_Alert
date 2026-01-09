@@ -43,6 +43,7 @@
 #include "ra/credits.h"
 
 #include <algorithm>
+#include <cstdlib>
 
 #include "ra/conquer.h"
 #include "ra/defines.h"

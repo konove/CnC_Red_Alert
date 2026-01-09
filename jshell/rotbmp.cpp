@@ -40,7 +40,7 @@
 #include "jshell/rotbmp.h"
 
 #include "sdllib/include/gbuffer.h"
-#include <cmath>
+#include <cstdlib>
 
 int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
                   int angle);

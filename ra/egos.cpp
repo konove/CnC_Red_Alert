@@ -42,6 +42,7 @@
  *- - */
 #include "ra/egos.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "port/safe_string.h"

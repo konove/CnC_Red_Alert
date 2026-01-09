@@ -71,6 +71,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <new>
 
 #include "ra/abstract.h"
@@ -96,7 +97,6 @@
 #include "ra/type.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
-#include "sdllib/include/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/lcwpipe.h"
 #include "tech/lcwstraw.h"

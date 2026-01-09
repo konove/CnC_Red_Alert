@@ -66,6 +66,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 
 #include "ra/building.h"
@@ -89,7 +90,6 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/wwstd.h"
 #include "tech/fixed.h"
 
 #ifdef NEVER

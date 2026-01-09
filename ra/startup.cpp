@@ -71,7 +71,6 @@
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
-#include "sdllib/include/wwstd.h"
 #include "tech/cdfile.h"
 #include "tech/rawfile.h"
 #include "tech/wwfile.h"

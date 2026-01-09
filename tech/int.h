@@ -41,6 +41,7 @@
 #define INT_H
 
 #include <climits>
+#include <cstdint>
 #include <cstring>
 
 #include "tech/mp.h"

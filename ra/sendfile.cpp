@@ -42,6 +42,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
+#include <algorithm>
 #include <cstring>
 #include <string>
 

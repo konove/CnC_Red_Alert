@@ -44,10 +44,10 @@
 #include "ra/facing.h"
 
 #include <algorithm>
+#include <cstdlib>
 
 #include "ra/face.h"
 #include "ra/inline.h"
-#include "sdllib/include/wwstd.h"
 
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *

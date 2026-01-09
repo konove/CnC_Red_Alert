@@ -63,6 +63,7 @@
 
 #include "ra/vortex.h"
 
+#include <algorithm>
 #include <cstdio>
 
 #include "ra/abstract.h"
@@ -86,7 +87,6 @@
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_win.h"
-#include "sdllib/include/wwstd.h"
 #include "tech/rgb.h"
 
 /*

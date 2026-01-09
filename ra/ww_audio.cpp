@@ -46,6 +46,7 @@
 
 #include "sdllib/include/ww_audio.h"
 
+#include <cstdlib>
 #include <filesystem>
 
 #include "port/ex_string.h"
@@ -62,7 +63,6 @@
 #include "ra/jshell.h"
 #include "ra/mouse.h"
 #include "ra/ww_audio.h"
-#include "sdllib/include/wwstd.h"
 #include "tech/fixed.h"
 
 /***************************************************************************
