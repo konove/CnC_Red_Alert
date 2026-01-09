@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_SUPPORT_H_
 #define CNC_RED_ALERT_TD_SUPPORT_H_
 
+#include <cstdint>
+
 #include "sdllib/include/gbuffer.h"
 
 void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,

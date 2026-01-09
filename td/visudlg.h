@@ -41,8 +41,6 @@
 #ifndef VISUDLG_H
 #define VISUDLG_H
 
-#include "td/gadget.h"
-
 class VisualControlsClass {
  private:
   enum VisualControlEnums {

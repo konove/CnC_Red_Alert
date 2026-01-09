@@ -42,8 +42,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * FuseClass::FuseClass -- Constructor. *
  *                                                                                             *
@@ -55,6 +53,14 @@
  *                                                                                             *
  * HISTORY: * 06/27/1995 BRR : Created.  Gosh, what a lotta work. *
  *=============================================================================================*/
+#include <algorithm>
+
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/fuse.h"
+#include "td/inline.h"
+#include "tech/wwfile.h"
+
 FuseClass::FuseClass(void) {
   Timer = 0;
   Arming = 0;

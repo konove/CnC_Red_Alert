@@ -45,8 +45,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/edit.h"
+
+#include <cctype>
+#include <cstring>
+
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/jshell.h"
 
 /***********************************************************************************************
  * EditClass::EditClass -- Normal constructor for edit class object. *
@@ -251,7 +265,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
       ** Allow numeric keypad presses to map to ascii numbers
       */
       if ((key & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
-        key &= ~WWKEY_VK_BIT;
+        key = (KeyNumType)(key & ~WWKEY_VK_BIT);
 
         if ((!(flags & LEFTRELEASE)) && (!(flags & RIGHTRELEASE))) {
           if (Handle_Key(ascii)) {

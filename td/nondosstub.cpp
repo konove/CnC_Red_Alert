@@ -17,9 +17,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "td/function.h"
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
+
 #include "td/ccfile.h"
 #include "td/compat.h"
 #include "td/defines.h"
@@ -31,7 +32,9 @@
 #include "td/mouse.h"
 #include "td/palette.h"
 #include "td/theme.h"
-#include "sdllib/include/wwstd.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/conquer.h"
 
 typedef struct {
   char red;

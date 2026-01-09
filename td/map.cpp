@@ -57,10 +57,36 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/map.h"
+
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+
+#include "port/ex_string.h"
 #include "rand.h"
-#include "td/function.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
+#include "td/ccfile.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/gscreen.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/overlay.h"
+#include "td/queue.h"
+#include "td/region.h"
+#include "td/special.h"
+#include "td/techno.h"
+#include "td/terrain.h"
+#include "td/type.h"
+#include "td/vector.h"
 
 #define MCW MAP_CELL_W
 int const MapClass::RadiusOffset[] = {

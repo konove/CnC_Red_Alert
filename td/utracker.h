@@ -36,6 +36,8 @@
  *                                                                         *
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#ifndef CNC_RED_ALERT_TD_UTRACKER_H_
+#define CNC_RED_ALERT_TD_UTRACKER_H_
 
 /*
 ** UnitTracker Class
@@ -62,3 +64,5 @@ class UnitTrackerClass {
   int UnitCount;
   int InNetworkFormat;
 };
+
+#endif  // CNC_RED_ALERT_TD_UTRACKER_H_

@@ -42,6 +42,8 @@
 #define SUPER_H
 
 #include "td/ftimer.h"
+#include "td/defines.h"
+#include "tech/noinit.h"
 
 class SuperClass {
  public:

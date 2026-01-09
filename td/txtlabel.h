@@ -43,6 +43,9 @@
 #ifndef TXTLABEL_H
 #define TXTLABEL_H
 
+#include "td/defines.h"
+#include "td/gadget.h"
+
 class TextLabelClass : public GadgetClass {
  public:
   /*

@@ -45,8 +45,19 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/textbtn.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/jshell.h"
+#include "td/text.h"
 
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *

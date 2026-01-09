@@ -48,12 +48,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <filesystem>
+
 #include "sdllib/include/iconcach.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
-
-#include <filesystem>
+#include "port/ex_string.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/object.h"
+#include "td/template.h"
+#include "td/type.h"
 
 static char const _slope00000001[] = {7, -1};
 static char const _slope000000101[] = {6, 8, -1};

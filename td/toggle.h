@@ -41,6 +41,7 @@
 #ifndef TOGGLE_H
 #define TOGGLE_H
 
+#include "sdllib/include/keyboard.h"
 #include "td/control.h"
 
 /*

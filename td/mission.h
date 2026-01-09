@@ -42,8 +42,9 @@
 #define MISSION_H
 
 #include "td/object.h"
-#include "td/monoc.h"
 #include "td/ftimer.h"
+#include "td/defines.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide

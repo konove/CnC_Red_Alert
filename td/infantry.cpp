@@ -92,8 +92,53 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/infantry.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "td/abstract.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/cell.h"
+#include "td/combat.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/face.h"
+#include "td/facing.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mission.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/profile.h"
+#include "td/radio.h"
 #include "td/rand.h"
-#include "td/function.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/terrain.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/utracker.h"
+#include "td/vector.h"
 
 int const InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,

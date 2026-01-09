@@ -41,6 +41,8 @@
 #ifndef CARGO_H
 #define CARGO_H
 
+#include "tech/noinit.h"
+
 class FootClass;
 
 /****************************************************************************

@@ -38,13 +38,28 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/ccdde.h"
-
 /*****************************
 **	Function prototypes
 ******************************/
 
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/expand.h"
+#include "td/externs.h"
+#include "td/goptions.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/menus.h"
+#include "td/textbtn.h"
 #ifdef SCENARIO_EDITOR
 
 static int Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,

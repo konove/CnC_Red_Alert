@@ -49,8 +49,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * SuperClass::SuperClass -- Constructor for special super weapon objects. *
  *                                                                                             *
@@ -70,6 +68,12 @@
  *                                                                                             *
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/audio.h"
+#include "td/defines.h"
+#include "td/ftimer.h"
+#include "td/jshell.h"
+#include "td/super.h"
+
 SuperClass::SuperClass(int recharge, VoxType ready, VoxType charging,
                        VoxType impatient, VoxType suspend) {
   IsPresent = false;

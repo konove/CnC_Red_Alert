@@ -39,10 +39,24 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/logic.h"
-
 #include "rand.h"
+#include "td/aircraft.h"
+#include "td/building.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/factory.h"
+#include "td/ftimer.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/team.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 static unsigned FramesPerSecond = 0;
 

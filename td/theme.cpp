@@ -52,13 +52,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 #include "td/theme.h"
 
-#include "td/rand.h"
-
+#include <cstring>
 #include <filesystem>
+
+#include "port/ex_string.h"
+#include "sdllib/include/ww_audio.h"
+#include "td/ccfile.h"
+#include "td/conquer.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/jshell.h"
+#include "td/rand.h"
+#include "td/special.h"
+#include "td/text.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

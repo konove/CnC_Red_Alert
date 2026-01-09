@@ -49,8 +49,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/help.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/tab.h"
+#include "td/text.h"
 
 /*
 **	This is the holding buffer for the text overlap list. This buffer must

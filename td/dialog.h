@@ -1,6 +1,10 @@
 #ifndef CNC_RED_ALERT_TD_DIALOG_H_
 #define CNC_RED_ALERT_TD_DIALOG_H_
 
+#include "sdllib/include/wwstd.h"
+#include "td/defines.h"
+#include "td/jshell.h"
+
 int Format_Window_String(char *string, int maxlinelen, int &width, int &height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(char const *, unsigned x, unsigned y,

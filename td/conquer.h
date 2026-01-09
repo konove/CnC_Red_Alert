@@ -18,7 +18,11 @@
 #ifndef CNC_RED_ALERT_TD_CONQUER_H_
 #define CNC_RED_ALERT_TD_CONQUER_H_
 
+#include <stdint.h>
+
 #include "td/defines.h"
+#include "sdllib/include/shape.h"
+#include "winvq/vqa32/vqaplay.h"
 
 #define TXT_NONE 0                            //
 #define TXT_CREDIT_FORMAT 1                   // %3d.%02d
@@ -788,6 +792,7 @@ void Center_About_Objects(void);
 bool Force_CD_Available(int cd);
 void Handle_View(int view, int action = 0);
 void Handle_Team(int team, int action = 0);
+
 
 class TechnoTypeClass;
 

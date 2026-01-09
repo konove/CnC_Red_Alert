@@ -50,8 +50,6 @@
  ** Mono_Debug_Print -- Debug output routine                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *
  *                                                                         *
@@ -72,6 +70,11 @@
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
+#include <string.h>
+
+#include "td/combuf.h"
+// #include "td/externs.h"
+
 CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen) {
   int i;
 
@@ -310,8 +313,9 @@ int CommBufferClass::Queue_Send(void *buf, int buflen) {
 /***************************************************************************
  * CommBufferClass::UnQueue_Send -- removes next entry from send queue *
  *                                                                         *
- * Frees the given entry; the index given by the caller is the "active" * index value (ie the "nth" active entry), not the actual index in the		*
- * array.
+ * Frees the given entry; the index given by the caller is the "active" * index
+ * value (ie the "nth" active entry), not the actual index in the
+ *	* array.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -433,7 +437,7 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen) {
   --------------------- Error if no room in the queue ----------------------
   */
   if (ReceiveCount == MaxReceive) {
-    CCDebugString("C&C95 - Error - Receive queue full!\n");
+    // CCDebugString("C&C95 - Error - Receive queue full!\n");
     return (0);
   }
 
@@ -449,7 +453,7 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen) {
   }
 
   if (index == -1) {
-    CCDebugString("C&C95 - Error - Receive queue full too!\n");
+    // CCDebugString("C&C95 - Error - Receive queue full too!\n");
   }
 
   /*
@@ -484,8 +488,9 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen) {
  * CommBufferClass::UnQueue_Receive -- removes next entry from send queue
  **
  *                                                                         *
- * Frees the given entry; the index given by the caller is the "active" * index value (ie the "nth" active entry), not the actual index in the		*
- * array.
+ * Frees the given entry; the index given by the caller is the "active" * index
+ * value (ie the "nth" active entry), not the actual index in the
+ *	* array.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -703,8 +708,9 @@ void CommBufferClass::Reset_Response_Time(void) {
  *                                                                         *
  * Mono_Debug_Print2() can look into a packet to pull out a particular * ID, and
  *can print both that ID and a string corresponding to * that ID.  This routine
- *configures these values so it can find				* and decode the ID.  This ID is used in addition to the normal				*
- * CommHeaderType values.
+ *configures these values so it can find				* and
+ * decode the ID.  This ID is used in addition to the normal
+ *	* CommHeaderType values.
  **
  *                                                                         *
  * INPUT:                                                                  *

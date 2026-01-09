@@ -40,9 +40,40 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <filesystem>
 
-#include "td/function.h"
+#include "port/ex_string.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/playcd.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/init.h"
+#include "td/ipx.h"
+#include "td/ipxaddr.h"
+#include "td/ipxmgr.h"
+#include "td/jshell.h"
+#include "td/nullconn.h"
+#include "td/nullmgr.h"
+#include "td/profile.h"
+#include "td/special.h"
+#include "tech/cdfile.h"
+#include "tech/rawfile.h"
 #ifdef WIN32
 #ifndef PORTABLE
 #include <windows.h>
@@ -55,9 +86,7 @@
 #ifdef _WIN32
 #include <direct.h>  //chdir
 #else
-#include <unistd.h>
 #endif
-#include "td/ccdde.h"
 
 bool Read_Private_Config_Struct(char *profile, NewConfigType *config);
 void Delete_Swap_Files(void);
@@ -289,10 +318,6 @@ int main(int argc, char *argv[])
 #endif
 
     RawFileClass cfile("CONQUER.INI");
-
-#ifdef JAPANESE
-    //////////////////////////////////////if(!ForceEnglish) KBLanguage = 1;
-#endif
 
 #ifndef PORTABLE
     /*

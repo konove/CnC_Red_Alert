@@ -41,9 +41,23 @@
 #ifndef HEAP_H
 #define HEAP_H
 
-class FileClass;
-
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/factory.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/overlay.h"
+#include "td/smudge.h"
+#include "td/team.h"
+#include "td/teamtype.h"
+#include "td/template.h"
+#include "td/terrain.h"
+#include "td/trigger.h"
+#include "td/unit.h"
 #include "td/vector.h"
+#include "tech/wwfile.h"
 
 /**************************************************************************
 **	This is a block memory managment handler. It is used when memory is to
@@ -119,8 +133,8 @@ class FixedHeapClass {
 template <class T>
 class TFixedHeapClass : public FixedHeapClass {
  public:
-  TFixedHeapClass(void) : FixedHeapClass(sizeof(T)){};
-  virtual ~TFixedHeapClass(void){};
+  TFixedHeapClass(void) : FixedHeapClass(sizeof(T)) {};
+  virtual ~TFixedHeapClass(void) {};
 
   int ID(T const *pointer) { return FixedHeapClass::ID(pointer); };
 
@@ -139,8 +153,8 @@ class TFixedHeapClass : public FixedHeapClass {
 */
 class FixedIHeapClass : public FixedHeapClass {
  public:
-  FixedIHeapClass(int size) : FixedHeapClass(size){};
-  virtual ~FixedIHeapClass(void){};
+  FixedIHeapClass(int size) : FixedHeapClass(size) {};
+  virtual ~FixedIHeapClass(void) {};
 
   virtual int Set_Heap(int count, void *buffer = nullptr);
   virtual void *Allocate(void);
@@ -167,8 +181,8 @@ class FixedIHeapClass : public FixedHeapClass {
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
-  TFixedIHeapClass(void) : FixedIHeapClass(sizeof(T)){};
-  virtual ~TFixedIHeapClass(void){};
+  TFixedIHeapClass(void) : FixedIHeapClass(sizeof(T)) {};
+  virtual ~TFixedIHeapClass(void) {};
 
   int ID(T const *pointer) { return FixedIHeapClass::ID(pointer); };
   virtual T *Alloc(void) { return (T *)FixedIHeapClass::Allocate(); };

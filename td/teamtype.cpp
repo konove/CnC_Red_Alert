@@ -51,8 +51,23 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "port/safe_string.h"
-#include "td/function.h"
+#include "port/ex_string.h"
+#include "td/compat.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/profile.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/teamtype.h"
+#include "td/trigger.h"
+#include "td/type.h"
 
 /*
 ********************************** Globals **********************************

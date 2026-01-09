@@ -2,10 +2,7 @@
 #include <cctype>
 #include <cstring>
 
-#include "td/function.h"
 #include "sdllib/include/gbuffer.h"
-
-#include <string>
 #include "td/support.h"
 
 void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,

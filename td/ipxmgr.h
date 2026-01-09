@@ -136,6 +136,7 @@
 #include "td/ipxgconn.h"
 #include "td/ipxaddr.h"
 #include "td/connmgr.h"
+#include "td/ipx.h"
 
 /*
 ********************************** Defines **********************************

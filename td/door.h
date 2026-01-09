@@ -41,6 +41,9 @@
 #ifndef DOOR_H
 #define DOOR_H
 
+#include "td/stage.h"
+#include "tech/noinit.h"
+
 class DoorClass {
  private:
   /*

@@ -56,6 +56,7 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"

@@ -47,9 +47,8 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include "td/mission.h"
-#include "td/target.h"
 #include "td/defines.h"
+#include "td/monoc.h"
 
 /*
 **	This class implements a classic FIFO queue (also known as - standing in

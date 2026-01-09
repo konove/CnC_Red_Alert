@@ -60,8 +60,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * FactoryClass::Validate -- validates factory pointer
  **
@@ -77,6 +75,17 @@
  *                                                                                             *
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
+#include <stddef.h>
+#include <algorithm>
+
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/factory.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/techno.h"
+#include "td/type.h"
 #ifdef CHEAT_KEYS
 int FactoryClass::Validate(void) const {
   int num;

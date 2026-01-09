@@ -42,14 +42,14 @@
 
 #include "ra/shapebtn.h"
 
-#include "ra/externs.h"
-#include "ra/keyframe.h"
-#include "sdllib/include/ww_mouse.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
+#include "ra/globals.h"
+#include "ra/keyframe.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
 
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type

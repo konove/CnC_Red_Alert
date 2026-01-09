@@ -41,6 +41,14 @@
 #ifndef TRIGGER_H
 #define TRIGGER_H
 
+#include <string.h>
+
+#include "td/defines.h"
+#include "td/object.h"
+#include "td/teamtype.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
+
 typedef enum EventType {
   EVENT_NONE = -1,
 

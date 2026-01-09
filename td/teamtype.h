@@ -37,9 +37,14 @@
 #ifndef TEAMTYPE_H
 #define TEAMTYPE_H
 
+#include <stddef.h>
+
 #include "tech/noinit.h"
 #include "td/defines.h"
 #include "td/type.h"
+#include "td/house.h"
+#include "td/target.h"
+#include "tech/wwfile.h"
 
 /*
 ********************************** Defines **********************************
@@ -69,14 +74,6 @@ typedef enum TeamMissionType {
   TMISSION_COUNT,
   TMISSION_FIRST = 0
 } TeamMissionType;
-
-/*
-** Forward declarations.
-*/
-class TechnoTypeClass;
-class FileClass;
-class TeamClass;
-class HouseClass;
 
 /*
 **	This structure contains one team mission value & its argument.

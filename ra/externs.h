@@ -136,7 +136,6 @@ extern WWMouseClass *WWMouse;
 extern GraphicBufferClass HiddenPage;
 #define SeenPage SeenBuff
 extern GraphicBufferClass VisiblePage;
-extern GraphicViewPortClass SeenBuff;
 extern GraphicBufferClass SysMemPage;
 extern int ScreenWidth;
 extern int ScreenHeight;

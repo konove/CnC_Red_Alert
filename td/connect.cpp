@@ -40,8 +40,7 @@
  ** ConnectionClass::Command_Name -- returns name for a packet command *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
+#include "td/connect.h"
 #ifdef WWLIB32_H
 #else
 #include <sys/timeb.h>

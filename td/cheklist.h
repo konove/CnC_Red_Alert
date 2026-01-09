@@ -44,6 +44,8 @@
 #ifndef CHEKLIST_H
 #define CHEKLIST_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/defines.h"
 #include "td/list.h"
 
 class CheckListClass : public ListClass {
@@ -53,7 +55,7 @@ class CheckListClass : public ListClass {
   ---------------------------------------------------------------------*/
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  void const *up, void const *down);
-  ~CheckListClass(void){};
+  ~CheckListClass(void) {};
 
   /*---------------------------------------------------------------------
   Checkmark utility functions

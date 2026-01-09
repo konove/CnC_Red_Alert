@@ -65,8 +65,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/options.h"
+
+#include <cstring>
+
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_audio.h"
+#include "td/audio.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/palette.h"
+#include "td/profile.h"
+#include "td/special.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

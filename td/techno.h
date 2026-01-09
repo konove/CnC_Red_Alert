@@ -41,15 +41,19 @@
 #ifndef TECHNO_H
 #define TECHNO_H
 
-#include "td/radio.h"
-#include "td/stage.h"
+#include "td/bullet.h"
 #include "td/cargo.h"
+#include "td/crew.h"
+#include "td/defines.h"
+#include "td/door.h"
+#include "td/facing.h"
 #include "td/flasher.h"
 #include "td/house.h"
-#include "td/target.h"
-#include "td/bullet.h"
-#include "td/door.h"
-#include "td/crew.h"
+#include "td/object.h"
+#include "td/radio.h"
+#include "td/stage.h"
+#include "td/type.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	This is the common data between building and units.
@@ -207,8 +211,8 @@ class TechnoClass : public RadioClass,
         CargoClass(x),
         DoorClass(x),
         CloakingDevice(x),
-        PrimaryFacing(x){};
-  virtual ~TechnoClass(void){};
+        PrimaryFacing(x) {};
+  virtual ~TechnoClass(void) {};
 
   /*
   **	Query functions.
@@ -262,7 +266,8 @@ class TechnoClass : public RadioClass,
   virtual bool In_Range(COORDINATE coord, int which = 0) const;
   virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(ObjectClass const *target, int which = 0) const;
-  virtual void Death_Announcement(TechnoClass const *source = nullptr) const = 0;
+  virtual void Death_Announcement(
+      TechnoClass const *source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);

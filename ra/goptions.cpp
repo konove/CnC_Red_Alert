@@ -50,6 +50,7 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gamedlg.h"
+#include "ra/globals.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/loaddlg.h"

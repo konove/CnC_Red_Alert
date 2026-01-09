@@ -46,8 +46,8 @@
 #ifdef _WIN32
 #include <winsock.h>
 #else
-#include "td/compat.h"
 #include <netinet/in.h>
+
 typedef int SOCKET;
 typedef void *HANDLE;
 #define IN_ADDR in_addr

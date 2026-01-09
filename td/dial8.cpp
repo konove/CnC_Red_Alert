@@ -41,8 +41,6 @@
  *   Dial8Class::Set_Direction -- sets current direction (0-255) of dial   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * Dial8Class::Dial8Class -- constructor for the facing dial               *
  *                                                                         *
@@ -61,6 +59,19 @@
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dial8.h"
+#include "td/dialog.h"
+#include "td/globals.h"
+#include "td/face.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTHELD | LEFTRELEASE, true) {
   /*

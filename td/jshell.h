@@ -42,7 +42,13 @@
 #define JSHELL_H
 
 #include <cstdint>
+
+#include "sdllib/include/buffer.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_mouse.h"
+#include "td/compat.h"
+#include "tech/wwfile.h"
 
 /*
 **	Interface class to the keyboard. This insulates the game from library
@@ -258,9 +264,6 @@ unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
                                 "fini:"
 
 extern void Fatal(char const *message, ...);
-
-class BufferClass;
-class FileClass;
 
 typedef struct {
   unsigned char SourceColor;

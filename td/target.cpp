@@ -53,8 +53,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/target.h"
+#include "td/abstract.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/externs.h"
+#include "td/heap.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/team.h"
+#include "td/teamtype.h"
+#include "td/techno.h"
+#include "td/terrain.h"
+#include "td/trigger.h"
+#include "td/unit.h"
 
 /***********************************************************************************************
  * As_Trigger -- Converts specified target into a trigger pointer. *

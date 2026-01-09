@@ -48,6 +48,7 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"

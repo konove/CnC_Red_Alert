@@ -41,8 +41,6 @@
 #ifndef SOUNDDLG_H
 #define SOUNDDLG_H
 
-#include "td/gadget.h"
-
 class SoundControlsClass {
   enum SoundControlsClassEnums {
 #ifdef FRENCH

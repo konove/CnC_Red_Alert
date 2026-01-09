@@ -41,11 +41,14 @@
 #ifndef GAUGE_H
 #define GAUGE_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/control.h"
+
 class GaugeClass : public ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h);
   //		static GaugeClass * Create_One_Of(unsigned id, int x, int y, int
-  //w, int h);
+  // w, int h);
 
   virtual int Draw_Me(int forced = false);
   virtual int Set_Maximum(int value);
@@ -94,7 +97,7 @@ class TriColorGaugeClass : public GaugeClass {
  public:
   TriColorGaugeClass(unsigned id, int x, int y, int w, int h);
   //		static TriColorGaugeClass * Create_One_Of(unsigned id, int x,
-  //int y, int w, int h);
+  // int y, int w, int h);
   virtual int Draw_Me(int forced);
   virtual int Set_Red_Limit(int value);
   virtual int Set_Yellow_Limit(int value);

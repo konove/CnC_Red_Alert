@@ -42,12 +42,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/audio.h"
 
-#include "sdllib/include/ww_audio.h"
-
+#include <algorithm>
+#include <cstdlib>
 #include <filesystem>
+
+#include "sdllib/include/ww_audio.h"
+#include "td/ccfile.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/special.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

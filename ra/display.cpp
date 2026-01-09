@@ -121,6 +121,7 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"

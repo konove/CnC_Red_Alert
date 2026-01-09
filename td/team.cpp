@@ -58,9 +58,29 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <string.h>
+
 #include "rand.h"
-#include "td/function.h"
-#include "td/mission.h"
+#include "td/abstract.h"
+#include "td/aircraft.h"
+#include "td/building.h"
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/teamtype.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/unit.h"
 
 /*
 **	This array records the number of teams in existance of each type.

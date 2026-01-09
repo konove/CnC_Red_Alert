@@ -44,11 +44,12 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 /*
 ** Define host to network to host functions for DOS
 */
+#include <string.h>
+
+#include "td/utracker.h"
 #ifdef WIN32
 #ifdef _WIN32
 #include <winsock.h>

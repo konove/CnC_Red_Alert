@@ -2,8 +2,7 @@
 #define CNC_RED_ALERT_TD_INI_H_
 
 #include "td/defines.h"
-
-class ObjectClass;
+#include "td/object.h"
 
 void Set_Scenario_Name(char *buf, int scenario, ScenarioPlayerType player,
                        ScenarioDirType dir = SCEN_DIR_NONE,

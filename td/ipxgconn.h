@@ -53,6 +53,9 @@
 #define IPXGLOBALCONN_H
 
 #include "td/ipxconn.h"
+#include "td/connect.h"
+#include "td/ipx.h"
+#include "td/ipxaddr.h"
 
 /*
 ********************************** Defines **********************************

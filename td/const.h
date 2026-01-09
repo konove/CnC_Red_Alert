@@ -3,8 +3,8 @@
 
 #include "td/defines.h"
 
-class WeaponTypeClass;
-class WarheadTypeClass;
+class WeaponTypeClass;   // IWYU pragma: keep
+class WarheadTypeClass;  // IWYU pragma: keep
 
 extern unsigned char const RemapGreen[256];
 extern unsigned char const RemapBlue[256];

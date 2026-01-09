@@ -51,6 +51,7 @@
 #include "ra/expand.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/jshell.h"

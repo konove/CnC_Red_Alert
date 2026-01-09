@@ -42,6 +42,9 @@
 #define DRIVE_H
 
 #include "td/foot.h"
+#include "td/defines.h"
+#include "td/type.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects

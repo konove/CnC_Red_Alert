@@ -39,10 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include <cstdarg>
 #include "td/debug.h"
-#include <cstdio>
 #ifdef CHEAT_KEYS
 
 extern bool ScreenRecording;

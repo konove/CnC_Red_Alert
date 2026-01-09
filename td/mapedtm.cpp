@@ -43,8 +43,6 @@
  *   MapEditClass::Team_Members -- Team members dialog                     *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************

@@ -55,6 +55,7 @@
 #include "td/noseqcon.h"
 #endif
 #include "td/ipxaddr.h"
+#include "td/ipx.h"
 
 /*
 ***************************** Class Declaration *****************************

@@ -88,10 +88,47 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/sidebar.h"
 
+#include <algorithm>
+#include <cstring>
 #include <filesystem>
+#include <new>
 #include <string>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/factory.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/power.h"
+#include "td/queue.h"
+#include "td/shapebtn.h"
+#include "td/super.h"
+#include "td/techno.h"
+#include "td/text.h"
+#include "td/type.h"
 
 /*
 **	Define "_RETRIEVE" if the palette morphing tables are part of the loaded

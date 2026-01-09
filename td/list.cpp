@@ -60,8 +60,28 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/list.h"
+
+#include <algorithm>
+
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/jshell.h"
+#include "td/link.h"
+#include "td/shapebtn.h"
+#include "td/slider.h"
+#include "td/text.h"
+#include "td/vector.h"
 
 /***************************************************************************
  * ListClass::ListClass -- class constructor                               *

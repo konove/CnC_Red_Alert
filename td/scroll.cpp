@@ -40,7 +40,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/scroll.h"
+
+#include <algorithm>
+
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/timer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/face.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/help.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/special.h"
 
 #define SCROLL_DELAY 1
 

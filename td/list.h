@@ -41,9 +41,14 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include "sdllib/include/keyboard.h"
 #include "td/control.h"
+#include "td/defines.h"
+#include "td/gadget.h"
+#include "td/link.h"
 #include "td/shapebtn.h"
 #include "td/slider.h"
+#include "td/vector.h"
 
 /***************************************************************************
  * ListClass -- Like a Windows ListBox structure
@@ -67,7 +72,7 @@ class ListClass : public ControlClass {
   virtual ~ListClass(void);
 
   //		static ListClass * Create_One_Of(int id, int x, int y, int w,
-  //int h, TextPrintType flags, void const * up, void const * down);
+  // int h, TextPrintType flags, void const * up, void const * down);
   virtual int Add_Item(char const *text);
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar(void);

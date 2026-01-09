@@ -15,7 +15,6 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 /* $Header:   F:\projects\c&c0\vcs\code\queue.cpv   2.24   11 Oct 1995 13:47:40
  * JOE_BOSTIC  $ */
 /***************************************************************************
@@ -77,9 +76,47 @@
  *   Update_Queue_Mono -- updates mono display                             *
  *   Print_Framesync_Values -- displays frame-sync variables               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+#include "td/queue.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "port/safe_string.h"
-#include "td/function.h"
-#include "td/tcpip.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/connect.h"
+#include "td/connmgr.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/facing.h"
+#include "td/ftimer.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/ipxmgr.h"
+#include "td/jshell.h"
+#include "td/monoc.h"
+#include "td/mouse.h"
+#include "td/mplayer.h"
+#include "td/msgbox.h"
+#include "td/msglist.h"
+#include "td/netdlg.h"
+#include "td/nulldlg.h"
+#include "td/nullmgr.h"
+#include "td/text.h"
+#include "td/type.h"
+#include "td/unit.h"
 
 /********************************** Defines *********************************/
 #define SHOW_MONO 1

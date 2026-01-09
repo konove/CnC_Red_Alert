@@ -86,6 +86,7 @@
 #define GADGET_H
 
 #include "td/link.h"
+#include "sdllib/include/keyboard.h"
 
 class ControlClass;
 
@@ -104,10 +105,10 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass(void){};
+  GadgetClass(void) {};
   virtual ~GadgetClass(void);
   //		static GadgetClass * Create_One_Of(int x, int y, int w, int h,
-  //unsigned flags, int sticky=false);
+  // unsigned flags, int sticky=false);
 
   /*
   **	Gadget list management functions.

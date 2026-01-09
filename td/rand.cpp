@@ -36,7 +36,6 @@
  *   Sim_IRandom -- Returns minval to maxval, inclusive                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
 #include "td/jshell.h"
 #include "td/rand.h"
 
@@ -114,10 +113,10 @@ This routine can be used to create the _RandVals[] table.  It will be
 different every time it's run.
 ---------------------------------------------------------------------------*/
 #if 0
+#include <conio.h>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <conio.h>
 
 void main(void);
 

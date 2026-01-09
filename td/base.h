@@ -41,13 +41,18 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "td/building.h"
+#include "td/defines.h"
+#include "td/vector.h"
+#include "tech/wwfile.h"
+
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node
 ** contains a type of building to build, and the COORD to build it at.
 */
 class BaseNodeClass {
  public:
-  BaseNodeClass(void){};
+  BaseNodeClass(void) {};
   int operator==(BaseNodeClass const &node);
   int operator!=(BaseNodeClass const &node);
   int operator>(BaseNodeClass const &node);
@@ -65,7 +70,7 @@ class BaseClass {
   /**********************************************************************
   ** Constructor/Destructor
   */
-  BaseClass(void){};
+  BaseClass(void) {};
   virtual ~BaseClass() { Nodes.Clear(); }
 
   /**********************************************************************

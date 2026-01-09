@@ -41,8 +41,19 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "td/map.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/wwstd.h"
+#include "td/defines.h"
+#include "td/gadget.h"
+#include "td/house.h"
+#include "td/jshell.h"
 #include "td/layer.h"
+#include "td/map.h"
+#include "td/object.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/vector.h"
+#include "tech/noinit.h"
 
 extern COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2);
 
@@ -175,11 +186,7 @@ class DisplayClass : public MapClass {
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
 
-  void Flag_Cell(CELL cell) {
-    Flag_To_Redraw(false);
-    IsToRedraw = true;
-    CellRedraw[cell] = true;
-  };
+  virtual void Flag_Cell(CELL cell);
   bool Is_Cell_Flagged(CELL cell) const { return CellRedraw.Is_True(cell); };
 
   /*

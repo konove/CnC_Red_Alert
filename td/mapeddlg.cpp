@@ -49,8 +49,6 @@
  *   MapEditClass::Import_Teams -- lets user import teams                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************

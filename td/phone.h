@@ -35,6 +35,8 @@
 #ifndef PHONE_H
 #define PHONE_H
 
+#include <cstring>
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -42,8 +44,8 @@ class PhoneEntryClass {
  public:
   enum PhoneEntryEnum { PHONE_MAX_NAME = 21, PHONE_MAX_NUM = 21 };
 
-  PhoneEntryClass(void){};
-  ~PhoneEntryClass(){};
+  PhoneEntryClass(void) {};
+  ~PhoneEntryClass() {};
 
   bool operator==(PhoneEntryClass &obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) == 0);

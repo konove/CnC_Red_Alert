@@ -87,12 +87,44 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /*
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
 */
+#include "td/object.h"
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/cell.h"
+#include "td/combat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/globals.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/logic.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/radio.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
+
 void const *ObjectTypeClass::SelectShapes = nullptr;
 
 void const *ObjectTypeClass::PipShapes = nullptr;

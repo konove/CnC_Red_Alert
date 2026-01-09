@@ -39,8 +39,20 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/combat.h"
+
+#include "td/cell.h"
+#include "td/const.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/special.h"
+#include "td/type.h"
+#include "td/vector.h"
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
 void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass *source,

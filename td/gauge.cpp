@@ -43,8 +43,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * GAUGECLASS::GAUGECLASS -- class constructor                             *
  *                                                                         *
@@ -60,6 +58,19 @@
  *                                                                         *
  * HISTORY:  01/05/1995 MML : Created.                                     *
  *=========================================================================*/
+#include "td/gauge.h"
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/jshell.h"
+
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
     : ControlClass(id, x, y, w, h, LEFTHELD | LEFTPRESS | LEFTRELEASE, true) {
   Set_Maximum(255);

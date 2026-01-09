@@ -45,8 +45,12 @@
 /*
 ********************************* Includes **********************************
 */
-#include "td/nullconn.h"
+#include "sdllib/include/keyboard.h"
 #include "td/connmgr.h"
+#include "td/defines.h"
+#include "td/gadget.h"
+#include "td/nullconn.h"
+
 #ifndef PORTABLE
 #include "commlib.h"
 #endif

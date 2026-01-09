@@ -48,9 +48,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <string.h>
+
 #include "td/vector.h"
-#include <cstdio>
+
+#include "td/base.h"
+#include "td/loaddlg.h"
+#include "td/cell.h"
 
 /*
 **	The following template function can be located here ONLY if all the

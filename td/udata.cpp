@@ -51,11 +51,28 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "rand.h"
-#include "td/function.h"
-
+#include <algorithm>
 #include <filesystem>
 #include <string>
+
+#include "port/ex_string.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/mixfile.h"
+#include "td/object.h"
+#include "td/rand.h"
+#include "td/special.h"
+#include "td/type.h"
+#include "td/unit.h"
 
 void const *UnitTypeClass::WakeShapes = nullptr;
 

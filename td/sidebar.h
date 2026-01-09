@@ -41,9 +41,15 @@
 #ifndef SIDEBAR_H
 #define SIDEBAR_H
 
-#include "td/function.h"
+#include "sdllib/include/keyboard.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/gadget.h"
 #include "td/power.h"
-#include "td/factory.h"
+#include "td/shapebtn.h"
+#include "td/stage.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 class InitClass {};
 
@@ -369,8 +375,8 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public GadgetClass {
    public:
     //				SBGadgetClass(void) : GadgetClass(SIDE_X+8,
-    //SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, LEFTUP) {};
-    SBGadgetClass(void) : GadgetClass(0, 0, 0, 0, LEFTUP){};
+    // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, LEFTUP) {};
+    SBGadgetClass(void) : GadgetClass(0, 0, 0, 0, LEFTUP) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

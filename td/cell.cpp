@@ -82,9 +82,49 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/rand.h"
+#include "td/cell.h"
+
+#include <cassert>
+
+#include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/wwstd.h"
+#include "td/anim.h"
+#include "td/building.h"
+#include "td/combat.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/display.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/globals.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/layer.h"
+#include "td/logic.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/rand.h"
+#include "td/special.h"
+#include "td/super.h"
+#include "td/target.h"
+#include "td/techno.h"
+#include "td/terrain.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/utracker.h"
+#include "td/vector.h"
 
 #define FIXUP 0
 
@@ -1886,17 +1926,6 @@ bool CellClass::Goodie_Check(FootClass *object) {
       AIR_STRIKE, HEAL_BASE, HEAL_BASE, CLOAK, CLOAK, EXPLOSION, EXPLOSION,
       EXPLOSION, EXPLOSION, NAPALM, NAPALM, NAPALM, SQUAD, SQUAD, SQUAD, SQUAD,
       SQUAD, UNIT, UNIT, UNIT, UNIT, UNIT, VISCEROID};
-
-  /*
-  ** Crate types are only defined here so it needs to match my new global crate
-  *total ST - 6/4/96 2:16PM
-  */
-#if (TOTAL_CRATES) == (TOTAL_CRATE_TYPES)
-
-#else
-  // Huge_Errrrror..... Oh NO!
-
-#endif
 
   if (object && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {

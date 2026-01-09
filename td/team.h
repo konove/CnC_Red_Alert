@@ -41,9 +41,17 @@
 #ifndef TEAM_H
 #define TEAM_H
 
+#include <stddef.h>
+
 #include "tech/wwfile.h"
 #include "td/teamtype.h"
 #include "td/abstract.h"
+#include "td/defines.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/house.h"
+#include "td/techno.h"
+#include "tech/noinit.h"
 
 /*
 ** Units are only allowed to stray a certain distance away from their

@@ -70,8 +70,32 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdint.h>
+#include <stdio.h>
+#include <new>
+
 #include "saveload.h"
-#include "td/function.h"
+#include "td/cell.h"
+#include "td/defines.h"
+#include "td/display.h"
+#include "td/externs.h"
+#include "td/gscreen.h"
+#include "td/help.h"
+#include "td/map.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/power.h"
+#include "td/radar.h"
+#include "td/scroll.h"
+#include "td/sidebar.h"
+#include "td/support.h"
+#include "td/tab.h"
+#include "td/target.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/vector.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * CellClass::Should_Save -- Should the cell be written to disk? *

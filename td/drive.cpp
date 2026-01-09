@@ -60,7 +60,36 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/drive.h"
+
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/facing.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/globals.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/overlay.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 DriveClass::DriveClass(void) : Class(nullptr) {};
 

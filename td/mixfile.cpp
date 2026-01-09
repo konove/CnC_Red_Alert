@@ -16,8 +16,17 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "td/function.h"
+#include <stdlib.h>
+#include <string.h>
+
 #include "td/mixfile.h"
+#include "port/ex_string.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "td/ccfile.h"
+#include "td/conquer.h"
+#include "td/externs.h"
+#include "td/jshell.h"
 
 template <class T>
 int Compare(T const *obj1, T const *obj2) {

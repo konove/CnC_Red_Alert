@@ -48,11 +48,35 @@
  *                                                                         				*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
+#include <cstdlib>
+#include <cstring>
 
 #include "port/safe_string.h"
-#include "td/function.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/mplayer.h"
+#include "td/msgbox.h"
+#include "td/palette.h"
+#include "td/profile.h"
+#include "td/special.h"
 #include "td/tcpip.h"
-#include "td/ccdde.h"
+#include "td/text.h"
+#include "td/textbtn.h"
+#include "tech/rawfile.h"
 
 /***************************************************************************
 ** Internet specific globals

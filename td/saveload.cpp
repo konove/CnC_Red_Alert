@@ -49,10 +49,47 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "port/safe_string.h"
 #include "td/scenario.h"
-#include "td/function.h"
 #include "td/saveload.h"
+#include "port/ex_string.h"
+#include "sdllib/include/misc.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/base.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/externs.h"
+#include "td/factory.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/ini.h"
+#include "td/layer.h"
+#include "td/logic.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/overlay.h"
+#include "td/score.h"
+#include "td/smudge.h"
+#include "td/support.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/teamtype.h"
+#include "td/template.h"
+#include "td/terrain.h"
+#include "td/trigger.h"
+#include "td/unit.h"
+#include "td/vector.h"
+#include "tech/rawfile.h"
 
 /*
 ********************************** Defines **********************************

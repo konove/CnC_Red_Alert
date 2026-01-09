@@ -41,9 +41,17 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "td/object.h"
+#include <cstddef>
+
+#include "td/defines.h"
+#include "td/facing.h"
 #include "td/fly.h"
 #include "td/fuse.h"
+#include "td/globals.h"
+#include "td/object.h"
+#include "td/type.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:
@@ -79,7 +87,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
         Class(Class),
         FlyClass(x),
         FuseClass(x),
-        PrimaryFacing(x){};
+        PrimaryFacing(x) {};
   virtual ~BulletClass(void) {
     if (GameActive) BulletClass::Limbo();
   };

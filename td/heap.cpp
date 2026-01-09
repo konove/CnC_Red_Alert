@@ -53,11 +53,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/heap.h"
-#include <cstdio>
-#include <cstddef>
 #include <cstring>
+#include <new>
+
+#include "td/heap.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

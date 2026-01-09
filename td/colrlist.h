@@ -42,6 +42,9 @@
 #define COLORLIST_H
 
 #include "td/list.h"
+#include "sdllib/include/wwstd.h"
+#include "td/defines.h"
+#include "td/vector.h"
 
 /***************************************************************************
 ** This class adds the ability for every list item to have a different color.

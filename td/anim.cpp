@@ -57,8 +57,38 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <algorithm>
+#include <cstdlib>
+
 #include "rand.h"
-#include "td/function.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "td/abstract.h"
+#include "td/anim.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/combat.h"
+#include "td/conquer.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/logic.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/palette.h"
+#include "td/smudge.h"
+#include "td/stage.h"
+#include "td/target.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

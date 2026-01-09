@@ -46,14 +46,27 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <cerrno>
+#include <algorithm>
+
 // #include	<direct.h>
 // #include	<fcntl.h>
 // #include	<io.h>
 // #include	<dos.h>
 #include "sdllib/include/memflag.h"
-
-#include <cerrno>
+#include "sdllib/include/file.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/wwstd.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/externs.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "tech/cdfile.h"
 // #include	<share.h>
 // #include	"ccfile.h"
 

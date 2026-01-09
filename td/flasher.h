@@ -41,6 +41,8 @@
 #ifndef FLASHER_H
 #define FLASHER_H
 
+#include "tech/noinit.h"
+
 class FlasherClass {
  public:
   /*

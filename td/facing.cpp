@@ -42,8 +42,11 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <algorithm>
+#include <cstdlib>
+
 #include "td/facing.h"
+#include "td/inline.h"
 
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *

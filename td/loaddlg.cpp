@@ -43,14 +43,39 @@
  *   LoadOptionsClass::~LoadOptionsClass -- class destructor *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "port/safe_string.h"
-#include "td/saveload.h"
-#include "sdllib/include/file.h"
+#include "td/loaddlg.h"
 
-#include <filesystem>
 #include <charconv>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
 
-#include "td/function.h"
+#include "port/safe_string.h"
+#include "sdllib/include/file.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/edit.h"
+#include "td/externs.h"
+#include "td/goptions.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/mouse.h"
+#include "td/msgbox.h"
+#include "td/palette.h"
+#include "td/saveload.h"
+#include "td/text.h"
+#include "td/textbtn.h"
+#include "td/vector.h"
+
 #ifdef _WIN32
 #include <io.h>  // for unlink
 #else

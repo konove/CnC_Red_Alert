@@ -41,20 +41,36 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
-#include "td/cell.h"
+#include "port/ex_string.h"
 #include "sdllib/include/playcd.h"
+#include "td/base.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/cell.h"
+#include "td/event.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/infantry.h"
+#include "td/ipxmgr.h"
+#include "td/logic.h"
+#include "td/mixfile.h"
+#include "td/monoc.h"
+#include "td/msglist.h"
+#include "td/nullmgr.h"
+#include "td/overlay.h"
+#include "td/queue.h"
+#include "td/score.h"
+#include "td/smudge.h"
+#include "td/template.h"
+#include "td/terrain.h"
+#include "td/theme.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "winvq/vqa32/vqaplay.h"
 
 #ifdef SCENARIO_EDITOR
 #include "td/mapedit.h"
 #endif
-#include "td/techno.h"
-#include "td/type.h"
-#include "td/building.h"
-#include "td/unit.h"
-#include "td/credits.h"
-#include "td/goptions.h"
-#include "td/options.h"
-#include "td/infantry.h"
 
 #ifdef JAPANESE
 extern bool ForceEnglish;
@@ -123,6 +139,7 @@ extern LogicClass Logic;
 #ifdef SCENARIO_EDITOR
 extern MapEditClass Map;
 #else
+class MouseClass;
 extern MouseClass Map;
 #endif
 extern ScoreClass Score;
@@ -133,7 +150,6 @@ extern MixFileClass *LowTheaterData;
 extern MixFileClass *MoviesMix;
 extern MixFileClass *GeneralMix;
 extern ThemeClass Theme;
-extern SpecialClass Special;
 
 /*
 **	Game object allocation and tracking classes.

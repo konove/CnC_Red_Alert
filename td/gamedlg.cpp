@@ -39,11 +39,30 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/gamedlg.h"
-#include "td/sounddlg.h"
-#include "td/visudlg.h"
+
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
 #include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/goptions.h"
+#include "td/jshell.h"
+#include "td/msgbox.h"
+#include "td/options.h"
+#include "td/queue.h"
+#include "td/slider.h"
+#include "td/sounddlg.h"
+#include "td/text.h"
+#include "td/textbtn.h"
+#include "td/visudlg.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

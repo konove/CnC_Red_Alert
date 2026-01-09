@@ -42,8 +42,6 @@
  *   IPXGlobalConnClass::Set_Bridge -- Sets up connection to cross a bridge*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * IPXGlobalConnClass::IPXGlobalConnClass -- class constructor             *
  *                                                                         *
@@ -68,6 +66,15 @@
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
+#include <string.h>
+
+#include "td/combuf.h"
+#include "td/connect.h"
+#include "td/ipx.h"
+#include "td/ipxaddr.h"
+#include "td/ipxconn.h"
+#include "td/ipxgconn.h"
+
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        unsigned short product_id)
     : IPXConnClass(numsend, numreceive,

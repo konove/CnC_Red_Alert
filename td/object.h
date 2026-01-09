@@ -42,8 +42,9 @@
 #define OBJECT_H
 
 #include "td/abstract.h"
+#include "td/defines.h"
+#include "tech/noinit.h"
 
-class ObjectClass;
 class TechnoClass;
 class ObjectTypeClass;
 class HouseClass;

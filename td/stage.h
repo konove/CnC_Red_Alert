@@ -41,6 +41,8 @@
 #ifndef STAGE_H
 #define STAGE_H
 
+#include "tech/noinit.h"
+
 class StageClass {
   /*
   **	This handles the animation stage of the object. This includes smoke,
@@ -68,7 +70,7 @@ class StageClass {
     Stage = 0;
     Rate = 0;
   };
-  StageClass(NoInitClass const &x){};
+  StageClass(NoInitClass const &x) {};
 
   int Fetch_Stage(void) const { return Stage; };
   int Fetch_Rate(void) const { return Rate; };

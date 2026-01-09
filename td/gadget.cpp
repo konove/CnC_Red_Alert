@@ -58,7 +58,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 // #include "ra/filepcx.h"
 
 /*
@@ -66,6 +65,14 @@
 *Such a *	gadget will be processed to the exclusion of all others until
 *the mouse button *	is no longer pressed.
 */
+#include "td/gadget.h"
+
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/control.h"
+#include "td/jshell.h"
+#include "td/link.h"
+
 GadgetClass *GadgetClass::StuckOn = nullptr;
 
 /*

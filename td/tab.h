@@ -41,13 +41,15 @@
 #ifndef TAB_H
 #define TAB_H
 
-#include "td/sidebar.h"
+#include "sdllib/include/keyboard.h"
 #include "td/credits.h"
+#include "td/sidebar.h"
+#include "tech/noinit.h"
 
 class TabClass : public SidebarClass {
  public:
   TabClass(void);
-  TabClass(NoInitClass const &x) : SidebarClass(x), Credits(x){};
+  TabClass(NoInitClass const &x) : SidebarClass(x), Credits(x) {};
 
   virtual void AI(KeyNumType &input, int x, int y);
   virtual void Draw_It(bool complete = false);

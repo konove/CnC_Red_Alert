@@ -38,8 +38,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * TextLabelClass -- Constructor *
  *                                                                                             *
@@ -55,6 +53,12 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
+#include "sdllib/include/wwstd.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/gadget.h"
+#include "td/txtlabel.h"
+
 TextLabelClass::TextLabelClass(char *txt, int x, int y, int color,
                                TextPrintType style)
     : GadgetClass(x, y, 1, 1, 0, 0) {

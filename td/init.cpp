@@ -45,21 +45,72 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <ctype.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+
 #include "td/scenario.h"
 #include "sdllib/include/file.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
-
 #include "absl/log/log.h"
 #include "td/loaddlg.h"
 #include "td/tcpip.h"
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/memflag.h"
+#include "port/ex_string.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/playcd.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/event.h"
+#include "td/expand.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/ini.h"
+#include "td/init.h"
+#include "td/intro.h"
+#include "td/ipx.h"
+#include "td/ipxaddr.h"
+#include "td/ipxmgr.h"
+#include "td/jshell.h"
+#include "td/logic.h"
+#include "td/menus.h"
+#include "td/mixfile.h"
+#include "td/monoc.h"
+#include "td/mouse.h"
+#include "td/mplayer.h"
+#include "td/msgbox.h"
+#include "td/msglist.h"
+#include "td/netdlg.h"
+#include "td/nulldlg.h"
+#include "td/nullmgr.h"
+#include "td/palette.h"
+#include "td/queue.h"
+#include "td/special.h"
+#include "td/text.h"
+#include "td/theme.h"
+#include "td/type.h"
+#include "tech/rawfile.h"
+#include "winvq/vqa32/vqaplay.h"
 #ifndef PORTABLE
 #include <conio.h>
 #include <dos.h>
 #endif
-#include "td/ccdde.h"
 
 #ifndef PORTABLE
 static HANDLE hCCLibrary;

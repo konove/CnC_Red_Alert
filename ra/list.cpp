@@ -66,7 +66,7 @@
 #include "port/ex_string.h"
 #include "ra/conquer.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "sdllib/include/drawbuff.h"

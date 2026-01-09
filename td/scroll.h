@@ -41,8 +41,10 @@
 #ifndef SCROLL_H
 #define SCROLL_H
 
-#include "td/help.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/timer.h"
+#include "td/help.h"
+#include "tech/noinit.h"
 
 class ScrollClass : public HelpClass {
   /*

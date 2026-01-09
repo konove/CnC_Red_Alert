@@ -49,8 +49,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * MissionClass::MissionClass -- Default constructor for the mission object
  *type.              *
@@ -66,6 +64,13 @@
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
+#include "port/ex_string.h"
+#include "td/defines.h"
+#include "td/ftimer.h"
+#include "td/jshell.h"
+#include "td/mission.h"
+#include "td/object.h"
+
 MissionClass::MissionClass(void) {
   Status = 0;
   Timer = 0;

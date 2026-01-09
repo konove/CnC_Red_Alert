@@ -54,6 +54,7 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/globals.h"
 #include "ra/jshell.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"

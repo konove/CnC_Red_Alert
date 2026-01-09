@@ -41,13 +41,18 @@
 #ifndef GSCREEN_H
 #define GSCREEN_H
 
-#include "td/function.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "td/cell.h"
+#include "td/defines.h"
+#include "td/gadget.h"
+#include "td/vector.h"
+#include "tech/noinit.h"
 
 class GScreenClass : public VectorClass<CellClass> {
  public:
   GScreenClass(void);
-  GScreenClass(NoInitClass const &x) : VectorClass<CellClass>(x){};
+  GScreenClass(NoInitClass const &x) : VectorClass<CellClass>(x) {};
 
   /*
   ** Initialization

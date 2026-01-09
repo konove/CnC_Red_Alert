@@ -51,17 +51,48 @@
  *   NullModemClass::Hangup_Modem -- hangs up the modem                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "td/nullmgr.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "port/safe_string.h"
-#include "td/function.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/modemreg.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/wincomm.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/combuf.h"
+#include "td/connect.h"
+#include "td/connmgr.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/goptions.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/monoc.h"
+#include "td/msgbox.h"
+#include "td/nullconn.h"
+#include "td/tcpip.h"
+#include "td/text.h"
+#include "td/textbtn.h"
+#include "td/vector.h"
+
 #ifdef _WIN32
 #include <windows.h>
 #else
 #define INVALID_HANDLE_VALUE NULL
 #endif
-#include "sdllib/include/wincomm.h"
-#include "sdllib/include/modemreg.h"
-// #include "i86.h"
-#include "td/tcpip.h"
 
 extern ModemRegistryEntryClass *ModemRegistry;
 
@@ -1451,7 +1482,7 @@ DialStatusType NullModemClass::Dial_Modem(char *string, DialMethodType method,
   int x, y, width, height;  // dialog dimensions
   char buffer[80 * 3];
 
-  Input = 0;
+  Input = KN_NONE;
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -1733,7 +1764,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   // Load_Picture("TITLE.CPS", HidPage, HidPage, Palette, BM_DEFAULT);
 
-  Input = 0;
+  Input = KN_NONE;
 
   /*
   ............................ Create the list .............................

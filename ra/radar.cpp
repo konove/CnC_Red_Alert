@@ -92,6 +92,7 @@
 #include "ra/coord.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/map.h"

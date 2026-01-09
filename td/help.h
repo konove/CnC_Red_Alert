@@ -41,8 +41,12 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "td/tab.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/timer.h"
+#include "sdllib/include/wwstd.h"
+#include "td/defines.h"
+#include "td/tab.h"
+#include "tech/noinit.h"
 
 class HelpClass : public TabClass {
  public:

@@ -39,8 +39,33 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/sounddlg.h"
+
+#include <cstdio>
+#include <cstring>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/goptions.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/mixfile.h"
+#include "td/shapebtn.h"
+#include "td/slider.h"
+#include "td/textbtn.h"
+#include "td/theme.h"
+#include "td/vector.h"
 
 class MusicListClass : public ListClass {
  public:

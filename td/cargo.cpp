@@ -42,8 +42,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
+#include "td/cargo.h"
+#include "td/foot.h"
+#include "td/object.h"
 #ifdef CHEAT_KEYS
 /***********************************************************************************************
  * CargoClass::Debug_Dump -- Displays the cargo value to the monochrome screen.

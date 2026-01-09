@@ -57,10 +57,10 @@
 #define VECTOR_H
 
 #include <cstddef>
-#include <new>
+#include <new>  // IWYU pragma: keep
 
-#include "ra/defines.h"
-#include "ra/egos.h"
+#include "ra/defines.h"  // IWYU pragma: keep
+#include "ra/egos.h"     // IWYU pragma: keep
 #include "ra/jshell.h"
 #include "tech/noinit.h"
 

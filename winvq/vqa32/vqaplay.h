@@ -15,9 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#ifndef VQAPLAY_H
-#define VQAPLAY_H
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_
 
 #include <cstdint>
 
@@ -315,4 +314,4 @@ void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats);
 char *VQA_Version(void);
 char *VQA_IDString(void);
 
-#endif /* VQAPLAY_H */
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

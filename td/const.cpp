@@ -43,6 +43,7 @@
 #include "td/compat.h"
 #include "td/defines.h"
 #include "td/type.h"
+#include "sdllib/include/wwstd.h"
 
 char const* SourceName[SOURCE_COUNT] = {
     "North", "East",    "South",     "West",     "Shipping", "Beach",

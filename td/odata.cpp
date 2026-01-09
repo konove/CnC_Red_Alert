@@ -52,11 +52,23 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/type.h"
-
 #include <filesystem>
 #include <string>
+
+#include "td/type.h"
+#include "port/ex_string.h"
+#include "sdllib/include/shape.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/overlay.h"
 
 static OverlayTypeClass const Road(
     OVERLAY_ROAD,  // Overlay type number.

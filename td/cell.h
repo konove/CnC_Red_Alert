@@ -42,8 +42,14 @@
 #define CELL_H
 
 #include "td/building.h"
+#include "td/defines.h"
+#include "td/foot.h"
+#include "td/object.h"
+#include "td/target.h"
+#include "td/techno.h"
+#include "td/terrain.h"
 #include "td/unit.h"
-#include "td/template.h"
+#include "tech/wwfile.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.

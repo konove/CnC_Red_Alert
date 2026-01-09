@@ -54,6 +54,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/ww_mouse.h"
 #include "tech/fixed.h"

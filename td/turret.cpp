@@ -49,8 +49,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <algorithm>
+#include <cstdlib>
+
 #include "td/turret.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/target.h"
+#include "td/type.h"
 
 /***********************************************************************************************
  * TurretClass::TurretClass -- Normal constructor for the turret class. *

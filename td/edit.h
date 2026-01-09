@@ -41,6 +41,10 @@
 #ifndef EDIT_H
 #define EDIT_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/control.h"
+#include "td/defines.h"
+
 class EditClass : public ControlClass {
  public:
   typedef enum EditStyle {

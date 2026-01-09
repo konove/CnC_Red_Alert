@@ -50,9 +50,46 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/textblit.h"
+#include "td/score.h"
+
+#include <algorithm>
+#include <cstdio>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/wsa.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/audio.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/house.h"
 #include "td/interpal.h"
+#include "td/jshell.h"
+#include "td/logic.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/nullmgr.h"
+#include "td/object.h"
+#include "td/palette.h"
+#include "td/special.h"
+#include "td/text.h"
+#include "td/textblit.h"
+#include "td/theme.h"
+#include "td/type.h"
+#include "td/vector.h"
+
 #define SCORETEXT_X 184
 #define SCORETEXT_Y 8
 #define CASUALTY_Y 88

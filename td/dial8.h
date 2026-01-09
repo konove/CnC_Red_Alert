@@ -41,6 +41,10 @@
 #ifndef DIAL8_H
 #define DIAL8_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/control.h"
+#include "td/defines.h"
+
 class Dial8Class : public ControlClass {
  public:
   /*

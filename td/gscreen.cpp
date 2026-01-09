@@ -52,9 +52,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/gscreen.h"
 
-// #include "ra/filepcx.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/msglist.h"
 
 GadgetClass *GScreenClass::Buttons = nullptr;
 

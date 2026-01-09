@@ -52,11 +52,28 @@
  *overlap bit for given cell                                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "td/findpath.h"
 
-#include "support.h"
-#include "td/function.h"
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
 #include "sdllib/include/memflag.h"
-// #include	<string.h>
+#include "sdllib/include/wwstd.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/globals.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/special.h"
+#include "td/support.h"
+#include "td/team.h"
+#include "td/teamtype.h"
 
 /*
 **	When an edge search is started, it can be performed CLOCKwise or

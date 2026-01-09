@@ -42,12 +42,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /*
 **	These are the text representations of the radio messages that can be
 *transmitted.
 */
+#include "td/defines.h"
+#include "td/globals.h"
+#include "td/mission.h"
+#include "td/radio.h"
+#include "td/techno.h"
+
 char const *RadioClass::Messages[RADIO_COUNT] = {
     "hisssss",
     "Roger.",

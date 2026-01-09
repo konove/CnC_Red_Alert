@@ -42,6 +42,7 @@
 #define FTIMER_H
 
 #include "td/globals.h"
+#include "tech/noinit.h"
 
 /*
 **	This timer class is based around an external tick system. As such, it is

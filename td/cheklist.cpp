@@ -40,8 +40,6 @@
  *   CheckListClass::~CheckListClass -- destructor                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * CheckListClass::CheckListClass -- constructor                           *
  *                                                                         *
@@ -64,6 +62,12 @@
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
+#include "td/cheklist.h"
+
+#include "td/defines.h"
+#include "td/list.h"
+#include "td/vector.h"
+
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags, void const *up,
                                void const *down)

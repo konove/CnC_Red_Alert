@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_COORD_H_
 #define CNC_RED_ALERT_TD_COORD_H_
 
+#include "td/defines.h"
+
 void Move_Point(short &x, short &y, DirType dir, unsigned short distance);
 COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir);
 COORDINATE Coord_Move(COORDINATE start, DirType facing,

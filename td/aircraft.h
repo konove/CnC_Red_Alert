@@ -41,9 +41,20 @@
 #ifndef AIRCRAFT_H
 #define AIRCRAFT_H
 
+#include <stddef.h>
+
 #include "td/radio.h"
 #include "td/fly.h"
-#include "td/target.h"
+#include "td/bullet.h"
+#include "td/defines.h"
+#include "td/facing.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/object.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 class AircraftClass : public FootClass, public FlyClass {
  public:

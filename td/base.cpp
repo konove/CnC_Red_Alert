@@ -50,8 +50,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *
  *                                                                                             *
@@ -63,6 +61,23 @@
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "td/base.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/inline.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/profile.h"
+#include "td/type.h"
+#include "td/vector.h"
+#include "tech/wwfile.h"
+
 int BaseNodeClass::operator==(BaseNodeClass const &node) {
   return (Type == node.Type && Coord == node.Coord);
 }

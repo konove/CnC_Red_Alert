@@ -42,6 +42,7 @@
 #define TEXTBTN_H
 
 #include "td/toggle.h"
+#include "td/defines.h"
 
 class TextButtonClass : public ToggleClass {
  public:

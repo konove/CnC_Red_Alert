@@ -46,9 +46,6 @@
  *   IPXAddressClass::operator!= -- overloaded comparison operator         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-#include "td/tcpip.h"
-
 /***************************************************************************
  * IPXAddressClass::IPXAddressClass -- class constructor                   *
  *                                                                         *
@@ -71,6 +68,11 @@
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
+#include <string.h>
+
+#include "td/ipx.h"
+#include "td/ipxaddr.h"
+
 IPXAddressClass::IPXAddressClass(void) {
   NetworkNumber[0] = 0xff;
   NetworkNumber[1] = 0xff;

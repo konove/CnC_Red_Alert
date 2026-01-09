@@ -61,6 +61,7 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
 #include "ra/house.h"

@@ -47,8 +47,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <algorithm>
+
 #include "td/slider.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)

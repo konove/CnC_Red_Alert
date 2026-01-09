@@ -53,10 +53,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 #include <filesystem>
 #include <string>
+
+#include "port/ex_string.h"
+#include "td/aircraft.h"
+#include "td/building.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/object.h"
+#include "td/type.h"
 
 void const *AircraftTypeClass::LRotorData = nullptr;
 void const *AircraftTypeClass::RRotorData = nullptr;

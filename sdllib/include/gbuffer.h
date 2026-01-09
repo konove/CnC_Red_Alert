@@ -127,7 +127,6 @@
 #include "sdllib/include/buffer.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/ww_win.h"
-#include "sdllib/include/wwstd.h"
 
 //////////////////////////////////////////////////////////////////////////
 //

@@ -15,13 +15,16 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef CNC_RED_ALERT_TD_TEXTBLIT_H_
+#define CNC_RED_ALERT_TD_TEXTBLIT_H_
 
 #define MAX_ENTRIES 128
+#include "sdllib/include/gbuffer.h"
 
 class TextBlitClass {
  public:
   TextBlitClass(void);
-  ~TextBlitClass(void){};
+  ~TextBlitClass(void) {};
 
   void Add(int x, int y, int dx, int dy, int w, int h);
   void Clear(void);
@@ -43,3 +46,5 @@ class TextBlitClass {
 
 extern GraphicBufferClass *TextPrintBuffer;
 extern TextBlitClass BlitList;
+
+#endif  // CNC_RED_ALERT_TD_TEXTBLIT_H_

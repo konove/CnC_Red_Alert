@@ -72,13 +72,50 @@
  *a radar pixel position       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+#include "td/radar.h"
 
-#include "support.h"
-#include "td/function.h"
-
-#include <filesystem>
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <filesystem>
 #include <string>
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "support.h"
+#include "td/audio.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/display.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/globals.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/mplayer.h"
+#include "td/object.h"
+#include "td/shapebtn.h"
+#include "td/special.h"
+#include "td/techno.h"
+#include "td/terrain.h"
+#include "td/text.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;

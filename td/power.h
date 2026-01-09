@@ -41,7 +41,12 @@
 #ifndef POWER_H
 #define POWER_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/defines.h"
+#include "td/gadget.h"
+#include "td/jshell.h"
 #include "td/radar.h"
+#include "tech/noinit.h"
 
 class PowerClass : public RadarClass {
  public:
@@ -53,7 +58,7 @@ class PowerClass : public RadarClass {
   int PowLineWidth;
 
   PowerClass();
-  PowerClass(NoInitClass const &x) : RadarClass(x){};
+  PowerClass(NoInitClass const &x) : RadarClass(x) {};
 
   /*
   ** Initialization
@@ -83,7 +88,7 @@ class PowerClass : public RadarClass {
     PowerButtonClass(void)
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true){};
+                      true) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

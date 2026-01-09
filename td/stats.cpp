@@ -41,10 +41,30 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <cstdio>
+#include <cstring>
+
+#include "sdllib/include/shape.h"
+#include "sdllib/include/timer.h"
+#include "td/aircraft.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/defines.h"
+#include "td/expand.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/profile.h"
+#include "td/special.h"
 #include "td/tcpip.h"
-#include "../tech/packet.h"
-#include "td/ccdde.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/utracker.h"
+#include "tech/packet.h"
 
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"

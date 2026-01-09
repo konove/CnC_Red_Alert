@@ -41,8 +41,14 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
+#include <stddef.h>
+
 #include "td/object.h"
 #include "td/type.h"
+#include "td/defines.h"
+#include "td/globals.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function

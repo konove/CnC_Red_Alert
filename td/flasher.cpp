@@ -40,8 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
+#include "td/flasher.h"
 #ifdef CHEAT_KEYS
 /***********************************************************************************************
  * FlasherClass::Debug_Dump -- Displays current status to the monochrome screen.

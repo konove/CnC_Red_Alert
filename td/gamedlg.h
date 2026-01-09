@@ -41,8 +41,6 @@
 #ifndef GAMEDLG_H
 #define GAMEDLG_H
 
-#include "td/gadget.h"
-
 class GameControlsClass {
  public:
   GameControlsClass(void){};

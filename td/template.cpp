@@ -52,10 +52,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/template.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "td/template.h"
 #include "sdllib/include/tile.h"
+#include "td/abstract.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/externs.h"
+#include "td/heap.h"
+#include "td/inline.h"
+#include "td/mouse.h"
+#include "td/profile.h"
+#include "td/target.h"
+#include "td/vector.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

@@ -57,10 +57,15 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include <cstdlib>
 #include <cstddef>
-#include <type_traits>
+#include <new>
 
+#include "td/cell.h"
+#include "td/jshell.h"
+#include "td/nodename.h"
+#include "td/object.h"
+#include "td/phone.h"
+#include "td/trigger.h"
 #include "tech/noinit.h"
 
 /**************************************************************************

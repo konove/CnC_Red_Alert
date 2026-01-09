@@ -62,8 +62,37 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "reinf.h"
-#include "td/function.h"
+#include "port/ex_string.h"
+#include "td/anim.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/ftimer.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/profile.h"
+#include "td/super.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/teamtype.h"
+#include "td/techno.h"
+#include "td/terrain.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 static void Do_All_To_Hunt(void);
 

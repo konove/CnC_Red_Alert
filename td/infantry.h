@@ -41,6 +41,21 @@
 #ifndef INFANTRY_H
 #define INFANTRY_H
 
+#include <stddef.h>
+
+#include "td/bullet.h"
+#include "td/cell.h"
+#include "td/defines.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/inline.h"
+#include "td/object.h"
+#include "td/radio.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
+
 /**********************************************************************
 **	Infantry can be afraid. These defines are for the various infantry
 **	fear levels. When infantry be come scared enough they take cover and

@@ -46,8 +46,18 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/mouse.h"
+
+#include "sdllib/include/shape.h"
 #include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/cell.h"
+#include "td/defines.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/scroll.h"
+#include "td/vector.h"
+#include "tech/rawfile.h"
 
 /*
 **	This points to the loaded mouse shapes.

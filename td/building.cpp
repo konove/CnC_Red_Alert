@@ -109,9 +109,64 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/building.h"
+
+#include <algorithm>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "rand.h"
 #include "reinf.h"
-#include "td/function.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "td/abstract.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/audio.h"
+#include "td/base.h"
+#include "td/bullet.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/drive.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/facing.h"
+#include "td/factory.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/overlay.h"
+#include "td/power.h"
+#include "td/profile.h"
+#include "td/queue.h"
+#include "td/radio.h"
+#include "td/smudge.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/teamtype.h"
+#include "td/techno.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/utracker.h"
+#include "td/vector.h"
 
 enum SAMState {
   SAM_NONE = -1,    // Used for non SAM site buildings.

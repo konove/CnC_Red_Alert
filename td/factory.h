@@ -41,7 +41,14 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
+#include <stddef.h>
+
 #include "td/stage.h"
+#include "td/house.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 class FactoryClass : private StageClass {
  public:

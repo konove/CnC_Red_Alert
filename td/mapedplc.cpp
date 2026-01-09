@@ -55,8 +55,6 @@
  *   MapEditClass::Build_Base_To -- builds the AI base to the given percent*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 #ifdef SCENARIO_EDITOR
 
 /***************************************************************************

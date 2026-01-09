@@ -42,12 +42,12 @@
 #define FOOT_H
 
 #include "td/target.h"
-#include "td/type.h"
 #include "td/techno.h"
 #include "td/ftimer.h"
-
-class UnitClass;
-class BuildingClass;
+#include "td/defines.h"
+#include "td/object.h"
+#include "td/radio.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects

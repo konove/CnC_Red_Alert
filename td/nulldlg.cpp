@@ -49,12 +49,58 @@
  *   Phone_Compare -- for qsort
  ** Edit_Phone_Dialog -- lets user edit a phone book entry                *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "port/safe_string.h"
-#include "td/function.h"
-#include "sdllib/include/wincomm.h"
-#include "sdllib/include/modemreg.h"
-#include "td/tcpip.h"
+
 #include "td/nulldlg.h"
+
+#include <algorithm>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/modemreg.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/wincomm.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/dialog.h"
+#include "td/edit.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/gauge.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/house.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/monoc.h"
+#include "td/mouse.h"
+#include "td/mplayer.h"
+#include "td/msgbox.h"
+#include "td/msglist.h"
+#include "td/nullmgr.h"
+#include "td/palette.h"
+#include "td/phone.h"
+#include "td/special.h"
+#include "td/tcpip.h"
+#include "td/text.h"
+#include "td/textbtn.h"
+#include "td/theme.h"
+#include "td/vector.h"
 
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 

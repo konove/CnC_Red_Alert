@@ -41,7 +41,12 @@
 #ifndef SCORE_H
 #define SCORE_H
 
+#include <string.h>
+
 #include "sdllib/include/wwstd.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/timer.h"
+#include "tech/wwfile.h"
 
 class ScoreClass {
  public:

@@ -40,9 +40,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 #include <filesystem>
+
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/type.h"
+#include "tech/rawfile.h"
 
 // Dinosaur death animations
 static AnimTypeClass const TricDie(

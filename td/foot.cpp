@@ -84,8 +84,41 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/foot.h"
+
+#include <algorithm>
+#include <cstring>
+
 #include "rand.h"
-#include "td/function.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/ftimer.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/queue.h"
+#include "td/radio.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *

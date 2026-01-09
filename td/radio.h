@@ -41,12 +41,11 @@
 #ifndef RADIO_H
 #define RADIO_H
 
-// #include "object.h"
+#include "td/defines.h"
+#include "td/globals.h"
 #include "td/mission.h"
-// #include	"flasher.h"
-
-class ObjectClass;
-class TechnoClass;
+#include "td/object.h"
+#include "tech/noinit.h"
 
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore
@@ -83,8 +82,8 @@ class RadioClass : public MissionClass {
     Radio = nullptr;
     LastMessage = RADIO_STATIC;
   };
-  RadioClass(NoInitClass const &x) : MissionClass(x){};
-  virtual ~RadioClass(void){};
+  RadioClass(NoInitClass const &x) : MissionClass(x) {};
+  virtual ~RadioClass(void) {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

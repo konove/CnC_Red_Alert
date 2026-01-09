@@ -40,6 +40,7 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/globals.h"
 #include "ra/init.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"

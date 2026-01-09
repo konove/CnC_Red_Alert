@@ -63,27 +63,86 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "port/safe_string.h"
-#include "td/scenario.h"
-#include "sdllib/include/font.h"
-#include "td/function.h"
-#include "sdllib/include/memflag.h"
-#include "td/tcpip.h"
-#include "sdllib/include/ww_audio.h"
-#include "tech/2keyfbuf.h"
+#include "td/conquer.h"
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
-#include <fcntl.h>
 #include <filesystem>
+#include <string>
+
+#include "port/ex_string.h"
+#include "port/safe_string.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/playcd.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_audio.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/display.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/init.h"
+#include "td/inline.h"
+#include "td/ipxaddr.h"
+#include "td/ipxgconn.h"
+#include "td/ipxmgr.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/layer.h"
+#include "td/logic.h"
+#include "td/mixfile.h"
+#include "td/monoc.h"
+#include "td/mouse.h"
+#include "td/mplayer.h"
+#include "td/msgbox.h"
+#include "td/msglist.h"
+#include "td/netdlg.h"
+#include "td/nulldlg.h"
+#include "td/nullmgr.h"
+#include "td/object.h"
+#include "td/palette.h"
+#include "td/queue.h"
+#include "td/scenario.h"
+#include "td/score.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/tcpip.h"
+#include "td/text.h"
+#include "td/theme.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
+#include "tech/2keyfbuf.h"
+#include "winvq/vqa32/vqaplay.h"
 #ifndef PORTABLE
-#include <io.h>
 #include <dos.h>
+#include <io.h>
 #include <share.h>
 #endif
 
-#include "td/ccdde.h"
 #include "td/interpal.h"
 
 #define SHAPE_TRANS 0x40
@@ -463,7 +522,7 @@ void Keyboard_Process(KeyNumType &input) {
   ** and we need WWKEY_VK_BIT to still be set if it is.
   */
   KeyNumType plain =
-      input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT);
+      (KeyNumType)(input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
 #ifdef CHEAT_KEYS
 

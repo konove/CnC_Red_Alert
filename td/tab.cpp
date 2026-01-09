@@ -41,7 +41,24 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/tab.h"
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/credits.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/queue.h"
+#include "td/sidebar.h"
+#include "td/special.h"
 
 void const *TabClass::TabShape = nullptr;
 

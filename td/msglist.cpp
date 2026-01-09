@@ -45,8 +45,22 @@
  *   MessageListClass::Set_Width -- sets allowable width of messages       *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "td/msglist.h"
+
+#include <cstring>
+
 #include "port/safe_string.h"
-#include "td/function.h"
+#include "sdllib/include/font.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/timer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/gadget.h"
+#include "td/jshell.h"
+#include "td/txtlabel.h"
 
 char MessageListClass::MessageBuffers[MAX_NUM_MESSAGES]
                                      [MAX_MESSAGE_LENGTH + 30];

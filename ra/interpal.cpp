@@ -48,9 +48,9 @@
 
 #include <algorithm>
 
-#include "ra/externs.h"
 #include "ra/ccfile.h"
 #include "ra/compat.h"
+#include "ra/globals.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"

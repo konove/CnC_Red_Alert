@@ -42,8 +42,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *
  *                                                                                             *
@@ -71,6 +69,11 @@
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/control.h"
+
+#include "sdllib/include/keyboard.h"
+#include "td/gadget.h"
+
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, int sticky)
     : GadgetClass(x, y, w, h, flags, sticky) {

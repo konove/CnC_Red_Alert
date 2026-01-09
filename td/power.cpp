@@ -46,11 +46,25 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /*
 **	Points to the shape to use for the "desired" power level indicator.
 */
+#include "td/power.h"
+
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_win.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/radar.h"
+
 void const *PowerClass::PowerShape;
 void const *PowerClass::PowerBarShape;
 
@@ -169,7 +183,7 @@ void PowerClass::Draw_It(bool complete) {
 
   if (complete || IsToRedraw) {
     //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
-    //upper left corner of power bar.
+    // upper left corner of power bar.
 
     if (LogicPage->Lock()) {
       if (Map.IsSidebarActive) {

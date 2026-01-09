@@ -16,12 +16,19 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "td/function.h"
-
 // Determines the direct line distance to the target in leptons.
 // For building targets, adjusts the distance by subtracting the building's
 // average radius to get the distance to the building edge rather than center.
 // Typically used for weapon range checks.
+#include <string.h>
+#include <algorithm>
+
+#include "td/abstract.h"
+#include "td/building.h"
+#include "td/defines.h"
+#include "td/target.h"
+#include "td/type.h"
+
 int AbstractClass::Distance(const TARGET target) const {
   const BuildingClass *obj = As_Building(target);
   int dist = Distance(As_Coord(target));

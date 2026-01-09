@@ -43,8 +43,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * ColorListClass::ColorListClass -- class constructor                     *
  *                                                                         *
@@ -64,6 +62,16 @@
  *                                                                         *
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
+#include "td/colrlist.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/vector.h"
+
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags, void const* up,
                                void const* down)

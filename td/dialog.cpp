@@ -48,10 +48,22 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "port/safe_string.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
 #include "td/dialog.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/externs.h"
+#include "td/mixfile.h"
+#include "td/text.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

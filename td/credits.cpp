@@ -41,8 +41,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.
  **
@@ -58,6 +56,22 @@
  *                                                                                             *
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
+#include <algorithm>
+#include <cstdlib>
+
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/wwstd.h"
+#include "td/audio.h"
+#include "td/conquer.h"
+#include "td/credits.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/tab.h"
+
 CreditClass::CreditClass(void) {
   IsToRedraw = false;
   IsUp = false;

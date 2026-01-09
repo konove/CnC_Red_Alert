@@ -41,10 +41,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "port/safe_string.h"
-#include "td/function.h"
 #include "tech/readline.h"
 #include "td/profile.h"
+#include "port/ex_string.h"
+#include "td/defines.h"
 
 /***************************************************************************
  * Read_Private_Config_Struct -- Fetches override integer value.           *

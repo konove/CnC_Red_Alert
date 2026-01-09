@@ -42,8 +42,21 @@
 
 #include "td/rand.h"
 #include "port/safe_string.h"
-#include "td/function.h"
 #include "td/reinf.h"
+#include "td/aircraft.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/cell.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 /***********************************************************************************************
  * Do_Reinforcements -- Create and place a reinforcement team. *

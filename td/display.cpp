@@ -16,6 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
+#include <cstdlib>
+
 /* $Header:   F:\projects\c&c\vcs\code\display.cpv   2.16   16 Oct 1995 16:48:24
  * JOE_BOSTIC  $ */
 /***********************************************************************************************
@@ -92,8 +97,49 @@
 #include "rand.h"
 #include "support.h"
 #include "sdllib/include/font.h"
-#include "td/function.h"
 #include "sdllib/include/memflag.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/ww_win.h"
+#include "sdllib/include/wwstd.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/display.h"
+#include "td/display_constants.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/layer.h"
+#include "td/map.h"
+#include "td/mixfile.h"
+#include "td/mouse.h"
+#include "td/msglist.h"
+#include "td/object.h"
+#include "td/profile.h"
+#include "td/queue.h"
+#include "td/target.h"
+#include "td/techno.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -2022,17 +2068,6 @@ void DisplayClass::Draw_It(bool forced) {
     */
     // Redraw_Icons(CELL_BLIT_ONLY);
     Redraw_Icons(0);
-
-    /*
-    **	Once the icons are drawn, duplicate the bottom line of the screen into
-    *the phantom *	area one line below the screen. This causes the predator
-    *effect to work on any *	shape drawn at the bottom of the screen.
-    */
-// Colour_Debug(4);
-#ifdef FIX_ME_LATER
-//		HidPage.Blit(HidPage, 0, HidPage.Get_Height()-1, 0,
-// HidPage.Get_Height(), HidPage.Get_Width(), 1, false);
-#endif  // FIX_ME_LATER
     if (HidPage.Lock()) {
       // Redraw_Icons(CELL_DRAW_ONLY);
 
@@ -3768,3 +3803,8 @@ void DisplayClass::Center_Map(void) {
         XY_Coord(x - (TacLeptonWidth / 2), y - (TacLeptonHeight / 2)));
   }
 }
+void DisplayClass::Flag_Cell(CELL cell) {
+  Flag_To_Redraw(false);
+  IsToRedraw = true;
+  CellRedraw[cell] = true;
+};

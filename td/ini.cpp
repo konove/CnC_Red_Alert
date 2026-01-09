@@ -50,11 +50,51 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/ini.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "port/ex_string.h"
 #include "rand.h"
-#include "port/safe_string.h"
-#include "td/scenario.h"
-#include "td/function.h"
 #include "sdllib/include/memflag.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "td/base.h"
+#include "td/building.h"
+#include "td/ccfile.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/ftimer.h"
+#include "td/globals.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/mplayer.h"
+#include "td/object.h"
+#include "td/overlay.h"
+#include "td/profile.h"
+#include "td/queue.h"
+#include "td/scenario.h"
+#include "td/smudge.h"
+#include "td/special.h"
+#include "td/teamtype.h"
+#include "td/techno.h"
+#include "td/template.h"
+#include "td/terrain.h"
+#include "td/theme.h"
+#include "td/trigger.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/vector.h"
 
 /************************************* Prototypes
  * *********************************************/

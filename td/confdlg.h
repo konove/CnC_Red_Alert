@@ -39,8 +39,6 @@
 #ifndef CONFDLG_H
 #define CONFDLG_H
 
-#include "td/gadget.h"
-
 class ConfirmationClass {
  private:
   enum ConfirmationClassEnum {

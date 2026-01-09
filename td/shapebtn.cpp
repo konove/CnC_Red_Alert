@@ -40,8 +40,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
 #include "td/shapebtn.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "td/conquer.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/keyframe.h"
 
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type

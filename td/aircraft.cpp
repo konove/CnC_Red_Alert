@@ -102,8 +102,49 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <algorithm>
+
 #include "rand.h"
-#include "td/function.h"
+#include "sdllib/include/shape.h"
+#include "td/abstract.h"
+#include "td/aircraft.h"
+#include "td/anim.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/bullet.h"
+#include "td/cell.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/display.h"
+#include "td/display_constants.h"
+#include "td/externs.h"
+#include "td/facing.h"
+#include "td/foot.h"
+#include "td/ftimer.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/infantry.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mission.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/profile.h"
+#include "td/queue.h"
+#include "td/radio.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "td/unit.h"
+#include "td/utracker.h"
+#include "td/vector.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

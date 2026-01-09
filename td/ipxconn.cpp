@@ -48,10 +48,15 @@
  **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <string.h>
+
 #include "port/safe_string.h"
-#include "td/function.h"
 #include "td/ipx95.h"
 #include "td/tcpip.h"
+#include "td/ipx.h"
+#include "td/ipxaddr.h"
+#include "td/ipxconn.h"
+#include "td/noseqcon.h"
 
 /*
 ********************************* Globals ***********************************

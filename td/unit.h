@@ -41,11 +41,16 @@
 #ifndef UNIT_H
 #define UNIT_H
 
+#include <stddef.h>
+
 #include "td/tarcom.h"
 #include "td/radio.h"
-#include "td/cargo.h"
-#include "td/mission.h"
-#include "td/target.h"
+#include "td/defines.h"
+#include "td/object.h"
+#include "td/techno.h"
+#include "td/type.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of

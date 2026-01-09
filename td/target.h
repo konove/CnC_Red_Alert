@@ -41,6 +41,9 @@
 #ifndef TARGET_H
 #define TARGET_H
 
+#include "td/defines.h"
+#include "td/object.h"
+
 /**************************************************************************
 ** When a unit proceeds with carrying out its mission, it can have several
 **	intermediate goals. Each goal (or target if you will) can be one of the
@@ -113,13 +116,8 @@ inline TARGET As_Target(CELL cell) {
 }
 
 class UnitClass;
-class BuildingClass;
-class TechnoClass;
-class TerrainClass;
-class ObjectClass;
 class InfantryClass;
 class BulletClass;
-class TriggerClass;
 class TeamClass;
 class TeamTypeClass;
 class AnimClass;

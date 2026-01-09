@@ -40,11 +40,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /*
 **	These are the colors used to identify the various owners.
 */
+#include <cstring>
+
+#include "port/ex_string.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/globals.h"
+#include "td/jshell.h"
+#include "td/special.h"
+#include "td/type.h"
+
 const int COLOR_GOOD = 180;            // GOLD
 const int COLOR_BRIGHT_GOOD = 176;     // GOLD
 const int COLOR_BAD = 123;             // RED;

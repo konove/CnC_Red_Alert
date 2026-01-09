@@ -66,10 +66,30 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/terrain.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "td/terrain.h"
 #include "rand.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "td/abstract.h"
+#include "td/anim.h"
+#include "td/cell.h"
+#include "td/combat.h"
+#include "td/compat.h"
+#include "td/conquer.h"
+#include "td/externs.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/jshell.h"
+#include "td/keyframe.h"
+#include "td/mouse.h"
+#include "td/profile.h"
+#include "td/target.h"
+#include "td/trigger.h"
+#include "td/vector.h"
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30

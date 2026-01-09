@@ -41,6 +41,9 @@
 #ifndef FACING_H
 #define FACING_H
 
+#include "td/defines.h"
+#include "tech/noinit.h"
+
 /*
 **	This is a general facing handler class. It is used in those cases where
 *facing needs to be *	kept track of, but there could also be an associated

@@ -41,9 +41,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/wsa.h"
+#include "sdllib/include/iff.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/keyframe.h"
 
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 

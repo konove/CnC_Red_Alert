@@ -57,6 +57,10 @@
 #ifndef MSGLIST_H
 #define MSGLIST_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/defines.h"
+#include "td/txtlabel.h"
+
 /*
 **	Class declaration
 */

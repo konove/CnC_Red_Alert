@@ -41,7 +41,13 @@
 #ifndef RADAR_H
 #define RADAR_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/defines.h"
 #include "td/display.h"
+#include "td/gadget.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "tech/noinit.h"
 
 class RadarClass : public DisplayClass {
  public:
@@ -57,7 +63,7 @@ class RadarClass : public DisplayClass {
   int RadPHeight;
 
   RadarClass(void);
-  RadarClass(NoInitClass const &x) : DisplayClass(x){};
+  RadarClass(NoInitClass const &x) : DisplayClass(x) {};
 
   /*
   ** Initialization
@@ -72,7 +78,7 @@ class RadarClass : public DisplayClass {
   virtual void Refresh_Cells(CELL cell, short const *list);
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
-  //int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
+  // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
   virtual void Set_Tactical_Position(COORDINATE coord);
   void Zoom_Mode(CELL cell);
   int Click_In_Radar(int &x, int &y, bool change = false);
@@ -151,7 +157,7 @@ class RadarClass : public DisplayClass {
     TacticalClass(void)
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true){};
+                      true) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType &key);

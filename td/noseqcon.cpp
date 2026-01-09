@@ -45,8 +45,6 @@
  *queue*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/function.h"
-
 /***************************************************************************
  * NonSequencedConnClass::NonSequencedConnClass -- class constructor       *
  *                                                                         *
@@ -75,6 +73,12 @@
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
+#include <string.h>
+
+#include "td/combuf.h"
+#include "td/connect.h"
+#include "td/noseqcon.h"
+
 NonSequencedConnClass::NonSequencedConnClass(
     int numsend, int numreceive, int maxlen, unsigned short magicnum,
     unsigned long retry_delta, unsigned long max_retries, unsigned long timeout)

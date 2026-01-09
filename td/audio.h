@@ -41,6 +41,8 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
+#include "td/defines.h"
+
 // #include "memory.h"
 //
 // class AudioClass {

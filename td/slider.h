@@ -41,6 +41,8 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
+#include "sdllib/include/keyboard.h"
+#include "td/control.h"
 #include "td/gauge.h"
 #include "td/shapebtn.h"
 
@@ -65,7 +67,7 @@ class SliderClass : public GaugeClass {
               int belong_to_list = false);
   virtual ~SliderClass(void);
   //		static SliderClass * Create_One_Of(unsigned id, int x, int y,
-  //int w, int h, int belong_to_list=false);
+  // int w, int h, int belong_to_list=false);
 
   virtual void Set_Thumb_Size(int value);
   virtual int Set_Maximum(int value);

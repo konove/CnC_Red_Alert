@@ -1,6 +1,9 @@
 #ifndef CNC_RED_ALERT_TD_NETDLG_H_
 #define CNC_RED_ALERT_TD_NETDLG_H_
 
+#include "td/defines.h"
+#include "td/ipxaddr.h"
+
 bool Init_Network(void);
 void Shutdown_Network(void);
 bool Remote_Connect(void);

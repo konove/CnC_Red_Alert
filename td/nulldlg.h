@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_NULLDLG_H_
 #define CNC_RED_ALERT_TD_NULLDLG_H_
 
+#include "td/defines.h"
+
 int Init_Null_Modem(SerialSettingsType *settings);
 void Shutdown_Modem(void);
 void Modem_Signoff(void);

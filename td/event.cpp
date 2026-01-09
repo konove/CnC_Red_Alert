@@ -49,13 +49,37 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/ccdde.h"
-
 /***************************************************************************
 ** Table of what data is really used in the EventClass struct for different
 ** events.  This table must be kept current with the EventType enum.
 */
+#include "td/event.h"
+
+#include <cstdio>
+
+#include "td/anim.h"
+#include "td/audio.h"
+#include "td/building.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/foot.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/heap.h"
+#include "td/house.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/msglist.h"
+#include "td/object.h"
+#include "td/special.h"
+#include "td/target.h"
+#include "td/team.h"
+#include "td/techno.h"
+#include "td/text.h"
+#include "td/theme.h"
+#include "td/type.h"
+
 unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
     0,                                          // EMPTY
     size_of(EventClass, Data.General),          // ALLY

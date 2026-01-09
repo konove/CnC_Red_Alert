@@ -19,6 +19,9 @@
 #ifndef TD_MIXFILE_H_
 #define TD_MIXFILE_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include "td/link.h"
 
 // Manages MIX archive files (Westwood's packed game asset format).

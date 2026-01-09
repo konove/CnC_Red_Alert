@@ -41,7 +41,9 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include "sdllib/include/keyboard.h"
 #include "td/gadget.h"
+#include "td/jshell.h"
 
 /***************************************************************************
  * ControlClass -- Region tracking class
@@ -65,7 +67,7 @@ class ControlClass : public GadgetClass {
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = LEFTPRESS | RIGHTPRESS, int sticky = false);
   //		static ControlClass * Create_One_Of(unsigned id, int x, int y,
-  //int w, int h, unsigned flags=LEFTPRESS|RIGHTPRESS, int sticky=false);
+  // int w, int h, unsigned flags=LEFTPRESS|RIGHTPRESS, int sticky=false);
 
   virtual void Make_Peer(GadgetClass& gadget);
 

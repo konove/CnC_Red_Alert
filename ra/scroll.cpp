@@ -43,11 +43,12 @@
 
 #include <algorithm>
 
-#include "ra/externs.h"
-#include "ra/inline.h"
 #include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/face.h"
+#include "ra/globals.h"
 #include "ra/goptions.h"
+#include "ra/inline.h"
 #include "sdllib/include/gbuffer.h"
 
 #ifdef WIN32

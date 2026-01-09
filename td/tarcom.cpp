@@ -41,8 +41,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * TarComClass::~TarComClass -- Destructor for turret object. *
  *                                                                                             *
@@ -56,6 +54,17 @@
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
+#include "td/audio.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/facing.h"
+#include "td/inline.h"
+#include "td/tarcom.h"
+#include "td/target.h"
+#include "td/turret.h"
+#include "td/type.h"
+#include "td/unit.h"
+
 TarComClass::~TarComClass(void) {}
 
 #ifdef CHEAT_KEYS

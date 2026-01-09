@@ -41,10 +41,12 @@
 #ifndef REGION_H
 #define REGION_H
 
+#include <cstring>
+
 class RegionClass {
  public:
   RegionClass(void) { Threat = 0; };
-  ~RegionClass(void){};
+  ~RegionClass(void) {};
   int operator!=(RegionClass const& region) {
     return memcmp(this, &region, sizeof(RegionClass));
   };

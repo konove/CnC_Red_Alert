@@ -37,12 +37,35 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "port/safe_string.h"
-#include "td/function.h"
+#include "td/expand.h"
 
 #include <cstring>
 #include <format>
 #include <string>
+
+#include "port/safe_string.h"
+#include "sdllib/include/drawbuff.h"
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/shape.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/ccfile.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/goptions.h"
+#include "td/ini.h"
+#include "td/init.h"
+#include "td/jshell.h"
+#include "td/list.h"
+#include "td/profile.h"
+#include "td/text.h"
+#include "td/textbtn.h"
+#include "td/vector.h"
 
 // Creates a list item string with an integer index stored at the beginning.
 // The returned buffer layout is: [int index][null-terminated string]

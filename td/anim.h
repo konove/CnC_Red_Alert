@@ -41,7 +41,14 @@
 #ifndef ANIM_H
 #define ANIM_H
 
+#include <stddef.h>
+
 #include "td/type.h"
+#include "td/defines.h"
+#include "td/object.h"
+#include "td/stage.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape

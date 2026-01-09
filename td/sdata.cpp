@@ -50,10 +50,21 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-#include "td/type.h"
-
 #include <filesystem>
+
+#include "td/type.h"
+#include "port/ex_string.h"
+#include "sdllib/include/shape.h"
+#include "td/conquer.h"
+#include "td/const.h"
+#include "td/defines.h"
+#include "td/externs.h"
+#include "td/house.h"
+#include "td/inline.h"
+#include "td/jshell.h"
+#include "td/mixfile.h"
+#include "td/object.h"
+#include "td/smudge.h"
 
 static SmudgeTypeClass const Crater1(
 

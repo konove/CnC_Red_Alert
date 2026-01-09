@@ -54,10 +54,20 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
-/*
-********************************* Includes **********************************
-*/
-#include "td/function.h"
+#include "sdllib/include/keyboard.h"
+#include "td/control.h"
+#include "td/defines.h"
+#include "td/dial8.h"
+#include "td/gadget.h"
+#include "td/gauge.h"
+#include "td/list.h"
+#include "td/mouse.h"
+#include "td/object.h"
+#include "td/teamtype.h"
+#include "td/textbtn.h"
+#include "td/trigger.h"
+#include "td/txtlabel.h"
+#include "td/type.h"
 
 /*
 ********************************** Defines **********************************
@@ -75,7 +85,7 @@ enum MapEdit1Enum {
   (int)UNIT_COUNT + (int)INFANTRY_COUNT + (int)AIRCRAFT_COUNT,
 
   //	NUM_EDIT_MISSIONS = 6,			// # missions that can be
-  //assigned an object
+  // assigned an object
 
   NUM_EDIT_CLASSES = 8,  // # different classes (templates, terrain, etc)
 
@@ -164,11 +174,6 @@ enum MapEditButtonIDEnum {
   MAP_AREA,           // map as a click-able thingy
   BUTTON_FLAG = 0x8000
 };
-
-/*
-******************************* Declarations ********************************
-*/
-class TeamTypeClass;
 
 /*
 ***************************** Class Declaration *****************************

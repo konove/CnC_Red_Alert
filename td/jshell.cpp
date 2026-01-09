@@ -46,11 +46,23 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "support.h"
-#include "td/function.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
 #include "tech/wwfile.h"
+#include "sdllib/include/buffer.h"
+#include "sdllib/include/iff.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_win.h"
+#include "td/ccfile.h"
+#include "td/compat.h"
+#include "td/jshell.h"
+#include "td/monoc.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

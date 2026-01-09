@@ -41,14 +41,17 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "td/defines.h"
+#include "td/object.h"
 #include "td/gscreen.h"
+#include "tech/noinit.h"
 
 #define BIGMAP 0
 
 class MapClass : public GScreenClass {
  public:
-  MapClass(void){};
-  MapClass(NoInitClass const &x) : GScreenClass(x){};
+  MapClass(void) {};
+  MapClass(NoInitClass const &x) : GScreenClass(x) {};
 
   /*
   ** Initialization

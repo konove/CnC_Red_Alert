@@ -41,14 +41,20 @@
 #ifndef HOUSE_H
 #define HOUSE_H
 
-#include "td/type.h"
-#include "td/region.h"
-#include "td/vector.h"
+#include <cstddef>
 
-// extern "C" {
-// unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
-// }
-class TriggerClass;
+#include "td/defines.h"
+#include "td/ftimer.h"
+#include "td/jshell.h"
+#include "td/object.h"
+#include "td/region.h"
+#include "td/super.h"
+#include "td/target.h"
+#include "td/type.h"
+#include "td/utracker.h"
+#include "tech/noinit.h"
+#include "tech/wwfile.h"
+
 /****************************************************************************
 **	Player control structure. Each player (computer or human) has one of
 **	these structures associated. These are located in a global array.
@@ -383,7 +389,7 @@ class HouseClass {
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
-  HouseClass(void) : Class(nullptr){};
+  HouseClass(void) : Class(nullptr) {};
   HouseClass(HousesType house);
   HouseClass(NoInitClass const &x)
       : Class(Class),
@@ -399,7 +405,7 @@ class HouseClass {
         SpeakAttackDelay(x),
         SpeakPowerDelay(x),
         SpeakMoneyDelay(x),
-        SpeakMaxedDelay(x){};
+        SpeakMaxedDelay(x) {};
   ~HouseClass(void);
   operator HousesType(void) const;
 
@@ -488,15 +494,15 @@ class HouseClass {
   **	Special house actions.
   */
   //		void  Init_Ion_Cannon(bool first_time, bool one_time_effect =
-  //false); 		void  Init_Air_Strike(bool first_time, bool one_time_effect =
-  //false); 		void  Init_Nuke_Bomb(bool first_time, bool one_time_effect = false);
-  //		void  Remove_Ion_Cannon(void);
-  //		void  Remove_Air_Strike(void);
-  //		void  Remove_Nuke_Bomb(void);
+  // false); 		void  Init_Air_Strike(bool first_time, bool
+  // one_time_effect = false); 		void  Init_Nuke_Bomb(bool first_time,
+  // bool one_time_effect = false); 		void  Remove_Ion_Cannon(void);
+  // void
+  // Remove_Air_Strike(void); 		void  Remove_Nuke_Bomb(void);
   void Detach(TARGET target, bool all);
   void Add_Nuke_Piece(int piece = -1);
   //		void  Make_Air_Strike_Available(bool present, bool
-  //one_time_effect = false);
+  // one_time_effect = false);
   bool Has_Nuke_Device(void);
 
   /*

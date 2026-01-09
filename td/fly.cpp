@@ -39,8 +39,6 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
-
 /***********************************************************************************************
  * FlyClass::Physics -- Performs vector physics (movement). *
  *                                                                                             *
@@ -59,6 +57,14 @@
  * HISTORY: * 04/24/1994 JLB : Created. * 06/05/1995 JLB : Simplified to just do
  *movement.                                          *
  *=============================================================================================*/
+#include <stdlib.h>
+
+#include "td/coord.h"
+#include "td/defines.h"
+#include "td/display_constants.h"
+#include "td/fly.h"
+#include "td/jshell.h"
+
 ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
   if (SpeedAdd != MPH_IMMOBILE) {
     int actual = (int)SpeedAdd + SpeedAccum;

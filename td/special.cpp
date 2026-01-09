@@ -38,7 +38,26 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/function.h"
+#include "td/special.h"
+
+#include "sdllib/include/gbuffer.h"
+#include "sdllib/include/keyboard.h"
+#include "sdllib/include/misc.h"
+#include "sdllib/include/ww_mouse.h"
+#include "sdllib/include/wwstd.h"
+#include "td/checkbox.h"
+#include "td/conquer.h"
+#include "td/defines.h"
+#include "td/dialog.h"
+#include "td/event.h"
+#include "td/externs.h"
+#include "td/gadget.h"
+#include "td/globals.h"
+#include "td/goptions.h"
+#include "td/jshell.h"
+#include "td/mouse.h"
+#include "td/queue.h"
+#include "td/textbtn.h"
 
 #define OPTION_WIDTH 236
 #define OPTION_HEIGHT 162
