@@ -1651,9 +1651,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     *process of scrolling.
     */
     for (int i = 0; i < MAX_VISIBLE + (IsScrolling ? 1 : 0); i++) {
-      bool production;
-      bool completed;
-      int stage;
+      bool production = false;
+      bool completed = false;
+      int stage = 0;
       bool darken = false;
       void const *shapefile = nullptr;
       int shapenum = 0;
