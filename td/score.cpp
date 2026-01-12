@@ -1122,7 +1122,7 @@ void ScoreClass::Presentation(void) {
 }
 
 void Cycle_Wait_Click(void) {
-  int counter;
+  int counter = 0;
   int minclicks = 20;
   unsigned long timingtime = TickCount.Time();
   SerialPacketType sendpacket;
@@ -1160,9 +1160,9 @@ void Cycle_Wait_Click(void) {
       Keyboard::Clear();
     }
 
-    counter = ((++counter) & 7);
+    counter = (counter + 1) & 7;
 
-    if (!counter) {
+    if (counter == 0) {
       unsigned char r, g, b;
 
       r = Palette[233 * 3 + 0];

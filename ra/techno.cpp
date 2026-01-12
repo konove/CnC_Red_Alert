@@ -3059,8 +3059,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         {0, 0, 0, 8, 8, 8, 0, 0},      {0, 0, 0, 8, 8, 8, 0, 0},
         {0, 0, 0, 8, 8, 8, 0, 0},      {-8, -8, -8, 0, 0, 0, -8, -8}};
 
-    int savex = x, savey = y;
     if (gonnadraw) {
+      int savex = x, savey = y;
       for (int shots = 0; shots < 3; shots++) {
         x = savex;
         y = savey;

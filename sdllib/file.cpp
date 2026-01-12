@@ -143,23 +143,39 @@ uint64_t Disk_Space_Available() {
   return 0;
 }
 #else
-static bool Update_Find_Result(FindFileState &state) {
-  auto glob_buf = (glob_t *)state.data;
 
+static bool Update_Find_Result(FindFileState &state) {
+  const auto glob_buf = static_cast<glob_t *>(state.data);
   struct stat stat_buf;
 
-  // skip any dirs
-  while (state.off < glob_buf->gl_pathc &&
-         stat(glob_buf->gl_pathv[state.off], &stat_buf) == 0 &&
-         S_ISDIR(stat_buf.st_mode))
-    state.off++;
+  // Iterate through paths until we find a valid file or run out of items
+  while (state.offset < glob_buf->gl_pathc) {
+    const char *current_path = glob_buf->gl_pathv[state.offset];
 
-  if (state.off == glob_buf->gl_pathc) return false;
+    // 1. Try to stat the file.
+    // If stat fails (e.g., broken symlink, permission denied), skip this item.
+    if (stat(current_path, &stat_buf) != 0) {
+      state.offset++;
+      continue;
+    }
 
-  state.mod_time = stat_buf.st_mtime;
+    // 2. If it is a directory, skip it.
+    if (S_ISDIR(stat_buf.st_mode)) {
+      state.offset++;
+      continue;
+    }
 
-  state.name = glob_buf->gl_pathv[state.off];
-  return true;
+    // 3. Success: We found a valid non-directory file, and stat_buf is
+    // populated. Populate the state and return true.
+    state.mod_time = stat_buf.st_mtim.tv_sec;
+    state.name = current_path;
+
+    // Note: We leave state.offset pointing to this current valid item.
+    return true;
+  }
+
+  // We reached the end of the list without finding a valid file.
+  return false;
 }
 
 bool Find_First_File(const char *path_glob, FindFileState &state) {
@@ -182,7 +198,7 @@ bool Find_First_File(const char *path_glob, FindFileState &state) {
     return false;
   }
 
-  state.off = 0;
+  state.offset = 0;
   state.data = glob_buf;
 
   if (!Update_Find_Result(state)) {
@@ -196,7 +212,7 @@ bool Find_First_File(const char *path_glob, FindFileState &state) {
 
 bool Find_Next_File(FindFileState &state) {
   // increment offset
-  state.off++;
+  state.offset++;
   auto glob_buf = (glob_t *)state.data;
 
   if (!glob_buf) return 2;

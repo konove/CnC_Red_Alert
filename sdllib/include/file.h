@@ -91,7 +91,7 @@ struct FindFileState {
 
   // internal state
   void *data;
-  int off;
+  size_t offset;
 };
 
 bool Find_First_File(const char *path_glob, FindFileState &state);
