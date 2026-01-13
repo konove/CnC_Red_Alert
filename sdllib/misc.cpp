@@ -17,7 +17,8 @@ long RandNumb;
 void (*Misc_Focus_Loss_Function)(void);
 void (*Misc_Focus_Restore_Function)(void);
 
-bool Set_Video_Mode(void *hwnd, int w, int h, int bits_per_pixel) {
+bool Set_Video_Mode(void * /*hwnd*/, int /*w*/, int /*h*/,
+                    int /*bits_per_pixel*/) {
   printf("%s\n", __func__);
   return true;
 }

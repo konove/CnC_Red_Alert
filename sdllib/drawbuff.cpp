@@ -63,7 +63,7 @@ void Buffer_Clear(void *thisptr, unsigned char color) {
 }
 
 long Buffer_To_Buffer(void *thisptr, int x_pixel, int y_pixel, int pixel_width,
-                      int pixel_height, void *buff, long size) {
+                      int pixel_height, void *buff, long /*size*/) {
   auto vp_src = (GraphicViewPortClass *)thisptr;
 
   int dst_x0 = 0;

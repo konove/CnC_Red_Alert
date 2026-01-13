@@ -353,8 +353,8 @@ void Close_Animation(void *handle) {
 }
 
 bool Animate_Frame(void *handle, GraphicViewPortClass &view, int frame_number,
-                   int x_pixel, int y_pixel, WSAType flags_and_prio,
-                   void *magic_cols, void *magic) {
+                   int x_pixel, int y_pixel, WSAType /*flags_and_prio*/,
+                   void * /*magic_cols*/, void * /*magic*/) {
   SysAnimHeaderType *sys_header;  // fix up the void pointer past in.
   int curr_frame;                 // current frame we are on.
   int total_frames;               // number of frames in anim.

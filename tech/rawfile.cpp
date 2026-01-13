@@ -742,7 +742,7 @@ unsigned long RawFileClass::Get_Date_Time(void) {
  * HISTORY: * 11/14/1995 DRD : Created. * 07/13/1996 JLB : Handles win 32 method
  **
  *=============================================================================================*/
-bool RawFileClass::Set_Date_Time(unsigned long datetime) {
+bool RawFileClass::Set_Date_Time(unsigned long /*datetime*/) {
   // does not seem that this has any users
   return false;
 }

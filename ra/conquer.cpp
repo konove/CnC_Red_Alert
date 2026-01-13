@@ -3778,7 +3778,7 @@ long VQ_Call_Back(unsigned char *, long) {
 }
 #endif  // WIN32
 
-long VQ_Event_Handler(unsigned long event, void *buffer, long nbytes) {
+long VQ_Event_Handler(unsigned long event, void * /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) Video_End_Frame();
@@ -4138,7 +4138,7 @@ void Handle_View(int view, int action) {
  * HISTORY: * 5/21/96 5:27PM ST : Created * 01/20/97 V.Grippi added CS support
  **
  *=============================================================================================*/
-int Get_CD_Index(int cd_drive, int timeout) {
+int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 #ifdef PORTABLE  // below code might work on win32 if GetCDClass was implemented
                  // in SDLLIB
   return 5;      // we uh, magically have the DVD

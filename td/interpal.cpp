@@ -279,7 +279,7 @@ void Increase_Palette_Luminance(unsigned char *palette, int red_percentage,
   }
 }
 
-int CopyType = 0;
+int CopyType = 1;
 
 #ifndef LORES
 /***************************************************************************

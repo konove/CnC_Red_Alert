@@ -269,7 +269,7 @@ static void ResetStream(ChannelState &chan, AUDHeaderType *header) {
     SDL_AudioStreamClear(chan.stream);
 }
 
-static void SDL_Audio_Callback(void *userdata, Uint8 *stream, int len) {
+static void SDL_Audio_Callback(void * /*userdata*/, Uint8 *stream, int len) {
   memset(stream, 0, len);
   auto stream16 = (int16_t *)stream;
 
@@ -315,7 +315,7 @@ static void SDL_Audio_Callback(void *userdata, Uint8 *stream, int len) {
 }
 
 int File_Stream_Sample_Vol(char const *filename, int volume,
-                           bool real_time_start) {
+                           bool /*real_time_start*/) {
   int id = Get_Free_Sample_Handle(0xFF);
 
   if (id == -1) return -1;
@@ -424,8 +424,8 @@ void Sound_Callback(void) {
   }
 }
 
-bool Audio_Init(void *window, int bits_per_sample, bool stereo, int rate,
-                int reverse_channels) {
+bool Audio_Init(void * /*window*/, int /*bits_per_sample*/, bool stereo,
+                int rate, int /*reverse_channels*/) {
   SDL_AudioSpec desired;
   desired.freq = rate;
   desired.format = AUDIO_S16;  // bits_per_sample == 16 ? AUDIO_S16 : AUDIO_S8;
@@ -505,7 +505,7 @@ int Play_Sample(void const *sample, int priority, int volume,
 }
 
 int Play_Sample_Handle(void const *sample, int priority, int volume,
-                       signed short panloc, int id) {
+                       signed short /*panloc*/, int id) {
   if (id == -1 || !sample) return -1;
 
   // play it
@@ -617,7 +617,7 @@ int Get_Digi_Handle(void) {
   return AudioDevice ? 1 : -1;
 }
 
-bool Start_Primary_Sound_Buffer(bool forced) {
+bool Start_Primary_Sound_Buffer(bool /*forced*/) {
   SDL_PauseAudioDevice(AudioDevice, false);
   return true;
 }

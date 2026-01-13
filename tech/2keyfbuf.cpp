@@ -59,7 +59,8 @@ inline int Make_Code(int x, int y, int w, int h) {
 
 static void Setup_Shape_Header(int pixel_width, int pixel_height, char *src,
                                ShapeHeaderType *headers, int flags,
-                               uint8_t *Translucent, uint8_t *IsTranslucent) {
+                               uint8_t * /*Translucent*/,
+                               uint8_t *IsTranslucent) {
   headers->draw_flags =
       flags & (SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
   auto ptr = (uint8_t *)headers + sizeof(ShapeHeaderType);

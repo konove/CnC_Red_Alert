@@ -3047,7 +3047,7 @@ long VQ_Call_Back(unsigned char *, long) {
   return (false);
 }
 
-long VQ_Event_Handler(unsigned long event, void *buffer, long nbytes) {
+long VQ_Event_Handler(unsigned long event, void * /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) Video_End_Frame();
@@ -3553,7 +3553,7 @@ void Error_In_Heap_Pointers(char *string) {
  *                                                                                             *
  * HISTORY: * 5/21/96 5:27PM ST : Created *
  *=============================================================================================*/
-int Get_CD_Index(int cd_drive, int timeout) {
+int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 #ifdef PORTABLE
   return -1;  // this may be a problem
 #else

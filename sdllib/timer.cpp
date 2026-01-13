@@ -72,7 +72,7 @@ long CountDownTimerClass::Time(void) {
   return ticks;
 }
 
-WinTimerClass::WinTimerClass(std::uint32_t freq, bool partial)
+WinTimerClass::WinTimerClass(std::uint32_t freq, bool /*partial*/)
     : SysTicks(0), UserTicks(0) {
   SDL_Init(SDL_INIT_TIMER);
   TimerHandle = SDL_AddTimer(1000 / freq, TimerCallback, this);

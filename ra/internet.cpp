@@ -476,7 +476,7 @@ void Just_Path(char *path, char *destpath, size_t dest_size) {
  *                                                                                             *
  * HISTORY: * 1/12/96 2:13PM ST : Created *
  *=============================================================================================*/
-bool Is_User_WChat_Registered(char *buffer, int buffer_len) {
+bool Is_User_WChat_Registered(char * /*buffer*/, int /*buffer_len*/) {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB
   HKEY key;
   char user_handle[256];
@@ -564,7 +564,7 @@ bool Is_User_WChat_Registered(char *buffer, int buffer_len) {
  *=============================================================================================*/
 #ifndef WOLAPI_INTEGRATION
 bool Poke_WChat(void);
-bool Spawn_WChat(bool can_launch) {
+bool Spawn_WChat(bool /*can_launch*/) {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB, also MainWindow is not
                   // a HWND
   WWDebugString("RA95 - In Spawn_WChat.\n");

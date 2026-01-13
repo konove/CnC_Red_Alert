@@ -21,7 +21,7 @@ unsigned int Window;
 SDL_Renderer *SDLRenderer;
 Uint32 ForceRenderEventID;
 
-int Change_Window(int windnum) {
+int Change_Window(int /*windnum*/) {
   printf("%s\n", __func__);
   return 0;
 }

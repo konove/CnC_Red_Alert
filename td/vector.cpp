@@ -593,7 +593,7 @@ int DynamicVectorClass<T>::Delete(T const &object) {
 
 // workaround for DynamicVectorClass<int>, nobody call this please
 template <>
-int DynamicVectorClass<int>::Delete(int const &object) {
+int DynamicVectorClass<int>::Delete(int const & /*object*/) {
   return false;
 }
 //

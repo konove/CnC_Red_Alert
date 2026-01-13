@@ -93,8 +93,8 @@ IPXInterfaceClass::IPXInterfaceClass(void) : WinsockInterfaceClass() {
  *                                                                                             *
  * HISTORY: * 8/1/97 3:04PM ST : Created *
  *=============================================================================================*/
-bool IPXInterfaceClass::Get_Network_Card_Address(int card_number,
-                                                 SOCKADDR_IPX *addr) {
+bool IPXInterfaceClass::Get_Network_Card_Address(int /*card_number*/,
+                                                 SOCKADDR_IPX * /*addr*/) {
 #ifdef PORTABLE
   return false;
 #else
@@ -176,7 +176,7 @@ bool IPXInterfaceClass::Get_Network_Card_Address(int card_number,
  *                                                                                             *
  * HISTORY: * 8/4/97 5:54PM ST : Created *
  *=============================================================================================*/
-bool IPXInterfaceClass::Open_Socket(SOCKET socketnum) {
+bool IPXInterfaceClass::Open_Socket(SOCKET /*socketnum*/) {
 #ifdef PORTABLE
   return false;
 #else

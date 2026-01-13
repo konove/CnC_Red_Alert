@@ -20,7 +20,7 @@ bool NoMouseGrab = false;
 
 static WWMouseClass *_Mouse = nullptr;
 
-WWMouseClass::WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
+WWMouseClass::WWMouseClass(GraphicViewPortClass * /*scr*/, int mouse_max_width,
                            int mouse_max_height)
     : MaxWidth(mouse_max_width), MaxHeight(mouse_max_height), State(0) {
   Set_Cursor_Clip();
@@ -129,7 +129,8 @@ void WWMouseClass::Show_Mouse(void) {
   }
 }
 
-void WWMouseClass::Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {}
+void WWMouseClass::Conditional_Hide_Mouse(int /*x1*/, int /*y1*/, int /*x2*/,
+                                          int /*y2*/) {}
 
 void WWMouseClass::Conditional_Show_Mouse(void) {}
 
@@ -139,11 +140,12 @@ int WWMouseClass::Get_Mouse_X(void) { return LastX; }
 
 int WWMouseClass::Get_Mouse_Y(void) { return LastY; }
 
-void WWMouseClass::Draw_Mouse(GraphicViewPortClass *scr) {
+void WWMouseClass::Draw_Mouse(GraphicViewPortClass * /*scr*/) {
   // we're using a "hardware" cursor, so don't need to do anything
 }
 
-void WWMouseClass::Erase_Mouse(GraphicViewPortClass *scr, bool forced) {}
+void WWMouseClass::Erase_Mouse(GraphicViewPortClass * /*scr*/,
+                               bool /*forced*/) {}
 
 void WWMouseClass::Set_Cursor_Clip(void) {
   if (!NoMouseGrab) {

@@ -29,7 +29,7 @@ void Focus_Restore(void);
 
 void VQA_ResumeAudio(void);
 
-void CCDebugString(char const *string) {}
+void CCDebugString(char const * /*string*/) {}
 
 void Check_For_Focus_Loss(void) {
   if (!GameInFocus) {
@@ -50,7 +50,7 @@ void Memory_Error_Handler(void) {
 
 #define WINDOW_NAME "Command & Conquer"
 
-void Create_Main_Window(HANDLE instance, int command_show, int width,
+void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   SDL_Create_Main_Window(WINDOW_NAME, width, height);
 

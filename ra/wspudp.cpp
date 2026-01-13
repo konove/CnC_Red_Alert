@@ -311,7 +311,7 @@ void UDPInterfaceClass::Broadcast(void *buffer, int buffer_len) {
 
 #ifdef PORTABLE
 // like below, but less windows-y
-void UDPInterfaceClass::Event_Handler(int socket, SocketEvent event) {
+void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
   struct sockaddr_in addr;
   WinsockBufferType *packet;
 

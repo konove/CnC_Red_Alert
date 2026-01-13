@@ -6,7 +6,7 @@
 void (*Memory_Error)(void) = nullptr;
 void (*Memory_Error_Exit)(char *string) = nullptr;
 
-void Force_VM_Page_In(void *buffer, int length) {}
+void Force_VM_Page_In(void * /*buffer*/, int /*length*/) {}
 
 void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   void *ptr = new char[bytes_to_alloc];
@@ -34,4 +34,4 @@ void *Resize_Alloc(void *original_ptr, unsigned long new_size_in_bytes) {
   return ptr;
 }
 
-long Ram_Free(MemoryFlagType flag) { return 64 * 1024 * 1024; }
+long Ram_Free(MemoryFlagType /*flag*/) { return 64 * 1024 * 1024; }
