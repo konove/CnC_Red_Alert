@@ -438,7 +438,9 @@ DynamicVectorClass<T>::DynamicVectorClass(unsigned size, T const *array)
 template <class T>
 int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
   if (VectorClass<T>::Resize(newsize, array)) {
-    if (this->Length() < ActiveCount) ActiveCount = this->Length();
+    if (this->Length() < ActiveCount) {
+      ActiveCount = this->Length();
+    }
     return (true);
   }
   return (false);
@@ -496,7 +498,11 @@ int DynamicVectorClass<T>::Add(T const &object) {
         **	Failure to increase the size of the vector is an error
         *condition. *	Return with the error flag.
         */
-        return (false);
+        return false;
+      }
+      // Verify resize actually allocated space.
+      if (ActiveCount >= this->Length()) {
+        return false;
       }
     } else {
       /*
@@ -524,6 +530,10 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
         **	Failure to increase the size of the vector is an error
         *condition. *	Return with the error flag.
         */
+        return (false);
+      }
+      // Verify resize actually allocated space.
+      if (ActiveCount >= this->Length()) {
         return (false);
       }
     } else {
@@ -765,7 +775,8 @@ int BooleanVectorClass::Resize(unsigned size) {
     **	clearing of the bits is required.
     */
     BitCount = size;
-    if (success && oldsize < size) {
+    // Also verify BitArray was actually allocated (protects against overflow).
+    if (success && BitArray.Length() && oldsize < size) {
       for (int index = oldsize; index < size; index++) {
         (*this)[index] = 0;
       }

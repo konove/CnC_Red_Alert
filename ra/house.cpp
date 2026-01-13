@@ -151,11 +151,11 @@
 #include "ra/house.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <new>
 
+#include "absl/log/check.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/abstract.h"
@@ -200,7 +200,6 @@
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/gbuffer.h"
-// #include "WolDebug.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
@@ -237,7 +236,7 @@ extern bool RedrawOptionsMenu;
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseClass::operator HousesType(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (Class->House);
 }
@@ -926,8 +925,8 @@ HouseStaticClass::HouseStaticClass(void)
  *=============================================================================================*/
 bool HouseClass::Can_Build(ObjectTypeClass const *type,
                            HousesType house) const {
-  assert(Houses.ID(this) == ID);
-  assert(type != nullptr);
+  CHECK_EQ(Houses.ID(this), ID);
+  CHECK_NE(type, nullptr);
 
   /*
   **	An object with a prohibited tech level availability will never be
@@ -1058,7 +1057,7 @@ void HouseClass::Init(void) {
  *unless the player can do something.                  *
  *=============================================================================================*/
 void HouseClass::AI(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	If base building has been turned on by a trigger, then force the house
@@ -1897,7 +1896,7 @@ void HouseClass::Super_Weapon_Handler(void) {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Attacked(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (SpeakAttackDelay == 0 &&
       ((Session.Type == GAME_NORMAL && IsPlayerControl) ||
@@ -1934,7 +1933,7 @@ void HouseClass::Attacked(void) {
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Harvested(unsigned tiberium) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   long oldtib = Tiberium;
 
@@ -1966,7 +1965,7 @@ void HouseClass::Harvested(unsigned tiberium) {
  * HISTORY: * 09/05/1996 BWG : Created. *
  *=============================================================================================*/
 void HouseClass::Stole(unsigned worth) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   StolenBuildingsCredits += worth;
 }
@@ -1987,7 +1986,7 @@ void HouseClass::Stole(unsigned worth) {
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
 long HouseClass::Available_Money(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (Tiberium + Credits);
 }
@@ -2010,7 +2009,7 @@ long HouseClass::Available_Money(void) const {
  *before spending cash.                                    *
  *=============================================================================================*/
 void HouseClass::Spend_Money(unsigned money) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   long oldtib = Tiberium;
   if (money > Tiberium) {
@@ -2043,7 +2042,7 @@ void HouseClass::Spend_Money(unsigned money) {
  *never lost                                             *
  *=============================================================================================*/
 void HouseClass::Refund_Money(unsigned money) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   Credits += money;
 }
@@ -2067,7 +2066,7 @@ void HouseClass::Refund_Money(unsigned money) {
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   long oldcap = Capacity;
   int retval = 0;
@@ -2107,7 +2106,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
  * HISTORY: * 02/02/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   int oldratio = 0;
   if (oldcap) oldratio = (oldtib * 5) / oldcap;
@@ -2139,7 +2138,7 @@ void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_Ally(HousesType house) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (house != HOUSE_NONE) {
     return (((1 << house) & Allies) != 0);
@@ -2163,7 +2162,7 @@ bool HouseClass::Is_Ally(HousesType house) const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_Ally(HouseClass const *house) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (house) {
     return (Is_Ally(house->Class->House));
@@ -2186,7 +2185,7 @@ bool HouseClass::Is_Ally(HouseClass const *house) const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_Ally(ObjectClass const *object) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (object) {
     return (Is_Ally(object->Owner()));
@@ -2211,7 +2210,7 @@ bool HouseClass::Is_Ally(ObjectClass const *object) const {
  *Added reveal base when allied.                                           *
  *=============================================================================================*/
 void HouseClass::Make_Ally(HousesType house) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (Is_Allowed_To_Ally(house)) {
     Allies |= (1L << house);
@@ -2322,7 +2321,7 @@ void HouseClass::Make_Ally(HousesType house) {
  *bilateral action.                                        *
  *=============================================================================================*/
 void HouseClass::Make_Enemy(HousesType house) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (house != HOUSE_NONE && Is_Ally(house)) {
     HouseClass *enemy = HouseClass::As_Pointer(house);
@@ -2397,7 +2396,7 @@ void HouseClass::Make_Enemy(HousesType house) {
  *=============================================================================================*/
 unsigned char const *HouseClass::Remap_Table(bool blushing,
                                              RemapType remap) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (blushing) return (&Map.FadingLight[0]);
 
@@ -2423,7 +2422,7 @@ unsigned char const *HouseClass::Remap_Table(bool blushing,
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamTypeClass const *HouseClass::Suggested_New_Team(bool alertcheck) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (TeamTypeClass::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
                                             alertcheck));
@@ -2446,7 +2445,7 @@ TeamTypeClass const *HouseClass::Suggested_New_Team(bool alertcheck) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Adjust_Threat(int region, int threat) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   static int _val[] = {
       -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,
@@ -2490,7 +2489,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
  *case.                                                 *
  *=============================================================================================*/
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
   int result = true;
   bool initial_start = false;
   FactoryClass *fptr;
@@ -2548,7 +2547,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 ProdFailType HouseClass::Suspend_Production(RTTIType type) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   FactoryClass *fptr = Fetch_Factory(type);
 
@@ -2591,7 +2590,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 ProdFailType HouseClass::Abandon_Production(RTTIType type) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   FactoryClass *fptr = Fetch_Factory(type);
 
@@ -2639,7 +2638,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
  * HISTORY: * 06/24/1995 PWG : Created. *
  *=============================================================================================*/
 void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   ** Loop through all of the building objects on the map
@@ -2690,7 +2689,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *Revamped to use super weapon class controller.                           *
  *=============================================================================================*/
 bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   BuildingClass *launchsite = nullptr;
   AnimClass *anim = nullptr;
@@ -2998,7 +2997,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Place_Object(RTTIType type, CELL cell) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   TechnoClass *tech = nullptr;
   FactoryClass *factory = Fetch_Factory(type);
@@ -3144,7 +3143,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
  *Bib_And_Offset() function to determine bib size.                *
  *=============================================================================================*/
 bool HouseClass::Manual_Place(BuildingClass *builder, BuildingClass *object) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (this == PlayerPtr && !Map.PendingObject && builder && object) {
     /*
@@ -3187,7 +3186,7 @@ bool HouseClass::Manual_Place(BuildingClass *builder, BuildingClass *object) {
  *   06/09/1995 JLB : Handles aircraft.                                    *
  *=========================================================================*/
 void HouseClass::Clobber_All(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   int i;
 
@@ -3263,7 +3262,7 @@ void HouseClass::Clobber_All(void) {
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
 void HouseClass::Detach(TARGET target, bool) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (ToCapture == target) {
     ToCapture = TARGET_NONE;
@@ -3291,7 +3290,7 @@ void HouseClass::Detach(TARGET target, bool) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   int bflag = 1L << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
@@ -3328,7 +3327,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
  *=============================================================================================*/
 TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
                                                       bool kennel) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   TechnoTypeClass const *techno = nullptr;
 
@@ -3403,9 +3402,9 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
-  int rc;
+  bool rc = false;
 
   if (Target_Legal(target)) {
     /*
@@ -3469,7 +3468,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
  *scanning handler.                                   *
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   bool rc;
   bool clockwise;
@@ -3591,7 +3590,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(UnitClass *object, bool set_home) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (object && !object->IsInLimbo) {
     Flag_Remove(FlagLocation, set_home);
@@ -3622,7 +3621,7 @@ bool HouseClass::Flag_Attach(UnitClass *object, bool set_home) {
  *   05/25/1995 BRR : Created.                                             *
  *=========================================================================*/
 void HouseClass::MPlayer_Defeated(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   char txt[80];
   int i, j;
@@ -3966,7 +3965,7 @@ void HouseClass::Tally_Score(void) {
  *   05/07/1996 JLB : Handles ships.                                       *
  *=========================================================================*/
 void HouseClass::Blowup_All(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   int i;
   int damage;
@@ -4099,7 +4098,7 @@ void HouseClass::Blowup_All(void) {
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_To_Die(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
@@ -4123,7 +4122,7 @@ bool HouseClass::Flag_To_Die(void) {
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_To_Win(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
@@ -4149,7 +4148,7 @@ bool HouseClass::Flag_To_Win(void) {
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_To_Lose(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   IsToWin = false;
   if (!IsToDie && !IsToLose) {
@@ -4181,7 +4180,7 @@ bool HouseClass::Flag_To_Lose(void) {
  *=============================================================================================*/
 void HouseClass::Init_Data(PlayerColorType color, HousesType house,
                            int credits) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   Credits = Control.InitialCredits = credits;
   RemapColor = color;
@@ -4203,7 +4202,7 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
  * HISTORY: * 07/22/1995 JLB : Created. *
  *=============================================================================================*/
 fixed HouseClass::Power_Fraction(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (Power >= Drain || Drain == 0) return (1);
 
@@ -4229,7 +4228,7 @@ fixed HouseClass::Power_Fraction(void) const {
  *for wall type.                                     *
  *=============================================================================================*/
 void HouseClass::Sell_Wall(CELL cell) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if ((unsigned)cell > 0) {
     OverlayType overlay = Map[cell].Overlay;
@@ -4310,7 +4309,7 @@ void HouseClass::Sell_Wall(CELL cell) {
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass const *HouseClass::Suggest_New_Building(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildStructure != STRUCT_NONE) {
     return (&BuildingTypeClass::As_Reference(BuildStructure));
@@ -4339,7 +4338,7 @@ BuildingTypeClass const *HouseClass::Suggest_New_Building(void) const {
  *specifics.                                               *
  *=============================================================================================*/
 BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	Only scan if we KNOW there is at least one building of the type
@@ -4378,7 +4377,7 @@ BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE HouseClass::Find_Build_Location(BuildingClass *building) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   int zonerating[ZONE_COUNT];
   struct {
@@ -4493,7 +4492,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass *building) const {
  * HISTORY: * 09/28/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Recalc_Center(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	First presume that there is no base. If there is a base, then these
@@ -4623,7 +4622,7 @@ void HouseClass::Recalc_Center(void) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Expert_AI(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   BuildingClass *b = nullptr;
   bool stop = false;
@@ -4917,7 +4916,7 @@ int HouseClass::Expert_AI(void) {
 }
 
 UrgencyType HouseClass::Check_Build_Power(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   fixed frac = Power_Fraction();
   UrgencyType urgency = URGENCY_NONE;
@@ -4944,7 +4943,7 @@ UrgencyType HouseClass::Check_Build_Power(void) const {
 }
 
 UrgencyType HouseClass::Check_Build_Defense(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	This routine determines what urgency level that base defense
@@ -4955,7 +4954,7 @@ UrgencyType HouseClass::Check_Build_Defense(void) const {
 }
 
 UrgencyType HouseClass::Check_Build_Offense(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	This routine determines what urgency level that offensive
@@ -4970,7 +4969,7 @@ UrgencyType HouseClass::Check_Build_Offense(void) const {
 **	the greater the immediate threat to base defense is.
 */
 UrgencyType HouseClass::Check_Attack(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (Frame > TICKS_PER_MINUTE && Attack == 0) {
     if (State == STATE_ATTACKED) {
@@ -4982,7 +4981,7 @@ UrgencyType HouseClass::Check_Attack(void) const {
 }
 
 UrgencyType HouseClass::Check_Build_Income(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	This routine should determine if income processing buildings
@@ -4994,7 +4993,7 @@ UrgencyType HouseClass::Check_Build_Income(void) const {
 }
 
 UrgencyType HouseClass::Check_Fire_Sale(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	If there are no more factories at all, then sell everything off because
@@ -5009,7 +5008,7 @@ UrgencyType HouseClass::Check_Fire_Sale(void) const {
 }
 
 UrgencyType HouseClass::Check_Build_Engineer(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	This routine should check to see what urgency that the production of
@@ -5024,7 +5023,7 @@ UrgencyType HouseClass::Check_Build_Engineer(void) const {
 **	to immediately raise cash.
 */
 UrgencyType HouseClass::Check_Raise_Money(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   UrgencyType urgency = URGENCY_NONE;
   if (Available_Money() < 100) {
@@ -5042,7 +5041,7 @@ UrgencyType HouseClass::Check_Raise_Money(void) const {
 **	build more power is returned.
 */
 UrgencyType HouseClass::Check_Lower_Power(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (Power > Drain + 300) {
     return (URGENCY_LOW);
@@ -5058,7 +5057,7 @@ UrgencyType HouseClass::Check_Lower_Power(void) const {
 **	enough.
 */
 UrgencyType HouseClass::Check_Raise_Power(void) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   UrgencyType urgency = URGENCY_NONE;
 
@@ -5075,7 +5074,7 @@ UrgencyType HouseClass::Check_Raise_Power(void) const {
 }
 
 bool HouseClass::AI_Attack(UrgencyType) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   bool shuffle =
       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
@@ -5139,7 +5138,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
 **	this need.
 */
 bool HouseClass::AI_Build_Power(UrgencyType) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (false);
 }
@@ -5149,7 +5148,7 @@ bool HouseClass::AI_Build_Power(UrgencyType) const {
 **	according to need and according to existing base disposition.
 */
 bool HouseClass::AI_Build_Defense(UrgencyType) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (false);
 }
@@ -5159,7 +5158,7 @@ bool HouseClass::AI_Build_Defense(UrgencyType) const {
 **	to need and according to the opponents base defenses.
 */
 bool HouseClass::AI_Build_Offense(UrgencyType) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (false);
 }
@@ -5169,13 +5168,13 @@ bool HouseClass::AI_Build_Offense(UrgencyType) const {
 **	structures according to need.
 */
 bool HouseClass::AI_Build_Income(UrgencyType) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (false);
 }
 
 bool HouseClass::AI_Fire_Sale(UrgencyType urgency) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (CurBuildings && urgency == URGENCY_CRITICAL) {
     Fire_Sale();
@@ -5189,7 +5188,7 @@ bool HouseClass::AI_Fire_Sale(UrgencyType urgency) {
 **	Given the specified urgency, build an engineer.
 */
 bool HouseClass::AI_Build_Engineer(UrgencyType) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (false);
 }
@@ -5199,7 +5198,7 @@ bool HouseClass::AI_Build_Engineer(UrgencyType) const {
 **	there appears to be excess.
 */
 bool HouseClass::AI_Lower_Power(UrgencyType) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   BuildingClass *b = Find_Building(STRUCT_POWER);
   if (b != nullptr) {
@@ -5233,7 +5232,7 @@ bool HouseClass::AI_Lower_Power(UrgencyType) const {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	Sell off structures in this order.
@@ -5285,7 +5284,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	Sell off structures in this order.
@@ -5344,7 +5343,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Base_Defense(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   /*
   **	Check to find if any zone of the base is over defended. Such zones
@@ -5430,7 +5429,7 @@ int HouseClass::AI_Base_Defense(void) {
  *aircraft of enemy                                         *
  *=============================================================================================*/
 int HouseClass::AI_Building(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildStructure != STRUCT_NONE) return (TICKS_PER_SECOND);
 
@@ -5817,7 +5816,7 @@ int HouseClass::AI_Building(void) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Unit(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildUnit != UNIT_NONE) return (TICKS_PER_SECOND);
   if (CurUnits >= Control.MaxUnit) return (TICKS_PER_SECOND);
@@ -5957,7 +5956,7 @@ int HouseClass::AI_Unit(void) {
 }
 
 int HouseClass::AI_Vessel(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
   if (BuildVessel != VESSEL_NONE) return (TICKS_PER_SECOND);
 
   if (CurVessels >= Control.MaxVessel) {
@@ -6089,7 +6088,7 @@ int HouseClass::AI_Vessel(void) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Infantry(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildInfantry != INFANTRY_NONE) return (TICKS_PER_SECOND);
   if (CurInfantry >= Control.MaxInfantry) return (TICKS_PER_SECOND);
@@ -6304,7 +6303,7 @@ int HouseClass::AI_Infantry(void) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Aircraft(void) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (!IsHuman && IQ >= Rule.IQAircraft) {
     if (BuildAircraft != AIRCRAFT_NONE) return (TICKS_PER_SECOND);
@@ -6368,7 +6367,7 @@ int HouseClass::AI_Aircraft(void) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Production_Begun(TechnoClass const *product) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (product != nullptr) {
     switch (product->What_Am_I()) {
@@ -6425,7 +6424,7 @@ void HouseClass::Production_Begun(TechnoClass const *product) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Tracking_Remove(TechnoClass const *techno) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   int type;
 
@@ -6485,7 +6484,7 @@ void HouseClass::Tracking_Remove(TechnoClass const *techno) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Tracking_Add(TechnoClass const *techno) {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   StructType building;
   AircraftType aircraft;
@@ -6674,7 +6673,7 @@ void HouseClass::Active_Add(TechnoClass const *techno) {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (coord == 0) return (ZONE_NONE);
 
@@ -6706,7 +6705,7 @@ ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 ZoneType HouseClass::Which_Zone(ObjectClass const *object) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   if (!object) return (ZONE_NONE);
   return (Which_Zone(object->Center_Coord()));
@@ -6729,7 +6728,7 @@ ZoneType HouseClass::Which_Zone(ObjectClass const *object) const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 ZoneType HouseClass::Which_Zone(CELL cell) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   return (Which_Zone(Cell_Coord(cell)));
 }
@@ -6856,7 +6855,7 @@ void HouseClass::Recalc_Attributes(void) {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 CELL HouseClass::Zone_Cell(ZoneType zone) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   switch (zone) {
     case ZONE_CORE:
@@ -6897,8 +6896,8 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
  *helper functions                                       *
  *=============================================================================================*/
 CELL HouseClass::Where_To_Go(FootClass const *object) const {
-  assert(Houses.ID(this) == ID);
-  assert(object != nullptr);
+  CHECK_EQ(Houses.ID(this), ID);
+  CHECK_NE(object, nullptr);
 
   ZoneType zone;  // The zone that the object should go to.
   if (object->Anti_Air() + object->Anti_Armor() + object->Anti_Infantry() ==
@@ -6909,7 +6908,7 @@ CELL HouseClass::Where_To_Go(FootClass const *object) const {
   }
 
   CELL cell = Random_Cell_In_Zone(zone);
-  assert(cell != 0);
+  CHECK_NE(cell, 0);
 
   return (Map.Nearby_Location(cell, SPEED_TRACK, Map[cell].Zones[MZONE_NORMAL],
                               MZONE_NORMAL));
@@ -6932,7 +6931,7 @@ CELL HouseClass::Where_To_Go(FootClass const *object) const {
  * HISTORY: * 10/12/1995 JLB : Created. *
  *=============================================================================================*/
 TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
-  assert(Houses.ID(this) == ID);
+  CHECK_EQ(Houses.ID(this), ID);
 
   UnitClass *best = nullptr;
   int value = 0;
@@ -7063,7 +7062,7 @@ FactoryClass *HouseClass::Fetch_Factory(RTTIType rtti) const {
 void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
   int *factory_index = nullptr;
 
-  assert(rtti != RTTI_NONE);
+  CHECK_NE(rtti, RTTI_NONE);
 
   switch (rtti) {
     case RTTI_UNIT:
@@ -7092,7 +7091,7 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
       break;
   }
 
-  assert(factory_index != nullptr);
+  CHECK_NE(factory_index, nullptr);
 
   /*
   **	Assign the factory to the appropriate slot. For the case of clearing

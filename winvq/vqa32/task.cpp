@@ -220,7 +220,7 @@ long VQA_Play(VQAHandle *vqa, long mode) {
   VQAData *vqabuf;
   VQAConfig *config;
   VQADrawer *drawer;
-  int64_t rc;
+  int64_t rc = 0;
   int64_t key;
 
 #ifdef WIN32

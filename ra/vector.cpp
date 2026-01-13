@@ -533,7 +533,7 @@ int BooleanVectorClass::Resize(unsigned size) {
     **	clearing of the bits is required.
     */
     BitCount = size;
-    if (success && oldsize < size) {
+    if (success && BitArray.Length() && oldsize < size) {
       for (int index = oldsize; index < size; index++) {
         (*this)[index] = 0;
       }

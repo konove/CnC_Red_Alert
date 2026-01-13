@@ -3392,7 +3392,7 @@ TechnoTypeClass const *HouseClass::Suggest_New_Object(
  *=============================================================================================*/
 bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
   Validate();
-  int rc;
+  int rc = 0;
 
   if (Target_Legal(target)) {
     /*

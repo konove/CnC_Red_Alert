@@ -180,6 +180,10 @@ static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
     case VQACMD_CLEANUP:
       error = 0;
       break;
+
+    default:
+      error = 1;
+      break;
   }
 
   return (error);

@@ -2158,7 +2158,7 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
 int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
                        int64_t nbytes) {
   CCFileClass *file;
-  int64_t error;
+  int64_t error = 0;
 
   file = (CCFileClass *)vqa->VQAio;
 

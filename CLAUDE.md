@@ -5,15 +5,15 @@ incrementally.
 
 ## Quick Reference
 
-| Target | Command | Output |
-|--------|---------|--------|
-| Both games | `cmake -Bbuild && cmake --build build` | `build/ra/rasdl`, `build/td/tdsdl` |
-| Red Alert only | `cmake --build build --target rasdl` | `build/ra/rasdl` |
-| Tiberian Dawn only | `cmake --build build --target tdsdl` | `build/td/tdsdl` |
-| Fast build (no checks) | `cmake -Bbuild -DSTRICT_CHECKS=OFF` | Disables clang-tidy, IWYU, warnings |
-| With ASan | `cmake -Bbuild -DENABLE_ASAN=ON` | Memory debugging |
-| Header verification | `cmake --build build --target all_verify_interface_header_sets` | Checks headers are self-contained |
-| Clean rebuild | `rm -rf build && cmake -Bbuild && cmake --build build` | |
+| Target                 | Command                                                         | Output                              |
+|------------------------|-----------------------------------------------------------------|-------------------------------------|
+| Both games             | `cmake -Bbuild && cmake --build build`                          | `build/ra/rasdl`, `build/td/tdsdl`  |
+| Red Alert only         | `cmake --build build --target rasdl`                            | `build/ra/rasdl`                    |
+| Tiberian Dawn only     | `cmake --build build --target tdsdl`                            | `build/td/tdsdl`                    |
+| Fast build (no checks) | `cmake -Bbuild -DSTRICT_CHECKS=OFF`                             | Disables clang-tidy, IWYU, warnings |
+| With ASan              | `cmake -Bbuild -DENABLE_ASAN=ON`                                | Memory debugging                    |
+| Header verification    | `cmake --build build --target all_verify_interface_header_sets` | Checks headers are self-contained   |
+| Clean rebuild          | `rm -rf build && cmake -Bbuild && cmake --build build`          |                                     |
 
 ## Setup
 
@@ -22,17 +22,20 @@ incrementally.
 **All platforms:** SDL2, C++23 compiler
 
 **Linux (Debian/Ubuntu):**
+
 ```bash
 sudo apt update
 sudo apt install libsdl2-dev clang-tidy
 ```
 
 **macOS:**
+
 ```bash
 brew install sdl2 llvm
 ```
 
-**Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable static analysis.
+**Note:** If clang-tidy is not installed, either install it (above) or build with `-DSTRICT_CHECKS=OFF` to disable
+static analysis.
 
 ## Architecture
 
@@ -69,7 +72,8 @@ Chromium-style paths relative to project root:
 ### New Files
 
 - NO Electronic Arts copyright header (only applies to original EA code)
-- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_PORT_CHECK_H_`, `CNC_RED_ALERT_SDLLIB_INCLUDE_GBUFFER_H_`)
+- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_PORT_CHECK_H_`,
+  `CNC_RED_ALERT_SDLLIB_INCLUDE_GBUFFER_H_`)
 
 ### Documentation (Google Style - REQUIRED for new code)
 
@@ -111,12 +115,12 @@ int dist = IsqrtFixed(dx * dx + dy * dy);
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.
 
-| Header | Usage |
-|--------|-------|
-| `absl/log/log.h` | `DLOG(INFO)`, `DLOG(WARNING)` (debug-only), `LOG(ERROR)`, `LOG(FATAL)` |
-| `absl/log/check.h` | `CHECK(x)`, `CHECK_EQ/NE/LT/GT`, `DCHECK` (debug-only) |
-| `absl/strings/` | `StrCat`, `StrSplit`, `StrFormat` |
-| `absl/container/` | `flat_hash_map`, `flat_hash_set` |
+| Header             | Usage                                                                  |
+|--------------------|------------------------------------------------------------------------|
+| `absl/log/log.h`   | `DLOG(INFO)`, `DLOG(WARNING)` (debug-only), `LOG(ERROR)`, `LOG(FATAL)` |
+| `absl/log/check.h` | `CHECK(x)`, `CHECK_EQ/NE/LT/GT`, `DCHECK` (debug-only)                 |
+| `absl/strings/`    | `StrCat`, `StrSplit`, `StrFormat`                                      |
+| `absl/container/`  | `flat_hash_map`, `flat_hash_set`                                       |
 
 **Logging rule:** Use `DLOG` for debug messages (compiled out in release). Original game excluded most logging from
 release builds—follow this pattern. Use `CHECK` for programmer errors/invariants, NOT for user input validation.
@@ -128,27 +132,28 @@ release builds—follow this pattern. Use `CHECK` for programmer errors/invarian
 You will encounter: `strcpy`/`strcat`/`sprintf`, raw `new`/`delete`, C-style casts, globals in `ra/externs.h`,
 missing const, `WIN32`/`PORTABLE` ifdefs.
 
-**Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes, self-contained headers.
+**Acceptable changes:** Safe string functions, buffer overflow fixes, add `override`, IWYU fixes, self-contained
+headers.
 
 **Avoid unless requested:** Class hierarchy refactoring, smart pointers everywhere, const everywhere, STL containers
 everywhere, removing globals.
 
 ## Tools Configuration
 
-| Tool | Config File | Notes |
-|------|-------------|-------|
-| clang-tidy | `.clang-tidy` | Many checks disabled for legacy code |
-| IWYU | `cmake/IWYU.cmake`, `.iwyu_mappings` | Can segfault on `ra/externs.h`; warnings don't fail builds |
+| Tool       | Config File                          | Notes                                                      |
+|------------|--------------------------------------|------------------------------------------------------------|
+| clang-tidy | `.clang-tidy`                        | Many checks disabled for legacy code                       |
+| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings` | Can segfault on `ra/externs.h`; warnings don't fail builds |
 
 ## Key Files
 
-| Purpose | File(s) |
-|---------|---------|
+| Purpose      | File(s)                                                    |
+|--------------|------------------------------------------------------------|
 | Build config | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt` |
-| Global state | `ra/externs.h` |
-| Pipe/Straw | `tech/pipe.h`, `tech/straw.h` |
-| Graphics | `sdllib/include/gbuffer.h`, `sdllib/include/drawbuff.h` |
-| Video | `winvq/vqa32/vqaplay.h` |
+| Global state | `ra/externs.h`                                             |
+| Pipe/Straw   | `tech/pipe.h`, `tech/straw.h`                              |
+| Graphics     | `sdllib/include/gbuffer.h`, `sdllib/include/drawbuff.h`    |
+| Video        | `winvq/vqa32/vqaplay.h`                                    |
 
 ## Platform Notes
 
