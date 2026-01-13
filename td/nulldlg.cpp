@@ -910,9 +910,6 @@ void Destroy_Null_Connection(int id, int error) {
  *=========================================================================*/
 GameType Select_Serial_Dialog(void) {
   int rc;
-  //	int value, i;
-  int com = -1, baud = -1;
-  int error = 0;
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
@@ -987,9 +984,7 @@ GameType Select_Serial_Dialog(void) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
-  int tabs[] = {77 * factor};            // tabs for player list box
-  GameType retval;                       // return value
+  GameType retval;  // return value
 
   int selection;
   bool pressed;
@@ -1409,7 +1404,6 @@ GameType Select_Serial_Dialog(void) {
  * HISTORY: * 12/16/96 2:29PM ST : Created *
  *=============================================================================================*/
 void Advanced_Modem_Settings(SerialSettingsType *settings) {
-  int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1776,18 +1770,12 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   int d_baudlist_h = 35 * factor;
   int d_baudlist_x = d_dialog_x + ((d_dialog_w * 5) / 6) - (d_baudlist_w / 2);
   d_baudlist_x -= 32;
-  // int d_baudlist_x = d_portlist_x + d_portlist_w + 20 * factor;
   int d_baudlist_y = d_portlist_y;
 
   int d_baud_w = ((BAUDBUF_MAX - 1) * 6 * factor) + 3 * factor;
   int d_baud_h = 9 * factor;
   int d_baud_x = d_baudlist_x + 31 * factor;
   int d_baud_y = d_baudlist_y - d_margin - d_txt6_h;
-
-  int d_inittype_w = 30 * factor;
-  int d_inittype_h = 9 * factor;
-  int d_inittype_x = d_dialog_x + ((d_dialog_w * 5) / 6) - (d_inittype_w / 2);
-  int d_inittype_y = d_baud_y + 20 * factor;
 
 #endif  // EDIT_IRQ
 
@@ -6392,13 +6380,10 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
   int d_dialog_w = 230 * factor;                       // dialog width
   int d_dialog_h = 105 * factor;                       // dialog height
   int d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
-  //		D_DIALOG_Y = ((200 - D_DIALOG_H) / 2);
-  //// dialog y-coord
   int d_dialog_y = ((136 * factor - d_dialog_h) / 2);  // dialog y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_txt6_h = 11 * factor;  // ht of 6-pt text
-  int d_margin = 7 * factor;   // margin width/height
+  int d_margin = 7 * factor;  // margin width/height
 
   int d_name_w = ((PhoneEntryClass::PHONE_MAX_NAME - 1) * 6) + 3 * factor;
   int d_name_h = 9 * factor;

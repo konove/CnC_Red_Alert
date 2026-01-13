@@ -1816,8 +1816,6 @@ short const *InfantryClass::Overlap_List(void) const {
  *=============================================================================================*/
 FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   Validate();
-  WeaponTypeClass const *weapon =
-      (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
 #ifdef BOXING
   /*
@@ -1838,6 +1836,9 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   if (IsFiring) return (FIRE_REARM);
 
 #ifdef OBSOLETE
+  WeaponTypeClass const *weapon =
+      (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
+
   if (weapon->Fires == BULLET_FLAME && IsProne) return (FIRE_ILLEGAL);
 #endif
 

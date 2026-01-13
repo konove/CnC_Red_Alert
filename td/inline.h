@@ -105,7 +105,6 @@ inline COORDINATE XYPixel_Coord(int x, int y) {
                                (int)(((long)x * (long)ICON_LEPTON_W) /
                                      (long)ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
-// inline int Facing_To_16(int facing) {return Facing16[facing];}
 inline int Facing_To_32(DirType facing) { return Facing32[facing]; }
 inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
   return ((DirType)Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
@@ -119,9 +118,6 @@ inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
   return ((DirType)Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
                                    Coord_X(coord2), Coord_Y(coord2)));
 }
-// inline int Direction16(COORDINATE coord1, COORD coord2) {return
-// (Desired_Facing16(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-// Coord_Y(coord2)));}
 inline DirType Direction(CELL cell1, CELL cell2) {
   return (DirType)(Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
                                    Cell_Y(cell2)));
@@ -144,8 +140,6 @@ inline int Lepton_To_Pixel(int lepton) {
 inline int Pixel_To_Lepton(int pixel) {
   return ((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) / ICON_PIXEL_W;
 }
-// inline FacingType Facing_To_8(DirType facing) {return (FacingType)(((unsigned
-// char)(facing|0x10))>>5);}
 inline COORDINATE XYP_Coord(int x, int y) {
   return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 };
@@ -156,20 +150,20 @@ inline CELL Coord_XCell(COORDINATE coord) {
 inline CELL Coord_YCell(COORDINATE coord) {
   return (CELL)(*(((unsigned char *)&coord) + 3));
 }
-#ifdef PORTABLE
-inline CELL Coord_Cell(COORDINATE coord) {
-  return (CELL)(((*(((unsigned short *)&coord) + 1) & 0xFF00) >> 2) |
-                *(((unsigned char *)&coord) + 1));
+[[nodiscard]] constexpr CELL Coord_Cell(const COORDINATE coord) noexcept {
+  // Capture the 'High Word' processing:
+  // ((coord >> 16) & 0xFF00) clears the 'AL' equivalent (bits 23-16).
+  // Then we shift that right by 2.
+  const uint32_t processed_high = ((coord >> 16) & 0xFF00) >> 2;
+
+  // Capture 'BH' (bits 15-8 of original)
+  const uint8_t original_mid_byte = (coord >> 8) & 0xFF;
+
+  // Combine them.
+  // Note: The 'OR' only affects the bottom 8 bits because 'original_mid_byte'
+  // is 8-bit.
+  return static_cast<CELL>(processed_high | original_mid_byte);
 }
-#else
-CELL Coord_Cell(COORDINATE coord);
-#pragma aux Coord_Cell parm[eax] modify[ebx] value[ax] =              \
-                                                       "mov	ebx,eax"  \
-                                                       "shr	eax,010h" \
-                                                       "xor	al,al"    \
-                                                       "shr	eax,2"    \
-                                                       "or	al,bh"
-#endif
 
 /***********************************************************************************************
  * Distance -- Determines the lepton distance between two coordinates. *
@@ -188,29 +182,7 @@ CELL Coord_Cell(COORDINATE coord);
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-int Distance_Coord(COORDINATE coord1, COORDINATE coord2);
-#pragma aux Distance_Coord parm[eax]             \
-    [ebx] modify[edx ebx] value[eax] =           \
-                                    "mov	dx,ax"  \
-                                    "sub	dx,bx"  \
-                                    "jg	okx"     \
-                                    "neg	dx"     \
-                                    "okx:"       \
-                                    "shr	eax,16" \
-                                    "shr	ebx,16" \
-                                    "sub	ax,bx"  \
-                                    "jg	oky"     \
-                                    "neg	ax"     \
-                                    "oky:"       \
-                                    "cmp	ax,dx"  \
-                                    "jg	ok"      \
-                                    "xchg	ax,dx" \
-                                    "ok:"        \
-                                    "shr	dx,1"   \
-                                    "add	ax,dx"
-
 inline int Distance(COORDINATE coord1, COORDINATE coord2) {
-#ifdef PORTABLE
   int diff1, diff2;
 
   diff1 = Coord_Y(coord1) - Coord_Y(coord2);
@@ -221,9 +193,6 @@ inline int Distance(COORDINATE coord1, COORDINATE coord2) {
     return (diff1 + (diff2 >> 1));
   }
   return (diff2 + (diff1 >> 1));
-#else
-  return (Distance_Coord(coord1, coord2));
-#endif
 }
 
 /***********************************************************************************************

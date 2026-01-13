@@ -547,7 +547,6 @@ int Main_Menu(unsigned long) {
   int d_dialog_h = 100 * RESFACTOR;
   int d_dialog_x = 85 * RESFACTOR;
   int d_dialog_y = 75 * RESFACTOR;
-  int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
 
   int d_start_w = 118 * RESFACTOR;
   int d_start_h = 9 * RESFACTOR;

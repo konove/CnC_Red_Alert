@@ -221,9 +221,7 @@ static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
         */
         if (team != nullptr) {
           ScenarioInit++;
-          bool ok = team->Add(temp);
-          // Mono_Printf("Added to team = %d.\n", ok);Keyboard->Get();
-
+          team->Add(temp);
           ScenarioInit--;
           temp->IsInitiated = true;
         }
@@ -451,8 +449,6 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
   **	Pick the location where the reinforcements appear and then place
   **	them there.
   */
-  bool placed = false;
-
   FacingType eface = (FacingType)(source << 1);  // Facing to enter map.
 
   CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,

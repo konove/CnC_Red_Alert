@@ -175,7 +175,6 @@ void Special_Dialog(bool simple) {
 
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Set_Logic_Page(SeenBuff);
-  bool recalc = true;
   bool display = true;
   bool process = true;
   while (process) {

@@ -1171,7 +1171,6 @@ void Map_Selection(void) {
   ** selection is made?
   */
   int done = 0;
-  int framecounter = 0;
 
   if (house == HOUSE_GOOD) {
     CCFileClass f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");

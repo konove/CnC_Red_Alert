@@ -47,8 +47,6 @@ void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
 
   auto cursor_shape = (Shape_Type *)cursor;
 
-  int datasize = cursor_shape->DataLength;
-
   if (cursor_shape->Width > MaxWidth ||
       cursor_shape->OriginalHeight > MaxHeight)
     return PrevCursor;

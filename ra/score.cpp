@@ -565,8 +565,6 @@ void ScoreClass::Presentation(void) {
 #endif
   Call_Back_Delay(13);
 
-  int scorecounter = 0;
-
   Keyboard->Clear();
 
   /*
@@ -629,9 +627,6 @@ void ScoreClass::Presentation(void) {
   /*
   **	Determine economy rating.
   */
-  int init = PlayerPtr->Control.InitialCredits;
-  int cred = PlayerPtr->Available_Money();
-
   int economy =
       100 * fixed((unsigned)PlayerPtr->Available_Money() + 1 +
                       PlayerPtr->StolenBuildingsCredits,

@@ -805,7 +805,6 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType *path,
   int forceout = false;
   FacingType firstdir = (FacingType)-1;
   CELL firstcell = -1;
-  bool stepped_off_line = false;
   startx = Cell_X(start);
   starty = Cell_Y(start);
   targetx = Cell_X(target);

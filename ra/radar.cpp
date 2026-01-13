@@ -417,8 +417,6 @@ void RadarClass::Draw_It(bool forced) {
       "uradrfrm.shp",  // HOUSE_BAD
   };
 
-  int radarforced = 0;
-
   /*
   **	Don't perform any rendering if none is requested.
   */

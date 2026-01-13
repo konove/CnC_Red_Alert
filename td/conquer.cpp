@@ -3642,19 +3642,12 @@ int Get_CD_Index(int cd_drive, int timeout) {
 bool Force_CD_Available(int cd) {
 #ifndef DEMO
   static int _last = -1;
-  int open_failed;
-  int file;
 #endif
   static char _palette[768];
   static char _hold[256];
   static void *font;
   static char *_volid[] = {"GDI", "NOD", "COVERT"};
 
-  int drive;
-
-  char volume_name[100];
-  unsigned filename_length;
-  unsigned misc_dword;
   int new_cd_drive = 0;
   int cd_index;
   char buffer[128];

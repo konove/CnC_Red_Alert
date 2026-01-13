@@ -86,7 +86,6 @@ void VisualControlsClass::Process(void) {
   int option_height = OPTION_HEIGHT * RESFACTOR;  // Height of dialog box.
   int option_x = OPTION_X * RESFACTOR;
   int option_y = OPTION_Y * RESFACTOR;
-  int text_x = TEXT_X * RESFACTOR;
   int text_y = TEXT_Y * RESFACTOR;
   int slider_x = SLIDER_X * RESFACTOR;
   int slider_y = SLIDER_Y * RESFACTOR;
@@ -95,7 +94,6 @@ void VisualControlsClass::Process(void) {
       SLIDER_HEIGHT * RESFACTOR;  // Height of each control slider.
   int slider_y_spacing =
       SLIDER_Y_SPACING * RESFACTOR;     // Vertical spacing between sliders.
-  int button_x = BUTTON_X * RESFACTOR;  // Options button x pos
   int button_y = BUTTON_Y * RESFACTOR;  // Options button y pos
 
   /*

@@ -246,11 +246,6 @@ NullModemClass::~NullModemClass() {
 #pragma off(unreferenced)
 int NullModemClass::Init(int port, int, char *dev_name, int baud, char parity,
                          int wordlen, int stopbits, int flowcontrol) {
-  int com;
-  // int irqnum;
-  // int address;
-  // int status;
-
 #ifdef _WIN32
   if (PortHandle) {
     CloseHandle(PortHandle);
@@ -752,8 +747,6 @@ int NullModemClass::Service(void) {
   // CCDebugString (port);
   //	}
 
-  bool enabled = false;
-
 #if (0)
   if (SerialPort->FramingErrors || SerialPort->IOErrors ||
       SerialPort->InBufferOverflows || SerialPort->BufferOverruns ||
@@ -1178,24 +1171,13 @@ void Timer_Test(int line, char *file) {
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
 int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
-  /*........................................................................
-  Button Enumerations
-  ........................................................................*/
-  //	enum {
-  //		BUTTON_CANCEL = 100,
-  //	};
-
   int status;
-  //	int modemstatus;
-  int value;
   int error_count = 0;
 
   int x, y, width, height;  // dialog dimensions
   char buffer[80 * 3];
 
   int factor = SeenBuff.Get_Width() / 320;
-
-  // Timer_Test(__LINE__, __FILE__);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.

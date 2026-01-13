@@ -976,7 +976,6 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
 
     TemplateTypeClass const *ttype = nullptr;
     int icon;  // The icon number to use from the template set.
-    CELL cell = Cell_Number();
     void *remap = nullptr;
 #ifdef SCENARIO_EDITOR
     TemplateTypeClass *tptr;
@@ -1003,6 +1002,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
     **	Draw the stamp of the template.
     */
     if (Debug_Icon) {
+      CELL cell = Cell_Number();
       LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
                            Map.TacPixelX + x + ICON_PIXEL_W - 1,
                            Map.TacPixelY + y + ICON_PIXEL_H - 1,

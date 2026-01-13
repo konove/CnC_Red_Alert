@@ -306,9 +306,6 @@ void WinsockInterfaceClass::Discard_Out_Buffers(void) {
  * HISTORY: * 3/20/96 2:54PM ST : Created *
  *=============================================================================================*/
 bool WinsockInterfaceClass::Init(void) {
-  short version;
-  int rc;
-
   /*
   ** Just return true if we are already set up
   */
@@ -336,8 +333,8 @@ bool WinsockInterfaceClass::Init(void) {
   /*
   ** Start WinSock, and fill in our Winsock info structure
   */
-  version = (WINSOCK_MINOR_VER << 8) | WINSOCK_MAJOR_VER;
-  rc = WSAStartup(version, winsock_info);
+  short version = (WINSOCK_MINOR_VER << 8) | WINSOCK_MAJOR_VER;
+  int rc = WSAStartup(version, winsock_info);
   if (rc != 0) {
     char out[128];
     sprintf(out, "TS: Winsock failed to initialise - error code %d.\n",

@@ -244,7 +244,6 @@ void TabClass::AI(KeyNumType &input, int x, int y) {
   if (y >= 0 && y < (TAB_HEIGHT * RESFACTOR) &&
       x < (SeenBuff.Get_Width() - 1) && x > 0) {
     bool ok = false;
-    int width = SeenBuff.Get_Width();
 
     /*
     **	If the mouse is at the top of the screen, then the tab bars only work

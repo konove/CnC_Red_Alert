@@ -152,7 +152,6 @@ int LoadOptionsClass::Process(void) {
   int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
 
   int d_edit_w = d_dialog_w - (x_margin * 2);
-  int d_edit_h = 13 * RESFACTOR;
   int d_edit_x = d_dialog_x + x_margin;
   int d_edit_y = d_list_y + d_list_h - (30 * RESFACTOR) + d_margin + d_txt8_h;
 

@@ -180,7 +180,6 @@ void Send_Statistics_Packet(void) {
   HouseClass *player;
   static int packet_size;
   int index;
-  bool packet_later = false;  // Should the packet be sent later
   void *packet;
 
   static char field_player_handle[5] = {"NAM?"};
@@ -659,7 +658,6 @@ void Send_Statistics_Packet(void) {
   /*
   ** Send it.....
   */
-  int times = 100;  // 100 times max
   CountDownTimerClass send_timer;
 
 #ifdef _WIN32

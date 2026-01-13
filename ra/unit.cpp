@@ -1884,8 +1884,6 @@ int UnitClass::Shape_Number(void) const {
 
   int shapenum;  // Working shape number.
   int facing = Dir_To_32(PrimaryFacing);
-  int tfacing = Dir_To_32(SecondaryFacing);
-  DirType rotation = DIR_N;
 
   /*
   **	This handles the ant case.
@@ -2005,7 +2003,6 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
 
   int shapenum;           // Working shape number.
   void const *shapefile;  // Working shape file pointer.
-  int facing = Dir_To_32(PrimaryFacing);
   int tfacing = Dir_To_32(SecondaryFacing);
   DirType rotation = DIR_N;
   int scale = 0x0100;

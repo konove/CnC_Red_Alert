@@ -254,8 +254,6 @@ NullModemClass::~NullModemClass() {
 int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
                          char parity, int wordlen, int stopbits,
                          int flowcontrol) {
-  int com;
-
 #ifdef WIN32
 
   /*
@@ -406,6 +404,7 @@ int NullModemClass::Init(int port, int irq, char *dev_name, int baud,
   Connection->Init(PortHandle);
 
 #else  // WIN32
+  int com;
 
   switch (port) {
     case 0x3f8:

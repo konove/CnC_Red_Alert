@@ -60,7 +60,6 @@
 
 #include "port/ex_string.h"
 #include "rand.h"
-#include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
 #include "sdllib/include/shape.h"
 #include "td/base.h"
@@ -535,8 +534,6 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
     memset(_ShapeBuffer, '\0', _ShapeBufferSize);
     CCFileClass("MISSION.INI").Read(_ShapeBuffer, _ShapeBufferSize);
 
-    char *buffer =
-        (char *)Add_Long_To_Pointer(_ShapeBuffer, strlen(_ShapeBuffer));
     char *work = &BriefingText[0];
     int index = 1;
 

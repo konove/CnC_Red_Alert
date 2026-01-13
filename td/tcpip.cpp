@@ -196,9 +196,6 @@ void TcpipManagerClass::Close(void) {
  *=============================================================================================*/
 
 bool TcpipManagerClass::Init(void) {
-  short version;
-  int rc;
-
   /*
   ** Just return true if we are already set up
   */
@@ -215,8 +212,8 @@ bool TcpipManagerClass::Init(void) {
   /*
   ** Start WinSock, and fill in our WinSockData
   */
-  version = (WINSOCK_MINOR_VER << 8) | WINSOCK_MAJOR_VER;
-  rc = WSAStartup(version, &WinsockInfo);
+  short version = (WINSOCK_MINOR_VER << 8) | WINSOCK_MAJOR_VER;
+  int rc = WSAStartup(version, &WinsockInfo);
   if (rc != 0) {
     return (false);
   }
@@ -342,7 +339,6 @@ void TcpipManagerClass::Start_Server(void) {
 
 int TcpipManagerClass::Read(void *buffer, int buffer_len) {
   int bytes_copied = 0;
-  char *dest_buf = (char *)buffer;
 
   /*
   ** Make sure the message loop gets called because all the Winsock
@@ -383,8 +379,6 @@ int TcpipManagerClass::Read(void *buffer, int buffer_len) {
  *=============================================================================================*/
 
 void TcpipManagerClass::Write(void *buffer, int buffer_len) {
-  char *source_buf = (char *)buffer;
-
   /*
   ** Copy the data to one of the classes internal buffers
   */
@@ -823,7 +817,6 @@ void TcpipManagerClass::Set_Host_Address(char *address) {
 
 void TcpipManagerClass::Start_Client(void) {
   struct sockaddr_in addr;
-  bool delay = true;
   int i;
 
   addr.sin_family = AF_INET;

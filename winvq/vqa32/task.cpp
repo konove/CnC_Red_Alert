@@ -221,15 +221,6 @@ long VQA_Play(VQAHandle *vqa, long mode) {
   VQAConfig *config;
   VQADrawer *drawer;
   int64_t rc = 0;
-  int64_t key;
-
-#ifdef WIN32
-  unsigned char *pal;
-  int64_t palsize;
-  int64_t slowpal;
-  VQAFrameNode *curframe;
-  int32_t setpalette;
-#endif  // WIN32
 
 #ifdef _WIN32
   /*
@@ -333,34 +324,9 @@ long VQA_Play(VQAHandle *vqa, long mode) {
           if (rc == 0) {
             vqabuf->DrawnFrames++;
             rc = vqabuf->Drawer.LastFrameNum;
-
-#ifdef WIN32never
-            curframe = drawer->CurFrame;
-            pal = curframe->Palette;
-            palsize = curframe->PaletteSize;
-            slowpal = (config->OptionFlags & VQAOPTF_SLOWPAL) ? 1 : 0;
-            if ((curframe->Flags & VQAFRMF_PALETTE) ||
-                (drawer->Flags & VQADRWF_SETPAL)) {
-              setpalette = TRUE;
-            } else {
-              setpalette = FALSE;
-            }
-#endif
-
             if (User_Update(vqa) != 0) {
               vqabuf->Flags |= (VQADATF_DDONE | VQADATF_LDONE);
             }
-#ifdef WIN32never
-            /*
-            ** Set the palette if neccessary
-            */
-            if (setpalette) {
-              SetPalette(pal, palsize, slowpal);
-              curframe->Flags &= ~VQAFRMF_PALETTE;
-              drawer->Flags &= ~VQADRWF_SETPAL;
-            }
-#endif  // WIN32
-
           } else {
             if (rc == VQAERR_EOF) {
               break;

@@ -48,9 +48,7 @@ bool Get_Broadcast_Addresses(void) {
   int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
-  int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // large margin
-  int d_margin2 = 7 * RESFACTOR;     // small margin
+  int d_margin2 = 7 * RESFACTOR;  // small margin
 
   int d_ip_address_list_w = 300 * RESFACTOR;
   int d_ip_address_list_h = ((20 * 6) + 3) * RESFACTOR;  // 6 rows high

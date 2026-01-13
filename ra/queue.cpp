@@ -689,7 +689,6 @@ static void Queue_AI_Multiplayer(void) {
   //........................................................................
   int i;
   RetcodeType rc;
-  int reconnect_dlg = 0;  // 1 = the reconnect dialog is displayed
 
   //------------------------------------------------------------------------
   //	Initialize the packet buffer pointer & its max size

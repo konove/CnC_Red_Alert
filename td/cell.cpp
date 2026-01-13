@@ -1866,8 +1866,6 @@ long CellClass::Tiberium_Adjust(bool pregame) {
       ** (Skip those cells which aren't on the map)
       */
       for (FacingType face = FACING_FIRST; face < FACING_COUNT; face++) {
-        CELL cell = Cell_Number() + AdjacentCell[face];
-
         CellClass &adj = Adjacent_Cell(face);
 
         if (adj.Overlay != OVERLAY_NONE &&

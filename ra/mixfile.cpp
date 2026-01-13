@@ -207,13 +207,6 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
   } alternate;
 
   /*
-  **	Fetch the first bit of the file. From this bit, it is possible to detect
-  **	whether this is an extended mixfile format or the plain format. An
-  **	extended format may have extra options or data layout.
-  */
-  int got = straw->Get(&alternate, sizeof(alternate));
-
-  /*
   **	Detect if this is an extended mixfile. If so, then see if it is
   *encrypted *	and/or has a message digest attached. Otherwise, just retrieve
   *the *	plain mixfile header.

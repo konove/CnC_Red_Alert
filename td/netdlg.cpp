@@ -4811,19 +4811,14 @@ static int Net_Fake_Join_Dialog(void) {
   int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_margin1 = 10;
-  int d_txt6_h = 15;
-
   int d_gamelist_w = 160 * factor;
   int d_gamelist_h = 27 * factor;
-  int d_gamelist_x = 500 * factor;  // 230*factor;	//Off screen
-  // int d_gamelist_x = 230*factor;	//Off screen
+  int d_gamelist_x = 500 * factor;  // Off screen
   int d_gamelist_y = d_dialog_y + 20;
 
   int d_playerlist_w = 106 * factor;
   int d_playerlist_h = 27 * factor;
-  // int d_playerlist_x = 10 * factor;	//Off screen
-  int d_playerlist_x = 500 * factor;  // 10 * factor;	//Off screen
+  int d_playerlist_x = 500 * factor;  // Off screen
   int d_playerlist_y = d_gamelist_y + 20;
 
 #if (GERMAN | FRENCH)
@@ -4884,7 +4879,6 @@ static int Net_Fake_Join_Dialog(void) {
   KeyNumType input;
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
-  char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New

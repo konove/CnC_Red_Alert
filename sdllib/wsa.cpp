@@ -586,8 +586,6 @@ void Apply_XOR_Delta_To_Page_Or_Viewport(void *target, void *delta, int width,
 
   int x = 0;
 
-  auto ot = target;
-
   if (copy == DO_XOR) {
     // mostly duplicated from Apply_XOR_Delta
     // except for the row checks

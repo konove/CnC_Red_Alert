@@ -559,15 +559,9 @@ void IPXConnClass::Close_Socket(unsigned short socket) {
 #pragma off(unreferenced)
 int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
                           NetNodeType immed) {
-  void *hdr_ptr;
-  void *buf_ptr;
-  unsigned long hdr_val;
-  unsigned long buf_val;
   NetNumType net;
   NetNodeType node;
   int rc;
-
-  unsigned short target_mask;
 
   unsigned char send_address[6];
 
@@ -583,7 +577,7 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
     ** Use first two bytes of ipx address as target mask
     */
     unsigned short *maskptr = (unsigned short *)&send_address[0];
-    target_mask = *maskptr;
+    unsigned short target_mask = *maskptr;
 
     char *tempsend = new char[buflen + sizeof(target_mask)];
 

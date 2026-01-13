@@ -290,7 +290,6 @@ void TeamClass::AI(void) {
   Validate();
   int desired = 0;
   int old_under = IsUnderStrength;
-  int old_full = IsFullStrength;
 
   /*
   ** If the team has been suspended then we need to check if its time for
@@ -1469,7 +1468,6 @@ void TeamClass::Suspend_Teams(int priority) {
     **	destroyed. The team members are then free to be reassigned.
     */
     if (team && team->Class->RecruitPriority < priority) {
-      FootClass *unit = team->Member;
       while (team->Member) {
         team->Remove(team->Member);
       }

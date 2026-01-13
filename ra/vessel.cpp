@@ -371,8 +371,6 @@ int VesselClass::Shape_Number(void) const {
   /*
   **	For eight facing units, adjust the facing number accordingly.
   */
-  FacingType facing = Dir_Facing(PrimaryFacing.Current());
-
   int shapenum = UnitClass::BodyShape[Dir_To_16(PrimaryFacing) * 2] >> 1;
 
   /*
@@ -427,7 +425,6 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	with the render process.
   */
   if (Visual_Character() != VISUAL_HIDDEN) {
-    int facing = Dir_To_32(PrimaryFacing);
     int tfacing = Dir_To_32(SecondaryFacing);
     DirType rotation = DIR_N;
     int scale = 0x0100;
@@ -718,8 +715,6 @@ void VesselClass::Per_Cell_Process(PCPType why) {
   BStart(BENCH_PCP);
 
   if (why == PCP_END) {
-    CELL cell = Coord_Cell(Coord);
-
     /*
     **	The unit performs looking around at this time. If the
     **	unit moved further than one square during the last track
@@ -1467,7 +1462,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
           */
           if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
             CELL cell;
-            DirType dir = Desired_Load_Dir(from, cell);
+            Desired_Load_Dir(from, cell);
 
             /*
             **	If no adjacent free cells are detected, then passenger loading

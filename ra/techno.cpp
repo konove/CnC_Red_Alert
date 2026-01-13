@@ -4770,7 +4770,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     int weakest = 0;
     int desired = enemy->Risk() * House->Control.TechLevel;
     int risktotal = 0;
-    int zone = Map[Center_Coord()].Zones[Techno_Type_Class()->MZone];
 
     /*
     ** Humans have to deal with their own base is attacked problems.
@@ -5587,7 +5586,6 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         int greenpips = pips * fixed(nickel, Rule.BailCount);
 
         while (greenpips + graypips < pips) {
-          int ironnickelmax = std::max(iron, nickel);
           if (iron > nickel) {
             graypips++;
           } else {

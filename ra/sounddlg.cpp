@@ -138,15 +138,6 @@ void SoundControlsClass::Process(void) {
   int fxslider_w = FXSLIDER_W * RESFACTOR;
   int fxslider_height = FXSLIDER_HEIGHT * RESFACTOR;
 
-  int button_stop = BUTTON_STOP;
-  int button_play = BUTTON_PLAY;
-  int button_shuffle = BUTTON_SHUFFLE;
-  int button_repeat = BUTTON_REPEAT;
-  int button_options = BUTTON_OPTIONS;
-  int slider_music = SLIDER_MUSIC;
-  int slider_sound = SLIDER_SOUND;
-  int button_listbox = BUTTON_LISTBOX;
-
   RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
   //	ThemeType theme;
 

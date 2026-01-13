@@ -1468,7 +1468,6 @@ static int Net_Join_Dialog(void) {
   int d_join_y = d_dialog_y + d_dialog_h - d_join_h - 8 * RESFACTOR;
 
   int d_cancel_w = 50 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y = d_join_y;
 
@@ -1477,7 +1476,6 @@ static int Net_Join_Dialog(void) {
 #else
   int d_new_w = 40 * RESFACTOR;
 #endif
-  int d_new_h = 9 * RESFACTOR;
   int d_new_x = d_dialog_x + ((d_dialog_w * 5) / 6) - (d_new_w / 2);
   int d_new_y = d_join_y;
 
@@ -1539,7 +1537,6 @@ static int Net_Join_Dialog(void) {
       d_color_x + (d_color_w * 7),
   };
   char housetext[25] = "";  // buffer for house droplist
-  int isdropped = 0;
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
@@ -7551,11 +7548,9 @@ static int Net_Fake_New_Dialog(void) {
 
   int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
   int d_margin1 = 5 * RESFACTOR;     // margin width/height
-  int d_margin2 = 2 * RESFACTOR;     // margin width/height
 
   int d_playerlist_w = 118 * RESFACTOR;
   int d_playerlist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
-  // int d_playerlist_x = d_dialog_x + d_margin1 + d_margin1;
   int d_playerlist_x = 500 * RESFACTOR;
   int d_playerlist_y = d_dialog_y + d_margin1 + d_txt6_h;
 
@@ -7601,8 +7596,7 @@ static int Net_Fake_New_Dialog(void) {
   int rc;
   int i;
   char *item;
-  int tabs[] = {77};       // tabs for player list box
-  int optiontabs[] = {8};  // tabs for option list box
+  int tabs[] = {77};  // tabs for player list box
 
   NodeNameType *who;    // node to add to Players
   long ping_timer = 0;  // for sending Ping packets
@@ -8344,23 +8338,17 @@ static int Net_Fake_Join_Dialog(void) {
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
   int d_txt6_h = 6 * RESFACTOR + 1;  // ht of 6-pt text
-  int d_margin1 = 5 * RESFACTOR;     // large margin
   int d_margin2 = 7 * RESFACTOR;     // small margin
 
   int d_gamelist_w = 160 * RESFACTOR;
   int d_gamelist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
-  //		int d_gamelist_x = d_dialog_x + d_margin1 + d_margin1;
-  int d_gamelist_x = 500 * RESFACTOR;  // d_dialog_x + d_margin1 + d_margin1;
-  int d_gamelist_y =
-      50 + d_margin2 + 2 * RESFACTOR /*KO + d_txt6_h + d_margin2*/;
+  int d_gamelist_x = 500 * RESFACTOR;
+  int d_gamelist_y = 50 + d_margin2 + 2 * RESFACTOR;
 
   int d_playerlist_w = 118 * RESFACTOR;
   int d_playerlist_h = ((6 * 6) + 3) * RESFACTOR;  // 6 rows high
-  // int d_playerlist_x = d_dialog_x + d_dialog_w - d_margin1 - d_margin1 -
-  // d_playerlist_w;
   int d_playerlist_x = 500 * RESFACTOR;
-  int d_playerlist_y =
-      50 + d_margin2 + 2 * RESFACTOR /*KO + d_txt6_h + d_margin2*/;
+  int d_playerlist_y = 50 + d_margin2 + 2 * RESFACTOR;
 
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * RESFACTOR;
@@ -8399,13 +8387,10 @@ static int Net_Fake_Join_Dialog(void) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  char housetext[25] = "";  // buffer for house droplist
-  int isdropped = 0;
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   char namebuf[MPLAYER_NAME_MAX] = {0};    // buffer for player's name
   int playertabs[] = {77 * RESFACTOR};     // tabs for player list box
-  int optiontabs[] = {8};                  // tabs for player list box
   int game_index = -1;                     // index of currently-selected game
   int join_index = -1;                     // index of game we're joining
   int rc = 0;                              // -1 = user cancelled, 1 = New
@@ -8415,9 +8400,7 @@ static int Net_Fake_Join_Dialog(void) {
   NodeNameType *who;                       // node to add to Players
   RejectType why;                          // reason for rejection
   TTimerClass<SystemTimerClass> lastclick_timer;  // time b/w send periods
-  int lastclick_idx = 0;  // index of item last clicked on
   RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
-  int ready_to_go = 0;
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
   int width;

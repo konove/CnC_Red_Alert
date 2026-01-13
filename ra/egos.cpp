@@ -668,9 +668,7 @@ void Show_Who_Was_Responsible(void) {
   /*
   ** Copy the font palette entries into the combo palette.
   */
-  PaletteClass credit_palette;
   ComboPalPtr = (unsigned char *)&ComboPalette;
-  unsigned char *creditpal_ptr = (unsigned char *)&credit_palette;
   memcpy(ComboPalette, CCPalette, sizeof(ComboPalette));
 
   for (int index = 0; index < 256; index++) {

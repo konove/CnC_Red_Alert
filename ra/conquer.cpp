@@ -4122,20 +4122,6 @@ void Handle_View(int view, int action) {
 #define ROR_NOT_READY 21
 #endif
 
-static char const *_CD_Volume_Label[] = {
-    "CD1",
-    "CD2",
-    "CD3",
-    "CD4",
-// Denzil 4/15/98
-#ifdef DVD
-    "CD1",  //	ajw - Pushes RADVD to position 5, to match enum in
-            // Force_CD_Available(). 4 will never be returned here.
-    "RADVD",
-#endif
-};
-static int _Num_Volumes = ARRAY_SIZE(_CD_Volume_Label);
-
 #ifdef WIN32
 /***********************************************************************************************
  * Get_CD_Index -- returns the volume type of the CD in the given drive *

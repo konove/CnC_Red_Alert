@@ -428,7 +428,6 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
     **	will perform when killed.
     */
     bool delthis = false;
-    TARGET us = As_Target();
     switch (WarheadTypeClass::As_Pointer(warhead)->InfantryDeath) {
       default:
       case 0:
@@ -900,8 +899,6 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           Scatter(Adjacent_Cell(Coord, PrimaryFacing), true, true);
           Assign_Mission(MISSION_MOVE);
 
-          CELL cell = Coord_Cell(Center_Coord());
-          CellClass *cellptr = &Map[cell];
           if (!Target_Legal(NavCom) ||
               Map[As_Cell(NavCom)].Land_Type() == LAND_WATER) {
             Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
@@ -1101,11 +1098,6 @@ void InfantryClass::Assign_Destination(TARGET target) {
       !Class->IsFraidyCat && !Class->IsDog) {
     Do_Action(DO_GET_UP);
   }
-
-  /*
-  ** If telling a dog to attack a human, start the dog running
-  */
-  TechnoClass *tech = As_Techno(target);
 
   /*
   **	Handle entry logic here.

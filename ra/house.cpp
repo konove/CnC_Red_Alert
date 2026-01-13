@@ -2692,7 +2692,6 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   CHECK_EQ(Houses.ID(this), ID);
 
   BuildingClass *launchsite = nullptr;
-  AnimClass *anim = nullptr;
   switch (id) {
     case SPC_SONAR_PULSE:
       // Automatically discharge the sonar pulse and uncloak all subs.
@@ -4624,10 +4623,6 @@ void HouseClass::Recalc_Center(void) {
 int HouseClass::Expert_AI(void) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  BuildingClass *b = nullptr;
-  bool stop = false;
-  int time = TICKS_PER_SECOND * 10;
-
   /*
   **	If the current enemy no longer has a base or is defeated, then don't
   *consider *	that house a threat anymore. Clear out the enemy record and then
@@ -5460,7 +5455,6 @@ int HouseClass::AI_Building(void) {
 
     BuildChoice.Free_All();
     BuildChoiceClass *choiceptr;
-    StructType stype = STRUCT_NONE;
     int money = Available_Money();
     int level = Control.TechLevel;
     bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
@@ -6094,7 +6088,6 @@ int HouseClass::AI_Infantry(void) {
   if (CurInfantry >= Control.MaxInfantry) return (TICKS_PER_SECOND);
 
   if (Session.Type == GAME_NORMAL) {
-    TechnoTypeClass const *techno = nullptr;
     int counter[INFANTRY_COUNT];
     memset(counter, 0x00, sizeof(counter));
 

@@ -49,9 +49,6 @@ int Buffer_Get_Pixel(void *thisptr, int x, int y) {
 void Buffer_Clear(void *thisptr, unsigned char color) {
   auto vp_dst = (GraphicViewPortClass *)thisptr;
 
-  int sx = 0;
-  int sy = 0;
-
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset();
 
@@ -247,11 +244,9 @@ bool Linear_Blit_To_Linear(void *thisptr, void *dest, int x_pixel, int y_pixel,
 
   int src_area = vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto src_offset = vp_src->Get_Offset() + src_x0 + src_y0 * src_area;
-  int src_adjust_width = src_area + src_x0 - src_x1;
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
-  int dst_adjust_width = dst_area + dst_x0 - dst_x1;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) return true;
 

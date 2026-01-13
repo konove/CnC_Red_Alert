@@ -10,8 +10,7 @@ int Extract_Shape_Count(void const *buffer) {
 
 void *Extract_Shape(void const *buffer, int shape) {
   ShapeBlock_Type *block = (ShapeBlock_Type *)buffer;
-  int numshapes;  // Number of shapes
-  long offset;    // Offset of shape data, from start of block
+  long offset;  // Offset of shape data, from start of block
   char *bytebuf = (char *)buffer;
 
   /*

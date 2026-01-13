@@ -1265,7 +1265,6 @@ int Surrender_Dialog(void) {
   int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // coord of x-center
 
-  int d_txt6_h = 6 * factor + 1;  // ht of 6-pt text
   int d_margin = 5 * factor;      // margin width/height
   int d_topmargin = 20 * factor;  // top margin
 

@@ -684,9 +684,6 @@ bool Do_The_Internet_Menu_Thang(void) {
   int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
 
-  int d_margin1 = 10;
-  int d_txt6_h = 15;
-
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * factor;
 #else
@@ -695,8 +692,6 @@ bool Do_The_Internet_Menu_Thang(void) {
   int d_cancel_h = 9 * factor;
   int d_cancel_x = d_dialog_cx - d_cancel_w / 2;
   int d_cancel_y = d_dialog_y + d_dialog_h - 20 * factor;
-
-  char packet[10] = {"Hello"};
 
 #if (GERMAN | FRENCH)
   int width = 160 * factor;

@@ -1600,7 +1600,6 @@ void TechnoClass::AI(void) {
         }
       }
     } else {
-      VisualType pre = Visual_Character(true);
       CloakingDevice.Graphic_Logic();
       switch (Cloak) {
         /*
@@ -2185,7 +2184,6 @@ ActionType TechnoClass::What_Action(ObjectClass *object) const {
     /*
     **	If firing is possible and legal, then return this action potential.
     */
-    bool control = Keyboard::Down(KN_LCTRL) || Keyboard::Down(KN_RCTRL);
     if (IsOwnedByPlayer && (ctrldown || !House->Is_Ally(object)) &&
         (ctrldown || object->Class_Of().IsLegalTarget ||
          (Special.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) {

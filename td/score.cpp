@@ -761,10 +761,6 @@ void ScoreClass::Presentation(void) {
   /*
   **	Determine efficiency rating.
   */
-  int gharv = GHarvested;
-  int init = PlayerPtr->InitialCredits;
-  int cred = PlayerPtr->Available_Money();
-
   unsigned efficiency =
       Cardinal_To_Fixed((house == HOUSE_GOOD ? GHarvested : NHarvested) +
                             (unsigned)PlayerPtr->InitialCredits + 1,

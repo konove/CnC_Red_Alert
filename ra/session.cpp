@@ -1388,7 +1388,6 @@ void SessionClass::Read_Scenario_Descriptions(void) {
   * appropriate entries
   **  into the scenario list list
   */
-  char const *file_name;
   char name_buffer[128];
   char digest_buffer[32];
 

@@ -320,9 +320,6 @@ void SidebarClass::Init_IO(void) {
   /*
   ** Add the sidebar's buttons only if we're not in editor mode.
   */
-  int buttonspacing =
-      (SideBarWidth - (ButtonOneWidth + ButtonTwoWidth + ButtonThreeWidth)) / 4;
-
   if (!Debug_Map) {
     /*
     ** Set the button widths based on the string that goes in them.
@@ -348,13 +345,6 @@ void SidebarClass::Init_IO(void) {
     Upgrade.Width = maxwidth;
     Zoom.Width = maxwidth;
 #endif
-
-    /*
-    ** find the spacing between buttons by getting remaining width
-    ** and dividing it between the buttons.
-    */
-    int buttonspacing =
-        (SideBarWidth - (Repair.Width + Upgrade.Width + Zoom.Width)) / 4;
 
     Repair.IsSticky = true;
     Repair.ID = BUTTON_REPAIR;
@@ -450,8 +440,6 @@ void SidebarClass::Init_IO(void) {
     if (IsSidebarActive) {
       IsSidebarActive = false;
       Activate(1);
-      //			Background.Zap();
-      //			Add_A_Button(Background);
     }
   }
 }
@@ -1010,10 +998,7 @@ bool SidebarClass::Activate(int control) {
   bool old = IsSidebarActive;
 
   int sidex = SeenBuff.Get_Width() - SideBarWidth;
-  int sidey = Map.RadY + Map.RadHeight;
-  int topheight = 13;
   int sidewidth = SeenBuff.Get_Width() - sidex;
-  int sideheight = SeenBuff.Get_Height() - sidey;
 
   if (PlaybackGame) return (old);
 

@@ -201,7 +201,6 @@ bool Expansion_Dialog(void) {
   }
 
   Set_Logic_Page(SeenBuff);
-  bool recalc = true;
   bool display = true;
   bool process = true;
   bool okval = true;
@@ -326,7 +325,6 @@ bool Bonus_Dialog(void) {
   /*
   **	Add in all the expansion scenarios.
   */
-  char *sbuffer = (char *)_ShapeBuffer;
   int gdi_scen_names[3] = {TXT_BONUS_MISSION_1, TXT_BONUS_MISSION_2,
                            TXT_BONUS_MISSION_3};
 
@@ -363,7 +361,6 @@ bool Bonus_Dialog(void) {
   }
 
   Set_Logic_Page(SeenBuff);
-  bool recalc = true;
   bool display = true;
   bool process = true;
   bool okval = true;

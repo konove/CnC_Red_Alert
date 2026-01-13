@@ -502,7 +502,6 @@ void TeamClass::AI(void) {
 
   int desired = 0;
   int old_under = IsUnderStrength;
-  int old_full = IsFullStrength;
 
   /*
   ** If the team has been suspended then we need to check if it's time for
@@ -2367,7 +2366,6 @@ void TeamClass::Suspend_Teams(int priority, HouseClass const *house) {
     */
     if (team != nullptr && team->House == house &&
         team->Class->RecruitPriority < priority) {
-      FootClass *unit = team->Member;
       while (team->Member) {
         team->Remove(team->Member);
       }

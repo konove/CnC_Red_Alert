@@ -490,7 +490,6 @@ bool Select_Game(bool fade) {
 #endif
 
   int cdcheck = 0;
-  bool cs = Is_Counterstrike_Installed();
 
   //	#ifndef DVD // Denzil - We want the menu screen			ajw No
   // we don't 	if (Special.IsFromInstall) { 		display = false;

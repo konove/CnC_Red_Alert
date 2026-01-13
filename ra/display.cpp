@@ -702,8 +702,6 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
   short const *ptr;
   int retval = -1;
   bool noradar = false;
-  bool nomapped = false;
-  bool shipyard = false;
 
   if (house == PlayerPtr->Class->House) {
     PassedProximity = false;
@@ -751,11 +749,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const *object,
 
         if (!In_Radar(newcell)) continue;
 
-        if (!(*this)[newcell].IsMapped) {
-          nomapped = true;
-        }
         TechnoClass *base = (*this)[newcell].Cell_Techno();
-
         /*
         **	The special cell ownership flag allows building adjacent
         **	to friendly walls and bibs even though there is no official
@@ -3493,7 +3487,6 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         *selected and each *	might perform a different action when the click
         *occurs.
         */
-        bool doflash = true;
         AllowVoice = true;
         FormMove = false;
         FormSpeed = SPEED_WHEEL;
@@ -3608,7 +3601,6 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             ** in formation when they arrive.
             */
             CELL newmove = cell;
-            int whatami = tobject->What_Am_I();
             if (action == ACTION_MOVE && tobject->Is_Foot()) {
               int oldisform;
               FootClass *foot = (FootClass *)tobject;

@@ -884,7 +884,7 @@ bool Load_Game(int id) {
   */
   CCINIClass ini;
   CCFileClass fc(Scen.ScenarioName);
-  int result = ini.Load(fc, true);
+  ini.Load(fc, true);
 
   /*
   **	Reset the rules values to their initial settings.

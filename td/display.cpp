@@ -3361,7 +3361,6 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         *selected and each *	might perform a different action when the click
         *occurs.
         */
-        bool doflash = true;
         AllowVoice = true;
         for (int index = 0; index < CurrentObject.Count(); index++) {
           ObjectClass *tobject = CurrentObject[index];

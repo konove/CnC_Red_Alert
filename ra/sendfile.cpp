@@ -236,9 +236,6 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
   int d_dialog_y = ((200 * RESFACTOR - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
-  int d_margin1 = 10;
-  int d_txt6_h = 15;
-
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * RESFACTOR;
 #else
@@ -526,9 +523,6 @@ bool Send_Remote_File(char *file_name, int gametype) {
   int d_dialog_x = ((320 * factor - d_dialog_w) / 2);  // dialog x-coord
   int d_dialog_y = ((200 * factor - d_dialog_h) / 2);  // centered y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);     // center x-coord
-
-  int d_margin1 = 10;
-  int d_txt6_h = 15;
 
 #if (GERMAN | FRENCH)
   int d_cancel_w = 50 * factor;

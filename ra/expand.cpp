@@ -445,7 +445,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   }
 
   Set_Logic_Page(SeenBuff);
-  bool recalc = true;
   bool display = true;
   bool process = true;
   bool okval = true;

@@ -270,7 +270,6 @@ static void ResetStream(ChannelState &chan, AUDHeaderType *header) {
 }
 
 static void SDL_Audio_Callback(void *userdata, Uint8 *stream, int len) {
-  int samples = len / sizeof(int16_t);
   memset(stream, 0, len);
   auto stream16 = (int16_t *)stream;
 
@@ -410,7 +409,6 @@ void Sound_Callback(void) {
     } else {
       // read block
       auto in_size = block_header[0];
-      auto out_size = block_header[1];
 
       uint8_t *buf = new uint8_t[in_size];
 

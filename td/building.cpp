@@ -4878,7 +4878,6 @@ void BuildingClass::Hidden(void) {
 CELL BuildingClass::Find_Exit_Cell(TechnoClass const *techno) const {
   CELL const *ptr;
   CELL origin = Coord_Cell(Coord);
-  bool found = false;
 
   ptr = Class->ExitList;
   if (ptr) {

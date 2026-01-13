@@ -77,7 +77,6 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
   int Error = 0;
   int Decimal = 0;
   // this is used if I walk in Y
-  int buffwidth = srcvp->Get_Width() + srcvp->Get_XAdd();
   int buffwid2 = destvp->Get_Width() + destvp->Get_XAdd();
   char* dest;
   char* src;
@@ -244,16 +243,11 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
       xinc = -1;
     }
     int yinc = 1;
-    int yinc1 = 1;
     if (Deltay < 0) {
       Deltay = -Deltay;
       buffwid2 = -buffwid2;
     }
     Decimal = (Deltax << shift) / Deltay;
-    // walk in X
-
-    int Deltax2 = Deltax << shift;
-    int Deltay2 = Deltay << shift;
 
     // this is the ratio between the source height and the dest height
     // as the rectangle rotates the height and width change
@@ -309,7 +303,6 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
     }
     return 0;
   } else {  // else we walk in X
-    int lasterror = 0;
     Error = 0;
     // start at left top corner in src and dest
 
@@ -339,11 +332,6 @@ int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
     }
 
     Decimal = (Deltay << shift) / Deltax;
-    // walk in X
-
-    int Deltax2 = Deltax << shift;
-    int Deltay2 = Deltay << shift;
-
     // this is the ratios between the source width and the dest width
     // as the rectangle rotates the actual size changes!
 

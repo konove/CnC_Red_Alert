@@ -807,7 +807,6 @@ bool BuildingClass::Mark(MarkType mark) {
   assert(IsActive);
 
   if (TechnoClass::Mark(mark)) {
-    short const *offset = Overlap_List();
     short const *occupy = Occupy_List();
     CELL cell = Coord_Cell(Coord);
     SmudgeType bib;
@@ -1988,8 +1987,6 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
   assert(IsActive);
 
   if (!base) return (0);
-
-  TechnoTypeClass const *ttype = (TechnoTypeClass const *)&base->Class_Of();
 
   /*
   **	A unit exiting a building is always considered to be "locked". That

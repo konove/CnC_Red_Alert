@@ -949,9 +949,6 @@ void Destroy_Null_Connection(int id, int error) {
  *=========================================================================*/
 GameType Select_Serial_Dialog(void) {
   int rc;
-  //	int value, i;
-  int com = -1, baud = -1;
-  int error = 0;
 
   /*
   ** Dialog & button dimensions
@@ -1021,9 +1018,7 @@ GameType Select_Serial_Dialog(void) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
-  int tabs[] = {77 * RESFACTOR};         // tabs for player list box
-  GameType retval;                       // return value
+  GameType retval;  // return value
 
   int selection;
   bool pressed;
@@ -1733,15 +1728,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   int d_port_h = 9 * RESFACTOR;
   int d_port_y = d_portlist_y - d_margin - d_txt6_h;
 
-  int d_irqlist_w = 80 * RESFACTOR;
-  int d_irqlist_h = 33 * RESFACTOR;
-  int d_irqlist_x = d_dialog_x + (d_dialog_w / 2) - (d_irqlist_w / 2);
   int d_irqlist_y = d_portlist_y;
-
-  int d_irq_w = ((IRQBUF_MAX - 1) * 6 * RESFACTOR) + 3 * RESFACTOR;
-  int d_irq_h = 9 * RESFACTOR;
-  int d_irq_x = d_irqlist_x + 25 * RESFACTOR;
-  int d_irq_y = d_irqlist_y - d_margin - d_txt6_h;
 
   int d_baudlist_w = 80 * RESFACTOR;
   int d_baudlist_h = 33 * RESFACTOR;
@@ -1867,13 +1854,6 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
-  static char const *portname[4] = {
-      "COM1 - 3F8",
-      "COM2 - 2F8",
-      "COM3 - 3E8",
-      "COM4 - 2E8",
-  };
-
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
 
 #ifndef WIN32  // No IRQ dialog in Win version
@@ -1905,14 +1885,12 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
 
   char portbuf[PORTBUF_MAX] = {0};          // buffer for port
-  char irqbuf[IRQBUF_MAX] = {0};            // buffer for irq
   char baudbuf[BAUDBUF_MAX] = {0};          // buffer for baud
   char initstrbuf[INITSTRBUF_MAX] = {0};    // buffer for init string
   char cwaitstrbuf[CWAITSTRBUF_MAX] = {0};  // buffer for call waiting string
 
   int port_index = 1;  // index of currently-selected port (default = com2)
   int port_custom_index = 4;  // index of custom entry in port list
-  int irq_index = 1;          // index of currently-selected irq (default = 3)
   int baud_index = 1;  // index of currently-selected baud (default = 19200)
   int initstr_index =
       0;  // index of currently-selected modem init (default = "ATZ")
@@ -5020,7 +4998,6 @@ int Com_Show_Scenario_Dialog(void) {
   int d_send_y = d_message_y + d_message_h;
 
   int d_cancel_w = 45 * RESFACTOR;
-  int d_cancel_h = 9 * RESFACTOR;
   int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   int d_cancel_y = d_send_y + d_send_h /*KO + d_margin2*/;
 
@@ -5444,8 +5421,6 @@ int Com_Show_Scenario_Dialog(void) {
         if (display >= REDRAW_PARMS && parms_received) {
           if (oppscorescreen) {
             sprintf(txt, "%s", Text_String(TXT_WAITING_FOR_OPPONENT));
-
-            int txtwidth = String_Pixel_Width(txt);
 
             Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, TBLACK,
                              TPF_CENTER | TPF_TEXT);
@@ -7100,7 +7075,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
   int d_dialog_y = ((136 * RESFACTOR - d_dialog_h) / 2);  // dialog y-coord
   int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);        // center x-coord
 
-  int d_txt6_h = 7 * RESFACTOR;  // ht of 6-pt text
   int d_margin = 7 * RESFACTOR;  // margin width/height
 
   int d_name_w =
