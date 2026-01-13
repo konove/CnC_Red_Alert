@@ -2736,7 +2736,6 @@ void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos, int ypos,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-#pragma off(unreferenced)
 void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
                    void const *fadingdata, void const *ghostdata) {

@@ -311,7 +311,6 @@ unsigned XMP_Encode(unsigned char *to, unsigned tobytes, uint32_t const *from,
  *                                                                                             *
  * HISTORY: * 07/01/1996 JLB : Created. *
  *=============================================================================================*/
-#pragma warning 364 9
 unsigned XMP_Encode(unsigned char *to, uint32_t const *from, int precision) {
   assert(to != nullptr);
   assert(from != nullptr);

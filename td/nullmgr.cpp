@@ -243,7 +243,6 @@ NullModemClass::~NullModemClass() {
  *=========================================================================*/
 // int NullModemClass::Init (int port, int irq, int baud, char parity, int
 // wordlen, int stopbits)
-#pragma off(unreferenced)
 int NullModemClass::Init(int port, int, char *dev_name, int baud, char parity,
                          int wordlen, int stopbits, int flowcontrol) {
 #ifdef _WIN32

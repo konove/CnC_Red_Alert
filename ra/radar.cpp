@@ -1428,7 +1428,6 @@ bool RadarClass::UnJam_Cell(CELL cell, HouseClass *house) {
  *                                                                                             *
  * HISTORY: * 05/22/1991 JLB : Created. * 11/17/1995 PWG : Created. *
  *=============================================================================================*/
-#pragma argsused
 void RadarClass::Radar_Cursor(int forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;

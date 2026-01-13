@@ -72,17 +72,10 @@
 
 #include "ra/inline.h"
 
-extern void output(short port, short data);
-#pragma aux output parm[dx][ax] =           \
-                                "out	dx,al" \
-                                "inc	dx"    \
-                                "mov	al,ah" \
-                                "out	dx,al"
+void output(short port, short data);
 
 bool MonoClass::Enabled = 0;
 MonoClass *MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES];
-// MonoClass::MonoPageType * MonoClass::MonoRAM = (MonoClass::MonoPageType *)
-// 0xB0000;
 
 /*
 **	These are the IBM linedraw characters.
@@ -93,20 +86,6 @@ MonoClass::BoxDataType const MonoClass::CharData[MonoClass::COUNT] = {
     {0xD6, 0xC4, 0xB7, 0xBA, 0xBD, 0xC4, 0xD3, 0xBA},  // Double vert.
     {0xC9, 0xCD, 0xBB, 0xBA, 0xBC, 0xCD, 0xC8, 0xBA}   // Double horz and vert.
 };
-
-#ifdef NEVER
-template <class T>
-T min(T a, T b) {
-  if (a < b) return (a);
-  return (b);
-}
-
-template <class T>
-T max(T a, T b) {
-  if (a > b) return (a);
-  return (b);
-}
-#endif
 
 /***********************************************************************************************
  * MonoClass::MonoClass -- The default constructor for monochrome screen object.

@@ -95,9 +95,6 @@ extern ModemRegistryEntryClass *ModemRegistry;
 #include "i86.h"
 #endif  // WIN32
 
-// Turn off "expression is not meaningful".
-#pragma warning 628 9
-
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
 // because of other define conflicts
 

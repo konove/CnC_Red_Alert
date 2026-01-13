@@ -1188,7 +1188,6 @@ void Toggle_Formation(void) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 BRR : Created. *
  *=============================================================================================*/
-#pragma off(unreferenced)
 static void Message_Input(KeyNumType &input) {
   int rc;
   char txt[MAX_MESSAGE_LENGTH + 32];
@@ -1560,7 +1559,6 @@ static void Message_Input(KeyNumType &input) {
     Map.Flag_To_Redraw(true);
   }
 }
-#pragma on(unreferenced)
 
 /***********************************************************************************************
  * Color_Cycle -- Handle the general palette color cycling. *

@@ -556,7 +556,6 @@ void IPXConnClass::Close_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-#pragma off(unreferenced)
 int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
                           NetNodeType immed) {
   NetNumType net;
@@ -637,7 +636,6 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
   return (IPX_Send_Packet95(&send_address[0], (unsigned char *)buf, buflen,
                             (unsigned char *)net, (unsigned char *)node));
 }
-#pragma on(unreferenced)
 
 /***************************************************************************
  * IPXConnClass::Broadcast -- broadcasts the given packet

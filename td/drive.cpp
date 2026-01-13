@@ -1635,7 +1635,6 @@ ObjectTypeClass const &DriveClass::Class_Of(void) const { return *Class; }
 **	Track 11= back up into refinery
 **	Track 12= drive out of refinery
 */
-#pragma warn - ias
 DriveClass::TrackType const DriveClass::Track1[24] = {
     {0x00F50000L, (DirType)0},
     {0x00EA0000L, (DirType)0},

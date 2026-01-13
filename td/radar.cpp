@@ -1122,7 +1122,6 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int &x, int &y) {
  *                                                                                             *
  * HISTORY: * 05/22/1991 JLB : Created. * 11/17/1995 PWG : Created. *
  *=============================================================================================*/
-#pragma argsused
 void RadarClass::Radar_Cursor(int forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;

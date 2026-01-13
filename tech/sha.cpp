@@ -238,7 +238,6 @@ int SHAEngine::Result(void *result) const {
 *warning when the _lrotl() function *	is called even though they both have the
 *same parameters and declaration attributes.
 */
-#pragma warn - sig
 template <class T>
 T _rotl(T X, int n) {
   return (T)((X << n) | ((unsigned)X >> ((sizeof(T) * 8) - n)));
