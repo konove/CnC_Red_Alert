@@ -50,8 +50,42 @@ if (MSVC)
     )
 else ()
     if (STRICT_CHECKS)
-        # Full set of warnings for strict mode
-        add_compile_options(-Wall -Wextra -Wpedantic -Wshadow=compatible-local -Wformat=2 -Wconversion -Wsign-conversion -Wcast-align -Wcast-qual -Wundef -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wswitch-enum -Wswitch-default -Wnull-dereference -Woverloaded-virtual -Wnon-virtual-dtor -Wsuggest-override -Wold-style-cast -Wuseless-cast -Wdouble-promotion -Wimplicit-fallthrough=5 -Wzero-as-null-pointer-constant -Wnoexcept -Wnoexcept-type -Wmissing-declarations -Wredundant-decls)
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            # GCC warnings
+            add_compile_options(
+                    -Wall
+                    -Wextra
+                    -Wpedantic
+                    -Wcast-align
+                    -Wcast-qual
+                    -Wconversion
+                    -Wdouble-promotion
+                    -Wduplicated-branches
+                    -Wduplicated-cond
+                    -Wformat=2
+                    -Wimplicit-fallthrough=5
+                    -Wlogical-op
+                    -Wmissing-declarations
+                    -Wnoexcept
+                    -Wnoexcept-type
+                    -Wnon-virtual-dtor
+                    -Wnull-dereference
+                    -Wold-style-cast
+                    -Woverloaded-virtual
+                    -Wredundant-decls
+                    -Wshadow=compatible-local
+                    -Wsign-conversion
+                    -Wsuggest-override
+                    -Wswitch-default
+                    -Wswitch-enum
+                    -Wundef
+                    -Wuninitialized
+                    -Wuseless-cast
+                    -Wzero-as-null-pointer-constant
+            )
+        elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            add_compile_options(-Weverything)
+        endif ()
     else ()
         # Disable all warnings for quick build
         add_compile_options(-w)
