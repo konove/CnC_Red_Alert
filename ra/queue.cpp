@@ -663,10 +663,10 @@ static void Queue_AI_Multiplayer(void) {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
-  ConnManClass *net;       // ptr to access all multiplayer functions
-  EventClass packet;       // for sending single frame-sync's
-  char *multi_packet_buf;  // buffer for sending/receiving
-  int multi_packet_max;    // max length of multi_packet_buf
+  ConnManClass *net = nullptr;  // ptr to access all multiplayer functions
+  EventClass packet;            // for sending single frame-sync's
+  char *multi_packet_buf;       // buffer for sending/receiving
+  int multi_packet_max;         // max length of multi_packet_buf
 
   //........................................................................
   // Frame-sync'ing variables
@@ -2249,7 +2249,6 @@ static int Process_Reconnect_Dialog(
     int num_conn, int reconn, int fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
-  int oldest_index;  // index of person requiring a reconnect
   int i, j;
 
   //------------------------------------------------------------------------
@@ -2261,6 +2260,7 @@ static int Process_Reconnect_Dialog(
   // If the timer has changed, or 'fresh' is set, redraw the dialog
   //------------------------------------------------------------------------
   if (fresh || (new_time != displayed_time)) {
+    int oldest_index = 0;
     //.....................................................................
     // Find the index of the person we're trying to reconnect to
     //.....................................................................

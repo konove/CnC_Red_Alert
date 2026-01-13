@@ -253,7 +253,7 @@ void Check_From_WChat(char *wchat_name) {
  *=========================================================================*/
 #ifndef WOLAPI_INTEGRATION
 int Read_Game_Options(char *name) {
-  char *buffer;
+  char *buffer = nullptr;
 
   char filename[256] = {"INVALID.123"};
 

@@ -95,7 +95,7 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
 #define BUFFSIZE (511)
   // #define BUFFSIZE (255)
   char buffer[BUFFSIZE];
-  bool retval;
+  bool retval = false;
   bool process;      // loop while true
   KeyNumType input;  // user input
   int selection;
@@ -121,7 +121,8 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   */
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
   char b1char, b2char, b3char;  // 1st char of each string
-  int bwidth, bheight;          // button width and height
+  int bwidth = 0;               // button width
+  int bheight = 0;              // button height
   int numbuttons = 0;
   if (b1txt) {
     b1char = toupper(b1txt[0]);

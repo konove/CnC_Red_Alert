@@ -1340,7 +1340,7 @@ bool Restate_Mission(char const *name, int button1, int button2) {
 bool BGMessageBox(char const *msg, int btn1, int btn2) {
 #define BUFFSIZE 511
   char buffer[BUFFSIZE];
-  bool retval;
+  bool retval = false;
   bool process;      // loop while true
   KeyNumType input;  // user input
   int selection;
