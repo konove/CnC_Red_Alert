@@ -34,7 +34,7 @@ class MixFileClass : public Node<MixFileClass<T> > {
   char const *Filename;  // Filename of mixfile.
 
   MixFileClass(char const *filename, PKey const *key);
-  ~MixFileClass(void);
+  ~MixFileClass(void) override;
 
   static bool Free(char const *filename);
   void Free(void);

@@ -128,16 +128,16 @@ class DynamicVectorClass : public VectorClass<T> {
   DynamicVectorClass(unsigned size = 0, T const *array = nullptr);
 
   // Change maximum size of vector.
-  virtual int Resize(unsigned newsize, T const *array = nullptr);
+  int Resize(unsigned newsize, T const *array = nullptr) override;
 
   // Resets and frees the vector array.
-  virtual void Clear(void) {
+  void Clear(void) override {
     ActiveCount = 0;
     VectorClass<T>::Clear();
-  };
+  }
 
   // Fetch number of "allocated" vector objects.
-  size_t Count(void) const { return (ActiveCount); };
+  size_t Count(void) const { return (ActiveCount); }
 
   // Add object to vector (growing as necessary).
   int Add(T const &object);
@@ -150,16 +150,16 @@ class DynamicVectorClass : public VectorClass<T> {
   int Delete(int index);
 
   // Deletes all objects in the vector.
-  void Delete_All(void) { ActiveCount = 0; };
+  void Delete_All(void) { ActiveCount = 0; }
 
   // Set amount that vector grows by.
-  int Set_Growth_Step(int step) { return (GrowthStep = step); };
+  int Set_Growth_Step(int step) { return (GrowthStep = step); }
 
   // Fetch current growth step rate.
-  int Growth_Step(void) { return GrowthStep; };
+  int Growth_Step(void) { return GrowthStep; }
 
-  virtual int ID(T const *ptr) { return (VectorClass<T>::ID(ptr)); };
-  virtual int ID(T const &ptr);
+  int ID(T const *ptr) override { return (VectorClass<T>::ID(ptr)); }
+  int ID(T const &ptr) override;
 
  protected:
   /*
@@ -218,17 +218,17 @@ class BooleanVectorClass {
   bool const &operator[](int index) const {
     if (LastIndex != index) Fixup(index);
     return (Copy);
-  };
+  }
   bool &operator[](int index) {
     if (LastIndex != index) Fixup(index);
     return (Copy);
-  };
+  }
 
   // Quick check on boolean state.
   bool Is_True(int index) const {
     if (index == LastIndex) return (Copy);
     return (Get_Bit(&BitArray[0], index));
-  };
+  }
 
   // Find first index that is false.
   int First_False(void) const {

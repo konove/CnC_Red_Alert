@@ -81,19 +81,18 @@
 template <class T>
 class VectorClass {
  public:
-  VectorClass(NoInitClass const &) {};
+  VectorClass(NoInitClass const &) {}
   VectorClass(unsigned size = 0, T const *array = nullptr);
-  VectorClass(VectorClass<T> const &);  // Copy constructor.
-  virtual ~VectorClass(void);
+  VectorClass(VectorClass const &);  // Copy constructor.
+  virtual ~VectorClass();
 
-  T &operator[](size_t index) { return (Vector[index]); };
-  T const &operator[](size_t index) const { return (Vector[index]); };
-  virtual VectorClass<T> &operator=(
-      VectorClass<T> const &);                           // Assignment operator.
-  virtual int operator==(VectorClass<T> const &) const;  // Equality operator.
+  T &operator[](size_t index) { return (Vector[index]); }
+  T const &operator[](size_t index) const { return (Vector[index]); }
+  virtual VectorClass &operator=(VectorClass const &);
+  virtual int operator==(VectorClass const &) const;
   virtual int Resize(unsigned newsize, T const *array = nullptr);
-  virtual void Clear(void);
-  unsigned Length(void) const { return VectorMax; };
+  virtual void Clear();
+  unsigned Length() const { return VectorMax; }
   virtual int ID(T const *ptr);  // Pointer based identification.
   virtual int ID(T const &ptr);  // Value based identification.
 
@@ -131,16 +130,16 @@ class DynamicVectorClass : public VectorClass<T> {
   DynamicVectorClass(unsigned size = 0, T const *array = nullptr);
 
   // Change maximum size of vector.
-  virtual int Resize(unsigned newsize, T const *array = nullptr);
+  int Resize(unsigned newsize, T const *array = nullptr) override;
 
   // Resets and frees the vector array.
-  virtual void Clear(void) {
+  void Clear() override {
     ActiveCount = 0;
     VectorClass<T>::Clear();
-  };
+  }
 
   // Fetch number of "allocated" vector objects.
-  size_t Count(void) const { return (ActiveCount); };
+  size_t Count() const { return (ActiveCount); }
 
   // Add object to vector (growing as necessary).
   int Add(T const &object);
@@ -153,16 +152,16 @@ class DynamicVectorClass : public VectorClass<T> {
   int Delete(int index);
 
   // Deletes all objects in the vector.
-  void Delete_All(void) { ActiveCount = 0; };
+  void Delete_All() { ActiveCount = 0; }
 
   // Set amount that vector grows by.
-  int Set_Growth_Step(int step) { return (GrowthStep = step); };
+  int Set_Growth_Step(int step) { return (GrowthStep = step); }
 
   // Fetch current growth step rate.
-  int Growth_Step(void) { return GrowthStep; };
+  int Growth_Step() { return GrowthStep; }
 
-  virtual int ID(T const *ptr) { return (VectorClass<T>::ID(ptr)); };
-  virtual int ID(T const &ptr);
+  int ID(T const *ptr) override { return (VectorClass<T>::ID(ptr)); }
+  int ID(T const &ptr) override;
 
  protected:
   /*
@@ -203,16 +202,16 @@ class BooleanVectorClass {
   int operator==(BooleanVectorClass const &vector);
 
   // Fetch number of boolean objects in vector.
-  int Length(void) { return BitCount; };
+  int Length() { return BitCount; }
 
   // Set all boolean values to false;
-  void Reset(void);
+  void Reset();
 
   // Set all boolean values to true.
-  void Set(void);
+  void Set();
 
   // Resets vector to zero length (frees memory).
-  void Clear(void);
+  void Clear();
 
   // Change size of this boolean vector.
   int Resize(unsigned size);
@@ -221,20 +220,20 @@ class BooleanVectorClass {
   bool const &operator[](int index) const {
     if (LastIndex != index) Fixup(index);
     return (Copy);
-  };
+  }
   bool &operator[](int index) {
     if (LastIndex != index) Fixup(index);
     return (Copy);
-  };
+  }
 
   // Quick check on boolean state.
   bool Is_True(int index) const {
     if (index == LastIndex) return (Copy);
     return (Get_Bit(&BitArray[0], index));
-  };
+  }
 
   // Find first index that is false.
-  int First_False(void) const {
+  int First_False() const {
     if (LastIndex != -1) Fixup(-1);
 
     int retval = First_False_Bit(&BitArray[0]);
@@ -248,7 +247,7 @@ class BooleanVectorClass {
   }
 
   // Find first index that is true.
-  int First_True(void) const {
+  int First_True() const {
     if (LastIndex != -1) Fixup(-1);
 
     int retval = First_True_Bit(&BitArray[0]);
