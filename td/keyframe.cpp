@@ -204,7 +204,9 @@ void Enable_Uncompressed_Shapes(void) {
 
 void *Build_Frame(void const *dataptr, unsigned short framenumber,
                   void *buffptr) {
-  char *ptr, *lockptr;  //, *uncomp_ptr;
+  char *ptr;
+  char *lockptr = nullptr;
+  // char *uncomp_ptr;
   uint32_t offset[SUBFRAMEOFFS];
   unsigned long offcurr, off16, offdiff;
   KeyFrameHeaderType *keyfr;
