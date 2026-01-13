@@ -223,53 +223,11 @@ int RawFileClass::Open(int rights) {
   *occurs.
   */
   for (;;) {
-/*
-**	Try to open the file according to the access rights specified.
-*/
-#ifndef WIN32
-    Hard_Error_Occured = 0;
-#endif
+    /*
+    **	Try to open the file according to the access rights specified.
+    */
 
-#ifdef PORTABLE
     Handle = IO_Open_File(Filename, rights);
-#else
-    switch (rights) {
-      /*
-      **	If the access rights are not recognized, then report this as
-      **	an invalid access code.
-      */
-      default:
-        errno = EINVAL;
-        break;
-
-      case READ:
-#ifdef WIN32
-        Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
-                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-#else
-        _dos_open(Filename, O_RDONLY | SH_DENYNO, &Handle);
-#endif
-        break;
-
-      case WRITE:
-#ifdef WIN32
-        Handle = CreateFile(Filename, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, nullptr);
-#else
-        _dos_creat(Filename, 0, &Handle);
-#endif
-        break;
-
-      case READ | WRITE:
-#ifdef WIN32
-        Handle = CreateFile(Filename, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-#else
-        _dos_open(Filename, O_RDWR | O_CREAT | SH_DENYWR, &Handle);
-#endif
-        break;
-    }
-#endif
     /*
     **	Biased files must be positioned past the bias start position.
     */
@@ -283,28 +241,7 @@ int RawFileClass::Open(int rights) {
     *retry. All other cases *	are fatal.
     */
     if (Handle == nullptr) {
-#ifdef PORTABLE
       // Error doesn't do anything...
-#elif defined(WIN32)
-      //			return(false);
-      Error(GetLastError(), false, Filename);
-//			continue;
-#else
-      /*
-      **	If this flag is set, then some hard error occurred. Just assume
-      *that the error *	is probably a removed CD-ROM and allow a retry.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-      } else {
-        if (errno == ENOENT) {
-          Error(ENOENT, true, Filename);
-        } else {
-          Error(errno, false, Filename);
-        }
-      }
-      continue;
-#endif
     }
     break;
   }
@@ -361,7 +298,6 @@ int RawFileClass::Is_Available(int forced) {
   *error recover channels.
   */
   for (;;) {
-#ifdef PORTABLE
     Handle = IO_Open_File(Filename, READ);
     if (!Handle) {
       // retry with lowercase name for case-sensitive fs
@@ -382,71 +318,13 @@ int RawFileClass::Is_Available(int forced) {
 
     if (!Handle) return false;
     break;
-#elif defined(WIN32)
-    Handle = CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, nullptr,
-                        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (Handle == nullptr) {
-      return (false);
-    }
-    break;
-#else
-
-    Hard_Error_Occured = 0;
-    open_failed = _dos_open(Filename, O_RDONLY | SH_DENYNO, &Handle);
-
-    /*
-    **	If DOS reports that everything is just fine except that the file is not
-    *present, *	then return with this fact. Any other case will fall through to
-    *the error handler *	routine.
-    */
-    if (open_failed && errno == ENOENT) return (false);
-
-    /*
-    ** If we got an access error it could be because there is no cd in
-    ** the drive.  Call the error handler but allow a continue if it
-    ** returns.
-    */
-    if (open_failed && errno == EACCES) {
-      Error(errno, true, Filename);
-      continue;
-    }
-
-    /*
-    **	If the file could not be found, then return with this information. If a
-    *more *	serious error occurred, then display the error message and
-    *abort.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;
-    } else {
-      if (open_failed) {
-        /*
-        **	An unhandled error condition is fatal. Display the error message
-        *and then *	abort.
-        */
-        Error(errno, false, Filename);
-      }
-    }
-    if (!open_failed) break;
-#endif
   }
 
   /*
   **	Since the file could be opened, then close it and return that the file
   *exists.
   */
-#ifdef PORTABLE
   IO_Close_File(Handle);
-#elif defined(WIN32)
-  if (!CloseHandle(Handle)) {
-    Error(GetLastError(), false, Filename);
-  }
-#else
-  if (_dos_close(Handle)) {
-    Error(errno, false, Filename);
-  }
-#endif
   Handle = nullptr;
 
   return (true);
@@ -473,44 +351,7 @@ void RawFileClass::Close(void) {
   *just return. This *	isn't considered an error condition.
   */
   if (Is_Open()) {
-#ifdef PORTABLE
     IO_Close_File(Handle);
-#elif defined(WIN32)
-    /*
-    **	Try to close the file. If there was an error (who knows what that could
-    *be), then *	call the error routine.
-    */
-    if (!CloseHandle(Handle)) {
-      Error(GetLastError(), false, Filename);
-    }
-#else
-    for (;;) {
-      /*
-      **	Close the file. If there was an error in the close operation --
-      *abort.
-      */
-      Hard_Error_Occured = 0;
-      if (_dos_close(Handle)) {
-        /*
-        **	By definition, this error can only be a bad file handle. This a
-        *fatal condition *	of course, so abort with an error message.
-        */
-        Error(errno, false, Filename);
-      }
-
-      /*
-      **	In the condition (if it is even possible) of a hard error
-      *occurring, then *	assume it is the case of missing media. Display
-      *an error message and try *	again if indicated.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-        continue;
-      }
-      break;
-    }
-
-#endif
 
     /*
     **	At this point the file must have been closed. Mark the file as empty and
@@ -573,85 +414,11 @@ long RawFileClass::Read(void *buffer, long size) {
     size = size < remainder ? size : remainder;
   }
 
-#ifdef PORTABLE
   size_t read_tmp = 0;
   IO_Read_File(Handle, buffer, size, read_tmp);
   bytesread = read_tmp;
   // doesn't bother looping, the below code is broken anyway (buffer isn't
   // incremented)
-#elif defined(WIN32)
-  long total = 0;
-  while (size > 0) {
-    bytesread = 0;
-
-    SetErrorMode(SEM_FAILCRITICALERRORS);
-    if (!ReadFile(Handle, buffer, size, &(DWORD &)bytesread, nullptr)) {
-      size -= bytesread;
-      total += bytesread;
-      Error(GetLastError(), true, Filename);
-      SetErrorMode(0);
-      continue;
-    }
-    SetErrorMode(0);
-    size -= bytesread;
-    total += bytesread;
-    if (bytesread == 0) break;
-  }
-  bytesread = total;
-
-#else
-
-  int readresult;
-
-  /*
-  **	Read the file in convenient chunk sizes. When the actual number
-  **	of bytes read does not match the desired, then assume that the file
-  **	is exhausted and bail. This loop was adjusted to take into
-  **	consideration the fact that "read" returns a SIGNED value whereas
-  **	it takes an UNSIGNED value as the byte count.
-  */
-  while (size) {
-    unsigned desired;  // Bytes desired to be read this pass.
-    unsigned actual;   // Actual number of bytes read.
-
-    /*
-    **	Break the read request into chunks no bigger than the low level DOS read
-    **	can handle.
-    */
-    desired = size < 32000L ? size : 32000L;
-
-    Hard_Error_Occured = 0;
-    readresult = _dos_read(Handle, buffer, desired, &actual);
-
-    /*
-    **	If a hard error occurred, then assume that it is the case of the CD-ROM
-    *or *	floppy media having been removed. Display the error and retry as
-    *directed.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;  // Not technically needed, but to be consistent...
-    } else {
-      /*
-      **	If negative one is returned from the read operation, then this
-      *indicates *	either a bad file number or invalid access. These are
-      *fatal conditions, so *	display the error and then abort.
-      */
-      if (readresult != 0) {
-        Error(errno, false, Filename);
-      } else {
-        /*
-        **	No error occurred during the read. Adjust the pointers and size
-        *counters and *	loop again if more data is needed to be read.
-        */
-        buffer = (char *)buffer + actual;
-        bytesread += actual;
-        size -= actual;
-        if (actual != desired) break;  // No more data?
-      }
-    }
-  }
-#endif  // WIN32
 
   /*
   **	Close the file if it was opened by this routine and return
@@ -695,67 +462,9 @@ long RawFileClass::Write(void const *buffer, long size) {
     opened = true;
   }
 
-#ifdef PORTABLE
   size_t write_tmp = 0;
   IO_Write_File(Handle, buffer, size, write_tmp);
   bytesread = write_tmp;
-#elif defined(WIN32)
-  if (!WriteFile(Handle, buffer, size, &(DWORD &)bytesread, nullptr)) {
-    Error(GetLastError(), false, Filename);
-  }
-
-#else
-
-  int writeresult;
-  /*
-  **	Write the data to the file in chunks no bigger than what the low level
-  *DOS write *	can handle.
-  */
-  while (size) {
-    unsigned desired;  // Bytes desired to be write this pass.
-    unsigned actual;   // Actual number of bytes written.
-
-    Hard_Error_Occured = 0;
-    //		desired = (unsigned)MIN(size, Transfer_Block_Size());
-    desired = size;
-    writeresult = _dos_write(Handle, buffer, desired, &actual);
-
-    /*
-    **	If a hard error occurred, then assume it is the case of the media being
-    **	removed. Print the error message an retry as directed.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;  // Not technically needed, but to be consistent...
-    } else {
-      /*
-      **	If negative one is returned by the DOS read, then this indicates
-      *a bad file *	handle or invalid access. Either condition is fatal --
-      *display error condition *	and abort.
-      */
-      if (writeresult != 0) {
-        Error(errno, false, Filename);
-      } else {
-        /*
-        **	A successful write occurred. Update pointers and byte counter as
-        *appropriate.
-        */
-        buffer = (char *)buffer + actual;
-        bytesread += actual;
-        size -= actual;
-
-        /*
-        **	If the actual bytes written is less than requested, assume this
-        *is a case of *	the disk being full. Consider this a fatal error
-        *condition.
-        */
-        if (actual != desired) {
-          Error(ENOSPC, false, Filename);
-        }
-      }
-    }
-  }
-#endif  // WIN32
 
   /*
   **	Fixup the bias length if necessary.
@@ -884,43 +593,7 @@ long RawFileClass::Size(void) {
   **	If the file is open, then proceed normally.
   */
   if (Is_Open()) {
-#ifdef PORTABLE
     size = IO_Get_File_Size(Handle);
-#elif defined(WIN32)
-    size = GetFileSize(Handle, nullptr);
-
-    /*
-    **	If there was in internal error, then call the error function.
-    */
-    if (size == 0xFFFFFFFF) {
-      Error(GetLastError(), false, Filename);
-    }
-#else
-
-    /*
-    **	Repetitively try to determine the file size until a fatal error
-    *condition or success *	is achieved.
-    */
-    for (;;) {
-      Hard_Error_Occured = 0;
-      size = filelength(Handle);
-
-      /*
-      **	If a hard error occurred, then assume it is the case of removed
-      *media. Display an *	error condition and allow retry.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-        continue;
-      } else {
-        if (size == -1) {
-          Error(errno, false, Filename);
-        }
-      }
-      break;
-    }
-#endif
-
   } else {
     /*
     **	If the file wasn't open, then open the file and call this routine again.
@@ -1022,41 +695,7 @@ int RawFileClass::Delete(void) {
       return (false);
     }
 
-#ifdef PORTABLE
     if (!IO_Delete_File(Filename)) return false;
-#elif defined(WIN32)
-    if (!DeleteFile(Filename)) {
-      Error(GetLastError(), false, Filename);
-      return (false);
-    }
-#else
-    Hard_Error_Occured = 0;
-    if (remove(Filename) == -1) {
-      /*
-      **	If a hard error occurred, then assume that the media has been
-      *removed. Display *	error message and retry as directed.
-      */
-      if (Hard_Error_Occured) {
-        Error(Hard_Error_Occured, true, Filename);
-        continue;
-      }
-
-      /*
-      **	If at this point, DOS says the file doesn't exist, then just
-      *exit with this *	fact. It should have been caught earlier, but in any
-      *case, this is a legal *	condition.
-      */
-      if (errno == ENOENT) break;
-
-      /*
-      **	The only way it can reach this point is if DOS indicates that
-      *access is denied *	on the file. This occurs when trying to delete a
-      *file on a read-only media such *	as a CD-ROM. Report this as a fatal
-      *error and then abort.
-      */
-      Error(errno, false, Filename);
-    }
-#endif
     break;
   }
 
@@ -1084,65 +723,8 @@ int RawFileClass::Delete(void) {
  **
  *=============================================================================================*/
 unsigned long RawFileClass::Get_Date_Time(void) {
-#ifdef PORTABLE
   // does not seem that this has any users
   return 0;
-#elif defined(WIN32)
-  BY_HANDLE_FILE_INFORMATION info;
-
-  if (GetFileInformationByHandle(Handle, &info)) {
-    WORD dosdate;
-    WORD dostime;
-    FileTimeToDosDateTime(&info.ftLastWriteTime, &dosdate, &dostime);
-    return ((dosdate << 16) | dostime);
-  }
-  return (0);
-#else
-  unsigned short time;
-  unsigned short date;
-  unsigned long datetime = 0;
-
-  //
-  //	If the file is open, then proceed normally.
-  //
-  if (RawFileClass::Is_Open()) {
-    if (_dos_getftime(Handle, &date, &time)) {
-      //
-      // return 0 indicating error with no date and time
-      //
-      return (datetime);
-    }
-  } else {
-    //
-    //	If the file wasn't open, then see if the file exists.
-    //
-    if (RawFileClass::Is_Available()) {
-      RawFileClass::Open();
-
-      if (_dos_getftime(Handle, &date, &time)) {
-        RawFileClass::Close();
-        //
-        // return 0 indicating error with no date and time
-        //
-        return (datetime);
-      }
-
-      RawFileClass::Close();
-    } else {
-      //
-      // return 0 indicating error with no date and time
-      //
-      return (datetime);
-    }
-  }
-
-  //
-  // combine the date and time as a long
-  //
-  datetime = (date << 16) + time;
-
-  return (datetime);
-#endif
 }
 
 /***********************************************************************************************
@@ -1161,72 +743,8 @@ unsigned long RawFileClass::Get_Date_Time(void) {
  **
  *=============================================================================================*/
 bool RawFileClass::Set_Date_Time(unsigned long datetime) {
-#ifdef PORTABLE
   // does not seem that this has any users
   return false;
-#elif defined(WIN32)
-  if (RawFileClass::Is_Open()) {
-    BY_HANDLE_FILE_INFORMATION info;
-
-    if (GetFileInformationByHandle(Handle, &info)) {
-      FILETIME filetime;
-      if (DosDateTimeToFileTime((WORD)(datetime >> 16),
-                                (WORD)(datetime & 0x0FFFF), &filetime)) {
-        return (
-            SetFileTime(Handle, &info.ftCreationTime, &filetime, &filetime));
-      }
-    }
-  }
-  return (false);
-#else
-  unsigned short time;
-  unsigned short date;
-
-  //
-  //	If the file is open, then proceed normally.
-  //
-  if (RawFileClass::Is_Open()) {
-    //
-    // only set the date and time if open for READ only
-    //
-    if (Rights == READ) {
-      time = (unsigned short)(datetime & 0xFFFF);
-      date = (unsigned short)((datetime >> 16) & 0xFFFF);
-
-      if (!_dos_setftime(Handle, date, time)) {
-        //
-        // return true indicating success
-        //
-        return (true);
-      }
-    }
-  } else {
-    //
-    //	If the file wasn't open, then see if the file exists.
-    //
-    if (RawFileClass::Is_Available()) {
-      RawFileClass::Open();
-
-      time = (unsigned short)(datetime & 0xFFFF);
-      date = (unsigned short)((datetime >> 16) & 0xFFFF);
-
-      if (!_dos_setftime(Handle, date, time)) {
-        RawFileClass::Close();
-        //
-        // return true indicating success
-        //
-        return (true);
-      }
-
-      RawFileClass::Close();
-    }
-  }
-
-  //
-  // return false indicating error
-  //
-  return (false);
-#endif
 }
 
 /***********************************************************************************************
@@ -1300,62 +818,7 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
     Error(EBADF, false, Filename);
   }
 
-#ifdef PORTABLE
   pos = IO_Seek_File(Handle, pos, dir);
-#elif defined(WIN32)
-  switch (dir) {
-    case SEEK_SET:
-      dir = FILE_BEGIN;
-      break;
-
-    case SEEK_CUR:
-      dir = FILE_CURRENT;
-      break;
-
-    case SEEK_END:
-      dir = FILE_END;
-      break;
-  }
-
-  pos = SetFilePointer(Handle, pos, nullptr, dir);
-
-  /*
-  **	If there was an error in the seek, then bail with an error condition.
-  */
-  if (pos == 0xFFFFFFFF) {
-    Error(GetLastError(), false, Filename);
-  }
-#else
-
-  /*
-  **	Keep trying to seek until a non-retry condition occurs.
-  */
-  for (;;) {
-    /*
-    **	Perform the low level seek on the file.
-    */
-    Hard_Error_Occured = 0;
-    pos = lseek(Handle, pos, dir);
-
-    /*
-    **	If a hard error occurred, then assume that it is the case of removed
-    *media. Display *	error message and retry.
-    */
-    if (Hard_Error_Occured) {
-      Error(Hard_Error_Occured, true, Filename);
-      continue;
-    } else {
-      /*
-      **	A negative one indicates a fatal error with the seek operation.
-      *Display error *	condition and then abort.
-      */
-      if (pos == -1) {
-        Error(errno, false, Filename);
-      }
-    }
-    break;
-  }
-#endif
 
   /*
   **	Return with the new position of the file. This will range between zero

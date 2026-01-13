@@ -84,7 +84,11 @@ else ()
                     -Wzero-as-null-pointer-constant
             )
         elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-            add_compile_options(-Weverything)
+            add_compile_options(
+                    -Weverything
+                    -Wno-c++98-compat
+                    -Wno-c++98-compat-pedantic
+            )
         endif ()
     else ()
         # Disable all warnings for quick build

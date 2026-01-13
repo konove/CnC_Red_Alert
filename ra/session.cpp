@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <regex>
 
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -1228,21 +1229,10 @@ bool Is_Mission_Counterstrike(char *file_name) {
 }
 
 bool Is_Mission_Aftermath(char *file_name) {
-  //	ajw added
-  //	Must start with "scm".
-  char szCopy[_MAX_PATH + 1];
-  port::SafeCopy(szCopy, file_name);
-  strlwr(szCopy);
-  if (strstr(szCopy, "scm") != szCopy) return false;
-
-  if (isdigit(file_name[5])) {
-    return (false);
-  }
-
-  if (!isdigit(file_name[3]) || !isdigit(file_name[4])) {
-    return (true);
-  }
-  return (false);
+  // Matches "scm" + 2 digits + non-digit, or "scm" + non-digit pattern
+  static const std::regex aftermath_pattern(R"(^scm(\d\d\D|\D))",
+                                            std::regex::icase);
+  return std::regex_search(file_name, aftermath_pattern);
 }
 
 /*
