@@ -43,7 +43,6 @@
 #include "td/msgbox.h"
 
 #include <algorithm>
-#include <cctype>
 #include <cstring>
 
 #include "sdllib/include/drawbuff.h"
@@ -120,13 +119,10 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   **	characters for each.
   */
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
-  char b1char, b2char, b3char;  // 1st char of each string
-  int bwidth = 0;               // button width
-  int bheight = 0;              // button height
+  int bwidth = 0;   // button width
+  int bheight = 0;  // button height
   int numbuttons = 0;
   if (b1txt) {
-    b1char = toupper(b1txt[0]);
-
     /*
     **	Build the button list.
     */
@@ -136,13 +132,11 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
 
     if (b2txt) {
       numbuttons = 2;
-      b2char = toupper(b2txt[0]);
       bwidth =
           std::max<int>((String_Pixel_Width(b2txt) + (8 * factor)), bwidth);
 
       if (b3txt) {
         numbuttons = 3;
-        b3char = toupper(b3txt[0]);
       }
 
     } else {

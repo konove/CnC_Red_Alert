@@ -345,8 +345,6 @@ char const* Fetch_Password(int caption, int message, int btext) {
   char buffer[BUFFSIZE];
   bool process;      // loop while true
   KeyNumType input;  // user input
-  bool pressed;
-  int curbutton;
   TextButtonClass ok;
 
   if (btext == TXT_NONE) btext = TXT_OK;
@@ -400,7 +398,6 @@ char const* Fetch_Password(int caption, int message, int btext) {
                       (y + height) - 35 * RESFACTOR, editwidth, 10 * RESFACTOR);
 
   TextButtonClass* buttonlist = nullptr;
-  curbutton = 0;
 
   /*
   **	Add and initialize the buttons to the button list.
@@ -435,7 +432,6 @@ char const* Fetch_Password(int caption, int message, int btext) {
   **	Main Processing Loop.
   */
   process = true;
-  pressed = false;
   bool first = true;
   while (process) {
     /*

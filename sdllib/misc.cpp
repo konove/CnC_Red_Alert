@@ -41,7 +41,6 @@ void *Build_Fading_Table(void const *palette, void *dest, long int color,
   uint8_t targetblue;
   uint8_t idealred;
   uint8_t idealgreen;
-  uint8_t idealblue;
   uint8_t matchcolor;
 
   // If the source palette is NULL, then just return with current fading table
@@ -77,7 +76,6 @@ void *Build_Fading_Table(void const *palette, void *dest, long int color,
     idealgreen = origgreen - (tmp >> 7);
 
     tmp = (origblue - targetblue) * (frac >> 1);
-    idealblue = origblue - (tmp >> 7);
 
     // Sweep through the entire existing palette to find the closest
     // matching color.  Never matches with color 0.

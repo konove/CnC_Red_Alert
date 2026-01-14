@@ -630,7 +630,6 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
         **	the edge of the blocking object in both CLOCKwise and
         **	COUNTERCLOCKwise fashions.
         */
-        int follow_len = maxlen + (maxlen >> 1);
 
         Mem_Copy(&path, &pleft, sizeof(PathType));
         pleft.Command = &moves_left[0];
@@ -642,10 +641,6 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
         //				left = Follow_Edge(startcell, next,
         //&pleft, COUNTERCLOCK, direction, threat, threat_stage, follow_len,
         // threshhold);
-
-        if (left) {
-          follow_len = std::min(maxlen, pleft.Length + (pleft.Length >> 1));
-        }
 
         Mem_Copy(&path, &pright, sizeof(PathType));
         pright.Command = &moves_right[0];

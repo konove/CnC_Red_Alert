@@ -191,13 +191,9 @@ void TabClass::Draw_Credits_Tab(void) {
 
 void TabClass::Hilite_Tab(int tab) {
   int xpos = 0;
-  int text = TXT_TAB_BUTTON_CONTROLS;
-  int textx = (EVA_WIDTH / 2) * RESFACTOR;
 
   if (tab) {
     xpos = (320 - EVA_WIDTH) * RESFACTOR;
-    text = TXT_TAB_SIDEBAR;
-    textx = (320 - (EVA_WIDTH / 2)) * RESFACTOR;
   }
 
 #ifdef WIN32

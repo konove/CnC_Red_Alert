@@ -4330,8 +4330,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   int cd_current;
   int current_drive;
 
-  ThemeType theme_playing = THEME_NONE;
-
   /*
   ** If the required CD is set to -2 then it means that the file is present
   ** on the local hard drive and we shouldn't have to worry about it.
@@ -4381,7 +4379,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
   /*
   ** Flag that we will have to restart the theme
   */
-  theme_playing = Theme.What_Is_Playing();
   Theme.Stop();
 
   // Check the last drive
@@ -4511,7 +4508,6 @@ bool Force_CD_Available(int cd_desired)  //	ajw
       }
 
       GraphicViewPortClass *oldpage = Set_Logic_Page(SeenBuff);
-      theme_playing = Theme.What_Is_Playing();
       Theme.Stop();
       int hidden = Get_Mouse_State();
       font = (void *)FontPtr;

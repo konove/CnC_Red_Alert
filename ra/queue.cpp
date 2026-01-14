@@ -1007,7 +1007,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
-  EventClass *event;       // event ptr for parsing incoming packets
   int packetlen;           // size of meta-packet sent, & received
   int id;                  // id of other player
   int messages_this_loop;  // to limit # messages processed each loop
@@ -1188,11 +1187,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
       Keyboard->Check();
 
       Update_Queue_Mono(net, 5);
-
-      /*..................................................................
-      Get an event ptr to the incoming message
-      ..................................................................*/
-      event = (EventClass *)multi_packet_buf;
 
       //------------------------------------------------------------------
       // Special processing for a modem game: process SERIAL packets

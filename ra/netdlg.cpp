@@ -8396,7 +8396,6 @@ static int Net_Fake_Join_Dialog(void) {
   int rc = 0;                              // -1 = user cancelled, 1 = New
   JoinEventType event;                     // event from incoming packet
   int i;                                   // loop counter
-  int parms_received = 0;                  // 1 = game options received
   NodeNameType *who;                       // node to add to Players
   RejectType why;                          // reason for rejection
   TTimerClass<SystemTimerClass> lastclick_timer;  // time b/w send periods
@@ -8660,9 +8659,7 @@ static int Net_Fake_Join_Dialog(void) {
           gamelist.Set_Selected_Index(1);  // lastclick_idx);
           game_index = 1;
           port::SafeCopy(Session.Handle, namebuf);
-          // Session.House = (HousesType)housebtn.Current_Index();
           join_index = gamelist.Current_Index();
-          parms_received = 0;
           if (Request_To_Join(namebuf, join_index, Session.House,
                               Session.ColorIdx)) {
             joinstate = JOIN_WAIT_CONFIRM;
@@ -8894,7 +8891,6 @@ static int Net_Fake_Join_Dialog(void) {
     else if (event == EV_GAME_OPTIONS) {
       Sound_Effect(VOC_OPTIONS_CHANGED);
 
-      parms_received = 1;
       display = REDRAW_PARMS;
     }
 

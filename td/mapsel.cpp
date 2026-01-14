@@ -475,7 +475,7 @@ struct nodstats {
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
 void Map_Selection(void) {
-  void *anim, *progress, *oldfont, *greyearth, *greyearth2;
+  void *anim, *progress, *greyearth, *greyearth2;
   unsigned char localpalette[768];
   int scenario, lastscenario;
   int house = PlayerPtr->Class->House;
@@ -510,7 +510,7 @@ void Map_Selection(void) {
   unsigned char *progresspalette = new unsigned char[768];
 
   Keyboard::Clear();
-  oldfont = Set_Font(ScoreFontPtr);
+  Set_Font(ScoreFontPtr);
   Set_Font_Palette(_regpal);
   Set_Palette(BlackPalette);
 

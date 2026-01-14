@@ -1291,14 +1291,11 @@ void HouseClass::AI(void) {
     }
   }
 
-  bool is_time = false;
-
   /*
   **	Triggers are only checked every so often. If the trigger timer has
   *expired, *	then set the trigger processing flag.
   */
   if (TriggerTime == 0 || IsBuiltSomething) {
-    is_time = true;
     TriggerTime = TICKS_PER_MINUTE / 10;
     IsBuiltSomething = false;
   }
@@ -2491,7 +2488,6 @@ void HouseClass::Adjust_Threat(int region, int threat) {
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   CHECK_EQ(Houses.ID(this), ID);
   int result = true;
-  bool initial_start = false;
   FactoryClass *fptr;
   TechnoTypeClass const *tech = Fetch_Techno_Type(type, id);
 
@@ -2510,7 +2506,6 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     if (!fptr) return (PROD_CANT);
     Set_Factory(type, fptr);
     result = fptr->Set(*tech, *this);
-    initial_start = true;
   }
 
   if (result) {
@@ -2891,7 +2886,6 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_CHRONO2: {
       TechnoClass *tech = (TechnoClass *)::As_Object(UnitToTeleport);
-      CELL oldcell = cell;
       if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
         /*
@@ -2913,7 +2907,6 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           */
           DriveClass *drive = (DriveClass *)tech;
           drive->MoebiusCell = Coord_Cell(drive->Coord);
-          oldcell = drive->MoebiusCell;
           drive->Teleport_To(cell);
           drive->IsMoebius = true;
           if (tech->What_Am_I() == RTTI_UNIT &&
@@ -3470,13 +3463,6 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
   CHECK_EQ(Houses.ID(this), ID);
 
   bool rc;
-  bool clockwise;
-
-  /*
-  **	Randomly decide if we're going to search cells clockwise or counter-
-  **	clockwise
-  */
-  clockwise = Percent_Chance(50);
 
   /*
   **	Only continue if this cell is a legal placement cell.
@@ -3499,55 +3485,6 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
       if (newcell != 0) {
         rc = Map[newcell].Flag_Place(Class->House);
       }
-
-#ifdef OBSOLETE
-      /*
-      **	Loop for increasing distance from the desired cell.
-      **	For each distance, randomly pick a starting direction.  Between
-      **	this and the clockwise/counterclockwise random value, the flag
-      **	should appear to be placed fairly randomly.
-      */
-      for (int dist = 1; dist < 32; dist++) {
-        FacingType fcounter;
-        FacingType rot;
-
-        /*
-        **	Clockwise search.
-        */
-        if (clockwise) {
-          rot = Random_Pick(FACING_N, FACING_NW);
-          for (fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
-            newcell = Coord_Cell(
-                Coord_Move(Cell_Coord(cell), Facing_Dir(rot), dist * 256));
-            if (Map.In_Radar(newcell) &&
-                Map[newcell].Flag_Place(Class->House)) {
-              dist = 32;
-              rc = true;
-              break;
-            }
-            rot++;
-            if (rot > FACING_NW) rot = FACING_N;
-          }
-        } else {
-          /*
-          **	Counter-clockwise search
-          */
-          rot = Random_Pick(FACING_N, FACING_NW);
-          for (fcounter = FACING_NW; fcounter >= FACING_N; fcounter--) {
-            newcell = Coord_Cell(
-                Coord_Move(Cell_Coord(cell), Facing_Dir(rot), dist * 256));
-            if (Map.In_Radar(newcell) &&
-                Map[newcell].Flag_Place(Class->House)) {
-              dist = 32;
-              rc = true;
-              break;
-            }
-            rot--;
-            if (rot < FACING_N) rot = FACING_NW;
-          }
-        }
-      }
-#endif
     }
 
     /*
@@ -4387,7 +4324,6 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass *building) const {
   int antiair = building->Anti_Air();
   int antiarmor = building->Anti_Armor();
   int antiinfantry = building->Anti_Infantry();
-  bool adj = true;
 
   /*
   **	Never place combat buildings adjacent to each other. This is partly
@@ -4395,9 +4331,9 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass *building) const {
   **	as because spacing defensive buildings out will yield a better
   **	defense.
   */
-  if (antiair || antiarmor || antiinfantry) {
-    adj = false;
-  }
+  // if (antiair || antiarmor || antiinfantry) {
+  //   adj = false;
+  // }
 
   /*
   **	Determine the average zone strengths for the base. This value is
@@ -4855,49 +4791,47 @@ int HouseClass::Expert_AI(void) {
   **	actions tend to greatly affect the lower urgency actions.
   */
   for (UrgencyType u = URGENCY_CRITICAL; u >= URGENCY_LOW; u--) {
-    bool acted = false;
-
     for (StrategyType strat = STRATEGY_FIRST; strat < STRATEGY_COUNT; strat++) {
       if (urgency[strat] == u) {
         switch (strat) {
           case STRATEGY_BUILD_POWER:
-            acted |= AI_Build_Power(u);
+            AI_Build_Power(u);
             break;
 
           case STRATEGY_BUILD_DEFENSE:
-            acted |= AI_Build_Defense(u);
+            AI_Build_Defense(u);
             break;
 
           case STRATEGY_BUILD_INCOME:
-            acted |= AI_Build_Income(u);
+            AI_Build_Income(u);
             break;
 
           case STRATEGY_FIRE_SALE:
-            acted |= AI_Fire_Sale(u);
+            AI_Fire_Sale(u);
             break;
 
           case STRATEGY_BUILD_ENGINEER:
-            acted |= AI_Build_Engineer(u);
+            AI_Build_Engineer(u);
             break;
 
           case STRATEGY_BUILD_OFFENSE:
-            acted |= AI_Build_Offense(u);
+            AI_Build_Offense(u);
             break;
 
           case STRATEGY_RAISE_MONEY:
-            acted |= AI_Raise_Money(u);
+            AI_Raise_Money(u);
             break;
 
           case STRATEGY_RAISE_POWER:
-            acted |= AI_Raise_Power(u);
+            AI_Raise_Power(u);
             break;
 
           case STRATEGY_LOWER_POWER:
-            acted |= AI_Lower_Power(u);
+            AI_Lower_Power(u);
             break;
 
           case STRATEGY_ATTACK:
-            acted |= AI_Attack(u);
+            AI_Attack(u);
             break;
 
           default:
@@ -5456,7 +5390,6 @@ int HouseClass::AI_Building(void) {
     BuildChoice.Free_All();
     BuildChoiceClass *choiceptr;
     int money = Available_Money();
-    int level = Control.TechLevel;
     bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
                       UQuantity[UNIT_HARVESTER] > 0);
     BuildingTypeClass const *b = nullptr;
@@ -5464,8 +5397,6 @@ int HouseClass::AI_Building(void) {
     if (Enemy != HOUSE_NONE) {
       enemy = HouseClass::As_Pointer(Enemy);
     }
-
-    level = Control.TechLevel;
 
     /*
     **	Try to build a power plant if there is insufficient power and there is

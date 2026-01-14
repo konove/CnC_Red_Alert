@@ -596,7 +596,6 @@ bool Send_Remote_File(char *file_name, int gametype) {
   int block_number;
   int max_chunk_size;
   int total_blocks;
-  int bytes_left;
 
   void *read_ptr;
 
@@ -662,7 +661,6 @@ bool Send_Remote_File(char *file_name, int gametype) {
 
   max_chunk_size = MAX_SEND_FILE_PACKET_SIZE;
   total_blocks = (file_length + max_chunk_size - 1) / max_chunk_size;
-  bytes_left = file_length;
 
   send_file.Open(READ);
 

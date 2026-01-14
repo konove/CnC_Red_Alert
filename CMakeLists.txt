@@ -88,6 +88,9 @@ else ()
                     -Weverything
                     -Wno-c++98-compat
                     -Wno-c++98-compat-pedantic
+                    -Wno-unsafe-buffer-usage
+                    -Wno-sign-conversion
+                    -Wno-old-style-cast
             )
         endif ()
     else ()

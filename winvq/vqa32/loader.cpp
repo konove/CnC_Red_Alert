@@ -148,7 +148,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
   VQAHeader *header;
   ChunkHeader chunk;
   long done;
-  long found;
 
   /* Dereference commonly used data members for quicker access. */
   vqap = (VQAHandleP *)vqa;
@@ -205,7 +204,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
   /*-------------------------------------------------------------------------
    * PROCESS THE PRE-FRAME CHUNKS (VQHD, CAP, FINF, ETC...)
    *-----------------------------------------------------------------------*/
-  found = 0;
   done = 0;
 
   while (!done) {
@@ -279,7 +277,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
           return (VQAERR_NOMEM);
         }
 
-        found |= OPEN_VQHD;
         break;
 
       /*---------------------------------------------------------------------

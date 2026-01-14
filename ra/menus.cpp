@@ -70,7 +70,6 @@
 #include "sdllib/include/ww_win.h"
 #include "sdllib/include/wwstd.h"
 #include "tech/fixed.h"
-#include "tech/ftimer.h"
 #include "tech/rndstraw.h"
 
 /*****************************
@@ -606,7 +605,6 @@ int Main_Menu(unsigned long) {
   int retval;        // return value
   int curbutton;
   TextButtonClass *buttons[7];
-  unsigned long starttime;
 
   /*
   **	Buttons
@@ -662,7 +660,6 @@ int Main_Menu(unsigned long) {
   }
   Set_Logic_Page(SeenBuff);
   Keyboard->Clear();
-  starttime = TickCount;
 
   /*
   **	Create the list

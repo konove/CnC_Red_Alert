@@ -702,17 +702,14 @@ void CellClass::Occupy_Up(ObjectClass *object) {
     OccupierPtr = object->Next;
     object->Next = nullptr;
   } else {
-    bool found = false;
     while (optr != nullptr) {
       if (optr->Next == object) {
         optr->Next = object->Next;
         object->Next = nullptr;
-        found = true;
         break;
       }
       optr = optr->Next;
     }
-    //		assert(found);
   }
   Map.Radar_Pixel(Cell_Number());
 

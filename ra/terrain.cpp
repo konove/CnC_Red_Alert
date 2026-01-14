@@ -715,8 +715,6 @@ COORDINATE TerrainClass::Target_Coord(void) const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Read_INI(CCINIClass &ini) {
-  TerrainClass *tptr;
-
   int len = ini.Entry_Count(INI_Name());
 
   for (int index = 0; index < len; index++) {
@@ -725,7 +723,7 @@ void TerrainClass::Read_INI(CCINIClass &ini) {
     CELL cell = atoi(entry);
 
     if (terrain != TERRAIN_NONE) {
-      tptr = new TerrainClass(terrain, cell);
+      new TerrainClass(terrain, cell);
     }
   }
 }

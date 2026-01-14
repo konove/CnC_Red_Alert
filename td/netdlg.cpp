@@ -4294,7 +4294,6 @@ static int Net_Fake_New_Dialog(void) {
   KeyNumType input;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
-  int old_cred;                  // old value in credits buffer
   int transmit;                  // 1 = re-transmit new game options
 
   long ok_timer = 0;  // for timing OK button
@@ -4355,7 +4354,6 @@ static int Net_Fake_New_Dialog(void) {
   */
 
   sprintf(credbuf, "%d", MPlayerCredits);
-  old_cred = MPlayerCredits;
 
   /*........................................................................
   Init other scenario parameters
@@ -4884,7 +4882,6 @@ static int Net_Fake_Join_Dialog(void) {
   int rc = 0;                              // -1 = user cancelled, 1 = New
   JoinEventType event;                     // event from incoming packet
   int i, j;                                // loop counter
-  int parms_received;                      // 1 = game options received
 
   unsigned char tmp_id[MAX_PLAYERS];  // temp storage for sorting player ID's
   int min_index;                      // for sorting player ID's
@@ -5121,7 +5118,6 @@ static int Net_Fake_Join_Dialog(void) {
         if (joinstate == JOIN_NOTHING && Games.Count() != 0) {
           gamelist.Set_Selected_Index(0);
           join_index = gamelist.Current_Index();
-          parms_received = 0;
           if (Request_To_Join(MPlayerName, join_index, &playerlist,
                               MPlayerHouse, MPlayerColorIdx)) {
             joinstate = JOIN_WAIT_CONFIRM;
@@ -5217,7 +5213,6 @@ static int Net_Fake_Join_Dialog(void) {
         If the game options have changed, print them.
         .....................................................................*/
         if (event == EV_GAME_OPTIONS) {
-          parms_received = 1;
           display = REDRAW_MESSAGE;
         } else
 

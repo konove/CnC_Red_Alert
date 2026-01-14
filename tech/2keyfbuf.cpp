@@ -201,13 +201,13 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
     // ShapeJumpTableAddress = AllFlagsJumpTable;
     use_all_flags = true;
   } else {
-    int eax = 0;
-    if (flags & SHAPE_PREDATOR) eax |= BLIT_PREDATOR;
-    if (flags & SHAPE_FADING) eax |= BLIT_FADING;
-    if (flags & SHAPE_TRANS) eax |= BLIT_TRANSPARENT;
-    if (flags & SHAPE_GHOST) eax |= BLIT_GHOST;
-
-    eax <<= 7;
+    // int eax = 0;
+    // if (flags & SHAPE_PREDATOR) eax |= BLIT_PREDATOR;
+    // if (flags & SHAPE_FADING) eax |= BLIT_FADING;
+    // if (flags & SHAPE_TRANS) eax |= BLIT_TRANSPARENT;
+    // if (flags & SHAPE_GHOST) eax |= BLIT_GHOST;
+    //
+    // eax <<= 7;
     // ShapeJumpTableAddress = NewShapeJumpTable + eax
   }
 

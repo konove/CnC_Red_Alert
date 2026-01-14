@@ -125,7 +125,7 @@ void Choose_Side(void) {
   VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
   void const *staticaud, *oldfont;
   void const *speechg, *speechn, *speech;
-  int statichandle, speechhandle, speechplaying = 0;
+  int statichandle, speechplaying = 0;
   int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
   int gdi_start_palette;
@@ -143,7 +143,7 @@ void Choose_Side(void) {
 #ifndef LORES
   PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
 #endif
-  int frame = 0, endframe = 255, selection = 0, lettersdone = 0;
+  int frame = 0, endframe = 255, lettersdone = 0;
 
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
@@ -279,18 +279,17 @@ void Choose_Side(void) {
             Whom = HOUSE_GOOD;
             ScenPlayer = SCEN_PLAYER_GDI;
             endframe = 0;
-            speechhandle = Play_Sample(speechg);
+            Play_Sample(speechg);
             speechplaying = true;
             speech = speechg;
 
           } else if ((_Kbd->MouseQX > 160 * RESFACTOR) &&
                      (_Kbd->MouseQX < 300 * RESFACTOR)) {
             // Chose Nod
-            selection = 1;
             endframe = 14;
             Whom = HOUSE_BAD;
             ScenPlayer = SCEN_PLAYER_NOD;
-            speechhandle = Play_Sample(speechn);
+            Play_Sample(speechn);
             speechplaying = true;
             speech = speechn;
           }

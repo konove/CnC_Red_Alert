@@ -3164,8 +3164,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   d_color_x + (d_color_w * 5),
                   d_color_x + (d_color_w * 6),
                   d_color_x + (d_color_w * 7)};
-  bool parms_received = false;  // 1 = game options received
-  bool changed = false;         // 1 = user has changed an option
+  bool changed = false;  // 1 = user has changed an option
 
   int rc;
   int recsignedoff = false;
@@ -3179,7 +3178,6 @@ int Com_Scenario_Dialog(bool skirmish) {
   unsigned long theirresponsetime;
   int packetlen;
   static bool first_time = true;
-  bool oppscorescreen = false;
   bool gameoptions = Session.Type == GAME_SKIRMISH;
   EventClass *event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
@@ -4260,9 +4258,7 @@ oh_dear_its_a_label:
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount;
-          oppscorescreen = true;
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-          parms_received = true;
         }
       } else {
         switch (ReceivePacket.Command) {
@@ -4290,7 +4286,6 @@ oh_dear_its_a_label:
           is responsible for ensuring the colors are different.)
           ..................................................................*/
           case (SERIAL_GAME_OPTIONS):
-            oppscorescreen = false;
             gameoptions = true;
             kludge_timer = 2 * 60;
             port::SafeCopy(TheirName, ReceivePacket.Name);
@@ -4298,7 +4293,6 @@ oh_dear_its_a_label:
             TheirHouse = ReceivePacket.ScenarioInfo.House;
             transmit = true;
 
-            parms_received = true;
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
 
             //.........................................................
@@ -4419,8 +4413,6 @@ oh_dear_its_a_label:
           Incoming message: add to our list
           ..................................................................*/
           case (SERIAL_MESSAGE):
-            oppscorescreen = false;
-
             Session.Messages.Add_Message(
                 ReceivePacket.Name,
                 ((PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE)
@@ -4441,7 +4433,6 @@ oh_dear_its_a_label:
           // get their response time
           //
           case (SERIAL_TIMING):
-            oppscorescreen = false;
             theirresponsetime = ReceivePacket.ScenarioInfo.ResponseTime;
 
             if (!gameoptions) {
@@ -4454,9 +4445,7 @@ oh_dear_its_a_label:
           // print msg waiting for opponent
           //
           case (SERIAL_SCORE_SCREEN):
-            oppscorescreen = true;
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-            parms_received = true;
             break;
 
           default:
@@ -5070,7 +5059,6 @@ int Com_Show_Scenario_Dialog(void) {
   unsigned long transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
-  bool gameoptions = false;
   EventClass *event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
   bool load_game = false;            // 1 = load saved game
@@ -5846,7 +5834,6 @@ int Com_Show_Scenario_Dialog(void) {
           ..................................................................*/
           case (SERIAL_GAME_OPTIONS):
             oppscorescreen = false;
-            gameoptions = true;
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
             parms_received = true;
 

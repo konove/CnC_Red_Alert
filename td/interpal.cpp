@@ -299,11 +299,8 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
                           char const *palette_file_name) {
   unsigned char *src_ptr;
   unsigned char *dest_ptr;
-  unsigned char *last_dest_ptr;
-  unsigned char *end_of_source;
   int src_width;
   int dest_width;
-  //	int	width_counter;
   bool source_locked = false;
   bool dest_locked = false;
 
@@ -355,19 +352,16 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
   //
   src_ptr = (unsigned char *)source->Get_Offset();
   dest_ptr = (unsigned char *)dest->Get_Offset();
-  end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
 
   //
   // Get width of source and dest buffers.
   //
   src_width = source->Get_Width();
   dest_width = 2 * (dest->Get_Width() + dest->Get_XAdd() + dest->Get_Pitch());
-  last_dest_ptr = dest_ptr;
 
   /*
   ** Call the appropriate assembly language copy routine
   */
-#if (1)
   switch (CopyType) {
     case 0:
       Asm_Interpolate(src_ptr, dest_ptr, source->Get_Height(), src_width,
@@ -384,45 +378,7 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
                                        src_width, dest_width);
       break;
   }
-#endif
 
-#if (0)
-  //
-  // Copy over the first pixel (upper left).
-  //
-  *dest_ptr = *src_ptr;
-  src_ptr++;
-  dest_ptr++;
-
-  //
-  // Scale copy.
-  //
-  width_counter = 0;
-  while (src_ptr < end_of_source) {
-    //
-    // Blend this pixel with the one to the left and place this new color in the
-    // dest buffer.
-    //
-    *dest_ptr = PaletteInterpolationTable[(*src_ptr)][(*(src_ptr - 1))];
-    dest_ptr++;
-
-    //
-    // Now place the source pixel into the dest buffer.
-    //
-    *dest_ptr = *src_ptr;
-
-    src_ptr++;
-    dest_ptr++;
-
-    width_counter++;
-    if (width_counter == src_width) {
-      width_counter = 0;
-      last_dest_ptr += dest_width;
-      dest_ptr = last_dest_ptr;
-    }
-  }
-
-#endif
   if (source_locked) source->Unlock();
   if (dest_locked) dest->Unlock();
   if (dest == &SeenBuff) Show_Mouse();

@@ -1566,18 +1566,6 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass *passenger,
   assert(IsActive);
 
   /*
-  **	Determine the ideal facing that provides the least resistance. This
-  *would be the direction *	of the potential passenger or the current
-  *transport facing if it is going to unload.
-  */
-  DirType faceto;
-  if (passenger != nullptr) {
-    faceto = Direction(passenger);
-  } else {
-    faceto = PrimaryFacing.Current() + DIR_S;
-  }
-
-  /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
   FacingType bestdir = FACING_N;

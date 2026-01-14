@@ -4707,7 +4707,6 @@ int Com_Show_Scenario_Dialog(void) {
   unsigned long transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
-  bool gameoptions = false;
   EventClass *event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
 
@@ -5446,7 +5445,6 @@ int Com_Show_Scenario_Dialog(void) {
           ..................................................................*/
           case (SERIAL_GAME_OPTIONS):
             oppscorescreen = false;
-            gameoptions = true;
             display = REDRAW_MESSAGE;
             parms_received = 1;
 
