@@ -51,7 +51,6 @@
  *     FreeBuffers   - Frees the VQA play buffers
  *     PrimeBuffers  - Pre-Load the internal buffers.
  *     Load_FINF     - Loads the Frame Info Table.
- *     Load_VQHD     - Loads a VQA Header.
  *     Load_CBF0     - Loads a full, uncompressed codebook
  *     Load_CBFZ     - Loads a full, compressed codebook
  *     Load_CBP0     - Loads a partial uncompressed codebook
@@ -91,7 +90,6 @@ static void FreeBuffers(VQAData *vqa, VQAConfig *config, VQAHeader *header);
 static long PrimeBuffers(VQAHandle *vqa);
 static long Load_VQF(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_FINF(VQAHandleP *vqap, unsigned long iffsize);
-static long Load_VQHD(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_CBF0(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_CBFZ(VQAHandleP *vqap, unsigned long iffsize);
 static long Load_CBP0(VQAHandleP *vqap, unsigned long iffsize);
@@ -1678,40 +1676,6 @@ static long Load_FINF(VQAHandleP *vqap, unsigned long iffsize) {
       return (VQAERR_SEEK);
     }
   }
-
-  return (0);
-}
-
-/****************************************************************************
- *
- * NAME
- *     Load_VQHD - Load VQA header chunk.
- *
- * SYNOPSIS
- *     Error = Load_VQHD(VQA, Iffsize)
- *
- *     long Load_VQHD(VQAHandleP *, unsigned long);
- *
- * FUNCTION
- *
- * INPUTS
- *     VQA     - Pointer to private VQA handle.
- *     Iffsize - Size of IFF chunk.
- *
- * RESULT
- *     Error - 0 if successful or VQAERR_??? error code.
- *
- ****************************************************************************/
-
-static long Load_VQHD(VQAHandleP *vqap, unsigned long iffsize) {
-  /* Read the header */
-  if (vqap->IOHandler((VQAHandle *)vqap, VQACMD_READ, &vqap->Header,
-                      PADSIZE(iffsize))) {
-    return (VQAERR_READ);
-  }
-
-  /* Reconfigure the Drawer for the new settings */
-  VQA_Configure_Drawer(vqap);
 
   return (0);
 }
