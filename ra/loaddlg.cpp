@@ -188,12 +188,12 @@ int LoadOptionsClass::Process(void) {
   /*
   **	Redraw values: in order from "top" to "bottom" layer of the dialog
   */
-  typedef enum {
+  enum RedrawType {
     REDRAW_NONE = 0,
     REDRAW_BUTTONS,
     REDRAW_BACKGROUND,
     REDRAW_ALL = REDRAW_BACKGROUND
-  } RedrawType;
+  };
 
   /*
   **	Dialog variables

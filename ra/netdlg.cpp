@@ -4082,7 +4082,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_New_Dialog(void) {
-  typedef enum { NUM_MESSAGES = 10 } NumMessagesType;
+  static constexpr int kNumMessages = 10;
 
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
@@ -4144,7 +4144,7 @@ static int Net_New_Dialog(void) {
   int d_options_y = d_scenariolist_y + d_scenariolist_h + d_margin1;
 
   int d_message_w = d_dialog_w - (d_margin1 * 2) - 20 * RESFACTOR;
-  int d_message_h = (NUM_MESSAGES * d_txt6_h) + 3 * RESFACTOR;  // 10 rows high
+  int d_message_h = (kNumMessages * d_txt6_h) + 3 * RESFACTOR;  // 10 rows high
   int d_message_x = d_dialog_x + d_margin1 + 10 * RESFACTOR;
   int d_message_y = d_dialog_y + d_dialog_h - (27 * RESFACTOR + d_message_h);
   //	int d_message_y = d_options_y + d_options_h + d_margin1;
@@ -4415,7 +4415,7 @@ static int Net_New_Dialog(void) {
   //	Init the message display system
   //------------------------------------------------------------------------
   Session.Messages.Init(
-      d_message_x + 1 * RESFACTOR, d_message_y + 1 * RESFACTOR, NUM_MESSAGES,
+      d_message_x + 1 * RESFACTOR, d_message_y + 1 * RESFACTOR, kNumMessages,
       MAX_MESSAGE_LENGTH, d_txt6_h, d_send_x + 1 * RESFACTOR,
       d_send_y + 1 * RESFACTOR, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
   Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
