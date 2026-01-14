@@ -189,10 +189,6 @@ BooleanVectorClass DisplayClass::CellRedraw;
 */
 DisplayClass::TacticalClass DisplayClass::TacButton;
 
-static int const TEX_X = 0;
-static int const TEX_Y = 6;
-static int const TEX_W = 14;
-
 /***********************************************************************************************
  * DisplayClass::DisplayClass -- Default constructor for display class. *
  *                                                                                             *
