@@ -22,7 +22,6 @@
 #define WSA_TARGET_IN_BUFFER 0x10
 #define WSA_LINEAR_ONLY 0x20
 #define WSA_FRAME_0_ON_PAGE 0x40
-#define WSA_AMIGA_ANIMATION 0x80
 #define WSA_PALETTE_PRESENT 0x100
 #define WSA_FRAME_0_IS_DELTA 0x200
 
@@ -30,8 +29,6 @@
 // parameter.  If These change, make sure and change their values in lp_asm.asm.
 #define DO_XOR 0x0
 #define DO_COPY 0x01
-#define TO_VIEWPORT 0x0
-#define TO_PAGE 0x02
 
 typedef struct {
   unsigned short current_frame;

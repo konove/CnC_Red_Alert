@@ -126,7 +126,7 @@
 #include "td/utracker.h"
 #include "td/vector.h"
 
-#define FIXUP 0
+// #define FIXUP 0
 
 /***********************************************************************************************
  * CellClass::Validate -- validates cell's number *

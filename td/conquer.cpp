@@ -3535,9 +3535,9 @@ void Error_In_Heap_Pointers(char *string) {
 }
 #endif
 
-#ifndef ROR_NOT_READY
-#define ROR_NOT_READY 21
-#endif
+// #ifndef ROR_NOT_READY
+// #define ROR_NOT_READY 21
+// #endif
 
 /***********************************************************************************************
  * Get_CD_Index -- returns the volume type of the CD in the given drive *

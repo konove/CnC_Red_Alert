@@ -93,26 +93,11 @@
 #define END FACING_NONE
 
 /*
-**	If memory is more important than speed, set this define to
-**	true. It will then perform intermediate optimizations to get the most
-**	milage out of a limited movement list staging area. If this value
-**	is true then it figures paths a bit more intelligently.
-*/
-#define SAVEMEM true
-
-/*
 **	Modify this macro so that given two cell values, it will return
 **	a value between 0 and 7, with 0 being North and moving
 **	clockwise (just like map degrees).
 */
 #define CELL_FACING(a, b) Dir_Facing(::Direction((a), (b)))
-
-/*-------------------------------------------------------------------------*/
-/*
-**	Cells values are really indexes into the 'map'. The following value is
-**	the X width of the map.
-*/
-#define MODULO MAP_CELL_W
 
 /*
 **	Maximum lookahead cells. Twice this value in bytes will be

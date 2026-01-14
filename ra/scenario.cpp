@@ -162,10 +162,10 @@ static int _build_tech[11] = {
     4, 5, 7, 8, 9, 10, 11, 12, 13};
 
 #ifdef FRENCH
-#define TXT_HACKHACK "Accomplie"
+// #define TXT_HACKHACK "Accomplie"
 #endif
 #if defined(ENGLISH) || defined(GERMAN)
-#define TXT_HACKHACK Text_String(TXT_ACCOMPLISHED)
+// #define TXT_HACKHACK Text_String(TXT_ACCOMPLISHED)
 #endif
 
 bool Is_Mission_Counterstrike(char *file_name);

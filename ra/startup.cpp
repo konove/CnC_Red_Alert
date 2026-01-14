@@ -112,17 +112,17 @@ BOOL Remove_Timer_System(VOID);
 
 const char *Game_Registry_Key();
 
-#if (ENGLISH)
-#define WINDOW_NAME "Red Alert"
-#endif
-
-#if (FRENCH)
-#define WINDOW_NAME "Alerte Rouge"
-#endif
-
-#if (GERMAN)
-#define WINDOW_NAME "Alarmstufe Rot"
-#endif
+// #if (ENGLISH)
+// #define WINDOW_NAME "Red Alert"
+// #endif
+//
+// #if (FRENCH)
+// #define WINDOW_NAME "Alerte Rouge"
+// #endif
+//
+// #if (GERMAN)
+// #define WINDOW_NAME "Alarmstufe Rot"
+// #endif
 
 /***********************************************************************************************
  * main -- Initial startup routine (preps library systems). *
@@ -178,43 +178,11 @@ int main(int argc, char *argv[])
   }
 
 #endif
-// printf("in program.\n");getch();
-// printf("ram free = %ld\n",Ram_Free(MEM_NORMAL));getch();
-#ifdef WIN32
+  // printf("in program.\n");getch();
+  // printf("ram free = %ld\n",Ram_Free(MEM_NORMAL));getch();
   if (Ram_Free(MEM_NORMAL) < 7000000) {
-#else
-
-  void *temp_mem = malloc(13 * 1024 * 1024);
-  if (temp_mem) {
-    free(temp_mem);
-  } else {
-    // if (Ram_Free(MEM_NORMAL) < 13000000) {
-//	if (Ram_Free(MEM_NORMAL) < 3500000) {
-#endif
     printf(TEXT_NO_RAM);
 
-#ifndef WIN32
-    printf(TEXT_USE_START_MENU);
-    getch();
-#endif
-
-#if (0)
-
-    /*
-    ** Take a stab at finding out how much memory there is available.
-    */
-
-    for (int mem = 13 * 1024 * 1024; mem > 0; mem -= 1024) {
-      temp_mem = malloc(mem);
-      if (temp_mem) {
-        free(temp_mem);
-        printf("Memory available: %d", mem);
-        break;
-      }
-    }
-
-    getch();
-#endif  //(0)
     return (EXIT_FAILURE);
   }
 
@@ -378,7 +346,7 @@ int main(int argc, char *argv[])
       return (EXIT_FAILURE);
     }
 #else   // WIN32
-  Init_Timer_System(60, true);
+    Init_Timer_System(60, true);
 #endif  // WIN32
     RawFileClass cfile(CONFIG_FILE_NAME);
 
@@ -425,14 +393,14 @@ int main(int argc, char *argv[])
         return (EXIT_FAILURE);
       }
 #else
-    printf(TEXT_INSUFFICIENT);
-    printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
-    printf("\n");
-    if (Keyboard) Keyboard->Get();
-    //			Keyboard::IsLibrary = false;
-    Remove_Keyboard_Interrupt();
-    Remove_Timer_System();
-    return (EXIT_FAILURE);
+      printf(TEXT_INSUFFICIENT);
+      printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
+      printf("\n");
+      if (Keyboard) Keyboard->Get();
+      //			Keyboard::IsLibrary = false;
+      Remove_Keyboard_Interrupt();
+      Remove_Timer_System();
+      return (EXIT_FAILURE);
 #endif
     }
 
@@ -461,22 +429,22 @@ int main(int argc, char *argv[])
       Create_Main_Window(instance, command_show, ScreenWidth, ScreenHeight);
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
 #else   // WIN32
-    if (!Debug_Quiet) {
-      Audio_Init(
-          NewConfig.DigitCard, NewConfig.Port, NewConfig.IRQ, NewConfig.DMA,
-          PLAYBACK_RATE_NORMAL,
-          //						(NewConfig.Speed)
-          //? PLAYBACK_RATE_SLOW : PLAYBACK_RATE_NORMAL,
-          NewConfig.BitsPerSample,
-          //						4,
-          (Get_CPU() < 5) ? 3 : 5,
-          //						(NewConfig.Speed)
-          //? 3 : 5,
-          NewConfig.Reverse);
-      SoundOn = true;
-    } else {
-      Audio_Init(0, -1, -1, -1, PLAYBACK_RATE_NORMAL, 8, 5, false);
-    }
+      if (!Debug_Quiet) {
+        Audio_Init(
+            NewConfig.DigitCard, NewConfig.Port, NewConfig.IRQ, NewConfig.DMA,
+            PLAYBACK_RATE_NORMAL,
+            //						(NewConfig.Speed)
+            //? PLAYBACK_RATE_SLOW : PLAYBACK_RATE_NORMAL,
+            NewConfig.BitsPerSample,
+            //						4,
+            (Get_CPU() < 5) ? 3 : 5,
+            //						(NewConfig.Speed)
+            //? 3 : 5,
+            NewConfig.Reverse);
+        SoundOn = true;
+      } else {
+        Audio_Init(0, -1, -1, -1, PLAYBACK_RATE_NORMAL, 8, 5, false);
+      }
 #endif  // WIN32
 
 #ifdef WIN32

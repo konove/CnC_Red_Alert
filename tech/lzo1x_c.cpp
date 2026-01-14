@@ -55,7 +55,6 @@
 //
 ************************************************************************/
 
-#define M1_MAX_OFFSET 0x0400
 #if defined(LZO1X)
 #define M2_MAX_OFFSET 0x0800
 #elif defined(LZO1Y)
@@ -64,10 +63,6 @@
 #define M3_MAX_OFFSET 0x4000
 #define M4_MAX_OFFSET 0xbfff
 
-#define MX_MAX_OFFSET (M1_MAX_OFFSET + M2_MAX_OFFSET)
-
-#define M1_MARKER 0
-#define M2_MARKER 64
 #define M3_MARKER 32
 #define M4_MARKER 16
 

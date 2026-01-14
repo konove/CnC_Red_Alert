@@ -55,18 +55,15 @@
  * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifdef WIN32
-
 #include "ra/tcpip.h"
 
 #ifdef _WIN32
 typedef int socklen_t;
 #else
 
-#define closesocket close
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#endif
+// #define closesocket close
+// #define INVALID_SOCKET -1
+// #define SOCKET_ERROR -1
 
 /*
 ** Nasty globals

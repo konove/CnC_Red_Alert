@@ -62,9 +62,6 @@
  *   doIncomingPacket -- Callback: packet has arrived                      *
  *   doPlayerJoins -- Callback: player joins                               *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifdef WIN32
-#define WINDOWS
-#endif
 
 #if (TEN)
 #include "ten.h"

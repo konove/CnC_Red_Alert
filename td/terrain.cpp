@@ -94,7 +94,7 @@
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
-#define FIRST_SPORABLE_LEVEL 7
+// #define FIRST_SPORABLE_LEVEL 7
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

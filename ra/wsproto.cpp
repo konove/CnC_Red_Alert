@@ -80,7 +80,7 @@ typedef int socklen_t;
 #else
 
 #define INVALID_SOCKET -1
-#define INVALID_HANDLE_VALUE NULL
+// #define INVALID_HANDLE_VALUE NULL
 
 #define closesocket close
 

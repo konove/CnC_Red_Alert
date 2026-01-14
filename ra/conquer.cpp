@@ -4116,11 +4116,6 @@ void Handle_View(int view, int action) {
   }
 }
 
-#ifndef ROR_NOT_READY
-#define ROR_NOT_READY 21
-#endif
-
-#ifdef WIN32
 /***********************************************************************************************
  * Get_CD_Index -- returns the volume type of the CD in the given drive *
  *                                                                                             *
@@ -4204,68 +4199,6 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
   }
 #endif
 }
-#else
-int Get_CD_Index(int cd_drive, int) {
-  char buffer[128];
-
-  /*
-  ** We need to do this twice because of the possibilities of a directory
-  ** being cached.  If this is so, it will only be discovered when we
-  ** actually attempt to read a file from the drive.
-  */
-  if (cd_drive)
-    for (int count = 0; count < 2; count++) {
-      struct find_t ft;
-      int file;
-      int open_failed;
-
-      /*
-      ** Create a path for the cd drive and attempt to read the volume label
-      *from
-      ** it.
-      */
-      sprintf(buffer, "%c:\\", 'A' + cd_drive);
-
-      /*
-      ** If we are able to read the volume label, this is good but not enough.
-      ** Further verification must be done.
-      */
-      if (!_dos_findfirst(buffer, _A_VOLID, &ft)) {
-        /*
-        ** Since some versions of disk cacheing software will cache the CD's
-        ** directory tracks, we may think the CD is in the drive when it is
-        ** actually not.  To resolve this we must attempt to open a file on
-        ** the cd.  Opening a file will always update the directory tracks
-        ** (suposedly).
-        */
-        sprintf(buffer, "%c:\\main.mix", 'A' + cd_drive);
-        open_failed = _dos_open(buffer, O_RDONLY | SH_DENYNO, &file);
-
-        if (!open_failed) {
-          _dos_close(file);
-
-          /*
-          ** Hey some times the stupid dos driver appends a period to the
-          ** name if it is eight characters long.  If the last char is a
-          ** period then erase it.
-          */
-          if (ft.name[strlen(ft.name) - 1] == '.') {
-            ft.name[strlen(ft.name) - 1] = 0;
-          }
-
-          /*
-          ** Match the volume label to the list of known C&C volume labels.
-          */
-          for (int i = 0; i < _Num_Volumes; i++) {
-            if (!stricmp(_CD_Volume_Label[i], ft.name)) return (i);
-          }
-        }
-      }
-    }
-
-  return -1;
-}
-#endif
 
 /***********************************************************************************************
  * Force_CD_Available -- Ensures that specified CD is available. *

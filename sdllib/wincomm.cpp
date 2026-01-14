@@ -11,7 +11,7 @@
 
 WinModemClass *SerialPort = nullptr;
 
-WinModemClass::WinModemClass(void) : PortHandle(nullptr) {}
+WinModemClass::WinModemClass() : PortHandle(nullptr) {}
 
 HANDLE WinModemClass::Serial_Port_Open(char * /*device_name*/, int /*baud*/,
                                        int /*parity*/, int /*wordlen*/,
@@ -94,7 +94,7 @@ HANDLE WinModemClass::Serial_Port_Open(char * /*device_name*/, int /*baud*/,
 #endif
 }
 
-void WinModemClass::Serial_Port_Close(void) {
+void WinModemClass::Serial_Port_Close() {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
     sp_port *port = (sp_port *)PortHandle;
@@ -131,7 +131,7 @@ void WinModemClass::Set_Modem_Dial_Type(WinCommDialMethodType /*method*/) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-unsigned WinModemClass::Get_Modem_Status(void) {
+unsigned WinModemClass::Get_Modem_Status() {
   printf("WinModemClass::%s\n", __func__);
   return 0;
 }
@@ -162,11 +162,11 @@ void WinModemClass::Set_Echo_Function(void (* /*func*/)(char c)) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-void WinModemClass::Set_Abort_Function(int (* /*func*/)(void)) {
+void WinModemClass::Set_Abort_Function(int (* /*func*/)()) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-HANDLE WinModemClass::Get_Port_Handle(void) { return PortHandle; }
+HANDLE WinModemClass::Get_Port_Handle() const { return PortHandle; }
 
 ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/)
     : ModemName(nullptr),
@@ -196,5 +196,7 @@ ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/)
 }
 
 ModemRegistryEntryClass::~ModemRegistryEntryClass() {
-  if (ModemName) free(ModemName);
+  if (ModemName) {
+    free(ModemName);
+  }
 }

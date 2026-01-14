@@ -90,8 +90,6 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#else
-#define INVALID_HANDLE_VALUE NULL
 #endif
 
 extern ModemRegistryEntryClass *ModemRegistry;
@@ -99,8 +97,8 @@ extern ModemRegistryEntryClass *ModemRegistry;
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
 // because of other define conflicts
 
-#define ESC 27
-#define NOKEY 0xffff
+// #define ESC 27
+// #define NOKEY 0xffff
 #define INIT_COMMAND_RETRIES 2
 
 // this time is in milliseconds

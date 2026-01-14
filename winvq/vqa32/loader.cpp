@@ -136,10 +136,6 @@ void __cdecl Force_VM_Page_In(void *buffer, int length);
  *
  ****************************************************************************/
 
-#define OPEN_VQHD (1 << 0)
-#define OPEN_FINF (1 << 1)
-#define OPEN_CAPTIONS (1 << 2)
-#define OPEN_EVA (1 << 3)
 extern int VQAMovieDone;
 long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
   VQAHandleP *vqap;

@@ -91,7 +91,7 @@
 #include "tech/rgb.h"
 
 #define SCORETEXT_X 184
-#define SCORETEXT_Y 8
+// #define SCORETEXT_Y 8
 #define CASUALTY_Y 88
 #define BUILDING_X 256
 #define BUILDING_Y 128
@@ -101,9 +101,9 @@
 #define HALLFAME_X 11
 #define HALLFAME_Y 120
 
-#define MULTISCOREX 30
+// #define MULTISCOREX 30
 
-#define TEDIT_FAME 1
+// #define TEDIT_FAME 1
 #define NUMINFANTRYMEN 10
 #define NUMFAMENAMES 7
 #define MAX_FAMENAME_LENGTH 11

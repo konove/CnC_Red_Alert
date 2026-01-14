@@ -124,7 +124,7 @@ void const *RadarClass::RadarAnim = nullptr;
 
 static bool FullRedraw = false;
 
-#define _MAX_NAME 13
+// #define _MAX_NAME 13
 
 static GraphicBufferClass _IconStage(3, 3);
 static GraphicBufferClass _TileStage(24, 24);

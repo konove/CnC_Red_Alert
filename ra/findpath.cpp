@@ -100,7 +100,7 @@
 **	milage out of a limited movement list staging area. If this value
 **	is true then it figures paths a bit more intelligently.
 */
-#define SAVEMEM true
+// #define SAVEMEM true
 
 /*
 **	Modify this macro so that given two cell values, it will return
@@ -114,7 +114,7 @@
 **	Cells values are really indexes into the 'map'. The following value is
 **	the X width of the map.
 */
-#define MODULO MAP_CELL_W
+// #define MODULO MAP_CELL_W
 
 /*
 **	Maximum lookahead cells. Twice this value in bytes will be

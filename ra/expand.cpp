@@ -68,7 +68,7 @@
 
 // #define CS_DEBUG
 
-#define ARRAYOFFSET 20
+// #define ARRAYOFFSET 20
 
 /***********************************************************************************************
  * Expansion_CS_Present -- Is the Counterstrike expansion available? *

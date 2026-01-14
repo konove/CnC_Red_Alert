@@ -9,7 +9,7 @@
 
 namespace config {
 
-// Build version type (migrated from defines.h:67-69)
+// Build version type
 enum class BuildVersion {
   Release,   // Production release - no cheats, no editor
   Playtest,  // Playtest version - limited cheats, no editor
@@ -51,6 +51,17 @@ inline constexpr bool kTenEnabled = (TEN != 0);
 static_assert(!(kMPathEnabled && kTenEnabled),
               "MPATH and TEN cannot both be enabled - only one network service "
               "can be active");
+
+// Build language
+enum class BuildLanguage { English, German, French };
+
+#ifdef FRENCH
+inline constexpr auto kBuildLanguage = BuildLanguage::French;
+#elifdef GERMAN
+inline constexpr auto kBuildLanguage = BuildLanguage::German;
+#else
+inline constexpr auto kBuildLanguage = BuildLanguage::English;
+#endif
 
 }  // namespace config
 

@@ -292,7 +292,6 @@ unsigned char const Facing32[256] = {
 **	of the given terrain cells.
 */
 #define S1 0x00
-#define S2 0x40
 #define S3 0x70
 #define S4 0xA0
 #define S5 0xC0

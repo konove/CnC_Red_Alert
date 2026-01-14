@@ -63,6 +63,8 @@ class BaseNodeClass {
   CELL Cell;
 };
 
+extern template class DynamicVectorClass<BaseNodeClass>;
+
 /****************************************************************************
 ** This is the class that defines a pre-built base for the computer AI.
 ** (Despite its name, this is NOT the "base" class for C&C's class hierarchy!)
@@ -72,13 +74,13 @@ class BaseClass {
   /*
   ** Constructor/Destructor
   */
-  BaseClass(void) {};
+  BaseClass() = default;
   virtual ~BaseClass() { Nodes.Clear(); }
 
   /*
   ** Initialization
   */
-  void Init(void) {
+  void Init() {
     House = HOUSE_NONE;
     Nodes.Clear();
   }
@@ -88,11 +90,11 @@ class BaseClass {
   */
   void Read_INI(CCINIClass &ini);
   void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "Base"; }
+  static char const *INI_Name() { return "Base"; }
   bool Load(Straw &file);
   bool Save(Pipe &file) const;
-  virtual void Code_Pointers(void) {};
-  virtual void Decode_Pointers(void) {};
+  virtual void Code_Pointers() {}
+  virtual void Decode_Pointers() {}
 
   /*
   ** Tells if the given node has been built or not

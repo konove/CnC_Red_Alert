@@ -41,9 +41,6 @@
 #ifndef NULLMODEM_H
 #define NULLMODEM_H
 
-/*
-********************************* Includes **********************************
-*/
 #include "ra/connmgr.h"
 #include "ra/gadget.h"
 #include "ra/nullconn.h"
@@ -167,11 +164,7 @@ class NullModemClass : public ConnManClass {
   void Remove_Modem_Echo(void);
   void Print_EchoBuf(void);
   void Reset_EchoBuf(void);
-#ifdef WIN32
   static int Abort_Modem();
-#else
-  static int Abort_Modem(PORT *);
-#endif
   void Setup_Abort_Modem(void);
   void Remove_Abort_Modem(void);
 
@@ -191,17 +184,10 @@ class NullModemClass : public ConnManClass {
   NullModemConnClass *Connection;
   int NumConnections;  // # connection objects in use
 
-#ifdef WIN32
   /*
   ** This is the Win95 port handle
   */
   HANDLE PortHandle;
-#else   // WIN32
-  /*
-  **	This is the Greenleaf port handle.
-  */
-  PORT *Port;
-#endif  // WIN32
 
   int NumSend;
   int NumReceive;

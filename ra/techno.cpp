@@ -768,7 +768,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
  *=============================================================================================*/
 // #define UNIT_BUILD_BIAS fixed(5,4)
 // #define UNIT_BUILD_BIAS fixed(6,4)
-#define UNIT_BUILD_BIAS fixed(1, 1)
+// #define UNIT_BUILD_BIAS fixed(1, 1)
 // #define UNIT_BUILD_BIAS fixed(5,1)
 
 extern int UnitBuildPenalty;

@@ -177,7 +177,7 @@ class WinModemClass {
   /*
   ** Member to allow access to the serial port handle
   */
-  HANDLE Get_Port_Handle(void);
+  HANDLE Get_Port_Handle(void) const;
 
   /*
   ** Modem send result codes

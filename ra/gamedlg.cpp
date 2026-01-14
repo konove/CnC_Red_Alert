@@ -66,7 +66,7 @@
 #include "session.h"
 #include "slider.h"
 
-#define GERMAN_OFFSET_Y 4  // VG
+// #define GERMAN_OFFSET_Y 4  // VG
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolStrng.h"

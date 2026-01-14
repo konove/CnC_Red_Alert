@@ -62,8 +62,8 @@
 #include "td/type.h"
 
 #define TREE_NORMAL 600
-#define TREE_WEAK 400
-#define TREE_STRONG 800
+// #define TREE_WEAK 400
+// #define TREE_STRONG 800
 
 static short const _List1[] = {0, REFRESH_EOL};
 static short const _List000010[] = {MAP_CELL_W + 1, REFRESH_EOL};

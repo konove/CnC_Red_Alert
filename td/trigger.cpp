@@ -97,7 +97,7 @@
 
 static void Do_All_To_Hunt(void);
 
-#define FIXUP 0
+// #define FIXUP 0
 
 /*
 ********************************** Globals **********************************
