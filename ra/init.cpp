@@ -460,7 +460,7 @@ extern bool Get_Broadcast_Addresses(void);
  *                                                                                             *
  * HISTORY: * 06/05/1995 BRR : Created. *
  *=============================================================================================*/
-bool Select_Game(bool fade) {
+bool Select_Game(bool /*fade*/) {
   //	Enums in Select_Game() must match order of buttons in Main_Menu().
   enum {
     SEL_TIMEOUT = -1,      // main menu timeout--go into attract mode
@@ -1273,7 +1273,6 @@ bool Select_Game(bool fade) {
           }
           Theme.Queue_Song(THEME_CRUS);
           display = true;
-          fade = true;
           selection = SEL_NONE;
           break;
 
