@@ -217,9 +217,10 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
 
 GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
                                   long Size) {
-  int i, j;
-  unsigned rle;
-  unsigned color;
+  int i = 0;
+  int j = 0;
+  unsigned rle = 0;
+  unsigned color = 0;
   unsigned scan_pos;
   char *file_ptr;
   int width;

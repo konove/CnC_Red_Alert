@@ -1417,7 +1417,8 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
   **	characters for each.
   */
   char b1char, b2char, b3char;  // 1st char of each string
-  int bwidth, bheight;          // button width and height
+  int bwidth = 0;               // button width and height
+  int bheight = 0;
   int numbuttons = 0;
   if (b1txt) {
     b1char = toupper(b1txt[0]);

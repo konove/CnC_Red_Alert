@@ -162,9 +162,10 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass *video_page,
 
 GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
                                   long Size) {
-  int32_t i, j;
-  unsigned rle;
-  unsigned color;
+  int32_t i = 0;
+  int32_t j = 0;
+  unsigned rle = 0;
+  unsigned color = 0;
   unsigned scan_pos;
   char *file_ptr;
   int width;

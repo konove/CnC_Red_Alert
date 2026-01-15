@@ -87,16 +87,12 @@
 
 #include "tech/mp.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
-
-#ifndef __BORLANDC__
-#define min(a, b) (((a) < (b)) ? (a) : (b))
-#define _USERENTRY
-#endif
 
 /***********************************************************************************************
  * _Byte_Precision -- Determines the number of bytes significant in long
@@ -283,8 +279,8 @@ unsigned XMP_Encode(unsigned char *to, unsigned tobytes, uint32_t const *from,
   }
 
   const unsigned char *fptr =
-      ((const unsigned char *)from) + min(tobytes, frombytes);
-  for (index = 0; index < (int)min(tobytes, frombytes); index++) {
+      ((const unsigned char *)from) + std::min(tobytes, frombytes);
+  for (index = 0; index < (int)std::min(tobytes, frombytes); index++) {
     *to++ = *--fptr;
   }
 
@@ -650,7 +646,7 @@ void XMP_Shift_Right_Bits(uint32_t *number, int bits, int precision) {
     number++;
   }
 
-  for (index = 0; index < min(digits_to_shift, precision); index++) {
+  for (index = 0; index < std::min(digits_to_shift, precision); index++) {
     *number++ = 0;
   }
 }
@@ -734,7 +730,7 @@ void XMP_Shift_Left_Bits(uint32_t *number, int bits, int precision) {
     number--;
   }
 
-  for (index = 0; index < min(digits_to_shift, precision); index++) {
+  for (index = 0; index < std::min(digits_to_shift, precision); index++) {
     *number-- = 0;
   }
 }
@@ -1529,7 +1525,7 @@ void XMP_Inverse_A_Mod_B(uint32_t *result, uint32_t const *number,
   XMP_Init(v[0], 0, precision);
   XMP_Init(v[1], 1, precision);
 
-  uint32_t y[MAX_UNIT_PRECISION];
+  uint32_t y[MAX_UNIT_PRECISION] = {};
 
   int i;
   for (i = 1; !XMP_Test_Eq_Int(g[i % 3], 0, precision); i++) {
@@ -2034,7 +2030,7 @@ unsigned short mp_quo_digit(unsigned short *dividend) {
   q >>= _modulus_shift;
 
   /*      Prevent overflow and then wipe out the intermediate results. */
-  return (unsigned short)min(q, (unsigned long)(1L << 16) - 1);
+  return (unsigned short)std::min(q, (unsigned long)(1L << 16) - 1);
 }
 
 /*
@@ -2150,7 +2146,7 @@ void memrev(char *buffer, size_t length) {
   }
 }
 
-int _USERENTRY pfunc(const void *pkey, const void *base) {
+int pfunc(const void *pkey, const void *base) {
   if (*(unsigned short *)pkey < *(unsigned short *)base) return (-1);
   if (*(unsigned short *)pkey > *(unsigned short *)base) return (1);
   return (0);
@@ -2286,7 +2282,7 @@ bool XMP_Fermat_Test(const uint32_t *candidate_prime, unsigned rounds,
  *=============================================================================================*/
 bool XMP_Rabin_Miller_Test(Straw &rng, uint32_t const *w, int rounds,
                            int precision) {
-  uint32_t wminus1[MAX_UNIT_PRECISION];
+  uint32_t wminus1[MAX_UNIT_PRECISION] = {};
   XMP_Sub_Int(wminus1, w, 1, 0, precision);
 
   unsigned maxbitprecision = precision * sizeof(uint32_t) * 8;
@@ -2362,7 +2358,7 @@ void XMP_Randomize(uint32_t *result, Straw &rng, int total_bits,
                    int precision) {
   assert(XMP_Bits_To_Digits(total_bits) <= MAX_UNIT_PRECISION);
 
-  total_bits = min(total_bits, precision * 32);
+  total_bits = std::min(total_bits, precision * 32);
 
   unsigned nbytes = total_bits / 8 + 1;
 
