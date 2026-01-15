@@ -165,7 +165,7 @@ void Check_From_WChat(char *wchat_name) {
                               sizeof(key_string), ini_file);
 
     if (!strcmp(key_string, default_string)) {
-      if (wchat_name) delete ini_file;
+      if (wchat_name) delete[] ini_file;
       return;
     }
     port::SafeCopy(PlanetWestwoodIPAddress, key_string);
@@ -179,7 +179,7 @@ void Check_From_WChat(char *wchat_name) {
                               sizeof(key_string), ini_file);
 
     if (!strcmp(key_string, default_string)) {
-      if (wchat_name) delete ini_file;
+      if (wchat_name) delete[] ini_file;
       return;
     }
 
@@ -194,7 +194,7 @@ void Check_From_WChat(char *wchat_name) {
                               sizeof(key_string), ini_file);
 
     if (!strcmp(key_string, default_string)) {
-      if (wchat_name) delete ini_file;
+      if (wchat_name) delete[] ini_file;
       return;
     }
 
@@ -210,7 +210,7 @@ void Check_From_WChat(char *wchat_name) {
     Special.IsFromWChat = true;
   }
 
-  if (wchat_name) delete ini_file;
+  if (wchat_name) delete[] ini_file;
 
 #else  // DEMO
 
@@ -322,7 +322,7 @@ int Read_Game_Options(char *name) {
   FrameSendRate = WChatSendRate =
       WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
 
-  if (name) delete buffer;
+  if (name) delete[] buffer;
   return (1);
 }
 

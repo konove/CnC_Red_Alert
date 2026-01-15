@@ -1291,7 +1291,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
       */
       if (status < ASSUCCESS) {
         if (CCMessageBox().Process(TXT_ERROR_NO_INIT, TXT_IGNORE, TXT_CANCEL)) {
-          delete istr;
+          delete[] istr;
           return (false);
         }
         error_count++;
