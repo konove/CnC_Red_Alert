@@ -1838,9 +1838,6 @@ static void Send_FrameSync(ConnManClass *net, int cmd_count) {
   net->Send_Private_Message(
       &packet,
       (offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo)), 0);
-
-  return;
-
 }  // end of Send_FrameSync
 
 /***************************************************************************
@@ -2430,9 +2427,6 @@ static void Stop_Game(void) {
     Send_Statistics_Packet();  //	Stop_Game()
   }
 #endif  // WIN32
-
-  return;
-
 }  // end of Stop_Game
 
 /***************************************************************************
@@ -3056,7 +3050,7 @@ int Extract_Uncompressed_Events(void *buf, int bufsize) {
 
       if (!DoList.Add(*event)) {
         if (event->Type == EventClass::ADDPLAYER) {
-          delete[] static_cast<char*>(event->Data.Variable.Pointer);
+          delete[] static_cast<char *>(event->Data.Variable.Pointer);
         }
         return (-1);
       }
@@ -3236,7 +3230,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
 
       if (!DoList.Add(eventdata)) {
         if (eventdata.Type == EventClass::ADDPLAYER) {
-          delete[] static_cast<char*>(eventdata.Data.Variable.Pointer);
+          delete[] static_cast<char *>(eventdata.Data.Variable.Pointer);
         }
         return (-1);
       }

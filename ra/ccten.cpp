@@ -333,9 +333,6 @@ void Connect_TEN(void) {
       send_timer = 240;
     }
   }
-
-#else
-  return;
 #endif
 }
 

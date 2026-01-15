@@ -1597,9 +1597,6 @@ static void Send_FrameSync(ConnManClass *net, int cmd_count) {
   net->Send_Private_Message(
       &packet,
       (offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo)), 0);
-
-  return;
-
 }  // end of Send_FrameSync
 
 /***************************************************************************
@@ -2148,9 +2145,6 @@ static void Stop_Game(void) {
     Send_Statistics_Packet();
     CCDebugString("C&C95 - Returned from sending stats packet.\n");
   }
-
-  return;
-
 }  // end of Stop_Game
 
 /***************************************************************************

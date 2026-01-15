@@ -320,9 +320,6 @@ void Connect_MPATH(void) {
       send_timer = 240;
     }
   }
-
-#else
-  return;
 #endif
 }
 

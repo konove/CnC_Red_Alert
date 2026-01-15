@@ -233,7 +233,6 @@ void Create_Palette_Interpolation_Table(void) {
 
 #endif
   InterpolationPaletteChanged = false;
-  return;
 }
 
 #endif
