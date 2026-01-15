@@ -126,7 +126,7 @@ VQAHandle *VQA_Alloc() {
  ****************************************************************************/
 
 void VQA_Free(VQAHandle *vqa) {
-  delete static_cast<VQAHandleP *>(vqa);  // Safe downcast to derived type
+  delete dynamic_cast<VQAHandleP *>(vqa);  // Safe downcast to derived type
 }
 
 /****************************************************************************
@@ -155,7 +155,7 @@ void VQA_Free(VQAHandle *vqa) {
 void VQA_Init(VQAHandle *vqa,
               int64_t (*iohandler)(VQAHandle *vqa, int64_t action, void *buffer,
                                    int64_t nbytes)) {
-  static_cast<VQAHandleP *>(vqa)->IOHandler = iohandler;
+  dynamic_cast<VQAHandleP *>(vqa)->IOHandler = iohandler;
 }
 
 /****************************************************************************
@@ -180,7 +180,7 @@ void VQA_Init(VQAHandle *vqa,
 
 void VQA_Reset(VQAHandle *vqa) {
   /* Dereference data members for quick access */
-  auto *vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
+  auto *vqabuf = dynamic_cast<VQAHandleP *>(vqa)->VQABuf;
 
   vqabuf->Flags = 0;
   vqabuf->LoadedFrames = 0;
@@ -231,27 +231,27 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 #endif  // WIN32
 
   /* Dereference commonly used data members for quick access. */
-  vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
+  vqabuf = dynamic_cast<VQAHandleP *>(vqa)->VQABuf;
   drawer = &vqabuf->Drawer;
-  config = &static_cast<VQAHandleP *>(vqa)->Config;
+  config = &dynamic_cast<VQAHandleP *>(vqa)->Config;
 
   /* One time player priming. */
   if ((vqabuf->Flags & VQADATF_PRIMED) == 0) {
     /* Init the Drawer's configuration */
-    VQA_Configure_Drawer(static_cast<VQAHandleP *>(vqa));
+    VQA_Configure_Drawer(dynamic_cast<VQAHandleP *>(vqa));
 
     /* If audio enabled & loaded, start playing */
     if ((config->OptionFlags & VQAOPTF_AUDIO) != 0 &&
         vqabuf->Audio.IsLoaded[0] != 0) {
-      VQA_StartAudio(static_cast<VQAHandleP *>(vqa));
+      VQA_StartAudio(dynamic_cast<VQAHandleP *>(vqa));
     }
 
     /* Initialize the timer */
     auto i = ((vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS) /
               config->DrawRate);
 
-    VQA_SetTimer(static_cast<VQAHandleP *>(vqa), i, config->TimerMethod);
-    vqabuf->StartTime = VQA_GetTime(static_cast<VQAHandleP *>(vqa));
+    VQA_SetTimer(dynamic_cast<VQAHandleP *>(vqa), i, config->TimerMethod);
+    vqabuf->StartTime = VQA_GetTime(dynamic_cast<VQAHandleP *>(vqa));
 
     /* Priming is complete. */
     vqabuf->Flags |= VQADATF_PRIMED;
@@ -262,11 +262,11 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     case VQAMODE_PAUSE:
       if ((vqabuf->Flags & VQADATF_PAUSED) == 0) {
         vqabuf->Flags |= VQADATF_PAUSED;
-        vqabuf->EndTime = VQA_GetTime(static_cast<VQAHandleP *>(vqa));
+        vqabuf->EndTime = VQA_GetTime(dynamic_cast<VQAHandleP *>(vqa));
 
         /* Stop the audio while the movie is paused. */
         if ((vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) != 0) {
-          VQA_StopAudio(static_cast<VQAHandleP *>(vqa));
+          VQA_StopAudio(dynamic_cast<VQAHandleP *>(vqa));
         }
       }
 
@@ -283,9 +283,9 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 
         /* Start the audio if it was previously on. */
         if ((config->OptionFlags & VQAOPTF_AUDIO) != 0) {
-          if (VQA_StartAudio(static_cast<VQAHandleP *>(vqa)) != 0) {
+          if (VQA_StartAudio(dynamic_cast<VQAHandleP *>(vqa)) != 0) {
             /* Stop audio, if it's playing. */
-            VQA_StopAudio(static_cast<VQAHandleP *>(vqa));
+            VQA_StopAudio(dynamic_cast<VQAHandleP *>(vqa));
 #ifdef _WIN32
             /*
             ** Restore the process priority level
@@ -296,7 +296,7 @@ long VQA_Play(VQAHandle *vqa, long mode) {
           }
         }
 
-        VQA_SetTimer(static_cast<VQAHandleP *>(vqa), vqabuf->EndTime,
+        VQA_SetTimer(dynamic_cast<VQAHandleP *>(vqa), vqabuf->EndTime,
                      config->TimerMethod);
       }
 
@@ -361,7 +361,7 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     /* Record the end time; must be done before stopping audio, since we're
      * getting the elapsed time from the audio DMA position.
      */
-    vqabuf->EndTime = VQA_GetTime(static_cast<VQAHandleP *>(vqa));
+    vqabuf->EndTime = VQA_GetTime(dynamic_cast<VQAHandleP *>(vqa));
 
     /* Movie is finished. */
     rc = VQAERR_EOF;
@@ -369,7 +369,7 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 
   /* Stop audio, if it's playing. */
   if ((vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) != 0) {
-    VQA_StopAudio(static_cast<VQAHandleP *>(vqa));
+    VQA_StopAudio(dynamic_cast<VQAHandleP *>(vqa));
   }
 
 #ifdef _WIN32
@@ -409,7 +409,7 @@ auto VQA_SetStop(VQAHandle *vqa, int64_t stop) -> int64_t {
   int64_t oldstop = -1;
 
   /* Get a local pointer to the header. */
-  auto *header = &static_cast<VQAHandleP *>(vqa)->Header;
+  auto *header = &dynamic_cast<VQAHandleP *>(vqa)->Header;
 
   if (stop > 0 && header->Frames >= stop) {
     oldstop = header->Frames;
@@ -442,12 +442,12 @@ auto VQA_SetStop(VQAHandle *vqa, int64_t stop) -> int64_t {
  ****************************************************************************/
 
 void VQA_GetInfo(VQAHandle *vqa, VQAInfo *info) {
-  auto *header = &static_cast<VQAHandleP *>(vqa)->Header;
+  auto *header = &dynamic_cast<VQAHandleP *>(vqa)->Header;
 
   info->NumFrames = header->Frames;
   info->ImageHeight = header->ImageHeight;
   info->ImageWidth = header->ImageWidth;
-  info->ImageBuf = static_cast<VQAHandleP *>(vqa)->VQABuf->Drawer.ImageBuf;
+  info->ImageBuf = dynamic_cast<VQAHandleP *>(vqa)->VQABuf->Drawer.ImageBuf;
 }
 
 /****************************************************************************
@@ -476,7 +476,7 @@ void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats) {
   VQAData *vqabuf;
 
   /* Dereference VQAData structure from VQAHandle */
-  vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
+  vqabuf = dynamic_cast<VQAHandleP *>(vqa)->VQABuf;
 
   stats->MemUsed = vqabuf->MemUsed;
   stats->StartTime = vqabuf->StartTime;
@@ -555,7 +555,7 @@ char *VQA_IDString() { return (VQA_IDSTRING); }
  ****************************************************************************/
 
 int64_t User_Update(VQAHandle *vqa) {
-  auto *vqabuf = static_cast<VQAHandleP *>(vqa)->VQABuf;
+  auto *vqabuf = dynamic_cast<VQAHandleP *>(vqa)->VQABuf;
 
   if ((vqabuf->Flags & VQADATF_UPDATE) != 0) {
     // Update data for mono output

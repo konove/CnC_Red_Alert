@@ -434,6 +434,15 @@ typedef struct _VQAData {
  * vocfh     - Override audiotrack file handle.
  */
 struct VQAHandleP : VQAHandle {
+  void Reset() override {
+    VQAHandle::Reset();
+    VQABuf = nullptr;
+    Config = {};
+    Header = {};
+    vocfh = 0;
+    // Note: IOHandler is intentionally preserved across reset
+  }
+
   int64_t (*IOHandler)(VQAHandle *vqa, int64_t action, void *buffer,
                        int64_t nbytes);
   VQAData *VQABuf;

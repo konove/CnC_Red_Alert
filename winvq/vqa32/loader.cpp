@@ -66,7 +66,6 @@
  *
  ****************************************************************************/
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -382,8 +381,6 @@ long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config) {
  ****************************************************************************/
 
 void VQA_Close(VQAHandle *vqa) {
-  int64_t (*iohandler)(VQAHandle *, int64_t, void *, int64_t);
-
   /* Shutdown audio/timing system. */
   if (((VQAHandleP *)vqa)->Config.OptionFlags & VQAOPTF_AUDIO) {
     VQA_CloseAudio((VQAHandleP *)vqa);
@@ -401,9 +398,7 @@ void VQA_Close(VQAHandle *vqa) {
   ((VQAHandleP *)vqa)->IOHandler(vqa, VQACMD_CLOSE, nullptr, 0);
 
   /* Reset the VQAHandle */
-  iohandler = ((VQAHandleP *)vqa)->IOHandler;
-  memset(vqa, 0, sizeof(VQAHandleP));
-  ((VQAHandleP *)vqa)->IOHandler = iohandler;
+  vqa->Reset();
 }
 
 /****************************************************************************

@@ -264,7 +264,7 @@ BuildingClass *BaseClass::Get_Building(int index) const {
 
     // 2. Safe Cast: We verified the type above, so static_cast is safe and
     // fast.
-    auto *building = static_cast<BuildingClass *>(candidate);
+    auto *building = dynamic_cast<BuildingClass *>(candidate);
 
     // 3. Logic Check: Does the Type matches?
     if (building->Class->Type != node.Type) {

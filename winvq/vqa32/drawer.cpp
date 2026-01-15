@@ -620,7 +620,7 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
   /* Check our "sleep" state */
   if (!(vqabuf->Flags & VQADATF_DSLEEP)) {
     /* Find the frame to draw */
-    const long result = Select_Frame(static_cast<VQAHandleP *>(vqa));
+    const long result = Select_Frame(dynamic_cast<VQAHandleP *>(vqa));
     if (result != 0) {
       return result;
     }
