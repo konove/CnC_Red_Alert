@@ -4,12 +4,12 @@ project(CnCRedAlert)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Fetch Abseil for CHECK/DCHECK macros
+# Fetch Abseil
 include(FetchContent)
 FetchContent_Declare(
         abseil-cpp
         GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-        GIT_TAG 20240722.0
+        GIT_TAG 20260107.0
 )
 set(ABSL_PROPAGATE_CXX_STD ON)
 set(ABSL_BUILD_TESTING OFF)

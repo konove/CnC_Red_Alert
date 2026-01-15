@@ -1341,9 +1341,7 @@ bool Select_Game(bool fade) {
                     DLOG(INFO) << "C&C95 - Ready to check for more packets.";
                   }
                   DLOG(INFO) << "C&C95 - About to delete scrap memory.";
-                  delete temp_buffer;
-                  // #endif	//(0)
-
+                  delete[] temp_buffer;
                 } else {
                   DLOG(INFO) << "C&C95 - Winsock failed to initialise.";
                   GameToPlay = GAME_NORMAL;
