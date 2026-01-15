@@ -1684,7 +1684,7 @@ void IPXManagerClass::Configure_Debug(int index, int offset, int size,
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
+void IPXManagerClass::Mono_Debug_Print(int /*index*/, int /*refresh*/) {
 #ifdef WWLIB32_H
   char txt[80];
   int i;
@@ -1734,10 +1734,6 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
   txt[i] = 0;
   Mono_Set_Cursor((80 - NumBufs) / 2, 3);
   Mono_Printf("%s", txt);
-
-#else
-  index = index;
-  refresh = refresh;
 #endif
 } /* end of Mono_Debug_Print */
 

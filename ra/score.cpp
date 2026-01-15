@@ -941,7 +941,6 @@ void Cycle_Wait_Click(bool cycle) {
 
       if (NullModem.Get_Message(&receivepacket, &packetlen) > 0) {
         // throw packet away
-        packetlen = packetlen;
       }
 
       NullModem.Service();

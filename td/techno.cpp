@@ -217,7 +217,7 @@ TechnoTypeClass::TechnoTypeClass(
     bool is_theater, bool is_twoshooter, bool is_turret_equipped,
     bool is_repairable, bool is_buildable, bool is_crew, int ammo,
     unsigned short strength, MPHType maxspeed, int sightrange, int cost,
-    int scenario, int risk, int reward, int ownable, WeaponType primary,
+    int scenario, int /*risk*/, int reward, int ownable, WeaponType primary,
     WeaponType secondary, ArmorType armor)
     : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,
@@ -247,7 +247,6 @@ TechnoTypeClass::TechnoTypeClass(
   ** Units risk value is based on the type of weapon he has and the
   ** rate of fire it shoots at.
   */
-  risk = risk;
   Risk = 0;
   if (primary != WEAPON_NONE) {
     Risk = (Weapons[primary].Attack * (Weapons[primary].Range >> 4)) /

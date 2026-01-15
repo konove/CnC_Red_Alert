@@ -518,11 +518,10 @@ int IPXGlobalConnClass::Service_Receive_Queue(void) {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXGlobalConnClass::Set_Bridge(NetNumType bridge) {
+void IPXGlobalConnClass::Set_Bridge(NetNumType /*bridge*/) {
 #ifdef WINSOCK_IPX
 
   if (Configured) {
-    bridge = bridge;
     IsBridge = 0;
   }
 

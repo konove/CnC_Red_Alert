@@ -3848,13 +3848,11 @@ bool Force_CD_Available(int cd) {
  *                                                                                             *
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
-void Validate_Error(char *name) {
+void Validate_Error(char * /*name*/) {
 #ifdef CHEAT_KEYS
   Prog_End();
   printf("%s object error!\n", name);
   exit(0);
-#else
-  name = name;
 #endif
 }
 

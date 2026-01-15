@@ -213,7 +213,7 @@ void HelpClass::AI(KeyNumType &key, int x, int y) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-void HelpClass::Help_Text(int text, int x, int y, int color, bool quick) {
+void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
   if (text != Text) {
     /*
     **	If there is an existing text message, then flag the map to redraw the
@@ -243,8 +243,6 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick) {
     /*
     ** All help text prints in the same color for E3
     */
-    // Color = color;
-    color = color;
     Color = HELP_TEXT_COLOR;
     Text = text;
     Cost = 0;

@@ -760,7 +760,7 @@ void CommBufferClass::Configure_Debug(int offset, int size, char **names,
  * HISTORY:                                                                *
  *   05/02/1995 BRR : Created.                                             *
  *=========================================================================*/
-void CommBufferClass::Mono_Debug_Print(int refresh) {
+void CommBufferClass::Mono_Debug_Print(int /*refresh*/) {
 #ifdef WWLIB32_H
   int i;                                    // loop counter
   static int send_col[] = {1, 14, 28};      // coords of send queue columns
@@ -919,9 +919,6 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
       col++;
     }
   }
-
-#else
-  refresh = refresh;
 #endif
 } /* end of Mono_Debug_Print */
 
@@ -948,7 +945,7 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
  * HISTORY:                                                                *
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
-void CommBufferClass::Mono_Debug_Print2(int refresh) {
+void CommBufferClass::Mono_Debug_Print2(int /*refresh*/) {
 #ifdef WWLIB32_H
   int i;  // loop counter
   char txt[80];
@@ -1150,8 +1147,5 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
       Mono_Printf("____ __                            _");
     }
   }
-
-#else
-  refresh = refresh;
 #endif
 } /* end of Mono_Debug_Print2 */

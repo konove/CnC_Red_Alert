@@ -3509,9 +3509,7 @@ void Add_CRC(unsigned long *crc, unsigned long val) {
  * HISTORY:                                                                *
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Print_CRCs(EventClass *ev) {
-  ev = ev;
-
+void Print_CRCs(EventClass * /*ev*/) {
   int i;  //,j;
   InfantryClass *infp;
   UnitClass *unitp;

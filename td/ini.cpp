@@ -649,10 +649,8 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_Ini(char *root) {
-#ifndef CHEAT_KEYS
-  root = root;
-#else
+void Write_Scenario_Ini(char * /*root*/) {
+#ifdef CHEAT_KEYS
   char *buffer;                       // Scenario.ini staging buffer pointer.
   char fname[_MAX_FNAME + _MAX_EXT];  // full scenario name
   HousesType house;

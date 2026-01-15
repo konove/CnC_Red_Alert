@@ -503,7 +503,6 @@ void Move_Point(short &x, short &y, DirType dir, unsigned short distance) {
       111,  113,  114,  116,  117,  118,  119,  120,  121,  122,  123,
       123,  124,  125,  125,  126,  126,  126,  126,  126,
   };
-  distance = distance;  // Keep LINT quiet.
 
 #ifdef OBSOLETE
   /*
@@ -618,7 +617,6 @@ void Normal_Move_Point(short &x, short &y, DirType dir,
       111,  113,  114,  116,  117,  118,  119,  120,  121,  122,  123,
       123,  124,  125,  125,  126,  126,  126,  126,  126,
   };
-  distance = distance;  // Keep LINT quiet.
 
   x += calcx(CosTable[dir], distance);
 

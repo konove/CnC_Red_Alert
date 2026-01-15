@@ -1273,15 +1273,6 @@ int MapClass::Validate(void) {
   LandType land;
   int i;
 
-  BlubCell = &((*this)[797]);
-
-  if (BlubCell->Overlappers[1]) {
-    obj = BlubCell->Overlappers[1];
-    if (obj) {
-      if (obj->IsInLimbo) obj = obj;
-    }
-  }
-
   /*------------------------------------------------------------------------
   Check every cell on the map, even those that aren't displayed,
   in the hopes of detecting a memory trasher.

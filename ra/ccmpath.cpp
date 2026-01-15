@@ -343,7 +343,7 @@ void Connect_MPATH(void) {
  * HISTORY:                                                                *
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Destroy_MPATH_Connection(int id, int error) {
+void Destroy_MPATH_Connection(int /*id*/, int /*error*/) {
 #if (MPATH)
   int i;
   HouseClass *housep;
@@ -405,11 +405,6 @@ void Destroy_MPATH_Connection(int id, int error) {
                                  Rule.MessageDelay * TICKS_PER_MINUTE);
     Map.Flag_To_Redraw(false);
   }
-
-#else
-  id = id;
-  error = error;
-
 #endif
 }  // end of Destroy_MPATH_Connection
 

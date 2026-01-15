@@ -831,7 +831,7 @@ long VQA_LoadFrame(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
+long VQA_SeekFrame(VQAHandle *vqa, long framenum, long /*fromwhere*/) {
   VQAHandleP *vqap;
   VQAData *vqabuf;
   VQALoader *loader;
@@ -849,8 +849,6 @@ long VQA_SeekFrame(VQAHandle *vqa, long framenum, long fromwhere) {
   loader = &vqabuf->Loader;
   header = &vqap->Header;
   config = &vqap->Config;
-
-  fromwhere = fromwhere;
 
   audio = &vqabuf->Audio;
 

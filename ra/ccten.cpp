@@ -355,7 +355,7 @@ void Connect_TEN(void) {
  * HISTORY:                                                                *
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Destroy_TEN_Connection(int id, int error) {
+void Destroy_TEN_Connection(int /*id*/, int /*error*/) {
 #if (TEN)
   int i;
   HouseClass *housep;
@@ -417,11 +417,6 @@ void Destroy_TEN_Connection(int id, int error) {
                                  Rule.MessageDelay * TICKS_PER_MINUTE);
     Map.Flag_To_Redraw(false);
   }
-
-#else
-  id = id;
-  error = error;
-
 #endif
 }  // end of Destroy_TEN_Connection
 
@@ -528,7 +523,7 @@ void Send_TEN_Win_Packet(void) {
  * HISTORY:                                                                *
  *   11/27/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Send_TEN_Alliance(char *whom, int ally) {
+void Send_TEN_Alliance(char * /*whom*/, int /*ally*/) {
 #if (TEN)
   char buf[80];
 
@@ -539,12 +534,7 @@ void Send_TEN_Alliance(char *whom, int ally) {
   }
 
   tenArSetPlayerState(buf);
-
-#else
-  whom = whom;
-  ally = ally;
 #endif  // TEN
-
 }  // end of Send_TEN_Alliance
 
 /***************************************************************************

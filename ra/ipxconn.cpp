@@ -556,9 +556,8 @@ int IPXConnClass::Open_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXConnClass::Close_Socket(unsigned short socket) {
+void IPXConnClass::Close_Socket(unsigned short /*socket*/) {
 #ifdef WINSOCK_IPX
-  socket = socket;
   PacketTransport->Close_Socket();
   SocketOpen = 0;
 #else   // WINSOCK_IPX
@@ -618,7 +617,6 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
                           NetNodeType immed) {
 #ifdef WINSOCK_IPX
 
-  immed = immed;
   assert(immed == nullptr);
   PacketTransport->WriteTo((void *)buf, buflen, (void *)address);
   return (true);

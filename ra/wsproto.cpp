@@ -383,7 +383,6 @@ bool WinsockInterfaceClass::Init(void) {
  *=============================================================================================*/
 int WinsockInterfaceClass::Read(void *buffer, int &buffer_len, void *address,
                                 int &address_len) {
-  address_len = address_len;
   /*
   ** Call the message loop in case there are any outstanding winsock READ
   *messages.

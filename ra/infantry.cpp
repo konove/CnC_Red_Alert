@@ -3016,19 +3016,13 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass *object) {
       action = ACTION_ATTACK;
       break;
 
-      //		case ACTION_ENTER:
-      //			action = ACTION_MOVE;
-      //			break;
-
     case ACTION_SABOTAGE:
     case ACTION_ATTACK:
     case ACTION_GUARD_AREA:
     case ACTION_MOVE:
-      action = action;
       break;
 
     default:
-      //			action = ACTION_NONE;
       break;
   }
 
