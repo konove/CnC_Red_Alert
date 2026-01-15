@@ -135,7 +135,7 @@ MixFileClass<T>::~MixFileClass(void) {
     free((char *)Filename);
   }
   if (Data != nullptr && IsAllocated) {
-    delete[] static_cast<char*>(Data);
+    delete[] static_cast<char *>(Data);
     IsAllocated = false;
   }
   Data = nullptr;
@@ -179,12 +179,9 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
       DataStart(0),
       HeaderBuffer(nullptr),
       Data(nullptr) {
-  /*
-  **	Check to see if the file is available. If it isn't, then
-  **	no further processing is needed or possible.
-  */
+  // Check to see if the file is available. If it isn't, then no further
+  // processing is needed or possible.
   if (!Force_CD_Available(RequiredCD)) {
-    // Prog_End();
     Emergency_Exit(EXIT_FAILURE);
   }
 
@@ -197,20 +194,21 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
 
   if (!file.Is_Available()) return;
 
-  /*
-  **	Stuctures used to hold the various file headers.
-  */
-  FileHeader fileheader;
+  // Structures used to hold the various file headers.
+  FileHeader file_header;
   struct {
     short First;   // Always zero for extended mixfile format.
     short Second;  // Bitfield of extensions to this mixfile.
   } alternate;
 
-  /*
-  **	Detect if this is an extended mixfile. If so, then see if it is
-  *encrypted *	and/or has a message digest attached. Otherwise, just retrieve
-  *the *	plain mixfile header.
-  */
+  // Fetch the first bit of the file. From this bit, it is possible to detect
+  // whether this is an extended mixfile format or the plain format. An extended
+  // format may have extra options or data layout.
+  straw->Get(&alternate, sizeof(alternate));
+
+  // Detect if this is an extended mixfile. If so, then see if it is encrypted
+  // and/or has a message digest attached. Otherwise, just retrieve the plain
+  // mixfile header.
   if (alternate.First == 0) {
     IsDigest = ((alternate.Second & 0x01) != 0);
     IsEncrypted = ((alternate.Second & 0x02) != 0);
@@ -220,38 +218,29 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
       pstraw.Get_From(&fstraw);
       straw = &pstraw;
     }
-    straw->Get(&fileheader, sizeof(fileheader));
 
+    straw->Get(&file_header, sizeof(file_header));
   } else {
-    memmove(&fileheader, &alternate, sizeof(alternate));
-    straw->Get(((char *)&fileheader) + sizeof(alternate),
-               sizeof(fileheader) - sizeof(alternate));
+    memmove(&file_header, &alternate, sizeof(alternate));
+    straw->Get(((char *)&file_header) + sizeof(alternate),
+               sizeof(file_header) - sizeof(alternate));
   }
 
-  Count = fileheader.count;
-  DataSize = fileheader.size;
-  // Mono_Printf("Mixfileclass %s DataSize: %08x\n", filename, DataSize);
-  // Get_Key();
-  /*
-  **	Load up the offset control array. If RAM is exhausted, then the mixfile
-  *is invalid.
-  */
+  Count = file_header.count;
+  DataSize = file_header.size;
+
+  // Load up the offset control array. If RAM is exhausted, then the mixfile is
+  // invalid.
   HeaderBuffer = new SubBlock[Count];
-  if (HeaderBuffer == nullptr) return;
   straw->Get(HeaderBuffer, Count * sizeof(SubBlock));
 
-  /*
-  **	The start of the embedded mixfile data will be at the current file
-  *offset. *	This should be true even if the file header has been encrypted
-  *because the file *	header was cleverly written with just the sufficient
-  *number of padding bytes so *	that this condition would be true.
-  */
+  // The start of the embedded mixfile data will be at the current file offset.
+  // This should be true even if the file header has been encrypted because the
+  // file header was cleverly written with just the sufficient number of padding
+  // bytes so that this condition would be true.
   DataStart = file.Seek(0, SEEK_CUR) + file.BiasStart;
-  //	DataStart = file.Seek(0, SEEK_CUR);
 
-  /*
-  **	Attach to list of mixfiles.
-  */
+  // Attach to list of mixfiles.
   MixList.Add_Tail(this);
 }
 
@@ -407,7 +396,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
     */
     long actual = straw->Get(Data, DataSize);
     if (actual != DataSize) {
-      delete[] static_cast<char*>(Data);
+      delete[] static_cast<char *>(Data);
       Data = nullptr;
       file.Error(EIO);
       return (false);
@@ -424,7 +413,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
       sha.Result(digest2);
       fstraw.Get(digest1, sizeof(digest1));
       if (memcmp(digest1, digest2, sizeof(digest1)) != 0) {
-        delete[] static_cast<char*>(Data);
+        delete[] static_cast<char *>(Data);
         Data = nullptr;
         return (false);
       }
@@ -457,7 +446,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
 template <class T>
 void MixFileClass<T>::Free(void) {
   if (Data != nullptr && IsAllocated) {
-    delete[] static_cast<char*>(Data);
+    delete[] static_cast<char *>(Data);
   }
   Data = nullptr;
   IsAllocated = false;

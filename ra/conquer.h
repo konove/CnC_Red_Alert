@@ -19,6 +19,7 @@
 #define CNC_RED_ALERT_RA_CONQUER_H_
 
 #include <cstdint>
+#include <string>
 
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -605,7 +606,7 @@ bool Force_CD_Available(int cd);
 void Handle_View(int view, int action = 0);
 void Handle_Team(int team, int action = 0);
 TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id);
-char const *Fading_Table_Name(char const *base, TheaterType theater);
+std::string Fading_Table_Name(char const *base, TheaterType theater);
 void Unselect_All(void);
 void Play_Movie(char const *name, ThemeType theme = THEME_NONE,
                 bool clrscrn = true);

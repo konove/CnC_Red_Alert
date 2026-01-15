@@ -15,12 +15,6 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include <algorithm>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 /* $Header:   F:\projects\c&c\vcs\code\display.cpv   2.16   16 Oct 1995 16:48:24
  * JOE_BOSTIC  $ */
 /***********************************************************************************************
@@ -94,7 +88,13 @@
  *object on the map.                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "rand.h"
+#include "td/display.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
@@ -115,7 +115,6 @@
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/defines.h"
-#include "td/display.h"
 #include "td/display_constants.h"
 #include "td/event.h"
 #include "td/externs.h"
@@ -134,6 +133,7 @@
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/queue.h"
+#include "td/rand.h"
 #include "td/target.h"
 #include "td/techno.h"
 #include "td/trigger.h"
@@ -442,11 +442,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("GREEN", theater))
+  CCFileClass(Fading_Table_Name("GREEN", theater).c_str())
       .Read(FadingGreen, sizeof(FadingGreen));
 #else
   Build_Fading_Table(GamePalette, FadingGreen, GREEN, 110);
-  CCFileClass(Fading_Table_Name("GREEN", theater))
+  CCFileClass(Fading_Table_Name("GREEN", theater).c_str())
       .Write(FadingGreen, sizeof(FadingGreen));
 #endif
   if (theater == THEATER_DESERT) {
@@ -454,29 +454,29 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   }
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("YELLOW", theater))
+  CCFileClass(Fading_Table_Name("YELLOW", theater).c_str())
       .Read(FadingYellow, sizeof(FadingYellow));
 #else
   Build_Fading_Table(GamePalette, FadingYellow, YELLOW, 140);
-  CCFileClass(Fading_Table_Name("YELLOW", theater))
+  CCFileClass(Fading_Table_Name("YELLOW", theater).c_str())
       .Write(FadingYellow, sizeof(FadingYellow));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("RED", theater))
+  CCFileClass(Fading_Table_Name("RED", theater).c_str())
       .Read(FadingRed, sizeof(FadingRed));
 #else
   Build_Fading_Table(GamePalette, FadingRed, RED, 140);
-  CCFileClass(Fading_Table_Name("RED", theater))
+  CCFileClass(Fading_Table_Name("RED", theater).c_str())
       .Write(FadingRed, sizeof(FadingRed));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("MOUSE", theater))
+  CCFileClass(Fading_Table_Name("MOUSE", theater).c_str())
       .Read(MouseTranslucentTable, sizeof(MouseTranslucentTable));
 #else
   Build_Translucent_Table(GamePalette, &MouseCols[0], 4, MouseTranslucentTable);
-  CCFileClass(Fading_Table_Name("MOUSE", theater))
+  CCFileClass(Fading_Table_Name("MOUSE", theater).c_str())
       .Write(MouseTranslucentTable, sizeof(MouseTranslucentTable));
 #endif
 
@@ -486,59 +486,59 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   //	MouseDrawFlags = (int)SHAPE_GHOST;
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("TRANS", theater))
+  CCFileClass(Fading_Table_Name("TRANS", theater).c_str())
       .Read(TranslucentTable, sizeof(TranslucentTable));
 #else
   Build_Translucent_Table(GamePalette, &MagicCols[0], MAGIC_COL_COUNT,
                           TranslucentTable);
-  CCFileClass(Fading_Table_Name("TRANS", theater))
+  CCFileClass(Fading_Table_Name("TRANS", theater).c_str())
       .Write(TranslucentTable, sizeof(TranslucentTable));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("WHITE", theater))
+  CCFileClass(Fading_Table_Name("WHITE", theater).c_str())
       .Read(WhiteTranslucentTable, sizeof(WhiteTranslucentTable));
 #else
   Build_Translucent_Table(GamePalette, &WhiteCols[0], 1, WhiteTranslucentTable);
-  CCFileClass(Fading_Table_Name("WHITE", theater))
+  CCFileClass(Fading_Table_Name("WHITE", theater).c_str())
       .Write(WhiteTranslucentTable, sizeof(WhiteTranslucentTable));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("SHADOW", theater))
+  CCFileClass(Fading_Table_Name("SHADOW", theater).c_str())
       .Read(ShadowTrans, sizeof(ShadowTrans));
 #else
   Build_Translucent_Table(GamePalette, &ShadowCols[0], SHADOW_COL_COUNT,
                           ShadowTrans);
-  CCFileClass(Fading_Table_Name("SHADOW", theater))
+  CCFileClass(Fading_Table_Name("SHADOW", theater).c_str())
       .Write(ShadowTrans, sizeof(ShadowTrans));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("UNITS", theater))
+  CCFileClass(Fading_Table_Name("UNITS", theater).c_str())
       .Read(UnitShadow, sizeof(UnitShadow));
 #else
   Conquer_Build_Translucent_Table(GamePalette, &UShadowCols[0],
                                   USHADOW_COL_COUNT, UnitShadow);
-  CCFileClass(Fading_Table_Name("UNITS", theater))
+  CCFileClass(Fading_Table_Name("UNITS", theater).c_str())
       .Write(UnitShadow, sizeof(UnitShadow));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("SHADE", theater))
+  CCFileClass(Fading_Table_Name("SHADE", theater).c_str())
       .Read(FadingShade, sizeof(FadingShade));
 #else
   Conquer_Build_Fading_Table(GamePalette, FadingShade, BLACK, 150);
-  CCFileClass(Fading_Table_Name("SHADE", theater))
+  CCFileClass(Fading_Table_Name("SHADE", theater).c_str())
       .Write(FadingShade, sizeof(FadingShade));
 #endif
 
 #ifdef _RETRIEVE
-  CCFileClass(Fading_Table_Name("LIGHT", theater))
+  CCFileClass(Fading_Table_Name("LIGHT", theater).c_str())
       .Read(FadingLight, sizeof(FadingLight));
 #else
   Conquer_Build_Fading_Table(GamePalette, FadingLight, WHITE, 85);
-  CCFileClass(Fading_Table_Name("LIGHT", theater))
+  CCFileClass(Fading_Table_Name("LIGHT", theater).c_str())
       .Write(FadingLight, sizeof(FadingLight));
 #endif
 

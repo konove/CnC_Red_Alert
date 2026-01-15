@@ -1287,11 +1287,11 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   */
   Build_Translucent_Table(GamePalette, &ClockCols[0], 1,
                           (void *)ClockTranslucentTable);
-  CCFileClass(Fading_Table_Name("CLOCK", theater))
+  CCFileClass(Fading_Table_Name("CLOCK", theater).c_str())
       .Write(ClockTranslucentTable, sizeof(ClockTranslucentTable));
   Mem_Copy(OriginalPalette, GamePalette, 768);
 #else
-  CCFileClass(Fading_Table_Name("CLOCK", theater))
+  CCFileClass(Fading_Table_Name("CLOCK", theater).c_str())
       .Read(ClockTranslucentTable, sizeof(ClockTranslucentTable));
 #endif
   LastTheater = theater;

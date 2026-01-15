@@ -2531,12 +2531,12 @@ void Unselect_All(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-char const *Fading_Table_Name(char const *base, TheaterType theater) {
+std::string Fading_Table_Name(char const *base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
   const auto root = std::string(1, Theaters[theater].Root[0]) + base;
   const auto file_path = std::filesystem::path(root).replace_extension(".MRF");
-  return file_path.string().c_str();
+  return file_path.string();
 }
 
 /***********************************************************************************************
