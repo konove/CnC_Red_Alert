@@ -43,6 +43,7 @@
 
 #include "td/profile.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -632,9 +633,10 @@ bool WWWritePrivateProfileString(char const *section, char const *entry,
     memmove(offset + strlen(buffer), offset, strlen(offset) + 1);
 
     /*
-    **	Copy the entry into the INI buffer.
+    **	Copy the entry into the INI buffer (without null terminator, since we're
+    **	inserting into the middle of existing text).
     */
-    memcpy(offset, buffer, strlen(buffer));
+    std::copy(buffer, buffer + strlen(buffer), offset);
   }
 
   return (true);
