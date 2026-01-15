@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(CnCRedAlert)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -14,6 +16,15 @@ FetchContent_Declare(
 set(ABSL_PROPAGATE_CXX_STD ON)
 set(ABSL_BUILD_TESTING OFF)
 FetchContent_MakeAvailable(abseil-cpp)
+
+# GoogleTest for unit testing
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.17.0
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 # Option to enable strict checks (clang-tidy + extra warnings)
 # Disable for quick iteration: cmake -DSTRICT_CHECKS=OFF ..
@@ -105,6 +116,10 @@ add_compile_definitions(WIN32) # hopefully easier than DOS
 
 # Use Chromium-style includes: all paths relative to project root
 include_directories(${CMAKE_SOURCE_DIR})
+
+# Testing support
+include(GoogleTest)
+enable_testing()
 
 add_subdirectory(port)
 add_subdirectory(sdllib)
