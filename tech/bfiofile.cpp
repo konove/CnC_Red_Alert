@@ -318,7 +318,7 @@ bool BufferIOFileClass::Cache(long size, void *ptr) {
 void BufferIOFileClass::Free(void) {
   if (Buffer) {
     if (IsAllocated) {
-      delete[] Buffer;
+      delete[] static_cast<char *>(Buffer);
       IsAllocated = false;
     }
 

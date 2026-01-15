@@ -3056,7 +3056,7 @@ int Extract_Uncompressed_Events(void *buf, int bufsize) {
 
       if (!DoList.Add(*event)) {
         if (event->Type == EventClass::ADDPLAYER) {
-          delete[] event->Data.Variable.Pointer;
+          delete[] static_cast<char*>(event->Data.Variable.Pointer);
         }
         return (-1);
       }
@@ -3236,7 +3236,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
 
       if (!DoList.Add(eventdata)) {
         if (eventdata.Type == EventClass::ADDPLAYER) {
-          delete[] eventdata.Data.Variable.Pointer;
+          delete[] static_cast<char*>(eventdata.Data.Variable.Pointer);
         }
         return (-1);
       }

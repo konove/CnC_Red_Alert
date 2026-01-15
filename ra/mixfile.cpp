@@ -135,7 +135,7 @@ MixFileClass<T>::~MixFileClass(void) {
     free((char *)Filename);
   }
   if (Data != nullptr && IsAllocated) {
-    delete[] Data;
+    delete[] static_cast<char*>(Data);
     IsAllocated = false;
   }
   Data = nullptr;
@@ -407,7 +407,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
     */
     long actual = straw->Get(Data, DataSize);
     if (actual != DataSize) {
-      delete[] Data;
+      delete[] static_cast<char*>(Data);
       Data = nullptr;
       file.Error(EIO);
       return (false);
@@ -424,7 +424,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
       sha.Result(digest2);
       fstraw.Get(digest1, sizeof(digest1));
       if (memcmp(digest1, digest2, sizeof(digest1)) != 0) {
-        delete[] Data;
+        delete[] static_cast<char*>(Data);
         Data = nullptr;
         return (false);
       }
@@ -457,7 +457,7 @@ bool MixFileClass<T>::Cache(Buffer const *buffer) {
 template <class T>
 void MixFileClass<T>::Free(void) {
   if (Data != nullptr && IsAllocated) {
-    delete[] Data;
+    delete[] static_cast<char*>(Data);
   }
   Data = nullptr;
   IsAllocated = false;

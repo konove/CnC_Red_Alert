@@ -911,7 +911,7 @@ void Send_Statistics_Packet(void) {
   /*
   ** Tidy up
   */
-  delete[] packet;
+  delete[] static_cast<char*>(packet);
 
   GameStatisticsPacketSent = true;
 #endif  // INTERNET_OFF

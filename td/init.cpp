@@ -753,7 +753,7 @@ void Uninit_Game(void) {
   Map.ShadowPage = NULL;
   Map.Free_Cells();
 
-  delete[] SpeechBuffer;
+  delete[] static_cast<char*>(SpeechBuffer);
 
   CCFileClass::Clear_Search_Drives();
   MixFileClass::Free_All();

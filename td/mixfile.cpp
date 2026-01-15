@@ -64,7 +64,7 @@ MixFileClass::~MixFileClass(void) {
     free((char *)Filename);
   }
   if (Data) {
-    delete[] Data;
+    delete[] static_cast<char*>(Data);
   }
   if (Buffer) {
     delete[] Buffer;
@@ -240,7 +240,7 @@ bool MixFileClass::Cache(void) {
 // re-caching later without re-reading the index from disk.
 void MixFileClass::Free(void) {
   if (Data) {
-    delete[] Data;
+    delete[] static_cast<char*>(Data);
     Data = nullptr;
   }
 }
