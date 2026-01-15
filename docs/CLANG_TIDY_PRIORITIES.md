@@ -7,9 +7,11 @@ disabled checks to re-enable and fix, ordered by **bug severity**, **fix effort*
 
 ---
 
-## TIER 1: HIGH PRIORITY - Real Bugs (Tackle First)
+## TIER 1: HIGH PRIORITY - Real Bugs ✅ DONE
 
 These find actual bugs, crashes, and security issues. Worth the effort even in legacy code.
+
+**Status: All checks in this tier have been enabled.**
 
 ### 1.1 Null/Uninitialized (Common crash sources)
 
@@ -43,7 +45,7 @@ These find actual bugs, crashes, and security issues. Worth the effort even in l
 
 Worth enabling incrementally. Can be fixed file-by-file.
 
-### 2.1 Easy Wins (Low effort, high value)
+### 2.1 Easy Wins ✅ DONE
 
 | Check                                | Why Enable                 | Effort                  |
 |--------------------------------------|----------------------------|-------------------------|
@@ -69,14 +71,14 @@ Worth enabling incrementally. Can be fixed file-by-file.
 | `clang-diagnostic-sign-compare`  | Signed/unsigned comparison | High - very common |
 | `bugprone-signed-char-misuse`    | char vs unsigned char      | Medium             |
 
-### 2.4 Dead Code / Unused
+### 2.4 Dead Code / Unused (3/4 done)
 
-| Check                                | Why Enable             | Effort                       |
-|--------------------------------------|------------------------|------------------------------|
-| `clang-analyzer-deadcode.DeadStores` | Assignments never read | Medium                       |
-| `clang-diagnostic-unused-variable`   | Unused variables       | Low                          |
-| `clang-diagnostic-unused-function`   | Dead functions         | Low                          |
-| `clang-diagnostic-unused-parameter`  | Unused params          | Low - use `[[maybe_unused]]` |
+| Check                                | Why Enable             | Effort                       | Status |
+|--------------------------------------|------------------------|------------------------------|--------|
+| `clang-analyzer-deadcode.DeadStores` | Assignments never read | Medium                       |        |
+| `clang-diagnostic-unused-variable`   | Unused variables       | Low                          | ✅      |
+| `clang-diagnostic-unused-function`   | Dead functions         | Low                          | ✅      |
+| `clang-diagnostic-unused-parameter`  | Unused params          | Low - use `[[maybe_unused]]` | ✅      |
 
 ---
 
@@ -148,25 +150,70 @@ These are "nice to have" but require significant refactoring. Consider for new c
 
 ---
 
+## C++ CORE GUIDELINES TYPE SAFETY PROFILE
+
+The C++ Core Guidelines define
+a [Type Safety Profile](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#ss-type)
+for incrementally modernizing legacy codebases. clang-tidy provides direct support via `cppcoreguidelines-pro-type-*`
+checks.
+
+### Profile Rules and clang-tidy Mapping
+
+| Rule   | Description                         | clang-tidy Check                                  | Current  |
+|--------|-------------------------------------|---------------------------------------------------|----------|
+| Type.1 | Don't use `reinterpret_cast`        | `cppcoreguidelines-pro-type-reinterpret-cast`     | Disabled |
+| Type.2 | Don't use `static_cast` to downcast | `cppcoreguidelines-pro-type-static-cast-downcast` | Disabled |
+| Type.3 | Don't use `const_cast`              | `cppcoreguidelines-pro-type-const-cast`           | Disabled |
+| Type.4 | Don't use C-style casts             | `cppcoreguidelines-pro-type-cstyle-cast`          | Disabled |
+| Type.5 | Always initialize variables         | `cppcoreguidelines-init-variables`                | Disabled |
+| Type.6 | Always initialize member variables  | `cppcoreguidelines-pro-type-member-init`          | Disabled |
+| Type.7 | Avoid naked unions                  | `cppcoreguidelines-pro-type-union-access`         | Disabled |
+| Type.8 | Avoid varargs                       | `cppcoreguidelines-pro-type-vararg`               | Disabled |
+
+### Recommended Adoption Order
+
+For legacy codebases, enable checks incrementally from least to most noisy:
+
+1. **`pro-type-static-cast-downcast`** - Likely few violations; use `dynamic_cast` or redesign
+2. **`pro-type-const-cast`** - Usually rare; indicates design issues
+3. **`pro-type-union-access`** - Depends on union usage; consider `std::variant`
+4. **`pro-type-vararg`** - Printf/logging heavy code has many; migrate to `std::format`/`absl::StrFormat`
+5. **`pro-type-reinterpret-cast`** - Common in low-level code; often unavoidable
+6. **`pro-type-cstyle-cast`** - Very common; thousands of violations expected
+7. **`pro-type-member-init`** - Noisy but offers auto-fixes
+
+### Usage Pattern
+
+```bash
+# Check violation count for a specific rule before enabling
+clang-tidy -checks='-*,cppcoreguidelines-pro-type-static-cast-downcast' src/**/*.cpp
+
+# Enable in .clang-tidy by removing the '-' prefix
+# Before: -cppcoreguidelines-pro-type-static-cast-downcast,
+# After:  (line removed or '-' removed)
+```
+
+---
+
 ## RECOMMENDED ACTION PLAN
 
-### Phase 1: Quick Wins
+### Phase 1: Quick Wins ✅ DONE
 
-1. Enable `clang-diagnostic-suggest-override` - auto-fix with clang-tidy
-2. Enable `clang-diagnostic-self-assign`
-3. Enable `readability-redundant-control-flow`
-4. Enable `clang-diagnostic-return-stack-address`
+1. ~~Enable `clang-diagnostic-suggest-override` - auto-fix with clang-tidy~~
+2. ~~Enable `clang-diagnostic-self-assign`~~
+3. ~~Enable `readability-redundant-control-flow`~~
+4. ~~Enable `clang-diagnostic-return-stack-address`~~
 
-### Phase 2: Memory Safety
+### Phase 2: Memory Safety ✅ DONE
 
-1. Enable `clang-analyzer-core.NullDereference` - fix warnings
-2. Enable `clang-diagnostic-delete-incomplete`
-3. Enable `clang-diagnostic-mismatched-new-delete`
+1. ~~Enable `clang-analyzer-core.NullDereference` - fix warnings~~
+2. ~~Enable `clang-diagnostic-delete-incomplete`~~
+3. ~~Enable `clang-diagnostic-mismatched-new-delete`~~
 
-### Phase 3: Uninitialized Variables
+### Phase 3: Uninitialized Variables ✅ DONE
 
-1. Enable `clang-diagnostic-uninitialized`
-2. Enable `clang-analyzer-core.uninitialized.*`
+1. ~~Enable `clang-diagnostic-uninitialized`~~
+2. ~~Enable `clang-analyzer-core.uninitialized.*`~~
 
 ### Phase 4: Incremental (ongoing)
 
@@ -177,9 +224,9 @@ These are "nice to have" but require significant refactoring. Consider for new c
 
 ## Summary
 
-| Tier   | Checks | Action                        |
-|--------|--------|-------------------------------|
-| Tier 1 | ~12    | Enable ASAP - finds real bugs |
-| Tier 2 | ~20    | Enable incrementally          |
-| Tier 3 | ~50    | New code only, or never       |
-| Tier 4 | ~120   | Keep disabled permanently     |
+| Tier   | Checks | Action                        | Status              |
+|--------|--------|-------------------------------|---------------------|
+| Tier 1 | ~12    | Enable ASAP - finds real bugs | ✅ DONE             |
+| Tier 2 | ~20    | Enable incrementally          | Partial (2.1, 2.4)  |
+| Tier 3 | ~50    | New code only, or never       | Not started         |
+| Tier 4 | ~120   | Keep disabled permanently     | N/A                 |
