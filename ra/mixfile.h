@@ -43,7 +43,7 @@ class MixFileClass : public Node<MixFileClass<T> > {
   static bool Offset(char const *filename, void **realptr = nullptr,
                      MixFileClass **mixfile = nullptr, long *offset = nullptr,
                      long *size = nullptr);
-  static void const *Retrieve(char const *filename);
+  static const void *Retrieve(char const *filename);
 
   struct SubBlock {
     int32_t CRC;     // CRC code for embedded file.

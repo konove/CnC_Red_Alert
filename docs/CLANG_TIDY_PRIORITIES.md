@@ -162,8 +162,8 @@ checks.
 | Rule   | Description                         | clang-tidy Check                                  | Current  |
 |--------|-------------------------------------|---------------------------------------------------|----------|
 | Type.1 | Don't use `reinterpret_cast`        | `cppcoreguidelines-pro-type-reinterpret-cast`     | Disabled |
-| Type.2 | Don't use `static_cast` to downcast | `cppcoreguidelines-pro-type-static-cast-downcast` | Disabled |
-| Type.3 | Don't use `const_cast`              | `cppcoreguidelines-pro-type-const-cast`           | Disabled |
+| Type.2 | Don't use `static_cast` to downcast | `cppcoreguidelines-pro-type-static-cast-downcast` | Enabled  |
+| Type.3 | Don't use `const_cast`              | `cppcoreguidelines-pro-type-const-cast`           | Enabled  |
 | Type.4 | Don't use C-style casts             | `cppcoreguidelines-pro-type-cstyle-cast`          | Disabled |
 | Type.5 | Always initialize variables         | `cppcoreguidelines-init-variables`                | Disabled |
 | Type.6 | Always initialize member variables  | `cppcoreguidelines-pro-type-member-init`          | Disabled |
@@ -224,9 +224,9 @@ clang-tidy -checks='-*,cppcoreguidelines-pro-type-static-cast-downcast' src/**/*
 
 ## Summary
 
-| Tier   | Checks | Action                        | Status              |
-|--------|--------|-------------------------------|---------------------|
+| Tier   | Checks | Action                        | Status             |
+|--------|--------|-------------------------------|--------------------|
 | Tier 1 | ~12    | Enable ASAP - finds real bugs | ✅ DONE             |
-| Tier 2 | ~20    | Enable incrementally          | Partial (2.1, 2.4)  |
-| Tier 3 | ~50    | New code only, or never       | Not started         |
-| Tier 4 | ~120   | Keep disabled permanently     | N/A                 |
+| Tier 2 | ~20    | Enable incrementally          | Partial (2.1, 2.4) |
+| Tier 3 | ~50    | New code only, or never       | Not started        |
+| Tier 4 | ~120   | Keep disabled permanently     | N/A                |

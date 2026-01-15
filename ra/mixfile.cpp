@@ -263,10 +263,10 @@ MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
  * HISTORY: * 08/23/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-void const *MixFileClass<T>::Retrieve(char const *filename) {
+const void *MixFileClass<T>::Retrieve(char const *filename) {
   void *ptr = nullptr;
   Offset(filename, &ptr);
-  return (ptr);
+  return ptr;
 };
 
 /***********************************************************************************************

@@ -62,6 +62,6 @@ typedef struct tIconSetType {
 } IconSetType;
 
 extern void Restore_Cached_Icons(void);
-extern void Register_Icon_Set(void *icon_data, bool pre_cache);
+extern void Register_Icon_Set(const void *icon_data, bool pre_cache);
 
 #endif  // ICONCACH_H

@@ -1753,25 +1753,23 @@ short const *TemplateTypeClass::Occupy_List(bool) const {
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
   for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
-    TemplateTypeClass const &tplate = As_Reference(index);
+    TemplateTypeClass &tplate = As_Reference(index);
 
-    const_cast<void const *&>(tplate.ImageData) = nullptr;
+    tplate.ImageData = nullptr;
     if (tplate.Theater & (1 << theater)) {
       auto fullname = std::filesystem::path(tplate.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
 
       // Working loaded iconset pointer.
-      void const *ptr = MFCD::Retrieve(fullname.c_str());
-      const_cast<void const *&>(tplate.ImageData) = ptr;
+      const void *ptr = MFCD::Retrieve(fullname.c_str());
+      tplate.ImageData = ptr;
 
-#ifdef WIN32
       // Register icon set for video memory caching
-      Register_Icon_Set(const_cast<void *>(ptr), true);
-#endif
+      Register_Icon_Set(ptr, true);
 
-      const_cast<unsigned char &>(tplate.Width) = Get_IconSet_MapWidth(ptr);
-      const_cast<unsigned char &>(tplate.Height) = Get_IconSet_MapHeight(ptr);
+      tplate.Width = Get_IconSet_MapWidth(ptr);
+      tplate.Height = Get_IconSet_MapHeight(ptr);
     }
   }
 }
