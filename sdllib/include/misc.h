@@ -40,6 +40,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
+#include <string_view>
 
 #include "sdllib/include/ww_win.h"
 
@@ -97,6 +98,12 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
                         unsigned int *r, unsigned int *g, unsigned int *b);
 
+/*=========================================================================*/
+/* The following prototype is for the file: CRC.ASM
+ */
+/*=========================================================================*/
+[[nodiscard]] constexpr uint32_t Calculate_CRC(std::string_view str) noexcept;
+
 /*========================= Assembly Routines ==============================*/
 
 #ifdef __cplusplus
@@ -105,12 +112,6 @@ extern "C" {
 
 void *Build_Fading_Table(void const *palette, void *dest, long int color,
                          long int frac);
-/*=========================================================================*/
-/* The following prototype is for the file: CRC.ASM
- */
-/*=========================================================================*/
-
-long Calculate_CRC(void *buffer, long length);
 
 extern int Clip_Rect(int *x, int *y, int *dw, int *dh, int width, int height);
 extern int Confine_Rect(int *x, int *y, int dw, int dh, int width, int height);

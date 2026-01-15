@@ -41,6 +41,10 @@
 
 #include "tech/crcpipe.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
 /***********************************************************************************************
  * CRCPipe::Put -- Retrieves the data bytes specified and calculates CRC on it.
  **
@@ -63,8 +67,9 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int CRCPipe::Put(void const* source, int slen) {
-  CRC(source, slen);
+int CRCPipe::Put(const void* source, int slen) {
+  crc_.Update(std::span(static_cast<const uint8_t*>(source),
+                        static_cast<size_t>(slen)));
   return (Pipe::Put(source, slen));
 }
 
@@ -82,4 +87,4 @@ int CRCPipe::Put(void const* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CRCPipe::Result(void) const { return (CRC()); }
+long CRCPipe::Result(void) const { return crc_.Value(); }

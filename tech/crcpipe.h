@@ -56,7 +56,7 @@ class CRCPipe : public Pipe {
   long Result(void) const;
 
  protected:
-  CRCEngine CRC;
+  CrcEngine crc_;
 
  private:
   CRCPipe(CRCPipe& rvalue);

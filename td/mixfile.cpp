@@ -64,7 +64,7 @@ MixFileClass::~MixFileClass(void) {
     free((char *)Filename);
   }
   if (Data) {
-    delete[] static_cast<char*>(Data);
+    delete[] static_cast<char *>(Data);
   }
   if (Buffer) {
     delete[] Buffer;
@@ -240,7 +240,7 @@ bool MixFileClass::Cache(void) {
 // re-caching later without re-reading the index from disk.
 void MixFileClass::Free(void) {
   if (Data) {
-    delete[] static_cast<char*>(Data);
+    delete[] static_cast<char *>(Data);
     Data = nullptr;
   }
 }
@@ -264,7 +264,7 @@ bool MixFileClass::Offset(char const *filename, void **realptr,
 
   // Compute CRC of uppercase filename for index lookup.
   char *upperFilename = strupr(strdup(filename));
-  long crc = Calculate_CRC(upperFilename, strlen(filename));
+  long crc = Calculate_CRC(upperFilename);
   free(upperFilename);
   SubBlock key;
   key.CRC = crc;

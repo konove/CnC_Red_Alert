@@ -40,13 +40,6 @@
 #ifndef FIXED_H
 #define FIXED_H
 
-#if defined(BIG_ENDIAN) && defined(BYTE_ORDER) && BYTE_ORDER != BIG_ENDIAN
-#undef BIG_ENDIAN
-#endif
-
-// #pragma warning 604 9
-// #pragma warning 595 9
-
 /*
 **	This is a very simple fixed point class that functions like a regular
 *integral type. However *	it is under certain restrictions. The whole part
@@ -394,13 +387,8 @@ class fixed {
  private:
   union {
     struct {
-#ifdef BIG_ENDIAN
-      unsigned char Whole;
-      unsigned char Fraction;
-#else
       unsigned char Fraction;
       unsigned char Whole;
-#endif
     } Composite;
     unsigned short Raw;
   } Data;

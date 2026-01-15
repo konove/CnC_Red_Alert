@@ -377,7 +377,7 @@ int INIClass::Save(Pipe &pipe) const {
  *=============================================================================================*/
 INIClass::INISection *INIClass::Find_Section(char const *section) const {
   if (section != nullptr) {
-    long crc = CRCEngine()(section, strlen(section));
+    long crc = CrcEngine::Compute(section);
 
     if (SectionIndex.Is_Present(crc)) {
       return (SectionIndex.Fetch_Index(crc));
@@ -1076,7 +1076,7 @@ bool INIClass::Get_Bool(char const *section, char const *entry,
  *=============================================================================================*/
 INIClass::INIEntry *INIClass::INISection::Find_Entry(char const *entry) const {
   if (entry != nullptr) {
-    int crc = CRCEngine()(entry, strlen(entry));
+    int crc = CrcEngine::Compute(entry);
     if (EntryIndex.Is_Present(crc)) {
       return (EntryIndex.Fetch_Index(crc));
     }

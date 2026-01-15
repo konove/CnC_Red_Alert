@@ -2894,7 +2894,7 @@ long Obfuscate(char const *string) {
   **	Transform the buffer into a number. This transformation is character
   **	order dependant.
   */
-  int32_t code = Calculate_CRC(buffer, length);
+  int32_t code = Calculate_CRC(buffer);
 
   /*
   **	Record a copy of this initial transformation to be used in a later
@@ -2908,7 +2908,7 @@ long Obfuscate(char const *string) {
   *the CRC calculation.
   */
   strrev(buffer);
-  code ^= Calculate_CRC(buffer, length);
+  code ^= Calculate_CRC(buffer);
 
   /*
   **	Perform a self referential transformation. This makes a reverse
@@ -2998,7 +2998,7 @@ long Obfuscate(char const *string) {
   **	Convert this final vector into a cypher key code to be
   **	returned by this routine.
   */
-  code = Calculate_CRC(buffer, length);
+  code = Calculate_CRC(buffer);
 
   /*
   **	Return the final code value.

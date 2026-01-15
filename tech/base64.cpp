@@ -85,35 +85,22 @@ static unsigned char const _decoder[256] = {
 int const PacketChars = 4;
 
 /*
-**	The packet type is used to construct and disect the Base64 data blocks.
+**	The packet type is used to construct and dissect the Base64 data blocks.
 *The data *	consists of three source data bytes mapped onto four 6 bit
 *Base64 code elements.
 */
 typedef union {
   struct {
-#ifdef BIG_ENDIAN
-    unsigned char C1;
-    unsigned char C2;
-    unsigned char C3;
-#else
     unsigned char C3;
     unsigned char C2;
     unsigned char C1;
-#endif
     unsigned char pad;
   } Char;
   struct {
-#ifdef BIG_ENDIAN
-    unsigned O1 : 6;
-    unsigned O2 : 6;
-    unsigned O3 : 6;
-    unsigned O4 : 6;
-#else
     unsigned O4 : 6;
     unsigned O3 : 6;
     unsigned O2 : 6;
     unsigned O1 : 6;
-#endif
     unsigned pad : 8;
   } SubCode;
   unsigned int Raw;

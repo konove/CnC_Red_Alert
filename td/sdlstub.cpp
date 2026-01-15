@@ -8,9 +8,11 @@
 #include <SDL_events.h>
 #include <SDL_video.h>
 
+#include <bit>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <string_view>
 
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
@@ -28,7 +30,7 @@ bool ReadyToQuit = 0;
 void Focus_Loss(void);
 void Focus_Restore(void);
 
-void CCDebugString(char const * /*string*/) {}
+void CCDebugString(char const* /*string*/) {}
 
 void Check_For_Focus_Loss(void) {
   if (!GameInFocus) {
@@ -60,7 +62,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   // Gbuffer_Focus_Loss_Function = &Focus_Loss;
 }
 
-void SDL_Event_Handler(SDL_Event *event) {
+void SDL_Event_Handler(SDL_Event* event) {
   if (Kbd.Event_Handler(event)) return;
 
   switch (event->type) {
@@ -88,28 +90,48 @@ void SDL_Event_Handler(SDL_Event *event) {
   }
 }
 
-// CRC.ASM in WIN32LIB
-// (re-implemented in RA)
-extern "C" long Calculate_CRC(void *buffer, long length) {
-  if (!length) return 0;
+// Computes a fast checksum over arbitrary binary data.
+//
+// Algorithm: Accumulates 32-bit words using rotate-left-by-1 + add.
+// Not a true CRC polynomial division, but provides similar error detection
+// with better performance. Originally from CRC.ASM in WIN32LIB.
+//
+// The checksum is computed as:
+//   For each 32-bit word: crc = rotl(crc, 1) + word
+//   Remaining bytes are packed into a final word (big-endian order).
+[[nodiscard]] constexpr uint32_t Calculate_CRC(
+    const std::string_view str) noexcept {
+  if (str.empty()) {
+    return 0;
+  }
 
   uint32_t crc = 0;
-  auto ptr32 = (uint32_t *)buffer;
+  size_t i = 0;
 
-  auto len32 = length >> 2;
-  do {
-    crc = (crc << 1 | crc >> 31) + *ptr32++;
-  } while (--len32);
+  // Process 32-bit aligned chunks.
+  // We reconstruct the integer manually to avoid reinterpret_cast and strict
+  // aliasing.
+  while (i + 4 <= str.size()) {
+    // Note: We cast to uint8_t first to prevent sign-extension (if char is
+    // signed).
+    const uint32_t word =
+        static_cast<uint32_t>(static_cast<uint8_t>(str[i])) |
+        static_cast<uint32_t>(static_cast<uint8_t>(str[i + 1])) << 8 |
+        static_cast<uint32_t>(static_cast<uint8_t>(str[i + 2])) << 16 |
+        static_cast<uint32_t>(static_cast<uint8_t>(str[i + 3])) << 24;
 
-  int remainder = length & 3;
-  if (remainder) {
-    auto ptr8 = (uint8_t *)ptr32;
+    crc = std::rotl(crc, 1) + word;
+    i += 4;
+  }
+
+  // Handle remaining 1-3 bytes by packing them into a 32-bit word (Little
+  // Endian).
+  if (i < str.size()) {
     uint32_t tmp = 0;
-    int i;
-    for (i = 0; i < remainder; i++) tmp = tmp >> 8 | *ptr8++ << 24;
-    for (; i < 4; i++) tmp = tmp >> 8 | tmp << 24;
-
-    crc = (crc << 1 | crc >> 31) + tmp;
+    for (size_t j = 0; i + j < str.size(); ++j) {
+      tmp |= static_cast<uint32_t>(static_cast<uint8_t>(str[i + j])) << (j * 8);
+    }
+    crc = std::rotl(crc, 1) + tmp;
   }
 
   return crc;

@@ -143,7 +143,7 @@ class INIClass {
       free(Value);
       Value = nullptr;
     }
-    int Index_ID(void) const { return (CRCEngine()(Entry, strlen(Entry))); };
+    int Index_ID(void) const { return CrcEngine::Compute(Entry); };
 
     char *Entry;
     char *Value;
@@ -161,9 +161,7 @@ class INIClass {
       EntryList.Delete();
     }
     INIEntry *Find_Entry(char const *entry) const;
-    int Index_ID(void) const {
-      return (CRCEngine()(Section, strlen(Section)));
-    };
+    int Index_ID(void) const { return CrcEngine::Compute(Section); };
 
     char *Section;
     List<INIEntry> EntryList;

@@ -100,6 +100,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -1494,7 +1495,7 @@ int CCINIClass::Get_Unique_ID(void) const {
     ((CCINIClass *)this)->Calculate_Message_Digest();
   }
 
-  return (CRCEngine()(&Digest[0], sizeof(Digest)));
+  return CrcEngine::Compute(Digest);
 }
 
 /***********************************************************************************************

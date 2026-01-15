@@ -41,6 +41,10 @@
 
 #include "tech/crcstraw.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
 /***********************************************************************************************
  * CRCStraw::Get -- Fetch the data requested and calculate CRC on it. *
  *                                                                                             *
@@ -66,8 +70,9 @@ int CRCStraw::Get(void* source, int slen) {
   }
 
   int counter = Straw::Get(source, slen);
-  CRC(source, counter);
-  return (counter);
+  crc_.Update(std::span(static_cast<const uint8_t*>(source),
+                        static_cast<size_t>(counter)));
+  return counter;
 }
 
 /***********************************************************************************************
@@ -86,4 +91,4 @@ int CRCStraw::Get(void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CRCStraw::Result(void) const { return (CRC()); }
+long CRCStraw::Result(void) const { return crc_.Value(); }

@@ -955,9 +955,7 @@ static void Message_Input(KeyNumType &input) {
 
       sent_so_far = 0;
       magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-      crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf(),
-                                           message_length) &
-                             0xffff);
+      crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) & 0xffff);
 
       while (sent_so_far < message_length) {
         serial_packet = (SerialPacketType *)NullModem.BuildBuf;
@@ -1012,9 +1010,7 @@ static void Message_Input(KeyNumType &input) {
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         sent_so_far = 0;
         magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-        crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf(),
-                                             message_length) &
-                               0xffff);
+        crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) & 0xffff);
 
         while (sent_so_far < message_length) {
           GPacket.Command = NET_MESSAGE;

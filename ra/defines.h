@@ -42,10 +42,6 @@
 
 #include "tech/fixed.h"
 
-#if defined(BIG_ENDIAN) && defined(BYTE_ORDER) && BYTE_ORDER != BIG_ENDIAN
-#undef BIG_ENDIAN
-#endif
-
 /**********************************************************************
 **	Language control: define the desired language for this build.
 */
@@ -557,13 +553,8 @@ typedef unsigned short LEPTON;
 typedef union {
   LEPTON Raw;
   struct {
-#ifdef BIG_ENDIAN
-    unsigned char Cell;
-    unsigned char Lepton;
-#else
     unsigned char Lepton;
     unsigned char Cell;
-#endif
   } Sub;
 } LEPTON_COMPOSITE;
 
@@ -571,35 +562,17 @@ typedef uint32_t COORDINATE;
 typedef union {
   COORDINATE Coord;
   struct {
-#ifdef BIG_ENDIAN
-    LEPTON_COMPOSITE Y;
-    LEPTON_COMPOSITE X;
-#else
     LEPTON_COMPOSITE X;
     LEPTON_COMPOSITE Y;
-#endif
   } Sub;
 } COORD_COMPOSITE;
 
 typedef signed short CELL;
-#define SLUFF_BITS (sizeof(CELL) * CHAR_BIT) - (14)
 typedef union {
   CELL Cell;
   struct {
-#ifdef BIG_ENDIAN
-#if SLUFF_BITS
-    /*
-    **	Unused upper bits will cause problems on a big-endian machine unless
-    *they *	are deliberately accounted for.
-    */
-    unsigned sluff : SLUF_BITS;
-#endif
-    unsigned Y : 7;
-    unsigned X : 7;
-#else
     unsigned X : 7;
     unsigned Y : 7;
-#endif
   } Sub;
 } CELL_COMPOSITE;
 
@@ -617,13 +590,8 @@ typedef int32_t TARGET;
 typedef union {
   TARGET Target;
   struct {
-#ifdef BIG_ENDIAN
-    unsigned Exponent : TARGET_EXPONENT;
-    unsigned Mantissa : TARGET_MANTISSA;
-#else
     unsigned Mantissa : TARGET_MANTISSA;
     unsigned Exponent : TARGET_EXPONENT;
-#endif
   } Sub;
 } TARGET_COMPOSITE;
 

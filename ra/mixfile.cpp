@@ -503,7 +503,7 @@ bool MixFileClass<T>::Offset(char const *filename, void **realptr,
   **	Create the key block that will be used to binary search for the file.
   */
   char *upperFilename = strupr(strdup(filename));
-  long crc = Calculate_CRC(upperFilename, strlen(filename));
+  long crc = Calculate_CRC(upperFilename);
   free(upperFilename);
   SubBlock key;
   key.CRC = crc;

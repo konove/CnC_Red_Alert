@@ -57,7 +57,7 @@ class CRCStraw : public Straw {
   long Result(void) const;
 
  protected:
-  CRCEngine CRC;
+  CrcEngine crc_;
 
  private:
   CRCStraw(CRCStraw& rvalue);

@@ -16,91 +16,93 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/CRC.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : CRC.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 03/02/96 *
- *                                                                                             *
- *                  Last Update : March 2, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// CRC checksum computation utilities.
 
-#ifndef CRC_H
-#define CRC_H
+#ifndef CNC_RED_ALERT_TECH_CRC_H_
+#define CNC_RED_ALERT_TECH_CRC_H_
 
+#include <array>
+#include <bit>
+#include <cstddef>
 #include <cstdint>
+#include <span>
+#include <string_view>
 
-/*
-**	This is a CRC engine class. It will process submitted data and generate
-*a CRC from it. *	Well, actually, the value returned is not a true CRC.
-*However, it shares the same strength *	characteristic and is faster to generate
-*than the traditional CRC. This object is treated like *	a method class.
-*If it is called as a function (using the function operator), it will return
-**	the CRC value. There are other function operators to submit data for
-*processing.
-*/
-class CRCEngine {
+// Modern constexpr CRC accumulator engine for computing checksums.
+//
+// Type-safe replacement for CRCEngine that avoids union type punning.
+// Processes data via update() methods and accumulates a running checksum.
+// The value returned is not a true CRC but shares similar error-detection
+// characteristics while being faster to compute.
+//
+// Example:
+//   CrcEngine crc;
+//   crc.update(buffer, length);
+//   uint32_t checksum = crc.value();
+class CrcEngine {
  public:
-  // Constructor for CRC engine (it can have an override initial CRC value).
-  CRCEngine(int32_t initial = 0) : CRC(initial), Index(0) {
-    StagingBuffer.Composite = 0;
-  };
+  explicit constexpr CrcEngine(const uint32_t initial = 0) noexcept
+      : crc_(initial) {}
 
-  // Fetches CRC value.
-  int32_t operator()(void) const { return (Value()); };
-
-  // Submits one byte sized datum to the CRC accumulator.
-  void operator()(char datum);
-
-  // Submits an arbitrary buffer to the CRC accumulator.
-  int32_t operator()(void const* buffer, int length);
-
-  // Implicit conversion operator so this object appears like a 'long integer'.
-  operator int32_t(void) const { return (Value()); };
-
- protected:
-  bool Buffer_Needs_Data(void) const { return (Index != 0); };
-
-  int32_t Value(void) const {
-    if (Buffer_Needs_Data()) {
-      return ((CRC << 1 | CRC >> 31) + StagingBuffer.Composite);
+  // Submits a single byte to the accumulator.
+  constexpr CrcEngine& Update(const uint8_t datum) noexcept {
+    buffer_[index_++] = datum;
+    if (index_ == sizeof(uint32_t)) {
+      crc_ = std::rotl(crc_, 1) + CurrentBufferAsInt();
+      index_ = 0;
+      buffer_.fill(0);
     }
-    return (CRC);
-  };
+    return *this;
+  }
 
-  /*
-  **	Current accumulator of the CRC value. This value doesn't take into
-  **	consideration any pending data in the staging buffer.
-  */
-  uint32_t CRC;
+  // Submits a string view to the accumulator.
+  constexpr CrcEngine& Update(const std::string_view str) noexcept {
+    for (const char c : str) {
+      Update(static_cast<uint8_t>(c));
+    }
+    return *this;
+  }
 
-  /*
-  **	This is the sub index into the staging buffer used to keep track of
-  **	partial data blocks as they are submitted to the CRC engine.
-  */
-  int Index;
+  // Submits a span of bytes to the accumulator.
+  constexpr CrcEngine& Update(const std::span<const uint8_t> data) noexcept {
+    for (const auto& byte : data) {
+      Update(byte);
+    }
+    return *this;
+  }
 
-  /*
-  **	This is the buffer that holds the incoming partial data. When the buffer
-  **	is filled, the value is transformed into the CRC and the buffer is
-  *flushed *	in preparation for additional data.
-  */
-  union {
-    int32_t Composite;
-    char Buffer[sizeof(int32_t)];
-  } StagingBuffer;
+  // Returns the current CRC value.
+  [[nodiscard]] constexpr uint32_t Value() const noexcept {
+    if (index_ > 0) {
+      return std::rotl(crc_, 1) + CurrentBufferAsInt();
+    }
+    return crc_;
+  }
+
+  // Computes CRC of a string in a single call.
+  [[nodiscard]] static constexpr uint32_t Compute(
+      const std::string_view str) noexcept {
+    return CrcEngine().Update(str).Value();
+  }
+
+  // Computes CRC of a byte span in a single call.
+  [[nodiscard]] static constexpr uint32_t Compute(
+      const std::span<const uint8_t> data) noexcept {
+    return CrcEngine().Update(data).Value();
+  }
+
+ private:
+  uint32_t crc_;
+  size_t index_ = 0;
+  std::array<uint8_t, 4> buffer_{};
+
+  // ReSharper disable once CppDFAUnreachableFunctionCall
+  [[nodiscard]] constexpr uint32_t CurrentBufferAsInt() const noexcept {
+    return static_cast<uint32_t>(buffer_[0]) |
+           static_cast<uint32_t>(buffer_[1]) << 8 |
+           static_cast<uint32_t>(buffer_[2]) << 16 |
+           static_cast<uint32_t>(buffer_[3]) << 24;
+  }
 };
 
-#endif
+#endif  // CNC_RED_ALERT_TECH_CRC_H_

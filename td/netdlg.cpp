@@ -1595,8 +1595,7 @@ static int Net_Join_Dialog(void) {
               sent_so_far = 0;
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
               message_length = strlen(Messages.Get_Edit_Buf());
-              crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf(),
-                                                   message_length) &
+              crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) &
                                      0xffff);
 
               while (sent_so_far < message_length) {
@@ -3578,8 +3577,7 @@ static int Net_New_Dialog(void) {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = strlen(Messages.Get_Edit_Buf());
-          crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf(),
-                                               message_length) &
+          crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) &
                                  0xffff);
           while (sent_so_far < message_length) {
             memset(&GPacket, 0, sizeof(GlobalPacketType));
