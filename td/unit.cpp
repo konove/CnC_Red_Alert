@@ -1361,10 +1361,13 @@ bool UnitClass::Unload_Hovercraft_Process(void) {
               u->IsUnloading = true;
 
             } else {
-              /*
-              **	Couldn't unlimbo for some strange reason. Kill the unit
-              *off.
-              */
+              // Couldn't unlimbo for some strange reason. Kill the unit off.
+              if (secondary == u) {
+                secondary = nullptr;
+              }
+              if (unit == u) {
+                unit = nullptr;
+              }
               delete u;
             }
             ScenarioInit--;

@@ -111,7 +111,12 @@ class GenericList {
   void Add_Head(GenericNode *node) { FirstNode.Link(node); }
   void Add_Tail(GenericNode *node) { LastNode.Prev()->Link(node); }
   void Delete(void) {
-    while (FirstNode.Next()->Is_Valid()) delete FirstNode.Next();
+    GenericNode* node = FirstNode.Next();
+    while (node->Is_Valid()) {
+      GenericNode* next = node->Next();
+      delete node;
+      node = next;
+    }
   }
 
  protected:

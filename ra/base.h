@@ -63,8 +63,6 @@ class BaseNodeClass {
   CELL Cell;
 };
 
-extern template class DynamicVectorClass<BaseNodeClass>;
-
 /****************************************************************************
 ** This is the class that defines a pre-built base for the computer AI.
 ** (Despite its name, this is NOT the "base" class for C&C's class hierarchy!)
