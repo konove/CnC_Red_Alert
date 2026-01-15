@@ -49,7 +49,6 @@
 #include "ten.h"
 #endif
 
-void Connect_TEN(void);
 void Debug_Mono(void);
 
 /***************************************************************************

@@ -771,8 +771,6 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
 // #define UNIT_BUILD_BIAS fixed(1, 1)
 // #define UNIT_BUILD_BIAS fixed(5,1)
 
-extern int UnitBuildPenalty;
-
 int TechnoClass::Time_To_Build(void) const {
   int val = Class_Of().Time_To_Build();
 

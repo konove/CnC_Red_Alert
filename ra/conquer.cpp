@@ -194,7 +194,6 @@ bool bNoMovies = false;
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
-bool Main_Loop(void);
 void Keyboard_Process(KeyNumType &input);
 static void Message_Input(KeyNumType &input);
 static void Color_Cycle(void);
@@ -3714,11 +3713,8 @@ TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
 #ifdef WIN32
-void VQA_PauseAudio(void);
 void Check_VQ_Palette_Set(void);
 
-extern GraphicBufferClass VQ640;
-extern bool IsVQ640;
 long VQ_Call_Back(unsigned char *, long) {
   int key = 0;
   if (Keyboard->Check()) {

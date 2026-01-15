@@ -85,8 +85,6 @@
 #include "sdllib/include/wwstd.h"
 #include "tech/rawfile.h"
 
-extern bool SpawnedFromWChat;
-
 #ifndef WOLAPI_INTEGRATION
 int Read_Game_Options(void);
 #endif

@@ -91,7 +91,6 @@
 #endif
 
 bool Read_Private_Config_Struct(FileClass &file, NewConfigType *config);
-void Print_Error_End_Exit(char *string);
 void Print_Error_Exit(char *string);
 
 #ifdef WIN32

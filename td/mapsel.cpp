@@ -74,7 +74,6 @@
 
 #ifndef DEMO
 
-void Map_Selection(void);
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
                       GraphicBufferClass *src, GraphicBufferClass *dest);
 void Print_Statistics(int country, int xpos, int ypos);

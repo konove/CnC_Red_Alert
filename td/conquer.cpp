@@ -152,7 +152,6 @@ void *Get_Shape_Header_Data(void *ptr);
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
-bool Main_Loop();
 void Keyboard_Process(KeyNumType &input);
 #ifndef DEMO
 static void Message_Input(KeyNumType &input);
@@ -3006,7 +3005,6 @@ void Trap_Object(void) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
-void VQA_PauseAudio(void);
 void Check_VQ_Palette_Set(void);
 
 long VQ_Call_Back(unsigned char *, long) {

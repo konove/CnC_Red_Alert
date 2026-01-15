@@ -15,11 +15,10 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
+#include "winvq/vqa32/vqaplay.h"
 
 void Focus_Loss(void);
 void Focus_Restore(void);
-
-void VQA_ResumeAudio(void);
 
 void WWDebugString(char const * /*string*/) {}
 

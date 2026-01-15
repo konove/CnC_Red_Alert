@@ -114,11 +114,6 @@ void (*NullModemClass::OrigAbortModemFunc)(int);
 KeyNumType NullModemClass::Input;
 GadgetClass *NullModemClass::Commands;  // button list
 
-/*
-** Ugly hack: this string stores the string received from the modem
-*/
-char ModemRXString[80];
-
 /***************************************************************************
  * NullModemClass::NullModemClass -- class constructor                     *
  *                                                                         *

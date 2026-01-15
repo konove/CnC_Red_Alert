@@ -12,8 +12,7 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/iff.h"
 #include "sdllib/include/shape.h"
-
-extern void *MainWindow;
+#include "sdllib/include/ww_win.h"
 
 // Global flag to disable mouse grabbing (for debugging)
 bool NoMouseGrab = false;

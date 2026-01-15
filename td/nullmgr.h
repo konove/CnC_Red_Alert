@@ -52,6 +52,11 @@
 #include "td/nullconn.h"
 
 /*
+** Ugly hack: this string stores the string received from the modem
+*/
+inline char ModemRXString[80] = {};
+
+/*
 ***************************** Class Declaration *****************************
 */
 class NullModemClass : public ConnManClass {

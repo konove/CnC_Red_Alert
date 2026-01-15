@@ -168,10 +168,6 @@ enum {
   COMPLETION_WASH = 64,
 };
 
-extern unsigned long PlanetWestwoodGameID;
-#ifndef PORTABLE
-extern HINSTANCE ProgramInstance;
-#endif
 extern unsigned long PlanetWestwoodStartTime;
 
 extern "C" char CPUType;
@@ -911,7 +907,7 @@ void Send_Statistics_Packet(void) {
   /*
   ** Tidy up
   */
-  delete[] static_cast<char*>(packet);
+  delete[] static_cast<char *>(packet);
 
   GameStatisticsPacketSent = true;
 #endif  // INTERNET_OFF

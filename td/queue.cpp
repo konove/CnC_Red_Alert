@@ -245,7 +245,6 @@ static void Print_Framesync_Values(long curframe, unsigned long max_ahead,
                                    unsigned short *their_sent,
                                    unsigned short my_sent);
 #endif  // DEMO
-void Add_CRC(unsigned long *crc, unsigned long val);
 void Print_CRCs(EventClass *);
 
 extern void Keyboard_Process(KeyNumType &input);

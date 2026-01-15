@@ -55,8 +55,6 @@
 #include "td/vector.h"
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
-void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass *source,
-                      WarheadType warhead);
 
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *

@@ -120,8 +120,6 @@
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
-extern bool SpawnedFromWChat;
-
 #define SAVE_BLOCK_SIZE 4096
 
 /*

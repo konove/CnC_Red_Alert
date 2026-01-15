@@ -131,10 +131,6 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect);
 static bool Answer_Modem(SerialSettingsType *settings, bool reconnect);
 static void Modem_Echo(char c);
 
-void Smart_Printf(char *format, ...);
-void Hex_Dump_Data(char *buffer, int length);
-void itoh(int i, char *s);
-
 static SerialPacketType SendPacket;
 static SerialPacketType ReceivePacket;
 char TheirName[MPLAYER_NAME_MAX];
@@ -3509,8 +3505,6 @@ int Com_Scenario_Dialog(void) {
   Load_Title_Page(true);
   Set_Palette(Palette);
 
-  extern char ModemRXString[];
-
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)
@@ -4793,8 +4787,6 @@ int Com_Show_Scenario_Dialog(void) {
 
   Load_Title_Page(true);
   Set_Palette(Palette);
-
-  extern char ModemRXString[];
 
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 

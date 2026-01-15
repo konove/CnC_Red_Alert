@@ -102,8 +102,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-extern int PreserveVQAScreen;
-
 /***********************************************************************************************
  * Start_Scenario -- Starts the scenario. *
  *                                                                                             *

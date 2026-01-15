@@ -43,9 +43,6 @@
 
 #include "sdllib/include/gbuffer.h"
 
-int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
-                  int angle);
-
 struct WPPOINT {
   int x;
   int y;

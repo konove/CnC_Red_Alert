@@ -21,13 +21,12 @@
 #include "td/nullconn.h"
 #include "td/palette.h"
 #include "td/rand.h"
+#include "winvq/vqa32/vqaplay.h"
 
 bool ReadyToQuit = 0;
 
 void Focus_Loss(void);
 void Focus_Restore(void);
-
-void VQA_ResumeAudio(void);
 
 void CCDebugString(char const * /*string*/) {}
 
@@ -37,6 +36,7 @@ void Check_For_Focus_Loss(void) {
     if (GameInFocus) VQA_ResumeAudio();
   }
 }
+
 void Memory_Error_Handler(void) {
   VisiblePage.Clear();
   Set_Palette(GamePalette);

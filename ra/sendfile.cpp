@@ -75,7 +75,6 @@
 
 bool Receive_Remote_File(char *file_name, unsigned int file_length,
                          int gametype);
-bool Send_Remote_File(char *file_name, int gametype);
 
 extern bool Is_Mission_Counterstrike(char *file_name);
 extern bool Is_Mission_Aftermath(char *file_name);

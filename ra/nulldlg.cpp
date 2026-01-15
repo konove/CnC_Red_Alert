@@ -159,10 +159,6 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect);
 static bool Answer_Modem(SerialSettingsType *settings, bool reconnect);
 static void Modem_Echo(char c);
 
-void Smart_Printf(char *format, ...);
-void Hex_Dump_Data(char *buffer, int length);
-void itoh(int i, char *s);
-
 static SerialPacketType SendPacket;
 static SerialPacketType ReceivePacket;
 char TheirName[MPLAYER_NAME_MAX];
@@ -3492,8 +3488,6 @@ int Com_Scenario_Dialog(bool skirmish) {
   Load_Title_Page(true);
   CCPalette.Set();
 
-  extern char ModemRXString[];
-
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)
@@ -4745,8 +4739,6 @@ oh_dear_its_a_label:
   return (rc);
 }
 
-extern bool Is_Mission_Aftermath(char *file_name);
-
 /***********************************************************************************************
  * Find_Local_Scenario -- finds the file name of the scenario with matching
  *attributes         *
@@ -5257,8 +5249,7 @@ int Com_Show_Scenario_Dialog(void) {
   Load_Title_Page(true);
   CCPalette.Set();
 
-  extern char ModemRXString[];
-
+  // TODO(konove): This is ugly and just for printing a message.
   if (strlen(ModemRXString) > 36) ModemRXString[36] = 0;
 
   if (strlen(ModemRXString) > 0)

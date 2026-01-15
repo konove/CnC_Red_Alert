@@ -176,8 +176,6 @@ static void Bootstrap(void);
 static void Init_Bulk_Data(void);
 static void Init_Keys(void);
 
-extern int UnitBuildPenalty;
-
 extern "C" {
 extern long RandNumb;
 }
@@ -185,7 +183,6 @@ extern long RandNumb;
 static int UsePageFaultHandler = 1;  // 1 = install PFH
 #endif                               // WIN32
 
-// extern int SimRandIndex;
 void Init_Random(void);
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode

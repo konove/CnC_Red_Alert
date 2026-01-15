@@ -136,6 +136,7 @@
 #include "ra/vector.h"
 #include "ra/vessel.h"
 #include "ra/weapon.h"
+#include "ra/wolstrng.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"
@@ -144,13 +145,6 @@
 #include "sdllib/include/ww_audio.h"
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
-
-extern bool SpawnedFromWChat;
-extern int PreserveVQAScreen;
-
-// Stalemate games.
-
-#include "ra/wolstrng.h"
 
 static void Remove_AI_Players(void);
 static void Create_Units(bool official);
