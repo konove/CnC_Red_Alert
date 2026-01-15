@@ -44,25 +44,28 @@ class VisualControlsClass {
  private:
   enum VisualControlEnums {
     BUTTON_BRIGHTNESS = 1,
+    BUTTON_BASE = BUTTON_BRIGHTNESS,  // Base for zero-indexed button offsets.
     BUTTON_COLOR,
     BUTTON_CONTRAST,
     BUTTON_TINT,
     BUTTON_RESET,
-    BUTTON_OPTIONS,       // Button number for "Options menu"
-    OPTION_WIDTH = 216,   // Width of dialog box.
-    OPTION_HEIGHT = 122,  // Height of dialog box.
-    OPTION_X = (((320 - OPTION_WIDTH) / 2)),
-    OPTION_Y = ((200 - OPTION_HEIGHT) / 2),
-    TEXT_X = OPTION_X + 28,     // Title's x pos
-    TEXT_Y = OPTION_Y + 30,     // Add 11 for each following line
-    SLIDER_X = OPTION_X + 105,  // Slider's x pos
-    SLIDER_Y = OPTION_Y + 30,   // Add 11 for each following line
-    SLIDER_WIDTH = 70,          // Width of each control slider.
-    SLIDER_HEIGHT = 5,          // Height of each control slider.
-    SLIDER_Y_SPACING = 11,      // Vertical spacing between sliders.
-    BUTTON_X = OPTION_X + 63,   // Options button x pos
-    BUTTON_Y = OPTION_Y + 102,  // Options button y pos
+    BUTTON_OPTIONS,
   };
+
+  // Layout constants.
+  static constexpr int kOptionWidth = 216;
+  static constexpr int kOptionHeight = 122;
+  static constexpr int kOptionX = (320 - kOptionWidth) / 2;
+  static constexpr int kOptionY = (200 - kOptionHeight) / 2;
+  static constexpr int kTextX = kOptionX + 28;
+  static constexpr int kTextY = kOptionY + 30;
+  static constexpr int kSliderX = kOptionX + 105;
+  static constexpr int kSliderY = kOptionY + 30;
+  static constexpr int kSliderWidth = 70;
+  static constexpr int kSliderHeight = 5;
+  static constexpr int kSliderYSpacing = 11;
+  static constexpr int kButtonX = kOptionX + 63;
+  static constexpr int kButtonY = kOptionY + 102;
 
  public:
   VisualControlsClass(void) {};

@@ -1152,7 +1152,7 @@ typedef enum MPHType {
 */
 typedef enum HousesType : int8_t {
   HOUSE_NONE = -1,
-  HOUSE_SPAIN,    //	Gold (unremapped)
+  HOUSE_SPAIN,    // Gold (unremapped)
   HOUSE_GREECE,   // LtBlue
   HOUSE_USSR,     // Red
   HOUSE_ENGLAND,  // Green

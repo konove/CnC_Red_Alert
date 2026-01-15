@@ -260,17 +260,6 @@ void Setup_Menu(int menu, char const *text[], unsigned long field, int index,
   Keyboard->Clear();
 }
 
-/*=========================================================================*/
-/*	CHECK_MENU:
- */
-/*																									*/
-/*																									*/
-/*																									*/
-/*	INPUTS:
- */
-/*	RETURNS:
- */
-/*=========================================================================*/
 int Check_Menu(int menu, char const *text[], char *, long field, int index) {
   int maxitem, select, key, menuy, menux;
   int mx1, mx2, my1, my2, tempy;
@@ -506,9 +495,9 @@ int Do_Menu(char const **strings, bool) {
   while (selection == -1) {
     Call_Back();
     selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
-    if (UnknownKey != 0 || UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE)
+    if (UnknownKey != 0) {
       break;
+    }
   }
   Keyboard->Clear();
   Hide_Mouse();
