@@ -25,7 +25,6 @@
 // #define GERMAN
 
 #ifdef ENGLISH
-#pragma message("...Building English version...")
 
 //	Menu choice for Internet game.
 const char TXT_WOL_INTERNETBUTTON[] = "Internet";
