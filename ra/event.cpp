@@ -80,6 +80,7 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/wolstrng.h"
 #include "ra/ww_audio.h"

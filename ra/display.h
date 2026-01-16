@@ -51,7 +51,7 @@
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "ra/vector.h"
+#include "ra/vector_bool.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/wwstd.h"
 #include "tech/noinit.h"

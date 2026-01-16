@@ -120,6 +120,7 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/include/file.h"

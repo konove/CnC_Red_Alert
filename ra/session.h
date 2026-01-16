@@ -51,7 +51,7 @@
 #include "ra/object.h"
 #include "ra/special.h"
 #include "ra/target.h"
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"

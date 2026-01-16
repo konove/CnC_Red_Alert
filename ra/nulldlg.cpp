@@ -102,6 +102,7 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/drawbuff.h"

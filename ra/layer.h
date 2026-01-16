@@ -40,7 +40,7 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 

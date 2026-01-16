@@ -81,6 +81,7 @@
 #include "ra/monoc.h"
 #include "ra/session.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
 #include "sdllib/include/wwlib32.h"  // to enable mono output
 

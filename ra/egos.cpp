@@ -58,6 +58,7 @@
 #include "ra/palette.h"
 #include "ra/theme.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/keyboard.h"
@@ -596,7 +597,9 @@ void Show_Who_Was_Responsible(void) {
         */
         ego = new EgoClass(x, y + line * 8 * RESFACTOR, strstart, flags);
 
-        EgoList.Add(ego);
+        if (!EgoList.Add(ego)) {
+          delete ego;
+        }
 
         /*
         ** Restore the character that was lost when we added the terminator.

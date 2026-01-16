@@ -86,7 +86,7 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "sdllib/include/gbuffer.h"

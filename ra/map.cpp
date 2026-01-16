@@ -95,6 +95,7 @@
 #include "ra/template.h"
 #include "ra/tracker.h"
 #include "ra/type.h"
+#include "ra/vector_dynamic.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/tile.h"
 #include "tech/fixed.h"

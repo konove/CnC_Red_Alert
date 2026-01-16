@@ -59,6 +59,7 @@
 
 #include "ra/externs.h"
 #include "ra/jshell.h"
+#include "ra/vector.h"
 
 #ifdef _WIN32
 #include <nspapi.h>
@@ -141,7 +142,9 @@ void UDPInterfaceClass::Set_Broadcast_Address(void *address) {
 
   uint32_t addr = inet_addr(ip_addr);
   memcpy(baddr, &addr, 4);
-  BroadcastAddresses.Add(baddr);
+  if (!BroadcastAddresses.Add(baddr)) {
+    delete[] baddr;
+  }
 }
 
 /***********************************************************************************************
@@ -230,7 +233,9 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
 
     unsigned char *a = new unsigned char[4];
     *((uint32_t *)a) = address;
-    LocalAddresses.Add(a);
+    if (!LocalAddresses.Add(a)) {
+      delete[] a;
+    }
   }
 
   /*
@@ -289,7 +294,10 @@ void UDPInterfaceClass::Broadcast(void *buffer, int buffer_len) {
     /*
     ** Add it to our out list.
     */
-    OutBuffers.Add(packet);
+    if (!OutBuffers.Add(packet)) {
+      delete packet;
+      continue;
+    }
 
 #ifdef PORTABLE
     // enable write events
@@ -348,7 +356,9 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         memcpy(packet->Buffer, ReceiveBuffer, rc);
         memset(packet->Address, 0, sizeof(packet->Address));
         memcpy(packet->Address + 4, &addr.sin_addr.s_addr, 4);
-        InBuffers.Add(packet);
+        if (!InBuffers.Add(packet)) {
+          delete packet;
+        }
       }
       break;
     }

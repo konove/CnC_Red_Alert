@@ -64,7 +64,7 @@
 #include "ra/taction.h"
 #include "ra/target.h"
 #include "ra/tracker.h"
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "tech/ftimer.h"
 
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)

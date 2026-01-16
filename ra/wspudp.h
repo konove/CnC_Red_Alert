@@ -39,7 +39,7 @@
 #ifndef WSPUDP_H
 #define WSPUDP_H
 
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
 #include "sdllib/include/net_select.h"
 

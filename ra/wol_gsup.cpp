@@ -22,6 +22,7 @@
 #include "ra/externs.h"
 #include "ra/session.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 
 #ifdef WOLAPI_INTEGRATION  //	Now implies also WINSOCK_IPX, WIN32, and
                            // FIXIT_CSII must be true

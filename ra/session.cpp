@@ -78,6 +78,7 @@
 #include "ra/mouse.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
+#include "ra/vector.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/file.h"
 #include "sdllib/include/gbuffer.h"
@@ -982,7 +983,9 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
       }
 
       //	Add it to our list
-      PhoneBook.Add(phone);
+      if (!PhoneBook.Add(phone)) {
+        delete phone;
+      }
     }
 
     //	Read special recording playback values, to help find sync bugs

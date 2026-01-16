@@ -48,7 +48,7 @@
 #include "ra/link.h"
 #include "ra/shapebtn.h"
 #include "ra/slider.h"
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "sdllib/include/keyboard.h"
 
 // Scrollable list box widget similar to a Windows ListBox control.

@@ -69,6 +69,7 @@
 #include "ra/globals.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
+#include "ra/vector.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/font.h"
 #include "sdllib/include/gbuffer.h"

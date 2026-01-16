@@ -74,6 +74,7 @@
 #include "ra/externs.h"
 #include "ra/ipxaddr.h"
 #include "ra/jshell.h"
+#include "ra/vector.h"
 
 #ifdef _WIN32
 typedef int socklen_t;
@@ -460,7 +461,10 @@ void WinsockInterfaceClass::WriteTo(void *buffer, int buffer_len,
   /*
   ** Add it to our out list.
   */
-  OutBuffers.Add(packet);
+  if (!OutBuffers.Add(packet)) {
+    delete packet;
+    return;
+  }
 
 #ifdef PORTABLE
   // enable write events
@@ -512,7 +516,10 @@ void WinsockInterfaceClass::Broadcast(void *buffer, int buffer_len) {
   /*
   ** Add it to our out list.
   */
-  OutBuffers.Add(packet);
+  if (!OutBuffers.Add(packet)) {
+    delete packet;
+    return;
+  }
 
 #ifndef PORTABLE
   /*

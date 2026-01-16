@@ -465,9 +465,9 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::ID(T const &object) {
+int DynamicVectorClass<T>::ID(T const &ptr) {
   for (size_t index = 0; index < Count(); index++) {
-    if ((*this)[index] == object) return (index);
+    if ((*this)[index] == ptr) return (index);
   }
   return (-1);
 }

@@ -39,7 +39,7 @@
 #ifndef WSPROTO_H
 #define WSPROTO_H
 
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 
 #ifdef _WIN32
 /*

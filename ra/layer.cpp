@@ -43,6 +43,7 @@
 #include "ra/layer.h"
 
 #include "ra/object.h"
+#include "ra/vector.h"
 
 /***********************************************************************************************
  * LayerClass::Submit -- Adds an object to a layer list. *

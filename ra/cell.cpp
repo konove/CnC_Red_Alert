@@ -127,6 +127,7 @@
 #include "ra/unit.h"
 #include "ra/utracker.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"

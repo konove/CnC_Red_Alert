@@ -60,6 +60,7 @@
 #include "ra/trigger.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
 #include "ra/ww_audio.h"
 #include "session.h"

@@ -42,7 +42,7 @@
 
 #include "ra/defines.h"
 #include "ra/list.h"
-#include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 
 /***************************************************************************
 ** This class adds the ability for every list item to have a different color.

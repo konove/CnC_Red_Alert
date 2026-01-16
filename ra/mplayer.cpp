@@ -63,6 +63,7 @@
 #include "ra/palette.h"
 #include "ra/session.h"
 #include "ra/textbtn.h"
+#include "ra/vector.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/ww_mouse.h"

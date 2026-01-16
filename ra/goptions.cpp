@@ -65,6 +65,7 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wolstrng.h"
 #include "sdllib/include/gbuffer.h"

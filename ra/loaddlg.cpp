@@ -71,6 +71,7 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/toggle.h"
+#include "ra/vector.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/file.h"
 #include "sdllib/include/gbuffer.h"
@@ -414,6 +415,7 @@ int LoadOptionsClass::Process(void) {
       */
       case (BUTTON_LOAD | KN_BUTTON):
         game_idx = listbtn.Current_Index();
+        if (game_idx < 0 || game_idx >= Files.Count()) break;
         game_num = Files[game_idx]->Num;
         if (Files[game_idx]->Valid) {
           /*
@@ -473,6 +475,7 @@ int LoadOptionsClass::Process(void) {
           display = true;
           break;
         }
+        if (game_idx < 0 || game_idx >= Files.Count()) break;
 
         game_num = Files[game_idx]->Num;
         if (!Save_Game(game_num, game_descr)) {
@@ -505,6 +508,7 @@ int LoadOptionsClass::Process(void) {
       */
       case (BUTTON_DELETE | KN_BUTTON):
         game_idx = listbtn.Current_Index();
+        if (game_idx < 0 || game_idx >= Files.Count()) break;
         game_num = Files[game_idx]->Num;
         if (WWMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
@@ -735,8 +739,9 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  qsort((void *)(&Files[0]), Files.Count(), sizeof(class FileEntryClass *),
-        LoadOptionsClass::Compare);
+  if (Files.Count() > 0) {
+    qsort(&Files[0], Files.Count(), sizeof(FileEntryClass *), Compare);
+  }
 
   /*
   ** Now add every file's name to the list box

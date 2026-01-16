@@ -148,6 +148,7 @@
 #include "ra/trigger.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/rawfile.h"

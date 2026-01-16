@@ -43,6 +43,8 @@
 #include <cstddef>
 
 #include "ra/vector.h"
+#include "ra/vector_bool.h"
+#include "ra/vector_dynamic.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
 

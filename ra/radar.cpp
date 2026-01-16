@@ -105,6 +105,7 @@
 #include "ra/terrain.h"
 #include "ra/type.h"
 #include "ra/vector.h"
+#include "ra/vector_dynamic.h"
 #include "ra/ww_audio.h"
 #include "sdllib/include/drawbuff.h"
 #include "sdllib/include/gbuffer.h"
