@@ -28,6 +28,7 @@
 #include "td/conquer.h"
 #include "td/externs.h"
 #include "td/jshell.h"
+#include "tech/crc.h"
 
 template <class T>
 int Compare(T const *obj1, T const *obj2) {
@@ -264,7 +265,7 @@ bool MixFileClass::Offset(char const *filename, void **realptr,
 
   // Compute CRC of uppercase filename for index lookup.
   char *upperFilename = strupr(strdup(filename));
-  long crc = Calculate_CRC(upperFilename);
+  long crc = CrcEngine::Compute(upperFilename);
   free(upperFilename);
   SubBlock key;
   key.CRC = crc;

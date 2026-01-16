@@ -1108,7 +1108,7 @@ void SidebarClass::StripClass::One_Time(int) {
     auto filename = std::string(SpecialWeaponFile[lp]) + "ICON";
     auto fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    SpecialShapes[lp] = MFCD::Retrieve(fullname.c_str());
+    SpecialShapes[lp] = MFCD::Retrieve(fullname);
   }
 }
 

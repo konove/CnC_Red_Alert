@@ -53,6 +53,7 @@
  *- - - - - - - */
 #include <cstddef>
 #include <filesystem>
+#include <string>
 
 #include "port/ex_string.h"
 #include "ra/compat.h"
@@ -1762,7 +1763,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
                           .string();
 
       // Working loaded iconset pointer.
-      const void *ptr = MFCD::Retrieve(fullname.c_str());
+      const void *ptr = MFCD::Retrieve(fullname);
       tplate.ImageData = ptr;
 
       // Register icon set for video memory caching

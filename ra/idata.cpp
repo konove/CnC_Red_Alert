@@ -1237,10 +1237,10 @@ void InfantryTypeClass::One_Time(void) {
     if (sfile.Is_Available()) {
       ((void const *&)uclass->ImageData) = Load_Alloc_Data(sfile);
     } else {
-      ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname.c_str());
+      ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname.c_str());
+    ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname);
 #endif
 
     // The small build image icon sized shapes are always generic.
@@ -1254,10 +1254,10 @@ void InfantryTypeClass::One_Time(void) {
     if (ifile.Is_Available()) {
       ((void const *&)uclass->CameoData) = Load_Alloc_Data(ifile);
     } else {
-      ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname.c_str());
+      ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname.c_str());
+    ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname);
 #endif
   }
 }

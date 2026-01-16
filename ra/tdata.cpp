@@ -55,6 +55,7 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <string>
 
 #include "port/ex_string.h"
 #include "ra/conquer.h"
@@ -518,7 +519,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(terrain.IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        ((void const *&)terrain.ImageData) = MFCD::Retrieve(fullname.c_str());
+        ((void const *&)terrain.ImageData) = MFCD::Retrieve(fullname);
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape

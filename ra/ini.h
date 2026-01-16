@@ -41,7 +41,6 @@
 #define INI_H
 
 #include <cstdlib>
-#include <cstring>
 
 #include "ra/defines.h"
 #include "ra/listnode.h"

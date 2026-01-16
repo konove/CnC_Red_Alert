@@ -534,7 +534,7 @@ void VesselTypeClass::One_Time(void) {
       auto filename = std::string(uclass.Graphic_Name()) + "ICON";
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname.c_str());
+      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
     }
 
     /*
@@ -543,7 +543,7 @@ void VesselTypeClass::One_Time(void) {
     auto fullname = std::filesystem::path(uclass.Graphic_Name())
                         .replace_extension(".SHP")
                         .string();
-    ((void const *&)uclass.ImageData) = MFCD::Retrieve(fullname.c_str());
+    ((void const *&)uclass.ImageData) = MFCD::Retrieve(fullname);
 
     ((int &)uclass.MaxSize) = 26;
   }

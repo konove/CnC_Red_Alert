@@ -101,6 +101,7 @@
 #include "td/textbtn.h"
 #include "td/theme.h"
 #include "td/vector.h"
+#include "tech/crc.h"
 
 ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 
@@ -4065,8 +4066,8 @@ int Com_Scenario_Dialog(void) {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = strlen(Messages.Get_Edit_Buf());
-          crc =
-              (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) & 0xffff);
+          crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
+                                 0xffff);
 
           while (sent_so_far < message_length) {
             SendPacket.Command = SERIAL_MESSAGE;
@@ -5249,7 +5250,8 @@ int Com_Show_Scenario_Dialog(void) {
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
                 message_length = strlen(Messages.Get_Edit_Buf());
-                crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) &
+                crc = (unsigned short)(CrcEngine::Compute(
+                                           Messages.Get_Edit_Buf()) &
                                        0xffff);
 
                 while (sent_so_far < message_length) {

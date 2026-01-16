@@ -1053,10 +1053,10 @@ void UnitTypeClass::One_Time(void) {
     if (datafile.Is_Available()) {
       ((void const *&)uclass.CameoData) = Load_Alloc_Data(datafile);
     } else {
-      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname.c_str());
+      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname.c_str());
+    ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
 #endif
     //		}
 
@@ -1071,10 +1071,10 @@ void UnitTypeClass::One_Time(void) {
     if (shpfile.Is_Available()) {
       ptr = Load_Alloc_Data(shpfile);
     } else {
-      ptr = MFCD::Retrieve(fullname.c_str());
+      ptr = MFCD::Retrieve(fullname);
     }
 #else
-    ptr = MFCD::Retrieve(fullname.c_str());
+    ptr = MFCD::Retrieve(fullname);
 #endif
 
     ((void const *&)uclass.ImageData) = ptr;

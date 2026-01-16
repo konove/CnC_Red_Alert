@@ -49,15 +49,17 @@
 
 #include "ra/ccfile.h"
 
-#include <cassert>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <new>
+#include <optional>
+#include <span>
 
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/jshell.h"
+#include "ra/mixfile.h"
 #include "ra/startup.h"
 #include "tech/rawfile.h"
 

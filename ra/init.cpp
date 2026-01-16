@@ -2092,7 +2092,7 @@ long Obfuscate(char const *string) {
   **	Transform the buffer into a number. This transformation is character
   **	order dependant.
   */
-  int32_t code = Calculate_CRC(buffer);
+  int32_t code = CrcEngine::Compute(buffer);
 
   /*
   **	Record a copy of this initial transformation to be used in a later
@@ -2106,7 +2106,7 @@ long Obfuscate(char const *string) {
   *the CRC calculation.
   */
   strrev(buffer);
-  code ^= Calculate_CRC(buffer);
+  code ^= CrcEngine::Compute(buffer);
 
   /*
   **	Perform a self referential transformation. This makes a reverse
@@ -2196,34 +2196,12 @@ long Obfuscate(char const *string) {
   **	Convert this final vector into a cypher key code to be
   **	returned by this routine.
   */
-  code = Calculate_CRC(buffer);
+  code = CrcEngine::Compute(buffer);
 
   /*
   **	Return the final code value.
   */
   return ((uint32_t)code);
-}
-
-/***********************************************************************************************
- * Calculate_CRC -- Calculates a one-way hash from a data block. *
- *                                                                                             *
- *    This routine is used to create a hash value from a data block. The
- *algorithm is similar  * to a CRC, but is faster. *
- *                                                                                             *
- * INPUT:   buffer   -- Pointer to a buffer of data to be 'hashed'. *
- *                                                                                             *
- *          len      -- The length of the buffer to compute the hash upon. *
- *                                                                                             *
- * OUTPUT:  Returns with a 32bit hash value calculated from the specified
- *buffer.              *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/02/1996 JLB : Created. *
- *=============================================================================================*/
-[[nodiscard]] constexpr uint32_t Calculate_CRC(
-    const std::string_view str) noexcept {
-  return CrcEngine::Compute(str);
 }
 
 /***************************************************************************

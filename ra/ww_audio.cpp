@@ -48,6 +48,7 @@
 
 #include <cstdlib>
 #include <filesystem>
+#include <string>
 
 #include "port/ex_string.h"
 #include "ra/abstract.h"
@@ -579,7 +580,7 @@ int Sound_Effect(VocType voc, fixed volume, int variation,
   auto name = std::filesystem::path(SoundEffectName[voc].Name)
                   .replace_extension(ext)
                   .string();
-  void const* ptr = MFCD::Retrieve(name.c_str());
+  void const* ptr = MFCD::Retrieve(name);
 
   /*
   **	If the sound data pointer is not nullptr, then presume that it is valid.

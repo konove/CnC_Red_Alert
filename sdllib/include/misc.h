@@ -40,7 +40,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
-#include <string_view>
 
 #include "sdllib/include/ww_win.h"
 
@@ -97,12 +96,6 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int *h, unsigned int *s, unsigned int *v);
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
                         unsigned int *r, unsigned int *g, unsigned int *b);
-
-/*=========================================================================*/
-/* The following prototype is for the file: CRC.ASM
- */
-/*=========================================================================*/
-[[nodiscard]] constexpr uint32_t Calculate_CRC(std::string_view str) noexcept;
 
 /*========================= Assembly Routines ==============================*/
 

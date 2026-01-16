@@ -48,6 +48,7 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <string>
 
 #include "ra/ccini.h"
 #include "ra/conquer.h"
@@ -57,7 +58,6 @@
 #include "ra/jshell.h"
 #include "ra/type.h"
 #include "tech/rawfile.h"
-
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *
  *                                                                                             *
@@ -216,7 +216,7 @@ void BulletTypeClass::One_Time(void) {
       if (file.Is_Available()) {
         ((void const *&)bullet.ImageData) = Load_Alloc_Data(file);
       } else {
-        ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname.c_str());
+        ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname);
       }
 #endif
     }

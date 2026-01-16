@@ -49,6 +49,7 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <string>
 
 #include "ra/conquer.h"
 #include "ra/const.h"
@@ -2180,7 +2181,7 @@ void AnimTypeClass::One_Time(void) {
             Load_Alloc_Data(file);
       } else {
         const_cast<void const *&>(As_Reference(index).ImageData) =
-            MFCD::Retrieve(fullname.c_str());
+            MFCD::Retrieve(fullname);
       }
 #else
       const_cast<void const *&>(As_Reference(index).ImageData) =
@@ -2215,8 +2216,7 @@ void AnimTypeClass::Init(TheaterType theater) {
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
 
-        const_cast<void const *&>(anim.ImageData) =
-            MFCD::Retrieve(fullname.c_str());
+        const_cast<void const *&>(anim.ImageData) = MFCD::Retrieve(fullname);
       }
     }
   }

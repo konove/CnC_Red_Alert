@@ -3206,8 +3206,7 @@ void BuildingTypeClass::One_Time() {
 
       auto fullname =
           std::filesystem::path(buffer).replace_extension(".SHP").string();
-      const_cast<void const *&>(building.CameoData) =
-          MFCD::Retrieve(fullname.c_str());
+      const_cast<void const *&>(building.CameoData) = MFCD::Retrieve(fullname);
     }
 
     /*
@@ -3217,7 +3216,7 @@ void BuildingTypeClass::One_Time() {
         std::filesystem::path(std::string(building.Graphic_Name()) + "MAKE")
             .replace_extension(".SHP")
             .string();
-    void const *dataptr = MFCD::Retrieve(fullname.c_str());
+    void const *dataptr = MFCD::Retrieve(fullname);
     const_cast<void const *&>(building.BuildupData) = dataptr;
     if (dataptr != nullptr) {
       int timedelay = 1;
@@ -3234,17 +3233,16 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.Graphic_Name())
                    .replace_extension(".SHP")
                    .string();
-    const_cast<void const *&>(building.ImageData) =
-        MFCD::Retrieve(fullname.c_str());
+    const_cast<void const *&>(building.ImageData) = MFCD::Retrieve(fullname);
   }
 
   // Try to load weap2.shp and tesla coil's lightning shapes
   auto fullname =
       std::filesystem::path("WEAP2").replace_extension(".SHP").string();
-  WarFactoryOverlay = MFCD::Retrieve(fullname.c_str());
+  WarFactoryOverlay = MFCD::Retrieve(fullname);
   fullname =
       std::filesystem::path("LITNING").replace_extension(".SHP").string();
-  LightningShapes = MFCD::Retrieve(fullname.c_str());
+  LightningShapes = MFCD::Retrieve(fullname);
 
   /*
   **	Install all the special animation sequences for the different building
@@ -3445,7 +3443,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(classptr->Graphic_Name())
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        ((void const *&)classptr->ImageData) = MFCD::Retrieve(fullname.c_str());
+        ((void const *&)classptr->ImageData) = MFCD::Retrieve(fullname);
 
         /*
         **	Buildup data is probably theater specific as well. Fetch a
@@ -3455,8 +3453,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
                                          "MAKE")
                        .replace_extension(Theaters[theater].Suffix)
                        .string();
-        ((void const *&)classptr->BuildupData) =
-            MFCD::Retrieve(fullname.c_str());
+        ((void const *&)classptr->BuildupData) = MFCD::Retrieve(fullname);
         if (classptr->BuildupData) {
           int timedelay = 1;
           int count = Get_Build_Frame_Count(classptr->BuildupData);

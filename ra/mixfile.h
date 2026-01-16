@@ -15,11 +15,10 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#ifndef MIXFILE_H
-#define MIXFILE_H
+#pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <span>
 #include <string>
@@ -31,36 +30,49 @@
 #include "tech/pk.h"
 
 template <class T>
-class MixFileClass : public Node<MixFileClass<T> > {
+class MixFileClass : public Node<MixFileClass<T>> {
  public:
   // Result of looking up a file in the mixfile system.
   struct FileLocation {
-    std::span<const std::byte> data;  // Cached data, or empty if not cached.
-    MixFileClass *mixfile;            // The mixfile containing this file.
-    long offset;  // Offset within the mixfile's data section.
-    long size;    // Size of the embedded file.
+    // View into cached data (empty if not cached).
+    std::span<const std::byte> data;
+
+    // The mixfile containing this file.
+    MixFileClass* mixfile;
+
+    // Absolute file offset (if uncached) or relative (if cached).
+    std::int32_t offset;
+
+    // Size of the embedded file.
+    std::int32_t size;
   };
 
-  MixFileClass(std::string_view filename, const PKey *key);
+  MixFileClass(std::string_view filename, const PKey* key);
   ~MixFileClass() override;
 
-  [[nodiscard]] const std::string &Filename() const { return filename_; }
+  // Delete copy/move to prevent slicing or list corruption.
+  MixFileClass(const MixFileClass&) = delete;
+  MixFileClass& operator=(const MixFileClass&) = delete;
+  MixFileClass(MixFileClass&&) = delete;
+  MixFileClass& operator=(MixFileClass&&) = delete;
+
+  [[nodiscard]] const std::string& Filename() const { return filename_; }
 
   static bool Free(std::string_view filename);
   void Free();
   bool Cache();
   static bool Cache(std::string_view filename);
   static std::optional<FileLocation> Offset(std::string_view filename);
-  static const void *Retrieve(std::string_view filename);
+  static const void* Retrieve(std::string_view filename);
 
   // Index entry for an embedded file within the mixfile.
   struct FileEntry {
-    std::int32_t crc;     // CRC of the filename (used as lookup key).
+    std::int32_t crc;     // CRC of the filename (lookup key).
     std::int32_t offset;  // Offset from start of data section.
     std::int32_t size;    // Size of the embedded file.
 
     // Default spaceship operator for easy comparison
-    auto operator<=>(const FileEntry &other) const = default;
+    auto operator<=>(const FileEntry& other) const = default;
     // Comparison with raw CRC for binary search projections
     auto operator<=>(std::int32_t other_crc) const { return crc <=> other_crc; }
   };
@@ -74,7 +86,7 @@ class MixFileClass : public Node<MixFileClass<T> > {
   };
 #pragma pack(pop)
 
-  static MixFileClass *Finder(std::string_view filename);
+  static MixFileClass* Finder(std::string_view filename);
 
   std::string filename_;
 
@@ -84,13 +96,12 @@ class MixFileClass : public Node<MixFileClass<T> > {
   std::int32_t data_size_ = 0;   // Total size of embedded data.
   std::int32_t data_start_ = 0;  // File offset where raw data begins.
 
-  std::vector<FileEntry> file_index_;  // Sorted by CRC for binary search.
+  std::vector<FileEntry> file_index_;  // Sorted by CRC.
+  std::vector<std::byte> data_;        // Cached file data.
 
-  // Cached file data, empty if not cached.
-  std::vector<std::byte> data_;
-
-  // Global registry of all open mixfiles, searched in order for file lookups.
+  // Global registry of all open mixfiles.
+  // Note: In C++23, consider wrapping this in a singleton accessor to avoid
+  // static initialization order fiasco, but keeping as-is for architectural
+  // consistency.
   inline static List<MixFileClass> MixList;
 };
-
-#endif

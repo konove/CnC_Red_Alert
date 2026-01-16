@@ -53,9 +53,9 @@
  *object.             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-
 #include <cstddef>
 #include <filesystem>
+#include <string>
 
 #include "externs.h"
 #include "port/ex_string.h"
@@ -344,7 +344,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
       auto fullname = std::filesystem::path(smudge.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
-      ((void const *&)smudge.ImageData) = MFCD::Retrieve(fullname.c_str());
+      ((void const *&)smudge.ImageData) = MFCD::Retrieve(fullname);
     }
   }
 }

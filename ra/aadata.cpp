@@ -385,13 +385,11 @@ void AircraftTypeClass::One_Time() {
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
     auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
-    const_cast<void const *&>(uclass.CameoData) =
-        MFCD::Retrieve(cameo_file.c_str());
+    const_cast<void const *&>(uclass.CameoData) = MFCD::Retrieve(cameo_file);
 
     // Load aircraft shape: "<GraphicName>.SHP"
     auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
-    const_cast<void const *&>(uclass.ImageData) =
-        MFCD::Retrieve(shape_file.c_str());
+    const_cast<void const *&>(uclass.ImageData) = MFCD::Retrieve(shape_file);
   }
 
   LRotorData = MFCD::Retrieve("LROTOR.SHP");

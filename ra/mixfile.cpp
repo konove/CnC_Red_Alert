@@ -24,13 +24,16 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
+#include <functional>
+#include <new>
 #include <span>
-#include <string>
 #include <string_view>
+#include <vector>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
@@ -39,18 +42,18 @@
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/startup.h"
-#include "sdllib/include/misc.h"
+#include "tech/crc.h"
 #include "tech/pkstraw.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
 
-// Opens a mixfile and reads its index. The file data is not loaded until
-// Cache() is called. Supports both plain and extended (encrypted/signed)
-// mixfile formats.
+// Helper to handle path separators safely across platforms without heavy
+// std::filesystem usage
+constexpr bool IsPathSeparator(char c) { return c == '/' || c == '\\'; }
+
 template <class T>
-MixFileClass<T>::MixFileClass(const std::string_view filename,
-                              const PKey *key) {
+MixFileClass<T>::MixFileClass(std::string_view filename, const PKey* key) {
   if (!Force_CD_Available(RequiredCD)) {
     Emergency_Exit(EXIT_FAILURE);
   }
@@ -59,113 +62,131 @@ MixFileClass<T>::MixFileClass(const std::string_view filename,
   filename_ = file.File_Name();
 
   FileStraw file_straw(file);
-  PKStraw pstraw(PKStraw::DECRYPT, CryptRandom);
-  Straw *straw = &file_straw;
+  PKStraw pk_straw(PKStraw::DECRYPT, CryptRandom);
+  Straw* straw = &file_straw;
 
   if (!file.Is_Available()) {
     return;
   }
 
-  FileHeader file_header;
-  struct {
-    short First;   // Zero indicates extended format.
-    short Second;  // Bit 0: has digest, Bit 1: encrypted.
-  } alternate;
+  FileHeader file_header{};
+  struct MixMetadata {
+    std::int16_t First;   // Zero indicates extended format.
+    std::int16_t Second;  // Bit 0: has digest, Bit 1: encrypted.
+  } alternate{};
 
+  // Read initial metadata to determine format
   straw->Get(&alternate, sizeof(alternate));
 
-  // Extended format: First field is zero, Second contains feature flags.
-  // Plain format: First two bytes are already part of the file header.
   if (alternate.First == 0) {
+    // Extended Format
     has_digest_ = (alternate.Second & 0x01) != 0;
     is_encrypted_ = (alternate.Second & 0x02) != 0;
 
     if (is_encrypted_) {
-      pstraw.Key(key);
-      pstraw.Get_From(&file_straw);
-      straw = &pstraw;
+      pk_straw.Key(key);
+      pk_straw.Get_From(&file_straw);
+      straw = &pk_straw;
     }
 
     straw->Get(&file_header, sizeof(file_header));
   } else {
-    // Plain format: reinterpret bytes already read as start of header.
-    memmove(&file_header, &alternate, sizeof(alternate));
-    straw->Get(reinterpret_cast<char *>(&file_header) + sizeof(alternate),
+    // Plain Format: The bytes read into 'alternate' are actually the start of
+    // FileHeader standard layout allows memcpy, though strictly
+    // reinterpret_cast is valid here due to packing.
+    std::memcpy(&file_header, &alternate, sizeof(alternate));
+
+    // Read the remainder of the header
+    char* header_ptr = reinterpret_cast<char*>(&file_header);
+    straw->Get(header_ptr + sizeof(alternate),
                sizeof(file_header) - sizeof(alternate));
   }
 
   data_size_ = file_header.size;
 
+  // Resize index and read entries
   file_index_.resize(file_header.count);
   straw->Get(file_index_.data(), file_index_.size() * sizeof(FileEntry));
 
-  // Encrypted headers are padded so data_start_ aligns to current position.
-  data_start_ = file.Seek(0, SEEK_CUR) + file.BiasStart;
+  // Calculate start position.
+  // Seek returns long, cast to int32_t to match class member (assuming < 2GB
+  // files)
+  data_start_ =
+      static_cast<std::int32_t>(file.Seek(0, SEEK_CUR) + file.BiasStart);
 
   MixList.Add_Tail(this);
 }
 
 template <class T>
 MixFileClass<T>::~MixFileClass() {
-  this->Unlink();  // Remove from global registry.
+  this->Unlink();
 }
 
 template <class T>
 bool MixFileClass<T>::Free(const std::string_view filename) {
-  if (MixFileClass *ptr = Finder(filename)) {
+  if (MixFileClass* ptr = Finder(filename)) {
     ptr->Free();
     return true;
   }
   return false;
 }
 
-// Releases cached data while keeping the index. Allows re-caching later.
 template <class T>
 void MixFileClass<T>::Free() {
-  data_.clear();
-  data_.shrink_to_fit();
+  // Clear and force deallocation
+  std::vector<std::byte>().swap(data_);
 }
 
-// Loads all file data into memory for fast access. Verifies SHA-1 digest
-// if present to detect corruption. Returns false on I/O error or bad digest.
 template <class T>
 bool MixFileClass<T>::Cache() {
   if (!data_.empty()) {
-    return true;  // Already cached.
+    return true;
   }
 
-  data_.resize(data_size_);
+  try {
+    data_.resize(data_size_);
+  } catch (const std::bad_alloc&) {
+    return false;
+  }
 
   T file(filename_.c_str());
   FileStraw file_straw(file);
-  Straw *straw = &file_straw;
+  Straw* straw = &file_straw;
 
-  // Chain SHA computation into the read stream to verify integrity.
   SHAStraw sha;
   if (has_digest_) {
     sha.Get_From(file_straw);
     straw = &sha;
   }
 
-  file.Open(READ);
+  if (!file.Open(READ)) {
+    data_.clear();
+    return false;
+  }
+
+  // Bias alignment logic
   file.Bias(0);
   file.Bias(data_start_);
 
+  // Read directly into the vector buffer
   long actual = straw->Get(data_.data(), data_size_);
+
   if (actual != data_size_) {
     data_.clear();
     file.Error(EIO);
     return false;
   }
 
-  // Verify digest matches if present.
   if (has_digest_) {
-    char expected[20];
-    char computed[20];
+    constexpr int kShaSize = 20;
+    char expected[kShaSize];
+    char computed[kShaSize];
+
     sha.Result(computed);
     file_straw.Get(expected, sizeof(expected));
-    if (memcmp(expected, computed, sizeof(expected)) != 0) {
-      data_.clear();
+
+    if (std::memcmp(expected, computed, sizeof(expected)) != 0) {
+      data_.clear();  // Corrupt data
       return false;
     }
   }
@@ -175,13 +196,12 @@ bool MixFileClass<T>::Cache() {
 
 template <class T>
 bool MixFileClass<T>::Cache(const std::string_view filename) {
-  if (auto *mixer = Finder(filename)) {
+  if (auto* mixer = Finder(filename)) {
     return mixer->Cache();
   }
   return false;
 }
 
-// Locates a file across all registered mixfiles by CRC lookup.
 template <class T>
 std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
     const std::string_view filename) {
@@ -189,23 +209,36 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
     return std::nullopt;
   }
 
-  // Filenames are stored as CRCs for compact indexing and fast lookup.
-  int32_t crc = Calculate_CRC(absl::AsciiStrToUpper(filename));
+  // NOTE: CRC calculation depends on specific implementation.
+  // Using upper case for case-insensitivity consistency.
+  const std::int32_t crc = CrcEngine::Compute(absl::AsciiStrToUpper(filename));
 
-  for (auto *mix = MixList.First(); mix->Is_Valid(); mix = mix->Next()) {
+  // Iterate through mixfiles (Most Recently Added / Tail priority is typical
+  // for override mods)
+  for (auto* mix = MixList.First(); mix->Is_Valid(); mix = mix->Next()) {
+    // Use C++20/23 ranges::lower_bound with projection
     auto it =
         std::ranges::lower_bound(mix->file_index_, crc, {}, &FileEntry::crc);
 
     if (it != mix->file_index_.end() && it->crc == crc) {
+      const bool cached = !mix->data_.empty();
+
+      // Safe span construction
+      std::span<const std::byte> view;
+      if (cached) {
+        // Ensure bounds safety
+        if (it->offset + it->size <= mix->data_.size()) {
+          view = {mix->data_.data() + it->offset,
+                  static_cast<std::size_t>(it->size)};
+        }
+      }
+
       return FileLocation{
-          .data = mix->data_.empty()
-                      ? std::span<std::byte>{}
-                      : std::span<std::byte>(mix->data_.data() + it->offset,
-                                             it->size),
+          .data = view,
           .mixfile = mix,
-          // Return absolute file offset if not cached, relative if cached.
-          .offset =
-              mix->data_.empty() ? it->offset + mix->data_start_ : it->offset,
+          // If cached, offset is relative to buffer. If not, absolute file
+          // offset.
+          .offset = cached ? it->offset : (it->offset + mix->data_start_),
           .size = it->size,
       };
     }
@@ -214,23 +247,40 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
   return std::nullopt;
 }
 
-// Returns cached file data, or nullptr if not cached or not found.
 template <class T>
-const void *MixFileClass<T>::Retrieve(const std::string_view filename) {
+const void* MixFileClass<T>::Retrieve(const std::string_view filename) {
   auto loc = Offset(filename);
-  return loc ? loc->data.data() : nullptr;
+  // data.data() returns const std::byte*, cast to void* for legacy API
+  // compatibility
+  return (loc && !loc->data.empty())
+             ? static_cast<const void*>(loc->data.data())
+             : nullptr;
 }
 
 template <class T>
-MixFileClass<T> *MixFileClass<T>::Finder(const std::string_view filename) {
-  for (auto *ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
-    // Compare basename only; paths may differ.
-    auto basename = std::filesystem::path(ptr->filename_).filename().string();
-    if (absl::EqualsIgnoreCase(basename, filename)) {
+MixFileClass<T>* MixFileClass<T>::Finder(const std::string_view filename) {
+  // Optimization: Avoid std::filesystem allocations just to compare filenames.
+  // 1. Extract basename from incoming filename
+  std::string_view query_base = filename;
+  auto last_sep = query_base.find_last_of("/\\");
+  if (last_sep != std::string_view::npos) {
+    query_base.remove_prefix(last_sep + 1);
+  }
+
+  for (auto* ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
+    // 2. Extract basename from current mixfile name
+    std::string_view target_base = ptr->filename_;
+    auto target_sep = target_base.find_last_of("/\\");
+    if (target_sep != std::string_view::npos) {
+      target_base.remove_prefix(target_sep + 1);
+    }
+
+    if (absl::EqualsIgnoreCase(target_base, query_base)) {
       return ptr;
     }
   }
   return nullptr;
 }
 
+// Explicit template instantiation
 template class MixFileClass<CCFileClass>;

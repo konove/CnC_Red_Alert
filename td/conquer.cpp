@@ -136,6 +136,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "tech/2keyfbuf.h"
+#include "tech/crc.h"
 #include "winvq/vqa32/vqaplay.h"
 #ifndef PORTABLE
 #include <dos.h>
@@ -955,7 +956,8 @@ static void Message_Input(KeyNumType &input) {
 
       sent_so_far = 0;
       magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-      crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) & 0xffff);
+      crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
+                             0xffff);
 
       while (sent_so_far < message_length) {
         serial_packet = (SerialPacketType *)NullModem.BuildBuf;
@@ -1010,7 +1012,8 @@ static void Message_Input(KeyNumType &input) {
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         sent_so_far = 0;
         magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-        crc = (unsigned short)(Calculate_CRC(Messages.Get_Edit_Buf()) & 0xffff);
+        crc = (unsigned short)(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
+                               0xffff);
 
         while (sent_so_far < message_length) {
           GPacket.Command = NET_MESSAGE;

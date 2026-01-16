@@ -882,7 +882,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      overlay.ImageData = MFCD::Retrieve(fullname.c_str());
+      overlay.ImageData = MFCD::Retrieve(fullname);
 
       IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
                                            // theater specific shape
