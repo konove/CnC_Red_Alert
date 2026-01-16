@@ -16,539 +16,221 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/MIXFILE.CPP 2     3/13/97 2:06p Steve_tall $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : MIXFILE.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : August 8, 1994 *
- *                                                                                             *
- *                  Last Update : July 12, 1996 [JLB] *
- *                                                                                             *
- *                                                                                             *
- *                  Modified by Vic Grippi for WwXlat Tool 10/14/96 *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * MixFileClass::Cache -- Caches the named mixfile into RAM. *
- *   MixFileClass::Cache -- Loads this particular mixfile's data into RAM. *
- *   MixFileClass::Finder -- Finds the mixfile object that matches the name
- *specified.         * MixFileClass::Free -- Uncaches a cached mixfile. *
- *   MixFileClass::MixFileClass -- Constructor for mixfile object. *
- *   MixFileClass::Offset -- Searches in mixfile for matching file and returns
- *offset if found.* MixFileClass::Retrieve -- Retrieves a pointer to the
- *specified data file.                 * MixFileClass::~MixFileClass --
- *Destructor for the mixfile object.                         *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// MIX file archive format implementation. MIX files are Westwood's archive
+// format that bundles game assets (sprites, sounds, etc.) into single files.
+// Files are indexed by CRC of their filename for fast lookup.
 
-#include "ra/mixfile.h"
+#include "mixfile.h"
 
-#include <cassert>
+#include <algorithm>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <span>
+#include <string>
+#include <string_view>
 
-#include "port/ex_string.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "ra/ccfile.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/externs.h"
 #include "ra/startup.h"
 #include "sdllib/include/misc.h"
-#include "tech/buff.h"
 #include "tech/pkstraw.h"
 #include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
 
-extern MFCD temp;
-
-// template<class T> int Compare(T const *obj1, T const *obj2) {
-//	if (*obj1 < *obj2) return(-1);
-//	if (*obj1 > *obj2) return(1);
-//	return(0);
-// };
-
-/*
-**	This is the pointer to the first mixfile in the list of mixfiles
-*registered *	with the mixfile system.
-*/
+// Opens a mixfile and reads its index. The file data is not loaded until
+// Cache() is called. Supports both plain and extended (encrypted/signed)
+// mixfile formats.
 template <class T>
-List<MixFileClass<T> > MixFileClass<T>::MixList;
-
-/***********************************************************************************************
- * MixFileClass::Free -- Uncaches a cached mixfile. *
- *                                                                                             *
- *    Use this routine to uncache a mixfile that has been cached. *
- *                                                                                             *
- * INPUT:   filename -- Pointer to the filename of the mixfile that is to be
- *uncached.         *
- *                                                                                             *
- * OUTPUT:  bool; Was the mixfile found and freed? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/23/1995 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-bool MixFileClass<T>::Free(char const *filename) {
-  MixFileClass *ptr = Finder(filename);
-
-  if (ptr) {
-    ptr->Free();
-    return (true);
-  }
-  return (false);
-}
-
-/***********************************************************************************************
- * MixFileClass::~MixFileClass -- Destructor for the mixfile object. *
- *                                                                                             *
- *    This destructor will free all memory allocated by this mixfile and will
- *remove it from   * the system. A mixfile removed in this fashion must be
- *created anew in order to be        * subsequent used. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/08/1994 JLB : Created. * 01/06/1995 JLB : Puts mixfile header
- *table into EMS.                                      *
- *=============================================================================================*/
-template <class T>
-MixFileClass<T>::~MixFileClass(void) {
-  /*
-  **	Deallocate any allocated memory.
-  */
-  if (Filename) {
-    free((char *)Filename);
-  }
-  if (Data != nullptr && IsAllocated) {
-    delete[] static_cast<char *>(Data);
-    IsAllocated = false;
-  }
-  Data = nullptr;
-
-  if (HeaderBuffer != nullptr) {
-    delete[] HeaderBuffer;
-    HeaderBuffer = nullptr;
-  }
-
-  /*
-  **	Unlink this mixfile object from the chain.
-  */
-  this->Unlink();
-}
-
-/***********************************************************************************************
- * MixFileClass::MixFileClass -- Constructor for mixfile object. *
- *                                                                                             *
- *    This is the constructor for the mixfile object. It takes a filename and a
- *memory         * handler object and registers the mixfile object with the
- *system. The index block is      * allocated and loaded from disk by this
- *routine.                                          *
- *                                                                                             *
- * INPUT:   filename -- Pointer to the filename of the mixfile object. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/08/1994 JLB : Created. * 07/12/1996 JLB : Handles compressed
- *file header.                                          *
- *=============================================================================================*/
-template <class T>
-MixFileClass<T>::MixFileClass(char const *filename, PKey const *key)
-    : IsDigest(false),
-      IsEncrypted(false),
-      IsAllocated(false),
-      Filename(nullptr),
-      Count(0),
-      DataSize(0),
-      DataStart(0),
-      HeaderBuffer(nullptr),
-      Data(nullptr) {
-  // Check to see if the file is available. If it isn't, then no further
-  // processing is needed or possible.
+MixFileClass<T>::MixFileClass(const std::string_view filename,
+                              const PKey *key) {
   if (!Force_CD_Available(RequiredCD)) {
     Emergency_Exit(EXIT_FAILURE);
   }
 
-  T file(filename);  // Working file object.
-  Filename = strdup(file.File_Name());
+  T file(std::string(filename).c_str());
+  filename_ = file.File_Name();
 
-  FileStraw fstraw(file);
+  FileStraw file_straw(file);
   PKStraw pstraw(PKStraw::DECRYPT, CryptRandom);
-  Straw *straw = &fstraw;
+  Straw *straw = &file_straw;
 
-  if (!file.Is_Available()) return;
+  if (!file.Is_Available()) {
+    return;
+  }
 
-  // Structures used to hold the various file headers.
   FileHeader file_header;
   struct {
-    short First;   // Always zero for extended mixfile format.
-    short Second;  // Bitfield of extensions to this mixfile.
+    short First;   // Zero indicates extended format.
+    short Second;  // Bit 0: has digest, Bit 1: encrypted.
   } alternate;
 
-  // Fetch the first bit of the file. From this bit, it is possible to detect
-  // whether this is an extended mixfile format or the plain format. An extended
-  // format may have extra options or data layout.
   straw->Get(&alternate, sizeof(alternate));
 
-  // Detect if this is an extended mixfile. If so, then see if it is encrypted
-  // and/or has a message digest attached. Otherwise, just retrieve the plain
-  // mixfile header.
+  // Extended format: First field is zero, Second contains feature flags.
+  // Plain format: First two bytes are already part of the file header.
   if (alternate.First == 0) {
-    IsDigest = ((alternate.Second & 0x01) != 0);
-    IsEncrypted = ((alternate.Second & 0x02) != 0);
+    has_digest_ = (alternate.Second & 0x01) != 0;
+    is_encrypted_ = (alternate.Second & 0x02) != 0;
 
-    if (IsEncrypted) {
+    if (is_encrypted_) {
       pstraw.Key(key);
-      pstraw.Get_From(&fstraw);
+      pstraw.Get_From(&file_straw);
       straw = &pstraw;
     }
 
     straw->Get(&file_header, sizeof(file_header));
   } else {
+    // Plain format: reinterpret bytes already read as start of header.
     memmove(&file_header, &alternate, sizeof(alternate));
-    straw->Get(((char *)&file_header) + sizeof(alternate),
+    straw->Get(reinterpret_cast<char *>(&file_header) + sizeof(alternate),
                sizeof(file_header) - sizeof(alternate));
   }
 
-  Count = file_header.count;
-  DataSize = file_header.size;
+  data_size_ = file_header.size;
 
-  // Load up the offset control array. If RAM is exhausted, then the mixfile is
-  // invalid.
-  HeaderBuffer = new SubBlock[Count];
-  straw->Get(HeaderBuffer, Count * sizeof(SubBlock));
+  file_index_.resize(file_header.count);
+  straw->Get(file_index_.data(), file_index_.size() * sizeof(FileEntry));
 
-  // The start of the embedded mixfile data will be at the current file offset.
-  // This should be true even if the file header has been encrypted because the
-  // file header was cleverly written with just the sufficient number of padding
-  // bytes so that this condition would be true.
-  DataStart = file.Seek(0, SEEK_CUR) + file.BiasStart;
+  // Encrypted headers are padded so data_start_ aligns to current position.
+  data_start_ = file.Seek(0, SEEK_CUR) + file.BiasStart;
 
-  // Attach to list of mixfiles.
   MixList.Add_Tail(this);
 }
 
-/***********************************************************************************************
- * MixFileClass::Retrieve -- Retrieves a pointer to the specified data file. *
- *                                                                                             *
- *    This routine will return with a pointer to the specified data file if the
- *file resides   * in memory. Otherwise, this routine returns nullptr. Use this
- *routine to access a resident   * file directly rather than going through the
- *process of pseudo disk access. This will     * save both time and RAM. *
- *                                                                                             *
- * INPUT:   filename -- Pointer to the filename of the data file to retrieve a
- *pointer to.     *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the data file's data. If the file is not
- *in RAM, then    * nullptr is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/23/1994 JLB : Created. *
- *=============================================================================================*/
 template <class T>
-const void *MixFileClass<T>::Retrieve(char const *filename) {
-  void *ptr = nullptr;
-  Offset(filename, &ptr);
-  return ptr;
-};
+MixFileClass<T>::~MixFileClass() {
+  this->Unlink();  // Remove from global registry.
+}
 
-/***********************************************************************************************
- * MixFileClass::Finder -- Finds the mixfile object that matches the name
- *specified.           *
- *                                                                                             *
- *    This routine will scan through all registered mixfiles and return with a
- *pointer to      * the matching mixfile. If no mixfile could be found that
- *matches the name specified,      * then nullptr is returned. *
- *                                                                                             *
- * INPUT:   filename -- Pointer to the filename to search for. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the matching mixfile -- if found. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/08/1994 JLB : Created. * 06/08/1996 JLB : Only compares
- *filename and extension.                                    *
- *=============================================================================================*/
 template <class T>
-MixFileClass<T> *MixFileClass<T>::Finder(char const *filename) {
-  MixFileClass<T> *ptr = MixList.First();
-  while (ptr->Is_Valid()) {
-    // Extract just the filename+extension (no path or drive)
-    auto file_only = std::filesystem::path(ptr->Filename).filename().string();
+bool MixFileClass<T>::Free(const std::string_view filename) {
+  if (MixFileClass *ptr = Finder(filename)) {
+    ptr->Free();
+    return true;
+  }
+  return false;
+}
 
-    if (stricmp(file_only.c_str(), filename) == 0) {
+// Releases cached data while keeping the index. Allows re-caching later.
+template <class T>
+void MixFileClass<T>::Free() {
+  data_.clear();
+  data_.shrink_to_fit();
+}
+
+// Loads all file data into memory for fast access. Verifies SHA-1 digest
+// if present to detect corruption. Returns false on I/O error or bad digest.
+template <class T>
+bool MixFileClass<T>::Cache() {
+  if (!data_.empty()) {
+    return true;  // Already cached.
+  }
+
+  data_.resize(data_size_);
+
+  T file(filename_.c_str());
+  FileStraw file_straw(file);
+  Straw *straw = &file_straw;
+
+  // Chain SHA computation into the read stream to verify integrity.
+  SHAStraw sha;
+  if (has_digest_) {
+    sha.Get_From(file_straw);
+    straw = &sha;
+  }
+
+  file.Open(READ);
+  file.Bias(0);
+  file.Bias(data_start_);
+
+  long actual = straw->Get(data_.data(), data_size_);
+  if (actual != data_size_) {
+    data_.clear();
+    file.Error(EIO);
+    return false;
+  }
+
+  // Verify digest matches if present.
+  if (has_digest_) {
+    char expected[20];
+    char computed[20];
+    sha.Result(computed);
+    file_straw.Get(expected, sizeof(expected));
+    if (memcmp(expected, computed, sizeof(expected)) != 0) {
+      data_.clear();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+template <class T>
+bool MixFileClass<T>::Cache(const std::string_view filename) {
+  if (auto *mixer = Finder(filename)) {
+    return mixer->Cache();
+  }
+  return false;
+}
+
+// Locates a file across all registered mixfiles by CRC lookup.
+template <class T>
+std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
+    const std::string_view filename) {
+  if (filename.empty()) {
+    return std::nullopt;
+  }
+
+  // Filenames are stored as CRCs for compact indexing and fast lookup.
+  int32_t crc = Calculate_CRC(absl::AsciiStrToUpper(filename));
+
+  for (auto *mix = MixList.First(); mix->Is_Valid(); mix = mix->Next()) {
+    auto it =
+        std::ranges::lower_bound(mix->file_index_, crc, {}, &FileEntry::crc);
+
+    if (it != mix->file_index_.end() && it->crc == crc) {
+      return FileLocation{
+          .data = mix->data_.empty()
+                      ? std::span<std::byte>{}
+                      : std::span<std::byte>(mix->data_.data() + it->offset,
+                                             it->size),
+          .mixfile = mix,
+          // Return absolute file offset if not cached, relative if cached.
+          .offset =
+              mix->data_.empty() ? it->offset + mix->data_start_ : it->offset,
+          .size = it->size,
+      };
+    }
+  }
+
+  return std::nullopt;
+}
+
+// Returns cached file data, or nullptr if not cached or not found.
+template <class T>
+const void *MixFileClass<T>::Retrieve(const std::string_view filename) {
+  auto loc = Offset(filename);
+  return loc ? loc->data.data() : nullptr;
+}
+
+template <class T>
+MixFileClass<T> *MixFileClass<T>::Finder(const std::string_view filename) {
+  for (auto *ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
+    // Compare basename only; paths may differ.
+    auto basename = std::filesystem::path(ptr->filename_).filename().string();
+    if (absl::EqualsIgnoreCase(basename, filename)) {
       return ptr;
     }
-    ptr = ptr->Next();
   }
   return nullptr;
-}
-
-/***********************************************************************************************
- * MixFileClass::Cache -- Caches the named mixfile into RAM. *
- *                                                                                             *
- *    This routine will cache the mixfile, specified by name, into RAM. *
- *                                                                                             *
- * INPUT:   filename -- The name of the mixfile that should be cached. *
- *                                                                                             *
- * OUTPUT:  bool; Was the cache successful? *
- *                                                                                             *
- * WARNINGS:   This routine could go to disk for a very long time. *
- *                                                                                             *
- * HISTORY: * 08/08/1994 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-bool MixFileClass<T>::Cache(char const *filename, Buffer const *buffer) {
-  MixFileClass<T> *mixer = Finder(filename);
-
-  if (mixer != nullptr) {
-    return (mixer->Cache(buffer));
-  }
-  return (false);
-}
-
-/***********************************************************************************************
- * MixFileClass::Cache -- Loads this particular mixfile's data into RAM. *
- *                                                                                             *
- *    This load the mixfile data into ram for this mixfile object. This is the
- *counterpart     * to the Free() function. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Was the file load successful?  It could fail if there wasn't
- *enough room     * to allocate the raw data block. *
- *                                                                                             *
- * WARNINGS:   This routine goes to disk for a potentially very long time. *
- *                                                                                             *
- * HISTORY: * 08/08/1994 JLB : Created. * 07/12/1996 JLB : Handles attached
- *message digest.                                         *
- *=============================================================================================*/
-template <class T>
-bool MixFileClass<T>::Cache(Buffer const *buffer) {
-  /*
-  **	If the mixfile is already cached, then no action needs to be performed.
-  */
-  if (Data != nullptr) return (true);
-
-  /*
-  **	If a buffer was supplied (and it is big enough), then use it as the data
-  *block *	pointer. Otherwise, the data block must be allocated.
-  */
-  if (buffer != nullptr) {
-    if (buffer->Get_Size() == 0 || buffer->Get_Size() >= DataSize) {
-      Data = buffer->Get_Buffer();
-    }
-  } else {
-    Data = new char[DataSize];
-    IsAllocated = true;
-  }
-
-  /*
-  **	If there is a data buffer to fill, then fill it now.
-  */
-  if (Data != nullptr) {
-    T file(Filename);
-
-    FileStraw fstraw(file);
-    Straw *straw = &fstraw;
-
-    /*
-    **	If a message digest is attached, then link a SHA straw segment to the
-    *data *	stream so that the actual SHA can be compared with the attached
-    *one.
-    */
-    SHAStraw sha;
-    if (IsDigest) {
-      sha.Get_From(fstraw);
-      straw = &sha;
-    }
-
-    /*
-    **	Bias the file to the actual start of the data. This is necessary because
-    *the *	real data starts some distance (not so easily determined) from
-    *the beginning of *	the real file.
-    */
-    file.Open(READ);
-    file.Bias(0);
-    file.Bias(DataStart);
-
-    /*
-    **	Fetch the whole mixfile data in one step. If the number of bytes
-    *retrieved *	does not equal that requested, then this indicates a
-    *serious error.
-    */
-    long actual = straw->Get(Data, DataSize);
-    if (actual != DataSize) {
-      delete[] static_cast<char *>(Data);
-      Data = nullptr;
-      file.Error(EIO);
-      return (false);
-    }
-
-    /*
-    **	If there is a digest attached to this mixfile, then read it in and
-    **	compare it to the generated digest. If they don't match, then
-    **	return with the "failure to cache" error code.
-    */
-    if (IsDigest) {
-      char digest1[20];
-      char digest2[20];
-      sha.Result(digest2);
-      fstraw.Get(digest1, sizeof(digest1));
-      if (memcmp(digest1, digest2, sizeof(digest1)) != 0) {
-        delete[] static_cast<char *>(Data);
-        Data = nullptr;
-        return (false);
-      }
-    }
-
-    return (true);
-  }
-  IsAllocated = false;
-  return (false);
-}
-
-/***********************************************************************************************
- * MixFileClass::Free -- Frees the allocated raw data block (not the index
- *block).             *
- *                                                                                             *
- *    This routine will free the (presumably large) raw data block, but leave
- *the index        * block intact. By using this in conjunction with the Cache()
- *function, one can maintain   * tight control of memory usage. If the index
- *block is desired to be freed, then the       * mixfile object must be deleted.
- **
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/08/1994 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-void MixFileClass<T>::Free(void) {
-  if (Data != nullptr && IsAllocated) {
-    delete[] static_cast<char *>(Data);
-  }
-  Data = nullptr;
-  IsAllocated = false;
-}
-
-int compfunc(void const *ptr1, void const *ptr2) {
-  if (*(int32_t const *)ptr1 < *(int32_t const *)ptr2) return (-1);
-  if (*(int32_t const *)ptr1 > *(int32_t const *)ptr2) return (1);
-  return (0);
-}
-
-/***********************************************************************************************
- * MixFileClass::Offset -- Determines the offset of the requested file from the
- *mixfile system.*
- *                                                                                             *
- *    This routine will take the filename specified and search through the
- *mixfile system      * looking for it. If the file was found, then the mixfile
- *it was found in, the offset      * from the start of the mixfile, and the size
- *of the embedded file will be returned.       * Using this method it is
- *possible for the CCFileClass system to process it as a normal    * file. *
- *                                                                                             *
- * INPUT:   filename    -- The filename to search for. *
- *                                                                                             *
- *          realptr     -- Stores a pointer to the start of the file in memory
- *here. If the    * file is not in memory, then nullptr is stored here. *
- *                                                                                             *
- *          mixfile     -- The pointer to the corresponding mixfile is placed
- *here. If no      * mixfile was found that contains the file, then nullptr is
- *stored here. *
- *                                                                                             *
- *          offset      -- The starting offset from the beginning of the parent
- *mixfile is     * stored here. *
- *                                                                                             *
- *          size        -- The size of the embedded file is stored here. *
- *                                                                                             *
- * OUTPUT:  bool; Was the file found? The file may or may not be resident, but
- *it does exist   * and can be opened. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-bool MixFileClass<T>::Offset(char const *filename, void **realptr,
-                             MixFileClass **mixfile, long *offset, long *size) {
-  MixFileClass<T> *ptr;
-
-  if (filename == nullptr) {
-    assert(filename != nullptr);  // BG
-    return (false);
-  }
-
-  /*
-  **	Create the key block that will be used to binary search for the file.
-  */
-  char *upperFilename = strupr(strdup(filename));
-  long crc = Calculate_CRC(upperFilename);
-  free(upperFilename);
-  SubBlock key;
-  key.CRC = crc;
-
-  /*
-  **	Sweep through all registered mixfiles, trying to find the file in
-  *question.
-  */
-  ptr = MixList.First();
-  while (ptr->Is_Valid()) {
-    SubBlock *block;
-
-    /*
-    **	Binary search for the file in this mixfile. If it is found, then extract
-    *the *	appropriate information and store it in the locations provided
-    *and then return.
-    */
-    block = (SubBlock *)bsearch(&key, ptr->HeaderBuffer, ptr->Count,
-                                sizeof(SubBlock), compfunc);
-    if (block != nullptr) {
-      if (mixfile != nullptr) *mixfile = ptr;
-      if (size != nullptr) *size = block->Size;
-      if (realptr != nullptr) *realptr = nullptr;
-      if (offset != nullptr) *offset = block->Offset;
-      if (realptr != nullptr && ptr->Data != nullptr) {
-        *realptr = (char *)ptr->Data + block->Offset;
-      }
-      if (ptr->Data == nullptr && offset != nullptr) {
-        *offset += ptr->DataStart;
-      }
-      return (true);
-    }
-
-    /*
-    **	Advance to next mixfile.
-    */
-    ptr = ptr->Next();
-  }
-
-  /*
-  **	All the mixfiles have been examined but no match was found. Return with
-  *the non success flag.
-  */
-  assert(1);  // BG
-  return (false);
 }
 
 template class MixFileClass<CCFileClass>;

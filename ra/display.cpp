@@ -405,11 +405,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
     delete TheaterData;
 
     TheaterData = new MFCD(fullname, &FastKey);
-    assert(TheaterData != nullptr);
 
-    bool theaterload = TheaterData->Cache(TheaterBuffer);
+    bool theaterload = TheaterData->Cache();
     assert(theaterload);
-    //		LastTheater = Scen.Theater;
   }
 
   /*

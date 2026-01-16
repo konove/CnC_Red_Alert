@@ -16,109 +16,81 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/MIXFILE.H 1     3/03/97 10:25a Joe_bostic $ */
-
 #ifndef MIXFILE_H
 #define MIXFILE_H
 
-#include <cstdint>
+#include <cstddef>
+#include <optional>
+#include <span>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "ra/ccfile.h"  // IWYU pragma: keep
 #include "ra/listnode.h"
-#include "tech/buff.h"
 #include "tech/pk.h"
 
 template <class T>
 class MixFileClass : public Node<MixFileClass<T> > {
  public:
-  char const *Filename;  // Filename of mixfile.
+  // Result of looking up a file in the mixfile system.
+  struct FileLocation {
+    std::span<const std::byte> data;  // Cached data, or empty if not cached.
+    MixFileClass *mixfile;            // The mixfile containing this file.
+    long offset;  // Offset within the mixfile's data section.
+    long size;    // Size of the embedded file.
+  };
 
-  MixFileClass(char const *filename, PKey const *key);
-  ~MixFileClass(void) override;
+  MixFileClass(std::string_view filename, const PKey *key);
+  ~MixFileClass() override;
 
-  static bool Free(char const *filename);
-  void Free(void);
-  bool Cache(Buffer const *buffer = nullptr);
-  static bool Cache(char const *filename, Buffer const *buffer = nullptr);
-  static bool Offset(char const *filename, void **realptr = nullptr,
-                     MixFileClass **mixfile = nullptr, long *offset = nullptr,
-                     long *size = nullptr);
-  static const void *Retrieve(char const *filename);
+  [[nodiscard]] const std::string &Filename() const { return filename_; }
 
-  struct SubBlock {
-    int32_t CRC;     // CRC code for embedded file.
-    int32_t Offset;  // Offset from start of data section.
-    int32_t Size;    // Size of data subfile.
+  static bool Free(std::string_view filename);
+  void Free();
+  bool Cache();
+  static bool Cache(std::string_view filename);
+  static std::optional<FileLocation> Offset(std::string_view filename);
+  static const void *Retrieve(std::string_view filename);
 
-    int operator<(SubBlock &two) const { return (CRC < two.CRC); };
-    int operator>(SubBlock &two) const { return (CRC > two.CRC); };
-    int operator==(SubBlock &two) const { return (CRC == two.CRC); };
+  // Index entry for an embedded file within the mixfile.
+  struct FileEntry {
+    std::int32_t crc;     // CRC of the filename (used as lookup key).
+    std::int32_t offset;  // Offset from start of data section.
+    std::int32_t size;    // Size of the embedded file.
+
+    // Default spaceship operator for easy comparison
+    auto operator<=>(const FileEntry &other) const = default;
+    // Comparison with raw CRC for binary search projections
+    auto operator<=>(std::int32_t other_crc) const { return crc <=> other_crc; }
   };
 
  private:
-  static MixFileClass *Finder(char const *filename);
-  long Offset(long crc, long *size = nullptr) const;
-
-  /*
-  **	If this mixfile has an attached message digest, then this flag
-  **	will be true. The digest is checked only when the mixfile is
-  **	cached.
-  */
-  unsigned IsDigest : 1;
-
-  /*
-  **	If the header to this mixfile has been encrypted, then this flag
-  **	will be true. Although the header of the mixfile may be encrypted,
-  **	the attached data files are not.
-  */
-  unsigned IsEncrypted : 1;
-
-  /*
-  **	If the cached memory block was allocated by this routine, then this
-  **	flag will be true.
-  */
-  unsigned IsAllocated : 1;
-
-  /*
-  **	This is the initial file header. It tells how many files are embedded
-  **	within this mixfile and the total size of all embedded files.
-  */
+  // On-disk file header format.
 #pragma pack(push, 1)
-  typedef struct {
-    int16_t count;
-    int32_t size;
-  } FileHeader;
+  struct FileHeader {
+    std::int16_t count;
+    std::int32_t size;
+  };
 #pragma pack(pop)
 
-  /*
-  **	The number of files within the mixfile.
-  */
-  int Count;
+  static MixFileClass *Finder(std::string_view filename);
 
-  /*
-  **	This is the total size of all the data file embedded within the mixfile.
-  **	It does not include the header or digest bytes.
-  */
-  long DataSize;
+  std::string filename_;
 
-  /*
-  **	Start of raw data in within the mixfile.
-  */
-  long DataStart;
+  bool has_digest_ = false;    // True if mixfile has an attached SHA-1 digest.
+  bool is_encrypted_ = false;  // True if the file header is encrypted.
 
-  /*
-  **	Points to the file header control block array. Each file in the mixfile
-  *will *	have an entry in this table. The entries are sorted by their
-  *(signed) CRC value.
-  */
-  SubBlock *HeaderBuffer;
+  std::int32_t data_size_ = 0;   // Total size of embedded data.
+  std::int32_t data_start_ = 0;  // File offset where raw data begins.
 
-  /*
-  **	If the mixfile has been cached, then this points to the cached data.
-  */
-  void *Data;  // Pointer to raw data.
+  std::vector<FileEntry> file_index_;  // Sorted by CRC for binary search.
 
-  static List<MixFileClass> MixList;
+  // Cached file data, empty if not cached.
+  std::vector<std::byte> data_;
+
+  // Global registry of all open mixfiles, searched in order for file lookups.
+  inline static List<MixFileClass> MixList;
 };
 
 #endif

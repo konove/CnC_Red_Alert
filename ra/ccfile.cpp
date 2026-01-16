@@ -295,9 +295,10 @@ long CCFileClass::Size(void) {
   *in the *	mixfiles in order to get its size.
   */
   if (!CDFileClass::Is_Available()) {
-    long length = 0;
-    MFCD::Offset(File_Name(), nullptr, nullptr, nullptr, &length);
-    return (length);
+    if (auto loc = MFCD::Offset(File_Name())) {
+      return loc->size;
+    }
+    return 0;
   }
 
   return (CDFileClass::Size());
@@ -327,7 +328,7 @@ int CCFileClass::Is_Available(int) {
   /*
   **	A file that is part of a mixfile is also presumed available.
   */
-  if (MFCD::Offset(File_Name())) {
+  if (MFCD::Offset(File_Name()).has_value()) {
     return (true);
   }
 
@@ -420,45 +421,40 @@ int CCFileClass::Open(int rights) {
   **	Check to see if file is part of a mixfile and that mixfile is currently
   *loaded *	into RAM.
   */
-  MFCD *mixfile = nullptr;
-  void *pointer = nullptr;
-  long length = 0;
-  long start = 0;
-  if (MFCD::Offset(File_Name(), &pointer, &mixfile, &start, &length)) {
-    assert(mixfile != nullptr);
-
-    /*
-    **	If the mixfile is located on disk, then fake out the file system to read
-    *from *	the mixfile, but think it is reading from a solitary file.
-    */
-    if (pointer == nullptr && mixfile != nullptr) {
-      /*
-      **	This is a legitimate open to the file. All access to the file
-      *through this *	file object will be appropriately adjusted for mixfile
-      *support however. Also *	note that the filename attached to this object
-      *is NOT the same as the file *	attached to the file handle.
-      */
-      char *dupfile = strdup(File_Name());
-      Open(mixfile->Filename, READ);
-      Searching(false);  // Disable multi-drive search.
-      Set_Name(dupfile);
-      Searching(true);
-      free(dupfile);
-      Bias(0);
-      Bias(start, length);
-      Seek(0, SEEK_SET);
-    } else {
-      new (&Data)::Buffer(pointer, length);
-      Position = 0;
-    }
-
-  } else {
+  auto loc = MFCD::Offset(File_Name());
+  if (!loc) {
     /*
     **	The file cannot be found in any mixfile, so it must reside as
     ** an individual file on the disk. Or else it is just plain missing.
     */
     return (CDFileClass::Open(rights));
   }
+
+  /*
+  **	If the mixfile is located on disk, then fake out the file system to read
+  *from *	the mixfile, but think it is reading from a solitary file.
+  */
+  if (loc->data.empty()) {
+    /*
+    **	This is a legitimate open to the file. All access to the file
+    *through this *	file object will be appropriately adjusted for mixfile
+    *support however. Also *	note that the filename attached to this object
+    *is NOT the same as the file *	attached to the file handle.
+    */
+    char *dupfile = strdup(File_Name());
+    Open(loc->mixfile->Filename().c_str(), READ);
+    Searching(false);  // Disable multi-drive search.
+    Set_Name(dupfile);
+    Searching(true);
+    free(dupfile);
+    Bias(0);
+    Bias(loc->offset, loc->size);
+    Seek(0, SEEK_SET);
+  } else {
+    new (&Data)::Buffer(loc->data.data(), loc->data.size());
+    Position = 0;
+  }
+
   return (true);
 }
 
@@ -478,22 +474,17 @@ int CCFileClass::Open(int rights) {
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
 unsigned long CCFileClass::Get_Date_Time(void) {
-  unsigned long datetime;
-  MFCD *mixfile;
-
-  datetime = CDFileClass::Get_Date_Time();
+  unsigned long datetime = CDFileClass::Get_Date_Time();
 
   if (!datetime) {
-    if (MFCD::Offset(File_Name(), nullptr, &mixfile, nullptr, nullptr)) {
-      //
-      // check for nested MIX files
-      //
-      return (CCFileClass(mixfile->Filename).Get_Date_Time());
+    if (auto loc = MFCD::Offset(File_Name())) {
+      // Check for nested MIX files.
+      return CCFileClass(loc->mixfile->Filename().c_str()).Get_Date_Time();
     }
     // else return 0 indicating no file
   }
 
-  return (datetime);
+  return datetime;
 }
 
 /***********************************************************************************************
@@ -511,22 +502,18 @@ unsigned long CCFileClass::Get_Date_Time(void) {
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
 bool CCFileClass::Set_Date_Time(unsigned long datetime) {
-  bool status;
-  MFCD *mixfile;
-
-  status = CDFileClass::Set_Date_Time(datetime);
+  bool status = CDFileClass::Set_Date_Time(datetime);
 
   if (!status) {
-    if (MFCD::Offset(File_Name(), nullptr, &mixfile, nullptr, nullptr)) {
-      //
-      // check for nested MIX files
-      //
-      return (CCFileClass(mixfile->Filename).Set_Date_Time(datetime));
+    if (auto loc = MFCD::Offset(File_Name())) {
+      // Check for nested MIX files.
+      return CCFileClass(loc->mixfile->Filename().c_str())
+          .Set_Date_Time(datetime);
     }
-    // else return 0 indicating no file
+    // else return false indicating no file
   }
 
-  return (status);
+  return status;
 }
 
 /***********************************************************************************
