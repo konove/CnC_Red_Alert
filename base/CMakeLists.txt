@@ -1,0 +1,9 @@
+add_library(base INTERFACE)
+
+file(GLOB_RECURSE BASE_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+target_sources(base PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_SOURCE_DIR}
+        FILES ${BASE_HEADERS}
+)

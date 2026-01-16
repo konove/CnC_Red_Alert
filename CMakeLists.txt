@@ -121,6 +121,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 include(GoogleTest)
 enable_testing()
 
+add_subdirectory(base)
 add_subdirectory(port)
 add_subdirectory(sdllib)
 add_subdirectory(winvq)
