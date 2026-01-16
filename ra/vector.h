@@ -21,9 +21,9 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include <cstddef>
 #include <new>  // IWYU pragma: keep
 
+#include "base/types.h"
 #include "ra/defines.h"  // IWYU pragma: keep
 #include "ra/egos.h"     // IWYU pragma: keep
 #include "tech/noinit.h"
@@ -34,32 +34,32 @@ template <typename T>
 class VectorClass {
  public:
   VectorClass(NoInitClass const &) {};
-  VectorClass(unsigned size = 0, const T *array = nullptr);
+  VectorClass(base::ssize size = 0, const T *array = nullptr);
   VectorClass(const VectorClass &);  // Copy constructor.
   virtual ~VectorClass();
 
-  T &operator[](size_t index) { return Vector[index]; };
-  T const &operator[](size_t index) const { return Vector[index]; };
+  T &operator[](base::ssize index) { return Vector[index]; };
+  T const &operator[](base::ssize index) const { return Vector[index]; };
   virtual VectorClass &operator=(const VectorClass &);  // Assignment operator.
   virtual bool operator==(const VectorClass &) const;   // Equality operator.
-  virtual bool Resize(unsigned newsize, const T *array = nullptr);
+  virtual bool Resize(base::ssize newsize, const T *array = nullptr);
   virtual void Clear();
-  unsigned Length() const { return VectorMax; };
-  virtual int ID(const T *ptr);  // Pointer based identification.
-  virtual int ID(const T &ptr);  // Value based identification.
+  base::ssize Length() const { return VectorMax; };
+  virtual base::ssize ID(const T *ptr);  // Pointer based identification.
+  virtual base::ssize ID(const T &ptr);  // Value based identification.
 
  protected:
-  T *Vector;                 // Pointer to element array.
-  unsigned VectorMax;        // Maximum number of elements.
-  unsigned IsAllocated : 1;  // True if we own the memory and must delete it.
+  T *Vector;                // Pointer to element array.
+  base::ssize VectorMax;    // Maximum number of elements.
+  bool IsAllocated : true;  // True if we own the memory and must delete it.
 };
 
 // Implementation details only below here
 
 template <class T>
-VectorClass<T>::VectorClass(unsigned size, T const *array)
+VectorClass<T>::VectorClass(base::ssize size, T const *array)
     : Vector(nullptr), VectorMax(size), IsAllocated(false) {
-  if (size) {
+  if (size > 0) {
     if (array) {
       Vector =
           new ((void *)array) T[size];  // Placement new into provided buffer.
@@ -86,11 +86,11 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
   if (this != &vector) {
     Clear();
     VectorMax = vector.Length();
-    if (VectorMax) {
+    if (VectorMax > 0) {
       Vector = new T[VectorMax];
       if (Vector) {
         IsAllocated = true;
-        for (size_t index = 0; index < VectorMax; index++) {
+        for (base::ssize index = 0; index < VectorMax; index++) {
           Vector[index] = vector[index];
         }
       }
@@ -106,7 +106,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
 template <class T>
 bool VectorClass<T>::operator==(VectorClass<T> const &vector) const {
   if (VectorMax == vector.Length()) {
-    for (size_t index = 0; index < VectorMax; index++) {
+    for (base::ssize index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
         return false;
       }
@@ -119,14 +119,14 @@ bool VectorClass<T>::operator==(VectorClass<T> const &vector) const {
 // Converts pointer to index via pointer arithmetic. Only valid for pointers
 // into this vector.
 template <class T>
-int VectorClass<T>::ID(T const *ptr) {
-  return static_cast<int>(ptr - &(*this)[0]);
+base::ssize VectorClass<T>::ID(T const *ptr) {
+  return ptr - &(*this)[0];
 }
 
 // Finds index of first element equal to object. Returns -1 if not found.
 template <class T>
-int VectorClass<T>::ID(T const &object) {
-  for (size_t index = 0; index < VectorMax; index++) {
+base::ssize VectorClass<T>::ID(T const &object) {
+  for (base::ssize index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
       return index;
     }
@@ -148,8 +148,8 @@ void VectorClass<T>::Clear(void) {
 // Changes capacity, preserving existing elements up to new size.
 // If array is provided, uses placement new into that buffer.
 template <class T>
-bool VectorClass<T>::Resize(unsigned newsize, T const *array) {
-  if (newsize) {
+bool VectorClass<T>::Resize(base::ssize newsize, T const *array) {
+  if (newsize > 0) {
     T *newptr;
     if (!array) {
       newptr = new T[newsize];
@@ -162,8 +162,8 @@ bool VectorClass<T>::Resize(unsigned newsize, T const *array) {
 
     if (Vector) {
       // Copy existing elements (uses assignment operator).
-      int copycount = (newsize < VectorMax) ? newsize : VectorMax;
-      for (size_t index = 0; index < copycount; index++) {
+      base::ssize copycount = (newsize < VectorMax) ? newsize : VectorMax;
+      for (base::ssize index = 0; index < copycount; index++) {
         newptr[index] = Vector[index];
       }
       if (IsAllocated) {

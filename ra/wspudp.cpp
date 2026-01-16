@@ -112,7 +112,7 @@ UDPInterfaceClass::~UDPInterfaceClass(void) {
     BroadcastAddresses.Delete(0);
   }
 
-  while (LocalAddresses.Count()) {
+  while (LocalAddresses.Count() > 0) {
     delete[] LocalAddresses[0];
     LocalAddresses.Delete(0);
   }
@@ -207,8 +207,8 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   /*
   ** Clear out any old local addresses from the local address list.
   */
-  while (LocalAddresses.Count()) {
-    delete LocalAddresses[0];
+  while (LocalAddresses.Count() > 0) {
+    delete[] LocalAddresses[0];
     LocalAddresses.Delete(0);
   }
 

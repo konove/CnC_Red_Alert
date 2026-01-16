@@ -446,7 +446,7 @@ char const *ListClass::Get_Item(size_t index) const {
   if (List.Count() == 0) {
     return nullptr;
   }
-  index = std::min(index, List.Count() - 1);
+  index = std::min(index, static_cast<size_t>(List.Count() - 1));
   return (List[index]);
 }
 

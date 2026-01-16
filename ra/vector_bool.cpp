@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-BooleanVectorClass::BooleanVectorClass(unsigned size, unsigned char *array) {
+BooleanVectorClass::BooleanVectorClass(base::ssize size, unsigned char *array) {
   BitArray.Resize(((size + (8 - 1)) / 8), array);
   LastIndex = -1;
   BitCount = size;
@@ -52,20 +52,19 @@ void BooleanVectorClass::Clear(void) {
 }
 
 // Changes capacity. New bits are initialized to false.
-bool BooleanVectorClass::Resize(unsigned size) {
+bool BooleanVectorClass::Resize(base::ssize size) {
   Fixup();
 
-  if (size) {
-    int oldsize = BitCount;
+  if (size > 0) {
+    base::ssize old_byte_count = BitArray.Length();
     // Round up to 32 bits (4 bytes) for bit scan operations.
     bool success = BitArray.Resize(((size + (32 - 1)) / 32) * 4);
 
     BitCount = size;
-    if (success && BitArray.Length() && oldsize < size) {
-      // Clear new bits (no default constructor for packed bits).
-      for (int index = oldsize; index < size; index++) {
-        (*this)[index] = 0;
-      }
+    if (success && BitArray.Length() > old_byte_count) {
+      // Zero-initialize new bytes (uninitialized after allocation).
+      std::memset(&BitArray[old_byte_count], 0,
+                  BitArray.Length() - old_byte_count);
     }
     return success;
   }
@@ -77,8 +76,8 @@ bool BooleanVectorClass::Resize(unsigned size) {
 // Syncs the cached Copy value with the bit array. Call with -1 before direct
 // bit array manipulation. The [] operator uses this to simulate array access
 // even though values are packed into bits.
-void BooleanVectorClass::Fixup(int index) const {
-  if ((unsigned)index >= BitCount) {
+void BooleanVectorClass::Fixup(base::ssize index) const {
+  if (index < 0 || index >= BitCount) {
     index = -1;
   }
 
@@ -91,6 +90,6 @@ void BooleanVectorClass::Fixup(int index) const {
     if (index != -1) {
       ((unsigned char &)Copy) = Get_Bit(&BitArray[0], index);
     }
-    ((int &)LastIndex) = index;
+    ((base::ssize &)LastIndex) = index;
   }
 }

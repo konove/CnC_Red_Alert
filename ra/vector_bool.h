@@ -1,6 +1,7 @@
 #ifndef CNC_RED_ALERT_RA_VECTOR_BOOL_H_
 #define CNC_RED_ALERT_RA_VECTOR_BOOL_H_
 
+#include "base/types.h"
 #include "ra/jshell.h"
 #include "ra/vector.h"
 
@@ -9,7 +10,7 @@
 // reference to a temporary copy that's only valid until the next access.
 class BooleanVectorClass {
  public:
-  BooleanVectorClass(unsigned size = 0, unsigned char *array = nullptr);
+  BooleanVectorClass(base::ssize size = 0, unsigned char *array = nullptr);
   BooleanVectorClass(const BooleanVectorClass &vector);
 
   // Assignment operator.
@@ -19,7 +20,7 @@ class BooleanVectorClass {
   bool operator==(const BooleanVectorClass &vector);
 
   // Fetch number of boolean objects in vector.
-  int Length() const { return BitCount; }
+  base::ssize Length() const { return BitCount; }
 
   // Set all boolean values to false;
   void Reset();
@@ -31,21 +32,21 @@ class BooleanVectorClass {
   void Clear();
 
   // Change size of this boolean vector.
-  bool Resize(unsigned size);
+  bool Resize(base::ssize size);
 
   // Fetch reference to specified index.
-  const bool &operator[](int index) const {
+  const bool &operator[](base::ssize index) const {
     if (LastIndex != index) Fixup(index);
     return Copy;
   }
 
-  bool &operator[](int index) {
+  bool &operator[](base::ssize index) {
     if (LastIndex != index) Fixup(index);
     return Copy;
   }
 
   // Quick check on boolean state.
-  bool Is_True(int index) const {
+  bool Is_True(base::ssize index) const {
     if (index == LastIndex) {
       return Copy;
     }
@@ -53,33 +54,33 @@ class BooleanVectorClass {
   }
 
   // Find first index that is false.
-  int First_False() const {
+  base::ssize First_False() const {
     if (LastIndex != -1) {
       Fixup(-1);
     }
 
-    int retval = First_False_Bit(&BitArray[0]);
+    base::ssize retval = First_False_Bit(&BitArray[0]);
     if (retval < BitCount) return retval;
     return -1;  // Not found.
   }
 
   // Find first index that is true.
-  int First_True() const {
+  base::ssize First_True() const {
     if (LastIndex != -1) {
       Fixup(-1);
     }
 
-    int retval = First_True_Bit(&BitArray[0]);
+    base::ssize retval = First_True_Bit(&BitArray[0]);
     if (retval < BitCount) return retval;
     return -1;  // Not found.
   }
 
  private:
-  void Fixup(int index = -1) const;
+  void Fixup(base::ssize index = -1) const;
 
-  int BitCount;   // Number of boolean values (not necessarily multiple of 8).
-  bool Copy;      // Cached copy of last accessed element for [] operator.
-  int LastIndex;  // Index of element cached in Copy (-1 if none).
+  base::ssize BitCount;   // Number of boolean values (not necessarily multiple of 8).
+  bool Copy;              // Cached copy of last accessed element for [] operator.
+  base::ssize LastIndex;  // Index of element cached in Copy (-1 if none).
   VectorClass<unsigned char> BitArray;  // Packed bit storage.
 };
 

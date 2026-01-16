@@ -733,7 +733,9 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
       if (id == -1) break;  // if ID not found, use this one
     }
 
-    Files[0]->Num = i;  // set the empty slot's ID
+    if (Files.Count() > 0) {
+      Files[0]->Num = i;  // set the empty slot's ID
+    }
   }
 
   /*
