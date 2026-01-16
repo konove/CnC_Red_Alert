@@ -301,6 +301,14 @@ void *Load_Alloc_Data(FileClass &file) {
   return (ptr);
 }
 
+// Modern RAII version that returns owned data as a vector.
+std::vector<std::byte> LoadAllocData(FileClass &file) {
+  long size = file.Size();
+  std::vector<std::byte> data(static_cast<size_t>(size));
+  file.Read(data.data(), size);
+  return data;
+}
+
 /***********************************************************************************************
  * Translucent_Table_Size -- Determines the size of a translucent table. *
  *                                                                                             *

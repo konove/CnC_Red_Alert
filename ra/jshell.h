@@ -41,7 +41,9 @@
 #define JSHELL_H
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "ra/compat.h"
 #include "ra/palette.h"
@@ -527,6 +529,7 @@ void *Conquer_Build_Fading_Table(PaletteClass const &palette, void *dest,
 void *Small_Icon(void const *iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 void *Load_Alloc_Data(FileClass &file);
+std::vector<std::byte> LoadAllocData(FileClass &file);
 long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
                      BuffType &dest_buff, void *reserved_data);
 long Translucent_Table_Size(int count);

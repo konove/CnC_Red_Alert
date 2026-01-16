@@ -40,7 +40,12 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include <cstddef>
 #include <cstring>
+#include <span>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #include "port/ex_string.h"
 #include "ra/ccini.h"
@@ -252,14 +257,16 @@ class ObjectTypeClass : public AbstractTypeClass {
   */
   unsigned short MaxStrength;
 
-  /*
-  **	These point to the shape imagery for this object type. Since the shape
-  *imagery *	exists in a separate file, the data is filled in after this
-  *object is constructed. *	The "mutable" keyword allows easy modification
-  *to this otherwise const object.
-  */
-  void const *ImageData;
+  // Image data with ownership tracking. Either:
+  // - borrowed span pointing into cached MIX data (from MFCD::Retrieve)
+  // - owned vector allocated for loose files (from Load_Alloc_Data)
+  using ImageDataType =
+      std::variant<std::span<const std::byte>, std::vector<std::byte>>;
 
+ private:
+  ImageDataType image_data_;
+
+ public:
   /*
   **	Points to the dimension data for each shape in the image list. By using
   *this *	data, the minimum number of cells will be redrawn when the
@@ -301,7 +308,31 @@ class ObjectTypeClass : public AbstractTypeClass {
   virtual BuildingClass *Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
   virtual void const *Get_Cameo_Data(void) const;
-  void const *Get_Image_Data(void) const { return ImageData; };
+
+  // Legacy API: returns raw pointer for backward compatibility.
+  void const *Get_Image_Data() const {
+    return std::visit(
+        [](auto &&d) -> void const * { return d.empty() ? nullptr : d.data(); },
+        image_data_);
+  }
+
+  // New typed API for modern code.
+  std::span<const std::byte> GetImageSpan() const {
+    return std::visit([](auto &&d) { return std::span<const std::byte>(d); },
+                      image_data_);
+  }
+
+  // Set borrowed image data (non-owning reference to cached MIX data).
+  void SetBorrowedImage(std::span<const std::byte> data) { image_data_ = data; }
+
+  // Set owned image data (takes ownership, will be freed on destruction).
+  void SetOwnedImage(std::vector<std::byte> &&data) {
+    image_data_ = std::move(data);
+  }
+
+  // Clear image data.
+  void ClearImage() { image_data_ = std::span<const std::byte>{}; }
+
   void const *Get_Radar_Data(void) const { return RadarIcon; };
 
 #ifdef SCENARIO_EDITOR

@@ -201,7 +201,7 @@ void BulletTypeClass::One_Time(void) {
   **	Load the bullet shapes.
   */
   for (BulletType index = BULLET_FIRST; index < BULLET_COUNT; index++) {
-    BulletTypeClass const &bullet = As_Reference(index);
+    BulletTypeClass &bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {
       auto fullname = std::filesystem::path(bullet.GraphicName)
@@ -209,14 +209,15 @@ void BulletTypeClass::One_Time(void) {
                           .string();
 
 #ifdef NDEBUG
-      ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname.c_str());
+      const_cast<BulletTypeClass &>(bullet).SetBorrowedImage(
+          MFCD::RetrieveData(fullname));
 #else
       RawFileClass file(fullname.c_str());
 
       if (file.Is_Available()) {
-        ((void const *&)bullet.ImageData) = Load_Alloc_Data(file);
+        bullet.SetOwnedImage(LoadAllocData(file));
       } else {
-        ((void const *&)bullet.ImageData) = MFCD::Retrieve(fullname);
+        bullet.SetBorrowedImage(MFCD::RetrieveData(fullname));
       }
 #endif
     }

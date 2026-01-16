@@ -63,6 +63,11 @@ class MixFileClass : public Node<MixFileClass<T>> {
   bool Cache();
   static bool Cache(std::string_view filename);
   static std::optional<FileLocation> Offset(std::string_view filename);
+
+  // Returns cached file data as a span, or empty span if not found/not cached.
+  static std::span<const std::byte> RetrieveData(std::string_view filename);
+
+  // Legacy API: returns raw pointer for backward compatibility.
   static const void* Retrieve(std::string_view filename);
 
   // Index entry for an embedded file within the mixfile.

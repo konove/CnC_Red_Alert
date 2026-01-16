@@ -381,7 +381,7 @@ AircraftType AircraftTypeClass::From_Name(char const *name) {
 /// WARNING: Reads from disk - must only be called ONCE
 void AircraftTypeClass::One_Time() {
   for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
-    const auto &uclass = As_Reference(index);
+    auto &uclass = As_Reference(index);
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
     auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
@@ -389,7 +389,7 @@ void AircraftTypeClass::One_Time() {
 
     // Load aircraft shape: "<GraphicName>.SHP"
     auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
-    const_cast<void const *&>(uclass.ImageData) = MFCD::Retrieve(shape_file);
+    uclass.SetBorrowedImage(MFCD::RetrieveData(shape_file));
   }
 
   LRotorData = MFCD::Retrieve("LROTOR.SHP");

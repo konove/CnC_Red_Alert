@@ -105,14 +105,12 @@ static int Length;
 
 void *Get_Shape_Header_Data(void *ptr) {
   if (UseBigShapeBuffer) {
-    ShapeHeaderType *header = (ShapeHeaderType *)ptr;
-    return ((void *)(header->shape_data + (long)(header->shape_buffer
-                                                     ? TheaterShapeBufferStart
-                                                     : BigShapeBufferStart)));
-
-  } else {
-    return (ptr);
+    ShapeHeaderType *header = static_cast<ShapeHeaderType *>(ptr);
+    return header->shape_data + (long)(header->shape_buffer
+                                           ? TheaterShapeBufferStart
+                                           : BigShapeBufferStart);
   }
+  return ptr;
 }
 
 int Get_Last_Frame_Length(void) { return (Length); }

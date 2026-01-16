@@ -526,7 +526,7 @@ void VesselTypeClass::Dimensions(int &width, int &height) const {
  *=============================================================================================*/
 void VesselTypeClass::One_Time(void) {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
-    VesselTypeClass const &uclass = As_Reference(index);
+    VesselTypeClass &uclass = As_Reference(index);
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
       /*
       **	Fetch the supporting data files for the unit.
@@ -534,7 +534,7 @@ void VesselTypeClass::One_Time(void) {
       auto filename = std::string(uclass.Graphic_Name()) + "ICON";
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+      uclass.CameoData = MFCD::Retrieve(fullname);
     }
 
     /*
@@ -543,7 +543,7 @@ void VesselTypeClass::One_Time(void) {
     auto fullname = std::filesystem::path(uclass.Graphic_Name())
                         .replace_extension(".SHP")
                         .string();
-    ((void const *&)uclass.ImageData) = MFCD::Retrieve(fullname);
+    uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
     ((int &)uclass.MaxSize) = 26;
   }

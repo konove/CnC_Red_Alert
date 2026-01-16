@@ -53,6 +53,7 @@
  *- - - - - - - */
 #include <cstddef>
 #include <filesystem>
+#include <span>
 #include <string>
 
 #include "port/ex_string.h"
@@ -1756,15 +1757,16 @@ void TemplateTypeClass::Init(TheaterType theater) {
   for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
     TemplateTypeClass &tplate = As_Reference(index);
 
-    tplate.ImageData = nullptr;
+    tplate.ClearImage();
     if (tplate.Theater & (1 << theater)) {
       auto fullname = std::filesystem::path(tplate.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
 
       // Working loaded iconset pointer.
-      const void *ptr = MFCD::Retrieve(fullname);
-      tplate.ImageData = ptr;
+      auto data = MFCD::RetrieveData(fullname);
+      tplate.SetBorrowedImage(data);
+      const void *ptr = data.data();
 
       // Register icon set for video memory caching
       Register_Icon_Set(ptr, true);

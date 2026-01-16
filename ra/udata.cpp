@@ -57,7 +57,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <filesystem>
+#include <span>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "port/ex_string.h"
 #include "ra/ccfile.h"
@@ -1033,7 +1036,7 @@ void UnitTypeClass::Prep_For_Add(void) {
  *=============================================================================================*/
 void UnitTypeClass::One_Time(void) {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    UnitTypeClass const &uclass = As_Reference(index);
+    UnitTypeClass &uclass = As_Reference(index);
     CCFileClass file;
 
     void const *ptr;  // Shape pointer and set pointer.
@@ -1069,15 +1072,19 @@ void UnitTypeClass::One_Time(void) {
 #ifndef NDEBUG
     RawFileClass shpfile(fullname.c_str());
     if (shpfile.Is_Available()) {
-      ptr = Load_Alloc_Data(shpfile);
+      auto owned_data = LoadAllocData(shpfile);
+      ptr = owned_data.data();
+      uclass.SetOwnedImage(std::move(owned_data));
     } else {
-      ptr = MFCD::Retrieve(fullname);
+      auto borrowed_data = MFCD::RetrieveData(fullname);
+      ptr = borrowed_data.data();
+      uclass.SetBorrowedImage(borrowed_data);
     }
 #else
-    ptr = MFCD::Retrieve(fullname);
+    auto borrowed_data = MFCD::RetrieveData(fullname);
+    ptr = borrowed_data.data();
+    uclass.SetBorrowedImage(borrowed_data);
 #endif
-
-    ((void const *&)uclass.ImageData) = ptr;
     if (ptr != nullptr) {
       largest = std::max(largest, (int)Get_Build_Frame_Width(ptr));
       largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));

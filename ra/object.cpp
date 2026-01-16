@@ -1921,7 +1921,6 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
       IsFootprint(is_footprint),
       Armor(ARMOR_NONE),
       MaxStrength(0),
-      ImageData(nullptr),
       DimensionData(nullptr),
       RadarIcon(nullptr) {}
 

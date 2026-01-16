@@ -1222,10 +1222,9 @@ InfantryType InfantryTypeClass::From_Name(char const *name) {
  *=============================================================================================*/
 void InfantryTypeClass::One_Time(void) {
   for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
-    InfantryTypeClass const *uclass;
     CCFileClass file;
 
-    uclass = &As_Reference(index);
+    InfantryTypeClass *uclass = &As_Reference(index);
 
     // Generic shape for all houses load method.
     auto fullname = std::filesystem::path(uclass->Graphic_Name())
@@ -1235,12 +1234,12 @@ void InfantryTypeClass::One_Time(void) {
 #ifndef NDEBUG
     RawFileClass sfile(fullname.c_str());
     if (sfile.Is_Available()) {
-      ((void const *&)uclass->ImageData) = Load_Alloc_Data(sfile);
+      uclass->SetOwnedImage(LoadAllocData(sfile));
     } else {
-      ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname);
+      uclass->SetBorrowedImage(MFCD::RetrieveData(fullname));
     }
 #else
-    ((void const *&)uclass->ImageData) = MFCD::Retrieve(fullname);
+    uclass->SetBorrowedImage(MFCD::RetrieveData(fullname));
 #endif
 
     // The small build image icon sized shapes are always generic.

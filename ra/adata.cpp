@@ -2177,15 +2177,13 @@ void AnimTypeClass::One_Time(void) {
 #ifndef NDEBUG
       RawFileClass file(fullname.c_str());
       if (file.Is_Available()) {
-        const_cast<void const *&>(As_Reference(index).ImageData) =
-            Load_Alloc_Data(file);
+        As_Reference(index).SetOwnedImage(LoadAllocData(file));
       } else {
-        const_cast<void const *&>(As_Reference(index).ImageData) =
-            MFCD::Retrieve(fullname);
+        As_Reference(index).SetBorrowedImage(MFCD::RetrieveData(fullname));
       }
 #else
-      const_cast<void const *&>(As_Reference(index).ImageData) =
-          MFCD::Retrieve(fullname.c_str());
+      const_cast<AnimTypeClass &>(As_Reference(index))
+          .SetBorrowedImage(MFCD::RetrieveData(fullname));
 #endif
     }
   }
@@ -2209,14 +2207,14 @@ void AnimTypeClass::One_Time(void) {
 void AnimTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; index++) {
-      AnimTypeClass const &anim = As_Reference(index);
+      AnimTypeClass &anim = As_Reference(index);
 
       if (anim.IsTheater) {
         auto fullname = std::filesystem::path(anim.IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
 
-        const_cast<void const *&>(anim.ImageData) = MFCD::Retrieve(fullname);
+        anim.SetBorrowedImage(MFCD::RetrieveData(fullname));
       }
     }
   }

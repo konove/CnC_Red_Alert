@@ -504,13 +504,13 @@ void TerrainTypeClass::One_Time(void) {}
 void TerrainTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
-      TerrainTypeClass const &terrain = As_Reference(index);
+      TerrainTypeClass &terrain = As_Reference(index);
       /*
       **	Clear any existing shape pointer. All terrain is theater
       *specific, thus if *	it isn't loaded in this routine, it shouldn't
       *exist at all.
       */
-      ((void const *&)terrain.ImageData) = nullptr;
+      terrain.ClearImage();
 
       if (terrain.Theater & (1 << theater)) {
         /*
@@ -519,13 +519,12 @@ void TerrainTypeClass::Init(TheaterType theater) {
         auto fullname = std::filesystem::path(terrain.IniName)
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        ((void const *&)terrain.ImageData) = MFCD::Retrieve(fullname);
+        terrain.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
         IsTheaterShape =
             true;  // Let Build_Frame know that this is a theater specific shape
         if (terrain.RadarIcon != nullptr) delete[] (char *)terrain.RadarIcon;
-        ((void const *&)terrain.RadarIcon) =
-            Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
+        terrain.RadarIcon = Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
         IsTheaterShape = false;
       }
     }

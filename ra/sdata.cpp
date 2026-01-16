@@ -339,12 +339,12 @@ short const *SmudgeTypeClass::Occupy_List(bool) const {
 void SmudgeTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
-      SmudgeTypeClass const &smudge = As_Reference(index);
+      SmudgeTypeClass &smudge = As_Reference(index);
       // Fully constructed smudge data set name.
       auto fullname = std::filesystem::path(smudge.IniName)
                           .replace_extension(Theaters[theater].Suffix)
                           .string();
-      ((void const *&)smudge.ImageData) = MFCD::Retrieve(fullname);
+      smudge.SetBorrowedImage(MFCD::RetrieveData(fullname));
     }
   }
 }

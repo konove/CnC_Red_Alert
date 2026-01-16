@@ -3567,10 +3567,11 @@ Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
 
   char *shape;
 #ifdef WIN32
-  void *sh = (void *)Build_Frame(shapedata, shapenum, _ShapeBuffer);
-  if (sh == nullptr) return (rect);
-  //	shape = (char *)sh;
-  shape = (char *)Get_Shape_Header_Data(sh);
+  void *sh = Build_Frame(shapedata, shapenum, _ShapeBuffer);
+  if (sh == nullptr) {
+    return rect;
+  }
+  shape = static_cast<char *>(Get_Shape_Header_Data(sh));
 #else
   Build_Frame(shapedata, shapenum, _ShapeBuffer);
   shape = (char *)_ShapeBuffer;

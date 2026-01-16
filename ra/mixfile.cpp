@@ -29,6 +29,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <functional>
 #include <new>
 #include <span>
@@ -47,10 +48,6 @@
 #include "tech/shastraw.h"
 #include "tech/straw.h"
 #include "tech/xstraw.h"
-
-// Helper to handle path separators safely across platforms without heavy
-// std::filesystem usage
-constexpr bool IsPathSeparator(char c) { return c == '/' || c == '\\'; }
 
 template <class T>
 MixFileClass<T>::MixFileClass(std::string_view filename, const PKey* key) {
@@ -248,34 +245,25 @@ std::optional<typename MixFileClass<T>::FileLocation> MixFileClass<T>::Offset(
 }
 
 template <class T>
-const void* MixFileClass<T>::Retrieve(const std::string_view filename) {
+std::span<const std::byte> MixFileClass<T>::RetrieveData(
+    std::string_view filename) {
   auto loc = Offset(filename);
-  // data.data() returns const std::byte*, cast to void* for legacy API
-  // compatibility
-  return (loc && !loc->data.empty())
-             ? static_cast<const void*>(loc->data.data())
-             : nullptr;
+  return loc ? loc->data : std::span<const std::byte>{};
+}
+
+// Legacy API for backward compatibility with code expecting void*.
+template <class T>
+const void* MixFileClass<T>::Retrieve(std::string_view filename) {
+  auto data = RetrieveData(filename);
+  return data.empty() ? nullptr : data.data();
 }
 
 template <class T>
 MixFileClass<T>* MixFileClass<T>::Finder(const std::string_view filename) {
-  // Optimization: Avoid std::filesystem allocations just to compare filenames.
-  // 1. Extract basename from incoming filename
-  std::string_view query_base = filename;
-  auto last_sep = query_base.find_last_of("/\\");
-  if (last_sep != std::string_view::npos) {
-    query_base.remove_prefix(last_sep + 1);
-  }
-
   for (auto* ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
-    // 2. Extract basename from current mixfile name
-    std::string_view target_base = ptr->filename_;
-    auto target_sep = target_base.find_last_of("/\\");
-    if (target_sep != std::string_view::npos) {
-      target_base.remove_prefix(target_sep + 1);
-    }
-
-    if (absl::EqualsIgnoreCase(target_base, query_base)) {
+    // Compare basename only; paths may differ.
+    auto basename = std::filesystem::path(ptr->filename_).filename().string();
+    if (absl::EqualsIgnoreCase(basename, filename)) {
       return ptr;
     }
   }

@@ -3192,7 +3192,7 @@ void BuildingTypeClass::One_Time() {
   };
 
   for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
-    const BuildingTypeClass &building = As_Reference(sindex);
+    BuildingTypeClass &building = As_Reference(sindex);
 
     /*
     **	Fetch the sidebar cameo image for this building.
@@ -3233,7 +3233,7 @@ void BuildingTypeClass::One_Time() {
     fullname = std::filesystem::path(building.Graphic_Name())
                    .replace_extension(".SHP")
                    .string();
-    const_cast<void const *&>(building.ImageData) = MFCD::Retrieve(fullname);
+    building.SetBorrowedImage(MFCD::RetrieveData(fullname));
   }
 
   // Try to load weap2.shp and tesla coil's lightning shapes
@@ -3437,13 +3437,13 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
 void BuildingTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (StructType sindex = STRUCT_FIRST; sindex < STRUCT_COUNT; sindex++) {
-      BuildingTypeClass const *classptr = &As_Reference(sindex);
+      BuildingTypeClass *classptr = &As_Reference(sindex);
 
       if (classptr->IsTheater) {
         auto fullname = std::filesystem::path(classptr->Graphic_Name())
                             .replace_extension(Theaters[theater].Suffix)
                             .string();
-        ((void const *&)classptr->ImageData) = MFCD::Retrieve(fullname);
+        classptr->SetBorrowedImage(MFCD::RetrieveData(fullname));
 
         /*
         **	Buildup data is probably theater specific as well. Fetch a
