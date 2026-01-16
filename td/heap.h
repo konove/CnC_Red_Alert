@@ -41,6 +41,8 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include <vector>
+
 #include "td/vector.h"
 #include "tech/wwfile.h"
 
@@ -112,7 +114,7 @@ class FixedHeapClass {
   /*
   **	This is a boolean vector array of allocation flag bits.
   */
-  BooleanVectorClass FreeFlag;
+  std::vector<bool> FreeFlag;
 
  private:
   // The assignment operator is not supported.

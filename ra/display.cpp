@@ -139,7 +139,6 @@
 #include "ra/trigtype.h"
 #include "ra/unit.h"
 #include "ra/vector.h"
-#include "ra/vector_bool.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
@@ -185,7 +184,7 @@ unsigned char DisplayClass::ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 /*
 ** Bit array of cell redraw flags
 */
-BooleanVectorClass DisplayClass::CellRedraw;
+std::vector<bool> DisplayClass::CellRedraw;
 
 /*
 ** The main button that intercepts user input to the map
@@ -260,12 +259,8 @@ DisplayClass::DisplayClass(void)
 void DisplayClass::One_Time(void) {
   MapClass::One_Time();
 
-  /*
-  ** Init the CellRedraw bit array.  Do not do this in the constructor, since
-  *the
-  ** BooleanVector may not have been constructed yet.
-  */
-  CellRedraw.Resize(MAP_CELL_TOTAL);
+  // Sized here rather than in constructor to follow one-time init pattern.
+  CellRedraw.resize(MAP_CELL_TOTAL);
 
   for (LayerType layer = LAYER_FIRST; layer < LAYER_COUNT; layer++) {
     Layer[layer].One_Time();
@@ -1997,7 +1992,7 @@ void DisplayClass::Draw_It(bool forced) {
     *redraw flags *	and let the normal processing take care of the rest.
     */
     if (forced) {
-      CellRedraw.Set();
+      CellRedraw.assign(CellRedraw.size(), true);
     }
 
     /*
@@ -2100,7 +2095,7 @@ void DisplayClass::Draw_It(bool forced) {
     /*
     **	Clear the redraw flags so that normal redraw flag setting can resume.
     */
-    CellRedraw.Reset();
+    CellRedraw.assign(CellRedraw.size(), false);
 
 #ifdef SCENARIO_EDITOR
     /*

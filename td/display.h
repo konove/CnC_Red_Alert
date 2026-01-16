@@ -41,6 +41,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#include <vector>
+
 #include "sdllib/include/keyboard.h"
 #include "sdllib/include/wwstd.h"
 #include "td/defines.h"
@@ -52,7 +54,6 @@
 #include "td/object.h"
 #include "td/techno.h"
 #include "td/type.h"
-#include "td/vector.h"
 #include "tech/noinit.h"
 
 extern COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2);
@@ -187,7 +188,7 @@ class DisplayClass : public MapClass {
   void Repair_Mode_Control(int control);
 
   virtual void Flag_Cell(CELL cell);
-  bool Is_Cell_Flagged(CELL cell) const { return CellRedraw.Is_True(cell); };
+  bool Is_Cell_Flagged(CELL cell) const { return CellRedraw[cell]; };
 
   /*
   ** Computes starting position based on player's units' Coords.
@@ -315,7 +316,7 @@ class DisplayClass : public MapClass {
   **	This bit array is used to flag cells to be redrawn. If the icon needs to
   **	be redrawn for a cell, then the corresponding flag will be true.
   */
-  static BooleanVectorClass CellRedraw;
+  static std::vector<bool> CellRedraw;
 };
 
 #define CELL_BLIT_ONLY 1

@@ -41,9 +41,9 @@
 #define HEAP_H
 
 #include <cstddef>
+#include <vector>
 
 #include "ra/vector.h"
-#include "ra/vector_bool.h"
 #include "ra/vector_dynamic.h"
 #include "tech/pipe.h"
 #include "tech/straw.h"
@@ -125,7 +125,7 @@ class FixedHeapClass {
   /*
   **	This is a boolean vector array of allocation flag bits.
   */
-  BooleanVectorClass FreeFlag;
+  std::vector<bool> FreeFlag;
 
  private:
   // The assignment operator is not supported.

@@ -58,6 +58,7 @@
 #include <cstring>
 #include <new>
 
+#include "base/algorithm.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"
@@ -160,20 +161,18 @@ int FixedHeapClass::Set_Heap(int count, void *buffer) {
   **	Initialize the free boolean vector and the buffer for the actual
   **	allocation objects.
   */
-  if (FreeFlag.Resize(count)) {
+  FreeFlag.resize(count, false);
+  if (!buffer) {
+    buffer = new char[count * Size];
     if (!buffer) {
-      buffer = new char[count * Size];
-      if (!buffer) {
-        FreeFlag.Clear();
-        return (false);
-      }
-      IsAllocated = true;
+      FreeFlag.clear();
+      return (false);
     }
-    Buffer = buffer;
-    TotalCount = count;
-    return (true);
+    IsAllocated = true;
   }
-  return (false);
+  Buffer = buffer;
+  TotalCount = count;
+  return (true);
 }
 
 /***********************************************************************************************
@@ -194,7 +193,7 @@ int FixedHeapClass::Set_Heap(int count, void *buffer) {
  *=============================================================================================*/
 void *FixedHeapClass::Allocate(void) {
   if (ActiveCount < TotalCount) {
-    int index = FreeFlag.First_False();
+    int index = base::first_false(FreeFlag);
 
     if (index != -1) {
       ActiveCount++;
@@ -286,7 +285,7 @@ void FixedHeapClass::Clear(void) {
   IsAllocated = false;
   ActiveCount = 0;
   TotalCount = 0;
-  FreeFlag.Clear();
+  FreeFlag.clear();
 }
 
 /***********************************************************************************************
@@ -305,7 +304,7 @@ void FixedHeapClass::Clear(void) {
  *=============================================================================================*/
 int FixedHeapClass::Free_All(void) {
   ActiveCount = 0;
-  FreeFlag.Reset();
+  FreeFlag.assign(FreeFlag.size(), false);
   return (true);
 }
 
