@@ -41,8 +41,8 @@ class VectorClass {
   T &operator[](size_t index) { return Vector[index]; };
   T const &operator[](size_t index) const { return Vector[index]; };
   virtual VectorClass &operator=(const VectorClass &);  // Assignment operator.
-  virtual int operator==(const VectorClass &) const;    // Equality operator.
-  virtual int Resize(unsigned newsize, const T *array = nullptr);
+  virtual bool operator==(const VectorClass &) const;   // Equality operator.
+  virtual bool Resize(unsigned newsize, const T *array = nullptr);
   virtual void Clear();
   unsigned Length() const { return VectorMax; };
   virtual int ID(const T *ptr);  // Pointer based identification.
@@ -104,7 +104,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
 
 // Element-by-element comparison. Requires T to have operator!=.
 template <class T>
-int VectorClass<T>::operator==(VectorClass<T> const &vector) const {
+bool VectorClass<T>::operator==(VectorClass<T> const &vector) const {
   if (VectorMax == vector.Length()) {
     for (size_t index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
@@ -148,7 +148,7 @@ void VectorClass<T>::Clear(void) {
 // Changes capacity, preserving existing elements up to new size.
 // If array is provided, uses placement new into that buffer.
 template <class T>
-int VectorClass<T>::Resize(unsigned newsize, T const *array) {
+bool VectorClass<T>::Resize(unsigned newsize, T const *array) {
   if (newsize) {
     T *newptr;
     if (!array) {

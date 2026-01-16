@@ -23,7 +23,7 @@ BooleanVectorClass &BooleanVectorClass::operator=(
   return *this;
 }
 
-int BooleanVectorClass::operator==(const BooleanVectorClass &vector) {
+bool BooleanVectorClass::operator==(const BooleanVectorClass &vector) {
   Fixup(LastIndex);
   return BitCount == vector.BitCount && BitArray == vector.BitArray;
 }
@@ -52,13 +52,13 @@ void BooleanVectorClass::Clear(void) {
 }
 
 // Changes capacity. New bits are initialized to false.
-int BooleanVectorClass::Resize(unsigned size) {
+bool BooleanVectorClass::Resize(unsigned size) {
   Fixup();
 
   if (size) {
     int oldsize = BitCount;
     // Round up to 32 bits (4 bytes) for bit scan operations.
-    int success = BitArray.Resize(((size + (32 - 1)) / 32) * 4);
+    bool success = BitArray.Resize(((size + (32 - 1)) / 32) * 4);
 
     BitCount = size;
     if (success && BitArray.Length() && oldsize < size) {

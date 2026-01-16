@@ -16,7 +16,7 @@ class BooleanVectorClass {
   BooleanVectorClass &operator=(const BooleanVectorClass &vector);
 
   // Equivalency operator.
-  int operator==(const BooleanVectorClass &vector);
+  bool operator==(const BooleanVectorClass &vector);
 
   // Fetch number of boolean objects in vector.
   int Length() const { return BitCount; }
@@ -31,7 +31,7 @@ class BooleanVectorClass {
   void Clear();
 
   // Change size of this boolean vector.
-  int Resize(unsigned size);
+  bool Resize(unsigned size);
 
   // Fetch reference to specified index.
   const bool &operator[](int index) const {

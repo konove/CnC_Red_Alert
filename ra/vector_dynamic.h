@@ -14,7 +14,7 @@ class DynamicVectorClass : public VectorClass<T> {
   DynamicVectorClass(unsigned size = 0, const T *array = nullptr);
 
   // Change maximum size of vector.
-  int Resize(unsigned newsize, const T *array = nullptr) override;
+  bool Resize(unsigned newsize, const T *array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -26,14 +26,14 @@ class DynamicVectorClass : public VectorClass<T> {
   size_t Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
-  int Add(const T &object);
-  int Add_Head(const T &object);
+  bool Add(const T &object);
+  bool Add_Head(const T &object);
 
   // Delete object just like this from vector.
-  int Delete(const T &object);
+  bool Delete(const T &object);
 
   // Delete object at this vector index.
-  int Delete(int index);
+  bool Delete(int index);
 
   // Deletes all objects in the vector.
   void Delete_All() { ActiveCount = 0; }
@@ -63,7 +63,7 @@ DynamicVectorClass<T>::DynamicVectorClass(unsigned size, T const *array)
 
 // Resizes capacity. Truncates ActiveCount if new size is smaller.
 template <class T>
-int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
+bool DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -76,7 +76,7 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
 // Appends object to end. Auto-grows if needed and allowed. Returns true on
 // success.
 template <class T>
-int DynamicVectorClass<T>::Add(T const &object) {
+bool DynamicVectorClass<T>::Add(T const &object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -93,7 +93,7 @@ int DynamicVectorClass<T>::Add(T const &object) {
 // Inserts object at index 0, shifting existing elements. Returns true on
 // success.
 template <class T>
-int DynamicVectorClass<T>::Add_Head(T const &object) {
+bool DynamicVectorClass<T>::Add_Head(T const &object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -118,14 +118,14 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
 // Removes first occurrence of object by value. Returns true if found and
 // deleted.
 template <class T>
-int DynamicVectorClass<T>::Delete(T const &object) {
+bool DynamicVectorClass<T>::Delete(T const &object) {
   return (Delete(ID(object)));
 }
 
 // Removes element at index, shifting subsequent elements down. Returns false if
 // out of bounds.
 template <class T>
-int DynamicVectorClass<T>::Delete(int index) {
+bool DynamicVectorClass<T>::Delete(int index) {
   if ((unsigned)index < ActiveCount) {
     ActiveCount--;
     // Use assignment (not memcpy) to properly handle class objects.
