@@ -160,3 +160,7 @@ everywhere, removing globals.
 - **Linux/macOS:** Primary platforms. Requires `libsdl2-dev` (apt) or `sdl2` (brew).
 - **Windows:** Links `wsock32`, includes `dde.cpp`, `ccdde.cpp`, `cc_icon.rc`.
 - **Emscripten:** Experimental WebAssembly support.
+
+## Git Commits
+
+- Do NOT include `Co-Authored-By` lines in commit messages.
