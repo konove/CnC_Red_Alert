@@ -135,33 +135,33 @@ EZERO,                 // Non-error.
   */
   int Rights;
 
-  RawFileClass(char const *filename);
+  RawFileClass(char const* filename);
   RawFileClass(void);
-  RawFileClass(RawFileClass const &f);
-  RawFileClass &operator=(RawFileClass const &f);
+  RawFileClass(RawFileClass const& f);
+  RawFileClass& operator=(RawFileClass const& f);
   virtual ~RawFileClass(void);
 
-  virtual char const *File_Name(void) const;
-  virtual char const *Set_Name(char const *filename);
+  virtual char const* File_Name(void) const;
+  virtual char const* Set_Name(char const* filename);
   virtual int Create(void);
   virtual int Delete(void);
   virtual int Is_Available(int forced = false);
   virtual int Is_Open(void) const;
-  virtual int Open(char const *filename, int rights = READ);
+  virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);
-  virtual long Read(void *buffer, long size);
+  virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
   virtual long Size(void);
-  virtual long Write(void const *buffer, long size);
+  virtual long Write(void const* buffer, long size);
   virtual void Close(void);
   virtual unsigned long Get_Date_Time(void);
   virtual bool Set_Date_Time(unsigned long datetime);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = nullptr);
+                     char const* filename = nullptr);
 
   void Bias(int start, int length = -1);
 
-  void *Get_File_Handle(void) { return (Handle); };
+  void* Get_File_Handle(void) { return (Handle); };
 
   /*
   **	These bias values enable a sub-portion of a file to appear as if it
@@ -185,14 +185,14 @@ EZERO,                 // Non-error.
   /*
   **	This is the low level DOS handle. A -1 indicates an empty condition.
   */
-  void *Handle;
+  void* Handle;
 
   /*
   **	This points to the filename as a NULL terminated string. It may point to
   *either a *	constant or an allocated string as indicated by the "Allocated"
   *flag.
   */
-  char const *const Filename;
+  char const* const Filename;
 
   //
   // file date and time are in the following formats:
@@ -235,7 +235,7 @@ EZERO,                 // Non-error.
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline char const *RawFileClass::File_Name(void) const { return (Filename); }
+inline char const* RawFileClass::File_Name(void) const { return (Filename); }
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *
@@ -280,8 +280,8 @@ inline RawFileClass::RawFileClass(void)
 inline RawFileClass::~RawFileClass(void) {
   Close();
   if (Allocated && Filename) {
-    free((char *)Filename);
-    ((char *&)Filename) = nullptr;
+    free((char*)Filename);
+    ((char*&)Filename) = nullptr;
     Allocated = false;
   }
 }

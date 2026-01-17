@@ -48,14 +48,14 @@
 
 class EgoClass {
  public:
-  EgoClass(int x, int y, char *text, TextPrintType flags);
+  EgoClass(int x, int y, char* text, TextPrintType flags);
   ~EgoClass();
 
   bool Scroll(int distance);
   void Render(void);
-  void Wipe(GraphicBufferClass *background);
+  void Wipe(GraphicBufferClass* background);
 
-  char *Text;
+  char* Text;
   int XPos;
   int YPos;
   TextPrintType Flags;

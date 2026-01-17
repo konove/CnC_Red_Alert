@@ -48,6 +48,7 @@
 
 #ifndef GBUFFER_H
 #include "gbuffer.h"
+
 #include "misc.h"
 #endif
 #pragma inline
@@ -79,7 +80,7 @@ BOOL AllowHardwareBlitFills = TRUE;
  * HISTORY:                                                                *
  *   05/09/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *gbuffer, int x,
+GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* gbuffer, int x,
                                            int y, int w, int h)
     : LockCount(0), GraphicBuff(nullptr) {
   Attach(gbuffer, x, y, w, h);
@@ -135,7 +136,7 @@ GraphicViewPortClass::~GraphicViewPortClass(void) {
  * HISTORY:                                                                *
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
-void GraphicViewPortClass::Attach(GraphicBufferClass *gbuffer, int x, int y,
+void GraphicViewPortClass::Attach(GraphicBufferClass* gbuffer, int x, int y,
                                   int w, int h) {
   /*======================================================================*/
   /* Can not attach a Graphic View Port if it is actually the physical
@@ -284,11 +285,11 @@ void GraphicBufferClass::DD_Init(GBC_Enum flags) {
   Allocated = FALSE;    //	even if system alloced, dont flag it cuz
                         //   we dont want it freed.
   IsDirectDraw = TRUE;  //	flag it as a video surface
-  Offset = nullptr;  //	flag it as unavailable for reading or writing
+  Offset = nullptr;     //	flag it as unavailable for reading or writing
   LockCount = 0;        //  surface is not locked
 }
 
-void GraphicBufferClass::Attach_DD_Surface(GraphicBufferClass *attach_buffer) {
+void GraphicBufferClass::Attach_DD_Surface(GraphicBufferClass* attach_buffer) {
   VideoSurfacePtr->AddAttachedSurface(attach_buffer->Get_DD_Surface());
 }
 
@@ -308,7 +309,7 @@ void GraphicBufferClass::Attach_DD_Surface(GraphicBufferClass *attach_buffer) {
  * HISTORY:                                                                *
  *   10/09/1995     : Created.                                             *
  *=========================================================================*/
-void GraphicBufferClass::Init(int w, int h, void *buffer, long size,
+void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
                               GBC_Enum flags) {
   Size = size;  // find size of physical buffer
   Width = w;    // Record width of Buffer
@@ -322,9 +323,9 @@ void GraphicBufferClass::Init(int w, int h, void *buffer, long size,
   if (flags & (GBC_VIDEOMEM | GBC_VISIBLE)) {
     DD_Init(flags);
   } else {
-    if (buffer) {               // if buffer is specified
-      Buffer = (BYTE *)buffer;  //		point to it and mark
-      Allocated = FALSE;        //		it as user allocated
+    if (buffer) {              // if buffer is specified
+      Buffer = (BYTE*)buffer;  //		point to it and mark
+      Allocated = FALSE;       //		it as user allocated
     } else {
       if (!Size) Size = w * h;
       Buffer = new BYTE[Size];  // otherwise allocate it and
@@ -406,7 +407,7 @@ GraphicBufferClass::GraphicBufferClass(void) {
  * HISTORY:                                                                *
  *   05/13/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer, long size) {
+GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer, long size) {
   Init(w, h, buffer, size, GBC_NONE);
 }
 /*=========================================================================*
@@ -422,7 +423,7 @@ GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer, long size) {
  * HISTORY:                                                                *
  *   05/03/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer) {
+GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer) {
   Init(w, h, buffer, w * h, GBC_NONE);
 }
 
@@ -475,8 +476,8 @@ GraphicBufferClass::~GraphicBufferClass() {
  * HISTORY:                                                                *
  *   02/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass *ptr) {
-  GraphicViewPortClass *old = LogicPage;
+GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass* ptr) {
+  GraphicViewPortClass* old = LogicPage;
   LogicPage = ptr;
   return (old);
 }
@@ -494,8 +495,8 @@ GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass *ptr) {
  * HISTORY:                                                                *
  *   02/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass &ptr) {
-  GraphicViewPortClass *old = LogicPage;
+GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass& ptr) {
+  GraphicViewPortClass* old = LogicPage;
   LogicPage = &ptr;
   return (old);
 }
@@ -514,8 +515,8 @@ GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass &ptr) {
 extern void Colour_Debug(int call_number);
 extern BOOL GameInFocus;
 
-extern void Block_Mouse(GraphicBufferClass *buffer);
-extern void Unblock_Mouse(GraphicBufferClass *buffer);
+extern void Block_Mouse(GraphicBufferClass* buffer);
+extern void Unblock_Mouse(GraphicBufferClass* buffer);
 
 BOOL GraphicBufferClass::Lock(void) {
   HRESULT result;
@@ -646,7 +647,7 @@ BOOL GraphicBufferClass::Unlock(void) {
  *=============================================================================================*/
 
 HRESULT GraphicViewPortClass::DD_Linear_Blit_To_Linear(
-    GraphicViewPortClass &dest, int source_x, int source_y, int dest_x,
+    GraphicViewPortClass& dest, int source_x, int source_y, int dest_x,
     int dest_y, int width, int height, BOOL mask)
 
 {

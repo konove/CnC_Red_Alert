@@ -23,21 +23,21 @@ extern "C" {
 #include "itable.cpp"
 #include "winvq/vqm32/soscomp.h"
 
-void sosCODECInitStream(_SOS_COMPRESS_INFO *info) {
+void sosCODECInitStream(_SOS_COMPRESS_INFO* info) {
   info->dwSampleIndex = 0;
   info->dwPredicted = 0;
 }
 
-unsigned long sosCODECDecompressData(_SOS_COMPRESS_INFO *info,
+unsigned long sosCODECDecompressData(_SOS_COMPRESS_INFO* info,
                                      unsigned long numbytes) {
   unsigned long token;
   long sample;
   unsigned int fastindex;
-  unsigned char *inbuff;
-  unsigned short *outbuff;
+  unsigned char* inbuff;
+  unsigned short* outbuff;
 
-  inbuff = (unsigned char *)info->lpSource;
-  outbuff = (unsigned short *)info->lpDest;
+  inbuff = (unsigned char*)info->lpSource;
+  outbuff = (unsigned short*)info->lpDest;
 
   // Preload variables before the big loop
   fastindex = (unsigned int)info->dwSampleIndex;

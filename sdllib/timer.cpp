@@ -6,8 +6,8 @@
 
 bool TimerSystemOn = false;
 
-static Uint32 TimerCallback(Uint32 interval, void *param) {
-  ((WinTimerClass *)param)->Update_Tick_Count();
+static Uint32 TimerCallback(Uint32 interval, void* param) {
+  ((WinTimerClass*)param)->Update_Tick_Count();
 
   return interval;
 }

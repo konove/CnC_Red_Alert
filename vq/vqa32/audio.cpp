@@ -59,13 +59,15 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <cstdlib>
 #include <malloc.h>
 #include <mem.h>
 #include <sys\timeb.h>
-#include "vqaplayp.h"
 #include <vqm32\all.h>
+
+#include <cstdio>
+#include <cstdlib>
+
+#include "vqaplayp.h"
 
 #ifdef __WATCOMC__
 #pragma pack(4);
@@ -87,7 +89,7 @@
  *-------------------------------------------------------------------------*/
 
 #if (VQAAUDIO_ON)
-long AutoDetect(_SOS_CAPABILITIES *digicaps, long bitsize, long channels);
+long AutoDetect(_SOS_CAPABILITIES* digicaps, long bitsize, long channels);
 void far TimerCallback(void);
 void far cdecl AudioCallback(WORD wDriverHandle, WORD wAction, WORD wSampleID);
 
@@ -99,7 +101,7 @@ static void EndAddr(void);
  * GLOBAL DATA
  *-------------------------------------------------------------------------*/
 
-static VQAHandleP *VQAP = NULL;
+static VQAHandleP* VQAP = NULL;
 static long AudioFlags = 0;
 static long TimerSysCount = 0;
 static long TimerIntCount = 0;
@@ -109,7 +111,7 @@ static long VQATickCount = 0;
 #endif /* VQAAUDIO_ON */
 
 static long TickOffset = 0;
-char *HMIDevName = "<none>";
+char* HMIDevName = "<none>";
 
 #if (VQAAUDIO_ON)
 /* This is a dummy function that is used to mark the start of the module.
@@ -142,8 +144,8 @@ static void StartAddr(void) {}
  *
  ****************************************************************************/
 
-long VQA_StartTimerInt(VQAHandleP *vqap, long init) {
-  VQAAudio *audio;
+long VQA_StartTimerInt(VQAHandleP* vqap, long init) {
+  VQAAudio* audio;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -187,7 +189,7 @@ long VQA_StartTimerInt(VQAHandleP *vqap, long init) {
 
   /* Lock the memory occupied by this module. */
   if ((audio->Flags & VQAAUDF_MODLOCKED) == 0) {
-    DPMI_Lock((void *)&StartAddr, (long)&EndAddr - (long)&StartAddr);
+    DPMI_Lock((void*)&StartAddr, (long)&EndAddr - (long)&StartAddr);
     audio->Flags |= VQAAUDF_MODLOCKED;
   }
 
@@ -216,8 +218,8 @@ long VQA_StartTimerInt(VQAHandleP *vqap, long init) {
  *
  ****************************************************************************/
 
-void VQA_StopTimerInt(VQAHandleP *vqap) {
-  VQAAudio *audio;
+void VQA_StopTimerInt(VQAHandleP* vqap) {
+  VQAAudio* audio;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -309,12 +311,12 @@ void far TimerCallback(void) { VQATickCount++; }
  *
  ****************************************************************************/
 
-long VQA_OpenAudio(VQAHandleP *vqap) {
-  VQAData *vqabuf;
-  VQAAudio *audio;
-  VQAConfig *config;
-  VQAHeader *header;
-  unsigned char *driver_path;
+long VQA_OpenAudio(VQAHandleP* vqap) {
+  VQAData* vqabuf;
+  VQAAudio* audio;
+  VQAConfig* config;
+  VQAHeader* header;
+  unsigned char* driver_path;
   WORD port;
   long rc;
 
@@ -367,7 +369,7 @@ long VQA_OpenAudio(VQAHandleP *vqap) {
     }
 
     /* Init the detection system */
-    driver_path = (unsigned char *)".\\";
+    driver_path = (unsigned char*)".\\";
 
     if ((rc = sosDIGIDetectInit(driver_path)) != 0) {
       return (rc);
@@ -392,7 +394,7 @@ long VQA_OpenAudio(VQAHandleP *vqap) {
     }
   } else {
     /* Init the detection system */
-    driver_path = (unsigned char *)".\\";
+    driver_path = (unsigned char*)".\\";
 
     if ((rc = sosDIGIDetectInit(driver_path)) != 0) {
       return (rc);
@@ -446,7 +448,7 @@ long VQA_OpenAudio(VQAHandleP *vqap) {
       config->DigiPort = audio->DigiHardware.wPort;
       config->DigiIRQ = audio->DigiHardware.wIRQ;
       config->DigiDMA = audio->DigiHardware.wDMA;
-      HMIDevName = (char *)audio->DigiCaps.szDeviceName;
+      HMIDevName = (char*)audio->DigiCaps.szDeviceName;
     } else {
       audio->DigiHardware.wPort = config->DigiPort;
       audio->DigiHardware.wIRQ = config->DigiIRQ;
@@ -526,8 +528,8 @@ long VQA_OpenAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-void VQA_CloseAudio(VQAHandleP *vqap) {
-  VQAAudio *audio;
+void VQA_CloseAudio(VQAHandleP* vqap) {
+  VQAAudio* audio;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -585,7 +587,7 @@ void VQA_CloseAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-long AutoDetect(_SOS_CAPABILITIES *digicaps, long bitsize, long channels) {
+long AutoDetect(_SOS_CAPABILITIES* digicaps, long bitsize, long channels) {
   long device_id = -1;
   WORD port;
   long i;
@@ -673,9 +675,9 @@ long AutoDetect(_SOS_CAPABILITIES *digicaps, long bitsize, long channels) {
  *
  ****************************************************************************/
 
-long VQA_StartAudio(VQAHandleP *vqap) {
-  VQAConfig *config;
-  VQAAudio *audio;
+long VQA_StartAudio(VQAHandleP* vqap) {
+  VQAConfig* config;
+  VQAAudio* audio;
 
   /* Save buffers for the callback routine */
   VQAP = vqap;
@@ -702,7 +704,7 @@ long VQA_StartAudio(VQAHandleP *vqap) {
    * Initialize the sample structure.
    *-----------------------------------------------------------------------*/
   memset(&audio->sSOSSampleData, 0, sizeof(_SOS_START_SAMPLE));
-  audio->sSOSSampleData.lpSamplePtr = (unsigned char *)audio->Buffer;
+  audio->sSOSSampleData.lpSamplePtr = (unsigned char*)audio->Buffer;
   audio->sSOSSampleData.dwSampleSize = config->HMIBufSize;
   audio->sSOSSampleData.wVolume = (config->Volume << 7);
   audio->sSOSSampleData.wSampleID = HMI_SAMPLE;
@@ -778,8 +780,8 @@ long VQA_StartAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-void VQA_StopAudio(VQAHandleP *vqap) {
-  VQAAudio *audio;
+void VQA_StopAudio(VQAHandleP* vqap) {
+  VQAAudio* audio;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -820,9 +822,9 @@ void VQA_StopAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-long CopyAudio(VQAHandleP *vqap) {
-  VQAAudio *audio;
-  VQAConfig *config;
+long CopyAudio(VQAHandleP* vqap) {
+  VQAAudio* audio;
+  VQAConfig* config;
   long startblock;
   long endblock;
   long len1, len2;
@@ -936,8 +938,8 @@ long CopyAudio(VQAHandleP *vqap) {
  ****************************************************************************/
 
 void far cdecl AudioCallback(WORD wDriverHandle, WORD wAction, WORD wSampleID) {
-  VQAAudio *audio;
-  VQAConfig *config;
+  VQAAudio* audio;
+  VQAConfig* config;
 
   /* Dereference commonly used data members for quicker access. */
   audio = &VQAP->VQABuf->Audio;
@@ -978,7 +980,7 @@ void far cdecl AudioCallback(WORD wDriverHandle, WORD wAction, WORD wSampleID) {
 
     /* Start the new buffer playing */
     audio->sSOSSampleData.lpSamplePtr =
-        (unsigned char *)(audio->Buffer) + audio->PlayPosition;
+        (unsigned char*)(audio->Buffer) + audio->PlayPosition;
 
     sosDIGIContinueSample(audio->DigiHandle, audio->SampleHandle,
                           &audio->sSOSSampleData);
@@ -1020,11 +1022,11 @@ static void EndAddr(void) {}
  *
  ****************************************************************************/
 
-void VQA_SetTimer(VQAHandleP *vqap, long time, long method) {
+void VQA_SetTimer(VQAHandleP* vqap, long time, long method) {
   unsigned long curtime;
 
 #if (VQAAUDIO_ON)
-  VQAAudio *audio;
+  VQAAudio* audio;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -1126,10 +1128,10 @@ void VQA_SetTimer(VQAHandleP *vqap, long time, long method) {
  *
  ****************************************************************************/
 
-int64_t VQA_GetTime(VQAHandleP *vqap) {
+int64_t VQA_GetTime(VQAHandleP* vqap) {
 #if (VQAAUDIO_ON)
-  VQAAudio *audio;
-  VQAConfig *config;
+  VQAAudio* audio;
+  VQAConfig* config;
   unsigned long fillcount;
   unsigned long lastfill;
   unsigned long dma_diff;

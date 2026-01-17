@@ -59,7 +59,7 @@
 /*
 **	This points to the loaded mouse shapes.
 */
-void const *MouseClass::MouseShapes;
+void const* MouseClass::MouseShapes;
 
 /*
 **	This is the timer that controls the mouse animation. It is always at a
@@ -146,7 +146,7 @@ void MouseClass::Revert_Mouse_Shape(void) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void MouseClass::Mouse_Small(bool wsmall) {
-  MouseStruct const *control = &MouseControl[CurrentMouseShape];
+  MouseStruct const* control = &MouseControl[CurrentMouseShape];
 
   if (IsSmall == wsmall) {
     return;
@@ -190,14 +190,14 @@ void MouseClass::Mouse_Small(bool wsmall) {
  *Added small control parameter.                                           *
  *=============================================================================================*/
 #ifdef WIN32
-void Block_Mouse(GraphicBufferClass *buffer);
-void Unblock_Mouse(GraphicBufferClass *buffer);
+void Block_Mouse(GraphicBufferClass* buffer);
+void Unblock_Mouse(GraphicBufferClass* buffer);
 #endif
 
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
   assert((unsigned)mouse < MOUSE_COUNT);
 
-  MouseStruct const *control = &MouseControl[mouse];
+  MouseStruct const* control = &MouseControl[mouse];
   static bool startup = false;
   int baseshp;
 
@@ -256,8 +256,8 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
  *   05/28/1995 JLB : Moderates animation so is more steady regardless of speed.
  ** 06/30/1995 JLB : Uses constant timer system. *
  *=============================================================================================*/
-void MouseClass::AI(KeyNumType &input, int x, int y) {
-  MouseStruct const *control = &MouseControl[CurrentMouseShape];
+void MouseClass::AI(KeyNumType& input, int x, int y) {
+  MouseStruct const* control = &MouseControl[CurrentMouseShape];
 
   if (control->FrameRate && Timer == 0) {
     Frame++;

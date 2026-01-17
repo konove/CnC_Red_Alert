@@ -36,8 +36,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <cstdarg>
-#include <cstring>
 #include <cstdio>
+#include <cstring>
+
 #include "mono.h"
 
 /***************************************************************************
@@ -60,7 +61,7 @@
  * HISTORY:                                                                *
  *   11/02/1993 JLB : Created.                                             *
  *=========================================================================*/
-int Mono_Printf(char const *string, ...) {
+int Mono_Printf(char const* string, ...) {
   va_list va;
   char buffer[256];
 

@@ -45,14 +45,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstring>
-#include <cstdio>
-#include <sys\types.h>
-#include <sys\stat.h>
-#include <fcntl.h>
-#include <malloc.h>
-#include <io.h>
 #include <conio.h>
+#include <fcntl.h>
+#include <io.h>
+#include <malloc.h>
+#include <sys\stat.h>
+#include <sys\types.h>
+
+#include <cstdio>
+#include <cstring>
 
 #define bool int
 #define true 1
@@ -65,24 +66,24 @@
 */
 void Print_My_Name(void);
 void Print_Usage(void);
-int Load_File(char *file_name, unsigned *file_ptr, unsigned mode);
+int Load_File(char* file_name, unsigned* file_ptr, unsigned mode);
 bool Extract_Function_Addresses(void);
 unsigned Get_Hex(char string[], int length);
-char *Search_For_Char(char character, char buffer_ptr[], int buffer_length);
-char *Search_For_String(char *string, char *buffer_ptr, int buffer_length);
+char* Search_For_Char(char character, char buffer_ptr[], int buffer_length);
+char* Search_For_String(char* string, char* buffer_ptr, int buffer_length);
 void Map_Profiler_Hits(void);
 void Sort_Functions(void);
 void Sort_Functions_Again(void);
 void Output_Profile(void);
 
-char *SampleFile;            // Ptr to sample file name
-char *MapFile;               // Ptr to map file name
-unsigned *SampleFileBuffer;  // Ptr to buffer that sample file is loaded in to
-char *MapFileBuffer;         // Ptr to buffer that map file is loaded in to
+char* SampleFile;            // Ptr to sample file name
+char* MapFile;               // Ptr to map file name
+unsigned* SampleFileBuffer;  // Ptr to buffer that sample file is loaded in to
+char* MapFileBuffer;         // Ptr to buffer that map file is loaded in to
 unsigned SampleFileLength;   // Length of sample file
 unsigned MapFileLength;      // Length of map file
 char FunctionNames[NAME_TABLE_SIZE];  // Buffer to store function names in
-char *FunctionNamePtr =
+char* FunctionNamePtr =
     &FunctionNames[0];    // Ptr to end of last function name in buffer
 int TotalFunctions;       // Total number of functions extracted from map file
 int SampleRate;           // Number of samples/sec that data was collected at
@@ -94,7 +95,7 @@ unsigned EndCodeSegment;  // Length of the sampled programs code segments
 typedef struct tFunction {
   unsigned FunctionAddress;  // Address of function relative to start of code
                              // seg
-  char *FunctionName;        // Ptr to name of function in FunctionNames buffer
+  char* FunctionName;        // Ptr to name of function in FunctionNames buffer
   int Hits;                  // Number of times function was 'hit' when sampling
 } Function;
 
@@ -114,7 +115,7 @@ Function FunctionList[10000];  // max 10,000 functions in map file.
  * HISTORY: * 11/20/95 5:21PM ST : Created *
  *=============================================================================================*/
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 
 {
   Print_My_Name();  // print the programs name
@@ -141,7 +142,7 @@ int main(int argc, char *argv[])
   ** Load the profile sample file
   */
   SampleFileLength =
-      Load_File(SampleFile, (unsigned *)&SampleFileBuffer, O_BINARY);
+      Load_File(SampleFile, (unsigned*)&SampleFileBuffer, O_BINARY);
   if (!SampleFileLength) return (0);
 
   /*
@@ -152,7 +153,7 @@ int main(int argc, char *argv[])
   /*
   ** Load the .map file
   */
-  MapFileLength = Load_File(MapFile, (unsigned *)&MapFileBuffer, O_BINARY);
+  MapFileLength = Load_File(MapFile, (unsigned*)&MapFileBuffer, O_BINARY);
   if (!MapFileLength) {
     free(SampleFileBuffer);
     return (0);
@@ -249,7 +250,7 @@ void Print_Usage(void) {
  * HISTORY: * 11/20/95 5:26PM ST : Created *
  *=============================================================================================*/
 
-void File_Error(char *file_name) {
+void File_Error(char* file_name) {
   cprintf("Error reading file:%s - aborting\n", file_name);
 }
 
@@ -283,10 +284,10 @@ void Memory_Error(void) { cprintf("Error - insufficient memory - aborting\n"); }
  * HISTORY: * 11/20/95 5:27PM ST : Created *
  *=============================================================================================*/
 
-int Load_File(char *file_name, unsigned *load_addr, unsigned mode) {
+int Load_File(char* file_name, unsigned* load_addr, unsigned mode) {
   int handle;
   unsigned file_length;
-  void *buffer;
+  void* buffer;
 
   handle = open(file_name, O_RDONLY | mode);
 
@@ -333,7 +334,7 @@ int Load_File(char *file_name, unsigned *load_addr, unsigned mode) {
  *=============================================================================================*/
 
 void Map_Profiler_Hits(void) {
-  unsigned *samples = (unsigned *)SampleFileBuffer;
+  unsigned* samples = (unsigned*)SampleFileBuffer;
   unsigned function_hit;
 
   for (int i = SAMPLE_START; i < SampleFileLength / 4; i++) {
@@ -485,9 +486,9 @@ void Output_Profile(void) {
  *=============================================================================================*/
 
 bool Extract_Function_Addresses(void) {
-  char *map_ptr;
-  char *segment_ptr;
-  char *end_str_ptr;
+  char* map_ptr;
+  char* segment_ptr;
+  char* end_str_ptr;
   unsigned chars_left = MapFileLength;
   int function_name_length;
   unsigned end_of_last_code_segment;
@@ -786,10 +787,10 @@ unsigned Get_Hex(char string[], int length) {
  * HISTORY: * 11/20/95 5:41PM ST : Created *
  *=============================================================================================*/
 
-char *Search_For_Char(char character, char buffer_ptr[], int buffer_length) {
+char* Search_For_Char(char character, char buffer_ptr[], int buffer_length) {
   for (unsigned i = 0; i < buffer_length; i++) {
     if (buffer_ptr[i] == character) {
-      return ((char *)(unsigned)buffer_ptr + i);
+      return ((char*)(unsigned)buffer_ptr + i);
     }
   }
   return (NULL);
@@ -809,7 +810,7 @@ char *Search_For_Char(char character, char buffer_ptr[], int buffer_length) {
  * HISTORY: * 11/20/95 5:42PM ST : Created *
  *=============================================================================================*/
 
-char *Search_For_String(char *string, char *buffer_ptr, int buffer_length) {
+char* Search_For_String(char* string, char* buffer_ptr, int buffer_length) {
   int j;
   int string_length = strlen(string);
 

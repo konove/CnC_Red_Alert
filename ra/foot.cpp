@@ -191,7 +191,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
  * HISTORY: * 06/02/1994 JLB : Created. * 07/04/1995 JLB : Handles aircraft
  *special case.                                           *
  *=============================================================================================*/
-void FootClass::Debug_Dump(MonoClass *mono) const {
+void FootClass::Debug_Dump(MonoClass* mono) const {
   assert(IsActive);
 
   mono->Fill_Attrib(53, 13, 12, 1,
@@ -228,7 +228,7 @@ void FootClass::Debug_Dump(MonoClass *mono) const {
     mono->Printf("%d", Group);
   }
 
-  static char const *_p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
+  static char const* _p2c[9] = {"-", "0", "1", "2", "3", "4", "5", "6", "7"};
   for (int index = 0; index < min(12, ARRAY_SIZE(Path)); index++) {
     mono->Set_Cursor(54 + index, 3);
     mono->Printf("%s",
@@ -274,7 +274,7 @@ void FootClass::Set_Speed(int speed) {
   assert(IsActive);
 
   speed &= 0xFF;
-  ((unsigned char &)Speed) = speed;
+  ((unsigned char&)Speed) = speed;
 }
 
 /***********************************************************************************************
@@ -359,7 +359,7 @@ bool FootClass::Mark(MarkType mark) {
 bool FootClass::Basic_Path(void) {
   assert(IsActive);
 
-  PathType *path;  // Pointer to path control structure.
+  PathType* path;  // Pointer to path control structure.
   CELL cell;
   int skip_path = false;
 
@@ -387,10 +387,10 @@ bool FootClass::Basic_Path(void) {
 
     if (What_Am_I() == RTTI_INFANTRY) {
       CELL mycell = Coord_Cell(Center_Coord());
-      ObjectClass *obj = Map[mycell].Cell_Occupier();
+      ObjectClass* obj = Map[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
-          InfantryClass *inf = (InfantryClass *)obj;
+          InfantryClass* inf = (InfantryClass*)obj;
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
               Mem_Copy(&inf->Path[1], Path, sizeof(Path) - sizeof(Path[0]));
@@ -588,8 +588,7 @@ int FootClass::Mission_Capture(void) {
   *accordingly.
   */
   if (Is_Target_Building(TarCom) && !Target_Legal(NavCom) &&
-      What_Am_I() == RTTI_INFANTRY &&
-      ((InfantryClass *)this)->Class->IsBomber) {
+      What_Am_I() == RTTI_INFANTRY && ((InfantryClass*)this)->Class->IsBomber) {
     Assign_Destination(TarCom);
   }
 
@@ -651,7 +650,7 @@ int FootClass::Mission_Guard(void) {
 
   int dtime = MissionControl[Mission].Normal_Delay();
   if (What_Am_I() == RTTI_VESSEL) {
-    switch (((VesselClass *)this)->Class->Type) {
+    switch (((VesselClass*)this)->Class->Type) {
       case VESSEL_DD:
       case VESSEL_PT:
         dtime = MissionControl[Mission].AA_Delay();
@@ -671,12 +670,12 @@ int FootClass::Mission_Guard(void) {
     *then go into *	sabotage mode if not already.
     */
     if (!House->IsHuman && Is_Target_Building(TarCom) &&
-        ((InfantryClass *)this)->Class->IsBomber &&
+        ((InfantryClass*)this)->Class->IsBomber &&
         Mission != MISSION_SABOTAGE) {
       Assign_Mission(MISSION_SABOTAGE);
     }
 
-    switch (((InfantryClass *)this)->Class->Type) {
+    switch (((InfantryClass*)this)->Class->Type) {
       case INFANTRY_E1:
       case INFANTRY_E3:
         dtime = MissionControl[Mission].AA_Delay();
@@ -710,7 +709,7 @@ int FootClass::Mission_Hunt(void) {
   if (!Target_Something_Nearby(THREAT_NORMAL)) {
 #if (0)
     if (What_Am_I() == RTTI_INFANTRY &&
-        *(InfantryClass *)this == INFANTRY_GENERAL &&
+        *(InfantryClass*)this == INFANTRY_GENERAL &&
         House->Class->House == HOUSE_UKRAINE && Scen.Scenario == 47) {
       for (int index = 0; index < Buildings.Count(); index++) {
         if (Buildings.Ptr(index)->IsOwnedByPlayer) {
@@ -741,13 +740,13 @@ int FootClass::Mission_Hunt(void) {
     Random_Animate();
   } else {
     if (What_Am_I() == RTTI_INFANTRY &&
-        (((InfantryTypeClass const &)Class_Of()).Type == INFANTRY_RENOVATOR ||
-         ((InfantryTypeClass const &)Class_Of()).Type == INFANTRY_THIEF)) {
+        (((InfantryTypeClass const&)Class_Of()).Type == INFANTRY_RENOVATOR ||
+         ((InfantryTypeClass const&)Class_Of()).Type == INFANTRY_THIEF)) {
       Assign_Destination(TarCom);
       Assign_Mission(MISSION_CAPTURE);
     } else {
       if (What_Am_I() == RTTI_INFANTRY &&
-          ((InfantryClass *)this)->Class->IsBomber &&
+          ((InfantryClass*)this)->Class->IsBomber &&
           Is_Target_Building(TarCom)) {
         Assign_Destination(TarCom);
         Assign_Mission(MISSION_SABOTAGE);
@@ -803,7 +802,7 @@ bool FootClass::Stop_Driver(void) {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/12/1994 JLB : Uses simple spot
  *index finder.                                           *
  *=============================================================================================*/
-bool FootClass::Start_Driver(COORDINATE &headto) {
+bool FootClass::Start_Driver(COORDINATE& headto) {
   assert(IsActive);
 
   Stop_Driver();
@@ -926,7 +925,7 @@ void FootClass::Approach_Target(void) {
       ** max range so that people can stand far away from the buildings and
       ** hit them.
       */
-      BuildingClass *obj = As_Building(TarCom);
+      BuildingClass* obj = As_Building(TarCom);
       if (obj) {
         maxrange +=
             ((obj->Class->Width() + obj->Class->Height()) * (0x100 / 4));
@@ -1025,7 +1024,7 @@ void FootClass::Approach_Target(void) {
 int FootClass::Mission_Guard_Area(void) {
   assert(IsActive);
 
-  if (What_Am_I() == RTTI_UNIT && ((UnitClass *)this)->Class->IsToHarvest) {
+  if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
     return (1 + Random_Pick(1, 10));
   }
@@ -1042,7 +1041,7 @@ int FootClass::Mission_Guard_Area(void) {
   *then go into *	sabotage mode if not already.
   */
   if (!House->IsHuman && What_Am_I() == RTTI_INFANTRY &&
-      Is_Target_Building(TarCom) && ((InfantryClass *)this)->Class->IsBomber &&
+      Is_Target_Building(TarCom) && ((InfantryClass*)this)->Class->IsBomber &&
       Mission != MISSION_SABOTAGE) {
     Assign_Mission(MISSION_SABOTAGE);
     return (1);
@@ -1143,8 +1142,8 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-ResultType FootClass::Take_Damage(int &damage, int distance,
-                                  WarheadType warhead, TechnoClass *source,
+ResultType FootClass::Take_Damage(int& damage, int distance,
+                                  WarheadType warhead, TechnoClass* source,
                                   bool forced) {
   assert(IsActive);
 
@@ -1233,7 +1232,7 @@ ResultType FootClass::Take_Damage(int &damage, int distance,
  *                                                                                             *
  * HISTORY: * 01/06/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Active_Click_With(ActionType action, ObjectClass *object) {
+void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
   assert(IsActive);
   assert(object != nullptr);
 
@@ -1241,7 +1240,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass *object) {
     case ACTION_GUARD_AREA:
       if (Can_Player_Fire() && Can_Player_Move()) {
         if (What_Am_I() == RTTI_INFANTRY &&
-            ((InfantryClass *)this)->Class->IsBomber &&
+            ((InfantryClass*)this)->Class->IsBomber &&
             object->What_Am_I() == RTTI_BUILDING && !House->Is_Ally(object)) {
           Player_Assign_Mission(MISSION_SABOTAGE, TARGET_NONE,
                                 object->As_Target());
@@ -1363,7 +1362,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         ** nearest cell using an expanding-radius box, and ignores cells
         ** off the edge of the map.
         */
-        CellClass const *cellptr = &Map[::As_Cell(::As_Target(Center_Coord()))];
+        CellClass const* cellptr = &Map[::As_Cell(::As_Target(Center_Coord()))];
         if (What_Am_I() != RTTI_AIRCRAFT) {
           if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == MOVE_OK) {
             cell =
@@ -1444,7 +1443,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
         CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
         if (Map.In_Radar(cell)) {
-          TechnoClass const *techno = Map[cell].Cell_Techno();
+          TechnoClass const* techno = Map[cell].Cell_Techno();
 
           if (techno && !techno->House->Is_Ally(this) &&
               techno->Techno_Type_Class()->IsScanner) {
@@ -1460,13 +1459,12 @@ void FootClass::Per_Cell_Process(PCPType why) {
     **	unit and this unit is on an attack type mission.
     */
     if (Target_Legal(TarCom) && (What_Am_I() != RTTI_INFANTRY ||
-                                 !((InfantryClass *)this)->Class->IsDog)) {
+                                 !((InfantryClass*)this)->Class->IsDog)) {
       int primary = What_Weapon_Should_I_Use(TarCom);
       bool inrange = In_Range(TarCom, primary);
-      TechnoClass const *techno = As_Techno(TarCom);
+      TechnoClass const* techno = As_Techno(TarCom);
       if (techno != nullptr && techno->Is_Foot()) {
-        inrange =
-            In_Range(((FootClass const *)techno)->Likely_Coord(), primary);
+        inrange = In_Range(((FootClass const*)techno)->Likely_Coord(), primary);
       }
 
       if ((Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
@@ -1481,7 +1479,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
     **	Trigger event associated with the player entering the cell.
     */
     if (Cloak != CLOAKED) {
-      TriggerClass *trigger = Map[Coord].Trigger;
+      TriggerClass* trigger = Map[Coord].Trigger;
       if (trigger != nullptr) {
         trigger->Spring(TEVENT_PLAYER_ENTERED, this, Coord_Cell(Coord));
         if (!IsActive) return;
@@ -1548,9 +1546,9 @@ void FootClass::Per_Cell_Process(PCPType why) {
     ** Flag any gap generators to re-draw
     */
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *obj = Buildings.Ptr(index);
+      BuildingClass* obj = Buildings.Ptr(index);
       if (obj && *obj == STRUCT_GAP && !obj->IsInLimbo &&
-          (HouseClass *)obj->House != PlayerPtr) {
+          (HouseClass*)obj->House != PlayerPtr) {
         int dist = Distance(obj) / CELL_LEPTON_W;
         if (dist < (6 + Rule.GapShroudRadius)) {
           //			if (dist < (6 + obj->Class->SightRange) ) {
@@ -1636,9 +1634,9 @@ bool FootClass::Restore_Mission(void) {
  *                                                                                             *
  * HISTORY: * 05/14/1995 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType FootClass::Receive_Message(RadioClass *from,
+RadioMessageType FootClass::Receive_Message(RadioClass* from,
                                             RadioMessageType message,
-                                            long &param) {
+                                            long& param) {
   assert(IsActive);
 
   switch (message) {
@@ -1647,7 +1645,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass *from,
     */
     case RADIO_ON_DEPOT:
       if (Map[Center_Coord()].Cell_Building() != nullptr) {
-        BuildingClass const *building = Map[Center_Coord()].Cell_Building();
+        BuildingClass const* building = Map[Center_Coord()].Cell_Building();
         if (*building == STRUCT_REPAIR) {
           return (RADIO_ROGER);
         }
@@ -1754,7 +1752,7 @@ int FootClass::Mission_Enter(void) {
   *transporter is *	defined. If not in radio contact, then try the archive
   *target value to see if that *	is suitable.
   */
-  TechnoClass *contact = Contact_With_Whom();
+  TechnoClass* contact = Contact_With_Whom();
   if (contact == nullptr) {
     contact = As_Techno(ArchiveTarget);
   }
@@ -1881,7 +1879,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** cannot abandon it as it will destroy us if we return to base.
   */
   if (Target_Legal(TarCom)) {
-    TechnoClass *techno = As_Techno(TarCom);
+    TechnoClass* techno = As_Techno(TarCom);
     if (techno != nullptr && techno->Is_Weapon_Equipped()) {
       return (0);
     }
@@ -1934,7 +1932,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
  *                                                                                             *
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Death_Announcement(TechnoClass const *) const {
+void FootClass::Death_Announcement(TechnoClass const*) const {
   assert(IsActive);
 
   if (IsOwnedByPlayer) {
@@ -2157,7 +2155,7 @@ bool FootClass::Can_Demolish(void) const {
     case RTTI_AIRCRAFT:
       if (In_Radio_Contact() &&
           Contact_With_Whom()->What_Am_I() == RTTI_BUILDING &&
-          *((BuildingClass *)Contact_With_Whom()) == STRUCT_REPAIR &&
+          *((BuildingClass*)Contact_With_Whom()) == STRUCT_REPAIR &&
           Distance(Contact_With_Whom()) < 0x0080) {
         return (true);
       }
@@ -2442,7 +2440,7 @@ bool FootClass::Is_Allowed_To_Leave_Map(void) const {
  *                                                                                             *
  * HISTORY: * 09/14/1996 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Is_Recruitable(HouseClass const *house) const {
+bool FootClass::Is_Recruitable(HouseClass const* house) const {
   /*
   **	If not of the correct house presuasion, then recruitment is not allowed.
   */

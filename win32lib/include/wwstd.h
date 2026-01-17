@@ -56,10 +56,11 @@
 // Once it is, the FALSE parts should be removed from the source code.
 #define LIB_EXTERNS_RESOLVED FALSE
 
+#include <bios.h>
+#include <dos.h>
+
 #include <cstdio>
 #include <cstdlib>
-#include <dos.h>
-#include <bios.h>
 
 //================================
 
@@ -215,7 +216,7 @@ typedef void VOID;
 #define ULONG unsigned long
 #define REALPTR unsigned long
 
-#define FARPTR char far *
+#define FARPTR char far*
 
 #endif
 #endif
@@ -251,12 +252,12 @@ T Abs(T a) {
 }
 
 template <class T>
-VOID minimize(T &a, T b) {
+VOID minimize(T& a, T b) {
   if (b < a) a = b;
 }
 
 template <class T>
-VOID maximize(T &a, T b) {
+VOID maximize(T& a, T b) {
   if (b > a) a = b;
 }
 #endif
@@ -272,12 +273,12 @@ VOID maximize(T &a, T b) {
 // Template replacements for the user defines above
 #ifdef __cplusplus
 template <class T>
-VOID BitFlagsOn(T &a, T b) {
+VOID BitFlagsOn(T& a, T b) {
   a |= (b);
 }
 
 template <class T>
-VOID BitFlagsOff(T &a, T b) {
+VOID BitFlagsOff(T& a, T b) {
   a &= (~(b));
 }
 
@@ -287,7 +288,7 @@ T BitFlagsValue(T a, T b) {
 }
 
 template <class T>
-VOID BitFlagsFlip(T &a, T b) {
+VOID BitFlagsFlip(T& a, T b) {
   a ^= (b);
 }
 #endif

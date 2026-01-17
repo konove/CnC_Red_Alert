@@ -72,7 +72,7 @@ TFixedIHeapClass<WarheadTypeClass> Warheads;
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-WarheadTypeClass::WarheadTypeClass(char const *name)
+WarheadTypeClass::WarheadTypeClass(char const* name)
     : ID(Warheads.ID(this)),
       IniName(name),
       SpreadFactor(1),
@@ -104,7 +104,7 @@ WarheadTypeClass::WarheadTypeClass(char const *name)
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void *WarheadTypeClass::operator new(size_t) throw() {
+void* WarheadTypeClass::operator new(size_t) throw() {
   return (Warheads.Alloc());
 }
 
@@ -124,8 +124,8 @@ void *WarheadTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void WarheadTypeClass::operator delete(void *pointer) {
-  Warheads.Free((WarheadTypeClass *)pointer);
+void WarheadTypeClass::operator delete(void* pointer) {
+  Warheads.Free((WarheadTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -143,7 +143,7 @@ void WarheadTypeClass::operator delete(void *pointer) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-WarheadTypeClass *WarheadTypeClass::As_Pointer(WarheadType warhead) {
+WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
   if (warhead != WARHEAD_NONE) {
     return (Warheads.Ptr(warhead));
   }
@@ -166,7 +166,7 @@ WarheadTypeClass *WarheadTypeClass::As_Pointer(WarheadType warhead) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool WarheadTypeClass::Read_INI(CCINIClass &ini) {
+bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
   if (ini.Is_Present(Name())) {
     SpreadFactor = ini.Get_Int(Name(), "Spread", SpreadFactor);
     IsWallDestroyer = ini.Get_Bool(Name(), "Wall", IsWallDestroyer);
@@ -178,7 +178,7 @@ bool WarheadTypeClass::Read_INI(CCINIClass &ini) {
     char buffer[128];
     if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
                        buffer, sizeof(buffer))) {
-      char *aval = strtok(buffer, ",");
+      char* aval = strtok(buffer, ",");
       for (ArmorType armor = ARMOR_FIRST; armor < ARMOR_COUNT; armor++) {
         Modifier[armor] = fixed(aval);
         aval = strtok(nullptr, ",");

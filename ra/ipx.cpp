@@ -385,7 +385,7 @@ int IPX_Get_Connection_Number(void) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-int IPX_Get_1st_Connection_Num(char *username) {
+int IPX_Get_1st_Connection_Num(char* username) {
   struct request_buffer {
     unsigned short len;          // username length + 5
     unsigned char buffer_type;   // ConnectionNum = 0x15
@@ -403,8 +403,8 @@ int IPX_Get_1st_Connection_Num(char *username) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
-  struct request_buffer *reqbuf;
-  struct reply_buffer *replybuf;
+  struct request_buffer* reqbuf;
+  struct reply_buffer* replybuf;
   unsigned short segment;   // for DOS allocation
   unsigned short selector;  // for DOS allocation
   int num_conns;            // # connections returned
@@ -436,9 +436,9 @@ int IPX_Get_1st_Connection_Num(char *username) {
   //------------------------------------------------------------------------
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer *)(segment << 4);
+  reqbuf = (struct request_buffer*)(segment << 4);
   replybuf =
-      (struct reply_buffer *)(((char *)reqbuf) + sizeof(struct request_buffer));
+      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
 
   //------------------------------------------------------------------------
   //	Init the contents of the request & reply buffers
@@ -539,8 +539,8 @@ int IPX_Get_1st_Connection_Num(char *username) {
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
 int IPX_Get_Internet_Address(int connection_number,
-                             unsigned char *network_number,
-                             unsigned char *physical_node) {
+                             unsigned char* network_number,
+                             unsigned char* physical_node) {
   struct request_buffer {
     unsigned short len;
     unsigned char buffer_type;        // Internet = 0x13
@@ -555,8 +555,8 @@ int IPX_Get_Internet_Address(int connection_number,
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
-  struct request_buffer *reqbuf;
-  struct reply_buffer *replybuf;
+  struct request_buffer* reqbuf;
+  struct reply_buffer* replybuf;
   unsigned short segment;   // for DOS allocation
   unsigned short selector;  // for DOS allocation
 
@@ -592,9 +592,9 @@ int IPX_Get_Internet_Address(int connection_number,
   //------------------------------------------------------------------------
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer *)(segment << 4);
+  reqbuf = (struct request_buffer*)(segment << 4);
   replybuf =
-      (struct reply_buffer *)(((char *)reqbuf) + sizeof(struct request_buffer));
+      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
 
   //------------------------------------------------------------------------
   //	Init the contents of the request & reply buffers
@@ -674,7 +674,7 @@ int IPX_Get_Internet_Address(int connection_number,
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-int IPX_Get_User_ID(int connection_number, char *user_id) {
+int IPX_Get_User_ID(int connection_number, char* user_id) {
   struct request_buffer {
     unsigned short len;
     unsigned char buffer_type;        // 0x16 = UserID buffer type
@@ -691,8 +691,8 @@ int IPX_Get_User_ID(int connection_number, char *user_id) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
-  struct request_buffer *reqbuf;
-  struct reply_buffer *replybuf;
+  struct request_buffer* reqbuf;
+  struct reply_buffer* replybuf;
   unsigned short segment;   // for DOS allocation
   unsigned short selector;  // for DOS allocation
 
@@ -728,9 +728,9 @@ int IPX_Get_User_ID(int connection_number, char *user_id) {
   //------------------------------------------------------------------------
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer *)(segment << 4);
+  reqbuf = (struct request_buffer*)(segment << 4);
   replybuf =
-      (struct reply_buffer *)(((char *)reqbuf) + sizeof(struct request_buffer));
+      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
 
   //------------------------------------------------------------------------
   //	Init the contents of the request & reply buffers
@@ -830,7 +830,7 @@ int IPX_Get_User_ID(int connection_number, char *user_id) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-int IPX_Listen_For_Packet(struct ECB *ecb_ptr) {
+int IPX_Listen_For_Packet(struct ECB* ecb_ptr) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -911,7 +911,7 @@ int IPX_Listen_For_Packet(struct ECB *ecb_ptr) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-void IPX_Send_Packet(struct ECB *ecb_ptr) {
+void IPX_Send_Packet(struct ECB* ecb_ptr) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -975,9 +975,9 @@ void IPX_Send_Packet(struct ECB *ecb_ptr) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-int IPX_Get_Local_Target(unsigned char *dest_network, unsigned char *dest_node,
+int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
                          unsigned short dest_socket,
-                         unsigned char *bridge_address) {
+                         unsigned char* bridge_address) {
   struct request_buffer {
     unsigned char network_number[4];
     unsigned char physical_node[6];
@@ -990,8 +990,8 @@ int IPX_Get_Local_Target(unsigned char *dest_network, unsigned char *dest_node,
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
-  struct request_buffer *reqbuf;
-  struct reply_buffer *replybuf;
+  struct request_buffer* reqbuf;
+  struct reply_buffer* replybuf;
   unsigned short segment;   // for DOS allocation
   unsigned short selector;  // for DOS allocation
 
@@ -1020,9 +1020,9 @@ int IPX_Get_Local_Target(unsigned char *dest_network, unsigned char *dest_node,
   //------------------------------------------------------------------------
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer *)(segment << 4);
+  reqbuf = (struct request_buffer*)(segment << 4);
   replybuf =
-      (struct reply_buffer *)(((char *)reqbuf) + sizeof(struct request_buffer));
+      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
 
   //------------------------------------------------------------------------
   //	Init the contents of the request & reply buffers
@@ -1095,7 +1095,7 @@ int IPX_Get_Local_Target(unsigned char *dest_network, unsigned char *dest_node,
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-int IPX_Cancel_Event(struct ECB *ecb_ptr) {
+int IPX_Cancel_Event(struct ECB* ecb_ptr) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;

@@ -38,7 +38,7 @@
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-void Update_Full_Palette(unsigned char *palette);
+void Update_Full_Palette(unsigned char* palette);
 
 //==========================================================================
 // PUBLIC FUNCTIONS

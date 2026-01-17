@@ -180,10 +180,10 @@ void FactoryClass::Init(void) { Factories.Free_All(); }
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void *FactoryClass::operator new(size_t) throw() {
-  void *ptr = Factories.Allocate();
+void* FactoryClass::operator new(size_t) throw() {
+  void* ptr = Factories.Allocate();
   if (ptr) {
-    ((FactoryClass *)ptr)->IsActive = true;
+    ((FactoryClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -203,11 +203,11 @@ void *FactoryClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::operator delete(void *ptr) {
+void FactoryClass::operator delete(void* ptr) {
   if (ptr) {
-    ((FactoryClass *)ptr)->IsActive = false;
+    ((FactoryClass*)ptr)->IsActive = false;
   }
-  Factories.Free((FactoryClass *)ptr);
+  Factories.Free((FactoryClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -346,7 +346,7 @@ bool FactoryClass::Has_Changed(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(TechnoTypeClass const &object, HouseClass &house) {
+bool FactoryClass::Set(TechnoTypeClass const& object, HouseClass& house) {
   Validate();
   /*
   **	If there is any production currently in progress, abandon it.
@@ -364,7 +364,7 @@ bool FactoryClass::Set(TechnoTypeClass const &object, HouseClass &house) {
   /*
   **	Create an object of the type requested.
   */
-  Object = (TechnoClass *)object.Create_One_Of(&house);
+  Object = (TechnoClass*)object.Create_One_Of(&house);
 
   if (Object) {
     House = Object->House;
@@ -395,7 +395,7 @@ bool FactoryClass::Set(TechnoTypeClass const &object, HouseClass &house) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Set(int const &type, HouseClass &house) {
+bool FactoryClass::Set(int const& type, HouseClass& house) {
   Validate();
   /*
   **	If there is any production currently in progress, abandon it.
@@ -439,7 +439,7 @@ bool FactoryClass::Set(int const &type, HouseClass &house) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Set(TechnoClass &object) {
+void FactoryClass::Set(TechnoClass& object) {
   Validate();
   Abandon();
   Object = &object;
@@ -636,7 +636,7 @@ bool FactoryClass::Has_Completed(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass *FactoryClass::Get_Object(void) const {
+TechnoClass* FactoryClass::Get_Object(void) const {
   Validate();
   return (Object);
 }

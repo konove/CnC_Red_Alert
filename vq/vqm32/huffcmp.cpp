@@ -47,6 +47,7 @@
  ****************************************************************************/
 
 #include <mem.h>
+
 #include "huffman.h"
 
 /****************************************************************************
@@ -79,18 +80,18 @@
  *
  ****************************************************************************/
 
-long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
-                        char *temp) {
+long cdecl HuffCompress(unsigned char* data, unsigned char* buffer, long length,
+                        char* temp) {
 #if (1)
-  TreeNode *nodes;
-  HuffCode *codes;
+  TreeNode* nodes;
+  HuffCode* codes;
   long size;
   long root;
 
   /* Initialize variables */
-  nodes = (TreeNode *)temp;
+  nodes = (TreeNode*)temp;
   temp += (514 * sizeof(TreeNode));
-  codes = (HuffCode *)temp;
+  codes = (HuffCode*)temp;
 
   /* Analyze the frequency of the data. */
   HuffCount(data, nodes, length, 1);
@@ -109,9 +110,9 @@ long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
 
   return (size);
 #else
-  TreeNode *nodes;
-  HuffCode *codes;
-  unsigned long *counts;
+  TreeNode* nodes;
+  HuffCode* codes;
+  unsigned long* counts;
   unsigned long max_count;
   long i;
   long size;
@@ -122,10 +123,10 @@ long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
   unsigned long mask;
 
   /* Initialize variables. */
-  nodes = (TreeNode *)temp;
+  nodes = (TreeNode*)temp;
   temp += (514 * sizeof(TreeNode));
-  counts = (unsigned long *)temp;
-  codes = (HuffCode *)temp;
+  counts = (unsigned long*)temp;
+  codes = (HuffCode*)temp;
 
   /* Zero the initial counts. */
   memset(temp, 0, 256 * sizeof(unsigned long));
@@ -139,7 +140,7 @@ long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
   i = 0;
 
   while (i < length) {
-    counts[((unsigned char *)data)[i]]++;
+    counts[((unsigned char*)data)[i]]++;
     i++;
   }
 
@@ -307,7 +308,7 @@ long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
 
   do {
     if (i < length) {
-      symbol = ((unsigned char *)data)[i];
+      symbol = ((unsigned char*)data)[i];
     } else {
       symbol = HUFF_EOS;
     }
@@ -374,7 +375,7 @@ long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
  *
  ****************************************************************************/
 
-void cdecl HuffCount(unsigned char *data, TreeNode *nodes, long length,
+void cdecl HuffCount(unsigned char* data, TreeNode* nodes, long length,
                      long zero) {
   long i;
 
@@ -389,7 +390,7 @@ void cdecl HuffCount(unsigned char *data, TreeNode *nodes, long length,
   i = 0;
 
   while (i < length) {
-    nodes[((unsigned char *)data)[i]].count++;
+    nodes[((unsigned char*)data)[i]].count++;
     i++;
   }
 }
@@ -416,7 +417,7 @@ void cdecl HuffCount(unsigned char *data, TreeNode *nodes, long length,
  *
  ****************************************************************************/
 
-void cdecl HuffScaleCounts(TreeNode *nodes) {
+void cdecl HuffScaleCounts(TreeNode* nodes) {
   unsigned long max_count;
   unsigned long unscaled;
   long i;
@@ -490,7 +491,7 @@ void cdecl HuffScaleCounts(TreeNode *nodes) {
  *
  ****************************************************************************/
 
-long cdecl RLEHuffCounts(TreeNode *nodes, unsigned char *buffer) {
+long cdecl RLEHuffCounts(TreeNode* nodes, unsigned char* buffer) {
   long i;
   long first;
   long last;
@@ -593,7 +594,7 @@ long cdecl RLEHuffCounts(TreeNode *nodes, unsigned char *buffer) {
  *
  ****************************************************************************/
 
-void cdecl ConvertToCodes(TreeNode *nodes, HuffCode *codes, unsigned short code,
+void cdecl ConvertToCodes(TreeNode* nodes, HuffCode* codes, unsigned short code,
                           short bits, short node) {
   node >>= 3;
 
@@ -634,8 +635,8 @@ void cdecl ConvertToCodes(TreeNode *nodes, HuffCode *codes, unsigned short code,
  *
  ****************************************************************************/
 
-long cdecl HuffEncode(unsigned char *data, unsigned char *buffer,
-                      HuffCode *codes, long length) {
+long cdecl HuffEncode(unsigned char* data, unsigned char* buffer,
+                      HuffCode* codes, long length) {
   long i;
   long size;
   long next;
@@ -649,7 +650,7 @@ long cdecl HuffEncode(unsigned char *data, unsigned char *buffer,
 
   do {
     if (i < length) {
-      symbol = ((unsigned char *)data)[i];
+      symbol = ((unsigned char*)data)[i];
     } else {
       symbol = HUFF_EOS;
     }

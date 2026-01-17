@@ -63,13 +63,15 @@
  *   Open_Animation -- Opens an animation file and reads into buffer       *
  *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
 #include "wsa.h"
-#include <wwmem.h>
+
 #include <file.h>
-#include <misc.h>
 #include <iff.h>
 #include <mem.h>
+#include <misc.h>
+#include <wwmem.h>
+#include <wwstd.h>
+
 #include <cstring>
 
 //
@@ -103,8 +105,8 @@ typedef struct {
   UWORD pixel_width;
   UWORD pixel_height;
   UWORD largest_frame_size;
-  BYTE *delta_buffer;
-  BYTE *file_buffer;
+  BYTE* delta_buffer;
+  BYTE* file_buffer;
   BYTE file_name[13];
   WORD flags;
   // New fields that animate does not know about below this point. SEE
@@ -143,11 +145,11 @@ typedef struct {
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-PRIVATE ULONG Get_Resident_Frame_Offset(BYTE *file_buffer, WORD frame);
+PRIVATE ULONG Get_Resident_Frame_Offset(BYTE* file_buffer, WORD frame);
 PRIVATE ULONG Get_File_Frame_Offset(WORD file_handle, WORD frame,
                                     WORD palette_adjust);
-PRIVATE BOOL Apply_Delta(SysAnimHeaderType *sys_header, WORD curr_frame,
-                         BYTE *dest_ptr, WORD dest_w);
+PRIVATE BOOL Apply_Delta(SysAnimHeaderType* sys_header, WORD curr_frame,
+                         BYTE* dest_ptr, WORD dest_w);
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 /***************************************************************************
@@ -167,19 +169,19 @@ PRIVATE BOOL Apply_Delta(SysAnimHeaderType *sys_header, WORD curr_frame,
  * HISTORY:                                                                *
  *   11/26/1991  SB : Created.                                             *
  *=========================================================================*/
-VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
+VOID* cdecl Open_Animation(BYTE const* file_name, BYTE* user_buffer,
                            LONG user_buffer_size, WSAOpenType user_flags,
-                           UBYTE *palette) {
+                           UBYTE* palette) {
   WORD fh, anim_flags;
   WORD palette_adjust;
   UWORD offsets_size;
   UWORD frame0_size;
   LONG target_buffer_size, delta_buffer_size, file_buffer_size;
   LONG max_buffer_size, min_buffer_size;
-  BYTE *sys_anim_header_buffer;
-  BYTE *target_buffer;
+  BYTE* sys_anim_header_buffer;
+  BYTE* target_buffer;
   BYTE *delta_buffer, *delta_back;
-  SysAnimHeaderType *sys_header;
+  SysAnimHeaderType* sys_header;
   WSA_FileHeaderType file_header;
 
   /*======================================================================*/
@@ -189,7 +191,7 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
 
   anim_flags = 0;
   fh = Open_File(file_name, READ);
-  Read_File(fh, (BYTE *)&file_header, sizeof(WSA_FileHeaderType));
+  Read_File(fh, (BYTE*)&file_header, sizeof(WSA_FileHeaderType));
 
   /*======================================================================*/
   /* If the file has an attached palette then if we have a valid palette
@@ -301,7 +303,7 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
     }
 
     // allocate buffer needed
-    user_buffer = (BYTE *)Alloc(user_buffer_size, MEM_CLEAR);
+    user_buffer = (BYTE*)Alloc(user_buffer_size, MEM_CLEAR);
 
     anim_flags |= WSA_SYS_ALLOCATED;
   } else {
@@ -317,9 +319,9 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
 
   // Set the pointers to the RAM buffers
   sys_anim_header_buffer = user_buffer;
-  target_buffer = (BYTE *)Add_Long_To_Pointer(sys_anim_header_buffer,
-                                              sizeof(SysAnimHeaderType));
-  delta_buffer = (BYTE *)Add_Long_To_Pointer(target_buffer, target_buffer_size);
+  target_buffer = (BYTE*)Add_Long_To_Pointer(sys_anim_header_buffer,
+                                             sizeof(SysAnimHeaderType));
+  delta_buffer = (BYTE*)Add_Long_To_Pointer(target_buffer, target_buffer_size);
 
   //	Clear target buffer if it is in the user buffer.
   if (target_buffer_size) {
@@ -330,7 +332,7 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
   // current_frame is set to total_frames so that Animate_Frame() knows that
   // it needs to clear the target buffer.
 
-  sys_header = (SysAnimHeaderType *)sys_anim_header_buffer;
+  sys_header = (SysAnimHeaderType*)sys_anim_header_buffer;
   sys_header->current_frame = sys_header->total_frames =
       file_header.total_frames;
   sys_header->pixel_x = file_header.pixel_x;
@@ -358,7 +360,7 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
     // Read in remaining frames.
     //
 
-    sys_header->file_buffer = (BYTE *)Add_Long_To_Pointer(
+    sys_header->file_buffer = (BYTE*)Add_Long_To_Pointer(
         delta_buffer, sys_header->largest_frame_size);
     Seek_File(fh, WSA_FILE_HEADER_SIZE, SEEK_SET);
     Read_File(fh, sys_header->file_buffer, offsets_size);
@@ -387,7 +389,7 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
   }
 
   // Figure where to back load frame 0 into the delta buffer.
-  delta_back = (BYTE *)Add_Long_To_Pointer(
+  delta_back = (BYTE*)Add_Long_To_Pointer(
       delta_buffer, sys_header->largest_frame_size - frame0_size);
 
   // Read the first frame into the delta buffer and uncompress it.
@@ -424,11 +426,11 @@ VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
  * HISTORY:                                                                *
  *   11/23/1991  ML : Created.                                             *
  *=========================================================================*/
-VOID cdecl Close_Animation(VOID *handle) {
-  SysAnimHeaderType *sys_header;
+VOID cdecl Close_Animation(VOID* handle) {
+  SysAnimHeaderType* sys_header;
 
   // Assign our local system header pointer to the beginning of the handle space
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
 
   // Close the WSA file in it was disk based.
   if (sys_header->flags & WSA_FILE) {
@@ -458,24 +460,24 @@ VOID cdecl Close_Animation(VOID *handle) {
  *   11/27/1991  SB : Created.                                             *
  *=========================================================================*/
 #pragma argsused
-BOOL cdecl Animate_Frame(VOID *handle, VideoViewPortClass &view,
+BOOL cdecl Animate_Frame(VOID* handle, VideoViewPortClass& view,
                          WORD frame_number, WORD x_pixel, WORD y_pixel,
-                         WSAType flags_and_prio, VOID *magic_cols,
-                         VOID *magic) {
-  SysAnimHeaderType *sys_header;  // fix up the VOID pointer past in.
+                         WSAType flags_and_prio, VOID* magic_cols,
+                         VOID* magic) {
+  SysAnimHeaderType* sys_header;  // fix up the VOID pointer past in.
   WORD curr_frame;                // current frame we are on.
   WORD total_frames;              // number of frames in anim.
   WORD distance;                  // distance to desired frame.
   WORD search_dir;                // direcion to search for desired frame.
   WORD search_frames;             // How many frames to search.
   WORD loop;                      // Just a loop varible.
-  BYTE *frame_buffer;             // our destination.
+  BYTE* frame_buffer;             // our destination.
   BOOL direct_to_dest;            // are we going directly to the destination?
   WORD dest_width;  // the width of the destination buffer or page.
 
   // Assign local pointer to the beginning of the buffer where the system
   // information resides
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
 
   // Get the total number of frames
   total_frames = sys_header->total_frames;
@@ -501,10 +503,10 @@ BOOL cdecl Animate_Frame(VOID *handle, VideoViewPortClass &view,
   if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
     // Get a pointer to the frame in animation buffer.
     frame_buffer =
-        (BYTE *)Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType));
+        (BYTE*)Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType));
     direct_to_dest = FALSE;
   } else {
-    frame_buffer = (BYTE *)view.Get_Offset();
+    frame_buffer = (BYTE*)view.Get_Offset();
     frame_buffer += (y_pixel * dest_width) + x_pixel;
     direct_to_dest = TRUE;
   }
@@ -645,24 +647,24 @@ BOOL cdecl Animate_Frame(VOID *handle, VideoViewPortClass &view,
  *   11/27/1991  SB : Created.                                             *
  *=========================================================================*/
 #pragma argsused
-BOOL cdecl Animate_Frame(VOID *handle, GraphicViewPortClass &view,
+BOOL cdecl Animate_Frame(VOID* handle, GraphicViewPortClass& view,
                          WORD frame_number, WORD x_pixel, WORD y_pixel,
-                         WSAType flags_and_prio, VOID *magic_cols,
-                         VOID *magic) {
-  SysAnimHeaderType *sys_header;  // fix up the VOID pointer past in.
+                         WSAType flags_and_prio, VOID* magic_cols,
+                         VOID* magic) {
+  SysAnimHeaderType* sys_header;  // fix up the VOID pointer past in.
   WORD curr_frame;                // current frame we are on.
   WORD total_frames;              // number of frames in anim.
   WORD distance;                  // distance to desired frame.
   WORD search_dir;                // direcion to search for desired frame.
   WORD search_frames;             // How many frames to search.
   WORD loop;                      // Just a loop varible.
-  BYTE *frame_buffer;             // our destination.
+  BYTE* frame_buffer;             // our destination.
   BOOL direct_to_dest;            // are we going directly to the destination?
   WORD dest_width;  // the width of the destination buffer or page.
 
   // Assign local pointer to the beginning of the buffer where the system
   // information resides
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
 
   // Get the total number of frames
   total_frames = sys_header->total_frames;
@@ -688,10 +690,10 @@ BOOL cdecl Animate_Frame(VOID *handle, GraphicViewPortClass &view,
   if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
     // Get a pointer to the frame in animation buffer.
     frame_buffer =
-        (BYTE *)Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType));
+        (BYTE*)Add_Long_To_Pointer(sys_header, sizeof(SysAnimHeaderType));
     direct_to_dest = FALSE;
   } else {
-    frame_buffer = (BYTE *)view.Get_Offset();
+    frame_buffer = (BYTE*)view.Get_Offset();
     frame_buffer += (y_pixel * dest_width) + x_pixel;
     direct_to_dest = TRUE;
   }
@@ -828,13 +830,13 @@ BOOL cdecl Animate_Frame(VOID *handle, GraphicViewPortClass &view,
  * HISTORY:                                                                *
  *   12/05/1991  SB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_Animation_Frame_Count(VOID *handle) {
-  SysAnimHeaderType *sys_header;
+WORD cdecl Get_Animation_Frame_Count(VOID* handle) {
+  SysAnimHeaderType* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return ((WORD)sys_header->total_frames);
 }
 
@@ -852,13 +854,13 @@ WORD cdecl Get_Animation_Frame_Count(VOID *handle) {
  * HISTORY:                                                                *
  *   07/03/1992 DRD : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_Animation_X(VOID const *handle) {
-  SysAnimHeaderType const *sys_header;
+WORD cdecl Get_Animation_X(VOID const* handle) {
+  SysAnimHeaderType const* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return (sys_header->pixel_x);
 }
 
@@ -876,13 +878,13 @@ WORD cdecl Get_Animation_X(VOID const *handle) {
  * HISTORY:                                                                *
  *   10/14/1992 PWG : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_Animation_Y(VOID const *handle) {
-  SysAnimHeaderType const *sys_header;
+WORD cdecl Get_Animation_Y(VOID const* handle) {
+  SysAnimHeaderType const* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return (sys_header->pixel_y);
 }
 
@@ -900,13 +902,13 @@ WORD cdecl Get_Animation_Y(VOID const *handle) {
  * HISTORY:                                                                *
  *   10/14/1992 PWG : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_Animation_Width(VOID const *handle) {
-  SysAnimHeaderType const *sys_header;
+WORD cdecl Get_Animation_Width(VOID const* handle) {
+  SysAnimHeaderType const* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return (sys_header->pixel_width);
 }
 
@@ -921,13 +923,13 @@ WORD cdecl Get_Animation_Width(VOID const *handle) {
  * HISTORY:                                                                *
  *   10/14/1992 PWG : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_Animation_Height(VOID const *handle) {
-  SysAnimHeaderType const *sys_header;
+WORD cdecl Get_Animation_Height(VOID const* handle) {
+  SysAnimHeaderType const* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return (sys_header->pixel_height);
 }
 
@@ -943,13 +945,13 @@ WORD cdecl Get_Animation_Height(VOID const *handle) {
  * HISTORY:                                                                *
  *   10/14/1992 PWG : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_Animation_Palette(VOID const *handle) {
-  SysAnimHeaderType const *sys_header;
+WORD cdecl Get_Animation_Palette(VOID const* handle) {
+  SysAnimHeaderType const* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return (sys_header->flags & WSA_PALETTE_PRESENT);
 }
 
@@ -967,13 +969,13 @@ WORD cdecl Get_Animation_Palette(VOID const *handle) {
  * HISTORY:                                                                *
  *   05/23/1994 SKB : Created.                                             *
  *=========================================================================*/
-ULONG cdecl Get_Animation_Size(VOID const *handle) {
-  SysAnimHeaderType const *sys_header;
+ULONG cdecl Get_Animation_Size(VOID const* handle) {
+  SysAnimHeaderType const* sys_header;
 
   if (!handle) {
     return FALSE;
   }
-  sys_header = (SysAnimHeaderType *)handle;
+  sys_header = (SysAnimHeaderType*)handle;
   return (sys_header->anim_mem_size);
 }
 
@@ -993,12 +995,12 @@ ULONG cdecl Get_Animation_Size(VOID const *handle) {
  * HISTORY:                                                                *
  *   11/26/1991  SB : Created.                                             *
  *=========================================================================*/
-PRIVATE ULONG Get_Resident_Frame_Offset(BYTE *file_buffer, WORD frame) {
+PRIVATE ULONG Get_Resident_Frame_Offset(BYTE* file_buffer, WORD frame) {
   ULONG frame0_size;
-  ULONG *lptr;
+  ULONG* lptr;
 
   // If there is a frame 0, the calculate its size.
-  lptr = (ULONG *)file_buffer;
+  lptr = (ULONG*)file_buffer;
 
   if (*lptr) {
     frame0_size = lptr[1] - *lptr;
@@ -1033,7 +1035,7 @@ PRIVATE ULONG Get_File_Frame_Offset(WORD file_handle, WORD frame,
 
   Seek_File(file_handle, (frame << 2) + WSA_FILE_HEADER_SIZE, SEEK_SET);
 
-  if (Read_File(file_handle, (BYTE *)&offset, sizeof(ULONG)) != sizeof(ULONG)) {
+  if (Read_File(file_handle, (BYTE*)&offset, sizeof(ULONG)) != sizeof(ULONG)) {
     offset = 0L;
   }
   offset += palette_adjust;
@@ -1053,8 +1055,8 @@ PRIVATE ULONG Get_File_Frame_Offset(WORD file_handle, WORD frame,
  * HISTORY:                                                                *
  *   11/26/1991  SB : Created.                                             *
  *=========================================================================*/
-PRIVATE BOOL Apply_Delta(SysAnimHeaderType *sys_header, WORD curr_frame,
-                         BYTE *dest_ptr, WORD dest_w) {
+PRIVATE BOOL Apply_Delta(SysAnimHeaderType* sys_header, WORD curr_frame,
+                         BYTE* dest_ptr, WORD dest_w) {
   BYTE *data_ptr, *delta_back;
   WORD file_handle, palette_adjust;
   ULONG frame_data_size, frame_offset;
@@ -1076,8 +1078,8 @@ PRIVATE BOOL Apply_Delta(SysAnimHeaderType *sys_header, WORD curr_frame,
         frame_offset;
 
     data_ptr =
-        (BYTE *)Add_Long_To_Pointer(sys_header->file_buffer, frame_offset);
-    delta_back = (BYTE *)Add_Long_To_Pointer(
+        (BYTE*)Add_Long_To_Pointer(sys_header->file_buffer, frame_offset);
+    delta_back = (BYTE*)Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size);
 
     Mem_Copy(data_ptr, delta_back, frame_data_size);
@@ -1105,7 +1107,7 @@ PRIVATE BOOL Apply_Delta(SysAnimHeaderType *sys_header, WORD curr_frame,
     }
 
     Seek_File(file_handle, frame_offset, SEEK_SET);
-    delta_back = (BYTE *)Add_Long_To_Pointer(
+    delta_back = (BYTE*)Add_Long_To_Pointer(
         delta_back, sys_header->largest_frame_size - frame_data_size);
 
     if (Read_File(file_handle, delta_back, frame_data_size) !=

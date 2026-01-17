@@ -101,20 +101,20 @@ typedef struct {
  */
 /*=========================================================================*/
 
-int __cdecl Open_Iff_File(char const *filename);
+int __cdecl Open_Iff_File(char const* filename);
 void __cdecl Close_Iff_File(int fh);
 unsigned long __cdecl Get_Iff_Chunk_Size(int fh, long id);
-unsigned long __cdecl Read_Iff_Chunk(int fh, long id, void *buffer,
+unsigned long __cdecl Read_Iff_Chunk(int fh, long id, void* buffer,
                                      unsigned long maxsize);
-void __cdecl Write_Iff_Chunk(int file, long id, void *buffer, long length);
+void __cdecl Write_Iff_Chunk(int file, long id, void* buffer, long length);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LOADPICT.CPP
  */
 /*=========================================================================*/
 
-int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
-                         BufferClass &destbuf, unsigned char *palette = nullptr,
+int __cdecl Load_Picture(char const* filename, BufferClass& scratchbuf,
+                         BufferClass& destbuf, unsigned char* palette = nullptr,
                          PicturePlaneType format = BM_DEFAULT);
 
 /*=========================================================================*/
@@ -122,16 +122,16 @@ int __cdecl Load_Picture(char const *filename, BufferClass &scratchbuf,
  */
 /*=========================================================================*/
 
-unsigned long __cdecl Load_Data(char const *name, void *ptr,
+unsigned long __cdecl Load_Data(char const* name, void* ptr,
                                 unsigned long size);
-unsigned long __cdecl Write_Data(char const *name, void *ptr,
+unsigned long __cdecl Write_Data(char const* name, void* ptr,
                                  unsigned long size);
-void *__cdecl Load_Alloc_Data(char const *name, MemoryFlagType flags);
-unsigned long __cdecl Load_Uncompress(char const *file,
-                                      BufferClass &uncomp_buff,
-                                      BufferClass &dest_buff,
-                                      void *reserved_data = nullptr);
-unsigned long __cdecl Uncompress_Data(void const *src, void *dst);
+void* __cdecl Load_Alloc_Data(char const* name, MemoryFlagType flags);
+unsigned long __cdecl Load_Uncompress(char const* file,
+                                      BufferClass& uncomp_buff,
+                                      BufferClass& dest_buff,
+                                      void* reserved_data = nullptr);
+unsigned long __cdecl Uncompress_Data(void const* src, void* dst);
 void __cdecl Set_Uncomp_Buffer(int buffer_segment, int size_of_buffer);
 
 /*=========================================================================*/
@@ -139,8 +139,8 @@ void __cdecl Set_Uncomp_Buffer(int buffer_segment, int size_of_buffer);
  */
 /*=========================================================================*/
 
-PUBLIC BOOL Write_LBM_File(int lbmhandle, BufferClass &buff, int bitplanes,
-                           unsigned char *palette);
+PUBLIC BOOL Write_LBM_File(int lbmhandle, BufferClass& buff, int bitplanes,
+                           unsigned char* palette);
 
 /*========================= Assembly Functions ============================*/
 
@@ -153,14 +153,14 @@ extern "C" {
  */
 /*=========================================================================*/
 
-extern void __cdecl Pack_2_Plane(void *buffer, void *pageptr, int planebit);
+extern void __cdecl Pack_2_Plane(void* buffer, void* pageptr, int planebit);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LCWCOMP.ASM
  */
 /*=========================================================================*/
 
-extern unsigned long __cdecl LCW_Compress(void *source, void *dest,
+extern unsigned long __cdecl LCW_Compress(void* source, void* dest,
                                           unsigned long length);
 
 /*=========================================================================*/
@@ -168,7 +168,7 @@ extern unsigned long __cdecl LCW_Compress(void *source, void *dest,
  */
 /*=========================================================================*/
 
-extern unsigned long __cdecl LCW_Uncompress(void *source, void *dest,
+extern unsigned long __cdecl LCW_Uncompress(void* source, void* dest,
                                             unsigned long length);
 
 #ifdef __cplusplus

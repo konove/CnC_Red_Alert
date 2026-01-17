@@ -62,42 +62,42 @@
 #endif
 
 // These are actually implemented in the game, but used by audio and WSA
-int Open_File(char const *file_name, int mode);
+int Open_File(char const* file_name, int mode);
 void Close_File(int handle);
-long Read_File(int handle, void *buf, unsigned long bytes);
-long Write_File(int handle, void const *buf, unsigned long bytes);
+long Read_File(int handle, void* buf, unsigned long bytes);
+long Write_File(int handle, void const* buf, unsigned long bytes);
 unsigned long Seek_File(int handle, long offset, int starting);
 unsigned long File_Size(int handle);
-int Find_File(char const *file_name);
+int Find_File(char const* file_name);
 
 // low level IO implemented here
-void *IO_Open_File(const char *filename, int mode);
-void IO_Close_File(void *handle);
+void* IO_Open_File(const char* filename, int mode);
+void IO_Close_File(void* handle);
 
-bool IO_Read_File(void *handle, void *buffer, size_t count,
-                  size_t &actual_read);
-bool IO_Write_File(void *handle, const void *buffer, size_t count,
-                   size_t &actual_written);
+bool IO_Read_File(void* handle, void* buffer, size_t count,
+                  size_t& actual_read);
+bool IO_Write_File(void* handle, const void* buffer, size_t count,
+                   size_t& actual_written);
 
-size_t IO_Seek_File(void *handle, size_t offset, int origin);
-size_t IO_Get_File_Size(void *handle);
+size_t IO_Seek_File(void* handle, size_t offset, int origin);
+size_t IO_Get_File_Size(void* handle);
 
-bool IO_Delete_File(const char *filename);
+bool IO_Delete_File(const char* filename);
 
 // file searching
 struct FindFileState {
-  const char *name;
+  const char* name;
   time_t mod_time;
 
   // internal state
-  void *data;
+  void* data;
   size_t offset;
 };
 
-bool Find_First_File(const char *path_glob, FindFileState &state);
-bool Find_Next_File(FindFileState &state);
+bool Find_First_File(const char* path_glob, FindFileState& state);
+bool Find_Next_File(FindFileState& state);
 // to clean up if not finishing the search
-void End_Find_File(FindFileState &state);
+void End_Find_File(FindFileState& state);
 
 uint64_t Disk_Space_Available();
 

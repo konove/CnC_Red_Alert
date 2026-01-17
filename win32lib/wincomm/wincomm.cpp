@@ -48,13 +48,15 @@
 
 // #include "function.h"
 #include "wincomm.h"
-#include "timer.h"
+
+#include <fcntl.h>
+#include <io.h>
+#include <sys\stat.h>
+#include <sys\types.h>
+
 #include "keyboard.h"
 #include "misc.h"
-#include <io.h>
-#include <sys\types.h>
-#include <sys\stat.h>
-#include <fcntl.h>
+#include "timer.h"
 
 /*
 ** Define this to log modem activity to disk.
@@ -64,7 +66,7 @@
 /*
 ** Object represents a serial port
 */
-WinModemClass *SerialPort = NULL;
+WinModemClass* SerialPort = NULL;
 
 /***********************************************************************************************
  * WMC::WinModemClass -- WinModemClass constructor *
@@ -165,7 +167,7 @@ WinModemClass::~WinModemClass(void) {
  * HISTORY: * 1/12/96 2:11PM ST : Created *
  *=============================================================================================*/
 
-HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close) {
+HKEY Get_Registry_Sub_Key(HKEY base_key, char* search_key, BOOL close) {
   char class_string[1024];
   DWORD string_size = 1024;
   DWORD num_sub_keys;
@@ -179,8 +181,8 @@ HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close) {
   HKEY result_key;
   DWORD sub_key_buffer_size;
 
-  char *sub_key_buffer;
-  char *sub_key_class;
+  char* sub_key_buffer;
+  char* sub_key_class;
 
   if (RegQueryInfoKey(
           base_key, &class_string[0], &string_size, NULL, &num_sub_keys,
@@ -234,7 +236,7 @@ HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close) {
  *                                                                                             *
  * HISTORY: * 1/12/96 2:13PM ST : Created *
  *=============================================================================================*/
-BOOL Get_Modem_Name_From_Registry(char *buffer, int buffer_len) {
+BOOL Get_Modem_Name_From_Registry(char* buffer, int buffer_len) {
   HKEY key;
   char modem_name[256];
   DWORD modem_name_size = 256;
@@ -252,7 +254,7 @@ BOOL Get_Modem_Name_From_Registry(char *buffer, int buffer_len) {
   if (!key) return (FALSE);
 
   if (RegQueryValueEx(key, "FriendlyName", NULL, NULL,
-                      (unsigned char *)&modem_name[0],
+                      (unsigned char*)&modem_name[0],
                       &modem_name_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
     return (FALSE);
@@ -273,8 +275,8 @@ BOOL Get_Modem_Name_From_Registry(char *buffer, int buffer_len) {
  *                                                                                             *
  * INPUT:    Com port 	- 0=com1, 1=com2 etc. * baud rate 	- bits per
  *second                                                     * parity
- *- true or false                                                       * word length	- 5 to 8 bits                                                         *
- *           stop bits	- 0=1 stop bit, 1=1.5 & 2=2 *
+ *- true or false                                                       * word
+ * length	- 5 to 8 bits       * stop bits	- 0=1 stop bit, 1=1.5 & 2=2 *
  *                                                                                             *
  * OUTPUT:   Handle to port *
  *                                                                                             *
@@ -300,8 +302,8 @@ HANDLE WinModemClass::Serial_Port_Open(int com, int baud, int parity,
   char device_name[266] = {"\\\\.\\"};  // device name to open
   DWORD config_size = 2048;
   char config[2048];
-  COMMCONFIG *modem_config = (COMMCONFIG *)&config[0];
-  MODEMDEVCAPS *modem_caps;
+  COMMCONFIG* modem_config = (COMMCONFIG*)&config[0];
+  MODEMDEVCAPS* modem_caps;
   int temp;
   BOOL found_modem;
 
@@ -409,7 +411,7 @@ HANDLE WinModemClass::Serial_Port_Open(int com, int baud, int parity,
     if (modem_config->dwProviderSubType == PST_MODEM) {
       temp = modem_config->dwProviderOffset;
       temp += (int)modem_config;
-      modem_caps = (MODEMDEVCAPS *)temp;
+      modem_caps = (MODEMDEVCAPS*)temp;
       modem_caps->dwModemOptions &=
           ~(MDM_COMPRESSION | MDM_ERROR_CONTROL | MDM_FLOWCONTROL_HARD);
       SetCommConfig(PortHandle, modem_config, (unsigned)config_size);
@@ -442,9 +444,9 @@ HANDLE WinModemClass::Serial_Port_Open(int com, int baud, int parity,
  *                                                                                             *
  * INPUT:    Com port 	- 0=com1, 1=com2 etc. * baud rate 	- bits per
  *second                                                     * parity
- *- true or false                                                       * word length	- 5 to 8 bits                                                         *
- *           stop bits	- 0=1 stop bit, 1=1.5 & 2=2 * flow control- 0 = none, 1
- *= hardware                                              *
+ *- true or false                                                       * word
+ * length	- 5 to 8 bits       * stop bits	- 0=1 stop bit, 1=1.5 & 2=2 *
+ * flow control- 0 = none, 1 = hardware      *
  *                                                                                             *
  * OUTPUT:   Handle to port *
  *                                                                                             *
@@ -452,7 +454,7 @@ HANDLE WinModemClass::Serial_Port_Open(int com, int baud, int parity,
  *                                                                                             *
  * HISTORY: * 1/10/96 2:17PM ST : Created *
  *=============================================================================================*/
-HANDLE WinModemClass::Serial_Port_Open(char *device_name, int baud, int parity,
+HANDLE WinModemClass::Serial_Port_Open(char* device_name, int baud, int parity,
                                        int wordlen, int stopbits,
                                        int flowcontrol) {
   HANDLE com_handle;      // temporary storage for the port handle
@@ -707,7 +709,7 @@ void WinModemClass::Serial_Port_Close(void) {
  * HISTORY: * 1/10/96 2:26PM ST : Created *
  *=============================================================================================*/
 
-void Smart_Printf(char *format, ...);
+void Smart_Printf(char* format, ...);
 BOOL WinModemClass::Read_Serial_Chars(void) {
   DWORD bytes_read;            // amount of data read this time
   BOOL read_result;            // result of ReadFile
@@ -853,11 +855,11 @@ BOOL WinModemClass::Read_Serial_Chars(void) {
  * HISTORY: * 1/10/96 2:27PM ST : Created *
  *=============================================================================================*/
 
-int WinModemClass::Read_From_Serial_Port(unsigned char *dest_ptr,
+int WinModemClass::Read_From_Serial_Port(unsigned char* dest_ptr,
                                          int buffer_len) {
   int bytes_read;
   int bytes_to_copy = 0;
-  unsigned char *original_dest = dest_ptr;
+  unsigned char* original_dest = dest_ptr;
 
   /*
   ** Get any outstanding data from the windows serial buffer into our class'
@@ -892,7 +894,7 @@ int WinModemClass::Read_From_Serial_Port(unsigned char *dest_ptr,
 #ifdef LOG_MODEM
 
   if (bytes_read) {
-    char *outstr = new char[bytes_read + 1];
+    char* outstr = new char[bytes_read + 1];
     memcpy(outstr, original_dest, bytes_read);
     outstr[bytes_read] = 0;
     OutputDebugString(outstr);
@@ -970,14 +972,14 @@ void WinModemClass::Wait_For_Serial_Write() {
  * HISTORY: * 1/10/96 2:29PM ST : Created *
  *=============================================================================================*/
 
-void WinModemClass::Write_To_Serial_Port(unsigned char *buffer, int length) {
+void WinModemClass::Write_To_Serial_Port(unsigned char* buffer, int length) {
   DWORD bytes_written;
   BOOL write_result;
 
 #ifdef LOG_MODEM
 
   if (length) {
-    char *outstr = new char[length + 1];
+    char* outstr = new char[length + 1];
     memcpy(outstr, buffer, length);
     outstr[length] = 0;
     OutputDebugString(outstr);
@@ -1027,13 +1029,13 @@ void WinModemClass::Write_To_Serial_Port(unsigned char *buffer, int length) {
  * HISTORY: * 1/10/96 2:30PM ST : Created *
  *=============================================================================================*/
 
-extern void CCDebugString(char *);
+extern void CCDebugString(char*);
 
-int WinModemClass::Get_Modem_Result(int delay, char *buffer, int buffer_len) {
+int WinModemClass::Get_Modem_Result(int delay, char* buffer, int buffer_len) {
   CountDownTimerClass timer;
   int dest_ptr;
-  char *cr_ptr;
-  char *lf_ptr;
+  char* cr_ptr;
+  char* lf_ptr;
   int copy_bytes;
 
   // OutputDebugString ("Wincomm - In Get_Modem_Result\n");
@@ -1089,7 +1091,7 @@ int WinModemClass::Get_Modem_Result(int delay, char *buffer, int buffer_len) {
       }
 
       // OutputDebugString ("Wincomm - About to call Read_From_Serial_Port.\n");
-      dest_ptr += Read_From_Serial_Port((unsigned char *)(buffer + dest_ptr),
+      dest_ptr += Read_From_Serial_Port((unsigned char*)(buffer + dest_ptr),
                                         (int)buffer_len - dest_ptr);
       sprintf(abuffer, "Wincomm - End of inner do loop. Time is %d.\n",
               timer.Time());
@@ -1168,7 +1170,7 @@ int WinModemClass::Get_Modem_Result(int delay, char *buffer, int buffer_len) {
  *                                                                                             *
  * HISTORY: * 1/10/96 2:32PM ST : Created *
  *=============================================================================================*/
-void WinModemClass::Dial_Modem(char *dial_number) {
+void WinModemClass::Dial_Modem(char* dial_number) {
   char dial_string[80];
 
   /*
@@ -1191,7 +1193,7 @@ void WinModemClass::Dial_Modem(char *dial_number) {
   ** Write the dial command to the serial port and wait for the write to
   *complete
   */
-  Write_To_Serial_Port((unsigned char *)dial_string, strlen(dial_string));
+  Write_To_Serial_Port((unsigned char*)dial_string, strlen(dial_string));
   Wait_For_Serial_Write();
 }
 
@@ -1214,8 +1216,8 @@ void WinModemClass::Dial_Modem(char *dial_number) {
  * HISTORY: * 1/10/96 2:33PM ST : Created *
  *=============================================================================================*/
 
-int WinModemClass::Send_Command_To_Modem(char *command, char terminator,
-                                         char *buffer, int buflen, int delay,
+int WinModemClass::Send_Command_To_Modem(char* command, char terminator,
+                                         char* buffer, int buflen, int delay,
                                          int retries) {
   int times;
   unsigned char tmp_string[80];
@@ -1232,8 +1234,8 @@ int WinModemClass::Send_Command_To_Modem(char *command, char terminator,
   /*
   ** Create the command from the supplied command and terminator
   */
-  strcpy((char *)tmp_string, command);
-  strcat((char *)tmp_string, term_string);
+  strcpy((char*)tmp_string, command);
+  strcat((char*)tmp_string, term_string);
 
   /*
   ** Flush out any pending characters from the port
@@ -1248,7 +1250,7 @@ int WinModemClass::Send_Command_To_Modem(char *command, char terminator,
     ** Write the command to the serial port
     */
     // Smart_Printf("%s",tmp_string);
-    Write_To_Serial_Port(tmp_string, strlen((char *)tmp_string));
+    Write_To_Serial_Port(tmp_string, strlen((char*)tmp_string));
     Wait_For_Serial_Write();
 
     // Delay(120);
@@ -1290,7 +1292,7 @@ int WinModemClass::Send_Command_To_Modem(char *command, char terminator,
     *version so...
     */
     Sleep(100);
-    Write_To_Serial_Port((unsigned char *)"\r", 1);
+    Write_To_Serial_Port((unsigned char*)"\r", 1);
     Wait_For_Serial_Write();
     Sleep(100);
   }

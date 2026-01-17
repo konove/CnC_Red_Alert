@@ -169,60 +169,60 @@ TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 *manager of *	game objects, then a CCPtr can be instantiated for it.
 */
 template <>
-FixedIHeapClass *CCPtr<AircraftClass>::Heap = &Aircraft;
+FixedIHeapClass* CCPtr<AircraftClass>::Heap = &Aircraft;
 template <>
-FixedIHeapClass *CCPtr<AnimClass>::Heap = &Anims;
+FixedIHeapClass* CCPtr<AnimClass>::Heap = &Anims;
 template <>
-FixedIHeapClass *CCPtr<BuildingClass>::Heap = &Buildings;
+FixedIHeapClass* CCPtr<BuildingClass>::Heap = &Buildings;
 template <>
-FixedIHeapClass *CCPtr<BulletClass>::Heap = &Bullets;
+FixedIHeapClass* CCPtr<BulletClass>::Heap = &Bullets;
 template <>
-FixedIHeapClass *CCPtr<FactoryClass>::Heap = &Factories;
+FixedIHeapClass* CCPtr<FactoryClass>::Heap = &Factories;
 template <>
-FixedIHeapClass *CCPtr<HouseClass>::Heap = &Houses;
+FixedIHeapClass* CCPtr<HouseClass>::Heap = &Houses;
 template <>
-FixedIHeapClass *CCPtr<InfantryClass>::Heap = &Infantry;
+FixedIHeapClass* CCPtr<InfantryClass>::Heap = &Infantry;
 template <>
-FixedIHeapClass *CCPtr<OverlayClass>::Heap = &Overlays;
+FixedIHeapClass* CCPtr<OverlayClass>::Heap = &Overlays;
 template <>
-FixedIHeapClass *CCPtr<SmudgeClass>::Heap = &Smudges;
+FixedIHeapClass* CCPtr<SmudgeClass>::Heap = &Smudges;
 template <>
-FixedIHeapClass *CCPtr<TeamClass>::Heap = &Teams;
+FixedIHeapClass* CCPtr<TeamClass>::Heap = &Teams;
 template <>
-FixedIHeapClass *CCPtr<TeamTypeClass>::Heap = &TeamTypes;
+FixedIHeapClass* CCPtr<TeamTypeClass>::Heap = &TeamTypes;
 template <>
-FixedIHeapClass *CCPtr<TemplateClass>::Heap = &Templates;
+FixedIHeapClass* CCPtr<TemplateClass>::Heap = &Templates;
 template <>
-FixedIHeapClass *CCPtr<TerrainClass>::Heap = &Terrains;
+FixedIHeapClass* CCPtr<TerrainClass>::Heap = &Terrains;
 template <>
-FixedIHeapClass *CCPtr<TriggerClass>::Heap = &Triggers;
+FixedIHeapClass* CCPtr<TriggerClass>::Heap = &Triggers;
 template <>
-FixedIHeapClass *CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
+FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
 
 template <>
-FixedIHeapClass *CCPtr<HouseTypeClass>::Heap = &HouseTypes;
+FixedIHeapClass* CCPtr<HouseTypeClass>::Heap = &HouseTypes;
 template <>
-FixedIHeapClass *CCPtr<BuildingTypeClass>::Heap = &BuildingTypes;
+FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap = &BuildingTypes;
 template <>
-FixedIHeapClass *CCPtr<AircraftTypeClass>::Heap = &AircraftTypes;
+FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap = &AircraftTypes;
 template <>
-FixedIHeapClass *CCPtr<InfantryTypeClass>::Heap = &InfantryTypes;
+FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap = &InfantryTypes;
 template <>
-FixedIHeapClass *CCPtr<BulletTypeClass>::Heap = &BulletTypes;
+FixedIHeapClass* CCPtr<BulletTypeClass>::Heap = &BulletTypes;
 template <>
-FixedIHeapClass *CCPtr<AnimTypeClass>::Heap = &AnimTypes;
+FixedIHeapClass* CCPtr<AnimTypeClass>::Heap = &AnimTypes;
 template <>
-FixedIHeapClass *CCPtr<UnitTypeClass>::Heap = &UnitTypes;
+FixedIHeapClass* CCPtr<UnitTypeClass>::Heap = &UnitTypes;
 template <>
-FixedIHeapClass *CCPtr<VesselTypeClass>::Heap = &VesselTypes;
+FixedIHeapClass* CCPtr<VesselTypeClass>::Heap = &VesselTypes;
 template <>
-FixedIHeapClass *CCPtr<TemplateTypeClass>::Heap = &TemplateTypes;
+FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap = &TemplateTypes;
 template <>
-FixedIHeapClass *CCPtr<TerrainTypeClass>::Heap = &TerrainTypes;
+FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap = &TerrainTypes;
 template <>
-FixedIHeapClass *CCPtr<OverlayTypeClass>::Heap = &OverlayTypes;
+FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap = &OverlayTypes;
 template <>
-FixedIHeapClass *CCPtr<SmudgeTypeClass>::Heap = &SmudgeTypes;
+FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap = &SmudgeTypes;
 
 /* These variables are used to keep track of the slowest speed of a team */
 MPHType TeamMaxSpeed[10];
@@ -264,11 +264,11 @@ fixed EngineerCaptureLevel =
 
 #ifdef WIN32
 unsigned short Hard_Error_Occured = 0;
-WWMouseClass *WWMouse = nullptr;
+WWMouseClass* WWMouse = nullptr;
 #ifndef LORES
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)nullptr);
+GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void*)nullptr);
 #endif
-WinTimerClass *WindowsTimer = nullptr;
+WinTimerClass* WindowsTimer = nullptr;
 #ifdef LORES
 int ScreenWidth = 320;
 int ScreenHeight = 200;
@@ -302,7 +302,7 @@ PKey SlowKey;
 /***************************************************************************
 **	This is where the name overrides for the units will reside.
 */
-char const *NameOverride[25];
+char const* NameOverride[25];
 int NameIDOverride[25];
 
 /***************************************************************************
@@ -315,7 +315,7 @@ MissionControlClass MissionControl[MISSION_COUNT];
 **	There are various tutorial messages that can appear in the game. These
 **	are called upon by number and pointed to by this array.
 */
-char const *TutorialTextData;
+char const* TutorialTextData;
 uint16_t TutorialTextOffsets[225];
 
 /***************************************************************************
@@ -329,7 +329,7 @@ CCINIClass AftermathINI;
 **	This points to the benchmark objects that are allocated only if the
 **	machine is running on a Pentium and this is a debug version.
 */
-Benchmark *Benches;
+Benchmark* Benches;
 
 /***************************************************************************
 **	General rules that control the game.
@@ -340,7 +340,7 @@ RulesClass Rule;
 ** All keyboard input is routed through the object pointed to by this
 **	keyboard class pointer.
 */
-KeyboardClass *Keyboard;
+KeyboardClass* Keyboard;
 
 /***************************************************************************
 **	Remap control array. This is used to hold the remap
@@ -372,7 +372,7 @@ RandomStraw CryptRandom;
 *functions *	are used to control access to this list. Do not modify it
 *directly.
 */
-DynamicVectorClass<ObjectClass *> CurrentObject;
+DynamicVectorClass<ObjectClass*> CurrentObject;
 
 /***************************************************************************
 **	This is the game version.
@@ -443,14 +443,14 @@ bool PlayerAborts;
 **	is played at a time, this buffer is only as big as the largest speech
 **	sample that can be played.
 */
-void *SpeechBuffer[2];
+void* SpeechBuffer[2];
 VoxType SpeechRecord[2];
 
 /***************************************************************************
 **	The theater specific mixfiles are cached into the buffer pointed to by
 **	this global.
 */
-Buffer *TheaterBuffer;
+Buffer* TheaterBuffer;
 
 /***************************************************************************
 **	This is a running accumulation of the number of ticks that were unused.
@@ -473,12 +473,12 @@ DMonoType MonoPage = DMONO_STRESS;  // The current page.
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MFCD *TheaterData = nullptr;
-MFCD *MoviesMix = nullptr;
-MFCD *GeneralMix = nullptr;
-MFCD *ScoreMix = nullptr;
-MFCD *MainMix = nullptr;
-MFCD *ConquerMix = nullptr;
+MFCD* TheaterData = nullptr;
+MFCD* MoviesMix = nullptr;
+MFCD* GeneralMix = nullptr;
+MFCD* ScoreMix = nullptr;
+MFCD* MainMix = nullptr;
+MFCD* ConquerMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
@@ -545,8 +545,8 @@ int BuildLevel = 10;  // Buildable level (1 = simplest)
 **	The various tutor and dialog messages are located in the data block
 **	referenced by this pointer.
 */
-char const *SystemStrings;
-char const *DebugStrings;
+char const* SystemStrings;
+char const* DebugStrings;
 
 /***************************************************************************
 **	The game plays as long as this var is true.
@@ -572,22 +572,22 @@ CELL CurrentCell = 0;
 **	pointers to the fonts. If it is NULL, then the font hasn't been loaded
 **	yet.
 */
-void const *Metal12FontPtr;  // Font for use on in-game tabs in hires
-void const *MapFontPtr;      // Standard very small font.
-void const *TypeFontPtr;     // Teletype font for mission briefings.
-void const *Font3Ptr;        // Standard very small font.
-void const *Font6Ptr;        // Standard small font.
-void const *EditorFont;      // Font used for scenario editor.
-void const *Font8Ptr;        // 8 point proportional.
-void const *FontLEDPtr;      // LED fixed point font.
-void const *VCRFontPtr;      // VCR font pointer.
-void const *ScoreFontPtr;    // font for score & map selection screens
-void const *GradFont6Ptr;    // gradient 6 point font pointer.
+void const* Metal12FontPtr;  // Font for use on in-game tabs in hires
+void const* MapFontPtr;      // Standard very small font.
+void const* TypeFontPtr;     // Teletype font for mission briefings.
+void const* Font3Ptr;        // Standard very small font.
+void const* Font6Ptr;        // Standard small font.
+void const* EditorFont;      // Font used for scenario editor.
+void const* Font8Ptr;        // 8 point proportional.
+void const* FontLEDPtr;      // LED fixed point font.
+void const* VCRFontPtr;      // VCR font pointer.
+void const* ScoreFontPtr;    // font for score & map selection screens
+void const* GradFont6Ptr;    // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.
 */
-HouseClass *PlayerPtr;
+HouseClass* PlayerPtr;
 
 /***************************************************************************
 **	Special palettes for MCGA mode goes here. These palette buffers are used
@@ -619,10 +619,10 @@ QueueClass<EventClass, (MAX_EVENTS * 64)> MirrorList;
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
-DynamicVectorClass<TriggerClass *> HouseTriggers[HOUSE_COUNT];
-DynamicVectorClass<TriggerClass *> MapTriggers;
+DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
+DynamicVectorClass<TriggerClass*> MapTriggers;
 int MapTriggerID;
-DynamicVectorClass<TriggerClass *> LogicTriggers;
+DynamicVectorClass<TriggerClass*> LogicTriggers;
 int LogicTriggerID;
 
 /***************************************************************************
@@ -635,7 +635,7 @@ BaseClass Base;
 **	pseudo saved game that might be carried along with the current saved
 **	game.
 */
-CarryoverClass *Carryover;
+CarryoverClass* Carryover;
 
 /***************************************************************************
 ** This value is computed every time a new scenario is loaded; it's a
@@ -709,7 +709,7 @@ IPXManagerClass Ipx(
 ** - The TEN internal player ID is used to determine the player's color.
 ** - Ten's broadcast destination address -1
 */
-TenConnManClass *Ten = NULL;
+TenConnManClass* Ten = NULL;
 
 #endif
 
@@ -720,7 +720,7 @@ TenConnManClass *Ten = NULL;
 ** - The player's color is read from the OPTIONS.INI file
 ** - MPath's broadcast destination address is 0
 */
-MPlayerManClass *MPath = NULL;
+MPlayerManClass* MPath = NULL;
 
 #endif
 
@@ -772,10 +772,10 @@ GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 #else
-GraphicBufferClass HidPage(DEFAULT_SCREEN_WIDTH, 201, (void *)NULL);
-GraphicBufferClass SeenBuff(320, 200, (void *)0xA0000L);
+GraphicBufferClass HidPage(DEFAULT_SCREEN_WIDTH, 201, (void*)NULL);
+GraphicBufferClass SeenBuff(320, 200, (void*)0xA0000L);
 VideoBufferClass SeenPage;
-GraphicBufferClass &VisiblePage = SeenBuff;
+GraphicBufferClass& VisiblePage = SeenBuff;
 #endif
 
 int SoundOn;
@@ -827,12 +827,12 @@ int UnitBuildPenalty = 100;
 #ifdef MCIMPEG
 #include "ra/mcimovie.h"
 
-MCIMovie *MciMovie = NULL;
+MCIMovie* MciMovie = NULL;
 #endif
 
 #include "ra/mpgset.h"
 
-MPGSettings *MpgSettings = NULL;
+MPGSettings* MpgSettings = NULL;
 #endif
 
 bool bAutoSonarPulse = false;

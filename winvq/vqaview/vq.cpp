@@ -87,7 +87,7 @@
 // PRIVATE FUNCTIONS
 //==========================================================================
 
-long Disk_VQA_Stream_Handler(VQAHandle *vqa_handle, long action, void *buffer,
+long Disk_VQA_Stream_Handler(VQAHandle* vqa_handle, long action, void* buffer,
                              long nbytes);
 
 #if (DEBUG_CODE)
@@ -119,8 +119,8 @@ int Debug_Movie_Frame_Rate = -1;
  *                                                                         *
  * HISTORY: See PVCS log                                                   *
  *=========================================================================*/
-VQAClass::VQAClass(char *filename, char *buffer, short media_src,
-                   long (*callback)(unsigned char *, long)) {
+VQAClass::VQAClass(char* filename, char* buffer, short media_src,
+                   long (*callback)(unsigned char*, long)) {
   // Initialize config options.
   VQA_DefaultConfig(&vqa_config);
 
@@ -128,7 +128,7 @@ VQAClass::VQAClass(char *filename, char *buffer, short media_src,
   // Set up video config options.
   //-------------------------------------------------------------------------
   vqa_config.Vmode = 0;
-  vqa_config.ImageBuf = (unsigned char *)buffer;
+  vqa_config.ImageBuf = (unsigned char*)buffer;
 
   //
   // Set up draw options.
@@ -240,7 +240,7 @@ VQAClass::~VQAClass(void) {
  *                                                                         *
  * HISTORY: See PVCS log                                                   *
  *=========================================================================*/
-long Disk_VQA_Stream_Handler(VQAHandle *vqa_handle, long action, void *buffer,
+long Disk_VQA_Stream_Handler(VQAHandle* vqa_handle, long action, void* buffer,
                              long nbytes) {
   unsigned char temp_char;
   int fh;
@@ -300,7 +300,7 @@ long Disk_VQA_Stream_Handler(VQAHandle *vqa_handle, long action, void *buffer,
     // VQACMD_OPEN asks that you open your stream for access.
     //
     case VQACMD_OPEN:
-      error = Open_File((char const *)buffer, READ);
+      error = Open_File((char const*)buffer, READ);
       if (error != kInvalidHandle) {
         vqa_handle->VQAio = error;
         error = 0;
@@ -356,7 +356,7 @@ long Disk_VQA_Stream_Handler(VQAHandle *vqa_handle, long action, void *buffer,
  * HISTORY: * 12/12/95 12:16PM ST : Created *
  *=============================================================================================*/
 
-void Increase_Palette_Luminance(unsigned char *palette, int red_percentage,
+void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
                                 int green_percentage, int blue_percentage) {
   unsigned int red;
   unsigned int green;
@@ -400,9 +400,9 @@ void Increase_Palette_Luminance(unsigned char *palette, int red_percentage,
 extern BOOL SuspendAudioCallback;
 extern "C" unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE]
                                                     [SIZE_OF_PALETTE];
-BOOL VQAClass::Update_Palette(unsigned char *newpalette) {
-  unsigned char *pal_src = newpalette;
-  unsigned char *pal_dst = palette;
+BOOL VQAClass::Update_Palette(unsigned char* newpalette) {
+  unsigned char* pal_src = newpalette;
+  unsigned char* pal_dst = palette;
 
   for (int j = 0; j < SIZE_OF_PALETTE * 3; j++) {
     *pal_dst++ = (*pal_src++) << 2;
@@ -425,7 +425,7 @@ BOOL VQAClass::Update_Palette(unsigned char *newpalette) {
     for (int i = 0; i < 50; i++) {
       if (!InterpolatedPalettes[i]) {
         InterpolatedPalettes[i] =
-            (unsigned char *)malloc(SIZE_OF_PALETTE * SIZE_OF_PALETTE);
+            (unsigned char*)malloc(SIZE_OF_PALETTE * SIZE_OF_PALETTE);
         memcpy(InterpolatedPalettes[i], &Palette_Interpolation_Table[0][0],
                SIZE_OF_PALETTE * SIZE_OF_PALETTE);
         NumPalettes++;
@@ -454,7 +454,7 @@ BOOL VQAClass::Update_Palette(unsigned char *newpalette) {
  *                                                                                             *
  * HISTORY: * 12/21/95 10:34AM ST : Created *
  *=============================================================================================*/
-void Strip_Interpolated_Palette(unsigned char *interpal) {
+void Strip_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     memset(interpal + (y * 256 + y + 1), 0, 256 - y - 1);
   }
@@ -474,7 +474,7 @@ void Strip_Interpolated_Palette(unsigned char *interpal) {
  *                                                                                             *
  * HISTORY: * 12/21/95 10:35AM ST : Created *
  *=============================================================================================*/
-void Rebuild_Interpolated_Palette(unsigned char *interpal) {
+void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
       *(interpal + (y * 256 + x)) = *(interpal + (x * 256 + y));
@@ -498,7 +498,7 @@ void Rebuild_Interpolated_Palette(unsigned char *interpal) {
  *=============================================================================================*/
 
 void VQAClass::Read_Palettes(void) {
-  unsigned char *comp_buff = (unsigned char *)malloc(65536);
+  unsigned char* comp_buff = (unsigned char*)malloc(65536);
   unsigned comp_size;
 
   NumPalettes = 0;
@@ -535,7 +535,7 @@ void VQAClass::Read_Palettes(void) {
     ** Read each palette. Palettes are all the same size.
     */
     for (i = 0; i < NumPalettes; i++) {
-      InterpolatedPalettes[i] = (unsigned char *)malloc(65536);
+      InterpolatedPalettes[i] = (unsigned char*)malloc(65536);
       memset(InterpolatedPalettes[i], 0, 65536);
 
       for (int y = 0; y < 256; y++) {
@@ -575,7 +575,7 @@ void VQAClass::Read_Palettes(void) {
  *=============================================================================================*/
 
 void VQAClass::Write_Palettes(void) {
-  unsigned char *comp_buff = (unsigned char *)malloc(65536);
+  unsigned char* comp_buff = (unsigned char*)malloc(65536);
   unsigned comp_size;
 
   /*
@@ -627,7 +627,7 @@ void VQAClass::Write_Palettes(void) {
  *=========================================================================*/
 BOOL VQAClass::Open_And_Load_Buffers(void) {
   VQAInfo vqa_info;
-  unsigned char *pal_ptr;
+  unsigned char* pal_ptr;
   INT i;
 
   //
@@ -642,7 +642,7 @@ BOOL VQAClass::Open_And_Load_Buffers(void) {
   //
   // Get the VQA's palette.
   //
-  pal_ptr = (unsigned char *)VQA_GetPalette(vqa_handle);
+  pal_ptr = (unsigned char*)VQA_GetPalette(vqa_handle);
   if (pal_ptr) {
     //
     // Get a copy of the VQA's palette.

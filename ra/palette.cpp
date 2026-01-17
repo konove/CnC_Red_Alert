@@ -12,9 +12,9 @@
 
 PaletteClass PaletteClass::CurrentPalette;
 
-unsigned char *CurrentPalette = PaletteClass::CurrentPalette;
+unsigned char* CurrentPalette = PaletteClass::CurrentPalette;
 
-PaletteClass::PaletteClass(const RGBClass &col) {
+PaletteClass::PaletteClass(const RGBClass& col) {
   for (int i = 0; i < COLOR_COUNT; i++) data_[i] = col;
 }
 
@@ -30,9 +30,9 @@ void PaletteClass::Set(int fade, void (*callback)()) {
 
       if (cur_time > fade) cur_time = fade;
 
-      const unsigned char *old_ptr = CurrentPalette;
-      const unsigned char *new_ptr = *this;
-      unsigned char *out_ptr = fade_palette;
+      const unsigned char* old_ptr = CurrentPalette;
+      const unsigned char* new_ptr = *this;
+      unsigned char* out_ptr = fade_palette;
 
       for (int c = 0; c < COLOR_COUNT * 3; c++) {
         int new_val = *new_ptr++ & 0x3F;
@@ -60,17 +60,17 @@ void PaletteClass::Set(int fade, void (*callback)()) {
 // presumably this is to force a palette update
 void PaletteClass::Adjust(int) {}
 
-void PaletteClass::Adjust(int, PaletteClass &) {}
+void PaletteClass::Adjust(int, PaletteClass&) {}
 
-void PaletteClass::Partial_Adjust(int, char *) {
+void PaletteClass::Partial_Adjust(int, char*) {
   printf("PaletteClass::%s\n", __func__);
 }
 
-void PaletteClass::Partial_Adjust(int, PaletteClass &, char *) {
+void PaletteClass::Partial_Adjust(int, PaletteClass&, char*) {
   printf("PaletteClass::%s\n", __func__);
 }
 
-int PaletteClass::Closest_Color(const RGBClass &col) const {
+int PaletteClass::Closest_Color(const RGBClass& col) const {
   int index = -1;
   int diff = 256 * 3;
 
@@ -91,19 +91,19 @@ int PaletteClass::Closest_Color(const RGBClass &col) const {
   return index;
 }
 
-RGBClass &PaletteClass::operator[](int index) { return data_[index]; }
+RGBClass& PaletteClass::operator[](int index) { return data_[index]; }
 
-const RGBClass &PaletteClass::operator[](int index) const {
+const RGBClass& PaletteClass::operator[](int index) const {
   return data_[index];
 }
 
-PaletteClass::operator unsigned char *() { return (unsigned char *)data_; }
+PaletteClass::operator unsigned char*() { return (unsigned char*)data_; }
 
-PaletteClass::operator const unsigned char *() const {
-  return (const unsigned char *)data_;
+PaletteClass::operator const unsigned char*() const {
+  return (const unsigned char*)data_;
 }
 
-void Set_Palette(void *palette) {
+void Set_Palette(void* palette) {
   memcpy(&PaletteClass::CurrentPalette, palette, PaletteClass::COLOR_COUNT * 3);
   Do_Set_Palette(palette);
 }

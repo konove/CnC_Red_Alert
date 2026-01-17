@@ -54,7 +54,7 @@
  *   05/03/1994 BR : Created.                                              *
  *=========================================================================*/
 #pragma argsused
-WORD Main_Program(WORD argc, BYTE *argv[]) { return (TRUE); }
+WORD Main_Program(WORD argc, BYTE* argv[]) { return (TRUE); }
 
 //////////////////////////////////// End of File
 ////////////////////////////////////////

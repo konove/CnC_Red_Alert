@@ -77,9 +77,9 @@ MPlayerManClass::MPlayerManClass(void) : ConnManClass() {
 // here's what we do to get private & broadcasts over the same chunnel
 // we package up an extra dword at the beginning to indicate the address
 
-int MPlayerManClass::Send_Private_Message(void *buf, int buflen,
+int MPlayerManClass::Send_Private_Message(void* buf, int buflen,
                                           int /* ack_req */, int conn_id) {
-  RTQ_NODE *n;
+  RTQ_NODE* n;
   int idx = Connection_Index(conn_id);
 
   if (_nConnections == 0) {
@@ -88,7 +88,7 @@ int MPlayerManClass::Send_Private_Message(void *buf, int buflen,
 
   while ((n = MGenMoveTo(FREEQUEUE, DOSWORKQUEUE)) == 0);
 
-  packet *p = (packet *)n->rtqDatum;
+  packet* p = (packet*)n->rtqDatum;
 
   if (conn_id == CONNECTION_NONE) {
     p->address = BROADCAST_ADDR;
@@ -106,8 +106,8 @@ int MPlayerManClass::Send_Private_Message(void *buf, int buflen,
   return STATUS_OK;
 }
 
-int MPlayerManClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
-  RTQ_NODE *n;
+int MPlayerManClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
+  RTQ_NODE* n;
   int i;
 
   if ((n = MGenMoveTo(DOSPENDINGQUEUE, DOSWORKQUEUE)) == 0) {
@@ -115,7 +115,7 @@ int MPlayerManClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
     return 0;
   }
 
-  packet *p = (packet *)n->rtqDatum;
+  packet* p = (packet*)n->rtqDatum;
 
   int lentocpy = n->rtqUpCtr - sizeof(DWORD);
 
@@ -136,13 +136,13 @@ int MPlayerManClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
   return STATUS_OK;
 }
 
-int MPlayerManClass::Send_Global_Message(void *buf, int buflen, int /*ack_req*/,
+int MPlayerManClass::Send_Global_Message(void* buf, int buflen, int /*ack_req*/,
                                          int address) {
-  RTQ_NODE *n;
+  RTQ_NODE* n;
 
   while ((n = MGenMoveTo(FREEQUEUE, DOSWORKQUEUE)) == 0);
 
-  packet *p = (packet *)n->rtqDatum;
+  packet* p = (packet*)n->rtqDatum;
 
   if (address == 0) {
     p->address = BROADCAST_ADDR;
@@ -160,15 +160,15 @@ int MPlayerManClass::Send_Global_Message(void *buf, int buflen, int /*ack_req*/,
   return STATUS_OK;
 }
 
-int MPlayerManClass::Get_Global_Message(void *buf, int *buflen, int *address) {
-  RTQ_NODE *n;
+int MPlayerManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
+  RTQ_NODE* n;
 
   if ((n = MGenMoveTo(GDOSPENDINGQUEUE, DOSWORKQUEUE)) == 0) {
     *buflen = 0;
     return 0;
   }
 
-  packet *p = (packet *)n->rtqDatum;
+  packet* p = (packet*)n->rtqDatum;
 
   int lentocpy = n->rtqUpCtr - sizeof(DWORD);
 
@@ -191,7 +191,7 @@ int MPlayerManClass::Get_Global_Message(void *buf, int *buflen, int *address) {
 
 int MPlayerManClass::Service(void) { return STATUS_OK; }
 
-int MPlayerManClass::Create_Connection(int id, char *name, int address) {
+int MPlayerManClass::Create_Connection(int id, char* name, int address) {
   _Connections[_nConnections] = address;
   _ID[_nConnections] = id;
   strcpy(_Names[_nConnections], name);
@@ -213,7 +213,7 @@ int MPlayerManClass::Delete_Connection(int id) {
   return STATUS_OK;
 }
 
-char *MPlayerManClass::Connection_Name(int id) {
+char* MPlayerManClass::Connection_Name(int id) {
   int idx = Connection_Index(id);
   if (idx == -1) {
     return (NULL);
@@ -274,7 +274,7 @@ void MPlayerManClass::Set_Timing(unsigned long /*retrydelta*/,
 }
 
 void MPlayerManClass::Configure_Debug(int /*index*/, int /*type_offset*/,
-                                      int /*type_size*/, char ** /*names*/,
+                                      int /*type_size*/, char** /*names*/,
                                       int /*namestart*/, int /*namecount*/) {
   // unsupported
 }

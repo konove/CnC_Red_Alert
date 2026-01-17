@@ -57,7 +57,7 @@
 /*
 **	Pointer to the first search path record.
 */
-CDFileClass::SearchDriveType *CDFileClass::First = nullptr;
+CDFileClass::SearchDriveType* CDFileClass::First = nullptr;
 
 int CDFileClass::current_cd_drive_ = 0;
 int CDFileClass::last_cd_drive_ = 0;
@@ -74,7 +74,7 @@ int __cdecl Is_Disk_Inserted(int disk) {
   return ret;
 }
 
-CDFileClass::CDFileClass(char const *filename) : IsDisabled(false) {
+CDFileClass::CDFileClass(char const* filename) : IsDisabled(false) {
   Set_Name(filename);
   memset(RawPath, 0, sizeof(RawPath));
 }
@@ -158,7 +158,7 @@ void CDFileClass::Refresh_Search_Drives(void) {
  * HISTORY: * 10/18/1994 JLB : Created. * 05/21/1996 ST  : Modified to recognise
  *multiple CD drives                                 *
  *=============================================================================================*/
-int CDFileClass::Set_Search_Drives(char *pathlist) {
+int CDFileClass::Set_Search_Drives(char* pathlist) {
   bool found = false;
   bool empty = false;
   /*
@@ -175,7 +175,7 @@ int CDFileClass::Set_Search_Drives(char *pathlist) {
     port::SafeAppend(RawPath, pathlist);
   }
 
-  char const *ptr = strtok(pathlist, ";");
+  char const* ptr = strtok(pathlist, ";");
   while (ptr) {
     if (strlen(ptr)) {
       char path[PATH_MAX];  // Working path buffer.
@@ -267,8 +267,8 @@ void CDFileClass::Set_CD_Drive(int drive) {
  * HISTORY: * 5/22/96 10:12AM ST : Created *
  *=============================================================================================*/
 
-void CDFileClass::Add_Search_Drive(char *path) {
-  SearchDriveType *srch;  // Working pointer to path object.
+void CDFileClass::Add_Search_Drive(char* path) {
+  SearchDriveType* srch;  // Working pointer to path object.
   /*
   **	Allocate a record structure.
   */
@@ -286,10 +286,10 @@ void CDFileClass::Add_Search_Drive(char *path) {
   if (!First) {
     First = srch;
   } else {
-    SearchDriveType *chain = First;
+    SearchDriveType* chain = First;
 
     while (chain->Next) {
-      chain = (SearchDriveType *)chain->Next;
+      chain = (SearchDriveType*)chain->Next;
     }
     chain->Next = srch;
   }
@@ -310,15 +310,15 @@ void CDFileClass::Add_Search_Drive(char *path) {
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 void CDFileClass::Clear_Search_Drives(void) {
-  SearchDriveType *chain;  // Working pointer to path chain.
+  SearchDriveType* chain;  // Working pointer to path chain.
 
   chain = First;
   while (chain) {
-    SearchDriveType *next;
+    SearchDriveType* next;
 
-    next = (SearchDriveType *)chain->Next;
+    next = (SearchDriveType*)chain->Next;
     if (chain->Path) {
-      free((char *)chain->Path);
+      free((char*)chain->Path);
     }
     delete chain;
 
@@ -350,7 +350,7 @@ void CDFileClass::Clear_Search_Drives(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-char const *CDFileClass::Set_Name(char const *filename) {
+char const* CDFileClass::Set_Name(char const* filename) {
   /*
   **	Try to find the file in the current directory first. If it can be found,
   *then *	just return with the normal file name setting process. Do the
@@ -367,7 +367,7 @@ char const *CDFileClass::Set_Name(char const *filename) {
   *still can't be found, then just *	fall into the normal raw file filename
   *setting system.
   */
-  SearchDriveType *srch = First;
+  SearchDriveType* srch = First;
 
   while (srch) {
     char path[_MAX_PATH];
@@ -392,7 +392,7 @@ char const *CDFileClass::Set_Name(char const *filename) {
     /*
     **	It wasn't found, so try the next path entry.
     */
-    srch = (SearchDriveType *)srch->Next;
+    srch = (SearchDriveType*)srch->Next;
   }
 
   /*
@@ -427,7 +427,7 @@ char const *CDFileClass::Set_Name(char const *filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(char const *filename, int rights) {
+int CDFileClass::Open(char const* filename, int rights) {
   Close();
 
   /*

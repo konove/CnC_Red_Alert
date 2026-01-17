@@ -58,7 +58,7 @@
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void FlasherClass::Debug_Dump(MonoClass *mono) const {
+void FlasherClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(50, 7);
   mono->Printf("%2d", FlashCount);
 }

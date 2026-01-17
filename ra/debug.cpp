@@ -133,7 +133,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_O: {
-        AircraftClass *air =
+        AircraftClass* air =
             new AircraftClass(AIRCRAFT_HIND, PlayerPtr->Class->House);
         if (air) {
           air->Height = 0;
@@ -142,7 +142,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_B: {
-        AircraftClass *air =
+        AircraftClass* air =
             new AircraftClass(AIRCRAFT_LONGBOW, PlayerPtr->Class->House);
         if (air) {
           air->Height = 0;
@@ -220,9 +220,9 @@ void Debug_Key(unsigned input) {
           Map.Recalc();
           // CurrentObject[0]->Detach_All();
           if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING) {
-            ((BuildingClass *)CurrentObject[0])->Sell_Back(1);
+            ((BuildingClass*)CurrentObject[0])->Sell_Back(1);
           } else {
-            ObjectClass *object = CurrentObject[0];
+            ObjectClass* object = CurrentObject[0];
             object->Unselect();
             object->Limbo();
             delete object;
@@ -295,8 +295,8 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          TechnoTypeClass const &ttype =
-              (TechnoTypeClass const &)CurrentObject[0]->Class_Of();
+          TechnoTypeClass const& ttype =
+              (TechnoTypeClass const&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.PrimaryWeapon != NULL) weapon = ttype.PrimaryWeapon->Range;
@@ -350,7 +350,7 @@ void Debug_Key(unsigned input) {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-static char const *Bench_Time(BenchType btype) {
+static char const* Bench_Time(BenchType btype) {
   static char buffer[32];
 
   int rootcount = Benches[BENCH_GAME_FRAME].Count();
@@ -387,7 +387,7 @@ static char const *Bench_Time(BenchType btype) {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-static void Benchmarks(MonoClass *mono) {
+static void Benchmarks(MonoClass* mono) {
   static bool _first = true;
   if (_first) {
     _first = false;
@@ -477,7 +477,7 @@ static void Benchmarks(MonoClass *mono) {
  *=============================================================================================*/
 #define UPDATE_INTERVAL TIMER_SECOND
 void Self_Regulate(void) {
-  static ObjectClass *_lastobject = 0;
+  static ObjectClass* _lastobject = 0;
   static bool _first = true;
 
   if (DebugTimer == 0) {
@@ -497,7 +497,7 @@ void Self_Regulate(void) {
       */
       Logic.Debug_Dump(&MonoArray[DMONO_STRESS]);
 
-      MonoClass *mono = &MonoArray[MonoPage];
+      MonoClass* mono = &MonoArray[MonoPage];
       mono->Set_Default_Attribute(MonoClass::NORMAL);
       mono->View();
 
@@ -547,7 +547,7 @@ void Self_Regulate(void) {
             _lastobject = 0;
           }
           if (_lastobject && _lastobject->Is_Techno()) {
-            ((TechnoClass *)_lastobject)->House->Debug_Dump(mono);
+            ((TechnoClass*)_lastobject)->House->Debug_Dump(mono);
           }
           break;
 

@@ -217,7 +217,7 @@ class FootClass : public TechnoClass {
   *that everyone is going *	to move to a new location, it would inform each
   *of the objects by chaining *	through this pointer.
   */
-  FootClass *Member;
+  FootClass* Member;
 
   /*
   **	Since all objects derived from this class move according to a path list.
@@ -266,7 +266,7 @@ class FootClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FootClass(NoInitClass const &x)
+  FootClass(NoInitClass const& x)
       : TechnoClass(x), Team(x), PathDelay(x), BaseAttackTimer(x) {};
   FootClass(RTTIType rtti, int id, HousesType house);
 
@@ -275,11 +275,11 @@ class FootClass : public TechnoClass {
   */
   bool Basic_Path(void);
 
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual bool Can_Demolish(void) const;
-  bool Is_Recruitable(HouseClass const *house = nullptr) const;
+  bool Is_Recruitable(HouseClass const* house = nullptr) const;
   bool Is_On_Priority_Mission(void) const;
 
   /*
@@ -294,7 +294,7 @@ class FootClass : public TechnoClass {
   **	occupation flags and driver instructions.
   */
   COORDINATE Head_To_Coord(void) const { return (HeadToCoord); };
-  virtual bool Start_Driver(COORDINATE &headto);
+  virtual bool Start_Driver(COORDINATE& headto);
   virtual bool Stop_Driver(void);
   virtual void Assign_Destination(TARGET target);
   bool Is_Allowed_To_Leave_Map(void) const;
@@ -309,17 +309,17 @@ class FootClass : public TechnoClass {
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell);
 
   /*
   **	Combat related.
   */
   virtual void Stun(void);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr,
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr,
                                  bool forced = false);
-  virtual void Death_Announcement(TechnoClass const *source = nullptr) const;
+  virtual void Death_Announcement(TechnoClass const* source = nullptr) const;
 
   /*
   **	AI.
@@ -343,7 +343,7 @@ class FootClass : public TechnoClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
@@ -354,11 +354,11 @@ class FootClass : public TechnoClass {
   void Clear_Navigation_List(void);
   virtual void Per_Cell_Process(PCPType why);
   virtual void Approach_Target(void);
-  virtual void Fixup_Path(PathType *) {};
+  virtual void Fixup_Path(PathType*) {};
   virtual void Set_Speed(int speed);
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType from = FACING_NONE) const;
-  int Optimize_Moves(PathType *path, MoveType threshhold);
+  int Optimize_Moves(PathType* path, MoveType threshhold);
   virtual void Override_Mission(MissionType mission, TARGET tarcom,
                                 TARGET navcom);
   virtual bool Restore_Mission(void);
@@ -376,16 +376,16 @@ class FootClass : public TechnoClass {
  private:
   int Passable_Cell(CELL cell, FacingType face, int threat,
                     MoveType threshhold);
-  PathType *Find_Path(CELL dest, FacingType *final_moves, int maxlen,
+  PathType* Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                       MoveType threshhold);
-  void Debug_Draw_Map(char const *txt, CELL start, CELL dest, bool pause);
-  void Debug_Draw_Path(PathType *path);
-  bool Follow_Edge(CELL start, CELL target, PathType *path, FacingType search,
+  void Debug_Draw_Map(char const* txt, CELL start, CELL dest, bool pause);
+  void Debug_Draw_Path(PathType* path);
+  bool Follow_Edge(CELL start, CELL target, PathType* path, FacingType search,
                    FacingType olddir, int threat, int threat_stage,
                    int max_cells, MoveType threshhold);
-  bool Register_Cell(PathType *path, CELL cell, FacingType dir, int cost,
+  bool Register_Cell(PathType* path, CELL cell, FacingType dir, int cost,
                      MoveType threshhold);
-  bool Unravel_Loop(PathType *path, CELL &cell, FacingType &dir, int sx, int sy,
+  bool Unravel_Loop(PathType* path, CELL& cell, FacingType& dir, int sx, int sy,
                     int dx, int dy, MoveType threshhold);
 
   /*

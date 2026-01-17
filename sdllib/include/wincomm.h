@@ -56,7 +56,7 @@ typedef enum WinCommDialMethodType {
 #define COMMUSERABORT -16
 #define ASSUCCESS COMMSUCCESS
 #define ASUSERABORT COMMUSERABORT
-typedef void *HANDLE;
+typedef void* HANDLE;
 
 // same enum as in the class below
 enum { CTS_SET = 0x10, DSR_SET = 0x20, RI_SET = 0x40, CD_SET = 0x80 };
@@ -82,7 +82,7 @@ class WinModemClass {
   */
   // virtual	HANDLE	Serial_Port_Open (int port, int baud, int parity, int
   // wordlen, int stopbits);
-  virtual HANDLE Serial_Port_Open(char *device_name, int baud, int parity,
+  virtual HANDLE Serial_Port_Open(char* device_name, int baud, int parity,
                                   int wordlen, int stopbits, int flowcontrol);
 
   /*
@@ -99,14 +99,14 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: ReadBuffer
   */
-  int Read_From_Serial_Port(unsigned char *dest_ptr, int buffer_len);
+  int Read_From_Serial_Port(unsigned char* dest_ptr, int buffer_len);
 
   /*
   ** Write chars to the serial port
   **
   ** Replacement for Greenleaf function: WriteBuffer
   */
-  void Write_To_Serial_Port(unsigned char *buffer, int length);
+  void Write_To_Serial_Port(unsigned char* buffer, int length);
 
   /*
   ** Wait for the outgoing buffer to empty
@@ -140,7 +140,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMInputLine
   */
-  virtual int Get_Modem_Result(int delay, const char *buffer, int buffer_len);
+  virtual int Get_Modem_Result(int delay, const char* buffer, int buffer_len);
 
   /*
   ** Issue a dial command to the modem.
@@ -148,14 +148,14 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMDial
   */
-  virtual void Dial_Modem(const char *dial_number);
+  virtual void Dial_Modem(const char* dial_number);
 
   /*
   ** Send a command to the modem. This is usually an 'AT' command.
   ** Function will optionally retry until 'OK' is received.
   */
-  virtual int Send_Command_To_Modem(const char *command, char terminator,
-                                    char *buffer, int buflen, int delay,
+  virtual int Send_Command_To_Modem(const char* command, char terminator,
+                                    char* buffer, int buflen, int delay,
                                     int retries);
 
   /*
@@ -198,7 +198,7 @@ class WinModemClass {
   /*
   ** Pointer to the internal class circular buffer for incoming data
   */
-  unsigned char *SerialBuffer;
+  unsigned char* SerialBuffer;
 
   /*
   ** Head and Tail pointers for our internal serial buffer
@@ -233,16 +233,15 @@ class WinNullModemClass : public WinModemClass {
   virtual inline void Set_Modem_Dial_Type(int) {};
   virtual inline unsigned Get_Modem_Status(void) { return (0); };
   virtual inline void Set_Serial_DTR(bool) {};
-  virtual inline int Get_Modem_Result(int, char *, int) { return (0); };
-  virtual inline void Dial_Modem(char *) {};
-  virtual inline int Send_Command_To_Modem(char *, char, char *, int, int,
-                                           int) {
+  virtual inline int Get_Modem_Result(int, char*, int) { return (0); };
+  virtual inline void Dial_Modem(char*) {};
+  virtual inline int Send_Command_To_Modem(char*, char, char*, int, int, int) {
     return (0);
   };
   virtual inline void Set_Echo_Function(void (*)(char)) {};
   virtual inline void Set_Abort_Function(int (*)(void)) {};
 };
 
-extern WinModemClass *SerialPort;
+extern WinModemClass* SerialPort;
 
 #endif  // CNC_RED_ALERT_SDLLIB_WINCOMM_H_

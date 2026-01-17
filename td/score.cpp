@@ -111,12 +111,12 @@
 struct InfantryAnim {
   int xpos;
   int ypos;
-  void const *shapefile;
-  void const *remap;
+  void const* shapefile;
+  void const* remap;
   int anim;
   int stage;
   char delay;
-  InfantryTypeClass const *Class;
+  InfantryTypeClass const* Class;
 } InfantryMan[NUMINFANTRYMEN];
 void Draw_InfantryMen(void);
 void Draw_InfantryMan(int index);
@@ -127,16 +127,16 @@ void Animate_Score_Objs(void);
 void Cycle_Wait_Click(void);
 int ScorePass;
 
-void const *Beepy6;
+void const* Beepy6;
 int ControlQ;  // cheat key to skip past score/mapsel screens
 bool StillUpdating;
 
-GraphicBufferClass *PseudoSeenBuff;
-GraphicBufferClass *TextPrintBuffer;
+GraphicBufferClass* PseudoSeenBuff;
+GraphicBufferClass* TextPrintBuffer;
 
 #ifdef WRITE_LBM
-PUBLIC bool CCWrite_LBM_File(CCFileClass &lbmhandle, BufferClass &buff,
-                             short bitplanes, unsigned char *palette);
+PUBLIC bool CCWrite_LBM_File(CCFileClass& lbmhandle, BufferClass& buff,
+                             short bitplanes, unsigned char* palette);
 #endif
 
 unsigned char RemapCiv[256] = {
@@ -282,7 +282,7 @@ unsigned char const ScoreRemapFBall[256] = {
 
 TextBlitClass BlitList;
 
-char *ScreenNames[2] = {"S-GDIIN2.WSA", "SCRSCN1.WSA"};
+char* ScreenNames[2] = {"S-GDIIN2.WSA", "SCRSCN1.WSA"};
 
 // extern short StreamLowImpact;
 
@@ -292,11 +292,11 @@ struct Fame {
   int level;
 };
 
-ScoreAnimClass *ScoreObjs[MAXSCOREOBJS];
+ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-ScoreAnimClass::ScoreAnimClass(int x, int y, void const *data) {
+ScoreAnimClass::ScoreAnimClass(int x, int y, void const* data) {
   BlitList.Add(x * RESFACTOR, y * RESFACTOR, x * RESFACTOR, y * RESFACTOR,
-               RESFACTOR * String_Pixel_Width((char *)data), 8 * RESFACTOR);
+               RESFACTOR * String_Pixel_Width((char*)data), 8 * RESFACTOR);
   XPos = x;
   YPos = y;
   Timer.Set(0);
@@ -304,7 +304,7 @@ ScoreAnimClass::ScoreAnimClass(int x, int y, void const *data) {
   DataPtr = data;
 }
 
-ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const *data, int max,
+ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const* data, int max,
                                int timer)
     : ScoreAnimClass(xpos, ypos, data) {
   Stage = 0;
@@ -313,7 +313,7 @@ ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const *data, int max,
 }
 
 void ScoreTimeClass::Update(void) {
-  GraphicViewPortClass *oldpage;
+  GraphicViewPortClass* oldpage;
   if (!Timer.Time()) {
     Timer.Set(TimerReset);
     if (++Stage >= MaxStage) Stage = 0;
@@ -329,7 +329,7 @@ void ScoreTimeClass::Update(void) {
   }
 }
 
-ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const *data, int max,
+ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const* data, int max,
                                  int timer)
     : ScoreAnimClass(xpos, ypos, data) {
   Stage = 0;
@@ -340,7 +340,7 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const *data, int max,
 }
 
 void ScoreCredsClass::Update(void) {
-  GraphicViewPortClass *oldpage;
+  GraphicViewPortClass* oldpage;
   if (!Timer.Time()) {
     Timer.Set(TimerReset);
     if (++Stage >= MaxStage) Stage = 0;
@@ -364,15 +364,15 @@ void ScoreCredsClass::Update(void) {
 }
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
-                                 void const *palette, int background)
+                                 void const* palette, int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)) {
   Background = background;
   PrimaryPalette = palette;
   Stage = 0;
 }
 
-ScorePrintClass::ScorePrintClass(void const *string, int xpos, int ypos,
-                                 void const *palette, int background)
+ScorePrintClass::ScorePrintClass(void const* string, int xpos, int ypos,
+                                 void const* palette, int background)
     : ScoreAnimClass(xpos, ypos, string) {
   Background = background;
   PrimaryPalette = palette;
@@ -384,7 +384,7 @@ void ScorePrintClass::Update(void) {
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && (((char *)DataPtr)[Stage - 1] == 0)) {
+  if (Stage && (((char*)DataPtr)[Stage - 1] == 0)) {
     for (int i = 0; i < MAXSCOREOBJS; i++) {
       if (ScoreObjs[i] == this) {
         ScoreObjs[i] = nullptr;
@@ -403,7 +403,7 @@ void ScorePrintClass::Update(void) {
 
     int pos = XPos + (Stage * 6);
     if (Stage) {
-      localstr[0] = ((char *)DataPtr)[Stage - 1];
+      localstr[0] = ((char*)DataPtr)[Stage - 1];
 
       /*
       ** Clear out the white letter overlay
@@ -423,8 +423,8 @@ void ScorePrintClass::Update(void) {
       TextPrintBuffer->Print(localstr, RESFACTOR * (pos - 6), RESFACTOR * YPos,
                              TBLACK, TBLACK);
     }
-    if (((char *)DataPtr)[Stage]) {
-      localstr[0] = ((char *)DataPtr)[Stage];
+    if (((char*)DataPtr)[Stage]) {
+      localstr[0] = ((char*)DataPtr)[Stage];
       Set_Font_Palette(_whitepal);
       TextPrintBuffer->Print(localstr, pos * RESFACTOR, RESFACTOR * (YPos - 1),
                              TBLACK, TBLACK);
@@ -438,15 +438,15 @@ void ScorePrintClass::Update(void) {
 }
 
 MultiStagePrintClass::MultiStagePrintClass(int string, int xpos, int ypos,
-                                           void const *palette, int background)
+                                           void const* palette, int background)
     : ScoreAnimClass(xpos, ypos, Text_String(string)) {
   Background = background;
   PrimaryPalette = palette;
   Stage = 0;
 }
 
-MultiStagePrintClass::MultiStagePrintClass(void const *string, int xpos,
-                                           int ypos, void const *palette,
+MultiStagePrintClass::MultiStagePrintClass(void const* string, int xpos,
+                                           int ypos, void const* palette,
                                            int background)
     : ScoreAnimClass(xpos, ypos, string) {
   Background = background;
@@ -459,7 +459,7 @@ void MultiStagePrintClass::Update(void) {
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 
-  if (Stage && (((char *)DataPtr)[Stage - 1] == 0)) {
+  if (Stage && (((char*)DataPtr)[Stage - 1] == 0)) {
     for (int i = 0; i < MAXSCOREOBJS; i++) {
       if (ScoreObjs[i] == this) {
         ScoreObjs[i] = nullptr;
@@ -482,7 +482,7 @@ void MultiStagePrintClass::Update(void) {
     for (int wibble = 0; wibble < 10; wibble++) {
       int pos = XPos + (Stage * 6);
       if (Stage) {
-        localstr[0] = ((char *)DataPtr)[Stage - 1];
+        localstr[0] = ((char*)DataPtr)[Stage - 1];
 
         /*
         ** Clear out the white letter overlay
@@ -502,8 +502,8 @@ void MultiStagePrintClass::Update(void) {
         TextPrintBuffer->Print(localstr, RESFACTOR * (pos - 6),
                                RESFACTOR * YPos, TBLACK, TBLACK);
       }
-      if (((char *)DataPtr)[Stage]) {
-        localstr[0] = ((char *)DataPtr)[Stage];
+      if (((char*)DataPtr)[Stage]) {
+        localstr[0] = ((char*)DataPtr)[Stage];
         Set_Font_Palette(_whitepal);
         TextPrintBuffer->Print(localstr, pos * RESFACTOR,
                                RESFACTOR * (YPos - 1), TBLACK, TBLACK);
@@ -514,12 +514,12 @@ void MultiStagePrintClass::Update(void) {
       }
       Stage++;
 
-      if (((char *)DataPtr)[Stage - 1] == 0) break;
+      if (((char*)DataPtr)[Stage - 1] == 0) break;
     }
   }
 }
 
-ScoreScaleClass::ScoreScaleClass(void const *string, int xpos, int ypos,
+ScoreScaleClass::ScoreScaleClass(void const* string, int xpos, int ypos,
                                  unsigned char const palette[])
     : ScoreAnimClass(xpos, ypos, string) {
   Palette = &palette[0];
@@ -546,7 +546,7 @@ void ScoreScaleClass::Update(void) {
     if (Stage) {
       Set_Font_Palette(Palette);
       TextPrintBuffer->Fill_Rect(0, 0, 7 * RESFACTOR, 7 * RESFACTOR, TBLACK);
-      TextPrintBuffer->Print((char *)DataPtr, 0, 0, TBLACK, TBLACK);
+      TextPrintBuffer->Print((char*)DataPtr, 0, 0, TBLACK, TBLACK);
       TextPrintBuffer->Scale(HidPage, 0, 0, _destx[Stage] * RESFACTOR,
                              YPos * RESFACTOR, 5 * RESFACTOR, 5 * RESFACTOR,
                              _destw[Stage] * RESFACTOR,
@@ -562,8 +562,8 @@ void ScoreScaleClass::Update(void) {
       for (int i = 0; i < MAXSCOREOBJS; i++) {
         if (ScoreObjs[i] == this) ScoreObjs[i] = nullptr;
       }
-      TextPrintBuffer->Print((char *)DataPtr, XPos * RESFACTOR,
-                             YPos * RESFACTOR, TBLACK, TBLACK);
+      TextPrintBuffer->Print((char*)DataPtr, XPos * RESFACTOR, YPos * RESFACTOR,
+                             TBLACK, TBLACK);
       // TextPrintBuffer->Blit(HidPage, XPos * RESFACTOR, YPos * RESFACTOR, XPos
       // * RESFACTOR, YPos * RESFACTOR,RESFACTOR * 6, RESFACTOR * 6);
       // BlitList.Add (XPos, YPos, XPos, YPos, 6,6);
@@ -576,7 +576,7 @@ void ScoreScaleClass::Update(void) {
   }
 }
 
-int Alloc_Object(ScoreAnimClass *obj) {
+int Alloc_Object(ScoreAnimClass* obj) {
   int i, ret;
 
   for (i = ret = 0; i < MAXSCOREOBJS; i++) {
@@ -670,8 +670,8 @@ void ScoreClass::Presentation(void) {
   //	int gdikilled, nodkilled, civkilled, max, i, k, shapenum;
   int i;
   int max;
-  void const *yellowptr;
-  void const *redptr;
+  void const* yellowptr;
+  void const* redptr;
   CCFileClass file(FAME_FILE_NAME);
   struct Fame hallfame[NUMFAMENAMES];
   void *anim, *oldfont;
@@ -690,9 +690,9 @@ void ScoreClass::Presentation(void) {
 
   if (Special.IsJurassic && AreThingiesEnabled) return;
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
   Disable_Uncompressed_Shapes();
@@ -711,8 +711,8 @@ void ScoreClass::Presentation(void) {
 
   Set_Logic_Page(SysMemPage);
 
-  void const *country4 = MixFileClass::Retrieve("COUNTRY4.AUD");
-  void const *sfx4 = MixFileClass::Retrieve("SFX4.AUD");
+  void const* country4 = MixFileClass::Retrieve("COUNTRY4.AUD");
+  void const* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
   Beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
 
   /*
@@ -729,13 +729,13 @@ void ScoreClass::Presentation(void) {
   */
   unsigned leadership = 0;
   for (int index = 0; index < Logic.Count(); index++) {
-    ObjectClass *object = Logic[index];
+    ObjectClass* object = Logic[index];
     if (object->Owner() == house) {
       leadership++;
     }
   }
 
-  HouseClass *houses[3];
+  HouseClass* houses[3];
   for (int index = 0; index < 3; index++) {
     houses[index] = (HouseClass::As_Pointer((HousesType)(HOUSE_GOOD + index)));
   }
@@ -823,11 +823,11 @@ void ScoreClass::Presentation(void) {
   /*
   ** Background's up, so now load various shapes and animations
   */
-  void const *timeshape = MixFileClass::Retrieve("TIME.SHP");
+  void const* timeshape = MixFileClass::Retrieve("TIME.SHP");
   ScoreObjs[0] = new ScoreTimeClass(233, 2, timeshape, 30, 4);
 
-  void const *hiscore1shape = MixFileClass::Retrieve("HISCORE1.SHP");
-  void const *hiscore2shape = MixFileClass::Retrieve("HISCORE2.SHP");
+  void const* hiscore1shape = MixFileClass::Retrieve("HISCORE1.SHP");
+  void const* hiscore2shape = MixFileClass::Retrieve("HISCORE2.SHP");
   ScoreObjs[1] = new ScoreTimeClass(4, 97, hiscore1shape, 10, 4);
   ScoreObjs[2] = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
 
@@ -840,7 +840,7 @@ void ScoreClass::Presentation(void) {
     /*
     ** load the logo
     */
-    void const *logoptr = MixFileClass::Retrieve("LOGOS.SHP");
+    void const* logoptr = MixFileClass::Retrieve("LOGOS.SHP");
     CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                   nullptr);
 
@@ -1035,7 +1035,7 @@ void ScoreClass::Presentation(void) {
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
                                      HALLFAME_Y + (i * 8), _bluepal));
     if (hallfame[i].score) {
-      char *str = (char *)(SysMemPage.Get_Buffer()) + i * 32;
+      char* str = (char*)(SysMemPage.Get_Buffer()) + i * 32;
       sprintf(str, "%d", hallfame[i].score);
       Alloc_Object(new ScorePrintClass(str, HALLFAME_X + (6 * 15),
                                        HALLFAME_Y + (i * 8), _bluepal, BLACK));
@@ -1181,11 +1181,11 @@ void Cycle_Wait_Click(void) {
 
 void ScoreClass::Do_Nod_Buildings_Graph(void) {
   int shapenum;
-  InfantryTypeClass const *ramboclass;
+  InfantryTypeClass const* ramboclass;
 
-  void const *factptr = MixFileClass::Retrieve("FACT.SHP");
-  void const *rmboptr = MixFileClass::Retrieve("RMBO.SHP");
-  void const *fball1ptr = MixFileClass::Retrieve("FBALL1.SHP");
+  void const* factptr = MixFileClass::Retrieve("FACT.SHP");
+  void const* rmboptr = MixFileClass::Retrieve("RMBO.SHP");
+  void const* fball1ptr = MixFileClass::Retrieve("FBALL1.SHP");
   ramboclass = &InfantryTypeClass::As_Reference(INFANTRY_E5);
 
   /*
@@ -1324,7 +1324,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
  *   05/03/1995 BWG : Created.                                             *
  *=========================================================================*/
 
-void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
+void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
                               int gkilled, int nkilled, int ypos) {
   int i, max;
   int gdikilled = gkilled, nodkilled = nkilled;
@@ -1414,8 +1414,8 @@ void ScoreClass::Do_GDI_Graph(void const *yellowptr, void const *redptr,
 void ScoreClass::Do_Nod_Casualties_Graph(void) {
   int i, gdikilled, nodkilled, civkilled, max;
 
-  void const *e1ptr = MixFileClass::Retrieve("E1.SHP");
-  void const *c1ptr = MixFileClass::Retrieve("C1.SHP");
+  void const* e1ptr = MixFileClass::Retrieve("E1.SHP");
+  void const* c1ptr = MixFileClass::Retrieve("C1.SHP");
 
   gdikilled = GKilled;
   nodkilled = NKilled;
@@ -1564,7 +1564,7 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   int credobj, i;
   int min, add;
 
-  void const *credshape = MixFileClass::Retrieve("CREDS.SHP");
+  void const* credshape = MixFileClass::Retrieve("CREDS.SHP");
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, _credtx[house],
                                    _credty[house], pal));
@@ -1603,7 +1603,7 @@ void ScoreClass::Show_Credits(int house, unsigned char const pal[]) {
   } while (i < PlayerPtr->Available_Money());
 
   // Make sure the credits object doesn't freeze on the white stage
-  while (((ScoreTimeClass *)ScoreObjs[credobj])->Stage >= 20 && !ControlQ) {
+  while (((ScoreTimeClass*)ScoreObjs[credobj])->Stage >= 20 && !ControlQ) {
     Call_Back_Delay(1);
   }
   delete ScoreObjs[credobj];
@@ -1656,7 +1656,7 @@ void ScoreClass::Print_Minutes(int minutes) {
  *                                                                                             *
  * HISTORY: * 04/07/1995 BWG : Created. *
  *=============================================================================================*/
-void ScoreClass::Count_Up_Print(char *str, int percent, int max, int xpos,
+void ScoreClass::Count_Up_Print(char* str, int percent, int max, int xpos,
                                 int ypos) {
   char destbuf[64];
   int width;
@@ -1704,7 +1704,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
                             unsigned char const pal[]) {
   int key = 0, ascii = 0, index = 0;
 
-  void const *keystrok = MixFileClass::Retrieve("KEYSTROK.AUD");
+  void const* keystrok = MixFileClass::Retrieve("KEYSTROK.AUD");
 
   /*
   ** Ready the hidpage so it can restore background under zoomed letters
@@ -2067,7 +2067,7 @@ void Animate_Score_Objs() {
   }
 }
 
-char *Int_Print(int a) {
+char* Int_Print(int a) {
   static char str[10];
 
   sprintf(str, "%d", a);
@@ -2123,21 +2123,21 @@ void Multi_Score_Presentation(void) {
   // static char const
   // _yellowpal[]={0x0,0x0,0x05,0x0,0xEE,0x0,0xF1,0x0,0xF2,0x0,0x0,0x0,0x0,0x0,0x7D,0x0};
 
-  static unsigned char const *_colors[] = {_yellowpal, _redpal,   _bluepal,
+  static unsigned char const* _colors[] = {_yellowpal, _redpal,   _bluepal,
                                            _orangepal, _greenpal, _graypal};
 
   int i, k;
   void *oldfont, *anim;
   int oldfontxspacing = FontXSpacing;
-  unsigned char const *pal;
+  unsigned char const* pal;
 
   FontXSpacing = 0;
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
   BlitList.Clear();
 
   SysMemPage.Clear();
@@ -2280,12 +2280,12 @@ static BitMapHeaderType
 /* The following static functions are in this file:                       */
 /*=========================================================================*/
 
-static long CCWrite_BMHD(CCFileClass &lbmhandle, short bitplanes);
-static long CCWrite_CMAP(CCFileClass &lbmhandle, unsigned char *palette,
+static long CCWrite_BMHD(CCFileClass& lbmhandle, short bitplanes);
+static long CCWrite_CMAP(CCFileClass& lbmhandle, unsigned char* palette,
                          short bitplanes);
-static long CCWrite_BODY(CCFileClass &lbmhandle, BufferClass &buff,
+static long CCWrite_BODY(CCFileClass& lbmhandle, BufferClass& buff,
                          short bitplanes);
-static long CCWrite_Row(CCFileClass &lbmhandle, unsigned char *buffer);
+static long CCWrite_Row(CCFileClass& lbmhandle, unsigned char* buffer);
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -2304,8 +2304,8 @@ static long CCWrite_Row(CCFileClass &lbmhandle, unsigned char *buffer);
  * HISTORY:                                                                *
  *   11/18/1991  SB : Created.                                             *
  *=========================================================================*/
-bool CCWrite_LBM_File(CCFileClass &lbmhandle, BufferClass &buff,
-                      short bitplanes, unsigned char *palette) {
+bool CCWrite_LBM_File(CCFileClass& lbmhandle, BufferClass& buff,
+                      short bitplanes, unsigned char* palette) {
   long filesize;
 
   lbmhandle.Seek(0L, SEEK_SET);  // goto beginning of file
@@ -2332,7 +2332,7 @@ bool CCWrite_LBM_File(CCFileClass &lbmhandle, BufferClass &buff,
   lbmhandle.Seek(4L, SEEK_SET);  // goto beginning of file
   filesize =
       Reverse_LONG(filesize - 8L);  // - 8 because of "FORM" + short (size)
-  lbmhandle.Write((char *)&filesize, 4L);  // patch in filesize
+  lbmhandle.Write((char*)&filesize, 4L);  // patch in filesize
 
   return (true);
 }
@@ -2350,22 +2350,22 @@ bool CCWrite_LBM_File(CCFileClass &lbmhandle, BufferClass &buff,
  * HISTORY:                                                                *
  *   11/19/1991  SB : Created.                                             *
  *=========================================================================*/
-static long CCWrite_BMHD(CCFileClass &lbmhandle, short bitplanes) {
+static long CCWrite_BMHD(CCFileClass& lbmhandle, short bitplanes) {
   long size;
 
   lbmhandle.Write("BMHD", 4L);  // write out chunk title
   size =
       Reverse_LONG(sizeof(LocalHeader));  // write out size of LocalHeader chunk
-  lbmhandle.Write((char *)&size, 4L);
+  lbmhandle.Write((char*)&size, 4L);
 
   LocalHeader.planes = bitplanes;  // only nonconstant value in LocalHeader
 
   // Make sure size is even. Return 8 = "BMHD" + size of the bitmap header
   // structure
 
-  return (lbmhandle.Write((char *)&LocalHeader,
-                          (sizeof(LocalHeader) + 1) & 0xFFFE) +
-          8L);
+  return (
+      lbmhandle.Write((char*)&LocalHeader, (sizeof(LocalHeader) + 1) & 0xFFFE) +
+      8L);
 }
 
 /***************************************************************************
@@ -2383,18 +2383,18 @@ static long CCWrite_BMHD(CCFileClass &lbmhandle, short bitplanes) {
  * HISTORY:                                                                *
  *   11/19/1991  SB : Created.                                             *
  *=========================================================================*/
-static long CCWrite_CMAP(CCFileClass &lbmhandle, unsigned char *palette,
+static long CCWrite_CMAP(CCFileClass& lbmhandle, unsigned char* palette,
                          short bitplanes) {
   short color, r, g, b, colors;
   long size;
-  unsigned char *pal_ptr;
+  unsigned char* pal_ptr;
   char rgb[3];
 
   lbmhandle.Write("CMAP", 4L);       // write out palette info
   colors = 1 << bitplanes;           // colors = 2 to the bitplanes
   size = Reverse_LONG(colors * 3L);  // size = colors * 3 guns
 
-  lbmhandle.Write((char *)&size, 4L);
+  lbmhandle.Write((char*)&size, 4L);
 
   for (pal_ptr = palette, color = 0; color < colors;
        color++) {  // for each color
@@ -2432,7 +2432,7 @@ static long CCWrite_CMAP(CCFileClass &lbmhandle, unsigned char *palette,
  * HISTORY:                                                                *
  *   11/19/1991  SB : Created.                                             *
  *=========================================================================*/
-static long CCWrite_BODY(CCFileClass &lbmhandle, BufferClass &buff,
+static long CCWrite_BODY(CCFileClass& lbmhandle, BufferClass& buff,
                          short bitplanes) {
   long bodysize = 0;
   long actualsize;
@@ -2440,12 +2440,12 @@ static long CCWrite_BODY(CCFileClass &lbmhandle, BufferClass &buff,
   short planebit;
   short line, plane;
   unsigned char buffer[40];
-  unsigned char *buffptr;
+  unsigned char* buffptr;
 
   lbmhandle.Write("BODY????",
                   8L);  // BODY chunk ID, ???? reserved for chuncksize
 
-  buffptr = (unsigned char *)buff.Get_Buffer();  // point to beginning of buff
+  buffptr = (unsigned char*)buff.Get_Buffer();  // point to beginning of buff
 
   for (line = 0; line < 200; line++) {
     planebit = 1;  // start with bit 1 set
@@ -2469,7 +2469,7 @@ static long CCWrite_BODY(CCFileClass &lbmhandle, BufferClass &buff,
 
   lbmhandle.Seek(-(actualsize + 4L), SEEK_CUR);  // Patch in chunksize
   size = Reverse_LONG(bodysize);
-  lbmhandle.Write((char *)&size, 4L);
+  lbmhandle.Write((char*)&size, 4L);
 
   return (actualsize + 8L);  // total size of BODY,  "BODY????" = 8 bytes
 }
@@ -2487,12 +2487,12 @@ static long CCWrite_BODY(CCFileClass &lbmhandle, BufferClass &buff,
  * HISTORY:                                                                *
  *   11/19/1991  SB : Created.                                             *
  *=========================================================================*/
-static long CCWrite_Row(CCFileClass &lbmhandle, unsigned char *buffer) {
+static long CCWrite_Row(CCFileClass& lbmhandle, unsigned char* buffer) {
   short i;
   short chunksize = 0;
   short dataLength = 40;  // 320 rows / 8 ( 1 plane per row)
   unsigned char repCode, current, curr_plus_2;
-  unsigned char *buffptr;
+  unsigned char* buffptr;
 
   while (dataLength) {
     // If at least 2 more bytes and they are equal, then replicate

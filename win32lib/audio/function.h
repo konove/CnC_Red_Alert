@@ -21,7 +21,7 @@
  */
 /*=========================================================================*/
 
-short Decompress_Frame(void *source, void *dest, short size);
+short Decompress_Frame(void* source, void* dest, short size);
 int __cdecl Stream_Sample_Vol(void *buffer, long size, BOOL (*callback);
 int __cdecl Stream_Sample(void *buffer, long size, BOOL (*callback);
 int __cdecl File_Stream_Sample(char const *filename);

@@ -210,6 +210,6 @@ static VQAConfig _defaultconfig = {
  *
  ****************************************************************************/
 
-void VQA_DefaultConfig(VQAConfig *config) {
+void VQA_DefaultConfig(VQAConfig* config) {
   memcpy(config, &_defaultconfig, sizeof(VQAConfig));
 }

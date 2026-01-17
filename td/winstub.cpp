@@ -76,8 +76,8 @@ bool ReadyToQuit = false;
  *   08/19/1993 SKB : Split drawshp.asm into several modules.              *
  *   05/25/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-int __cdecl Extract_Shape_Count(VOID const *buffer) {
-  ShapeBlock_Type *block = (ShapeBlock_Type *)buffer;
+int __cdecl Extract_Shape_Count(VOID const* buffer) {
+  ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
 
   return (block->NumShapes);
 
@@ -105,10 +105,10 @@ int __cdecl Extract_Shape_Count(VOID const *buffer) {
  *   08/19/1993 SKB : Split drawshp.asm into several modules.              *
  *   05/25/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-VOID *__cdecl Extract_Shape(VOID const *buffer, int shape) {
-  ShapeBlock_Type *block = (ShapeBlock_Type *)buffer;
+VOID* __cdecl Extract_Shape(VOID const* buffer, int shape) {
+  ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
   long offset;  // Offset of shape data, from start of block
-  char *bytebuf = (char *)buffer;
+  char* bytebuf = (char*)buffer;
 
   /*
   ----------------------- Return if invalid argument -----------------------
@@ -499,7 +499,7 @@ HANDLE DebugFile = INVALID_HANDLE_VALUE;
  *                                                                                             *
  * HISTORY: * 10/28/96 12:48PM ST : Created *
  *=============================================================================================*/
-void CCDebugString(char const *string) {
+void CCDebugString(char const* string) {
 #if (0)
 
   char outstr[256];
@@ -596,17 +596,17 @@ void CCDebugString(char const *string) {
 //	return (0);
 // }
 
-unsigned char *VQPalette;
+unsigned char* VQPalette;
 long VQNumBytes;
 unsigned long VQSlowpal;
 bool VQPaletteChange = false;
 
 extern "C" {
-void __cdecl SetPalette(unsigned char *palette, long numbytes,
+void __cdecl SetPalette(unsigned char* palette, long numbytes,
                         unsigned long slowpal);
 }
 
-void Flag_To_Set_Palette(unsigned char *palette, long numbytes,
+void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
                          unsigned long slowpal) {
   VQPalette = palette;
   VQNumBytes = numbytes;
@@ -621,7 +621,7 @@ void Check_VQ_Palette_Set(void) {
   }
 }
 
-void __cdecl SetPalette(unsigned char *palette, long, unsigned long) {
+void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
   for (int i = 0; i < 256 * 3; i++) {
     *(palette + i) &= 63;
   }
@@ -660,7 +660,7 @@ void Memory_Error_Handler(void) {
   ExitProcess(0);
 }
 
-GraphicBufferClass *Read_PCX_File(char const *name, char *Palette, void *Buff,
+GraphicBufferClass* Read_PCX_File(char const* name, char* Palette, void* Buff,
                                   long Size);
 
 /***********************************************************************************************
@@ -677,11 +677,11 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *Palette, void *Buff,
  * HISTORY: * 7/5/96 11:30AM ST : Created *
  *=============================================================================================*/
 
-void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
-                       unsigned char *palette) {
-  GraphicBufferClass *load_buffer;
+void Load_Title_Screen(char const* name, GraphicViewPortClass* video_page,
+                       unsigned char* palette) {
+  GraphicBufferClass* load_buffer;
 
-  load_buffer = Read_PCX_File(name, (char *)palette, NULL, 0);
+  load_buffer = Read_PCX_File(name, (char*)palette, NULL, 0);
 
   if (load_buffer) {
     load_buffer->Blit(*video_page);
@@ -727,20 +727,20 @@ void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
     file_ptr = pool;                   \
   }
 
-GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
+GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
                                   long Size) {
   unsigned i, j;
   unsigned rle;
   unsigned color;
   unsigned scan_pos;
-  char *file_ptr;
+  char* file_ptr;
   int width;
   int height;
-  char *buffer;
+  char* buffer;
   PCX_HEADER header;
-  RGB *pal;
+  RGB* pal;
   char pool[POOL_SIZE];
-  GraphicBufferClass *pic;
+  GraphicBufferClass* pic;
 
   CCFileClass file_handle(name);
 
@@ -757,7 +757,7 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
   height = header.height - header.y + 1;
 
   if (Buff) {
-    buffer = (char *)Buff;
+    buffer = (char*)Buff;
     i = Size / width;
     height = std::min(i - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
@@ -767,7 +767,7 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
     if (!(pic && pic->Get_Buffer())) return NULL;
   }
 
-  buffer = (char *)pic->Get_Buffer();
+  buffer = (char*)pic->Get_Buffer();
   file_ptr = pool;
   file_handle.Read(pool, POOL_SIZE);
 
@@ -809,7 +809,7 @@ GraphicBufferClass *Read_PCX_File(char const *name, char *palette, void *Buff,
     file_handle.Seek(-(256 * sizeof(RGB)), SEEK_END);
     file_handle.Read(palette, 256L * sizeof(RGB));
 
-    pal = (RGB *)palette;
+    pal = (RGB*)palette;
     for (i = 0; i < 256; i++) {
       pal->red >>= 2;
       pal->green >>= 2;

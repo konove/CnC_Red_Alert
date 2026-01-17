@@ -61,20 +61,20 @@ class IPXAddressClass {
   .....................................................................*/
   IPXAddressClass(void);
   IPXAddressClass(NetNumType net, NetNodeType node);
-  IPXAddressClass(IPXHeaderType *header);
+  IPXAddressClass(IPXHeaderType* header);
 
   /*.....................................................................
   Set the address from explicit variables, or from the SOURCE values
   in an IPX packet header.
   .....................................................................*/
   void Set_Address(NetNumType net, NetNodeType node);
-  void Set_Address(IPXHeaderType *header);
+  void Set_Address(IPXHeaderType* header);
   /*.....................................................................
   Get the address values explicitly, or copy them into the DESTINATION
   values in an IPX packet header.
   .....................................................................*/
   void Get_Address(NetNumType net, NetNodeType node);
-  void Get_Address(IPXHeaderType *header);
+  void Get_Address(IPXHeaderType* header);
 
   /*.....................................................................
   Tells if this address is a broadcast address
@@ -84,12 +84,12 @@ class IPXAddressClass {
   /*.....................................................................
   Overloaded operators:
   .....................................................................*/
-  int operator==(IPXAddressClass &addr);
-  int operator!=(IPXAddressClass &addr);
-  int operator>(IPXAddressClass &addr);
-  int operator<(IPXAddressClass &addr);
-  int operator>=(IPXAddressClass &addr);
-  int operator<=(IPXAddressClass &addr);
+  int operator==(IPXAddressClass& addr);
+  int operator!=(IPXAddressClass& addr);
+  int operator>(IPXAddressClass& addr);
+  int operator<(IPXAddressClass& addr);
+  int operator>=(IPXAddressClass& addr);
+  int operator<=(IPXAddressClass& addr);
   /*
   -------------------------- Protected Interface ---------------------------
   */

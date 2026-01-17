@@ -38,10 +38,10 @@
 /*
 ********************************* Includes **********************************
 */
-#include "wwstd.h"
-#include "video.h"
 #include "palette.h"
 #include "timer.h"
+#include "video.h"
+#include "wwstd.h"
 
 /*
 ********************************* Constants *********************************
@@ -56,7 +56,7 @@
 ******************************** Prototypes *********************************
 */
 
-PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette,
+PRIVATE WORD cdecl Palette_To_Palette(VOID* src_palette, VOID* dst_palette,
                                       ULONG current_time, ULONG delay);
 
 /***************************************************************************
@@ -78,7 +78,7 @@ PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette,
  * HISTORY:                                                                *
  *   05/02/1994 BR : Created.                                              *
  *=========================================================================*/
-VOID cdecl Morph_Palette(VOID *src_pal, VOID *dst_pal, UWORD delay,
+VOID cdecl Morph_Palette(VOID* src_pal, VOID* dst_pal, UWORD delay,
                          VOID (*callback)(VOID)) {
   WORD result;
   ULONG pal_start = TickCount.Time();
@@ -132,7 +132,7 @@ VOID cdecl Morph_Palette(VOID *src_pal, VOID *dst_pal, UWORD delay,
  * HISTORY:                                                                *
  *   05/24/1993  MC : Created.                                             *
  *=========================================================================*/
-PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette,
+PRIVATE WORD cdecl Palette_To_Palette(VOID* src_palette, VOID* dst_palette,
                                       ULONG current_time, ULONG delay) {
   BYTE colour;
   BYTE diff;
@@ -149,12 +149,12 @@ PRIVATE WORD cdecl Palette_To_Palette(VOID *src_palette, VOID *dst_palette,
   for (change = lp = 0; lp < 768; lp++) {
     if (current_time < delay) {
       diff =
-          ((((BYTE *)dst_palette)[lp] & 63) - (((BYTE *)src_palette)[lp] & 63));
+          ((((BYTE*)dst_palette)[lp] & 63) - (((BYTE*)src_palette)[lp] & 63));
       if (diff) change = TRUE;
       chgval = SCALE(diff, delay, current_time);
-      colour = (((BYTE *)src_palette)[lp] & 63) + chgval;
+      colour = (((BYTE*)src_palette)[lp] & 63) + chgval;
     } else {
-      colour = ((BYTE *)dst_palette)[lp] & 63;
+      colour = ((BYTE*)dst_palette)[lp] & 63;
       change = FALSE;
     }
     palette[lp] = colour;

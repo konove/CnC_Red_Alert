@@ -56,7 +56,7 @@ class DriveClass : public FootClass {
   **	This points to the static control data that gives 'this' unit its
   *characteristics.
   */
-  UnitTypeClass const *const Class;
+  UnitTypeClass const* const Class;
 
   /*
   **	This records the number of "loads" of Tiberium the unit is carrying.
@@ -99,7 +99,7 @@ class DriveClass : public FootClass {
   */
   DriveClass(void);
   DriveClass(UnitType classid, HousesType house);
-  DriveClass(NoInitClass const &x) : FootClass(x), Class(Class) {};
+  DriveClass(NoInitClass const& x) : FootClass(x), Class(Class) {};
   virtual ~DriveClass(void) {};
   operator UnitType(void) const { return Class->Type; };
 
@@ -109,14 +109,14 @@ class DriveClass : public FootClass {
   virtual int Offload_Tiberium_Bail(void);
   void Do_Turn(DirType dir);
   virtual void Approach_Target(void);
-  virtual ObjectTypeClass const &Class_Of(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const;
   virtual void Overrun_Square(CELL cell, bool threaten = true);
   virtual void Assign_Destination(TARGET target);
   virtual void Per_Cell_Process(bool center);
   virtual bool Ok_To_Move(DirType) const;
   virtual void AI(void);
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   void Force_Track(int track, COORDINATE coord);
   virtual int Tiberium_Load(void) const;
@@ -166,7 +166,7 @@ class DriveClass : public FootClass {
   } TrackType;
 
   typedef struct {
-    DriveClass::TrackType const *Track;  // Pointer to track list.
+    DriveClass::TrackType const* Track;  // Pointer to track list.
     int Jump;   // Index where track jumping is allowed.
     int Entry;  // Entry point if jumping to this track.
     int Cell;   // Per cell process should occur at this index.
@@ -191,11 +191,11 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual void Fixup_Path(PathType *path);
+  virtual void Fixup_Path(PathType* path);
   bool While_Moving(void);
   bool Start_Of_Move(void);
   void Lay_Track(void);
-  COORDINATE Smooth_Turn(COORDINATE adj, DirType *dir);
+  COORDINATE Smooth_Turn(COORDINATE adj, DirType* dir);
 
   static TurnTrackType const TrackControl[67];
   static RawTrackType const RawTracks[13];

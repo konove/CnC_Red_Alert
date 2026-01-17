@@ -31,18 +31,18 @@ Streamer::~Streamer() {
   delete[] (base());
 }
 
-int Streamer::setOutputDevice(OutputDevice *device) {
+int Streamer::setOutputDevice(OutputDevice* device) {
   Output_Device = device;
   return (0);
 }
 
 // put n chars from string into buffer
-int Streamer::xsputn(const char *buf, int size)  // implementation of sputn
+int Streamer::xsputn(const char* buf, int size)  // implementation of sputn
 {
   if (size <= 0)  // Nothing to do
     return (0);
 
-  const unsigned char *ptr = (const unsigned char *)buf;
+  const unsigned char* ptr = (const unsigned char*)buf;
   for (int i = 0; i < size; i++, ptr++) {
     if (*ptr == '\n') {
       if (overflow(*ptr) == EOF) return (i);
@@ -72,7 +72,7 @@ int Streamer::underflow(void) { return (EOF); }
 
 int Streamer::doallocate() {
   if (base() == NULL) {
-    char *buf = new char[(2 * STREAMER_BUFSIZ)];  // deleted by destructor
+    char* buf = new char[(2 * STREAMER_BUFSIZ)];  // deleted by destructor
     memset(buf, 0, 2 * STREAMER_BUFSIZ);
 
     // Buffer

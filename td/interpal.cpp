@@ -58,24 +58,24 @@
 
 bool InterpolationPaletteChanged = false;
 extern "C" {
-extern void __cdecl Asm_Interpolate(unsigned char *src_ptr,
-                                    unsigned char *dest_ptr, int lines,
+extern void __cdecl Asm_Interpolate(unsigned char* src_ptr,
+                                    unsigned char* dest_ptr, int lines,
                                     int src_width, int dest_width);
 
-extern void __cdecl Asm_Interpolate_Line_Double(unsigned char *src_ptr,
-                                                unsigned char *dest_ptr,
+extern void __cdecl Asm_Interpolate_Line_Double(unsigned char* src_ptr,
+                                                unsigned char* dest_ptr,
                                                 int lines, int src_width,
                                                 int dest_width);
 
-extern void __cdecl Asm_Interpolate_Line_Interpolate(unsigned char *src_ptr,
-                                                     unsigned char *dest_ptr,
+extern void __cdecl Asm_Interpolate_Line_Interpolate(unsigned char* src_ptr,
+                                                     unsigned char* dest_ptr,
                                                      int lines, int src_width,
                                                      int dest_width);
 }
 
 extern "C" {
 unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
-unsigned char *InterpolationPalette;
+unsigned char* InterpolationPalette;
 }
 
 /***********************************************************************************************
@@ -93,7 +93,7 @@ unsigned char *InterpolationPalette;
  * HISTORY: * 12/12/95 12:15PM ST : Created *
  *=============================================================================================*/
 
-void Read_Interpolation_Palette(char const *palette_file_name) {
+void Read_Interpolation_Palette(char const* palette_file_name) {
   CCFileClass palette_file(palette_file_name);
 
   if (palette_file.Is_Available()) {
@@ -119,7 +119,7 @@ void Read_Interpolation_Palette(char const *palette_file_name) {
  * HISTORY: * 12/12/95 12:15PM ST : Created *
  *=============================================================================================*/
 
-void Write_Interpolation_Palette(char const *palette_file_name) {
+void Write_Interpolation_Palette(char const* palette_file_name) {
   CCFileClass palette_file(palette_file_name);
 
   if (!palette_file.Is_Available()) {
@@ -149,9 +149,9 @@ void Create_Palette_Interpolation_Table(void) {
   int i;
   int j;
   int p;
-  unsigned char *first_palette_ptr;
-  unsigned char *second_palette_ptr;
-  unsigned char *match_pal_ptr;
+  unsigned char* first_palette_ptr;
+  unsigned char* second_palette_ptr;
+  unsigned char* match_pal_ptr;
   int first_r;
   int first_g;
   int first_b;
@@ -171,7 +171,7 @@ void Create_Palette_Interpolation_Table(void) {
   //
   // Create an interpolation table for the current palette.
   //
-  first_palette_ptr = (unsigned char *)InterpolationPalette;
+  first_palette_ptr = (unsigned char*)InterpolationPalette;
   for (i = 0; i < SIZE_OF_PALETTE; i++) {
     //
     // Get the first palette entry's RGB.
@@ -183,7 +183,7 @@ void Create_Palette_Interpolation_Table(void) {
     first_b = *first_palette_ptr;
     first_palette_ptr++;
 
-    second_palette_ptr = (unsigned char *)InterpolationPalette;
+    second_palette_ptr = (unsigned char*)InterpolationPalette;
     for (j = 0; j < SIZE_OF_PALETTE; j++) {
       //
       // Get the second palette entry's RGB.
@@ -209,7 +209,7 @@ void Create_Palette_Interpolation_Table(void) {
       index_of_closest_color = 0;
       //			closest_distance = (256 * 256) * 3;
       closest_distance = 500000;
-      match_pal_ptr = (unsigned char *)InterpolationPalette;
+      match_pal_ptr = (unsigned char*)InterpolationPalette;
       for (p = 0; p < SIZE_OF_PALETTE; p++) {
         diff_r = (((int)(*match_pal_ptr)) - dest_r);
         match_pal_ptr++;
@@ -253,7 +253,7 @@ void Create_Palette_Interpolation_Table(void) {
  * HISTORY: * 12/12/95 12:16PM ST : Created *
  *=============================================================================================*/
 
-void Increase_Palette_Luminance(unsigned char *palette, int red_percentage,
+void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
                                 int green_percentage, int blue_percentage,
                                 unsigned cap) {
   unsigned int red;
@@ -293,11 +293,11 @@ int CopyType = 1;
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass *source,
-                          GraphicViewPortClass *dest,
-                          char const *palette_file_name) {
-  unsigned char *src_ptr;
-  unsigned char *dest_ptr;
+void Interpolate_2X_Scale(GraphicBufferClass* source,
+                          GraphicViewPortClass* dest,
+                          char const* palette_file_name) {
+  unsigned char* src_ptr;
+  unsigned char* dest_ptr;
   int src_width;
   int dest_width;
   bool source_locked = false;
@@ -349,8 +349,8 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
   //
   // Get pointers to the source and destination buffers.
   //
-  src_ptr = (unsigned char *)source->Get_Offset();
-  dest_ptr = (unsigned char *)dest->Get_Offset();
+  src_ptr = (unsigned char*)source->Get_Offset();
+  dest_ptr = (unsigned char*)dest->Get_Offset();
 
   //
   // Get width of source and dest buffers.

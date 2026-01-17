@@ -80,15 +80,15 @@
  *                                                                                             *
  * HISTORY: * 05/11/1995 JLB : Created. *
  *=============================================================================================*/
-void *Small_Icon(void const *iconptr, int iconnum) {
+void* Small_Icon(void const* iconptr, int iconnum) {
   static unsigned char _icon[9];
-  IControl_Type const *iptr = (IControl_Type const *)iconptr;
-  unsigned char *data;
+  IControl_Type const* iptr = (IControl_Type const*)iconptr;
+  unsigned char* data;
 
   if (iconptr) {
-    iconnum = ((char *)((char *)iptr + iptr->Map))[iconnum];
-    data = &((unsigned char *)((unsigned char *)iptr +
-                               iptr->Icons))[iconnum * (24 * 24)];
+    iconnum = ((char*)((char*)iptr + iptr->Map))[iconnum];
+    data = &((unsigned char*)((unsigned char*)iptr +
+                              iptr->Icons))[iconnum * (24 * 24)];
     //		data = &iptr->Icons[iconnum*(24*24)];
 
     for (int index = 0; index < 9; index++) {
@@ -148,7 +148,7 @@ void Set_Window(int window, int x, int y, int w, int h) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void Fatal(char const *message, ...) {
+void Fatal(char const* message, ...) {
   va_list va;
 
   va_start(va, message);
@@ -159,7 +159,7 @@ void Fatal(char const *message, ...) {
 }
 
 #ifdef NEVER
-void File_Fatal(char const *message) {
+void File_Fatal(char const* message) {
   // Prog_End();
   perror(message);
   Emergency_Exit(EXIT_FAILURE);
@@ -190,11 +190,11 @@ void File_Fatal(char const *message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
-                     BuffType &dest_buff, void *reserved_data) {
+long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
+                     BuffType& dest_buff, void* reserved_data) {
   unsigned short size;
-  void *sptr = uncomp_buff.Get_Buffer();
-  void *dptr = dest_buff.Get_Buffer();
+  void* sptr = uncomp_buff.Get_Buffer();
+  void* dptr = dest_buff.Get_Buffer();
   int opened = false;
   CompHeaderType header;
 
@@ -243,14 +243,14 @@ long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
   **	the buffer and decompressed at the beginning.
   */
   if (uncomp_buff.Get_Buffer() == dest_buff.Get_Buffer()) {
-    sptr = (char *)sptr + uncomp_buff.Get_Size() - (size + sizeof(header));
+    sptr = (char*)sptr + uncomp_buff.Get_Size() - (size + sizeof(header));
   }
 
   /*
   **	Read in the bulk of the data.
   */
   Mem_Copy(&header, sptr, sizeof(header));
-  file.Read((char *)sptr + sizeof(header), size);
+  file.Read((char*)sptr + sizeof(header), size);
 
   /*
   **	Decompress the data.
@@ -266,8 +266,8 @@ long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
   return ((long)size);
 }
 
-int Load_Picture(char const *filename, BufferClass &scratchbuf,
-                 BufferClass &destbuf, unsigned char *palette,
+int Load_Picture(char const* filename, BufferClass& scratchbuf,
+                 BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType) {
   CCFileClass fc(filename);
   return (Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000);
@@ -290,8 +290,8 @@ int Load_Picture(char const *filename, BufferClass &scratchbuf,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void *Load_Alloc_Data(FileClass &file) {
-  void *ptr = nullptr;
+void* Load_Alloc_Data(FileClass& file) {
+  void* ptr = nullptr;
   long size = file.Size();
 
   ptr = new char[size];
@@ -302,7 +302,7 @@ void *Load_Alloc_Data(FileClass &file) {
 }
 
 // Modern RAII version that returns owned data as a vector.
-std::vector<std::byte> LoadAllocData(FileClass &file) {
+std::vector<std::byte> LoadAllocData(FileClass& file) {
   long size = file.Size();
   std::vector<std::byte> data(static_cast<size_t>(size));
   file.Read(data.data(), size);
@@ -352,10 +352,10 @@ long Translucent_Table_Size(int count) { return (256L + (256L * count)); }
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-void *Build_Translucent_Table(PaletteClass const &palette,
-                              TLucentType const *control, int count,
-                              void *buffer) {
-  unsigned char const *table;  // Remap table pointer.
+void* Build_Translucent_Table(PaletteClass const& palette,
+                              TLucentType const* control, int count,
+                              void* buffer) {
+  unsigned char const* table;  // Remap table pointer.
   int index;                   // Working color index.
 
   if (count && control && palette) {
@@ -365,16 +365,16 @@ void *Build_Translucent_Table(PaletteClass const &palette,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = (unsigned char *)buffer + 256;
+      table = (unsigned char*)buffer + 256;
 
       /*
       **	Build the individual remap tables for each translucent color.
       */
       for (index = 0; index < count; index++) {
-        ((unsigned char *)buffer)[control[index].SourceColor] = index;
-        Build_Fading_Table(palette, (void *)table, control[index].DestColor,
+        ((unsigned char*)buffer)[control[index].SourceColor] = index;
+        Build_Fading_Table(palette, (void*)table, control[index].DestColor,
                            control[index].Fading);
-        table = (unsigned char *)table + 256;
+        table = (unsigned char*)table + 256;
       }
     }
   }
@@ -410,10 +410,10 @@ void *Build_Translucent_Table(PaletteClass const &palette,
  *                                                                                             *
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
-void *Conquer_Build_Translucent_Table(PaletteClass const &palette,
-                                      TLucentType const *control, int count,
-                                      void *buffer) {
-  unsigned char const *table;  // Remap table pointer.
+void* Conquer_Build_Translucent_Table(PaletteClass const& palette,
+                                      TLucentType const* control, int count,
+                                      void* buffer) {
+  unsigned char const* table;  // Remap table pointer.
 
   if (count && control) {
     if (!buffer) {
@@ -422,27 +422,27 @@ void *Conquer_Build_Translucent_Table(PaletteClass const &palette,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = (unsigned char *)buffer + 256;
+      table = (unsigned char*)buffer + 256;
 
       /*
       **	Build the individual remap tables for each translucent color.
       */
       for (int index = 0; index < count; index++) {
-        ((unsigned char *)buffer)[control[index].SourceColor] = index;
-        Conquer_Build_Fading_Table(palette, (void *)table,
+        ((unsigned char*)buffer)[control[index].SourceColor] = index;
+        Conquer_Build_Fading_Table(palette, (void*)table,
                                    control[index].DestColor,
                                    control[index].Fading);
-        table = (unsigned char *)table + 256;
+        table = (unsigned char*)table + 256;
       }
     }
   }
   return (buffer);
 }
 
-void *Make_Fading_Table(PaletteClass const &palette, void *dest, int color,
+void* Make_Fading_Table(PaletteClass const& palette, void* dest, int color,
                         int frac) {
   if (dest) {
-    unsigned char *ptr = (unsigned char *)dest;
+    unsigned char* ptr = (unsigned char*)dest;
 
     /*
     **	Find an appropriate remap color index for every color in the palette.
@@ -468,10 +468,10 @@ void *Make_Fading_Table(PaletteClass const &palette, void *dest, int color,
   return (dest);
 }
 
-void *Conquer_Build_Fading_Table(PaletteClass const &palette, void *dest,
+void* Conquer_Build_Fading_Table(PaletteClass const& palette, void* dest,
                                  int color, int frac) {
   if (dest) {
-    unsigned char *ptr = (unsigned char *)dest;
+    unsigned char* ptr = (unsigned char*)dest;
     //		HSVClass desthsv = palette[color];
 
     /*

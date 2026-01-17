@@ -17,13 +17,14 @@
 */
 
 #define WIN32_LEAN_AND_MEAN
+#include "winblows.h"
+
 #include <windows.h>
 #include <windowsx.h>
-#include <cstdlib>
-#include <cstdio>
-#include <cstdarg>
 
-#include "winblows.h"
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 
 HINSTANCE Global_instance;
 LPSTR Global_commandline;
@@ -32,7 +33,7 @@ int Global_commandshow;
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *command_line,
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show) {
   //////MSG         msg;
 
@@ -41,10 +42,10 @@ int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *command_line,
   Global_commandshow = command_show;
 
   int argc;
-  char *argv[64];
+  char* argv[64];
 
   char path_to_exe[512];
-  GetModuleFileName(instance, (char *)&path_to_exe, 512);
+  GetModuleFileName(instance, (char*)&path_to_exe, 512);
   argc = 1;
   argv[0] = path_to_exe;
 
@@ -76,7 +77,7 @@ int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *command_line,
 
 } /* WinMain */
 
-int Print_WM(UINT message, char *out) {
+int Print_WM(UINT message, char* out) {
   switch (message) {
     case WM_NULL:
       sprintf(out, "WM_NULL");

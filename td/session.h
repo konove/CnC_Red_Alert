@@ -332,13 +332,13 @@ typedef struct {
 //...........................................................................
 typedef struct {
   union {
-    AircraftClass *Aircraft;
-    AnimClass *Anim;
-    BuildingClass *Building;
-    BulletClass *Bullet;
-    InfantryClass *Infantry;
-    UnitClass *Unit;
-    void *All;
+    AircraftClass* Aircraft;
+    AnimClass* Anim;
+    BuildingClass* Building;
+    BulletClass* Bullet;
+    InfantryClass* Infantry;
+    UnitClass* Unit;
+    void* All;
   } Ptr;
 } TrapObjectType;
 
@@ -390,8 +390,8 @@ class SessionClass {
   //.....................................................................
   // File I/O
   //.....................................................................
-  int Save(FileClass &file);
-  int Load(FileClass &file);
+  int Save(FileClass& file);
+  int Load(FileClass& file);
 
   //.....................................................................
   // Debugging / Sync Bugs
@@ -464,7 +464,7 @@ class SessionClass {
   //.....................................................................
   // List of scenarios & their file numbers
   //.....................................................................
-  DynamicVectorClass<char *> Scenarios;
+  DynamicVectorClass<char*> Scenarios;
   DynamicVectorClass<int> Filenum;
 
   //.....................................................................
@@ -492,8 +492,8 @@ class SessionClass {
   static char Descriptions[100][40];
   static int CountMin[2];
   static int CountMax[2];
-  static char *GlobalPacketNames[];
-  static char *SerialPacketNames[];
+  static char* GlobalPacketNames[];
+  static char* SerialPacketNames[];
 
   //.....................................................................
   // For Recording & Playing back a file
@@ -506,21 +506,21 @@ class SessionClass {
   //.....................................................................
   // IPX-specific variables
   //.....................................................................
-  int IsBridge;                                // 1 = we're crossing a bridge
-  IPXAddressClass BridgeNet;                   // address of bridge
-  bool NetStealth;                             // makes us invisible
-  bool NetProtect;                             // keeps others from messaging us
-  bool NetOpen;                                // 1 = game is open for joining
-  char GameName[MPLAYER_NAME_MAX];             // game's name
-  GlobalPacketType GPacket;                    // global packet
-  int GPacketlen;                              // global packet length
-  IPXAddressClass GAddress;                    // address of sender
-  unsigned short GProductID;                   // product ID of sender
-  char MetaPacket[MAX_IPX_PACKET_SIZE];        // packet building buffer
-  int MetaSize;                                // size of MetaPacket
-  DynamicVectorClass<NodeNameType *> Games;    // list of games
-  DynamicVectorClass<NodeNameType *> Players;  // list of players
-  DynamicVectorClass<NodeNameType *> Chat;     // list of chat nodes
+  int IsBridge;                               // 1 = we're crossing a bridge
+  IPXAddressClass BridgeNet;                  // address of bridge
+  bool NetStealth;                            // makes us invisible
+  bool NetProtect;                            // keeps others from messaging us
+  bool NetOpen;                               // 1 = game is open for joining
+  char GameName[MPLAYER_NAME_MAX];            // game's name
+  GlobalPacketType GPacket;                   // global packet
+  int GPacketlen;                             // global packet length
+  IPXAddressClass GAddress;                   // address of sender
+  unsigned short GProductID;                  // product ID of sender
+  char MetaPacket[MAX_IPX_PACKET_SIZE];       // packet building buffer
+  int MetaSize;                               // size of MetaPacket
+  DynamicVectorClass<NodeNameType*> Games;    // list of games
+  DynamicVectorClass<NodeNameType*> Players;  // list of players
+  DynamicVectorClass<NodeNameType*> Chat;     // list of chat nodes
 
   //.....................................................................
   // Modem-specific variables
@@ -530,10 +530,10 @@ class SessionClass {
   SerialSettingsType SerialDefaults;  // default serial settings
   ModemGameType ModemType;            // caller or answerer?
 
-  DynamicVectorClass<PhoneEntryClass *> PhoneBook;
-  DynamicVectorClass<char *> InitStrings;
-  static char *DialMethodCheck[DIAL_METHODS];
-  static char *CallWaitStrings[CALL_WAIT_STRINGS_NUM];
+  DynamicVectorClass<PhoneEntryClass*> PhoneBook;
+  DynamicVectorClass<char*> InitStrings;
+  static char* DialMethodCheck[DIAL_METHODS];
+  static char* CallWaitStrings[CALL_WAIT_STRINGS_NUM];
 
   //.....................................................................
   // For finding Sync Bugs
@@ -542,8 +542,8 @@ class SessionClass {
   RTTIType TrapObjType;
   TrapObjectType TrapObject;
   COORD TrapCoord;
-  void *TrapThis;
-  CellClass *TrapCell;
+  void* TrapThis;
+  CellClass* TrapCell;
   int TrapCheckHeap;
 };
 

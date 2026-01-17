@@ -35,13 +35,15 @@
  *   Get_Next_Text_Print_XY -- Calculates X and Y given ret value from Text_P*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
 #include "font.h"
-#include <malloc.h>
+
 #include <dos.h>
 #include <fcntl.h>
 #include <io.h>
+#include <malloc.h>
 #include <sys\stat.h>
+#include <wwstd.h>
+
 #include <cstring>
 
 /***************************************************************************
@@ -88,7 +90,7 @@ WORD cdecl Char_Pixel_Width(BYTE chr) {
  *   01/31/1992 DRD : Use Char_Pixel_Width.                                *
  *   06/30/1994 SKB : Converted to 32 bit library.                         *
  *=========================================================================*/
-UWORD cdecl String_Pixel_Width(BYTE const *string) {
+UWORD cdecl String_Pixel_Width(BYTE const* string) {
   WORD width;        // Working accumulator of string width.
   WORD largest = 0;  // Largest recorded width of the string.
 
@@ -124,8 +126,8 @@ UWORD cdecl String_Pixel_Width(BYTE const *string) {
  * HISTORY:                                                                *
  *   07/20/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID cdecl Get_Next_Text_Print_XY(VideoViewPortClass &vp, ULONG offset, INT *x,
-                                  INT *y) {
+VOID cdecl Get_Next_Text_Print_XY(VideoViewPortClass& vp, ULONG offset, INT* x,
+                                  INT* y) {
   INT buffwidth;
 
   if (offset) {
@@ -153,8 +155,8 @@ VOID cdecl Get_Next_Text_Print_XY(VideoViewPortClass &vp, ULONG offset, INT *x,
  * HISTORY:                                                                *
  *   07/20/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID cdecl Get_Next_Text_Print_XY(GraphicViewPortClass &vp, ULONG offset,
-                                  INT *x, INT *y) {
+VOID cdecl Get_Next_Text_Print_XY(GraphicViewPortClass& vp, ULONG offset,
+                                  INT* x, INT* y) {
   INT buffwidth;
 
   if (offset) {

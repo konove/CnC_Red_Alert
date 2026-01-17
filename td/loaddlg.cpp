@@ -245,8 +245,8 @@ int LoadOptionsClass::Process(void) {
   char game_descr[40] = {0};  // save-game description
   char fname[13];             // for generating filename to delete
 
-  void const *up_button;
-  void const *down_button;
+  void const* up_button;
+  void const* down_button;
 
   if (InMainLoop || factor == 1) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -259,7 +259,7 @@ int LoadOptionsClass::Process(void) {
   /*
   **	Buttons
   */
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   if (Style == LOAD) {
     btn_txt = TXT_LOAD_BUTTON;
@@ -566,7 +566,7 @@ int LoadOptionsClass::Process(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void LoadOptionsClass::Clear_List(ListClass *list) {
+void LoadOptionsClass::Clear_List(ListClass* list) {
   /*
   ** For every item in the list, free its buffer & remove it from the list.
   */
@@ -596,8 +596,8 @@ void LoadOptionsClass::Clear_List(ListClass *list) {
  * HISTORY: * 02/14/1995 BR : Created. * 06/25/1995 JLB : Shows which saved
  *games are "(old)".                                     *
  *=============================================================================================*/
-void LoadOptionsClass::Fill_List(ListClass *list) {
-  FileEntryClass *fdata;  // for adding entries to 'Files'
+void LoadOptionsClass::Fill_List(ListClass* list) {
+  FileEntryClass* fdata;  // for adding entries to 'Files'
   char descr[DESCRIP_MAX];
   unsigned scenario;  // scenario #
   HousesType house;   // house
@@ -682,7 +682,7 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  qsort((void *)(&Files[0]), Files.Count(), sizeof(class FileEntryClass *),
+  qsort((void*)(&Files[0]), Files.Count(), sizeof(class FileEntryClass*),
         LoadOptionsClass::Compare);
 
   /*
@@ -704,7 +704,7 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int LoadOptionsClass::Num_From_Ext(const char *fname) {
+int LoadOptionsClass::Num_From_Ext(const char* fname) {
   auto ext = std::filesystem::path(fname).extension().string();
 
   int num = 0;
@@ -726,11 +726,11 @@ int LoadOptionsClass::Num_From_Ext(const char *fname) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int LoadOptionsClass::Compare(const void *p1, const void *p2) {
+int LoadOptionsClass::Compare(const void* p1, const void* p2) {
   class FileEntryClass *fe1, *fe2;
 
-  fe1 = *((class FileEntryClass **)p1);
-  fe2 = *((class FileEntryClass **)p2);
+  fe1 = *((class FileEntryClass**)p1);
+  fe2 = *((class FileEntryClass**)p2);
 
   if (fe1->DateTime > fe2->DateTime) return (-1);
   if (fe1->DateTime < fe2->DateTime) return (1);

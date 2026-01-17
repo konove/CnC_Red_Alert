@@ -84,7 +84,7 @@
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Pop_Group_Out_Of_Object(FootClass *group, TechnoClass *object) {
+static bool _Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
   assert(group != nullptr && object != nullptr);
   int quantity = 0;
 
@@ -93,8 +93,8 @@ static bool _Pop_Group_Out_Of_Object(FootClass *group, TechnoClass *object) {
   *list *	and then make it pop out of the candidate source.
   */
   while (group != nullptr) {
-    TechnoClass *todo = group;
-    group = (FootClass *)(ObjectClass *)group->Next;
+    TechnoClass* todo = group;
+    group = (FootClass*)(ObjectClass*)group->Next;
     todo->Next = nullptr;
 
     switch (object->What_Am_I()) {
@@ -115,7 +115,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass *group, TechnoClass *object) {
       case RTTI_UNIT:
       case RTTI_VESSEL:
       case RTTI_AIRCRAFT:
-        object->Attach((FootClass *)todo);
+        object->Attach((FootClass*)todo);
         object->Assign_Mission(MISSION_UNLOAD);
         ++quantity;
         break;
@@ -145,7 +145,7 @@ static bool _Pop_Group_Out_Of_Object(FootClass *group, TechnoClass *object) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool _Need_To_Take(AircraftClass const *air) {
+bool _Need_To_Take(AircraftClass const* air) {
   if (*air == AIRCRAFT_YAK || *air == AIRCRAFT_MIG) {
     int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP);
     //		int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP) -
@@ -156,7 +156,7 @@ bool _Need_To_Take(AircraftClass const *air) {
     *loaners.
     */
     for (int index = 0; index < Aircraft.Count(); index++) {
-      AircraftClass const *airptr = Aircraft.Ptr(index);
+      AircraftClass const* airptr = Aircraft.Ptr(index);
       if ((*airptr == AIRCRAFT_YAK || *airptr == AIRCRAFT_MIG) &&
           airptr->IsOwnedByPlayer && !airptr->IsALoaner && airptr != air) {
         deficit -= 1;
@@ -184,10 +184,10 @@ bool _Need_To_Take(AircraftClass const *air) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
+static FootClass* _Create_Group(TeamTypeClass const* teamtype) {
   assert(teamtype != nullptr);
 
-  TeamClass *team = new TeamClass(teamtype);
+  TeamClass* team = new TeamClass(teamtype);
   if (team != nullptr) {
     team->Force_Active();
   }
@@ -204,14 +204,14 @@ static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
   **	Now that the official source for the reinforcement has been determined,
   *the *	objects themselves must be created.
   */
-  FootClass *transport = nullptr;
-  FootClass *object = nullptr;
+  FootClass* transport = nullptr;
+  FootClass* object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
-    TechnoTypeClass const *tclass = teamtype->Members[index].Class;
+    TechnoTypeClass const* tclass = teamtype->Members[index].Class;
 
     for (int sub = 0; sub < teamtype->Members[index].Quantity; sub++) {
       ScenarioInit++;
-      FootClass *temp = (FootClass *)tclass->Create_One_Of(
+      FootClass* temp = (FootClass*)tclass->Create_One_Of(
           HouseClass::As_Pointer(teamtype->House));
       ScenarioInit--;
 
@@ -227,7 +227,7 @@ static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
         }
 
         if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-            !_Need_To_Take((AircraftClass const *)temp)) {
+            !_Need_To_Take((AircraftClass const*)temp)) {
           temp->IsALoaner = true;
         }
 
@@ -277,7 +277,7 @@ static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
   */
   if (transport != nullptr && object == nullptr &&
       transport->What_Am_I() == RTTI_AIRCRAFT &&
-      *((AircraftClass *)transport) == AIRCRAFT_TRANSPORT) {
+      *((AircraftClass*)transport) == AIRCRAFT_TRANSPORT) {
     transport->IsALoaner = false;
   }
 
@@ -314,12 +314,12 @@ static FootClass *_Create_Group(TeamTypeClass const *teamtype) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Consists_Only_Of_Infantry(FootClass const *first) {
+static bool _Consists_Only_Of_Infantry(FootClass const* first) {
   while (first != nullptr) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
       return (false);
     }
-    first = (FootClass const *)((ObjectClass *)first->Next);
+    first = (FootClass const*)((ObjectClass*)first->Next);
   }
   return (true);
 }
@@ -342,22 +342,22 @@ static bool _Consists_Only_Of_Infantry(FootClass const *first) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static TechnoClass *_Who_Can_Pop_Out_Of(CELL origin) {
-  CellClass *cellptr = &Map[origin];
-  TechnoClass *candidate = nullptr;
+static TechnoClass* _Who_Can_Pop_Out_Of(CELL origin) {
+  CellClass* cellptr = &Map[origin];
+  TechnoClass* candidate = nullptr;
 
   for (int f = -1; f < 8; f++) {
-    CellClass *ptr = cellptr;
+    CellClass* ptr = cellptr;
     if (f != -1) {
       ptr = &ptr->Adjacent_Cell(FacingType(f));
     }
 
-    BuildingClass *building = ptr->Cell_Building();
+    BuildingClass* building = ptr->Cell_Building();
     if (building && building->Strength > 0) {
       candidate = building;
     }
 
-    UnitClass *unit = ptr->Cell_Unit();
+    UnitClass* unit = ptr->Cell_Unit();
     if (unit && unit->Strength && unit->Class->Max_Passengers() > 0) {
       return (unit);
     }
@@ -384,7 +384,7 @@ static TechnoClass *_Who_Can_Pop_Out_Of(CELL origin) {
  *Announces reinforcements.                                                *
  *   02/15/1996 JLB : Recognizes team reinforcement location. *
  *=============================================================================================*/
-bool Do_Reinforcements(TeamTypeClass const *teamtype) {
+bool Do_Reinforcements(TeamTypeClass const* teamtype) {
   assert(teamtype != nullptr);
 
   /*
@@ -398,13 +398,13 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
   *location of this *	team if there are no team missions previously assigned.
   */
   if (teamtype->MissionCount == 0) {
-    TeamTypeClass *tt = (TeamTypeClass *)teamtype;
+    TeamTypeClass* tt = (TeamTypeClass*)teamtype;
     tt->MissionCount = 1;
     tt->MissionList[0].Mission = TMISSION_ATT_WAYPT;
     tt->MissionList[0].Data.Value = teamtype->Origin;
   }
 
-  FootClass *object = _Create_Group(teamtype);
+  FootClass* object = _Create_Group(teamtype);
 
   // Mono_Printf("%d-%s (object=%p, team=%d).\n", __LINE__, __FILE__, object,
   // object->Team.Is_Valid());Keyboard->Get();
@@ -427,7 +427,7 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
     /*
     **	Search for an object that these infantry can pop out of.
     */
-    TechnoClass *candidate =
+    TechnoClass* candidate =
         _Who_Can_Pop_Out_Of(Scen.Waypoint[teamtype->Origin]);
 
     if (candidate != nullptr) {
@@ -457,9 +457,9 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
   **	For the ants, they will pop out of the ant hill directly.
   */
   if (teamtype->Origin != -1 && object->What_Am_I() == RTTI_UNIT &&
-      (*((UnitClass *)object) == UNIT_ANT1 ||
-       *((UnitClass *)object) == UNIT_ANT2 ||
-       *((UnitClass *)object) == UNIT_ANT3)) {
+      (*((UnitClass*)object) == UNIT_ANT1 ||
+       *((UnitClass*)object) == UNIT_ANT2 ||
+       *((UnitClass*)object) == UNIT_ANT3)) {
     CELL newcell = Scen.Waypoint[teamtype->Origin];
     if (newcell != -1) {
       if (Map[newcell].TType == TEMPLATE_HILL01) {
@@ -470,7 +470,7 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
 
   CELL newcell = cell;
 
-  FootClass *o = (FootClass *)(ObjectClass *)object->Next;
+  FootClass* o = (FootClass*)(ObjectClass*)object->Next;
   object->Next = nullptr;
   bool okvoice = false;
   while (newcell > 0 && object != nullptr) {
@@ -515,7 +515,7 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
 
     object = o;
     if (object != nullptr) {
-      o = (FootClass *)(ObjectClass *)object->Next;
+      o = (FootClass*)(ObjectClass*)object->Next;
       object->Next = nullptr;
     }
   }
@@ -525,8 +525,8 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
   */
   if (o != nullptr) {
     while (o != nullptr) {
-      FootClass *old = o;
-      o = (FootClass *)(ObjectClass *)o->Next;
+      FootClass* old = o;
+      o = (FootClass*)(ObjectClass*)o->Next;
       old->Next = nullptr;
 
       delete old;
@@ -569,15 +569,15 @@ bool Do_Reinforcements(TeamTypeClass const *teamtype) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool Create_Special_Reinforcement(HouseClass *house,
-                                  TechnoTypeClass const *type,
-                                  TechnoTypeClass const *another,
+bool Create_Special_Reinforcement(HouseClass* house,
+                                  TechnoTypeClass const* type,
+                                  TechnoTypeClass const* another,
                                   TeamMissionType mission, int argument) {
   assert(house != nullptr);
   assert(type != nullptr);
 
   if (house && type) {
-    TeamTypeClass *team = new TeamTypeClass();
+    TeamTypeClass* team = new TeamTypeClass();
 
     if (team) {
       /*
@@ -648,7 +648,7 @@ bool Create_Special_Reinforcement(HouseClass *house,
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
-int Create_Air_Reinforcement(HouseClass *house, AircraftType air, int number,
+int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, TARGET tarcom, TARGET navcom,
                              InfantryType passenger) {
   assert(house != nullptr);
@@ -658,8 +658,8 @@ int Create_Air_Reinforcement(HouseClass *house, AircraftType air, int number,
   /*
   ** Get a pointer to the class of the object that we are going to create.
   */
-  TechnoTypeClass const *type =
-      (TechnoTypeClass *)&AircraftTypeClass::As_Reference(air);
+  TechnoTypeClass const* type =
+      (TechnoTypeClass*)&AircraftTypeClass::As_Reference(air);
 
   /*
   ** Abort the airstrike if Tanya is the passenger and she's dead.
@@ -679,7 +679,7 @@ int Create_Air_Reinforcement(HouseClass *house, AircraftType air, int number,
     ** a real problem.
     */
     ScenarioInit++;
-    TechnoClass *obj = (TechnoClass *)type->Create_One_Of(house);
+    TechnoClass* obj = (TechnoClass*)type->Create_One_Of(house);
     ScenarioInit--;
     if (!obj) return (sub);
 
@@ -738,7 +738,7 @@ int Create_Air_Reinforcement(HouseClass *house, AircraftType air, int number,
       *determine *	if this aircraft should drop parachute reinforcements.
       */
       if (obj->What_Am_I() == RTTI_AIRCRAFT) {
-        AircraftClass *aircraft = (AircraftClass *)obj;
+        AircraftClass* aircraft = (AircraftClass*)obj;
         if (passenger != INFANTRY_NONE) {
           aircraft->Passenger = passenger;
         }

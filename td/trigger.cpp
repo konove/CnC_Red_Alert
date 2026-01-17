@@ -102,14 +102,14 @@ static void Do_All_To_Hunt(void);
 /*
 ********************************** Globals **********************************
 */
-static const char *EventText[EVENT_COUNT + 1] = {
+static const char* EventText[EVENT_COUNT + 1] = {
     "None",          "Player Enters", "Discovered",    "Attacked",
     "Destroyed",     "Any",           "House Discov.", "Units Destr.",
     "Bldgs Destr.",  "All Destr.",    "Credits",       "Time",
     "# Bldgs Dstr.", "# Units Dstr.", "No Factories",  "Civ. Evac.",
     "Built It"};
 
-static const char *ActionText[TriggerClass::ACTION_COUNT + 1] = {
+static const char* ActionText[TriggerClass::ACTION_COUNT + 1] = {
     "None",
     "Win",
     "Lose",
@@ -347,7 +347,7 @@ void TriggerClass::Init(void) { Triggers.Free_All(); }
  * HISTORY: * 12/06/1994 BR : Created. * 06/25/1995 JLB : Added more trigger
  *events.                                               *
  *=============================================================================================*/
-bool TriggerClass::Spring(EventType event, ObjectClass *obj) {
+bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
   Validate();
   /*
   **	If this is not the event for this trigger, just return.
@@ -399,7 +399,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass *obj) {
   **	Otherwise, take an appropriate action.
   */
   bool success = true;
-  TriggerClass *trig = nullptr;
+  TriggerClass* trig = nullptr;
   switch (Action) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
@@ -482,7 +482,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass *obj) {
 
     case ACTION_AUTOCREATE:
       if (obj && obj->Is_Techno()) {
-        ((TechnoClass *)obj)->House->IsAlerted = true;
+        ((TechnoClass*)obj)->House->IsAlerted = true;
       }
       break;
 
@@ -591,7 +591,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
   **	Otherwise, take an appropriate action.
   */
   bool success = true;
-  TriggerClass *trig = nullptr;
+  TriggerClass* trig = nullptr;
   int index;
   switch (Action) {
     case ACTION_NUKE:
@@ -777,7 +777,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
   **	The trigger has gone off; take appropriate action
   */
   bool success = true;
-  TriggerClass *trig = nullptr;
+  TriggerClass* trig = nullptr;
   switch (Action) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
@@ -994,9 +994,9 @@ bool TriggerClass::Remove(void) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Read_INI(char *buffer) {
-  TriggerClass *trigger;  // Working trigger pointer.
-  char *tbuffer;          // Accumulation buffer of trigger IDs.
+void TriggerClass::Read_INI(char* buffer) {
+  TriggerClass* trigger;  // Working trigger pointer.
+  char* tbuffer;          // Accumulation buffer of trigger IDs.
   int len;                // Length of data in buffer.
   char buf[128];
 
@@ -1078,9 +1078,9 @@ void TriggerClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Fill_In(char *name, char *entry) {
+void TriggerClass::Fill_In(char* name, char* entry) {
   Validate();
-  char *p;
+  char* p;
 
   /*
   **	Set its name.
@@ -1141,12 +1141,12 @@ void TriggerClass::Fill_In(char *name, char *entry) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Write_INI(char *buffer, bool refresh) {
+void TriggerClass::Write_INI(char* buffer, bool refresh) {
   int index;
   char buf[128];
-  TriggerClass *trigger;
-  char const *hname;
-  char const *tname;
+  TriggerClass* trigger;
+  char const* hname;
+  char const* tname;
 
   /*
   **	First, clear out all existing trigger data from the INI file.
@@ -1202,13 +1202,13 @@ void TriggerClass::Write_INI(char *buffer, bool refresh) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass *TriggerClass::As_Pointer(char const *name) {
+TriggerClass* TriggerClass::As_Pointer(char const* name) {
   if (name == nullptr) {
     return (nullptr);
   }
 
   for (int i = 0; i < Triggers.Count(); i++) {
-    TriggerClass *trigger = Triggers.Ptr(i);
+    TriggerClass* trigger = Triggers.Ptr(i);
 
     if (!stricmp(name, trigger->Name)) {
       return (trigger);
@@ -1229,10 +1229,10 @@ TriggerClass *TriggerClass::As_Pointer(char const *name) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void *TriggerClass::operator new(size_t) throw() {
-  void *ptr = Triggers.Allocate();
+void* TriggerClass::operator new(size_t) throw() {
+  void* ptr = Triggers.Allocate();
   if (ptr) {
-    ((TriggerClass *)ptr)->IsActive = true;
+    ((TriggerClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -1248,11 +1248,11 @@ void *TriggerClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::operator delete(void *ptr) {
+void TriggerClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TriggerClass *)ptr)->IsActive = false;
+    ((TriggerClass*)ptr)->IsActive = false;
   }
-  Triggers.Free((TriggerClass *)ptr);
+  Triggers.Free((TriggerClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -1266,7 +1266,7 @@ void TriggerClass::operator delete(void *ptr) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-EventType TriggerClass::Event_From_Name(char const *name) {
+EventType TriggerClass::Event_From_Name(char const* name) {
   int i;
 
   if (name == nullptr) {
@@ -1293,7 +1293,7 @@ EventType TriggerClass::Event_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const *TriggerClass::Name_From_Event(EventType event) {
+char const* TriggerClass::Name_From_Event(EventType event) {
   return (EventText[event + 1]);
 }
 
@@ -1308,7 +1308,7 @@ char const *TriggerClass::Name_From_Event(EventType event) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::ActionType TriggerClass::Action_From_Name(char const *name) {
+TriggerClass::ActionType TriggerClass::Action_From_Name(char const* name) {
   int i;
 
   if (name == nullptr) {
@@ -1335,7 +1335,7 @@ TriggerClass::ActionType TriggerClass::Action_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const *TriggerClass::Name_From_Action(ActionType action) {
+char const* TriggerClass::Name_From_Action(ActionType action) {
   return (ActionText[action + 1]);
 }
 
@@ -1374,7 +1374,7 @@ static void Do_All_To_Hunt(void) {
   int index;
 
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass *unit = Units.Ptr(index);
+    UnitClass* unit = Units.Ptr(index);
 
     if (!unit->House->IsHuman && unit->IsDown && !unit->IsInLimbo) {
       if (unit->Team) unit->Team->Remove(unit);
@@ -1383,7 +1383,7 @@ static void Do_All_To_Hunt(void) {
   }
 
   for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass *infantry = Infantry.Ptr(index);
+    InfantryClass* infantry = Infantry.Ptr(index);
 
     if (!infantry->House->IsHuman && infantry->IsDown && !infantry->IsInLimbo) {
       if (infantry->Team) infantry->Team->Remove(infantry);

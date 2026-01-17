@@ -178,12 +178,12 @@ SidebarClass::StripClass::SelectClass
 /*
 ** Shape data pointers
 */
-void const *SidebarClass::StripClass::LogoShapes;
-void const *SidebarClass::StripClass::ClockShapes;
-void const *SidebarClass::StripClass::SpecialShapes[3];
+void const* SidebarClass::StripClass::LogoShapes;
+void const* SidebarClass::StripClass::ClockShapes;
+void const* SidebarClass::StripClass::SpecialShapes[3];
 
-void const *SidebarClass::SidebarShape1;
-void const *SidebarClass::SidebarShape2;
+void const* SidebarClass::SidebarShape1;
+void const* SidebarClass::SidebarShape2;
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -313,7 +313,7 @@ void SidebarClass::Init_Clear(void) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::Init_IO(void) {
-  void *oldfont;
+  void* oldfont;
   int oldx;
   PowerClass::Init_IO();
 
@@ -530,7 +530,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, short const *list) {
+void SidebarClass::Refresh_Cells(CELL cell, short const* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Column[0].IsToRedraw = true;
@@ -829,7 +829,7 @@ void SidebarClass::Draw_It(bool complete) {
  *   12/31/1994 JLB : Uses mouse coordinate parameters. * 06/27/1995 JLB : <TAB>
  *key toggles sidebar.                                               *
  *=============================================================================================*/
-void SidebarClass::AI(KeyNumType &input, int x, int y) {
+void SidebarClass::AI(KeyNumType& input, int x, int y) {
   bool redraw = false;
 
   /*
@@ -1085,7 +1085,7 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(InitClass const &) {
+SidebarClass::StripClass::StripClass(InitClass const&) {
   IsScrollingDown = false;
   IsScrolling = false;
   IsBuilding = false;
@@ -1115,7 +1115,7 @@ SidebarClass::StripClass::StripClass(InitClass const &) {
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::StripClass::One_Time(int) {
-  static char *_file[3] = {"ION", "ATOM", "BOMB"};
+  static char* _file[3] = {"ION", "ATOM", "BOMB"};
   int factor = Get_Resolution_Factor();
 
   ObjectWidth = OBJECT_WIDTH << factor;
@@ -1160,7 +1160,7 @@ void SidebarClass::StripClass::One_Time(int) {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
-void const *SidebarClass::StripClass::Get_Special_Cameo(int type) {
+void const* SidebarClass::StripClass::Get_Special_Cameo(int type) {
   return (SpecialShapes[type]);
 }
 
@@ -1229,7 +1229,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
   DownButton[ID].Set_Shape(Hires_Retrieve("STRIPDN.SHP"));
 
   for (int index = 0; index < MAX_VISIBLE; index++) {
-    SelectClass &g = SelectButton[ID][index];
+    SelectClass& g = SelectButton[ID][index];
     g.ID = BUTTON_SELECT;
     g.X = X;
     g.Y = Y + (ObjectHeight * index);
@@ -1252,8 +1252,8 @@ void SidebarClass::StripClass::Init_IO(int id) {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
-  static char *_file[3] = {"ION", "ATOM", "BOMB"};
-  void const *cameo_ptr;
+  static char* _file[3] = {"ION", "ATOM", "BOMB"};
+  void const* cameo_ptr;
 
   for (int lp = 0; lp < 3; lp++) {
     std::string filename;
@@ -1286,7 +1286,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   **	Create the translucent table used for the sidebar.
   */
   Build_Translucent_Table(GamePalette, &ClockCols[0], 1,
-                          (void *)ClockTranslucentTable);
+                          (void*)ClockTranslucentTable);
   CCFileClass(Fading_Table_Name("CLOCK", theater).c_str())
       .Write(ClockTranslucentTable, sizeof(ClockTranslucentTable));
   Mem_Copy(OriginalPalette, GamePalette, 768);
@@ -1371,15 +1371,15 @@ void SidebarClass::StripClass::Deactivate(void) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-static int sortfunc(void const *ptr1, void const *ptr2) {
-  SidebarClass::StripClass::BuildType *b1 =
-      (SidebarClass::StripClass::BuildType *)ptr1;
-  SidebarClass::StripClass::BuildType *b2 =
-      (SidebarClass::StripClass::BuildType *)ptr2;
+static int sortfunc(void const* ptr1, void const* ptr2) {
+  SidebarClass::StripClass::BuildType* b1 =
+      (SidebarClass::StripClass::BuildType*)ptr1;
+  SidebarClass::StripClass::BuildType* b2 =
+      (SidebarClass::StripClass::BuildType*)ptr2;
 
-  TechnoTypeClass const *p1 =
+  TechnoTypeClass const* p1 =
       Fetch_Techno_Type(b1->BuildableType, b1->BuildableID);
-  TechnoTypeClass const *p2 =
+  TechnoTypeClass const* p2 =
       Fetch_Techno_Type(b2->BuildableType, b2->BuildableID);
 
   int i1 = 0;
@@ -1392,11 +1392,11 @@ static int sortfunc(void const *ptr1, void const *ptr2) {
   **	Walls should be sorted after the regular buildings.
   */
   if (p1 && p1->What_Am_I() == RTTI_BUILDINGTYPE &&
-      ((BuildingTypeClass *const)p1)->IsWall) {
+      ((BuildingTypeClass* const)p1)->IsWall) {
     i1++;
   }
   if (p2 && p2->What_Am_I() == RTTI_BUILDINGTYPE &&
-      ((BuildingTypeClass *const)p2)->IsWall) {
+      ((BuildingTypeClass* const)p2)->IsWall) {
     i2++;
   }
 
@@ -1552,7 +1552,7 @@ void SidebarClass::StripClass::Flag_To_Redraw(void) {
  * HISTORY: * 12/31/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
+bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
   bool redraw = false;
 
   /*
@@ -1650,7 +1650,7 @@ bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
       int factoryid = Buildables[index].Factory;
 
       if (factoryid != -1) {
-        FactoryClass *factory = Factories.Raw_Ptr(factoryid);
+        FactoryClass* factory = Factories.Raw_Ptr(factoryid);
 
         if (factory && factory->Has_Changed()) {
           redraw = true;
@@ -1661,7 +1661,7 @@ bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
             *factory. Buildings are *	the main exception to the ability to
             *leave the factory under their own *	power.
             */
-            TechnoClass *pending = factory->Get_Object();
+            TechnoClass* pending = factory->Get_Object();
             if (pending) {
               switch (pending->What_Am_I()) {
                 case RTTI_UNIT:
@@ -1746,10 +1746,10 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed = false;
       int stage = 0;
       bool darken = false;
-      void const *shapefile = nullptr;
+      void const* shapefile = nullptr;
       int shapenum = 0;
-      void const *remapper = nullptr;
-      FactoryClass *factory = nullptr;
+      void const* remapper = nullptr;
+      FactoryClass* factory = nullptr;
       int index = i + TopIndex;
       int x = X;
       int y = Y + i * ObjectHeight;
@@ -1769,7 +1769,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *underlying graphic there.
       */
       if ((unsigned)index < BuildableCount) {
-        ObjectTypeClass const *obj = nullptr;
+        ObjectTypeClass const* obj = nullptr;
         int spc = 0;
 
         if (Buildables[index].BuildableType != RTTI_SPECIAL) {
@@ -1996,7 +1996,7 @@ bool SidebarClass::StripClass::Recalc(void) {
   */
   bool redraw = false;
   for (int index = 0; index < BuildableCount; index++) {
-    TechnoTypeClass const *tech = Fetch_Techno_Type(
+    TechnoTypeClass const* tech = Fetch_Techno_Type(
         Buildables[index].BuildableType, Buildables[index].BuildableID);
     if (tech) {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
@@ -2143,7 +2143,7 @@ SidebarClass::StripClass::SelectClass::SelectClass(void)
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass &strip,
+void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
                                                       int index) {
   int factor = Get_Resolution_Factor();
   Strip = &strip;
@@ -2170,14 +2170,14 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass &strip,
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
-                                                  KeyNumType &key) {
+                                                  KeyNumType& key) {
   int index = Strip->TopIndex + Index;
   RTTIType otype = Strip->Buildables[index].BuildableType;
   int oid = Strip->Buildables[index].BuildableID;
   int fnumber = Strip->Buildables[index].Factory;
 
-  FactoryClass *factory = nullptr;
-  ObjectTypeClass const *choice = nullptr;
+  FactoryClass* factory = nullptr;
+  ObjectTypeClass const* choice = nullptr;
   int spc = 0;
 
   /*
@@ -2361,11 +2361,11 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
             *exit *	the factory or go into placement mode.
             */
             if (factory->Has_Completed()) {
-              TechnoClass *pending = factory->Get_Object();
+              TechnoClass* pending = factory->Get_Object();
               if (!pending && factory->Get_Special_Item()) {
                 Map.IsTargettingMode = true;
               } else {
-                BuildingClass *builder =
+                BuildingClass* builder =
                     pending->Who_Can_Build_Me(false, false);
                 if (!builder) {
                   OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
@@ -2378,7 +2378,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                   **	the building is actually placed down.
                   */
                   if (pending->What_Am_I() == RTTI_BUILDING) {
-                    PlayerPtr->Manual_Place(builder, (BuildingClass *)pending);
+                    PlayerPtr->Manual_Place(builder, (BuildingClass*)pending);
                   } else {
                     /*
                     **	For objects that can leave the factory under their own
@@ -2443,7 +2443,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  *                                                                                             *
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
-int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType &) {
+int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType&) {
   Map.Help_Text(TXT_NONE);
   Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
   return (true);

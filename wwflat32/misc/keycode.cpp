@@ -16,10 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <conio.h>
+
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
-#include <conio.h>
-#include <cctype>
 #include <cstring>
 
 #define true 1

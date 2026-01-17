@@ -103,7 +103,7 @@ void Dialog_Box(int x, int y, int w, int h) {
  * HISTORY: * 05/28/1991 JLB : Created. * 05/30/1992 JLB : Embedded color codes.
  ** 07/31/1992 JLB : Depressed option added. *
  *=============================================================================================*/
-extern void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos,
+extern void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos,
                             int ypos, int width, int height);
 
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
@@ -133,7 +133,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   w--;
   h--;
-  BoxStyleType const &style = ButtonColors[up];
+  BoxStyleType const& style = ButtonColors[up];
 
   if (filled) {
     if (style.Filler == CC_GREEN_BKGD && RESFACTOR == 2) {
@@ -183,8 +183,8 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
  * HISTORY: * 03/27/1992  SB : Created. * 05/18/1995 JLB : Greatly revised for
  *new font system.                                     *
  *=============================================================================================*/
-int Format_Window_String(char *string, int maxlinelen, int &width,
-                         int &height) {
+int Format_Window_String(char* string, int maxlinelen, int& width,
+                         int& height) {
   int linelen;
   int lines = 0;
   width = 0;
@@ -319,11 +319,11 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
+void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
                        unsigned back, TextPrintType flag) {
   static int yspace = 0;       // Y spacing adjustment for font.
   static int xspace = 0;       // Spacing adjustment for font.
-  void const *font = nullptr;  // Font to use.
+  void const* font = nullptr;  // Font to use.
 
   ////////////////#if (0)
   static unsigned char _textfontpal[16][16] = {
@@ -372,14 +372,14 @@ void Simple_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
     fontpalette[15] = 205;
   }
 
-  char *tempstr = nullptr;
+  char* tempstr = nullptr;
 
   if (text) {
     /*
     ** remove any 0xff characters from the string
     */
     tempstr = new char[strlen(text) + 1];
-    char *tempptr = tempstr;
+    char* tempptr = tempstr;
 
     for (int i = 0; i < strlen(text) + 1; i++) {
       if (text[i] != -1) {
@@ -611,7 +611,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
     **	The text string must be locked since the vsprintf function doesn't know
     **	how to handle EMS pointers.
     */
-    char const *tptr = Text_String(text);
+    char const* tptr = Text_String(text);
     vsprintf(buffer, tptr, arg);
     va_end(arg);
 
@@ -620,7 +620,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
     */
-    Simple_Text_Print((char const *)nullptr, x, y, fore, back, flag);
+    Simple_Text_Print((char const*)nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -650,7 +650,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
+void Fancy_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -675,7 +675,7 @@ void Fancy_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
     **	Just the flags are desired to be changed, so call the simple print
     *routine with *	a NULL text pointer.
     */
-    Simple_Text_Print((char const *)nullptr, x, y, fore, back, flag);
+    Simple_Text_Print((char const*)nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -708,9 +708,9 @@ void Fancy_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
+void Conquer_Clip_Text_Print(char const* text, unsigned x, unsigned y,
                              unsigned fore, unsigned back, TextPrintType flag,
-                             unsigned width, int const *tabs) {
+                             unsigned width, int const* tabs) {
   char buffer[512];
 
   if (text) {
@@ -722,11 +722,11 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
     */
     Simple_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, flag);
 
-    char *source = &buffer[0];
+    char* source = &buffer[0];
     unsigned offset = 0;
     int processing = true;
     while (processing && offset < width) {
-      char *ptr = strchr(source, '\t');
+      char* ptr = strchr(source, '\t');
 
       /*
       **	Zap the tab character. It will be processed later.
@@ -741,7 +741,7 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
         **	maximum width, whichever comes first.
         */
         int w = 0;
-        char *bptr = source;
+        char* bptr = source;
         do {
           w += Char_Pixel_Width(*bptr++);
         } while (*bptr && offset + w < width);

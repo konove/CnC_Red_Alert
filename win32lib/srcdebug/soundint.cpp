@@ -59,13 +59,15 @@
 #ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
 #endif  // _WIN32
+#include "soundint.h"
+
 #include <windows.h>
 #include <windowsx.h>
-#include "dsound.h"
 #include <wwstd.h>
-#include "soundint.h"
-#include "memflag.h"
+
 #include "audio.h"
+#include "dsound.h"
+#include "memflag.h"
 
 extern DebugBuffer[];
 
@@ -88,8 +90,8 @@ extern DebugBuffer[];
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-long Simple_Copy(void **source, long *ssize, void **alternate, long *altsize,
-                 void **dest, long size) {
+long Simple_Copy(void** source, long* ssize, void** alternate, long* altsize,
+                 void** dest, long size) {
   long out = 0;  // Number of bytes copied to the destination.
 
   /*
@@ -157,9 +159,9 @@ long Simple_Copy(void **source, long *ssize, void **alternate, long *altsize,
  * HISTORY: * 09/03/1994 JLB : Created. * 09/04/1994 JLB : Revamped entirely. *
  *=============================================================================================*/
 #pragma argsused
-long Sample_Copy(SampleTrackerType *st, void **source, long *ssize,
-                 void **alternate, long *altsize, void *dest, long size,
-                 SCompressType scomp, void *, short int *) {
+long Sample_Copy(SampleTrackerType* st, void** source, long* ssize,
+                 void** alternate, long* altsize, void* dest, long size,
+                 SCompressType scomp, void*, short int*) {
   long s;
   long datasize = 0;  // Output bytes.
 
@@ -181,9 +183,9 @@ long Sample_Copy(SampleTrackerType *st, void **source, long *ssize,
           long magic;
           unsigned short fsize;
           unsigned short dsize;
-          void *fptr;
-          void *dptr;
-          void *mptr;
+          void* fptr;
+          void* dptr;
+          void* mptr;
 
           fptr = &fsize;
           dptr = &dsize;
@@ -229,8 +231,8 @@ long Sample_Copy(SampleTrackerType *st, void **source, long *ssize,
             if (scomp == SCOMP_WESTWOOD) {
               Decompress_Frame(LockedData.UncompBuffer, dest, dsize);
             } else {
-              st->sosinfo.lpSource = (char *)LockedData.UncompBuffer;
-              st->sosinfo.lpDest = (char *)dest;
+              st->sosinfo.lpSource = (char*)LockedData.UncompBuffer;
+              st->sosinfo.lpDest = (char*)dest;
               if (st->sosinfo.wBitSize == 16 && st->sosinfo.wChannels == 1) {
                 sosCODECDecompressData(&st->sosinfo, dsize);
               } else {
@@ -267,7 +269,7 @@ extern int Convert_HMI_To_Direct_Sound_Volume(int volume);
  *=============================================================================================*/
 VOID far __cdecl maintenance_callback(VOID) {
   int index;              // index used in for loop
-  SampleTrackerType *st;  // ptr to SampleTracker structure
+  SampleTrackerType* st;  // ptr to SampleTracker structure
   DWORD play_cursor;      // Position that direct sound is reading from
   DWORD write_cursor;     // Position in buffer that we can write to
   int bytes_copied;       // Number of bytes copied into the buffer
@@ -361,7 +363,7 @@ VOID far __cdecl maintenance_callback(VOID) {
                 ** We must have reached the end of the sample
                 */
                 st->MoreSource = FALSE;
-                memset(((char *)play_buffer_ptr) + bytes_copied, 0,
+                memset(((char*)play_buffer_ptr) + bytes_copied, 0,
                        (SECONDARY_BUFFER_SIZE / 4) - bytes_copied);
 
                 /*
@@ -375,7 +377,7 @@ VOID far __cdecl maintenance_callback(VOID) {
                     memset(dummy_buffer_ptr, 0, lock_length2);
                   }
                 } else {
-                  memset((char *)play_buffer_ptr + SECONDARY_BUFFER_SIZE / 4, 0,
+                  memset((char*)play_buffer_ptr + SECONDARY_BUFFER_SIZE / 4, 0,
                          SECONDARY_BUFFER_SIZE / 4);
                 }
               }
@@ -496,8 +498,8 @@ VOID far __cdecl maintenance_callback(VOID) {
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
 
-void *Audio_Add_Long_To_Pointer(void const *ptr, long size) {
-  return ((void *)((char const *)ptr + size));
+void* Audio_Add_Long_To_Pointer(void const* ptr, long size) {
+  return ((void*)((char const*)ptr + size));
 }
 
 /***************************************************************************
@@ -513,8 +515,8 @@ void *Audio_Add_Long_To_Pointer(void const *ptr, long size) {
  * HISTORY:                                                                *
  *   06/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-void Audio_Mem_Set(void const *ptr, unsigned char value, long size) {
-  unsigned char *temp = (unsigned char *)ptr;
+void Audio_Mem_Set(void const* ptr, unsigned char value, long size) {
+  unsigned char* temp = (unsigned char*)ptr;
   for (int lp = 0; lp < size; lp++) {
     *temp++ = value;
   }

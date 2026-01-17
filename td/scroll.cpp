@@ -101,7 +101,7 @@ ScrollClass::ScrollClass(void) {
  *Handles new scrolling option.                                            *
  *=============================================================================================*/
 #define EVA_WIDTH 80
-void ScrollClass::AI(KeyNumType &input, int x, int y) {
+void ScrollClass::AI(KeyNumType& input, int x, int y) {
   static DirType direction;
   bool player_scrolled = false;
 

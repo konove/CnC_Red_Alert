@@ -69,7 +69,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
-extern bool Is_Mission_Counterstrike(char *file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolStrng.h"
@@ -138,7 +138,7 @@ GameType Select_MPlayer_Game(void) {
 
 #if defined(WIN32) && !defined(PORTABLE)
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void *)NULL);
+                                    VisiblePage.Get_Height(), (void*)NULL);
 #endif
 
   //------------------------------------------------------------------------
@@ -181,12 +181,12 @@ GameType Select_MPlayer_Game(void) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS];
 
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   //------------------------------------------------------------------------
   // If IPX not active then do only the modem serial dialog
@@ -479,14 +479,14 @@ GameType Select_MPlayer_Game(void) {
  * HISTORY:                                                                *
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Clear_Listbox(ListClass *list) {
-  char *item;
+void Clear_Listbox(ListClass* list) {
+  char* item;
 
   //------------------------------------------------------------------------
   //	Clear the list box
   //------------------------------------------------------------------------
   while (list->Count()) {
-    item = (char *)(list->Get_Item(0));
+    item = (char*)(list->Get_Item(0));
     list->Remove_Item(item);
     delete[] item;
   }
@@ -512,7 +512,7 @@ void Clear_Listbox(ListClass *list) {
  * HISTORY:                                                                *
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Clear_Vector(DynamicVectorClass<NodeNameType *> *vector) {
+void Clear_Vector(DynamicVectorClass<NodeNameType*>* vector) {
   int i;
 
   //------------------------------------------------------------------------
@@ -544,7 +544,7 @@ void Computer_Message(void) {
 #ifdef NEVER
   int color;
   HousesType house;
-  HouseClass *ptr;
+  HouseClass* ptr;
 
   //------------------------------------------------------------------------
   //	Find the computer house that the message will be from
@@ -612,12 +612,12 @@ void Computer_Message(void) {
  * HISTORY:                                                                *
  *   06/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Garble_Message(char *buf) {
+static void Garble_Message(char* buf) {
   char txt[80];
   char punct[20];   // for punctuation
-  char *p;          // working ptr
+  char* p;          // working ptr
   int numwords;     // # words in the phrase
-  char *words[40];  // ptrs to various words in the phrase
+  char* words[40];  // ptrs to various words in the phrase
   int i, j;
 
   //------------------------------------------------------------------------
@@ -697,7 +697,7 @@ static void Garble_Message(char *buf) {
  *=========================================================================*/
 int Surrender_Dialog(int text) { return Surrender_Dialog(Text_String(text)); }
 
-int Surrender_Dialog(const char *text) {
+int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -735,7 +735,7 @@ int Surrender_Dialog(const char *text) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_BUTTON, D_OK_X, D_OK_Y, D_OK_W,
                         D_OK_H);
@@ -744,7 +744,7 @@ int Surrender_Dialog(const char *text) {
                             D_CANCEL_Y, D_CANCEL_W, D_CANCEL_H);
 
   int curbutton;
-  TextButtonClass *buttons[2];
+  TextButtonClass* buttons[2];
   curbutton = 0;
 
   //------------------------------------------------------------------------
@@ -927,7 +927,7 @@ int Abort_Dialog(void) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass yesbtn(BUTTON_YES, TXT_YES, TPF_BUTTON, D_YES_X, D_YES_Y,
                          D_YES_W, D_YES_H);
@@ -936,7 +936,7 @@ int Abort_Dialog(void) {
                         D_NO_H);
 
   int curbutton;
-  TextButtonClass *buttons[2];
+  TextButtonClass* buttons[2];
   curbutton = 0;
 
   //------------------------------------------------------------------------

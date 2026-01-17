@@ -9,21 +9,21 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_win.h"
 
-void *MainWindow;
+void* MainWindow;
 
-GraphicViewPortClass *LogicPage;
+GraphicViewPortClass* LogicPage;
 bool AllowHardwareBlitFills = true;
 bool OverlappedVideoBlits = true;
 
-GraphicBufferClass *WindowBuffer = nullptr;
+GraphicBufferClass* WindowBuffer = nullptr;
 
 inline int Make_Code(int x, int y, int w, int h) {
   return (x < 0 ? 0b1000 : 0) | (x >= w ? 0b0100 : 0) | (y < 0 ? 0b0010 : 0) |
          (y >= h ? 0b0001 : 0);
 }
 
-void Buffer_Put_Pixel(void *thisptr, int x, int y, unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+void Buffer_Put_Pixel(void* thisptr, int x, int y, unsigned char color) {
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height())
     return;
@@ -34,8 +34,8 @@ void Buffer_Put_Pixel(void *thisptr, int x, int y, unsigned char color) {
   *dst_offset = color;
 }
 
-int Buffer_Get_Pixel(void *thisptr, int x, int y) {
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+int Buffer_Get_Pixel(void* thisptr, int x, int y) {
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   if (x < 0 || y < 0 || x >= vp_dst->Get_Width() || y >= vp_dst->Get_Height())
     return 0;
@@ -46,8 +46,8 @@ int Buffer_Get_Pixel(void *thisptr, int x, int y) {
   return *dst_offset;
 }
 
-void Buffer_Clear(void *thisptr, unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+void Buffer_Clear(void* thisptr, unsigned char color) {
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset();
@@ -62,9 +62,9 @@ void Buffer_Clear(void *thisptr, unsigned char color) {
   } while (--line_count);
 }
 
-long Buffer_To_Buffer(void *thisptr, int x_pixel, int y_pixel, int pixel_width,
-                      int pixel_height, void *buff, long /*size*/) {
-  auto vp_src = (GraphicViewPortClass *)thisptr;
+long Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel, int pixel_width,
+                      int pixel_height, void* buff, long /*size*/) {
+  auto vp_src = (GraphicViewPortClass*)thisptr;
 
   int dst_x0 = 0;
   int dst_y0 = 0;
@@ -101,7 +101,7 @@ long Buffer_To_Buffer(void *thisptr, int x_pixel, int y_pixel, int pixel_width,
   int src_area = vp_src->Get_XAdd() + vp_src->Get_Width() + vp_src->Get_Pitch();
   auto src_offset = vp_src->Get_Offset() + src_x0 + src_y0 * src_area;
 
-  auto dst_offset = (uint8_t *)buff + dst_x0 + dst_y0 * pixel_width;
+  auto dst_offset = (uint8_t*)buff + dst_x0 + dst_y0 * pixel_width;
 
   if (src_x1 <= src_x0 || src_y1 <= src_y0) return true;
 
@@ -121,8 +121,8 @@ long Buffer_To_Buffer(void *thisptr, int x_pixel, int y_pixel, int pixel_width,
 }
 
 long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
-                    int pixel_height, void *Buffer, void *view) {
-  auto vp_dst = (GraphicViewPortClass *)view;
+                    int pixel_height, void* Buffer, void* view) {
+  auto vp_dst = (GraphicViewPortClass*)view;
 
   int src_x0 = 0;
   int src_y0 = 0;
@@ -156,7 +156,7 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     if (code1 & 0b0001) dst_y1 = vp_dst->Get_Height();
   }
 
-  auto src_offset = (uint8_t *)Buffer + src_x0 + src_y0 * pixel_width;
+  auto src_offset = (uint8_t*)Buffer + src_x0 + src_y0 * pixel_width;
 
   int dst_area = vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
   auto dst_offset = vp_dst->Get_Offset() + dst_x0 + dst_y0 * dst_area;
@@ -178,13 +178,13 @@ long Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   return 0;
 }
 
-bool Linear_Blit_To_Linear(void *thisptr, void *dest, int x_pixel, int y_pixel,
+bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                            int dx_pixel, int dy_pixel, int pixel_width,
                            int pixel_height, bool trans) {
   // trans seems to only be used by TD
 
-  auto vp_src = (GraphicViewPortClass *)thisptr;
-  auto vp_dst = (GraphicViewPortClass *)dest;
+  auto vp_src = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = (GraphicViewPortClass*)dest;
 
   // clip source
   int src_x0 = x_pixel;
@@ -302,14 +302,14 @@ bool Linear_Blit_To_Linear(void *thisptr, void *dest, int x_pixel, int y_pixel,
   return true;
 }
 
-bool Linear_Scale_To_Linear(void *thisptr, void *dest, int src_x, int src_y,
+bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                             int dst_x, int dst_y, int src_w, int src_h,
-                            int dst_w, int dst_h, bool trans, char *remap) {
+                            int dst_w, int dst_h, bool trans, char* remap) {
   // Check for scale error when to or from size 0,0
   if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) return true;
 
-  auto vp_src = (GraphicViewPortClass *)thisptr;
-  auto vp_dst = (GraphicViewPortClass *)dest;
+  auto vp_src = (GraphicViewPortClass*)thisptr;
+  auto vp_dst = (GraphicViewPortClass*)dest;
 
   int src_x0 = src_x;
   int src_y0 = src_y;
@@ -494,14 +494,14 @@ bool Linear_Scale_To_Linear(void *thisptr, void *dest, int src_x, int src_y,
   return true;
 }
 
-long Buffer_Print(void *thisptr, const char *str, int x, int y, int fcolor,
+long Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
                   int bcolor) {
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   if (!str) return 0;
 
   int start_x = x;
-  auto font = (uint8_t *)FontPtr;  // this could use a struct
+  auto font = (uint8_t*)FontPtr;  // this could use a struct
 
   int vpheight = vp_dst->Get_Height();
   int vpwidth = vp_dst->Get_Width();
@@ -510,15 +510,15 @@ long Buffer_Print(void *thisptr, const char *str, int x, int y, int fcolor,
 
   if (!FontPtr) return 0;
 
-  uint16_t infoblock_off = *((uint16_t *)(font + FONTINFOBLOCK));
-  uint16_t offsetblock_off = *((uint16_t *)(font + FONTOFFSETBLOCK));
-  uint16_t widthblock_off = *((uint16_t *)(font + FONTWIDTHBLOCK));
-  uint16_t heightblock_off = *((uint16_t *)(font + FONTHEIGHTBLOCK));
+  uint16_t infoblock_off = *((uint16_t*)(font + FONTINFOBLOCK));
+  uint16_t offsetblock_off = *((uint16_t*)(font + FONTOFFSETBLOCK));
+  uint16_t widthblock_off = *((uint16_t*)(font + FONTWIDTHBLOCK));
+  uint16_t heightblock_off = *((uint16_t*)(font + FONTHEIGHTBLOCK));
 
-  uint8_t *infoblock = font + infoblock_off;
-  uint16_t *offsetblock = (uint16_t *)(font + offsetblock_off);
-  uint8_t *widthblock = font + widthblock_off;
-  uint16_t *heightblock = (uint16_t *)(font + heightblock_off);
+  uint8_t* infoblock = font + infoblock_off;
+  uint16_t* offsetblock = (uint16_t*)(font + offsetblock_off);
+  uint8_t* widthblock = font + widthblock_off;
+  uint16_t* heightblock = (uint16_t*)(font + heightblock_off);
 
   uint8_t maxheight = infoblock[FONTINFOMAXHEIGHT];
   y = maxheight + y;
@@ -623,9 +623,9 @@ long Buffer_Print(void *thisptr, const char *str, int x, int y, int fcolor,
   return 0;
 }
 
-void Buffer_Draw_Line(void *thisptr, int sx, int sy, int dx, int dy,
+void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   int width = vp_dst->Get_Width();
   int height = vp_dst->Get_Height();
@@ -705,11 +705,11 @@ void Buffer_Draw_Line(void *thisptr, int sx, int sy, int dx, int dy,
 
       // 32-bit fill
       uint32_t color32 = color | color << 8 | color << 16 | color << 24;
-      auto ptr32 = (uint32_t *)ptr;
+      auto ptr32 = (uint32_t*)ptr;
       for (int count32 = count >> 2; count32 != 0; count32--)
         *ptr32++ = color32;
 
-      ptr = (uint8_t *)ptr32;
+      ptr = (uint8_t*)ptr32;
 
       // draw remainder
       for (count = count & 3; count != 0; count--) *ptr++ = color;
@@ -778,9 +778,9 @@ void Buffer_Draw_Line(void *thisptr, int sx, int sy, int dx, int dy,
   }
 }
 
-void Buffer_Fill_Rect(void *thisptr, int sx, int sy, int dx, int dy,
+void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   if (sx > dx) std::swap(sx, dx);
   if (sy > dy) std::swap(sy, dy);
@@ -808,11 +808,11 @@ void Buffer_Fill_Rect(void *thisptr, int sx, int sy, int dx, int dy,
   } while (--line_count);
 }
 
-void Buffer_Remap(void *thisptr, int sx, int sy, int width, int height,
-                  void *remap) {
+void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
+                  void* remap) {
   if (!remap) return;
 
-  auto vp_dst = (GraphicViewPortClass *)thisptr;
+  auto vp_dst = (GraphicViewPortClass*)thisptr;
 
   // clip
   int dst_x0 = sx;
@@ -849,7 +849,7 @@ void Buffer_Remap(void *thisptr, int sx, int sy, int width, int height,
   // remap lines
   do {
     for (int x = 0; x < pixel_count; x++) {
-      auto v = ((uint8_t *)remap)[*dst_offset];
+      auto v = ((uint8_t*)remap)[*dst_offset];
       *dst_offset++ = v;
     }
     dst_offset += skip;
@@ -857,7 +857,7 @@ void Buffer_Remap(void *thisptr, int sx, int sy, int width, int height,
 }
 
 // from misc.h, implemented here to share clipping helpers
-int Clip_Rect(int *x, int *y, int *dw, int *dh, int width, int height) {
+int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   int x0 = *x;
   int y0 = *y;
   int x1 = *x + *dw;
@@ -886,16 +886,16 @@ int Clip_Rect(int *x, int *y, int *dw, int *dh, int width, int height) {
   return 0;
 }
 
-GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass *ptr) {
+GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass* ptr) {
   std::swap(LogicPage, ptr);
   return ptr;
 }
 
-GraphicViewPortClass *Set_Logic_Page(GraphicViewPortClass &ptr) {
+GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass& ptr) {
   return Set_Logic_Page(&ptr);
 }
 
-GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *graphic_buff,
+GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* graphic_buff,
                                            int x, int y, int w, int h)
     : GraphicBuff(nullptr) {
   Attach(graphic_buff, x, y, w, h);
@@ -911,7 +911,7 @@ void GraphicViewPortClass::Draw_Rect(int sx, int sy, int dx, int dy,
   Unlock();
 }
 
-void GraphicViewPortClass::Attach(GraphicBufferClass *graphic_buff, int x,
+void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
                                   int y, int w, int h) {
   if (this == Get_Graphic_Buffer()) return;
 
@@ -945,19 +945,19 @@ void GraphicViewPortClass::Attach(GraphicBufferClass *graphic_buff, int x,
   GraphicBuff = graphic_buff;
 }
 
-GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer, long size)
+GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer, long size)
     : GraphicBufferClass() {
   Init(w, h, buffer, size, GBC_NONE);
 }
 
-GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer)
+GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer)
     : GraphicBufferClass(w, h, buffer, w * h) {}
 
 GraphicBufferClass::GraphicBufferClass(void) { GraphicBuff = this; }
 
 GraphicBufferClass::~GraphicBufferClass() { Un_Init(); }
 
-void GraphicBufferClass::Init(int w, int h, void *buffer, long size,
+void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
                               GBC_Enum flags) {
   Size = size;
   Width = w;
@@ -980,7 +980,7 @@ void GraphicBufferClass::Init(int w, int h, void *buffer, long size,
       Buffer = new uint8_t[Size];
     }
 
-    Offset = (uint8_t *)Buffer;
+    Offset = (uint8_t*)Buffer;
   }
 }
 

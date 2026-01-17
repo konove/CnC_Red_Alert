@@ -598,7 +598,7 @@ HBITMAP FAR DIBToBitmap(HDIB hDIB, HPALETTE hPal) {
 HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
   BITMAP bm;                   // bitmap structure
   BITMAPINFOHEADER bi;         // bitmap header
-  BITMAPINFOHEADER FAR *lpbi;  // pointer to BITMAPINFOHEADER
+  BITMAPINFOHEADER FAR* lpbi;  // pointer to BITMAPINFOHEADER
   DWORD dwLen;                 // size of memory block
   HANDLE hDIB, h;              // handle to DIB, temp handle
   HDC hDC;                     // handle to DC
@@ -663,7 +663,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
   }
 
   /* lock memory and get pointer to it */
-  lpbi = (BITMAPINFOHEADER FAR *)GlobalLock(hDIB);
+  lpbi = (BITMAPINFOHEADER FAR*)GlobalLock(hDIB);
 
   /* use our bitmap info. to fill BITMAPINFOHEADER */
   *lpbi = bi;
@@ -698,7 +698,7 @@ HDIB FAR BitmapToDIB(HBITMAP hBitmap, HPALETTE hPal) {
   }
 
   /* lock memory block and get pointer to it */
-  lpbi = (BITMAPINFOHEADER FAR *)GlobalLock(hDIB);
+  lpbi = (BITMAPINFOHEADER FAR*)GlobalLock(hDIB);
 
   /*  call GetDIBits with a NON-NULL lpBits param, and actualy get the
    *  bits this time

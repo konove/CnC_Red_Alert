@@ -60,12 +60,12 @@ class TemplateClass : public ObjectClass {
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   TemplateClass(void);
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(Class) {};
+  TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
   virtual ~TemplateClass(void) {
     if (GameActive) TemplateClass::Limbo();
   };
@@ -77,7 +77,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
   int Icon_Number(CELL cell);
 
   /*
@@ -103,11 +103,11 @@ class TemplateClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static char const *INI_Name(void) { return "TEMPLATE"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static char const* INI_Name(void) { return "TEMPLATE"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -120,12 +120,12 @@ class TemplateClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  TemplateTypeClass const *const Class;
+  TemplateTypeClass const* const Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

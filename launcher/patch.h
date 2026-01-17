@@ -19,13 +19,13 @@
 #ifndef PATCH_HEADER
 #define PATCH_HEADER
 
-#include "winblows.h"
 #include "dialog.h"
+#include "process.h"
 #include "resource.h"
 #include "wdebug.h"
-#include "process.h"
+#include "winblows.h"
 
-void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex);
+void Apply_Patch(char* patchfile, ConfigFile& config, int skuIndex);
 
 // Print an error message
 #define ERRMSGX(X, F)                                                         \

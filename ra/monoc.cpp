@@ -75,7 +75,7 @@
 void output(short port, short data);
 
 bool MonoClass::Enabled = 0;
-MonoClass *MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES];
+MonoClass* MonoClass::PageUsage[MonoClass::MAX_MONO_PAGES];
 
 /*
 **	These are the IBM linedraw characters.
@@ -503,7 +503,7 @@ void MonoClass::Scroll(int lines) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Printf(char const *text, ...) {
+void MonoClass::Printf(char const* text, ...) {
   va_list va;
   /*
   **	The buffer object is placed at the end of the local variable list
@@ -576,9 +576,9 @@ void MonoClass::Printf(int text, ...) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Print(char const *ptr) {
+void MonoClass::Print(char const* ptr) {
   int startcol = X;
-  char const *text;
+  char const* text;
   CellType cell;
 
   if (!ptr || !Enabled) return;
@@ -666,7 +666,7 @@ void MonoClass::Print(char const *ptr) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Text_Print(char const *text, int x, int y,
+void MonoClass::Text_Print(char const* text, int x, int y,
                            MonoAttribute attrib) {
   int oldx = X;
   int oldy = Y;
@@ -746,7 +746,7 @@ void MonoClass::Print(int text) { Print(Text_String(text)); }
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass &MonoClass::operator=(MonoClass const &src) {
+MonoClass& MonoClass::operator=(MonoClass const& src) {
   memmove(Page_Ptr(), src.Page_Ptr(), sizeof(MonoPageType));
   Set_Cursor(src.X, src.Y);
   return (*this);
@@ -778,7 +778,7 @@ void MonoClass::View(void) {
   **	If the visible page is already assigned to a real monochrome page
   **	object, then it must be swapped with the new one.
   */
-  MonoClass *displace = Get_Current();
+  MonoClass* displace = Get_Current();
   if (displace) {
     for (int line = 0; line < LINES; line++) {
       for (int col = 0; col < COLUMNS; col++) {
@@ -814,7 +814,7 @@ void MonoClass::View(void) {
 */
 void Mono_Set_Cursor(int x, int y) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
@@ -842,13 +842,13 @@ void Mono_Set_Cursor(int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-int Mono_Printf(char const *string, ...) {
+int Mono_Printf(char const* string, ...) {
   va_list va;
   char buffer[256];
 
   buffer[0] = '\0';
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
@@ -879,7 +879,7 @@ int Mono_Printf(char const *string, ...) {
  *=============================================================================================*/
 void Mono_Clear_Screen(void) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
@@ -905,15 +905,14 @@ void Mono_Clear_Screen(void) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-void Mono_Text_Print(void const *text, int x, int y, int attrib) {
+void Mono_Text_Print(void const* text, int x, int y, int attrib) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
     }
-    mono->Text_Print((const char *)text, x, y,
-                     (MonoClass::MonoAttribute)attrib);
+    mono->Text_Print((const char*)text, x, y, (MonoClass::MonoAttribute)attrib);
   }
 }
 
@@ -939,7 +938,7 @@ void Mono_Text_Print(void const *text, int x, int y, int attrib) {
  *=============================================================================================*/
 void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
@@ -962,14 +961,14 @@ void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-void Mono_Print(void const *text) {
+void Mono_Print(void const* text) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
     }
-    mono->Print((const char *)text);
+    mono->Print((const char*)text);
   }
 }
 
@@ -989,7 +988,7 @@ void Mono_Print(void const *text) {
  *=============================================================================================*/
 int Mono_X(void) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
@@ -1015,7 +1014,7 @@ int Mono_X(void) {
  *=============================================================================================*/
 int Mono_Y(void) {
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();
@@ -1037,7 +1036,7 @@ int Mono_Printf(int string, ...) {
 
   buffer[0] = '\0';
   if (MonoClass::Is_Enabled()) {
-    MonoClass *mono = MonoClass::Get_Current();
+    MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
       mono = new MonoClass();
       mono->View();

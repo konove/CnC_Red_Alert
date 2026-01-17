@@ -44,23 +44,23 @@
  * FUNCTION PROTOTYPES
  *-------------------------------------------------------------------------*/
 
-void VESA_Blit_640x480(DisplayInfo *disp, unsigned char *buf, long x1, long y1,
+void VESA_Blit_640x480(DisplayInfo* disp, unsigned char* buf, long x1, long y1,
                        long width, long height);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void cdecl Blit_VESA640x480(DisplayInfo *disp, unsigned char *buf, long x1,
+void cdecl Blit_VESA640x480(DisplayInfo* disp, unsigned char* buf, long x1,
                             long y1, long width, long height);
 
-void cdecl Buf_320x200_To_VESA_320x200(unsigned char *buffer, long grain);
-void cdecl Buf_320x200_To_VESA_640x400(unsigned char *buffer, long grain);
-void cdecl Buf_320x200_To_VESA_32K(unsigned char *buffer,
-                                   unsigned char *palette, long grain);
+void cdecl Buf_320x200_To_VESA_320x200(unsigned char* buffer, long grain);
+void cdecl Buf_320x200_To_VESA_640x400(unsigned char* buffer, long grain);
+void cdecl Buf_320x200_To_VESA_32K(unsigned char* buffer,
+                                   unsigned char* palette, long grain);
 
-void cdecl Copy_Row(char *, char *, long);
-void cdecl Copy_Word_Row(char *source, char *dest, char *palette,
+void cdecl Copy_Row(char*, char*, long);
+void cdecl Copy_Word_Row(char* source, char* dest, char* palette,
                          long numbytes);
 
 #ifdef __cplusplus

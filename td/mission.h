@@ -73,14 +73,14 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(void);
-  MissionClass(NoInitClass const &x) : ObjectClass(x), Timer(x) {};
+  MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {};
   virtual ~MissionClass(void) {};
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
 */
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const;
+  void Debug_Dump(MonoClass* mono) const;
 #endif
 
   virtual MissionType Get_Mission(void) const;
@@ -112,8 +112,8 @@ class MissionClass : public ObjectClass {
   virtual int Mission_Missile(void);
   virtual void Set_Mission(MissionType mission);
 
-  static char const *Mission_Name(MissionType order);
-  static MissionType Mission_From_Name(char const *name);
+  static char const* Mission_Name(MissionType order);
+  static MissionType Mission_From_Name(char const* name);
   virtual void Override_Mission(MissionType mission, TARGET, TARGET);
   virtual bool Restore_Mission(void);
 
@@ -133,7 +133,7 @@ class MissionClass : public ObjectClass {
   /*
   **	These are the order names as ASCII strings.
   */
-  static char const *Missions[MISSION_COUNT];
+  static char const* Missions[MISSION_COUNT];
 };
 
 #endif

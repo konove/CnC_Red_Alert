@@ -49,11 +49,11 @@ class DDEServerClass {
   DDEServerClass(void);
   ~DDEServerClass(void);
 
-  char *Get_MPlayer_Game_Info(void);  // Returns pointer to game info
+  char* Get_MPlayer_Game_Info(void);  // Returns pointer to game info
   int Get_MPlayer_Game_Info_Length() {
     return (MPlayerGameInfoLength);
   };  // Len of game info
-  BOOL Callback(unsigned char *data, long length);  // DDE callback function
+  BOOL Callback(unsigned char* data, long length);  // DDE callback function
   void Delete_MPlayer_Game_Info(void);  // release the game info memory
   void Enable(void);                    // Enable the DDE callback
   void Disable(void);                   // Disable the DDE callback
@@ -74,7 +74,7 @@ class DDEServerClass {
   };
 
  private:
-  char *MPlayerGameInfo;      // Pointer to game start packet
+  char* MPlayerGameInfo;      // Pointer to game start packet
   int MPlayerGameInfoLength;  // Length of game start packet.
   BOOL IsEnabled;             // Flag for DDE callback enable
   int LastHeartbeat;  // Time since last heartbeat packet was received from
@@ -82,6 +82,6 @@ class DDEServerClass {
 };
 
 extern DDEServerClass DDEServer;
-extern BOOL Send_Data_To_DDE_Server(char *data, int length, int packet_type);
+extern BOOL Send_Data_To_DDE_Server(char* data, int length, int packet_type);
 
 #endif  // WIN32

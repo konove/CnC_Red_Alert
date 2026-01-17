@@ -583,7 +583,7 @@ class WWKeyboardClass {
   /* Define public routines which can be used on keys in general.
    */
   /*===================================================================*/
-  VOID Split(int &key, int &shift, int &ctrl, int &alt, int &rls, int &dbl);
+  VOID Split(int& key, int& shift, int& ctrl, int& alt, int& rls, int& dbl);
   BOOL Is_Mouse_Key(int key);
 
   /*===================================================================*/
@@ -592,7 +592,7 @@ class WWKeyboardClass {
   /*===================================================================*/
   int Get_Mouse_X(void);
   int Get_Mouse_Y(void);
-  void Get_Mouse_XY(int &x, int &y);
+  void Get_Mouse_XY(int& x, int& y);
 
   /*===================================================================*/
   /* Define the public access variables which are used with the */

@@ -31,8 +31,9 @@ This is where all the code is for applying various types of patches.
 \*****************************************************************************/
 
 #include "patch.h"
-#include <shellapi.h>
+
 #include <direct.h>
+#include <shellapi.h>
 
 //
 // For the text box showing patch info
@@ -43,7 +44,7 @@ BOOL CALLBACK Update_Info_Proc(HWND hwnd, UINT iMsg, WPARAM wParam,
 
   switch (iMsg) {
     case WM_INITDIALOG: {
-      FILE *in = fopen("launcher.txt", "r");
+      FILE* in = fopen("launcher.txt", "r");
       if (in == NULL) {
         EndDialog(hwnd, -1);
         return (1);
@@ -51,7 +52,7 @@ BOOL CALLBACK Update_Info_Proc(HWND hwnd, UINT iMsg, WPARAM wParam,
 
       char line[270];
       int lastsel = 0;
-      char *cptr = NULL;
+      char* cptr = NULL;
       while (fgets(line, 255, in)) {
         // Get rid of any trailing junk
         while (1) {
@@ -107,15 +108,15 @@ void Shutdown_Computer_Now(void);
 
 LPVOID CALLBACK __export PatchCallBack(UINT ID, LPVOID Param);
 
-typedef LPVOID(CALLBACK *PATCHCALLBACK)(UINT, LPVOID);
-typedef UINT(CALLBACK *PATCHFUNC)(LPSTR, PATCHCALLBACK, BOOL);
+typedef LPVOID(CALLBACK* PATCHCALLBACK)(UINT, LPVOID);
+typedef UINT(CALLBACK* PATCHFUNC)(LPSTR, PATCHCALLBACK, BOOL);
 
 //
 //  Apply any type of patch.  Filename in patchfile.  Product base registry
 //    (eg: "SOFTWARE\Westwood\Red Alert") should be in the config file as
 //  SKUX SKU base reg dir   where X = index
 //
-void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex) {
+void Apply_Patch(char* patchfile, ConfigFile& config, int skuIndex) {
   DBGMSG("PATCHFILE : " << patchfile);
   char cwdbuf[256];
   _getcwd(cwdbuf, 255);
@@ -135,7 +136,7 @@ void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex) {
         REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &regKey, &regPrevious);
 
     if (regRetval == ERROR_SUCCESS) {
-      RegSetValueEx(regKey, "EXEPatch", 0, REG_SZ, (const uint8 *)patchfile,
+      RegSetValueEx(regKey, "EXEPatch", 0, REG_SZ, (const uint8*)patchfile,
                     strlen(patchfile) + 1);
 
       char message[256];
@@ -203,8 +204,8 @@ void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex) {
     // Eg: 22456_patch.rtp  means version 22456 goes into the registry
 
     // The version# starts after the last '\' char
-    char *cptr = patchfile;
-    char *tempPtr;
+    char* cptr = patchfile;
+    char* tempPtr;
     DWORD version;
     while ((tempPtr = strchr(cptr, '\\')) != NULL) cptr = tempPtr + 1;
     if (cptr) version = atol(cptr);
@@ -235,8 +236,8 @@ void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex) {
     regRetval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, path.get(), 0, KEY_ALL_ACCESS,
                              &regKey);
     if (regRetval != ERROR_SUCCESS) DBGMSG("Can't open reg key for writing");
-    regRetval = RegSetValueEx(regKey, "Version", 0, REG_DWORD,
-                              (uint8 *)&version, sizeof(version));
+    regRetval = RegSetValueEx(regKey, "Version", 0, REG_DWORD, (uint8*)&version,
+                              sizeof(version));
 
     // Create blocking DLG for update info
     DialogBox(Global_instance, MAKEINTRESOURCE(IDD_CHANGELOG), NULL,
@@ -267,7 +268,7 @@ void Apply_Patch(char *patchfile, ConfigFile &config, int skuIndex) {
     LoadString(NULL, IDS_WEBPATCH_TITLE, title, 128);
     MessageBox(NULL, message, title, MB_OK);
 
-    FILE *in = fopen(patchfile, "r");
+    FILE* in = fopen(patchfile, "r");
     if (in != NULL) {
       char URL[256];
       fgets(URL, 255, in);
@@ -354,23 +355,23 @@ LPVOID CALLBACK __export PatchCallBack(UINT Id, LPVOID Param) {
     case 1:
     case 2:
       // Warning message header/text
-      DBGMSG("P_MSG: " << ((char *)Param));
+      DBGMSG("P_MSG: " << ((char*)Param));
       break;
 
     case 3:
       // Error message header
-      DBGMSG("P_MSG: " << ((char *)Param));
+      DBGMSG("P_MSG: " << ((char*)Param));
       break;
 
     case 4:
       // Error message header/text
       ///////*g_LogFile << (char *)Parm << endl;
-      MessageBox(NULL, (char *)Param, "ERROR", MB_OK);
+      MessageBox(NULL, (char*)Param, "ERROR", MB_OK);
       {
-        FILE *out = fopen("patch.err", "a");
+        FILE* out = fopen("patch.err", "a");
         time_t timet = time(NULL);
         fprintf(out, "\n\nPatch Erorr: %s\n", ctime(&timet));
-        fprintf(out, "%s\n", (char *)Param);
+        fprintf(out, "%s\n", (char*)Param);
         fclose(out);
       }
       break;
@@ -396,15 +397,15 @@ LPVOID CALLBACK __export PatchCallBack(UINT Id, LPVOID Param) {
       // so adjust the progress bar using the global Dialog pointer
       /////////g_DlgPtr->SetProgressBar((int)((float)(*(UINT
       ///*)Parm)/(float)0x8000*(float)100));
-      percent = ((*(UINT *)Param) * 100) / 0x8000;
+      percent = ((*(UINT*)Param) * 100) / 0x8000;
       SendMessage(GetDlgItem(PatchDialog, IDC_PROGRESS2), PBM_SETPOS, percent,
                   0);
       break;
 
     case 6:
       // Number of patch files
-      DBGMSG("6: " << *((uint32 *)Param));
-      fileCount = *((uint32 *)Param);
+      DBGMSG("6: " << *((uint32*)Param));
+      fileCount = *((uint32*)Param);
       currFile = 0;
       break;
 
@@ -417,8 +418,8 @@ LPVOID CALLBACK __export PatchCallBack(UINT Id, LPVOID Param) {
       //*g_LogFile << buf << " : ";
       // fileModified = true;
 
-      DBGMSG("7: " << (char *)Param);
-      SetWindowText(GetDlgItem(PatchDialog, IDC_FILENAME), (char *)Param);
+      DBGMSG("7: " << (char*)Param);
+      SetWindowText(GetDlgItem(PatchDialog, IDC_FILENAME), (char*)Param);
       percent = 0;
       SendMessage(GetDlgItem(PatchDialog, IDC_PROGRESS2), PBM_SETPOS, percent,
                   0);
@@ -447,14 +448,14 @@ LPVOID CALLBACK __export PatchCallBack(UINT Id, LPVOID Param) {
       ////   doesn't have a patch file in it, and we insure that it does).
       // Abort = TRUE;
       //*g_LogFile << "Incorrect (or none) patch file specified in command
-      //line." << endl;
+      // line." << endl;
       break;
 
     case 0xe:
       //// this one shouldn't happen either (same reason)
       // Abort = TRUE;
       //*g_LogFile << "Incorrect (or none) path specified in command line." <<
-      //endl;
+      // endl;
       break;
 
     case 0xf:

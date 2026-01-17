@@ -14,8 +14,8 @@
 #include <unistd.h>
 #endif
 
-void *IO_Open_File(const char *filename, int mode) {
-  const char *mode_str;
+void* IO_Open_File(const char* filename, int mode) {
+  const char* mode_str;
 
   if (mode == READ)
     mode_str = "rb";
@@ -29,33 +29,33 @@ void *IO_Open_File(const char *filename, int mode) {
   return fopen(filename, mode_str);
 }
 
-void IO_Close_File(void *handle) {
-  auto file = (FILE *)handle;
+void IO_Close_File(void* handle) {
+  auto file = (FILE*)handle;
   fclose(file);
 }
 
-bool IO_Read_File(void *handle, void *buffer, size_t count,
-                  size_t &actual_read) {
-  auto file = (FILE *)handle;
+bool IO_Read_File(void* handle, void* buffer, size_t count,
+                  size_t& actual_read) {
+  auto file = (FILE*)handle;
   actual_read = fread(buffer, 1, count, file);
   return ferror(file) == 0;
 }
 
-bool IO_Write_File(void *handle, const void *buffer, size_t count,
-                   size_t &actual_written) {
-  auto file = (FILE *)handle;
+bool IO_Write_File(void* handle, const void* buffer, size_t count,
+                   size_t& actual_written) {
+  auto file = (FILE*)handle;
   actual_written = fwrite(buffer, 1, count, file);
   return ferror(file) == 0;
 }
 
-size_t IO_Seek_File(void *handle, size_t offset, int origin) {
-  auto file = (FILE *)handle;
+size_t IO_Seek_File(void* handle, size_t offset, int origin) {
+  auto file = (FILE*)handle;
   fseek(file, offset, origin);
   return ftell(file);
 }
 
-size_t IO_Get_File_Size(void *handle) {
-  auto file = (FILE *)handle;
+size_t IO_Get_File_Size(void* handle) {
+  auto file = (FILE*)handle;
   long pos = ftell(file);
 
   fseek(file, 0, SEEK_END);
@@ -67,10 +67,10 @@ size_t IO_Get_File_Size(void *handle) {
   return length;
 }
 
-bool IO_Delete_File(const char *filename) { return unlink(filename) == 0; }
+bool IO_Delete_File(const char* filename) { return unlink(filename) == 0; }
 
 #ifdef _WIN32
-static bool Update_Find_Result(FindFileState &state, WIN32_FIND_DATA &data) {
+static bool Update_Find_Result(FindFileState& state, WIN32_FIND_DATA& data) {
   // skip hidden/system/dir
 
   bool success = true;
@@ -91,7 +91,7 @@ static bool Update_Find_Result(FindFileState &state, WIN32_FIND_DATA &data) {
   return true;
 }
 
-bool Find_First_File(const char *path_glob, FindFileState &state) {
+bool Find_First_File(const char* path_glob, FindFileState& state) {
   WIN32_FIND_DATA data;
   auto handle = FindFirstFile(path_glob, &data);
 
@@ -108,11 +108,11 @@ bool Find_First_File(const char *path_glob, FindFileState &state) {
   return true;
 }
 
-bool Find_Next_File(FindFileState &state) {
+bool Find_Next_File(FindFileState& state) {
   WIN32_FIND_DATA data;
 
   // free old filename
-  free((char *)state.name);
+  free((char*)state.name);
   state.name = NULL;
 
   if (!FindNextFile((HANDLE)state.data, &data) ||
@@ -124,9 +124,9 @@ bool Find_Next_File(FindFileState &state) {
   return true;
 }
 
-void End_Find_File(FindFileState &state) {
+void End_Find_File(FindFileState& state) {
   if (state.name) {
-    free((char *)state.name);
+    free((char*)state.name);
     state.name = NULL;
   }
 
@@ -144,13 +144,13 @@ uint64_t Disk_Space_Available() {
 }
 #else
 
-static bool Update_Find_Result(FindFileState &state) {
-  const auto glob_buf = static_cast<glob_t *>(state.data);
+static bool Update_Find_Result(FindFileState& state) {
+  const auto glob_buf = static_cast<glob_t*>(state.data);
   struct stat stat_buf;
 
   // Iterate through paths until we find a valid file or run out of items
   while (state.offset < glob_buf->gl_pathc) {
-    const char *current_path = glob_buf->gl_pathv[state.offset];
+    const char* current_path = glob_buf->gl_pathv[state.offset];
 
     // 1. Try to stat the file.
     // If stat fails (e.g., broken symlink, permission denied), skip this item.
@@ -178,7 +178,7 @@ static bool Update_Find_Result(FindFileState &state) {
   return false;
 }
 
-bool Find_First_File(const char *path_glob, FindFileState &state) {
+bool Find_First_File(const char* path_glob, FindFileState& state) {
   auto glob_buf = new glob_t;
   int ret = glob(path_glob, GLOB_MARK, nullptr, glob_buf);
 
@@ -210,10 +210,10 @@ bool Find_First_File(const char *path_glob, FindFileState &state) {
   return true;
 }
 
-bool Find_Next_File(FindFileState &state) {
+bool Find_Next_File(FindFileState& state) {
   // increment offset
   state.offset++;
-  auto glob_buf = (glob_t *)state.data;
+  auto glob_buf = (glob_t*)state.data;
 
   if (!glob_buf) return 2;
 
@@ -227,9 +227,9 @@ bool Find_Next_File(FindFileState &state) {
   return true;
 }
 
-void End_Find_File(FindFileState &state) {
+void End_Find_File(FindFileState& state) {
   if (state.data) {
-    auto glob_buf = (glob_t *)state.data;
+    auto glob_buf = (glob_t*)state.data;
     globfree(glob_buf);
     delete glob_buf;
     state.data = nullptr;

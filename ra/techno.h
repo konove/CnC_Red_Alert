@@ -253,7 +253,7 @@ class TechnoClass : public RadioClass,
   **	Constructors, Destructors, and overloaded operators.
   */
   TechnoClass(RTTIType rtti, int id, HousesType house = HOUSE_NONE);
-  TechnoClass(NoInitClass const &x)
+  TechnoClass(NoInitClass const& x)
       : RadioClass(x),
         FlasherClass(x),
         StageClass(x),
@@ -271,7 +271,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Query functions.
   */
-  bool Is_Allowed_To_Retaliate(TechnoClass const *source) const;
+  bool Is_Allowed_To_Retaliate(TechnoClass const* source) const;
   bool Can_Teleport_Here(CELL cell) const;
   bool Is_In_Same_Zone(CELL cell) const;
   virtual bool Is_Players_Army(void) const;
@@ -281,9 +281,9 @@ class TechnoClass : public RadioClass,
   virtual DirType Turret_Facing(void) const {
     return (PrimaryFacing.Current());
   }
-  CELL Nearby_Location(TechnoClass const *from = nullptr) const;
-  TechnoTypeClass *Techno_Type_Class(void) const {
-    return ((TechnoTypeClass *)&Class_Of());
+  CELL Nearby_Location(TechnoClass const* from = nullptr) const;
+  TechnoTypeClass* Techno_Type_Class(void) const {
+    return ((TechnoTypeClass*)&Class_Of());
   };
   bool Is_Visible_On_Radar(void) const;
   int Anti_Air(void) const;
@@ -292,11 +292,11 @@ class TechnoClass : public RadioClass,
   int Time_To_Build(void) const;
   int What_Weapon_Should_I_Use(TARGET target) const;
   virtual ActionType What_Action(CELL cell) const;
-  virtual ActionType What_Action(ObjectClass const *target) const;
-  virtual BuildingClass *Find_Docking_Bay(StructType b, bool friendly) const;
-  virtual CELL Find_Exit_Cell(TechnoClass const *techno) const;
+  virtual ActionType What_Action(ObjectClass const* target) const;
+  virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
+  virtual CELL Find_Exit_Cell(TechnoClass const* techno) const;
   virtual COORDINATE Fire_Coord(int which) const;
-  virtual DirType Desired_Load_Dir(ObjectClass *, CELL &moveto) const;
+  virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
   virtual DirType Fire_Direction(void) const;
   virtual HousesType Owner(void) const;
   virtual InfantryType Crew_Type(void) const;
@@ -331,55 +331,55 @@ class TechnoClass : public RadioClass,
   */
   fixed Area_Modify(CELL cell) const;
   virtual int Made_A_Kill(void) { return (Crew.Made_A_Kill()); }
-  void Base_Is_Attacked(TechnoClass const *enemy);
-  void Kill_Cargo(TechnoClass *source);
-  virtual void Record_The_Kill(TechnoClass *source);
+  void Base_Is_Attacked(TechnoClass const* enemy);
+  void Kill_Cargo(TechnoClass* source);
+  virtual void Record_The_Kill(TechnoClass* source);
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun(void);
   virtual bool In_Range(COORDINATE coord, int which = 0) const;
   virtual bool In_Range(TARGET target, int which = 0) const;
-  virtual bool In_Range(ObjectClass const *target, int which = 0) const;
+  virtual bool In_Range(ObjectClass const* target, int which = 0) const;
   virtual void Death_Announcement(
-      TechnoClass const *source = nullptr) const = 0;
+      TechnoClass const* source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual void Assign_Target(TARGET target);
   virtual void Override_Mission(MissionType mission, TARGET tarcom,
                                 TARGET navcom);
   virtual bool Restore_Mission(void);
-  virtual BulletClass *Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(TARGET target, int which = 0);
   virtual int Weapon_Range(int which) const;
-  virtual bool Captured(HouseClass *newowner);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr,
+  virtual bool Captured(HouseClass* newowner);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr,
                                  bool forced = false);
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
-                     TechnoClass const **object, int &value,
+                     TechnoClass const** object, int& value,
                      int zone = 0) const;
   bool Evaluate_Object(ThreatType method, int mask, int range,
-                       TechnoClass const *object, int &value,
+                       TechnoClass const* object, int& value,
                        int zone = -1) const;
   int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
                             COORDINATE target_coord = 0L,
-                            unsigned char *remap = nullptr);
+                            unsigned char* remap = nullptr);
 
   /*
   **	AI.
   */
   virtual void Renovate(void);
   virtual void AI(void);
-  virtual bool Revealed(HouseClass *house);
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual bool Revealed(HouseClass* house);
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   void Cloaking_AI(void);
 
 /*
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
@@ -392,16 +392,16 @@ class TechnoClass : public RadioClass,
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table(void) const;
+  virtual void const* Remap_Table(void) const;
   VisualType Visual_Character(bool raw = false) const;
-  void Techno_Draw_Object(void const *shapefile, int shapenum, int x, int y,
+  void Techno_Draw_Object(void const* shapefile, int shapenum, int x, int y,
                           WindowNumberType window, DirType rotation = DIR_N,
                           int scale = 0x0100) const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual void Draw_Pips(int x, int y, WindowNumberType window) const;
   virtual void Hidden(void);
   virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual int Exit_Object(TechnoClass *);
+  virtual int Exit_Object(TechnoClass*);
   virtual void Do_Uncloak(void);
   virtual void Do_Cloak(void);
   virtual void Do_Shimmer(void);

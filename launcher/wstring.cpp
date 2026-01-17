@@ -29,18 +29,18 @@ A fairly typical string class.  This string class always copies any input
 string to it's own memory (for assignment or construction).
 \***************************************************************************/
 
-#include <cctype>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-
 #include "wstring.h"
+
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 Wstring::Wstring() : str(nullptr) {}
 
-Wstring::Wstring(IN char *string) : str(nullptr) { set(string); }
+Wstring::Wstring(IN char* string) : str(nullptr) { set(string); }
 
-Wstring::Wstring(IN const Wstring &other) : str(nullptr) {
+Wstring::Wstring(IN const Wstring& other) : str(nullptr) {
   if (other.str != nullptr) {
     str = new char[strlen(other.str) + 1];
     strcpy(str, other.str);
@@ -49,7 +49,7 @@ Wstring::Wstring(IN const Wstring &other) : str(nullptr) {
 
 Wstring::~Wstring() { clear(); }
 
-bit8 Wstring::operator==(IN char *other) {
+bit8 Wstring::operator==(IN char* other) {
   if ((str == nullptr) && (other == nullptr)) return (TRUE);
   if (strcmp(str, other) != 0)
     return (FALSE);
@@ -57,7 +57,7 @@ bit8 Wstring::operator==(IN char *other) {
     return (TRUE);
 }
 
-bit8 Wstring::operator==(IN Wstring &other) {
+bit8 Wstring::operator==(IN Wstring& other) {
   if ((str == nullptr) && (other.str == nullptr)) return (TRUE);
 
   if ((str == nullptr) || (other.str == nullptr)) return (FALSE);
@@ -68,14 +68,14 @@ bit8 Wstring::operator==(IN Wstring &other) {
     return (TRUE);
 }
 
-bit8 Wstring::operator!=(IN char *other) {
+bit8 Wstring::operator!=(IN char* other) {
   if (strcmp(str, other) != 0)
     return (TRUE);
   else
     return (FALSE);
 }
 
-bit8 Wstring::operator!=(IN Wstring &other) {
+bit8 Wstring::operator!=(IN Wstring& other) {
   if ((str == nullptr) && (other.str == nullptr)) return (FALSE);
 
   if ((str == nullptr) || (other.str == nullptr)) return (TRUE);
@@ -86,20 +86,20 @@ bit8 Wstring::operator!=(IN Wstring &other) {
     return (FALSE);
 }
 
-Wstring &Wstring::operator=(char *other) {
+Wstring& Wstring::operator=(char* other) {
   set(other);
   return (*this);
 }
 
-Wstring &Wstring::operator=(IN Wstring &other) {
+Wstring& Wstring::operator=(IN Wstring& other) {
   if (*this == other) return (*this);
 
   set(other.get());
   return (*this);
 }
 
-bit8 Wstring::cat(IN char *s) {
-  char *oldStr;
+bit8 Wstring::cat(IN char* s) {
+  char* oldStr;
   uint32 len;
 
   if (s == nullptr)  // it's OK to cat nothing
@@ -134,8 +134,8 @@ bit8 Wstring::cat(IN char *s) {
   return (TRUE);
 }
 
-bit8 Wstring::cat(uint32 size, IN char *s) {
-  char *oldStr;
+bit8 Wstring::cat(uint32 size, IN char* s) {
+  char* oldStr;
   uint32 len;
 
   // Save the contents of the string.
@@ -166,25 +166,25 @@ bit8 Wstring::cat(uint32 size, IN char *s) {
   return (TRUE);
 }
 
-bit8 Wstring::cat(IN Wstring &other) { return cat(other.get()); }
+bit8 Wstring::cat(IN Wstring& other) { return cat(other.get()); }
 
-Wstring &Wstring::operator+=(IN char *string) {
+Wstring& Wstring::operator+=(IN char* string) {
   cat(string);
   return (*this);
 }
 
-Wstring &Wstring::operator+=(IN Wstring &other) {
+Wstring& Wstring::operator+=(IN Wstring& other) {
   cat(other.get());
   return (*this);
 }
 
-Wstring Wstring::operator+(IN char *string) {
+Wstring Wstring::operator+(IN char* string) {
   Wstring temp = *this;
   temp.cat(string);
   return (temp);
 }
 
-Wstring Wstring::operator+(IN Wstring &s) {
+Wstring Wstring::operator+(IN Wstring& s) {
   Wstring temp = *this;
   temp.cat(s);
   return (temp);
@@ -198,7 +198,7 @@ Wstring Wstring::operator+(IN Wstring &s) {
 //
 //
 char Wstring::remove(sint32 pos, sint32 count) {
-  char *s;
+  char* s;
   sint32 len;
 
   if (!str) return (FALSE);
@@ -234,7 +234,7 @@ char Wstring::remove(sint32 pos, sint32 count) {
 // Remove all instances of a char from the string
 bit8 Wstring::removeChar(char c) {
   int len = 0;
-  char *cptr = nullptr;
+  char* cptr = nullptr;
   bit8 removed = FALSE;
 
   if (str == nullptr) return (FALSE);
@@ -247,7 +247,7 @@ bit8 Wstring::removeChar(char c) {
     removed = TRUE;
   }
   if (removed) {
-    char *newStr = new char[strlen(str) + 1];
+    char* newStr = new char[strlen(str) + 1];
     strcpy(newStr, str);
     delete[] (str);
     str = newStr;
@@ -272,7 +272,7 @@ void Wstring::setSize(sint32 size) {
   memset(str, 0, size);
 }
 
-void Wstring::cellCopy(char *dest, uint32 len) {
+void Wstring::cellCopy(char* dest, uint32 len) {
   uint32 i;
 
   strncpy(dest, str, len);
@@ -280,7 +280,7 @@ void Wstring::cellCopy(char *dest, uint32 len) {
   dest[len] = 0;
 }
 
-char *Wstring::get(void) {
+char* Wstring::get(void) {
   if (!str) return "";
   return str;
 }
@@ -296,10 +296,10 @@ uint32 Wstring::length(void) {
 }
 
 // Insert at given position and shift old stuff to right
-bit8 Wstring::insert(char *instring, uint32 pos) {
+bit8 Wstring::insert(char* instring, uint32 pos) {
   if (str == nullptr) return (set(instring));
   if (pos > strlen(str)) pos = strlen(str);
-  char *newstr = new char[strlen(str) + strlen(instring) + 1];
+  char* newstr = new char[strlen(str) + strlen(instring) + 1];
   memset(newstr, 0, strlen(str) + strlen(instring) + 1);
   strcpy(newstr, str);
   // move the old data out of the way
@@ -317,7 +317,7 @@ bit8 Wstring::insert(char *instring, uint32 pos) {
 // appended to the string.  If an error occurs, FALSE is returned.  Otherwise,
 // TRUE is returned.
 bit8 Wstring::insert(char k, uint32 pos) {
-  char *s;
+  char* s;
   uint32 len;
   char c[2];
 
@@ -331,7 +331,7 @@ bit8 Wstring::insert(char k, uint32 pos) {
 
   if (pos > len) pos = len;
 
-  if (!(s = (char *)new char[(len + 2)])) {
+  if (!(s = (char*)new char[(len + 2)])) {
     // ErrorMessage(SET_EM, "Insufficient memory to modify Wstring.");
     return (FALSE);
   }
@@ -353,7 +353,7 @@ bit8 Wstring::insert(char k, uint32 pos) {
 // This function replaces any occurences of the string pointed to by
 // `replaceThis' with the string pointed to by `withThis'.  If an error
 // occurs, FALSE is returned.  Otherwise, TRUE is returned.
-bit8 Wstring::replace(char *replaceThis, char *withThis) {
+bit8 Wstring::replace(char* replaceThis, char* withThis) {
   Wstring dest;
   char *foundStr, *src;
   uint32 len;
@@ -377,7 +377,7 @@ bit8 Wstring::replace(char *replaceThis, char *withThis) {
   return (set(dest.get()));
 }
 
-bit8 Wstring::set(IN char *s) {
+bit8 Wstring::set(IN char* s) {
   uint32 len;
 
   clear();
@@ -401,7 +401,7 @@ bit8 Wstring::set(char c, uint32 index) {
   return TRUE;
 }
 
-char Wstring::set(uint32 size, IN char *string) {
+char Wstring::set(uint32 size, IN char* string) {
   uint32 len;
 
   clear();
@@ -454,7 +454,7 @@ bit8 Wstring::truncate(char c) {
 
   if (str == nullptr) return (FALSE);
 
-  char *cptr = strchr(str, c);
+  char* cptr = strchr(str, c);
   if (cptr == nullptr) return (FALSE);
   len = (sint32)(cptr - str);
   truncate((uint32)len);
@@ -463,7 +463,7 @@ bit8 Wstring::truncate(char c) {
 
 // Get a token from this string that's seperated by one or more
 //  chars from the 'delim' string , start at offset & return offset
-sint32 Wstring::getToken(int offset, char *delim, Wstring &out) {
+sint32 Wstring::getToken(int offset, char* delim, Wstring& out) {
   int i;
   sint32 start;
   sint32 stop;
@@ -484,7 +484,7 @@ sint32 Wstring::getToken(int offset, char *delim, Wstring &out) {
 
 // Get the first line of text after offset.  Lines are terminated by '\r\n' or
 // '\n'
-sint32 Wstring::getLine(int offset, Wstring &out) {
+sint32 Wstring::getLine(int offset, Wstring& out) {
   int i;
   sint32 start;
   sint32 stop;

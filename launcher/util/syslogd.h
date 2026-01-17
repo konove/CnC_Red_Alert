@@ -19,16 +19,18 @@
 #ifndef SYSLOGD_HEADER
 #define SYSLOGD_HEADER
 
-#include <cstdlib>
-#include <cstdio>
 #include <syslog.h>
+
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
+
 #include "odevice.h"
 
 class SyslogD : public OutputDevice {
  public:
-  SyslogD(char *ident, int logopt, int facility, int priority);
-  virtual int print(const char *str, int len);
+  SyslogD(char* ident, int logopt, int facility, int priority);
+  virtual int print(const char* str, int len);
 
  private:
   int priority;

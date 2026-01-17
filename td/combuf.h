@@ -67,7 +67,7 @@ typedef struct {
   unsigned long LastTime;     // time this packet was last sent
   unsigned long SendCount;    // # of times this packet has been sent
   int BufLen;                 // size of the packet stored in this entry
-  char *Buffer;               // the data packet
+  char* Buffer;               // the data packet
 } SendQueueType;
 
 /*---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ typedef struct {
   unsigned int IsRead : 1;    // 1 = caller has read this entry
   unsigned int IsACK : 1;     // 1 = ACK sent for this packet
   int BufLen;                 // size of the packet stored in this entry
-  char *Buffer;               // the data packet
+  char* Buffer;               // the data packet
 } ReceiveQueueType;
 
 /*
@@ -100,23 +100,23 @@ class CommBufferClass {
   /*
   ......................... Send Queue routines .........................
   */
-  int Queue_Send(void *buf, int buflen);  // add to Send queue
-  int UnQueue_Send(void *buf, int *buflen,
+  int Queue_Send(void* buf, int buflen);  // add to Send queue
+  int UnQueue_Send(void* buf, int* buflen,
                    int index);                // remove from Send queue
   int Num_Send(void) { return (SendCount); }  // # entries in queue
   int Max_Send(void) { return (MaxSend); }    // max # send queue entries
-  SendQueueType *Get_Send(int index);         // random access to queue
+  SendQueueType* Get_Send(int index);         // random access to queue
   unsigned long Send_Total(void) { return (SendTotal); }
 
   /*
   ....................... Receive Queue routines ........................
   */
-  int Queue_Receive(void *buf, int buflen);  // add to Receive queue
-  int UnQueue_Receive(void *buf, int *buflen,
+  int Queue_Receive(void* buf, int buflen);  // add to Receive queue
+  int UnQueue_Receive(void* buf, int* buflen,
                       int index);                   // remove from Receive queue
   int Num_Receive(void) { return (ReceiveCount); }  // # entries in queue
   int Max_Receive(void) { return (MaxReceive); }    // max # recv queue entries
-  ReceiveQueueType *Get_Receive(int index);         // random access to queue
+  ReceiveQueueType* Get_Receive(int index);         // random access to queue
   unsigned long Receive_Total(void) { return (ReceiveTotal); }
 
   /*
@@ -130,7 +130,7 @@ class CommBufferClass {
   /*
   ........................ Debug output routines ........................
   */
-  void Configure_Debug(int offset, int size, char **names, int maxnames);
+  void Configure_Debug(int offset, int size, char** names, int maxnames);
   void Mono_Debug_Print(int refresh = 0);
   void Mono_Debug_Print2(int refresh = 0);
 
@@ -156,25 +156,25 @@ class CommBufferClass {
   /*
   ........................ Send Queue variables .........................
   */
-  SendQueueType *SendQueue;  // incoming packets
+  SendQueueType* SendQueue;  // incoming packets
   int SendCount;             // # packets in the queue
   unsigned long SendTotal;   // total # added to send queue
-  int *SendIndex;            // array of Send entry indices
+  int* SendIndex;            // array of Send entry indices
 
   /*
   ....................... Receive Queue variables .......................
   */
-  ReceiveQueueType *ReceiveQueue;  // outgoing packets
+  ReceiveQueueType* ReceiveQueue;  // outgoing packets
   int ReceiveCount;                // # packets in the queue
   unsigned long ReceiveTotal;      // total # added to receive queue
-  int *ReceiveIndex;               // array of Receive entry indices
+  int* ReceiveIndex;               // array of Receive entry indices
 
   /*
   ......................... Debugging Variables .........................
   */
   int DebugOffset;    // offset into app's packet for ID
   int DebugSize;      // size of app's ID
-  char **DebugNames;  // ptr to array of app-specific names
+  char** DebugNames;  // ptr to array of app-specific names
   int DebugMaxNames;  // max # of names in array
 };
 

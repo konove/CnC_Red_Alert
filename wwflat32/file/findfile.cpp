@@ -56,11 +56,12 @@
 #include <dos.h>
 #include <fcntl.h>
 #include <io.h>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <search.h>
 #include <sys\stat.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 /***************************************************************************
  * FIND_FILE -- Checks if a file is immediatly available.                  *
@@ -83,8 +84,8 @@
  *   03/14/1992 JLB : Modified for Amiga compatability.                    *
  *   01/11/1993 SKB : Modified for CD-ROM searches.                        *
  *=========================================================================*/
-int cdecl Find_File(char const *file_name) {
-  FileDataType *filedata = NULL;
+int cdecl Find_File(char const* file_name) {
+  FileDataType* filedata = NULL;
   WORD index;  // File index (if any).
   WORD disk;   // Disk number of file (if in filetable).
 
@@ -246,12 +247,12 @@ int cdecl Find_File(char const *file_name) {
  *   11/09/1991 JLB : Created.                                             *
  *   06/11/1993 JLB : Sorts and binary searches the file table.            *
  *=========================================================================*/
-PRIVATE int Comp_Func(const void *p1, const void *p2) {
-  return (strcmp((char *)((FileDataType *)p1)->Name,
-                 (char *)((FileDataType *)p2)->Name));
+PRIVATE int Comp_Func(const void* p1, const void* p2) {
+  return (strcmp((char*)((FileDataType*)p1)->Name,
+                 (char*)((FileDataType*)p2)->Name));
 }
-int cdecl Find_File_Index(char const *filename) {
-  FileDataType *filedata;  // File entry pointer.
+int cdecl Find_File_Index(char const* filename) {
+  FileDataType* filedata;  // File entry pointer.
   FileDataType key;        // Working file data type var.
 
   /*
@@ -259,8 +260,8 @@ int cdecl Find_File_Index(char const *filename) {
   */
   if (filename) {
     filedata = NULL;
-    key.Name = (BYTE *)strupr((char *)filename);
-    if (strstr((char *)key.Name, (char *)".PAK")) {
+    key.Name = (BYTE*)strupr((char*)filename);
+    if (strstr((char*)key.Name, (char*)".PAK")) {
       /*
       ** If the FileData table was not loaded from the disk then the PAK files
       *are
@@ -269,11 +270,11 @@ int cdecl Find_File_Index(char const *filename) {
       */
       if (FileData == FileDataPtr) {
         filedata =
-            (FileDataType *)lfind(&key, FileDataPtr, (size_t *)&NumPAKFiles,
-                                  sizeof(FileDataType), Comp_Func);
+            (FileDataType*)lfind(&key, FileDataPtr, (size_t*)&NumPAKFiles,
+                                 sizeof(FileDataType), Comp_Func);
       } else {
-        filedata = (FileDataType *)bsearch(&key, FileDataPtr, NumPAKFiles,
-                                           sizeof(FileDataType), Comp_Func);
+        filedata = (FileDataType*)bsearch(&key, FileDataPtr, NumPAKFiles,
+                                          sizeof(FileDataType), Comp_Func);
       }
 
     } else {
@@ -281,8 +282,8 @@ int cdecl Find_File_Index(char const *filename) {
       **	Perform a binary search for the regular files.
       */
       filedata =
-          (FileDataType *)bsearch(&key, &FileDataPtr[NumPAKFiles], NumFiles,
-                                  sizeof(FileDataType), Comp_Func);
+          (FileDataType*)bsearch(&key, &FileDataPtr[NumPAKFiles], NumFiles,
+                                 sizeof(FileDataType), Comp_Func);
     }
 
     // Return the element in the array if file was found in table.

@@ -75,7 +75,7 @@ class WOL_GameSetupDialog {
   bool bHostWaitingForGoTrigger;  //	True while host is waiting for go
                                   // message to bounce back to him and trigger
                                   // start.
-  bool bExitForGameTrigger;  //	Trigger exiting dialog for game.
+  bool bExitForGameTrigger;       //	Trigger exiting dialog for game.
 
   void ProcessGuestRequest(User* pUser, const char* szRequest);
   void ProcessInform(char* szRequest);

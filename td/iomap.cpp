@@ -129,9 +129,9 @@ bool CellClass::Should_Save(void) const {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Load(FileClass &file) {
+bool CellClass::Load(FileClass& file) {
   int rc;
-  TriggerClass *trig;
+  TriggerClass* trig;
 
   /*
   -------------------------- Load the object data --------------------------
@@ -143,7 +143,7 @@ bool CellClass::Load(FileClass &file) {
   */
   if (rc) {
     if (IsTrigger) {
-      if (file.Read(&trig, sizeof(void *)) != sizeof(void *)) return (false);
+      if (file.Read(&trig, sizeof(void*)) != sizeof(void*)) return (false);
       CellTriggers[Cell_Number()] = trig;
     }
   }
@@ -162,9 +162,9 @@ bool CellClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Save(FileClass &file) {
+bool CellClass::Save(FileClass& file) {
   int rc;
-  TriggerClass *trig;
+  TriggerClass* trig;
 
   /*
   -------------------------- Save the object data --------------------------
@@ -177,7 +177,7 @@ bool CellClass::Save(FileClass &file) {
   if (rc) {
     if (IsTrigger) {
       trig = CellTriggers[Cell_Number()];
-      if (file.Write(&trig, sizeof(void *)) != sizeof(void *)) return (false);
+      if (file.Write(&trig, sizeof(void*)) != sizeof(void*)) return (false);
     }
   }
 
@@ -202,21 +202,21 @@ bool CellClass::Save(FileClass &file) {
  *=============================================================================================*/
 void CellClass::Code_Pointers(void) {
   if (Cell_Occupier()) {
-    OccupierPtr = (ObjectClass *)OccupierPtr->As_Target();
+    OccupierPtr = (ObjectClass*)OccupierPtr->As_Target();
   }
 
   if (Overlappers[0] && Overlappers[0]->IsActive) {
-    Overlappers[0] = (ObjectClass *)Overlappers[0]->As_Target();
+    Overlappers[0] = (ObjectClass*)Overlappers[0]->As_Target();
   } else
     Overlappers[0] = nullptr;
 
   if (Overlappers[1] && Overlappers[1]->IsActive) {
-    Overlappers[1] = (ObjectClass *)Overlappers[1]->As_Target();
+    Overlappers[1] = (ObjectClass*)Overlappers[1]->As_Target();
   } else
     Overlappers[1] = nullptr;
 
   if (Overlappers[2] && Overlappers[2]->IsActive) {
-    Overlappers[2] = (ObjectClass *)Overlappers[2]->As_Target();
+    Overlappers[2] = (ObjectClass*)Overlappers[2]->As_Target();
   } else
     Overlappers[2] = nullptr;
 
@@ -225,7 +225,7 @@ void CellClass::Code_Pointers(void) {
   */
   if (IsTrigger) {
     CellTriggers[Cell_Number()] =
-        (TriggerClass *)CellTriggers[Cell_Number()]->As_Target();
+        (TriggerClass*)CellTriggers[Cell_Number()]->As_Target();
   }
 }
 
@@ -246,22 +246,22 @@ void CellClass::Code_Pointers(void) {
 void CellClass::Decode_Pointers(void) {
   if (OccupierPtr) {
     OccupierPtr = As_Object((TARGET)(uintptr_t)OccupierPtr);
-    Check_Ptr((void *)OccupierPtr, __FILE__, __LINE__);
+    Check_Ptr((void*)OccupierPtr, __FILE__, __LINE__);
   }
 
   if (Overlappers[0]) {
     Overlappers[0] = As_Object((TARGET)(uintptr_t)Overlappers[0]);
-    Check_Ptr((void *)Overlapper[0], __FILE__, __LINE__);
+    Check_Ptr((void*)Overlapper[0], __FILE__, __LINE__);
   }
 
   if (Overlappers[1]) {
     Overlappers[1] = As_Object((TARGET)(uintptr_t)Overlappers[1]);
-    Check_Ptr((void *)Overlapper[1], __FILE__, __LINE__);
+    Check_Ptr((void*)Overlapper[1], __FILE__, __LINE__);
   }
 
   if (Overlappers[2]) {
     Overlappers[2] = As_Object((TARGET)(uintptr_t)Overlappers[2]);
-    Check_Ptr((void *)Overlapper[2], __FILE__, __LINE__);
+    Check_Ptr((void*)Overlapper[2], __FILE__, __LINE__);
   }
 
   /*
@@ -270,7 +270,7 @@ void CellClass::Decode_Pointers(void) {
   if (IsTrigger) {
     CellTriggers[Cell_Number()] =
         As_Trigger((TARGET)(uintptr_t)CellTriggers[Cell_Number()]);
-    Check_Ptr((void *)CellTriggers[Cell_Number()], __FILE__, __LINE__);
+    Check_Ptr((void*)CellTriggers[Cell_Number()], __FILE__, __LINE__);
   }
 }
 
@@ -299,7 +299,7 @@ void CellClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool MouseClass::Load(FileClass &file) {
+bool MouseClass::Load(FileClass& file) {
   unsigned count;
   CELL cell = 0;
   int index;
@@ -399,7 +399,7 @@ bool MouseClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool MouseClass::Save(FileClass &file) {
+bool MouseClass::Save(FileClass& file) {
   unsigned count;
   long pos;
 
@@ -760,7 +760,7 @@ void DisplayClass::Code_Pointers(void) {
   **	Code PendingObjectPtr.
   */
   if (PendingObjectPtr) {
-    PendingObjectPtr = (ObjectClass *)PendingObjectPtr->As_Target();
+    PendingObjectPtr = (ObjectClass*)PendingObjectPtr->As_Target();
   }
 
   /*
@@ -793,7 +793,7 @@ void DisplayClass::Decode_Pointers(void) {
   */
   if (PendingObjectPtr) {
     PendingObjectPtr = As_Object((TARGET)(intptr_t)PendingObjectPtr);
-    Check_Ptr((void *)PendingObjectPtr, __FILE__, __LINE__);
+    Check_Ptr((void*)PendingObjectPtr, __FILE__, __LINE__);
   }
 
   /*

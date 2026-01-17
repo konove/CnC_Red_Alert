@@ -43,6 +43,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "iff.h"
+
 #include "file.h"
 
 #define ID_FORM MAKE_ID('F', 'O', 'R', 'M')
@@ -71,7 +72,7 @@
  *   05/16/1991 JLB : Created.                                             *
  *   04/19/1994 SKB : Update to 32 bit library.                            *
  *=========================================================================*/
-int __cdecl Open_Iff_File(char const *filename) {
+int __cdecl Open_Iff_File(char const* filename) {
   int fh;     // File handle.
   long type;  // IFF file type.
 
@@ -147,7 +148,7 @@ unsigned long __cdecl Get_Iff_Chunk_Size(int fh, long id) {
   for (;;) {
     if (Read_File(fh, &form, 4L) != 4L && !first_iteration) break;
 
-    if (Read_File(fh, (char *)&chunksize, 4L) != 4L && !first_iteration) break;
+    if (Read_File(fh, (char*)&chunksize, 4L) != 4L && !first_iteration) break;
 
 #if (IBM)
     chunksize = Reverse_Long(chunksize);
@@ -199,7 +200,7 @@ unsigned long __cdecl Get_Iff_Chunk_Size(int fh, long id) {
  *   05/16/1991 JLB : Created.                                             *
  *   04/19/1994 SKB : Update to 32 bit library.                            *
  *=========================================================================*/
-unsigned long __cdecl Read_Iff_Chunk(int fh, long id, void *buffer,
+unsigned long __cdecl Read_Iff_Chunk(int fh, long id, void* buffer,
                                      unsigned long maxsize) {
   long form;                // Chunk iff form name.
   unsigned long chunksize;  // Size of the chunk.
@@ -210,7 +211,7 @@ unsigned long __cdecl Read_Iff_Chunk(int fh, long id, void *buffer,
   for (;;) {
     if (Read_File(fh, &form, 4L) != 4L && !first_iteration) break;
 
-    if (Read_File(fh, (char *)&chunksize, 4L) != 4L && !first_iteration) break;
+    if (Read_File(fh, (char*)&chunksize, 4L) != 4L && !first_iteration) break;
 
 #if (IBM)
     chunksize = Reverse_Long(chunksize);
@@ -254,7 +255,7 @@ unsigned long __cdecl Read_Iff_Chunk(int fh, long id, void *buffer,
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-void __cdecl Write_Iff_Chunk(int file, long id, void *buffer, long length) {
+void __cdecl Write_Iff_Chunk(int file, long id, void* buffer, long length) {
   long pos;     // Current position in the IFF file.
   long oldpos;  // Record of start of chunk offset.
   long endpos;  // end of file offset before we write our data

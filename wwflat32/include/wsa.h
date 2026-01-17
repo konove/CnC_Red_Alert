@@ -90,26 +90,26 @@ typedef enum {
  */
 /*=========================================================================*/
 
-VOID *cdecl Open_Animation(BYTE const *file_name, BYTE *user_buffer,
+VOID* cdecl Open_Animation(BYTE const* file_name, BYTE* user_buffer,
                            LONG user_buffer_size, WSAOpenType user_flags,
-                           UBYTE *palette = nullptr);
-VOID cdecl Close_Animation(VOID *handle);
-BOOL cdecl Animate_Frame(VOID *handle, GraphicViewPortClass &view,
+                           UBYTE* palette = nullptr);
+VOID cdecl Close_Animation(VOID* handle);
+BOOL cdecl Animate_Frame(VOID* handle, GraphicViewPortClass& view,
                          WORD frame_number, WORD x_pixel = 0, WORD y_pixel = 0,
                          WSAType flags_and_prio = WSA_NORMAL,
-                         VOID *magic_cols = nullptr, VOID *magic = nullptr);
-WORD cdecl Get_Animation_Frame_Count(VOID *handle);
-BOOL cdecl Animate_Frame(VOID *handle, VideoViewPortClass &view,
+                         VOID* magic_cols = nullptr, VOID* magic = nullptr);
+WORD cdecl Get_Animation_Frame_Count(VOID* handle);
+BOOL cdecl Animate_Frame(VOID* handle, VideoViewPortClass& view,
                          WORD frame_number, WORD x_pixel = 0, WORD y_pixel = 0,
                          WSAType flags_and_prio = WSA_NORMAL,
-                         VOID *magic_cols = nullptr, VOID *magic = nullptr);
-WORD cdecl Get_Animation_Frame_Count(VOID *handle);
-WORD cdecl Get_Animation_X(VOID const *handle);
-WORD cdecl Get_Animation_Y(VOID const *handle);
-WORD cdecl Get_Animation_Width(VOID const *handle);
-WORD cdecl Get_Animation_Height(VOID const *handle);
-WORD cdecl Get_Animation_Palette(VOID const *handle);
-ULONG cdecl Get_Animation_Size(VOID const *handle);
+                         VOID* magic_cols = nullptr, VOID* magic = nullptr);
+WORD cdecl Get_Animation_Frame_Count(VOID* handle);
+WORD cdecl Get_Animation_X(VOID const* handle);
+WORD cdecl Get_Animation_Y(VOID const* handle);
+WORD cdecl Get_Animation_Width(VOID const* handle);
+WORD cdecl Get_Animation_Height(VOID const* handle);
+WORD cdecl Get_Animation_Palette(VOID const* handle);
+ULONG cdecl Get_Animation_Size(VOID const* handle);
 
 /***************************************************************************
  * OPEN_ANIMATION -- file name, flags, palette, system allocates buffer.   *
@@ -127,8 +127,8 @@ ULONG cdecl Get_Animation_Size(VOID const *handle);
  * HISTORY:                                                                *
  *   05/24/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline VOID *cdecl Open_Animation(BYTE *file_name, WSAOpenType user_flags,
-                                  UBYTE *palette = nullptr) {
+inline VOID* cdecl Open_Animation(BYTE* file_name, WSAOpenType user_flags,
+                                  UBYTE* palette = nullptr) {
   return (Open_Animation(file_name, nullptr, 0L, user_flags, palette));
 }
 
@@ -150,10 +150,10 @@ inline VOID *cdecl Open_Animation(BYTE *file_name, WSAOpenType user_flags,
  * HISTORY:                                                                *
  *   05/24/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline VOID *cdecl Open_Animation(BYTE *file_name, BufferClass &buffer,
+inline VOID* cdecl Open_Animation(BYTE* file_name, BufferClass& buffer,
                                   WSAOpenType user_flags,
-                                  UBYTE *palette = nullptr) {
-  return (Open_Animation(file_name, (BYTE *)buffer.Get_Buffer(),
+                                  UBYTE* palette = nullptr) {
+  return (Open_Animation(file_name, (BYTE*)buffer.Get_Buffer(),
                          buffer.Get_Size(), user_flags, palette));
 }
 
@@ -163,8 +163,8 @@ inline VOID *cdecl Open_Animation(BYTE *file_name, BufferClass &buffer,
 /*=========================================================================*/
 
 extern "C" {
-UWORD Apply_XOR_Delta(BYTE *source_ptr, BYTE *delta_ptr);
-VOID Apply_XOR_Delta_To_Page_Or_Viewport(VOID *target, VOID *delta, WORD width,
+UWORD Apply_XOR_Delta(BYTE* source_ptr, BYTE* delta_ptr);
+VOID Apply_XOR_Delta_To_Page_Or_Viewport(VOID* target, VOID* delta, WORD width,
                                          WORD nextrow, WORD copy);
 }
 

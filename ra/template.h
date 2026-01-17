@@ -66,11 +66,11 @@ class TemplateClass : public ObjectClass {
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const &x) : ObjectClass(x), Class(x) {};
+  TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(x) {};
   virtual ~TemplateClass(void) {
     if (GameActive) TemplateClass::Limbo();
     Class = nullptr;
@@ -82,7 +82,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
   int Icon_Number(CELL cell);
 
   /*
@@ -95,8 +95,8 @@ class TemplateClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 };
 
 #endif

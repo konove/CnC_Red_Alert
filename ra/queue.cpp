@@ -147,7 +147,7 @@
 #ifdef WOLAPI_INTEGRATION
 // #include "WolDebug.h"
 #include "WolapiOb.h"
-extern WolapiObject *pWolapi;
+extern WolapiObject* pWolapi;
 
 bool bReconnectDialogCancelled;
 #endif
@@ -164,7 +164,7 @@ bool bReconnectDialogCancelled;
 static uint32_t GameCRC;
 static uint32_t CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static char *ColorNames[8] = {"Yellow", "LtBlue", "Red",  "Green",
+static char* ColorNames[8] = {"Yellow", "LtBlue", "Red",  "Green",
                               "Orange", "Grey",   "Blue", "Brown"};
 
 //...........................................................................
@@ -200,58 +200,58 @@ extern void Enable_Secret_Units(void);
 //...........................................................................
 static void Queue_AI_Normal(void);
 static void Queue_AI_Multiplayer(void);
-static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
+static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                                     int resend_delta, int dialog_time,
-                                    int timeout, char *multi_packet_buf,
-                                    int my_sent, long *their_frame,
-                                    unsigned short *their_sent,
-                                    unsigned short *their_recv);
-static void Generate_Timing_Event(ConnManClass *net, int my_sent);
-static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent);
-static void Generate_Process_Time_Event(ConnManClass *net);
-static int Process_Send_Period(ConnManClass *net);  //, int init);
-static int Send_Packets(ConnManClass *net, char *multi_packet_buf,
+                                    int timeout, char* multi_packet_buf,
+                                    int my_sent, long* their_frame,
+                                    unsigned short* their_sent,
+                                    unsigned short* their_recv);
+static void Generate_Timing_Event(ConnManClass* net, int my_sent);
+static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent);
+static void Generate_Process_Time_Event(ConnManClass* net);
+static int Process_Send_Period(ConnManClass* net);  //, int init);
+static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent);
-static void Send_FrameSync(ConnManClass *net, int cmd_count);
-static RetcodeType Process_Receive_Packet(ConnManClass *net,
-                                          char *multi_packet_buf, int id,
-                                          int packetlen, long *their_frame,
-                                          unsigned short *their_sent,
-                                          unsigned short *their_recv);
-static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
+static void Send_FrameSync(ConnManClass* net, int cmd_count);
+static RetcodeType Process_Receive_Packet(ConnManClass* net,
+                                          char* multi_packet_buf, int id,
+                                          int packetlen, long* their_frame,
+                                          unsigned short* their_sent,
+                                          unsigned short* their_recv);
+static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
                                          int first_time);
-static int Can_Advance(ConnManClass *net, int max_ahead, long *their_frame,
-                       unsigned short *their_sent, unsigned short *their_recv);
+static int Can_Advance(ConnManClass* net, int max_ahead, long* their_frame,
+                       unsigned short* their_sent, unsigned short* their_recv);
 static int Process_Reconnect_Dialog(
-    CDTimerClass<SystemTimerClass> *timeout_timer, long *their_frame,
+    CDTimerClass<SystemTimerClass>* timeout_timer, long* their_frame,
     int num_conn, int reconn, int fresh);
-static int Handle_Timeout(ConnManClass *net, long *their_frame,
-                          unsigned short *their_sent,
-                          unsigned short *their_recv);
+static int Handle_Timeout(ConnManClass* net, long* their_frame,
+                          unsigned short* their_sent,
+                          unsigned short* their_recv);
 static void Stop_Game(void);
 
 //...........................................................................
 // Packet compression/decompression:
 //...........................................................................
-static int Build_Send_Packet(void *buf, int bufsize, int frame_delay,
+static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
                              int num_cmds, int cap);
-int Add_Uncompressed_Events(void *buf, int bufsize, int frame_delay, int size,
+int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
                             int cap);
-int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
+int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
                           int cap);
-static int Breakup_Receive_Packet(void *buf, int bufsize);
-int Extract_Uncompressed_Events(void *buf, int bufsize);
-int Extract_Compressed_Events(void *buf, int bufsize);
+static int Breakup_Receive_Packet(void* buf, int bufsize);
+int Extract_Uncompressed_Events(void* buf, int bufsize);
+int Extract_Compressed_Events(void* buf, int bufsize);
 
 //...........................................................................
 // DoList management:
 //...........................................................................
 static int Execute_DoList(
-    int max_houses, HousesType base_house, ConnManClass *net,
-    CDTimerClass<FrameTimerClass> *skip_crc,
+    int max_houses, HousesType base_house, ConnManClass* net,
+    CDTimerClass<FrameTimerClass>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
-    long *their_frame, unsigned short *their_sent, unsigned short *their_recv);
-static void Clean_DoList(ConnManClass *net);
+    long* their_frame, unsigned short* their_sent, unsigned short* their_recv);
+static void Clean_DoList(ConnManClass* net);
 static void Queue_Record(void);
 static void Queue_Playback(void);
 
@@ -259,19 +259,19 @@ static void Queue_Playback(void);
 // Debugging:
 //...........................................................................
 static void Compute_Game_CRC(void);
-static void Print_CRCs(EventClass *ev);
-static void Init_Queue_Mono(ConnManClass *net);
-static void Update_Queue_Mono(ConnManClass *net, int flow_index);
+static void Print_CRCs(EventClass* ev);
+static void Init_Queue_Mono(ConnManClass* net);
+static void Update_Queue_Mono(ConnManClass* net, int flow_index);
 static void Print_Framesync_Values(long curframe, unsigned long max_ahead,
                                    int num_connections,
-                                   unsigned short *their_recv,
-                                   unsigned short *their_sent,
+                                   unsigned short* their_recv,
+                                   unsigned short* their_sent,
                                    unsigned short my_sent);
 
-extern void Keyboard_Process(KeyNumType &input);
-void Dump_Packet_Too_Late_Stuff(EventClass *event, ConnManClass *net,
-                                long *their_frame, unsigned short *their_sent,
-                                unsigned short *their_recv);
+extern void Keyboard_Process(KeyNumType& input);
+void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
+                                long* their_frame, unsigned short* their_sent,
+                                unsigned short* their_recv);
 void Check_Mirror(void);
 
 /***************************************************************************
@@ -663,9 +663,9 @@ static void Queue_AI_Multiplayer(void) {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
-  ConnManClass *net = nullptr;  // ptr to access all multiplayer functions
+  ConnManClass* net = nullptr;  // ptr to access all multiplayer functions
   EventClass packet;            // for sending single frame-sync's
-  char *multi_packet_buf;       // buffer for sending/receiving
+  char* multi_packet_buf;       // buffer for sending/receiving
   int multi_packet_max;         // max length of multi_packet_buf
 
   //........................................................................
@@ -998,12 +998,12 @@ static void Queue_AI_Multiplayer(void) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
+static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                                     int resend_delta, int dialog_time,
-                                    int timeout, char *multi_packet_buf,
-                                    int my_sent, long *their_frame,
-                                    unsigned short *their_sent,
-                                    unsigned short *their_recv) {
+                                    int timeout, char* multi_packet_buf,
+                                    int my_sent, long* their_frame,
+                                    unsigned short* their_sent,
+                                    unsigned short* their_recv) {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
@@ -1073,9 +1073,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
     //---------------------------------------------------------------------
     if (!dialog_timer && SpecialDialog == SDLG_NONE) {
       if (reconnect_dlg == 0 && first_time == 0) {
-        FILE *fp;
+        FILE* fp;
         int i;
-        HouseClass *housep;
+        HouseClass* housep;
 
         fp = fopen("recon.txt", "wt");
         if (fp) {
@@ -1151,7 +1151,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
             // Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
+            Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
             // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
@@ -1225,7 +1225,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
+            Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
             // printf("After Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
@@ -1359,7 +1359,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass *net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Generate_Timing_Event(ConnManClass *net, int my_sent) {
+static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
   unsigned long resp_time;  // connection response time, in ticks
   EventClass ev;
 
@@ -1444,7 +1444,7 @@ static void Generate_Timing_Event(ConnManClass *net, int my_sent) {
  * HISTORY:                                                                *
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent) {
+static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   unsigned long resp_time;  // connection response time, in ticks
   EventClass ev;
   int highest_ticks;
@@ -1563,7 +1563,7 @@ static void Generate_Real_Timing_Event(ConnManClass *net, int my_sent) {
  * HISTORY:                                                                *
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void Generate_Process_Time_Event(ConnManClass *net) {
+static void Generate_Process_Time_Event(ConnManClass* net) {
   EventClass ev;
   int avgticks;
   unsigned long resp_time;  // connection response time, in ticks
@@ -1626,7 +1626,7 @@ static void Generate_Process_Time_Event(ConnManClass *net) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Process_Send_Period(ConnManClass *net)  //, int init)
+static int Process_Send_Period(ConnManClass* net)  //, int init)
 {
   //------------------------------------------------------------------------
   // If the current frame # is not an even multiple of 'FrameSendRate', then
@@ -1678,7 +1678,7 @@ static int Process_Send_Period(ConnManClass *net)  //, int init)
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Send_Packets(ConnManClass *net, char *multi_packet_buf,
+static int Send_Packets(ConnManClass* net, char* multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent) {
   int cap;        // max # events to send, NOT including FRAMEINFO event
   int do_once;    // true: only go through packet loop once
@@ -1808,7 +1808,7 @@ static int Send_Packets(ConnManClass *net, char *multi_packet_buf,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Send_FrameSync(ConnManClass *net, int cmd_count) {
+static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   EventClass packet;
 
   //------------------------------------------------------------------------
@@ -1876,12 +1876,12 @@ static void Send_FrameSync(ConnManClass *net, int cmd_count) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Receive_Packet(ConnManClass *net,
-                                          char *multi_packet_buf, int id,
-                                          int packetlen, long *their_frame,
-                                          unsigned short *their_sent,
-                                          unsigned short *their_recv) {
-  EventClass *event;
+static RetcodeType Process_Receive_Packet(ConnManClass* net,
+                                          char* multi_packet_buf, int id,
+                                          int packetlen, long* their_frame,
+                                          unsigned short* their_sent,
+                                          unsigned short* their_recv) {
+  EventClass* event;
   int index;
   RetcodeType retcode = RC_NORMAL;
   int i;
@@ -1889,7 +1889,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass *net,
   //------------------------------------------------------------------------
   //	Get an event ptr to the incoming message
   //------------------------------------------------------------------------
-  event = (EventClass *)multi_packet_buf;
+  event = (EventClass*)multi_packet_buf;
 
   //------------------------------------------------------------------------
   //	Get the index of the sender
@@ -1917,7 +1917,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass *net,
   //------------------------------------------------------------------------
   if (event->Data.FrameInfo.CommandCount > their_sent[index]) {
     if (abs(their_sent[index] - event->Data.FrameInfo.CommandCount) > 500) {
-      FILE *fp;
+      FILE* fp;
       fp = fopen("badcount.txt", "wt");
       if (fp) {
         fprintf(fp, "Event Type:%s\n", EventClass::EventNames[event->Type]);
@@ -2021,16 +2021,16 @@ static RetcodeType Process_Receive_Packet(ConnManClass *net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
+static RetcodeType Process_Serial_Packet(char* multi_packet_buf,
                                          int first_time) {
-  SerialPacketType *serial_packet;  // for parsing serial packets
+  SerialPacketType* serial_packet;  // for parsing serial packets
   int player_gone;
-  EventClass *event;
+  EventClass* event;
 
   //------------------------------------------------------------------------
   //	Determine if this packet means that the other player has left the game
   //------------------------------------------------------------------------
-  serial_packet = (SerialPacketType *)multi_packet_buf;
+  serial_packet = (SerialPacketType*)multi_packet_buf;
   player_gone = 0;
   //........................................................................
   // On Frame 0, only a SIGN_OFF means the other player left; the other
@@ -2065,7 +2065,7 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
             serial_packet->Name, serial_packet->ID,
             serial_packet->Message.Message,
             Rule.MessageDelay * TICKS_PER_MINUTE)) {
-      char *ptr = &serial_packet->Message.Message[0];
+      char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
       }
@@ -2109,7 +2109,7 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
   //........................................................................
   //	are we getting our own packets back??
   //........................................................................
-  event = (EventClass *)multi_packet_buf;
+  event = (EventClass*)multi_packet_buf;
 
   if (event->Type <= EventClass::EMPTY || event->Type >= EventClass::LAST_EVENT)
     return (RC_SERIAL_PROCESSED);
@@ -2164,8 +2164,8 @@ static RetcodeType Process_Serial_Packet(char *multi_packet_buf,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Can_Advance(ConnManClass *net, int max_ahead, long *their_frame,
-                       unsigned short *their_sent, unsigned short *their_recv) {
+static int Can_Advance(ConnManClass* net, int max_ahead, long* their_frame,
+                       unsigned short* their_sent, unsigned short* their_recv) {
   long their_oldest_frame;  // other players' oldest frame #
   int count_ok;             // true = my cmd count matches theirs
   int i;
@@ -2235,7 +2235,7 @@ static int Can_Advance(ConnManClass *net, int max_ahead, long *their_frame,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(
-    CDTimerClass<SystemTimerClass> *timeout_timer, long *their_frame,
+    CDTimerClass<SystemTimerClass>* timeout_timer, long* their_frame,
     int num_conn, int reconn, int fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int new_time;
@@ -2317,9 +2317,9 @@ static int Process_Reconnect_Dialog(
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Handle_Timeout(ConnManClass *net, long *their_frame,
-                          unsigned short *their_sent,
-                          unsigned short *their_recv) {
+static int Handle_Timeout(ConnManClass* net, long* their_frame,
+                          unsigned short* their_sent,
+                          unsigned short* their_recv) {
   int oldest_index;  // index of person requiring a reconnect
   int i, j;
   int id;
@@ -2463,10 +2463,10 @@ static void Stop_Game(void) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Build_Send_Packet(void *buf, int bufsize, int frame_delay,
+static int Build_Send_Packet(void* buf, int bufsize, int frame_delay,
                              int num_cmds, int cap) {
   int size = 0;
-  EventClass *finfo;
+  EventClass* finfo;
 
   //------------------------------------------------------------------------
   // All events start with a FRAMEINFO event; fill this part in.
@@ -2474,7 +2474,7 @@ static int Build_Send_Packet(void *buf, int bufsize, int frame_delay,
   //........................................................................
   // Set the event type
   //........................................................................
-  finfo = (EventClass *)buf;
+  finfo = (EventClass*)buf;
   finfo->Type = EventClass::FRAMEINFO;
   //........................................................................
   // Set the frame to execute this event on; this is protocol-specific
@@ -2563,7 +2563,7 @@ static int Build_Send_Packet(void *buf, int bufsize, int frame_delay,
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Add_Uncompressed_Events(void *buf, int bufsize, int frame_delay, int size,
+int Add_Uncompressed_Events(void* buf, int bufsize, int frame_delay, int size,
                             int cap) {
   int num = 0;  // # of events processed
   int ev_size;  // size of event we're adding
@@ -2613,13 +2613,13 @@ int Add_Uncompressed_Events(void *buf, int bufsize, int frame_delay, int size,
     // Add event to the send packet
     //.....................................................................
     if (OutList.First().Type == EventClass::ADDPLAYER) {
-      memcpy(((char *)buf) + size, &OutList.First(), sizeof(EventClass));
+      memcpy(((char*)buf) + size, &OutList.First(), sizeof(EventClass));
       size += sizeof(EventClass);
-      memcpy(((char *)buf) + size, OutList.First().Data.Variable.Pointer,
+      memcpy(((char*)buf) + size, OutList.First().Data.Variable.Pointer,
              OutList.First().Data.Variable.Size);
       size += OutList.First().Data.Variable.Size;
     } else {
-      memcpy(((char *)buf) + size, &OutList.First(), sizeof(EventClass));
+      memcpy(((char*)buf) + size, &OutList.First(), sizeof(EventClass));
       size += sizeof(EventClass);
     }
 
@@ -2656,14 +2656,14 @@ int Add_Uncompressed_Events(void *buf, int bufsize, int frame_delay, int size,
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
+int Add_Compressed_Events(void* buf, int bufsize, int frame_delay, int size,
                           int cap) {
   int num = 0;                      // # of events processed
   EventClass::EventType eventtype;  // type of event being compressed
   EventClass prevevent;             // last event processed
   int datasize;                     // size of element plucked from event union
   int storedsize;                   // actual # bytes stored from event
-  unsigned char *unitsptr =
+  unsigned char* unitsptr =
       nullptr;                 // ptr to buffer pos to store mega. rep count
   unsigned char numunits = 0;  // megamission rep count value
   bool missiondup = false;     // flag: is this event a megamission repeat?
@@ -2766,7 +2766,7 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
             *unitsptr = numunits;
           }
           unitsptr =
-              ((unsigned char *)buf) + size + sizeof(EventClass::EventType);
+              ((unsigned char*)buf) + size + sizeof(EventClass::EventType);
           storedsize += sizeof(numunits);
           numunits = 1;
           missiondup = false;
@@ -2802,7 +2802,7 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
         printf("  New MEGAMISSION run:\n");
       }
 
-      unitsptr = ((unsigned char *)buf) + size + sizeof(EventClass::EventType);
+      unitsptr = ((unsigned char*)buf) + size + sizeof(EventClass::EventType);
       storedsize += sizeof(numunits);
       numunits = 1;
       missiondup = false;
@@ -2852,9 +2852,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
       //..................................................................
       case (EventClass::RESPONSE_TIME):
 
-        *(EventClass::EventType *)(((char *)buf) + size) = eventtype;
+        *(EventClass::EventType*)(((char*)buf) + size) = eventtype;
 
-        memcpy(((char *)buf) + size + sizeof(EventClass::EventType),
+        memcpy(((char*)buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.FrameInfo.Delay, datasize);
 
         size += (datasize + sizeof(EventClass::EventType));
@@ -2874,7 +2874,7 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
             *unitsptr = numunits;
           }
 
-          memcpy(((char *)buf) + size, &OutList.First().Data.MegaMission.Whom,
+          memcpy(((char*)buf) + size, &OutList.First().Data.MegaMission.Whom,
                  datasize);
 
           size += datasize;
@@ -2890,9 +2890,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
             *unitsptr = numunits;
           }
 
-          *(EventClass::EventType *)(((char *)buf) + size) = eventtype;
+          *(EventClass::EventType*)(((char*)buf) + size) = eventtype;
 
-          memcpy(((char *)buf) + size + sizeof(EventClass::EventType) +
+          memcpy(((char*)buf) + size + sizeof(EventClass::EventType) +
                      sizeof(numunits),
                  &OutList.First().Data.MegaMission, datasize);
 
@@ -2904,13 +2904,13 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
       // Variable-sized packets: Copy the packet Size & the buffer
       //..................................................................
       case (EventClass::ADDPLAYER):
-        *(EventClass::EventType *)(((char *)buf) + size) = eventtype;
+        *(EventClass::EventType*)(((char*)buf) + size) = eventtype;
 
-        memcpy(((char *)buf) + size + sizeof(EventClass::EventType),
+        memcpy(((char*)buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data.Variable.Size, datasize);
         size += (datasize + sizeof(EventClass::EventType));
 
-        memcpy(((char *)buf) + size, OutList.First().Data.Variable.Pointer,
+        memcpy(((char*)buf) + size, OutList.First().Data.Variable.Pointer,
                OutList.First().Data.Variable.Size);
         size += OutList.First().Data.Variable.Size;
 
@@ -2920,9 +2920,9 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
       // Default case: Just copy over the data field from the union
       //..................................................................
       default:
-        *(EventClass::EventType *)(((char *)buf) + size) = eventtype;
+        *(EventClass::EventType*)(((char*)buf) + size) = eventtype;
 
-        memcpy(((char *)buf) + size + sizeof(EventClass::EventType),
+        memcpy(((char*)buf) + size + sizeof(EventClass::EventType),
                &OutList.First().Data, datasize);
 
         size += (datasize + sizeof(EventClass::EventType));
@@ -2976,7 +2976,7 @@ int Add_Compressed_Events(void *buf, int bufsize, int frame_delay, int size,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Breakup_Receive_Packet(void *buf, int bufsize) {
+static int Breakup_Receive_Packet(void* buf, int bufsize) {
   int count = 0;
 
   /*
@@ -3015,11 +3015,11 @@ static int Breakup_Receive_Packet(void *buf, int bufsize) {
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Extract_Uncompressed_Events(void *buf, int bufsize) {
+int Extract_Uncompressed_Events(void* buf, int bufsize) {
   int count = 0;
   int pos = 0;
   int leftover = bufsize;
-  EventClass *event;
+  EventClass* event;
 
   //------------------------------------------------------------------------
   // Loop until there are no more events in the packet
@@ -3027,7 +3027,7 @@ int Extract_Uncompressed_Events(void *buf, int bufsize) {
   while (leftover >= sizeof(EventClass)) {
     Keyboard->Check();
 
-    event = (EventClass *)(((char *)buf) + pos);
+    event = (EventClass*)(((char*)buf) + pos);
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -3041,7 +3041,7 @@ int Extract_Uncompressed_Events(void *buf, int bufsize) {
       //..................................................................
       if (event->Type == EventClass::ADDPLAYER) {
         event->Data.Variable.Pointer = new char[event->Data.Variable.Size];
-        memcpy(event->Data.Variable.Pointer, ((char *)buf) + sizeof(EventClass),
+        memcpy(event->Data.Variable.Pointer, ((char*)buf) + sizeof(EventClass),
                event->Data.Variable.Size);
 
         pos += event->Data.Variable.Size;
@@ -3050,7 +3050,7 @@ int Extract_Uncompressed_Events(void *buf, int bufsize) {
 
       if (!DoList.Add(*event)) {
         if (event->Type == EventClass::ADDPLAYER) {
-          delete[] static_cast<char *>(event->Data.Variable.Pointer);
+          delete[] static_cast<char*>(event->Data.Variable.Pointer);
         }
         return (-1);
       }
@@ -3095,10 +3095,10 @@ int Extract_Uncompressed_Events(void *buf, int bufsize) {
  * HISTORY:                                                                *
  *   11/21/1995 DRD : Created.                                             *
  *=========================================================================*/
-int Extract_Compressed_Events(void *buf, int bufsize) {
+int Extract_Compressed_Events(void* buf, int bufsize) {
   int pos = 0;                 // current buffer parsing position
   int leftover = bufsize;      // # bytes left to process
-  EventClass *event;           // event ptr for parsing buffer
+  EventClass* event;           // event ptr for parsing buffer
   int count = 0;               // # events processed
   int datasize = 0;            // size of data to copy
   EventClass eventdata;        // stores Frame, ID, etc
@@ -3118,7 +3118,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
   datasize =
       (offsetof(EventClass, Data) + size_of(EventClass, Data.FrameInfo)) -
       sizeof(EventClass::EventType);
-  event = (EventClass *)(((char *)buf) + pos);
+  event = (EventClass*)(((char*)buf) + pos);
 
   while (leftover >= (datasize + sizeof(EventClass::EventType))) {
     Keyboard->Check();
@@ -3147,7 +3147,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
       // if MEGAMISSION event get the number of units (events to generate)
       //..................................................................
       else if (event->Type == EventClass::MEGAMISSION) {
-        numunits = *(((unsigned char *)buf) + pos + sizeof(eventdata.Type));
+        numunits = *(((unsigned char*)buf) + pos + sizeof(eventdata.Type));
         pos += sizeof(numunits);
         leftover -= sizeof(numunits);
       }
@@ -3162,18 +3162,18 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
       switch (eventdata.Type) {
         case (EventClass::RESPONSE_TIME):
           memcpy(&eventdata.Data.FrameInfo.Delay,
-                 ((char *)buf) + pos + sizeof(EventClass::EventType), datasize);
+                 ((char*)buf) + pos + sizeof(EventClass::EventType), datasize);
           break;
 
         case (EventClass::ADDPLAYER):
 
           memcpy(&eventdata.Data.Variable.Size,
-                 ((char *)buf) + pos + sizeof(EventClass::EventType), datasize);
+                 ((char*)buf) + pos + sizeof(EventClass::EventType), datasize);
 
           eventdata.Data.Variable.Pointer =
               new char[eventdata.Data.Variable.Size];
           memcpy(eventdata.Data.Variable.Pointer,
-                 ((char *)buf) + pos + sizeof(EventClass::EventType) + datasize,
+                 ((char*)buf) + pos + sizeof(EventClass::EventType) + datasize,
                  eventdata.Data.Variable.Size);
 
           pos += eventdata.Data.Variable.Size;
@@ -3183,7 +3183,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
 
         case (EventClass::MEGAMISSION):
           memcpy(&eventdata.Data.MegaMission,
-                 ((char *)buf) + pos + sizeof(EventClass::EventType), datasize);
+                 ((char*)buf) + pos + sizeof(EventClass::EventType), datasize);
 
           if (numunits > 1) {
             pos += (datasize + sizeof(EventClass::EventType));
@@ -3205,7 +3205,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
               //......................................................
               count++;
               numunits--;
-              memcpy(&eventdata.Data.MegaMission.Whom, ((char *)buf) + pos,
+              memcpy(&eventdata.Data.MegaMission.Whom, ((char*)buf) + pos,
                      datasize);
 
               //......................................................
@@ -3224,13 +3224,13 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
 
         default:
           memcpy(&eventdata.Data,
-                 ((char *)buf) + pos + sizeof(EventClass::EventType), datasize);
+                 ((char*)buf) + pos + sizeof(EventClass::EventType), datasize);
           break;
       }
 
       if (!DoList.Add(eventdata)) {
         if (eventdata.Type == EventClass::ADDPLAYER) {
-          delete[] static_cast<char *>(eventdata.Data.Variable.Pointer);
+          delete[] static_cast<char*>(eventdata.Data.Variable.Pointer);
         }
         return (-1);
       }
@@ -3247,7 +3247,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
       leftover -= (datasize + sizeof(EventClass::EventType));
 
       if (leftover) {
-        event = (EventClass *)(((char *)buf) + pos);
+        event = (EventClass*)(((char*)buf) + pos);
         datasize = EventClass::EventLength[event->Type];
         if (event->Type == EventClass::MEGAMISSION) {
           datasize += sizeof(numunits);
@@ -3261,7 +3261,7 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
     else {
       pos += (datasize + sizeof(EventClass::EventType));
       leftover -= (datasize + sizeof(EventClass::EventType));
-      event = (EventClass *)(((char *)buf) + pos);
+      event = (EventClass*)(((char*)buf) + pos);
 
       //..................................................................
       // size of FRAMESYNC event - EventType size
@@ -3313,12 +3313,12 @@ int Extract_Compressed_Events(void *buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(int max_houses, HousesType base_house,
-                          ConnManClass *net,
-                          CDTimerClass<FrameTimerClass> *skip_crc,
-                          long *their_frame, unsigned short *their_sent,
-                          unsigned short *their_recv) {
+                          ConnManClass* net,
+                          CDTimerClass<FrameTimerClass>* skip_crc,
+                          long* their_frame, unsigned short* their_sent,
+                          unsigned short* their_recv) {
   HousesType house;
-  HouseClass *hptr;
+  HouseClass* hptr;
   int i, j, k;
   int index;
   int check_crc;
@@ -3421,7 +3421,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             ** Flag that this house lost because it quit.
             */
             HousesType quithouse;
-            HouseClass *quithptr;
+            HouseClass* quithptr;
 
             for (int player = 0; player < max_houses; player++) {
               quithouse = (HousesType)(player + base_house);
@@ -3622,7 +3622,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Clean_DoList(ConnManClass *net) {
+static void Clean_DoList(ConnManClass* net) {
   while (DoList.Count) {
     Keyboard->Check();
 
@@ -3864,12 +3864,12 @@ static void Queue_Playback(void) {
  *=========================================================================*/
 static void Compute_Game_CRC(void) {
   int i, j;
-  VesselClass *vessp;
-  InfantryClass *infp;
-  UnitClass *unitp;
-  BuildingClass *bldgp;
-  ObjectClass *objp;
-  HouseClass *housep;
+  VesselClass* vessp;
+  InfantryClass* infp;
+  UnitClass* unitp;
+  BuildingClass* bldgp;
+  ObjectClass* objp;
+  HouseClass* housep;
 
   GameCRC = 0;
 
@@ -3877,7 +3877,7 @@ static void Compute_Game_CRC(void) {
   //	Infantry
   //------------------------------------------------------------------------
   for (i = 0; i < Infantry.Count(); i++) {
-    infp = (InfantryClass *)Infantry.Active_Ptr(i);
+    infp = (InfantryClass*)Infantry.Active_Ptr(i);
     Add_CRC(&GameCRC, (int)infp->Coord + (int)infp->PrimaryFacing);
     Add_CRC(&GameCRC, (int)infp->Speed + (int)infp->NavCom);
     Add_CRC(&GameCRC, (int)infp->Mission + (int)infp->TarCom);
@@ -3887,7 +3887,7 @@ static void Compute_Game_CRC(void) {
   //	Units
   //------------------------------------------------------------------------
   for (i = 0; i < Units.Count(); i++) {
-    unitp = (UnitClass *)Units.Active_Ptr(i);
+    unitp = (UnitClass*)Units.Active_Ptr(i);
     Add_CRC(&GameCRC, (int)unitp->Coord + (int)unitp->PrimaryFacing +
                           (int)unitp->SecondaryFacing);
   }
@@ -3896,7 +3896,7 @@ static void Compute_Game_CRC(void) {
   //	Shippies
   //------------------------------------------------------------------------
   for (i = 0; i < Vessels.Count(); i++) {
-    vessp = (VesselClass *)Vessels.Active_Ptr(i);
+    vessp = (VesselClass*)Vessels.Active_Ptr(i);
     Add_CRC(&GameCRC, (int)vessp->Coord + (int)vessp->PrimaryFacing);
     Add_CRC(&GameCRC, (int)vessp->Speed + (int)vessp->NavCom);
     Add_CRC(&GameCRC, (int)vessp->Strength);
@@ -3907,7 +3907,7 @@ static void Compute_Game_CRC(void) {
   //	Buildings
   //------------------------------------------------------------------------
   for (i = 0; i < Buildings.Count(); i++) {
-    bldgp = (BuildingClass *)Buildings.Active_Ptr(i);
+    bldgp = (BuildingClass*)Buildings.Active_Ptr(i);
     Add_CRC(&GameCRC, (int)bldgp->Coord + (int)bldgp->PrimaryFacing);
   }
 
@@ -3915,7 +3915,7 @@ static void Compute_Game_CRC(void) {
   //	Houses
   //------------------------------------------------------------------------
   for (i = 0; i < Houses.Count(); i++) {
-    housep = (HouseClass *)Houses.Active_Ptr(i);
+    housep = (HouseClass*)Houses.Active_Ptr(i);
     Add_CRC(&GameCRC,
             (int)housep->Credits + (int)housep->Power + (int)housep->Drain);
   }
@@ -3965,7 +3965,7 @@ static void Compute_Game_CRC(void) {
  * HISTORY:                                                                *
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Add_CRC(uint32_t *crc, uint32_t val) {
+void Add_CRC(uint32_t* crc, uint32_t val) {
   int hibit;
 
   if ((*crc) & 0x80000000) {
@@ -3999,15 +3999,15 @@ void Add_CRC(uint32_t *crc, uint32_t val) {
  * HISTORY:                                                                *
  *   05/09/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Print_CRCs(EventClass *ev) {
+static void Print_CRCs(EventClass* ev) {
   int i, j;
-  InfantryClass *infp;
-  UnitClass *unitp;
-  VesselClass *vesselp;
-  BuildingClass *bldgp;
-  ObjectClass *objp;
-  FILE *fp;
-  HouseClass *housep;
+  InfantryClass* infp;
+  UnitClass* unitp;
+  VesselClass* vesselp;
+  BuildingClass* bldgp;
+  ObjectClass* objp;
+  FILE* fp;
+  HouseClass* housep;
   HousesType house;
   int color;
 
@@ -4050,7 +4050,7 @@ static void Print_CRCs(EventClass *ev) {
       fprintf(fp, "-------------------- %s Infantry -------------------\n",
               housep->Class->Name());
       for (i = 0; i < Infantry.Count(); i++) {
-        infp = (InfantryClass *)Infantry.Active_Ptr(i);
+        infp = (InfantryClass*)Infantry.Active_Ptr(i);
         if (infp->Owner() == house) {
           Add_CRC(&GameCRC, (int)infp->Coord + (int)infp->PrimaryFacing);
           Add_CRC(&GameCRC, (int)infp->Speed + (int)infp->NavCom);
@@ -4077,7 +4077,7 @@ static void Print_CRCs(EventClass *ev) {
       fprintf(fp, "-------------------- %s Units -------------------\n",
               housep->Class->Name());
       for (i = 0; i < Units.Count(); i++) {
-        unitp = (UnitClass *)Units.Active_Ptr(i);
+        unitp = (UnitClass*)Units.Active_Ptr(i);
         if (unitp->Owner() == house) {
           Add_CRC(&GameCRC, (int)unitp->Coord + (int)unitp->PrimaryFacing +
                                 (int)unitp->SecondaryFacing);
@@ -4103,7 +4103,7 @@ static void Print_CRCs(EventClass *ev) {
       fprintf(fp, "-------------------- %s Vessels -------------------\n",
               housep->Class->Name());
       for (i = 0; i < Vessels.Count(); i++) {
-        vesselp = (VesselClass *)Vessels.Active_Ptr(i);
+        vesselp = (VesselClass*)Vessels.Active_Ptr(i);
         if (vesselp->Owner() == house) {
           Add_CRC(&GameCRC, (int)vesselp->Coord + (int)vesselp->PrimaryFacing);
           Add_CRC(&GameCRC, (int)vesselp->Speed + (int)vesselp->NavCom);
@@ -4131,7 +4131,7 @@ static void Print_CRCs(EventClass *ev) {
       fprintf(fp, "-------------------- %s Buildings -------------------\n",
               housep->Class->Name());
       for (i = 0; i < Buildings.Count(); i++) {
-        bldgp = (BuildingClass *)Buildings.Active_Ptr(i);
+        bldgp = (BuildingClass*)Buildings.Active_Ptr(i);
         if (bldgp->Owner() == house) {
           Add_CRC(&GameCRC, (int)bldgp->Coord + (int)bldgp->PrimaryFacing);
           fprintf(fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
@@ -4146,10 +4146,10 @@ static void Print_CRCs(EventClass *ev) {
   //
   // Animations
   //
-  AnimClass *animp;
+  AnimClass* animp;
   fprintf(fp, "-------------------- Animations -------------------\n");
   for (i = 0; i < Anims.Count(); i++) {
-    animp = (AnimClass *)Anims.Active_Ptr(i);
+    animp = (AnimClass*)Anims.Active_Ptr(i);
     fprintf(fp, "Target:%x OwnerHouse:%d Loops:%d\n", animp->xObject,
             animp->OwnerHouse, animp->Loops);
   }
@@ -4167,35 +4167,35 @@ static void Print_CRCs(EventClass *ev) {
 
       if (objp->What_Am_I() == RTTI_AIRCRAFT)
         fprintf(fp, "Aircraft  (Type:%d) ",
-                (AircraftType)(*((AircraftClass *)objp)));
+                (AircraftType)(*((AircraftClass*)objp)));
       else if (objp->What_Am_I() == RTTI_ANIM)
-        fprintf(fp, "Anim      (Type:%d) ", (AnimType)(*((AnimClass *)objp)));
+        fprintf(fp, "Anim      (Type:%d) ", (AnimType)(*((AnimClass*)objp)));
       else if (objp->What_Am_I() == RTTI_BUILDING)
         fprintf(fp, "Building  (Type:%d) ",
-                (StructType)(*((BuildingClass *)objp)));
+                (StructType)(*((BuildingClass*)objp)));
       else if (objp->What_Am_I() == RTTI_BULLET)
         fprintf(fp, "Bullet    (Type:%d) ",
-                (BulletType)(*((BulletClass *)objp)));
+                (BulletType)(*((BulletClass*)objp)));
       else if (objp->What_Am_I() == RTTI_INFANTRY)
         fprintf(fp, "Infantry  (Type:%d) ",
-                (InfantryType)(*((InfantryClass *)objp)));
+                (InfantryType)(*((InfantryClass*)objp)));
       else if (objp->What_Am_I() == RTTI_OVERLAY)
         fprintf(fp, "Overlay   (Type:%d) ",
-                (OverlayType)(*((OverlayClass *)objp)));
+                (OverlayType)(*((OverlayClass*)objp)));
       else if (objp->What_Am_I() == RTTI_SMUDGE)
         fprintf(fp, "Smudge    (Type:%d) ",
-                (SmudgeType)(*((SmudgeClass *)objp)));
+                (SmudgeType)(*((SmudgeClass*)objp)));
       else if (objp->What_Am_I() == RTTI_TEMPLATE)
         fprintf(fp, "Template  (Type:%d) ",
-                (TemplateType)(*((TemplateClass *)objp)));
+                (TemplateType)(*((TemplateClass*)objp)));
       else if (objp->What_Am_I() == RTTI_TERRAIN)
         fprintf(fp, "Terrain   (Type:%d) ",
-                (TerrainType)(*((TerrainClass *)objp)));
+                (TerrainType)(*((TerrainClass*)objp)));
       else if (objp->What_Am_I() == RTTI_UNIT)
-        fprintf(fp, "Unit      (Type:%d) ", (UnitType)(*((UnitClass *)objp)));
+        fprintf(fp, "Unit      (Type:%d) ", (UnitType)(*((UnitClass*)objp)));
       else if (objp->What_Am_I() == RTTI_VESSEL)
         fprintf(fp, "Vessel    (Type:%d) ",
-                (VesselType)(*((VesselClass *)objp)));
+                (VesselType)(*((VesselClass*)objp)));
 
       house = objp->Owner();
       if (house != HOUSE_NONE) {
@@ -4220,30 +4220,30 @@ static void Print_CRCs(EventClass *ev) {
 
     if (objp->What_Am_I() == RTTI_AIRCRAFT)
       fprintf(fp, "Aircraft  (Type:%d) ",
-              (AircraftType)(*((AircraftClass *)objp)));
+              (AircraftType)(*((AircraftClass*)objp)));
     else if (objp->What_Am_I() == RTTI_ANIM)
-      fprintf(fp, "Anim      (Type:%d) ", (AnimType)(*((AnimClass *)objp)));
+      fprintf(fp, "Anim      (Type:%d) ", (AnimType)(*((AnimClass*)objp)));
     else if (objp->What_Am_I() == RTTI_BUILDING)
       fprintf(fp, "Building  (Type:%d) ",
-              (StructType)(*((BuildingClass *)objp)));
+              (StructType)(*((BuildingClass*)objp)));
     else if (objp->What_Am_I() == RTTI_BULLET)
-      fprintf(fp, "Bullet    (Type:%d) ", (BulletType)(*((BulletClass *)objp)));
+      fprintf(fp, "Bullet    (Type:%d) ", (BulletType)(*((BulletClass*)objp)));
     else if (objp->What_Am_I() == RTTI_INFANTRY)
       fprintf(fp, "Infantry  (Type:%d) ",
-              (InfantryType)(*((InfantryClass *)objp)));
+              (InfantryType)(*((InfantryClass*)objp)));
     else if (objp->What_Am_I() == RTTI_OVERLAY)
       fprintf(fp, "Overlay   (Type:%d) ",
-              (OverlayType)(*((OverlayClass *)objp)));
+              (OverlayType)(*((OverlayClass*)objp)));
     else if (objp->What_Am_I() == RTTI_SMUDGE)
-      fprintf(fp, "Smudge    (Type:%d) ", (SmudgeType)(*((SmudgeClass *)objp)));
+      fprintf(fp, "Smudge    (Type:%d) ", (SmudgeType)(*((SmudgeClass*)objp)));
     else if (objp->What_Am_I() == RTTI_TEMPLATE)
       fprintf(fp, "Template  (Type:%d) ",
-              (TemplateType)(*((TemplateClass *)objp)));
+              (TemplateType)(*((TemplateClass*)objp)));
     else if (objp->What_Am_I() == RTTI_TERRAIN)
       fprintf(fp, "Terrain   (Type:%d) ",
-              (TerrainType)(*((TerrainClass *)objp)));
+              (TerrainType)(*((TerrainClass*)objp)));
     else if (objp->What_Am_I() == RTTI_UNIT)
-      fprintf(fp, "Unit      (Type:%d) ", (UnitType)(*((UnitClass *)objp)));
+      fprintf(fp, "Unit      (Type:%d) ", (UnitType)(*((UnitClass*)objp)));
 
     house = objp->Owner();
     if (house != HOUSE_NONE) {
@@ -4308,7 +4308,7 @@ static void Print_CRCs(EventClass *ev) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Init_Queue_Mono(ConnManClass * /*net*/) {
+static void Init_Queue_Mono(ConnManClass* /*net*/) {
 #if (SHOW_MONO)
   //------------------------------------------------------------------------
   // Set 'IsMono' so we can steal the mono screen from the engine
@@ -4385,7 +4385,7 @@ static void Init_Queue_Mono(ConnManClass * /*net*/) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Update_Queue_Mono(ConnManClass * /*net*/, int /*flow_index*/) {
+static void Update_Queue_Mono(ConnManClass* /*net*/, int /*flow_index*/) {
 #if (SHOW_MONO)
   static int flowcount[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -4437,8 +4437,8 @@ static void Update_Queue_Mono(ConnManClass * /*net*/, int /*flow_index*/) {
 static void Print_Framesync_Values(long /*curframe*/,
                                    unsigned long /*max_ahead*/,
                                    int /*num_connections*/,
-                                   unsigned short * /*their_recv*/,
-                                   unsigned short * /*their_sent*/,
+                                   unsigned short* /*their_recv*/,
+                                   unsigned short* /*their_sent*/,
                                    unsigned short /*my_sent*/) {
 #if (SHOW_MONO)
   int i;
@@ -4484,10 +4484,10 @@ static void Print_Framesync_Values(long /*curframe*/,
  * HISTORY:                                                                *
  *   06/28/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Dump_Packet_Too_Late_Stuff(EventClass *event, ConnManClass *net,
-                                long *their_frame, unsigned short *their_sent,
-                                unsigned short *their_recv) {
-  FILE *fp;
+void Dump_Packet_Too_Late_Stuff(EventClass* event, ConnManClass* net,
+                                long* their_frame, unsigned short* their_sent,
+                                unsigned short* their_recv) {
+  FILE* fp;
   int i;
   HousesType house;
 
@@ -4547,10 +4547,10 @@ void Check_Mirror(void) {
 #ifdef MIRROR_QUEUE
   int i;
   char txt[80];
-  unsigned long *ptr;
+  unsigned long* ptr;
   int found_5s = 0;
 
-  ptr = (unsigned long *)(DoList.Get_Array());
+  ptr = (unsigned long*)(DoList.Get_Array());
   for (i = 0;
        i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
        i++) {
@@ -4561,7 +4561,7 @@ void Check_Mirror(void) {
     }
   }
 
-  ptr = (unsigned long *)(MirrorList.Get_Array());
+  ptr = (unsigned long*)(MirrorList.Get_Array());
   for (i = 0;
        i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
        i++) {
@@ -4572,7 +4572,7 @@ void Check_Mirror(void) {
     }
   }
 
-  ptr = (unsigned long *)(DoList.Get_Array());
+  ptr = (unsigned long*)(DoList.Get_Array());
   for (i = 0;
        i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
        i++) {
@@ -4583,7 +4583,7 @@ void Check_Mirror(void) {
     }
   }
 
-  ptr = (unsigned long *)(MirrorList.Get_Array());
+  ptr = (unsigned long*)(MirrorList.Get_Array());
   for (i = 0;
        i < (MAX_EVENTS * 64 * sizeof(EventClass)) / sizeof(unsigned long);
        i++) {

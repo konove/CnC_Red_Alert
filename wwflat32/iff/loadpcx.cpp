@@ -39,6 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <wwlib32.h>
+
 #include "filepcx.h"
 
 /***************************************************************************
@@ -53,9 +54,10 @@
  *					 the pcx file will be place in the
  *memory block pointed	   * by palette.
  ** Buff is optinal, if Buff == NULL a new memory Buffer
- ** will be allocated, otherwise the file will be placed 		* at location pointd by Buffer;										*
- *			Size is the size in bytes of the memory block pointed by
- *Buff		* is also optional;
+ ** will be allocated, otherwise the file will be placed 		* at
+ * location pointd by Buffer;
+ *			* Size is the size in bytes of the memory block pointed
+ * by Buff		* is also optional;
  *                                                                         *
  * OUTPUT: on succes a pointer to a GraphicBufferClass cointaining the     *
  *         pcx file, NULL othewise.                                        *

@@ -120,7 +120,7 @@
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool Start_Scenario(char *root, bool briefing) {
+bool Start_Scenario(char* root, bool briefing) {
   if (!Read_Scenario(root)) {
     CCDebugString("C&C95 - Failed to read scenario.\n");
     return (false);
@@ -218,7 +218,7 @@ bool Start_Scenario(char *root, bool briefing) {
  * HISTORY: * 07/22/1991     : Created. * 02/03/1992 JLB : Uses house
  *identification.                                               *
  *=============================================================================================*/
-bool Read_Scenario(char *root) {
+bool Read_Scenario(char* root) {
   CCDebugString("C&C95 - In Read_Scenario.\n");
   Clear_Scenario();
   ScenarioInit++;
@@ -542,7 +542,7 @@ void Do_Win(void) {
   if (SabotagedType != STRUCT_NONE && Scenario == 7 &&
       PlayerPtr->Class->House == HOUSE_GOOD) {
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *building = Buildings.Ptr(index);
+      BuildingClass* building = Buildings.Ptr(index);
 
       if (building && !building->IsInLimbo && building->House != PlayerPtr &&
           building->Class->Type == SabotagedType) {
@@ -556,7 +556,7 @@ void Do_Win(void) {
     **	Remove the building from the prebuild list.
     */
     for (int index = 0; index < Base.Nodes.Count(); index++) {
-      BaseNodeClass *node = Base.Get_Node(index);
+      BaseNodeClass* node = Base.Get_Node(index);
 
       if (node && node->Type == SabotagedType) {
         Base.Nodes.Delete(index);
@@ -710,7 +710,7 @@ void Do_Restart(void) {
  * HISTORY: * 06/23/1995 JLB : Created. * 08/06/1995 JLB : Uses preloaded
  *briefing text.                                            *
  *=============================================================================================*/
-bool Restate_Mission(char const *name, int button1, int button2) {
+bool Restate_Mission(char const* name, int button1, int button2) {
   if (name) {
 #ifdef JAPANESE
     char fname[14];

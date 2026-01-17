@@ -85,8 +85,8 @@ typedef enum TeamMissionType {
 class TeamMissionClass {
  public:
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-  char const *Description(int index) const;
-  operator const char *() const { return (Description(0)); };
+  char const* Description(int index) const;
+  operator const char*() const { return (Description(0)); };
 #endif
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags);
@@ -107,7 +107,7 @@ class TeamMissionClass {
 class TeamMemberClass {
  public:
   int Quantity;                  // Number of objects desired for this type.
-  TechnoTypeClass const *Class;  // The type of object desired.
+  TechnoTypeClass const* Class;  // The type of object desired.
 };
 
 /*
@@ -121,12 +121,12 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass(void);
-  TeamTypeClass(NoInitClass const &x) : AbstractTypeClass(x), Trigger(x) {};
+  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x), Trigger(x) {};
   virtual ~TeamTypeClass(void) {};
 
-  static void *operator new(size_t);
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t);
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
 
   /*
   **	Initialization: clears all team types in preparation for new scenario
@@ -136,25 +136,25 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	File I/O routines
   */
-  void Build_INI_Entry(char *buffer);
-  static void Read_INI(CCINIClass &ini);
-  void Fill_In(char *name, char *entry);
-  static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "TeamTypes"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  void Build_INI_Entry(char* buffer);
+  static void Read_INI(CCINIClass& ini);
+  void Fill_In(char* name, char* entry);
+  static void Write_INI(CCINIClass& ini);
+  static char const* INI_Name(void) { return "TeamTypes"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
   */
-  static TeamTypeClass *As_Pointer(char const *name);
+  static TeamTypeClass* As_Pointer(char const* name);
 
   /*
   **	Processing routines
   */
-  TeamClass *Create_One_Of(void) const;
+  TeamClass* Create_One_Of(void) const;
   void Destroy_All_Of(void) const;
   void Detach(TARGET target, bool all = true);
 
@@ -163,17 +163,17 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  static char const *Name_From_Mission(TeamMissionType order);
-  static TeamMissionType Mission_From_Name(char const *name);
-  static TeamTypeClass const *Suggested_New_Team(HouseClass *house, long atypes,
+  static char const* Name_From_Mission(TeamMissionType order);
+  static TeamMissionType Mission_From_Name(char const* name);
+  static TeamTypeClass const* Suggested_New_Team(HouseClass* house, long atypes,
                                                  long utypes, long itypes,
                                                  long vtypes, bool alerted);
-  static TeamTypeClass *From_Name(char const *name);
+  static TeamTypeClass* From_Name(char const* name);
   bool Edit(void);
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-  char const *Member_Description(void) const;
-  char const *Description(void) const;
-  operator const char *(void) const { return (Description()); };
+  char const* Member_Description(void) const;
+  char const* Description(void) const;
+  operator const char*(void) const { return (Description()); };
 #endif
 
   /*
@@ -276,7 +276,7 @@ class TeamTypeClass : public AbstractTypeClass {
   int ClassCount;
   TeamMemberClass Members[MAX_TEAM_CLASSCOUNT];
 
-  static char const *TMissions[TMISSION_COUNT];
+  static char const* TMissions[TMISSION_COUNT];
 };
 
 NeedType TeamMission_Needs(TeamMissionType tmtype);

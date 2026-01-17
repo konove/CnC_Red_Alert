@@ -62,10 +62,10 @@ extern void Mono_Scroll(int lines);
 extern void Mono_Put_Char(char character, int attrib = 2);
 extern void Mono_Draw_Rect(int x, int y, int w, int h, int attrib = 2,
                            int thick = 0);
-extern void Mono_Text_Print(void const *text, int x, int y, int attrib = 2);
-extern void Mono_Print(void const *text);
+extern void Mono_Text_Print(void const* text, int x, int y, int attrib = 2);
+extern void Mono_Print(void const* text);
 extern void Mono_View_Page(int page);
-extern int Mono_Printf(char const *string, ...);
+extern int Mono_Printf(char const* string, ...);
 
 #ifdef __cplusplus
 }

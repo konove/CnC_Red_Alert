@@ -57,16 +57,16 @@
 */
 class AnimClass : public ObjectClass, private StageClass {
  public:
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   AnimClass(void) : Class(nullptr) {
     Owner = HOUSE_NONE;
     Object = nullptr;
   };  // Default constructor does nothing.
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1, bool alt = false);
-  AnimClass(NoInitClass const &x)
+  AnimClass(NoInitClass const& x)
       : ObjectClass(x), Class(Class), StageClass(x) {};
   virtual ~AnimClass(void);
   operator AnimType(void) const { return Class->Type; };
@@ -77,7 +77,7 @@ class AnimClass : public ObjectClass, private StageClass {
   */
   static void Init(void);
 
-  void Attach_To(ObjectClass *obj);
+  void Attach_To(ObjectClass* obj);
   void Make_Invisible(void) { IsInvisible = true; };
 
   virtual bool Can_Place_Here(COORDINATE) const { return true; }
@@ -86,9 +86,9 @@ class AnimClass : public ObjectClass, private StageClass {
   virtual COORDINATE Center_Coord(void) const;
   virtual COORDINATE Sort_Y(void) const;
   virtual LayerType In_Which_Layer(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
-  virtual short const *Occupy_List(void) const;
-  virtual short const *Overlap_List(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual short const* Occupy_List(void) const;
+  virtual short const* Overlap_List(void) const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual void AI(void);
   virtual TARGET As_Target(void) const;
@@ -97,8 +97,8 @@ class AnimClass : public ObjectClass, private StageClass {
   /*
   **	File I/O.
   */
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -112,7 +112,7 @@ class AnimClass : public ObjectClass, private StageClass {
   *object. An *	animation that is attached will follow that object as it moves.
   *This is important *	for animations such as flames and smoke.
   */
-  ObjectClass *Object;
+  ObjectClass* Object;
 
   /*
   **	If this animation has an owner, then it will be recorded here. An owner
@@ -163,7 +163,7 @@ class AnimClass : public ObjectClass, private StageClass {
   /*
   **	This points to the type of animation object this is.
   */
-  AnimTypeClass const *const Class;
+  AnimTypeClass const* const Class;
 
   /*
   **	Is this animation in a temporary suspended state?  If so, then it won't
@@ -183,9 +183,9 @@ class AnimClass : public ObjectClass, private StageClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
-void Shorten_Attached_Anims(ObjectClass *obj);
+void Shorten_Attached_Anims(ObjectClass* obj);
 
 #endif

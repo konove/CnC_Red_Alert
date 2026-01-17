@@ -65,20 +65,20 @@ class INIClass {
   /*
   **	Fetch and store INI data.
   */
-  bool Load(FileClass &file);
-  bool Load(Straw &file);
-  int Save(FileClass &file) const;
-  int Save(Pipe &file) const;
+  bool Load(FileClass& file);
+  bool Load(Straw& file);
+  int Save(FileClass& file) const;
+  int Save(Pipe& file) const;
 
   /*
   **	Erase all data within this INI file manager.
   */
-  bool Clear(char const *section = nullptr, char const *entry = nullptr);
+  bool Clear(char const* section = nullptr, char const* entry = nullptr);
 
-  int Line_Count(char const *section) const;
+  int Line_Count(char const* section) const;
   bool Is_Loaded(void) const { return (!SectionList.Is_Empty()); }
   int Size(void) const;
-  bool Is_Present(char const *section, char const *entry = nullptr) const {
+  bool Is_Present(char const* section, char const* entry = nullptr) const {
     if (entry == nullptr) return (Find_Section(section) != nullptr);
     return (Find_Entry(section, entry) != nullptr);
   }
@@ -88,7 +88,7 @@ class INIClass {
   **	section is present.
   */
   int Section_Count(void) const;
-  bool Section_Present(char const *section) const {
+  bool Section_Present(char const* section) const {
     return (Find_Section(section) != nullptr);
   }
 
@@ -96,35 +96,35 @@ class INIClass {
   **	Fetch the number of entries in a section or get a particular entry in a
   *section.
   */
-  int Entry_Count(char const *section) const;
-  char const *Get_Entry(char const *section, int index) const;
+  int Entry_Count(char const* section) const;
+  char const* Get_Entry(char const* section, int index) const;
 
   /*
   **	Get the various data types from the section and entry specified.
   */
-  int Get_String(char const *section, char const *entry, char const *defvalue,
-                 char *buffer, int size) const;
-  int Get_Int(char const *section, char const *entry, int defvalue = 0) const;
-  int Get_Hex(char const *section, char const *entry, int defvalue = 0) const;
-  bool Get_Bool(char const *section, char const *entry,
+  int Get_String(char const* section, char const* entry, char const* defvalue,
+                 char* buffer, int size) const;
+  int Get_Int(char const* section, char const* entry, int defvalue = 0) const;
+  int Get_Hex(char const* section, char const* entry, int defvalue = 0) const;
+  bool Get_Bool(char const* section, char const* entry,
                 bool defvalue = false) const;
-  int Get_TextBlock(char const *section, char *buffer, int len) const;
-  int Get_UUBlock(char const *section, void *buffer, int len) const;
+  int Get_TextBlock(char const* section, char* buffer, int len) const;
+  int Get_UUBlock(char const* section, void* buffer, int len) const;
   PKey Get_PKey(bool fast) const;
-  fixed Get_Fixed(char const *section, char const *entry, fixed defvalue) const;
+  fixed Get_Fixed(char const* section, char const* entry, fixed defvalue) const;
 
   /*
   **	Put a data type to the section and entry specified.
   */
-  bool Put_Fixed(char const *section, char const *entry, fixed value);
-  bool Put_String(char const *section, char const *entry, char const *string);
-  bool Put_Hex(char const *section, char const *entry, int number);
-  bool Put_Int(char const *section, char const *entry, int number,
+  bool Put_Fixed(char const* section, char const* entry, fixed value);
+  bool Put_String(char const* section, char const* entry, char const* string);
+  bool Put_Hex(char const* section, char const* entry, int number);
+  bool Put_Int(char const* section, char const* entry, int number,
                int format = 0);
-  bool Put_Bool(char const *section, char const *entry, bool value);
-  bool Put_TextBlock(char const *section, char const *text);
-  bool Put_UUBlock(char const *section, void const *block, int len);
-  bool Put_PKey(PKey const &key);
+  bool Put_Bool(char const* section, char const* entry, bool value);
+  bool Put_TextBlock(char const* section, char const* text);
+  bool Put_UUBlock(char const* section, void const* block, int len);
+  bool Put_PKey(PKey const& key);
 
  protected:
   enum { MAX_LINE_LENGTH = 128 };
@@ -134,7 +134,7 @@ class INIClass {
   **	The entry identifier and value string are combined into this object.
   */
   struct INIEntry : Node<INIEntry> {
-    INIEntry(char *entry = nullptr, char *value = nullptr)
+    INIEntry(char* entry = nullptr, char* value = nullptr)
         : Entry(entry), Value(value) {}
     ~INIEntry(void) {
       free(Entry);
@@ -144,8 +144,8 @@ class INIClass {
     }
     int Index_ID(void) const { return CrcEngine::Compute(Entry); };
 
-    char *Entry;
-    char *Value;
+    char* Entry;
+    char* Value;
   };
 
   /*
@@ -153,38 +153,38 @@ class INIClass {
   *entries *	subordinate to this section are attached.
   */
   struct INISection : Node<INISection> {
-    INISection(char *section) : Section(section) {}
+    INISection(char* section) : Section(section) {}
     ~INISection(void) {
       free(Section);
       Section = nullptr;
       EntryList.Delete();
     }
-    INIEntry *Find_Entry(char const *entry) const;
+    INIEntry* Find_Entry(char const* entry) const;
     int Index_ID(void) const { return CrcEngine::Compute(Section); };
 
-    char *Section;
+    char* Section;
     List<INIEntry> EntryList;
-    IndexClass<INIEntry *> EntryIndex;
+    IndexClass<INIEntry*> EntryIndex;
   };
 
   /*
   **	Utility routines to help find the appropriate section and entry objects.
   */
-  INISection *Find_Section(char const *section) const;
-  INIEntry *Find_Entry(char const *section, char const *entry) const;
-  static void Strip_Comments(char *buffer);
+  INISection* Find_Section(char const* section) const;
+  INIEntry* Find_Entry(char const* section, char const* entry) const;
+  static void Strip_Comments(char* buffer);
 
   /*
   **	This is the list of all sections within this INI file.
   */
   List<INISection> SectionList;
 
-  IndexClass<INISection *> SectionIndex;
+  IndexClass<INISection*> SectionIndex;
 };
 
-void Write_Scenario_INI(char *root);
-bool Read_Scenario_INI(char *root, bool fresh = true);
-int Scan_Place_Object(ObjectClass *obj, CELL cell);
+void Write_Scenario_INI(char* root);
+bool Read_Scenario_INI(char* root, bool fresh = true);
+int Scan_Place_Object(ObjectClass* obj, CELL cell);
 void Assign_Houses(void);
 
 #endif

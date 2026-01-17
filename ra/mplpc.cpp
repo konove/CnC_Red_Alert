@@ -32,23 +32,23 @@ extern "C" {
 #define REC_QUEUE 7
 #define SEND_QUEUE 8
 
-void SetLPCData(LPCData *lpc) {
+void SetLPCData(LPCData* lpc) {
   lpc->version = 1;
   lpc->sizeOfArgs = 0;
   lpc->service = LPC_NOSERVICE;
 }
 
-void GetGameDef(void *gameDef, int *len) {
-  RTQ_NODE *n = MGenGetNode(IDLE_QUEUE);
-  LPCData *p;
-  LPCReturn *r;
+void GetGameDef(void* gameDef, int* len) {
+  RTQ_NODE* n = MGenGetNode(IDLE_QUEUE);
+  LPCData* p;
+  LPCReturn* r;
 
   if (!n) {
     *len = 0;
     return;  // can't get service!
   }
 
-  p = (LPCData *)n->rtqDatum;
+  p = (LPCData*)n->rtqDatum;
   SetLPCData(p);
   p->service = LPC_GENGETGAMEDEF;
   MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
@@ -59,7 +59,7 @@ void GetGameDef(void *gameDef, int *len) {
   // wait for return
   while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
 
-  r = (LPCReturn *)n->rtqDatum;
+  r = (LPCReturn*)n->rtqDatum;
 
   if (r->sizeOfReturn > *len || r->error != LPC_NOERROR) {
     *len = 0;
@@ -74,12 +74,12 @@ void GetGameDef(void *gameDef, int *len) {
 }
 
 int LPCGetMPAddr(void) {
-  RTQ_NODE *n = MGenGetNode(IDLE_QUEUE);
-  LPCData *p;
-  LPCReturn *r;
+  RTQ_NODE* n = MGenGetNode(IDLE_QUEUE);
+  LPCData* p;
+  LPCReturn* r;
   int retVal;
 
-  p = (LPCData *)n->rtqDatum;
+  p = (LPCData*)n->rtqDatum;
   SetLPCData(p);
   p->service = LPC_GETMPADDR;
   MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);
@@ -88,22 +88,22 @@ int LPCGetMPAddr(void) {
 
   while ((n = MGenGetNode(REC_QUEUE)) == 0) Yield();
 
-  r = (LPCReturn *)n->rtqDatum;
+  r = (LPCReturn*)n->rtqDatum;
 
   if (r->sizeOfReturn != sizeof(int) || r->error != LPC_NOERROR) {
     return -1;
   }
 
-  retVal = *((int *)r->Data);
+  retVal = *((int*)r->Data);
   MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
   return retVal;
 }
 
 void NullLPC(void) {
-  RTQ_NODE *n = MGenGetNode(IDLE_QUEUE);
-  LPCData *p;
+  RTQ_NODE* n = MGenGetNode(IDLE_QUEUE);
+  LPCData* p;
 
-  p = (LPCData *)n->rtqDatum;
+  p = (LPCData*)n->rtqDatum;
   SetLPCData(p);
   p->service = LPC_NULLSERVICE;
   MGenMoveTo(IDLE_QUEUE, SEND_QUEUE);

@@ -48,19 +48,19 @@
 */
 class Buffer {
  public:
-  Buffer(char *ptr, long size = 0);
-  Buffer(void *ptr = nullptr, long size = 0);
-  Buffer(void const *ptr, long size = 0);
+  Buffer(char* ptr, long size = 0);
+  Buffer(void* ptr = nullptr, long size = 0);
+  Buffer(void const* ptr, long size = 0);
   Buffer(long size);
-  Buffer(Buffer const &buffer);
+  Buffer(Buffer const& buffer);
   ~Buffer(void);
 
-  Buffer &operator=(Buffer const &buffer);
-  operator void *(void) const { return (BufferPtr); }
-  operator char *(void) const { return ((char *)BufferPtr); }
+  Buffer& operator=(Buffer const& buffer);
+  operator void*(void) const { return (BufferPtr); }
+  operator char*(void) const { return ((char*)BufferPtr); }
 
   void Reset(void);
-  void *Get_Buffer(void) const { return (BufferPtr); }
+  void* Get_Buffer(void) const { return (BufferPtr); }
   long Get_Size(void) const { return (Size); }
   bool Is_Valid(void) const { return (BufferPtr != nullptr); }
 
@@ -68,7 +68,7 @@ class Buffer {
   /*
   **	Pointer to the buffer memory.
   */
-  void *BufferPtr;
+  void* BufferPtr;
 
   /*
   **	The size of the buffer memory.

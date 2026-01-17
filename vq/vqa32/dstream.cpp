@@ -49,13 +49,14 @@
 
 #include <fcntl.h>
 #include <io.h>
+
 #include "vqaplayp.h"
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
+static long VQADOSHandler(VQAHandle* vqa, long action, void* buffer,
                           long nbytes);
 
 /****************************************************************************
@@ -79,8 +80,8 @@ static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
  *
  ****************************************************************************/
 
-void VQA_InitAsDOS(VQAHandle *vqa) {
-  ((VQAHandleP *)vqa)->IOHandler = VQADOSHandler;
+void VQA_InitAsDOS(VQAHandle* vqa) {
+  ((VQAHandleP*)vqa)->IOHandler = VQADOSHandler;
 }
 
 /****************************************************************************
@@ -107,7 +108,7 @@ void VQA_InitAsDOS(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
+static long VQADOSHandler(VQAHandle* vqa, long action, void* buffer,
                           long nbytes) {
   long fh;
   long error;
@@ -149,7 +150,7 @@ static long VQADOSHandler(VQAHandle *vqa, long action, void *buffer,
 
     /* VQACMD_OPEN asks that you open the file for access. */
     case VQACMD_OPEN:
-      error = open((char *)buffer, (O_RDONLY | O_BINARY));
+      error = open((char*)buffer, (O_RDONLY | O_BINARY));
 
       if (error != -1) {
         vqa->VQAio = error;

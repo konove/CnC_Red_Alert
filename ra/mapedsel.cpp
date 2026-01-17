@@ -61,7 +61,7 @@
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Select_Object(void) {
-  ObjectClass *object = NULL;  // Generic object clicked on.
+  ObjectClass* object = NULL;  // Generic object clicked on.
   int x, y;
   CELL cell;  // Cell that was selected.
   int rc = 0;
@@ -154,7 +154,7 @@ int MapEditClass::Select_Object(void) {
  *   11/22/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Select_Next(void) {
-  ObjectClass *obj;
+  ObjectClass* obj;
   CELL obj_cell;
   int smap_w;   // screen map width in icons
   int smap_h;   // screen map height in icons
@@ -262,7 +262,7 @@ void MapEditClass::Select_Next(void) {
  *   04/30/1996 JLB : Revamped for new buttons and stuff.                  *
  *=========================================================================*/
 void MapEditClass::Popup_Controls(void) {
-  const TechnoTypeClass *objtype = NULL;
+  const TechnoTypeClass* objtype = NULL;
   HousesType owner;   // object's current owner
   int mission_index;  // object's current mission
   int strength;       // object's 0-255 strength value
@@ -308,7 +308,7 @@ void MapEditClass::Popup_Controls(void) {
     return;
   }
 
-  objtype = (TechnoTypeClass const *)&CurrentObject[0]->Class_Of();
+  objtype = (TechnoTypeClass const*)&CurrentObject[0]->Class_Of();
 
   /*
   **	Get object's current values
@@ -331,7 +331,7 @@ void MapEditClass::Popup_Controls(void) {
       HealthGauge->Set_Value(strength);
       sprintf(HealthBuf, "%d", CurrentObject[0]->Strength);
       FacingDial->Set_Direction(
-          ((TechnoClass *)CurrentObject[0])->PrimaryFacing);
+          ((TechnoClass*)CurrentObject[0])->PrimaryFacing);
 
       /*
       **	Make the list.
@@ -353,13 +353,13 @@ void MapEditClass::Popup_Controls(void) {
       Add_A_Button(*HealthText);
 
       Add_A_Button(*Sellable);
-      if (((BuildingClass *)CurrentObject[0])->IsAllowedToSell) {
+      if (((BuildingClass*)CurrentObject[0])->IsAllowedToSell) {
         Sellable->Turn_On();
       } else {
         Sellable->Turn_Off();
       }
       Add_A_Button(*Rebuildable);
-      if (((BuildingClass *)CurrentObject[0])->IsToRebuild) {
+      if (((BuildingClass*)CurrentObject[0])->IsToRebuild) {
         Rebuildable->Turn_On();
       } else {
         Rebuildable->Turn_Off();
@@ -367,7 +367,7 @@ void MapEditClass::Popup_Controls(void) {
 
       if (objtype->IsTurretEquipped) {
         FacingDial->Set_Direction(
-            ((TechnoClass *)CurrentObject[0])->PrimaryFacing);
+            ((TechnoClass*)CurrentObject[0])->PrimaryFacing);
         Add_A_Button(*FacingDial);
       }
       break;
@@ -447,7 +447,7 @@ int MapEditClass::Move_Grabbed_Object(void) {
       /*
       **	Clear the occupied bit in this infantry's cell.
       */
-      ((InfantryClass *)GrabbedObject)->Clear_Occupy_Bit(GrabbedObject->Coord);
+      ((InfantryClass*)GrabbedObject)->Clear_Occupy_Bit(GrabbedObject->Coord);
     } else {
       new_coord = NULL;
     }
@@ -476,8 +476,8 @@ int MapEditClass::Move_Grabbed_Object(void) {
     ** in the Base's Node list.
     */
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING &&
-        Base.Get_Node((BuildingClass *)GrabbedObject))
-      Base.Get_Node((BuildingClass *)GrabbedObject)->Cell =
+        Base.Get_Node((BuildingClass*)GrabbedObject))
+      Base.Get_Node((BuildingClass*)GrabbedObject)->Cell =
           Coord_Cell(new_coord);
 
     GrabbedObject->Coord = new_coord;
@@ -489,7 +489,7 @@ int MapEditClass::Move_Grabbed_Object(void) {
   **	For infantry, set the bit in its new cell marking that spot as occupied.
   */
   if (GrabbedObject->Is_Infantry()) {
-    ((InfantryClass *)GrabbedObject)->Set_Occupy_Bit(new_coord);
+    ((InfantryClass*)GrabbedObject)->Set_Occupy_Bit(new_coord);
   }
 
   /*
@@ -519,7 +519,7 @@ int MapEditClass::Move_Grabbed_Object(void) {
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
 bool MapEditClass::Change_House(HousesType newhouse) {
-  TechnoClass *tp;
+  TechnoClass* tp;
 
   /*
   **	Return if no current object
@@ -539,7 +539,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   **	You can't change the house if the object is part of the AI's Base.
   */
   if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING &&
-      Base.Is_Node((BuildingClass *)CurrentObject[0])) {
+      Base.Is_Node((BuildingClass*)CurrentObject[0])) {
     return (false);
   }
 
@@ -560,7 +560,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*
   **	Change the house
   */
-  tp = (TechnoClass *)CurrentObject[0];
+  tp = (TechnoClass*)CurrentObject[0];
   tp->House = HouseClass::As_Pointer(newhouse);
 
   tp->IsOwnedByPlayer = false;

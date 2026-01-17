@@ -82,7 +82,7 @@ class WWKeyboardClass {
   /*===================================================================*/
   bool Is_Mouse_Key(int key);
 
-  bool Event_Handler(SDL_Event *event);
+  bool Event_Handler(SDL_Event* event);
 
   /*===================================================================*/
   /* Define the public access variables which are used with the */
@@ -110,7 +110,7 @@ class WWKeyboardClass {
   long Tail;                   // the tail position in keyboard buffer
 };
 
-extern WWKeyboardClass *_Kbd;
+extern WWKeyboardClass* _Kbd;
 
 inline int Check_Key() { return _Kbd->Check(); }
 inline int Check_Key_Num() { return _Kbd->Check(); }

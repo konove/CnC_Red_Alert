@@ -133,8 +133,8 @@ WORD cdecl Free_Handles(VOID) {
  * HISTORY:                                                                *
  *   11/22/1991 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Find_Disk_Number(BYTE const *file_name) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+WORD cdecl Find_Disk_Number(BYTE const* file_name) {
+  FileDataType* filedata;  // Pointer to the current FileData.
   WORD index;              // FileTable index.
 
   index = Find_File_Index(file_name);
@@ -163,8 +163,8 @@ WORD cdecl Find_Disk_Number(BYTE const *file_name) {
  * HISTORY:                                                                *
  *   10/04/1993 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Set_File_Flags(BYTE const *filename, WORD flags) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+WORD cdecl Set_File_Flags(BYTE const* filename, WORD flags) {
+  FileDataType* filedata;  // Pointer to the current FileData.
   WORD index;              // FileTable index.
 
   index = Find_File_Index(filename);
@@ -191,8 +191,8 @@ WORD cdecl Set_File_Flags(BYTE const *filename, WORD flags) {
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Clear_File_Flags(BYTE const *filename, WORD flags) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+WORD cdecl Clear_File_Flags(BYTE const* filename, WORD flags) {
+  FileDataType* filedata;  // Pointer to the current FileData.
   WORD index;              // FileTable index.
 
   index = Find_File_Index(filename);
@@ -219,8 +219,8 @@ WORD cdecl Clear_File_Flags(BYTE const *filename, WORD flags) {
  * HISTORY:                                                                *
  *   10/04/1993 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Get_File_Flags(BYTE const *filename) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+WORD cdecl Get_File_Flags(BYTE const* filename) {
+  FileDataType* filedata;  // Pointer to the current FileData.
   WORD index;              // FileTable index.
 
   index = Find_File_Index(filename);

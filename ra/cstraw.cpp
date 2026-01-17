@@ -62,7 +62,7 @@
  *                                                                                             *
  * HISTORY: * 11/10/1996 JLB : Created. *
  *=============================================================================================*/
-int CacheStraw::Get(void *source, int slen) {
+int CacheStraw::Get(void* source, int slen) {
   int total = 0;
 
   if (Is_Valid() && source != nullptr && slen > 0) {
@@ -77,12 +77,12 @@ int CacheStraw::Get(void *source, int slen) {
       */
       if (Length > 0) {
         int tocopy = (Length < slen) ? Length : slen;
-        memmove(source, ((char *)BufferPtr.Get_Buffer()) + Index, tocopy);
+        memmove(source, ((char*)BufferPtr.Get_Buffer()) + Index, tocopy);
         slen -= tocopy;
         Index += tocopy;
         total += tocopy;
         Length -= tocopy;
-        source = (char *)source + tocopy;
+        source = (char*)source + tocopy;
       }
       if (slen == 0) break;
 

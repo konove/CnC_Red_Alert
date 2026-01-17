@@ -143,8 +143,8 @@
 //										sizeof(Waypoint)))
 
 static int Reconcile_Players(void);
-extern bool Is_Mission_Counterstrike(char *file_name);
-extern bool Is_Mission_Aftermath(char *file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
+extern bool Is_Mission_Aftermath(char* file_name);
 
 /***********************************************************************************************
  * Put_All -- Store all save game data to the pipe. *
@@ -161,7 +161,7 @@ extern bool Is_Mission_Aftermath(char *file_name);
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-static void Put_All(Pipe &pipe, int save_net) {
+static void Put_All(Pipe& pipe, int save_net) {
   /*
   **	Save the scenario global information.
   */
@@ -269,10 +269,10 @@ static void Put_All(Pipe &pipe, int save_net) {
   **	many carry over objects are in the list.
   */
   int carry_count = 0;
-  CarryoverClass const *cptr = Carryover;
+  CarryoverClass const* cptr = Carryover;
   while (cptr != nullptr) {
     carry_count++;
-    cptr = (CarryoverClass const *)cptr->Get_Next();
+    cptr = (CarryoverClass const*)cptr->Get_Next();
   }
 
   if (!save_net) Call_Back();
@@ -286,10 +286,10 @@ static void Put_All(Pipe &pipe, int save_net) {
   /*
   **	Now write out the objects themselves.
   */
-  CarryoverClass const *object_to_write = Carryover;
+  CarryoverClass const* object_to_write = Carryover;
   while (object_to_write != nullptr) {
     pipe.Put(object_to_write, sizeof(*object_to_write));
-    object_to_write = (CarryoverClass const *)object_to_write->Get_Next();
+    object_to_write = (CarryoverClass const*)object_to_write->Get_Next();
   }
   if (!save_net) Call_Back();
 
@@ -349,7 +349,7 @@ static void Put_All(Pipe &pipe, int save_net) {
  *   12/28/1994 BR : Created.                                              *
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
-bool Save_Game(int id, char const *descr, bool) {
+bool Save_Game(int id, char const* descr, bool) {
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned scenario;
   HousesType house;
@@ -740,7 +740,7 @@ bool Load_Game(int id) {
   **	Delete any carryover pseudo-saved game list.
   */
   while (Carryover != nullptr) {
-    CarryoverClass *cptr = (CarryoverClass *)Carryover->Get_Next();
+    CarryoverClass* cptr = (CarryoverClass*)Carryover->Get_Next();
     Carryover->Remove();
     delete Carryover;
     Carryover = cptr;
@@ -752,7 +752,7 @@ bool Load_Game(int id) {
   int carry_count = 0;
   straw.Get(&carry_count, sizeof(carry_count));
   while (carry_count) {
-    CarryoverClass *cptr = new CarryoverClass;
+    CarryoverClass* cptr = new CarryoverClass;
     assert(cptr != nullptr);
 
     straw.Get(cptr, sizeof(CarryoverClass));
@@ -983,10 +983,10 @@ bool Load_Game(int id) {
  *   12/29/1994 BR : Created.                                              *
  *   03/12/1996 JLB : Simplified.                                          *
  *=========================================================================*/
-bool Save_Misc_Values(Pipe &file) {
+bool Save_Misc_Values(Pipe& file) {
   int i;
   int count;         // # ptrs in 'CurrentObject'
-  ObjectClass *ptr;  // for saving 'CurrentObject' ptrs
+  ObjectClass* ptr;  // for saving 'CurrentObject' ptrs
 
   /*
   **	Player's House.
@@ -1011,7 +1011,7 @@ bool Save_Misc_Values(Pipe &file) {
   */
   for (i = 0; i < count; i++) {
     ptr = CurrentObject[i];
-    file.Put(&ptr, sizeof(void *));
+    file.Put(&ptr, sizeof(void*));
   }
 
   /*
@@ -1039,8 +1039,8 @@ bool Save_Misc_Values(Pipe &file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
-bool Load_Misc_Values(Straw &file) {
-  ObjectClass *ptr;  // for loading 'CurrentObject' ptrs
+bool Load_Misc_Values(Straw& file) {
+  ObjectClass* ptr;  // for loading 'CurrentObject' ptrs
 
   /*
   **	Player's House.
@@ -1066,7 +1066,7 @@ bool Load_Misc_Values(Straw &file) {
   **	Load the pointers.
   */
   for (int i = 0; i < count; i++) {
-    file.Get(&ptr, sizeof(void *));
+    file.Get(&ptr, sizeof(void*));
     CurrentObject.Add(ptr);  // add to the list
   }
 
@@ -1111,7 +1111,7 @@ bool Load_Misc_Values(Straw &file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Save_MPlayer_Values(Pipe &file) {
+bool Save_MPlayer_Values(Pipe& file) {
   Session.Save(file);
   file.Put(&BuildLevel, sizeof(BuildLevel));
   file.Put(&Debug_Unshroud, sizeof(Debug_Unshroud));
@@ -1141,7 +1141,7 @@ bool Save_MPlayer_Values(Pipe &file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Load_MPlayer_Values(Straw &file) {
+bool Load_MPlayer_Values(Straw& file) {
   Session.Load(file);
   file.Get(&BuildLevel, sizeof(BuildLevel));
   file.Get(&Debug_Unshroud, sizeof(Debug_Unshroud));
@@ -1218,7 +1218,7 @@ void Code_All_Pointers(void) {
   **	Currently-selected objects.
   */
   for (i = 0; i < CurrentObject.Count(); i++) {
-    CurrentObject[i] = (ObjectClass *)CurrentObject[i]->As_Target();
+    CurrentObject[i] = (ObjectClass*)CurrentObject[i]->As_Target();
   }
 
   /*
@@ -1340,8 +1340,8 @@ void Decode_All_Pointers(void) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Get_Savefile_Info(int id, char *buf, size_t buf_size, unsigned *scenp,
-                       HousesType *housep) {
+bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
+                       HousesType* housep) {
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned long version;
   char descr_buf[DESCRIP_MAX];
@@ -1430,7 +1430,7 @@ static int Reconcile_Players(void) {
   int i;
   int found;
   HousesType house;
-  HouseClass *housep;
+  HouseClass* housep;
 
   /*
   **	If there are no players, there's nothing to do.

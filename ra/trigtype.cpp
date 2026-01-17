@@ -110,10 +110,10 @@ TriggerTypeClass::TriggerTypeClass(void)
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *TriggerTypeClass::operator new(size_t) {
-  void *ptr = TriggerTypes.Allocate();
+void* TriggerTypeClass::operator new(size_t) {
+  void* ptr = TriggerTypes.Allocate();
   if (ptr) {
-    ((TriggerTypeClass *)ptr)->IsActive = true;
+    ((TriggerTypeClass*)ptr)->IsActive = true;
   }
 
   return (ptr);
@@ -134,11 +134,11 @@ void *TriggerTypeClass::operator new(size_t) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::operator delete(void *ptr) {
+void TriggerTypeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TriggerTypeClass *)ptr)->IsActive = false;
+    ((TriggerTypeClass*)ptr)->IsActive = false;
   }
-  TriggerTypes.Free((TriggerTypeClass *)ptr);
+  TriggerTypes.Free((TriggerTypeClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -319,23 +319,23 @@ bool TriggerTypeClass::Edit(void) {
   */
   bool cancel = false;  // true = user cancels
   int i;                // loop counter
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Buttons
   */
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
 
   /*
   **	List of events allowed.
   */
   char eventtext[ENTRY_SIZE] = "";
-  TDropListClass<EventChoiceClass *> event1list(
+  TDropListClass<EventChoiceClass*> event1list(
       EVENT_LIST, eventtext, sizeof(eventtext), TPF_EFNT | TPF_NOSHADOW, E1_X,
       E1_Y, E_WIDTH, E_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
   char event2text[ENTRY_SIZE] = "";
-  TDropListClass<EventChoiceClass *> event2list(
+  TDropListClass<EventChoiceClass*> event2list(
       EVENT_LIST2, event2text, sizeof(event2text), TPF_EFNT | TPF_NOSHADOW,
       E2_X, E2_Y, E_WIDTH, E_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
@@ -356,12 +356,12 @@ bool TriggerTypeClass::Edit(void) {
   **	List of actions allowed.
   */
   char actiontext[ENTRY_SIZE] = "";
-  TDropListClass<ActionChoiceClass *> action1list(
+  TDropListClass<ActionChoiceClass*> action1list(
       ACTION_LIST, actiontext, sizeof(actiontext), TPF_EFNT | TPF_NOSHADOW,
       A1_X, A1_Y, E_WIDTH, E_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
   char action2text[ENTRY_SIZE] = "";
-  TDropListClass<ActionChoiceClass *> action2list(
+  TDropListClass<ActionChoiceClass*> action2list(
       ACTION_LIST2, action2text, sizeof(action2text), TPF_EFNT | TPF_NOSHADOW,
       A2_X, A2_Y, E_WIDTH, E_HEIGHT, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
@@ -962,7 +962,7 @@ bool TriggerTypeClass::Edit(void) {
   **	TriggerTypeClass definition.
   */
   char perstext[DESC_SIZE] = "";
-  static char *_perstext[3] = {"Volatile", "Semi-persistent", "Persistent"};
+  static char* _perstext[3] = {"Volatile", "Semi-persistent", "Persistent"};
   DropListClass persbtn(
       BUTTON_PERSISTANCE, perstext, sizeof(perstext), TPF_EFNT | TPF_NOSHADOW,
       housebtn.X + housebtn.Width + 20, housebtn.Y, 105, 8 * 5,
@@ -1691,7 +1691,7 @@ bool TriggerTypeClass::Edit(void) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-char const *TriggerTypeClass::Description(void) const {
+char const* TriggerTypeClass::Description(void) const {
   static char _buffer[128];
 
   char special;
@@ -1719,7 +1719,7 @@ char const *TriggerTypeClass::Description(void) const {
   }
 
   char tbuf[32];
-  char const *added = "";
+  char const* added = "";
   switch (Event_Needs(Event1.Event)) {
     case NEED_NUMBER:
       sprintf(tbuf, "%d", Event1.Data.Value);
@@ -1834,13 +1834,13 @@ AttachType TriggerTypeClass::Attaches_To(void) const {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Read_INI(CCINIClass &ini) {
-  TriggerTypeClass *trigger;  // Working trigger pointer.
+void TriggerTypeClass::Read_INI(CCINIClass& ini) {
+  TriggerTypeClass* trigger;  // Working trigger pointer.
   char buf[128];
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const *entry = ini.Get_Entry(INI_Name(), index);
+    char const* entry = ini.Get_Entry(INI_Name(), index);
 
     /*
     **	Create a new trigger.
@@ -1855,7 +1855,7 @@ void TriggerTypeClass::Read_INI(CCINIClass &ini) {
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In((char *)entry, buf);
+    trigger->Fill_In((char*)entry, buf);
   }
 
   if (NewINIFormat < 2) {
@@ -1863,15 +1863,15 @@ void TriggerTypeClass::Read_INI(CCINIClass &ini) {
     **	Fix up the self-referential trigger pointers.
     */
     for (int trig_index = 0; trig_index < TriggerTypes.Count(); trig_index++) {
-      TriggerTypeClass *trigger = TriggerTypes.Ptr(trig_index);
+      TriggerTypeClass* trigger = TriggerTypes.Ptr(trig_index);
 
-      char *ptr = (char *)trigger->Action1.Trigger.Raw();
+      char* ptr = (char*)trigger->Action1.Trigger.Raw();
       if (ptr /*&& trigger->Action1.Trigger.Raw() != -1*/) {
         trigger->Action1.Trigger = TriggerTypeClass::From_Name(ptr);
         free(ptr);
       }
 
-      ptr = (char *)trigger->Action2.Trigger.Raw();
+      ptr = (char*)trigger->Action2.Trigger.Raw();
       if (ptr /*&& trigger->Action2.Trigger.Raw() != -1*/) {
         trigger->Action2.Trigger = TriggerTypeClass::From_Name(ptr);
         free(ptr);
@@ -1901,7 +1901,7 @@ void TriggerTypeClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Fill_In(char *name, char *entry) {
+void TriggerTypeClass::Fill_In(char* name, char* entry) {
   assert(TriggerTypes.ID(this) == ID);
 
   /*
@@ -1936,7 +1936,7 @@ void TriggerTypeClass::Fill_In(char *name, char *entry) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Write_INI(CCINIClass &ini) {
+void TriggerTypeClass::Write_INI(CCINIClass& ini) {
   ini.Clear("Triggers");
   ini.Clear(INI_Name());
 
@@ -1946,7 +1946,7 @@ void TriggerTypeClass::Write_INI(CCINIClass &ini) {
   for (int index = 0; index < TriggerTypes.Count(); index++) {
     //	for (int index = TriggerTypes.Count()-1; index >= 0; index--) {
     std::string buf;
-    TriggerTypeClass *trigger = TriggerTypes.Ptr(index);
+    TriggerTypeClass* trigger = TriggerTypes.Ptr(index);
 
     trigger->Build_INI_Entry(buf);
     ini.Put_String(INI_Name(), trigger->IniName, buf.c_str());
@@ -1970,7 +1970,7 @@ void TriggerTypeClass::Write_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Build_INI_Entry(std::string &buffer) const {
+void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
   /*
   ** Build the root portion of the trigger event.
   */
@@ -2025,7 +2025,7 @@ void TriggerTypeClass::Build_INI_Entry(std::string &buffer) const {
  *=============================================================================================*/
 void TriggerTypeClass::Draw_It(int, int x, int y, int width, int height,
                                bool selected, TextPrintType flags) const {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
     if (selected) {
@@ -2084,7 +2084,7 @@ void TriggerTypeClass::Init(void) { TriggerTypes.Free_All(); }
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerTypeClass *TriggerTypeClass::From_Name(char const *name) {
+TriggerTypeClass* TriggerTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (int index = 0; index < TriggerTypes.Count(); index++) {
       if (stricmp(TriggerTypes.Ptr(index)->Name(), name) == 0) {

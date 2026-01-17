@@ -60,12 +60,12 @@ class OverlayClass : public ObjectClass {
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   OverlayClass(void);
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(NoInitClass const &x) : ObjectClass(x), Class(Class) {};
+  OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
   virtual ~OverlayClass(void) {
     if (GameActive) OverlayClass::Limbo();
   };
@@ -77,11 +77,11 @@ class OverlayClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char *);
-  static void Write_INI(char *);
-  static char const *INI_Name(void) { return "OVERLAY"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char*);
+  static void Write_INI(char*);
+  static char const* INI_Name(void) { return "OVERLAY"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -89,7 +89,7 @@ class OverlayClass : public ObjectClass {
   **	Virtual support functionality.
   */
   virtual bool Mark(MarkType);
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
   virtual void Draw_It(int, int, WindowNumberType) {};
 
   /*
@@ -108,12 +108,12 @@ class OverlayClass : public ObjectClass {
   /*
   **	This is a pointer to the overlay object's class.
   */
-  OverlayTypeClass const *const Class;
+  OverlayTypeClass const* const Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

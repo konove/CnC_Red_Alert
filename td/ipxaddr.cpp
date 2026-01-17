@@ -136,7 +136,7 @@ IPXAddressClass::IPXAddressClass(NetNumType net, NetNodeType node) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-IPXAddressClass::IPXAddressClass(IPXHeaderType *header) {
+IPXAddressClass::IPXAddressClass(IPXHeaderType* header) {
   memcpy(NetworkNumber, header->SourceNetworkNumber, 4);
   memcpy(NodeAddress, header->SourceNetworkNode, 6);
 
@@ -190,12 +190,12 @@ void IPXAddressClass::Set_Address(NetNumType net, NetNodeType node) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXAddressClass::Set_Address(IPXHeaderType *header) {
+void IPXAddressClass::Set_Address(IPXHeaderType* header) {
 #ifdef VIRTUAL_SUBNET_SERVER
   if (Winsock.Get_Connected()) {
     memset(NetworkNumber, 1, 4);
     memset(NodeAddress, 0, 6);
-    unsigned short target_mask = *(unsigned short *)header;
+    unsigned short target_mask = *(unsigned short*)header;
     /*
     ** If this is a head to head game (no VSS) --
     **  If mask is 0 then this packet was broadcast from the other player
@@ -208,7 +208,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType *header) {
       target_mask ^= 3;
     }
 
-    *(unsigned short *)&NodeAddress[0] = target_mask;
+    *(unsigned short*)&NodeAddress[0] = target_mask;
 
   } else {
     memcpy(NetworkNumber, header->SourceNetworkNumber, 4);
@@ -273,7 +273,7 @@ void IPXAddressClass::Get_Address(NetNumType net, NetNodeType node) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXAddressClass::Get_Address(IPXHeaderType *header) {
+void IPXAddressClass::Get_Address(IPXHeaderType* header) {
   memcpy(header->DestNetworkNumber, NetworkNumber, 4);
   memcpy(header->DestNetworkNode, NodeAddress, 6);
 
@@ -332,7 +332,7 @@ bool IPXAddressClass::Is_Broadcast(void) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator==(IPXAddressClass &addr) {
+int IPXAddressClass::operator==(IPXAddressClass& addr) {
   /*------------------------------------------------------------------------
   If either Network Number is all 0's (which can happen if the system is
   not running NETX), compare only the Node Addresses.
@@ -383,7 +383,7 @@ int IPXAddressClass::operator==(IPXAddressClass &addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator!=(IPXAddressClass &addr) {
+int IPXAddressClass::operator!=(IPXAddressClass& addr) {
   /*------------------------------------------------------------------------
   If either Network Number is all 0's (which can happen if the system is
   not running NETX), compare only the Node Addresses.
@@ -428,7 +428,7 @@ int IPXAddressClass::operator!=(IPXAddressClass &addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator>(IPXAddressClass &addr) {
+int IPXAddressClass::operator>(IPXAddressClass& addr) {
   return (memcmp(this, &addr, 10) > 0);
 
 } /* end of operator != */
@@ -451,7 +451,7 @@ int IPXAddressClass::operator>(IPXAddressClass &addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator<(IPXAddressClass &addr) {
+int IPXAddressClass::operator<(IPXAddressClass& addr) {
   return (memcmp(this, &addr, 10) < 0);
 
 } /* end of operator != */
@@ -474,7 +474,7 @@ int IPXAddressClass::operator<(IPXAddressClass &addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator>=(IPXAddressClass &addr) {
+int IPXAddressClass::operator>=(IPXAddressClass& addr) {
   return (memcmp(this, &addr, 10) >= 0);
 
 } /* end of operator != */
@@ -497,7 +497,7 @@ int IPXAddressClass::operator>=(IPXAddressClass &addr) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXAddressClass::operator<=(IPXAddressClass &addr) {
+int IPXAddressClass::operator<=(IPXAddressClass& addr) {
   return (memcmp(this, &addr, 10) <= 0);
 
 } /* end of operator != */

@@ -38,7 +38,7 @@ MonoD::~MonoD() {
 #endif
 }
 
-int MonoD::print(const char *str, int len) {
+int MonoD::print(const char* str, int len) {
 #ifdef _WIN32
   unsigned long retval;
   WriteFile(handle, str, len, &retval, NULL);

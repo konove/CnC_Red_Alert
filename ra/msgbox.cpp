@@ -83,8 +83,8 @@ bool cancel_current_msgbox = false;
 #define BUTTON_2 2
 #define BUTTON_3 3
 #define BUTTON_FLAG 0x8000
-int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
-                          const char *b3txt, bool preserve) {
+int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
+                          const char* b3txt, bool preserve) {
 #define BUFFSIZE (511)
   char buffer[BUFFSIZE];
   int retval = -1;
@@ -92,8 +92,8 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[3];
-  char *back;
+  TextButtonClass* buttons[3];
+  char* back;
   bool display = true;  // display level
   int realval[5];
 
@@ -103,7 +103,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
 
 #if defined(WIN32) && !defined(PORTABLE)
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void *)NULL);
+                                    VisiblePage.Get_Height(), (void*)NULL);
 #endif
 
   if (b1txt != nullptr && *b1txt == '\0') b1txt = nullptr;
@@ -204,7 +204,7 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
                           y + height - (bheight + (15 * RESFACTOR)));
   button3.X = x + ((width - button3.Width) >> 1);
 
-  TextButtonClass *buttonlist = nullptr;
+  TextButtonClass* buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -402,21 +402,21 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
       }
 
       if (pressed) {
-        TextButtonClass *toggle;
+        TextButtonClass* toggle;
         /*
         **	Turn all the buttons off.
         */
-        toggle = (TextButtonClass *)buttonlist->Extract_Gadget(BUTTON_1);
+        toggle = (TextButtonClass*)buttonlist->Extract_Gadget(BUTTON_1);
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
-        toggle = (TextButtonClass *)buttonlist->Extract_Gadget(BUTTON_2);
+        toggle = (TextButtonClass*)buttonlist->Extract_Gadget(BUTTON_2);
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
-        toggle = (TextButtonClass *)buttonlist->Extract_Gadget(BUTTON_3);
+        toggle = (TextButtonClass*)buttonlist->Extract_Gadget(BUTTON_3);
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
@@ -427,8 +427,8 @@ int WWMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
         */
         if (selection == BUTTON_1 || selection == BUTTON_2 ||
             selection == BUTTON_3) {
-          TextButtonClass *toggle =
-              (TextButtonClass *)buttonlist->Extract_Gadget(selection);
+          TextButtonClass* toggle =
+              (TextButtonClass*)buttonlist->Extract_Gadget(selection);
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
@@ -524,7 +524,7 @@ int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  *                                                                                             *
  * HISTORY: * 06/18/1995 JLB : Created. *
  *=============================================================================================*/
-int WWMessageBox::Process(char const *msg, int b1txt, int b2txt, int b3txt,
+int WWMessageBox::Process(char const* msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
   return (Process(msg, Text_String(b1txt), Text_String(b2txt),
                   Text_String(b3txt), preserve));

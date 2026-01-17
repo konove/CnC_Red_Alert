@@ -135,8 +135,7 @@ void DriveClass::Do_Turn(DirType dir) {
     } else {
       PrimaryFacing.Set_Desired(dir);
       if (Special.IsJurassic && AreThingiesEnabled &&
-          What_Am_I() == RTTI_UNIT &&
-          ((UnitClass *)this)->Class->IsPieceOfEight)
+          What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsPieceOfEight)
         PrimaryFacing.Set_Current(dir);
     }
   }
@@ -218,10 +217,10 @@ void DriveClass::Approach_Target(void) {
     **	infantry, AND the infantry is pretty darn close, then just try
     **	to drive over the infantry instead of firing on it.
     */
-    TechnoClass *target = As_Techno(TarCom);
+    TechnoClass* target = As_Techno(TarCom);
     if (Class->Primary != WEAPON_FLAME_TONGUE && Class->IsCrusher &&
         Distance(TarCom) < 0x0180 && target &&
-        ((TechnoTypeClass const &)(target->Class_Of())).IsCrushable) {
+        ((TechnoTypeClass const&)(target->Class_Of())).IsCrushable) {
       Assign_Destination(TarCom);
       return;
     }
@@ -256,7 +255,7 @@ void DriveClass::Approach_Target(void) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Overrun_Square(CELL cell, bool threaten) {
-  CellClass *cellptr = &Map[cell];
+  CellClass* cellptr = &Map[cell];
 
   if (Class->IsCrusher) {
     if (threaten) {
@@ -274,12 +273,12 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
         }
       }
     } else {
-      ObjectClass *object = cellptr->Cell_Occupier();
+      ObjectClass* object = cellptr->Cell_Occupier();
       int crushed = false;
       while (object) {
         if (object->Class_Of().IsCrushable && !House->Is_Ally(object) &&
             Distance(object->Center_Coord()) < 0x80) {
-          ObjectClass *next = object->Next;
+          ObjectClass* next = object->Next;
           crushed = true;
 
           /*
@@ -358,7 +357,7 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Debug_Dump(MonoClass *mono) const {
+void DriveClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(33, 7);
   mono->Printf("%2d:%2d", TrackNumber, TrackIndex);
   mono->Text_Print("X", 16 + (IsTurretLockedDown ? 2 : 0), 10);
@@ -438,7 +437,7 @@ void DriveClass::Exit_Map(void) {
  * HISTORY: * 03/14/1994 JLB : Created. * 07/13/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType *dir) {
+COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
   DirType workdir = *dir;
   int x, y;
   int temp;
@@ -493,7 +492,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   if (target == NavCom) return;
 
 #ifdef NEVER
-  UnitClass *tunit;  // Destination unit pointer.
+  UnitClass* tunit;  // Destination unit pointer.
 
   /*
   ** When in move mode, a map position may really indicate
@@ -524,7 +523,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   *procedure *	when the harvester is full and an empty refinery is selected as
   *a target.
   */
-  BuildingClass *b = As_Building(target);
+  BuildingClass* b = As_Building(target);
 
   /*
   **	Transport vehicles must tell all passengers that are about to load, that
@@ -619,15 +618,15 @@ bool DriveClass::While_Moving(void) {
   **	visibly move on the map, then process accordingly.
   ** Slow the unit down if he's carrying a flag.
   */
-  if (((UnitClass *)this)->Flagged != HOUSE_NONE) {
+  if (((UnitClass*)this)->Flagged != HOUSE_NONE) {
     actual = SpeedAccum + Fixed_To_Cardinal(Class->MaxSpeed / 2, Speed);
   } else {
     actual = SpeedAccum + Fixed_To_Cardinal(Class->MaxSpeed, Speed);
   }
 
   if (actual > PIXEL_LEPTON_W) {
-    TurnTrackType const *track;  // Track control pointer.
-    TrackType const *ptr;        // Pointer to coord offset values.
+    TurnTrackType const* track;  // Track control pointer.
+    TrackType const* ptr;        // Pointer to coord offset values.
     int tracknum;                // The track number being processed.
     FacingType nextface;         // Next facing queued in path.
     bool adj;                    // Is a turn coming up?
@@ -685,7 +684,7 @@ bool DriveClass::While_Moving(void) {
         */
         if (*this != UNIT_GUNBOAT && nextface != FACING_NONE && adj &&
             RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
-          TurnTrackType const *newtrack;  // Proposed jump-to track.
+          TurnTrackType const* newtrack;  // Proposed jump-to track.
           int tnum;
 
           tnum = Dir_Facing(track->Facing) * FACING_COUNT + nextface;
@@ -924,8 +923,8 @@ bool DriveClass::Start_Of_Move(void) {
             Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
         if (Map.In_Radar(cell)) {
           if (Can_Enter_Cell(cell) == MOVE_TEMP) {
-            CellClass *cellptr = &Map[cell];
-            TechnoClass *blockage = cellptr->Cell_Techno();
+            CellClass* cellptr = &Map[cell];
+            TechnoClass* blockage = cellptr->Cell_Techno();
             if (blockage && House->Is_Ally(blockage)) {
               bool old = Special.IsScatter;
               Special.IsScatter = true;
@@ -957,8 +956,8 @@ bool DriveClass::Start_Of_Move(void) {
     CELL cell = Adjacent_Cell(Coord_Cell(Center_Coord()), Path[0]);
     if (Map.In_Radar(cell)) {
       if (Can_Enter_Cell(cell) == MOVE_TEMP) {
-        CellClass *cellptr = &Map[cell];
-        TechnoClass *blockage = cellptr->Cell_Techno();
+        CellClass* cellptr = &Map[cell];
+        TechnoClass* blockage = cellptr->Cell_Techno();
         if (blockage && House->Is_Ally(blockage)) {
           bool old = Special.IsScatter;
           Special.IsScatter = true;
@@ -1312,7 +1311,7 @@ void DriveClass::AI(void) {
  ** 04/10/1994 JLB : Diagonal smooth turn added. * 04/15/1994 JLB : Converted to
  *member function.                                            *
  *=============================================================================================*/
-void DriveClass::Fixup_Path(PathType *path) {
+void DriveClass::Fixup_Path(PathType* path) {
   FacingType stage[6] = {FACING_N, FACING_N, FACING_N, FACING_N,
                          FACING_N, FACING_N};  // Prefix path elements.
   int facediff;  // The facing difference value (0..4 | 0..-4).
@@ -1337,8 +1336,8 @@ void DriveClass::Fixup_Path(PathType *path) {
 
   int index;
   int counter;          // Path addition
-  FacingType *ptr;      // Path list pointer.
-  FacingType *ptr2;     // Copy of new path list pointer.
+  FacingType* ptr;      // Path list pointer.
+  FacingType* ptr2;     // Copy of new path list pointer.
   FacingType nextpath;  // Next path value.
   CELL cell;            // Working cell value.
   bool ok;
@@ -1494,7 +1493,7 @@ void DriveClass::Fixup_Path(PathType *path) {
  *=============================================================================================*/
 void DriveClass::Lay_Track(void) {
 #ifdef NEVER
-  static IconCommandType *_trackdirs[8] = {TrackN_S,   TrackNE_SW, TrackE_W,
+  static IconCommandType* _trackdirs[8] = {TrackN_S,   TrackNE_SW, TrackE_W,
                                            TrackNW_SE, TrackN_S,   TrackNE_SW,
                                            TrackE_W,   TrackNW_SE};
 
@@ -1538,7 +1537,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       */
       int tracknum = TrackControl[TrackNumber].Track;
       if (tracknum) {
-        TrackType const *ptr = RawTracks[tracknum - 1].Track;
+        TrackType const* ptr = RawTracks[tracknum - 1].Track;
         int cellidx = RawTracks[tracknum - 1].Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;
@@ -1614,7 +1613,7 @@ bool DriveClass::Ok_To_Move(DirType) const { return true; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const &DriveClass::Class_Of(void) const { return *Class; }
+ObjectTypeClass const& DriveClass::Class_Of(void) const { return *Class; }
 
 /***************************************************************************
 **	Smooth turn track tables. These are coordinate offsets from the center

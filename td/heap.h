@@ -70,19 +70,19 @@ class FixedHeapClass {
   FixedHeapClass(int size);
   virtual ~FixedHeapClass();
 
-  virtual int ID(void const *pointer);
+  virtual int ID(void const* pointer);
   int Count() { return ActiveCount; }
   int Length() { return TotalCount; }
   int Avail() { return TotalCount - ActiveCount; }
 
-  virtual int Set_Heap(int count, void *buffer = nullptr);
-  virtual void *Allocate();
+  virtual int Set_Heap(int count, void* buffer = nullptr);
+  virtual void* Allocate();
   virtual void Clear();
-  virtual int Free(void *pointer);
+  virtual int Free(void* pointer);
   virtual int Free_All();
 
  protected:
-  void *operator[](int index) { return ((char *)Buffer) + (index * Size); }
+  void* operator[](int index) { return ((char*)Buffer) + (index * Size); }
 
   /*
   **	If the memory block buffer was allocated by this class, then this flag
@@ -109,7 +109,7 @@ class FixedHeapClass {
   /*
   **	Pointer to the heap's memory buffer.
   */
-  void *Buffer;
+  void* Buffer;
 
   /*
   **	This is a boolean vector array of allocation flag bits.
@@ -118,10 +118,10 @@ class FixedHeapClass {
 
  private:
   // The assignment operator is not supported.
-  FixedHeapClass &operator=(FixedHeapClass const &);
+  FixedHeapClass& operator=(FixedHeapClass const&);
 
   // The copy constructor is not supported.
-  FixedHeapClass(FixedHeapClass const &);
+  FixedHeapClass(FixedHeapClass const&);
 };
 
 /**************************************************************************
@@ -135,13 +135,13 @@ class TFixedHeapClass : public FixedHeapClass {
   TFixedHeapClass() : FixedHeapClass(sizeof(T)) {}
   ~TFixedHeapClass() override = default;
 
-  virtual int ID(T const *pointer) { return FixedHeapClass::ID(pointer); }
+  virtual int ID(T const* pointer) { return FixedHeapClass::ID(pointer); }
 
-  virtual T *Alloc() { return (T *)FixedHeapClass::Allocate(); }
-  virtual int Free(T *pointer) { return FixedHeapClass::Free(pointer); }
+  virtual T* Alloc() { return (T*)FixedHeapClass::Allocate(); }
+  virtual int Free(T* pointer) { return FixedHeapClass::Free(pointer); }
 
  protected:
-  T &operator[](int index) { return *(((char *)Buffer) + (index * Size)); }
+  T& operator[](int index) { return *(((char*)Buffer) + (index * Size)); }
 };
 
 /**************************************************************************
@@ -155,13 +155,13 @@ class FixedIHeapClass : public FixedHeapClass {
   FixedIHeapClass(int size) : FixedHeapClass(size) {}
   ~FixedIHeapClass() override = default;
 
-  int Set_Heap(int count, void *buffer = nullptr) override;
-  void *Allocate() override;
+  int Set_Heap(int count, void* buffer = nullptr) override;
+  void* Allocate() override;
   void Clear() override;
-  int Free(void *pointer) override;
+  int Free(void* pointer) override;
   int Free_All() override;
 
-  virtual void *Active_Ptr(int index) { return ActivePointers[index]; }
+  virtual void* Active_Ptr(int index) { return ActivePointers[index]; }
 
   /*
   **	This is an array of pointers to allocated objects. Using this array
@@ -169,7 +169,7 @@ class FixedIHeapClass : public FixedHeapClass {
   *processing. *	It also allows access to this array so that custom
   *sorting can be *	performed.
   */
-  DynamicVectorClass<void *> ActivePointers;
+  DynamicVectorClass<void*> ActivePointers;
 };
 
 /**************************************************************************
@@ -183,17 +183,17 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
   ~TFixedIHeapClass() override = default;
 
-  virtual int ID(T const *pointer) { return FixedIHeapClass::ID(pointer); }
-  virtual T *Alloc() { return (T *)FixedIHeapClass::Allocate(); }
-  virtual int Free(T *pointer) { return FixedIHeapClass::Free(pointer); }
-  int Free(void *pointer) override { return FixedIHeapClass::Free(pointer); }
-  virtual int Save(FileClass &);
-  virtual int Load(FileClass &);
+  virtual int ID(T const* pointer) { return FixedIHeapClass::ID(pointer); }
+  virtual T* Alloc() { return (T*)FixedIHeapClass::Allocate(); }
+  virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
+  int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
+  virtual int Save(FileClass&);
+  virtual int Load(FileClass&);
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-  virtual T *Ptr(int index) { return (T *)ActivePointers[index]; }
-  virtual T *Raw_Ptr(int index) { return (T *)((*this)[index]); }
+  virtual T* Ptr(int index) { return (T*)ActivePointers[index]; }
+  virtual T* Raw_Ptr(int index) { return (T*)((*this)[index]); }
 };
 
 #endif

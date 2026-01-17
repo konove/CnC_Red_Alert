@@ -71,7 +71,7 @@ between IPX and the application for a single IPX operation.  You should set
 up a separate ECB for each IPX operation you perform.
 ---------------------------------------------------------------------------*/
 typedef struct ECB {
-  void *Link_Address;
+  void* Link_Address;
   void (*Event_Service_Routine)(void);  // APP: event handler (NULL=none)
   unsigned char InUse;                  // IPX: 0 = event complete
   unsigned char CompletionCode;         // IPX: event's return code
@@ -82,7 +82,7 @@ typedef struct ECB {
   unsigned char ImmediateAddress[6];  // returned by Get_Local_Target
   unsigned short PacketCount;
   struct {
-    void *Address;
+    void* Address;
     unsigned short Length;
   } Packet[2];
 } ECBType;
@@ -174,17 +174,17 @@ int IPX_SPX_Installed(void);
 int IPX_Open_Socket(unsigned short socket);
 int IPX_Close_Socket(unsigned short socket);
 int IPX_Get_Connection_Number(void);
-int IPX_Get_1st_Connection_Num(char *username);
+int IPX_Get_1st_Connection_Num(char* username);
 int IPX_Get_Internet_Address(int connection_number,
-                             unsigned char *network_number,
-                             unsigned char *physical_node);
-int IPX_Get_User_ID(int connection_number, char *user_id);
-int IPX_Listen_For_Packet(struct ECB *ecb_ptr);
-void IPX_Send_Packet(struct ECB *ecb_ptr);
-int IPX_Get_Local_Target(unsigned char *dest_network, unsigned char *dest_node,
+                             unsigned char* network_number,
+                             unsigned char* physical_node);
+int IPX_Get_User_ID(int connection_number, char* user_id);
+int IPX_Listen_For_Packet(struct ECB* ecb_ptr);
+void IPX_Send_Packet(struct ECB* ecb_ptr);
+int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
                          unsigned short dest_socket,
-                         unsigned char *bridge_address);
-int IPX_Cancel_Event(struct ECB *ecb_ptr);
+                         unsigned char* bridge_address);
+int IPX_Cancel_Event(struct ECB* ecb_ptr);
 void Let_IPX_Breath(void);
 
 #endif

@@ -38,9 +38,9 @@
 /*
 ********************************* Includes **********************************
 */
-#include "wwstd.h"
 #include "palette.h"
 #include "timer.h"
+#include "wwstd.h"
 
 /*
 ********************************* Constants *********************************
@@ -56,7 +56,7 @@
 ******************************** Prototypes *********************************
 */
 
-PRIVATE int __cdecl Palette_To_Palette(void *src_palette, void *dst_palette,
+PRIVATE int __cdecl Palette_To_Palette(void* src_palette, void* dst_palette,
                                        unsigned long current_time,
                                        unsigned long delay);
 
@@ -79,7 +79,7 @@ PRIVATE int __cdecl Palette_To_Palette(void *src_palette, void *dst_palette,
  * HISTORY:                                                                *
  *   05/02/1994 BR : Created.                                              *
  *=========================================================================*/
-void cdecl Morph_Palette(void *src_pal, void *dst_pal, unsigned int delay,
+void cdecl Morph_Palette(void* src_pal, void* dst_pal, unsigned int delay,
                          void (*callback)(void)) {
   int result;
   unsigned long pal_start = TickCount.Time();
@@ -134,7 +134,7 @@ void cdecl Morph_Palette(void *src_pal, void *dst_pal, unsigned int delay,
  * HISTORY:                                                                *
  *   05/24/1993  MC : Created.                                             *
  *=========================================================================*/
-PRIVATE int cdecl Palette_To_Palette(void *src_palette, void *dst_palette,
+PRIVATE int cdecl Palette_To_Palette(void* src_palette, void* dst_palette,
                                      unsigned long current_time,
                                      unsigned long delay) {
   char colour;
@@ -143,8 +143,8 @@ PRIVATE int cdecl Palette_To_Palette(void *src_palette, void *dst_palette,
   int lp;
   int change;
   static char palette[768];
-  char *src_pal = (char *)src_palette;
-  char *dst_pal = (char *)dst_palette;
+  char* src_pal = (char*)src_palette;
+  char* dst_pal = (char*)dst_palette;
 
   /*======================================================================*/
   /* Loop through each RGB value attempting to change it to the correct	*/

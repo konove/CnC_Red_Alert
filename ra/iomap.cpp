@@ -101,7 +101,7 @@ bool CellClass::Should_Save(void) const {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Load(Straw &file) {
+bool CellClass::Load(Straw& file) {
   file.Get(this, sizeof(*this));
   return (true);
 }
@@ -117,7 +117,7 @@ bool CellClass::Load(Straw &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Save(Pipe &file) const {
+bool CellClass::Save(Pipe& file) const {
   file.Put(this, sizeof(*this));
   return (true);
 }
@@ -140,12 +140,12 @@ bool CellClass::Save(Pipe &file) const {
  *=============================================================================================*/
 void CellClass::Code_Pointers(void) {
   if (Cell_Occupier() != nullptr) {
-    OccupierPtr = (ObjectClass *)OccupierPtr->As_Target();
+    OccupierPtr = (ObjectClass*)OccupierPtr->As_Target();
   }
 
-  for (auto &overlapper : Overlappers) {
+  for (auto& overlapper : Overlappers) {
     if (overlapper != nullptr && overlapper->IsActive) {
-      overlapper = (ObjectClass *)overlapper->As_Target();
+      overlapper = (ObjectClass*)overlapper->As_Target();
     } else {
       overlapper = nullptr;
     }
@@ -205,7 +205,7 @@ void CellClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
-bool MouseClass::Load(Straw &file) {
+bool MouseClass::Load(Straw& file) {
   /*
   **	Load Theater:  Even though this value is located in the DisplayClass,
   **	it must be loaded first so initialization can be done before any other
@@ -313,7 +313,7 @@ bool MouseClass::Load(Straw &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. * 02/26/1996 JLB : Cleaned up. *
  *=============================================================================================*/
-bool MouseClass::Save(Pipe &file) const {
+bool MouseClass::Save(Pipe& file) const {
   /*
   **	Save Theater >first<
   */
@@ -326,7 +326,7 @@ bool MouseClass::Save(Pipe &file) const {
   **	Count how many cells will be saved.
   */
   int count = 0;
-  CellClass const *cellptr = &(*this)[(CELL)0];
+  CellClass const* cellptr = &(*this)[(CELL)0];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (cellptr->Should_Save()) {
       count++;
@@ -378,7 +378,7 @@ void DisplayClass::Code_Pointers(void) {
   **	Code PendingObjectPtr.
   */
   if (PendingObjectPtr) {
-    PendingObjectPtr = (ObjectClass *)PendingObjectPtr->As_Target();
+    PendingObjectPtr = (ObjectClass*)PendingObjectPtr->As_Target();
   }
 
   /*
@@ -437,7 +437,7 @@ void DisplayClass::Decode_Pointers(void) {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void MapClass::Code_Pointers(void) {
-  CellClass *cellptr = &(*this)[(CELL)0];
+  CellClass* cellptr = &(*this)[(CELL)0];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     cellptr->Code_Pointers();
     cellptr++;
@@ -459,7 +459,7 @@ void MapClass::Code_Pointers(void) {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void MapClass::Decode_Pointers(void) {
-  CellClass *cellptr = &(*this)[(CELL)0];
+  CellClass* cellptr = &(*this)[(CELL)0];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     cellptr->Decode_Pointers();
     cellptr++;

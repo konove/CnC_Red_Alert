@@ -69,8 +69,8 @@ struct KeyboardClass : public WWKeyboardClass {
   unsigned IsLibrary;
 
 #ifndef WIN32
-  int &MouseQX;
-  int &MouseQY;
+  int& MouseQX;
+  int& MouseQY;
 
   KeyboardClass() : IsLibrary(true), MouseQX(::MouseQX), MouseQY(::MouseQY) {}
   KeyNumType Get(void) {
@@ -107,23 +107,23 @@ struct KeyboardClass : public WWKeyboardClass {
 **	enumerated types desired.
 */
 template <class T>
-inline T operator++(T &a) {
+inline T operator++(T& a) {
   a = (T)((int)a + (int)1);
   return (a);
 }
 template <class T>
-inline T operator++(T &a, int) {
+inline T operator++(T& a, int) {
   T aa = a;
   a = (T)((int)a + (int)1);
   return (aa);
 }
 template <class T>
-inline T operator--(T &a) {
+inline T operator--(T& a) {
   a = (T)((int)a - (int)1);
   return (a);
 }
 template <class T>
-inline T operator--(T &a, int) {
+inline T operator--(T& a, int) {
   T aa = a;
   a = (T)((int)a - (int)1);
   return (aa);
@@ -164,7 +164,7 @@ long max(long, long);
 #endif
 
 template <class T>
-inline void swap(T &value1, T &value2) {
+inline void swap(T& value1, T& value2) {
   T temp = value1;
   value1 = value2;
   value2 = temp;
@@ -192,7 +192,7 @@ T _rotl(T X, int n) {
 #define ARRAY_LENGTH(x) int(sizeof(x) / sizeof(x[0]))
 #define ARRAY_SIZE(x) int(sizeof(x) / sizeof(x[0]))
 
-inline void Set_Bit(void *array, int bit, int value) {
+inline void Set_Bit(void* array, int bit, int value) {
   /*
   #pragma aux Set_Bit parm [esi] [ecx] [eax] \
           modify [esi ebx] = 			\
@@ -206,12 +206,12 @@ inline void Set_Bit(void *array, int bit, int value) {
           "ok:"
   */
   if (value)
-    ((uint32_t *)array)[(unsigned)bit >> 5] |= (1 << (bit & 0x1F));
+    ((uint32_t*)array)[(unsigned)bit >> 5] |= (1 << (bit & 0x1F));
   else
-    ((uint32_t *)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
+    ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
 }
 
-inline int Get_Bit(void const *array, int bit) {
+inline int Get_Bit(void const* array, int bit) {
   /*
           "mov	ebx,eax"					\
           "shr	ebx,5"					\
@@ -219,11 +219,10 @@ inline int Get_Bit(void const *array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return !!(((const uint32_t *)array)[(unsigned)bit >> 5] &
-            (1 << (bit & 0x1F)));
+  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & (1 << (bit & 0x1F)));
 }
 
-inline int First_True_Bit(void const *array) {
+inline int First_True_Bit(void const* array) {
   /*
   #pragma aux First_True_Bit parm [esi] \
           modify [esi ebx] \
@@ -237,7 +236,7 @@ inline int First_True_Bit(void const *array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t *array32 = (const uint32_t *)array;
+  const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
     uint32_t v = *array32++;
@@ -251,7 +250,7 @@ inline int First_True_Bit(void const *array) {
     off += 32;
   }
 }
-inline int First_False_Bit(void const *array) {
+inline int First_False_Bit(void const* array) {
   /*
   #pragma aux First_False_Bit parm [esi] \
           modify [esi ebx] \
@@ -266,7 +265,7 @@ inline int First_False_Bit(void const *array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t *array32 = (const uint32_t *)array;
+  const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
     uint32_t v = *array32++;
@@ -365,7 +364,7 @@ std::uint64_t Get_User_Tick_Count(void);
 // bool Init_Timer_System(unsigned int freq, int partial=false);
 bool Remove_Timer_System(void);
 #else
-extern WinTimerClass *WindowsTimer;
+extern WinTimerClass* WindowsTimer;
 #endif
 
 #ifndef SYSTEM_TIMER_CLASS
@@ -406,7 +405,7 @@ class UserTimerClass {
 };
 
 template <class T>
-void Bubble_Sort(T *array, int count) {
+void Bubble_Sort(T* array, int count) {
   if (array != nullptr && count > 1) {
     bool swapflag;
 
@@ -425,7 +424,7 @@ void Bubble_Sort(T *array, int count) {
 }
 
 template <class T>
-void PBubble_Sort(T *array, int count) {
+void PBubble_Sort(T* array, int count) {
   if (array != nullptr && count > 1) {
     bool swapflag;
 
@@ -444,7 +443,7 @@ void PBubble_Sort(T *array, int count) {
 }
 
 template <class T>
-void PNBubble_Sort(T *array, int count) {
+void PNBubble_Sort(T* array, int count) {
   if (array != nullptr && count > 1) {
     bool swapflag;
 
@@ -465,12 +464,12 @@ void PNBubble_Sort(T *array, int count) {
 template <class T>
 class SmartPtr {
  public:
-  SmartPtr(NoInitClass const &) {}
-  SmartPtr(T *realptr = nullptr) : Pointer(realptr) {}
-  SmartPtr(SmartPtr const &rvalue) : Pointer(rvalue.Pointer) {}
+  SmartPtr(NoInitClass const&) {}
+  SmartPtr(T* realptr = nullptr) : Pointer(realptr) {}
+  SmartPtr(SmartPtr const& rvalue) : Pointer(rvalue.Pointer) {}
   ~SmartPtr(void) { Pointer = nullptr; }
 
-  operator T *(void) const { return (Pointer); }
+  operator T*(void) const { return (Pointer); }
 
   operator long(void) const { return ((long)Pointer); }
 
@@ -480,7 +479,7 @@ class SmartPtr {
     ++Pointer;
     return (temp);
   }
-  SmartPtr<T> &operator++(void) {
+  SmartPtr<T>& operator++(void) {
     assert(Pointer != nullptr);
     ++Pointer;
     return (*this);
@@ -491,27 +490,27 @@ class SmartPtr {
     --Pointer;
     return (temp);
   }
-  SmartPtr<T> &operator--(void) {
+  SmartPtr<T>& operator--(void) {
     assert(Pointer != nullptr);
     --Pointer;
     return (*this);
   }
 
-  SmartPtr &operator=(SmartPtr const &rvalue) {
+  SmartPtr& operator=(SmartPtr const& rvalue) {
     Pointer = rvalue.Pointer;
     return (*this);
   }
-  T *operator->(void) const {
+  T* operator->(void) const {
     assert(Pointer != nullptr);
     return (Pointer);
   }
-  T &operator*(void) const {
+  T& operator*(void) const {
     assert(Pointer != nullptr);
     return (*Pointer);
   }
 
  private:
-  T *Pointer;
+  T* Pointer;
 };
 
 typedef struct {
@@ -521,27 +520,27 @@ typedef struct {
   unsigned char reserved;
 } TLucentType;
 
-int Load_Picture(char const *filename, BufferClass &scratchbuf,
-                 BufferClass &destbuf, unsigned char *palette,
+int Load_Picture(char const* filename, BufferClass& scratchbuf,
+                 BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType format);
-void *Conquer_Build_Fading_Table(PaletteClass const &palette, void *dest,
+void* Conquer_Build_Fading_Table(PaletteClass const& palette, void* dest,
                                  int color, int frac);
-void *Small_Icon(void const *iconptr, int iconnum);
+void* Small_Icon(void const* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-void *Load_Alloc_Data(FileClass &file);
-std::vector<std::byte> LoadAllocData(FileClass &file);
-long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
-                     BuffType &dest_buff, void *reserved_data);
+void* Load_Alloc_Data(FileClass& file);
+std::vector<std::byte> LoadAllocData(FileClass& file);
+long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
+                     BuffType& dest_buff, void* reserved_data);
 long Translucent_Table_Size(int count);
-void *Build_Translucent_Table(PaletteClass const &palette,
-                              TLucentType const *control, int count,
-                              void *buffer);
-void *Conquer_Build_Translucent_Table(PaletteClass const &palette,
-                                      TLucentType const *control, int count,
-                                      void *buffer);
-void *Make_Fading_Table(PaletteClass const &palette, void *dest, int color,
+void* Build_Translucent_Table(PaletteClass const& palette,
+                              TLucentType const* control, int count,
+                              void* buffer);
+void* Conquer_Build_Translucent_Table(PaletteClass const& palette,
+                                      TLucentType const* control, int count,
+                                      void* buffer);
+void* Make_Fading_Table(PaletteClass const& palette, void* dest, int color,
                         int frac);
 
-void Fatal(char const *message, ...);
+void Fatal(char const* message, ...);
 
 #endif

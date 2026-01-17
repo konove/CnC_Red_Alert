@@ -47,11 +47,11 @@ class WWMessageBox {
 
  public:
   WWMessageBox(int caption = TXT_NONE) { Caption = caption; };
-  int Process(const char *msg, const char *b1txt, const char *b2txt = nullptr,
-              const char *b3txt = nullptr, bool preserve = false);
+  int Process(const char* msg, const char* b1txt, const char* b2txt = nullptr,
+              const char* b3txt = nullptr, bool preserve = false);
   int Process(int msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
               int b3txt = TXT_NONE, bool preserve = false);
-  int Process(char const *msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
+  int Process(char const* msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
               int b3txt = TXT_NONE, bool preserve = false);
 };
 

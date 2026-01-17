@@ -63,7 +63,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowStraw::Get(void *source, int slen) {
+int BlowStraw::Get(void* source, int slen) {
   /*
   **	Verify the parameter for legality.
   */
@@ -90,7 +90,7 @@ int BlowStraw::Get(void *source, int slen) {
       int sublen = (slen < Counter) ? slen : Counter;
       memmove(source, &Buffer[sizeof(Buffer) - Counter], sublen);
       Counter -= sublen;
-      source = ((char *)source) + sublen;
+      source = ((char*)source) + sublen;
       slen -= sublen;
       total += sublen;
     }
@@ -142,7 +142,7 @@ int BlowStraw::Get(void *source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowStraw::Key(void const *key, int length) {
+void BlowStraw::Key(void const* key, int length) {
   /*
   **	Create the blowfish engine if one isn't already present.
   */

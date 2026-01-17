@@ -16,11 +16,12 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <windows.h>
-#include <sys\types.h>
-#include <sys\stat.h>
 #include <fcntl.h>
 #include <io.h>
+#include <sys\stat.h>
+#include <sys\types.h>
+#include <windows.h>
+
 #include <cstdio>
 
 unsigned char thunk_file[1000000];
@@ -40,7 +41,7 @@ unsigned char thunk_file_out[100050];
  * HISTORY: * 11/20/95 5:42PM ST : Created *
  *=============================================================================================*/
 
-char *Search_For_String(char *string, char *buffer_ptr, int buffer_length) {
+char* Search_For_String(char* string, char* buffer_ptr, int buffer_length) {
   int j;
   int string_length = strlen(string);
 
@@ -54,7 +55,7 @@ char *Search_For_String(char *string, char *buffer_ptr, int buffer_length) {
   return (NULL);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   int handle;
   char find_string[] = {
       ";************************ START OF THUNK "
@@ -69,8 +70,8 @@ int main(int argc, char *argv[]) {
   char insert_string4[] = {"Externdef   IPX_Initialise:near\n\r"};
   char insert_string5[] = {"IPX_Initialise label near\n\r\n\r"};
 
-  unsigned char *pointer;
-  unsigned char *pointer2;
+  unsigned char* pointer;
+  unsigned char* pointer2;
   int copy_length;
   int file_length;
 
@@ -87,8 +88,8 @@ int main(int argc, char *argv[]) {
 
   close(handle);
 
-  pointer = (unsigned char *)Search_For_String(find_string, (char *)thunk_file,
-                                               file_length);
+  pointer = (unsigned char*)Search_For_String(find_string, (char*)thunk_file,
+                                              file_length);
 
   if (pointer) {
     pointer += strlen(find_string);
@@ -97,11 +98,11 @@ int main(int argc, char *argv[]) {
 
     memcpy(thunk_file_out, thunk_file, copy_length);
 
-    sprintf((char *)&thunk_file_out[copy_length], "%s%s%s%s%s", insert_string1,
+    sprintf((char*)&thunk_file_out[copy_length], "%s%s%s%s%s", insert_string1,
             insert_string2, insert_string3, insert_string4, insert_string5);
 
-    pointer2 = (unsigned char *)Search_For_String(find_other_string,
-                                                  (char *)pointer, file_length);
+    pointer2 = (unsigned char*)Search_For_String(find_other_string,
+                                                 (char*)pointer, file_length);
     if (!pointer2) return (1);
     pointer2 += strlen(find_other_string);
 

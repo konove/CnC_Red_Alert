@@ -33,23 +33,23 @@
 template <typename T>
 class VectorClass {
  public:
-  VectorClass(NoInitClass const &) {};
-  VectorClass(base::ssize size = 0, const T *array = nullptr);
-  VectorClass(const VectorClass &);  // Copy constructor.
+  VectorClass(NoInitClass const&) {};
+  VectorClass(base::ssize size = 0, const T* array = nullptr);
+  VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
 
-  T &operator[](base::ssize index) { return Vector[index]; };
-  T const &operator[](base::ssize index) const { return Vector[index]; };
-  virtual VectorClass &operator=(const VectorClass &);  // Assignment operator.
-  virtual bool operator==(const VectorClass &) const;   // Equality operator.
-  virtual bool Resize(base::ssize newsize, const T *array = nullptr);
+  T& operator[](base::ssize index) { return Vector[index]; };
+  T const& operator[](base::ssize index) const { return Vector[index]; };
+  virtual VectorClass& operator=(const VectorClass&);  // Assignment operator.
+  virtual bool operator==(const VectorClass&) const;   // Equality operator.
+  virtual bool Resize(base::ssize newsize, const T* array = nullptr);
   virtual void Clear();
   base::ssize Length() const { return VectorMax; };
-  virtual base::ssize ID(const T *ptr);  // Pointer based identification.
-  virtual base::ssize ID(const T &ptr);  // Value based identification.
+  virtual base::ssize ID(const T* ptr);  // Pointer based identification.
+  virtual base::ssize ID(const T& ptr);  // Value based identification.
 
  protected:
-  T *Vector;                // Pointer to element array.
+  T* Vector;                // Pointer to element array.
   base::ssize VectorMax;    // Maximum number of elements.
   bool IsAllocated : true;  // True if we own the memory and must delete it.
 };
@@ -57,12 +57,12 @@ class VectorClass {
 // Implementation details only below here
 
 template <class T>
-VectorClass<T>::VectorClass(base::ssize size, T const *array)
+VectorClass<T>::VectorClass(base::ssize size, T const* array)
     : Vector(nullptr), VectorMax(size), IsAllocated(false) {
   if (size > 0) {
     if (array) {
       Vector =
-          new ((void *)array) T[size];  // Placement new into provided buffer.
+          new ((void*)array) T[size];  // Placement new into provided buffer.
     } else {
       Vector = new T[size];
       IsAllocated = true;
@@ -76,13 +76,13 @@ VectorClass<T>::~VectorClass(void) {
 }
 
 template <class T>
-VectorClass<T>::VectorClass(VectorClass<T> const &vector)
+VectorClass<T>::VectorClass(VectorClass<T> const& vector)
     : Vector(nullptr), VectorMax(0), IsAllocated(false) {
   *this = vector;
 }
 
 template <class T>
-VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
+VectorClass<T>& VectorClass<T>::operator=(VectorClass<T> const& vector) {
   if (this != &vector) {
     Clear();
     VectorMax = vector.Length();
@@ -104,7 +104,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
 
 // Element-by-element comparison. Requires T to have operator!=.
 template <class T>
-bool VectorClass<T>::operator==(VectorClass<T> const &vector) const {
+bool VectorClass<T>::operator==(VectorClass<T> const& vector) const {
   if (VectorMax == vector.Length()) {
     for (base::ssize index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
@@ -119,13 +119,13 @@ bool VectorClass<T>::operator==(VectorClass<T> const &vector) const {
 // Converts pointer to index via pointer arithmetic. Only valid for pointers
 // into this vector.
 template <class T>
-base::ssize VectorClass<T>::ID(T const *ptr) {
+base::ssize VectorClass<T>::ID(T const* ptr) {
   return ptr - &(*this)[0];
 }
 
 // Finds index of first element equal to object. Returns -1 if not found.
 template <class T>
-base::ssize VectorClass<T>::ID(T const &object) {
+base::ssize VectorClass<T>::ID(T const& object) {
   for (base::ssize index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
       return index;
@@ -148,13 +148,13 @@ void VectorClass<T>::Clear(void) {
 // Changes capacity, preserving existing elements up to new size.
 // If array is provided, uses placement new into that buffer.
 template <class T>
-bool VectorClass<T>::Resize(base::ssize newsize, T const *array) {
+bool VectorClass<T>::Resize(base::ssize newsize, T const* array) {
   if (newsize > 0) {
-    T *newptr;
+    T* newptr;
     if (!array) {
       newptr = new T[newsize];
     } else {
-      newptr = new ((void *)array) T[newsize];
+      newptr = new ((void*)array) T[newsize];
     }
     if (!newptr) {
       return false;

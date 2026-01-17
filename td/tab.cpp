@@ -60,7 +60,7 @@
 #include "td/sidebar.h"
 #include "td/special.h"
 
-void const *TabClass::TabShape = nullptr;
+void const* TabClass::TabShape = nullptr;
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *
@@ -187,7 +187,7 @@ void TabClass::Hilite_Tab(int /*tab*/) {
  *handle mouse shape properly.                                    * 08/25/1995
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
-void TabClass::AI(KeyNumType &input, int x, int y) {
+void TabClass::AI(KeyNumType& input, int x, int y) {
   if (y >= 0 && y < Tab_Height && x < (SeenBuff.Get_Width() - 1) && x > 0) {
     bool ok = false;
     int width = SeenBuff.Get_Width();

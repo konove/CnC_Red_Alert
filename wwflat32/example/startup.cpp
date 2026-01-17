@@ -37,12 +37,13 @@
  *   main -- Programs main entry point.                                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "function.h"
 #include <cstdio>
 #include <cstdlib>
 
+#include "function.h"
+
 #define GRAPHICS TRUE
-void *ShapeBuffer = nullptr;
+void* ShapeBuffer = nullptr;
 
 /***************************************************************************
  * MAIN -- Programs main entry point.                                      *
@@ -59,8 +60,8 @@ void *ShapeBuffer = nullptr;
  *   08/01/1994 SKB : Created.                                             *
  *=========================================================================*/
 #pragma argsused
-WORD main(WORD argc, BYTE *argv[]) {
-  void *fontptr;
+WORD main(WORD argc, BYTE* argv[]) {
+  void* fontptr;
 
   /*======================================================================*/
   /* Install page fault handle in case of fatal crash.

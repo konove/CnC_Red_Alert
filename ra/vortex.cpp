@@ -301,7 +301,7 @@ void ChronalVortexClass::Stop(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:32PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Load(Straw &file) {
+void ChronalVortexClass::Load(Straw& file) {
   /*
   ** Delete the render buffer as we are going to lose the pointer anyway.
   ** It will be re-allocated when needed.
@@ -324,8 +324,8 @@ void ChronalVortexClass::Load(Straw &file) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:33PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Save(Pipe &file) {
-  GraphicBufferClass *save_ptr = nullptr;
+void ChronalVortexClass::Save(Pipe& file) {
+  GraphicBufferClass* save_ptr = nullptr;
 
   if (RenderBuffer) {
     /*
@@ -539,7 +539,7 @@ void ChronalVortexClass::Movement(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:42PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Set_Target(ObjectClass *target) {
+void ChronalVortexClass::Set_Target(ObjectClass* target) {
   if (Active) {
     ZapFrame = 0;
     TargetObject = TARGET_NONE;
@@ -589,7 +589,7 @@ void ChronalVortexClass::Attack(void) {
   ** First scan - find any object directly above the vortex.
   */
   for (unsigned i = 0; i < Map.Layer[LAYER_GROUND].Count(); i++) {
-    ObjectClass *obj = Map.Layer[LAYER_GROUND][i];
+    ObjectClass* obj = Map.Layer[LAYER_GROUND][i];
 
     if (obj->Is_Techno() && obj->Strength > 0) {
       distance = Distance(obj->Center_Coord(), here);
@@ -617,7 +617,7 @@ void ChronalVortexClass::Attack(void) {
   if (chance > Frame - LastAttackFrame) return;
 
   for (int i = 0; i < Map.Layer[LAYER_GROUND].Count(); i++) {
-    ObjectClass *obj = Map.Layer[LAYER_GROUND][i];
+    ObjectClass* obj = Map.Layer[LAYER_GROUND][i];
 
     if (obj && obj->Is_Techno()) {
       distance = Distance(obj->Center_Coord(), Position);
@@ -668,10 +668,10 @@ void ChronalVortexClass::Zap_Target(void) {
     ** Create a temporary techno object se we can access the lightning ability
     *of the tesla.
     */
-    TechnoClass *temptech = new BuildingClass(STRUCT_TESLA, HOUSE_GOOD);
+    TechnoClass* temptech = new BuildingClass(STRUCT_TESLA, HOUSE_GOOD);
     if (temptech != nullptr) {
       temptech->Coord = here;
-      ObjectClass *obj = As_Object(TargetObject);
+      ObjectClass* obj = As_Object(TargetObject);
       TARGET target = As_Target(obj->Center_Coord());
       Sound_Effect(VOC_TESLA_ZAP, obj->Center_Coord());
       temptech->Electric_Zap(target, 0, here, LightningRemap);
@@ -716,14 +716,14 @@ void ChronalVortexClass::Zap_Target(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:48PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass *inbuffer, int x,
+void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
                                           int y, int width, int height,
-                                          unsigned char *remap_table) {
+                                          unsigned char* remap_table) {
   unsigned char getx, gety, remap_color, pixel_color;
 
   BufferClass destbuf(width * height);
 
-  unsigned char *destptr = (unsigned char *)destbuf.Get_Buffer();
+  unsigned char* destptr = (unsigned char*)destbuf.Get_Buffer();
 
   int destx = x;
   int desty = y;
@@ -735,8 +735,8 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass *inbuffer, int x,
     /*
     ** Get a pointer to the section of buffer we are going to work on.
     */
-    unsigned char *bufptr =
-        (unsigned char *)inbuffer->Get_Offset() + destx
+    unsigned char* bufptr =
+        (unsigned char*)inbuffer->Get_Offset() + destx
 #ifdef WIN32
         + desty * (inbuffer->Get_Width() + inbuffer->Get_XAdd() +
                    inbuffer->Get_Pitch());
@@ -816,7 +816,7 @@ void ChronalVortexClass::Render(void) {
 
     sprintf(fname, "HOLE%04d.lut", frame);
 
-    void const *lut_ptr = MFCD::Retrieve(fname);
+    void const* lut_ptr = MFCD::Retrieve(fname);
     if (lut_ptr) {
       /*
       ** Build a representation of the area of the screen where the vortex will
@@ -827,20 +827,20 @@ void ChronalVortexClass::Render(void) {
       ** the image from the hidpage.
       */
       if (!RenderBuffer) {
-        RenderBuffer = new GraphicBufferClass(
-            CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, (void *)nullptr);
+        RenderBuffer = new GraphicBufferClass(CELL_PIXEL_W * 4,
+                                              CELL_PIXEL_H * 4, (void*)nullptr);
       }
       CELL xc = Coord_XCell(Position);
       CELL yc = Coord_YCell(Position);
-      CellClass *cellptr;
+      CellClass* cellptr;
       CELL cell;
-      TemplateTypeClass const *ttype = nullptr;
+      TemplateTypeClass const* ttype = nullptr;
       int icon;  // The icon number to use from the template set.
 
 #ifdef WIN32
-      GraphicViewPortClass *oldpage = Set_Logic_Page(RenderBuffer);
+      GraphicViewPortClass* oldpage = Set_Logic_Page(RenderBuffer);
 #else
-      GraphicBufferClass *oldpage = Set_Logic_Page(RenderBuffer);
+      GraphicBufferClass* oldpage = Set_Logic_Page(RenderBuffer);
 #endif
 
       /*
@@ -903,7 +903,7 @@ void ChronalVortexClass::Render(void) {
             **	Draw the overlay object.
             */
             if (cellptr->Overlay != OVERLAY_NONE) {
-              OverlayTypeClass const &otype =
+              OverlayTypeClass const& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
               IsTheaterShape =
                   (bool)otype.IsTheater;  // Tell Build_Frame if this overlay is
@@ -937,7 +937,7 @@ void ChronalVortexClass::Render(void) {
       Coordinate_Remap(RenderBuffer,
                        Lepton_To_Pixel(Coord_X(Coord_Fraction(Position))),
                        Lepton_To_Pixel(Coord_Y(Coord_Fraction(Position))), 64,
-                       64, (unsigned char *)lut_ptr);
+                       64, (unsigned char*)lut_ptr);
 
       /*
       ** Calculate the pixel position of our fresh block of cells on the
@@ -1120,10 +1120,10 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:53PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Build_Fading_Table(PaletteClass const &palette,
-                                            void *dest, int color, int frac) {
+void ChronalVortexClass::Build_Fading_Table(PaletteClass const& palette,
+                                            void* dest, int color, int frac) {
   if (dest) {
-    unsigned char *ptr = (unsigned char *)dest;
+    unsigned char* ptr = (unsigned char*)dest;
 
     /*
     **	Find an appropriate remap color index for every color in the palette.

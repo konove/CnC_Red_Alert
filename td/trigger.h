@@ -128,7 +128,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass(void);
-  TriggerClass(NoInitClass const &x) {};
+  TriggerClass(NoInitClass const& x) {};
   ~TriggerClass(void);
 
   /*
@@ -139,7 +139,7 @@ class TriggerClass {
   /*
   **	Processing routines
   */
-  bool Spring(EventType event, ObjectClass *object);  // object-based
+  bool Spring(EventType event, ObjectClass* object);  // object-based
   bool Spring(EventType event, CELL cell);            // cell-based
   bool Spring(EventType event, HousesType house, long data = 0);  // house-based
   bool Remove(void);
@@ -147,19 +147,19 @@ class TriggerClass {
   /*
   **	File I/O routines
   */
-  static void Read_INI(char *buffer);
-  void Fill_In(char *name, char *entry);
-  static void Write_INI(char *buffer, bool refresh);
-  static char const *INI_Name(void) { return "Triggers"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  void Fill_In(char* name, char* entry);
+  static void Write_INI(char* buffer, bool refresh);
+  static char const* INI_Name(void) { return "Triggers"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
   /*
   **	As_Pointer gets a pointer to the trigger object give the mnemonic
   */
-  static TriggerClass *As_Pointer(char const *name);
+  static TriggerClass* As_Pointer(char const* name);
 
   /*
   **	Data Access routines
@@ -172,8 +172,8 @@ class TriggerClass {
   //		void Set_House(HousesType house) {House = house;}
   //		long Get_Data(void) const {return(Data);}
   //		void Set_Data(long credits) {Data = credits;}
-  char const *Get_Name(void) const { return (Name); }
-  void Set_Name(char const *buf) {
+  char const* Get_Name(void) const { return (Name); }
+  void Set_Name(char const* buf) {
     strncpy(Name, buf, sizeof(Name));
     Name[sizeof(Name) - 1] = '\0';
   }
@@ -186,17 +186,17 @@ class TriggerClass {
   static bool Event_Need_House(EventType event);
   static bool Event_Need_Data(EventType event);
   static bool Action_Need_Team(ActionType action);
-  static EventType Event_From_Name(char const *name);
-  static char const *Name_From_Event(EventType event);
-  static ActionType Action_From_Name(char const *name);
-  static char const *Name_From_Action(ActionType action);
+  static EventType Event_From_Name(char const* name);
+  static char const* Name_From_Event(EventType event);
+  static ActionType Action_From_Name(char const* name);
+  static char const* Name_From_Action(ActionType action);
 
   /*
   **	Overloaded operators
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
 
   /*
   **	Dee-buggin' support.
@@ -208,7 +208,7 @@ class TriggerClass {
   **	a team-related trigger goes off, or for reinforcements. The house
   **	for reinforcements is determined by the house for that team.
   */
-  TeamTypeClass *Team;
+  TeamTypeClass* Team;
 
   /*
   **	If this trigger object is active, then this flag will be true. Trigger

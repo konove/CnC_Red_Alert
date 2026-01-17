@@ -64,12 +64,12 @@
 */
 unsigned short IPXConnClass::Socket;
 int IPXConnClass::ConnectionNum;
-ECBType *IPXConnClass::ListenECB;
-IPXHeaderType *IPXConnClass::ListenHeader;
-char *IPXConnClass::ListenBuf;
-ECBType *IPXConnClass::SendECB;
-IPXHeaderType *IPXConnClass::SendHeader;
-char *IPXConnClass::SendBuf;
+ECBType* IPXConnClass::ListenECB;
+IPXHeaderType* IPXConnClass::ListenHeader;
+char* IPXConnClass::ListenBuf;
+ECBType* IPXConnClass::SendECB;
+IPXHeaderType* IPXConnClass::SendHeader;
+char* IPXConnClass::SendBuf;
 long IPXConnClass::Handler;
 int IPXConnClass::Configured = 0;
 int IPXConnClass::SocketOpen = 0;
@@ -101,8 +101,8 @@ int IPXConnClass::PacketLen;
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
-                           unsigned short magicnum, IPXAddressClass *address,
-                           int id, char *name)
+                           unsigned short magicnum, IPXAddressClass* address,
+                           int id, char* name)
     :
 #ifdef SEQ_NET
       SequencedConnClass(numsend, numreceive, maxlen, magicnum,
@@ -223,10 +223,10 @@ void IPXConnClass::Init(void) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void IPXConnClass::Configure(unsigned short socket, int conn_num,
-                             ECBType *listen_ecb, ECBType *send_ecb,
-                             IPXHeaderType *listen_header,
-                             IPXHeaderType *send_header, char *listen_buf,
-                             char *send_buf, long handler_rm_ptr,
+                             ECBType* listen_ecb, ECBType* send_ecb,
+                             IPXHeaderType* listen_header,
+                             IPXHeaderType* send_header, char* listen_buf,
+                             char* send_buf, long handler_rm_ptr,
                              int maxpacketlen) {
   /*------------------------------------------------------------------------
   Save the values passed in
@@ -291,9 +291,9 @@ bool IPXConnClass::Start_Listening(void) {
 
 #else
 
-  void *hdr_ptr;
+  void* hdr_ptr;
   unsigned long hdr_val;
-  void *buf_ptr;
+  void* buf_ptr;
   unsigned long buf_val;
   int rc;
 
@@ -317,10 +317,10 @@ bool IPXConnClass::Start_Listening(void) {
   Convert protected-mode ptrs to real-mode ptrs
   ------------------------------------------------------------------------*/
   hdr_val = (unsigned long)ListenHeader;
-  hdr_ptr = (void *)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
+  hdr_ptr = (void*)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
 
   buf_val = (unsigned long)ListenBuf;
-  buf_ptr = (void *)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
+  buf_ptr = (void*)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
 
   /*------------------------------------------------------------------------
   Fill in the ECB
@@ -332,7 +332,7 @@ bool IPXConnClass::Start_Listening(void) {
   ListenECB->Packet[1].Address = buf_ptr;
   ListenECB->Packet[1].Length = (unsigned short)PacketLen;
 
-  ((long &)ListenECB->Event_Service_Routine) = Handler;
+  ((long&)ListenECB->Event_Service_Routine) = Handler;
 
   /*------------------------------------------------------------------------
   Command IPX to listen
@@ -420,7 +420,7 @@ bool IPXConnClass::Stop_Listening(void) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(char *buf, int buflen) {
+int IPXConnClass::Send(char* buf, int buflen) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/
@@ -556,7 +556,7 @@ void IPXConnClass::Close_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
+int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
                           NetNodeType immed) {
   NetNumType net;
   NetNodeType node;
@@ -575,16 +575,16 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
     /*
     ** Use first two bytes of ipx address as target mask
     */
-    unsigned short *maskptr = (unsigned short *)&send_address[0];
+    unsigned short* maskptr = (unsigned short*)&send_address[0];
     unsigned short target_mask = *maskptr;
 
-    char *tempsend = new char[buflen + sizeof(target_mask)];
+    char* tempsend = new char[buflen + sizeof(target_mask)];
 
-    *(unsigned short *)tempsend = htons(target_mask);
+    *(unsigned short*)tempsend = htons(target_mask);
     memcpy(tempsend + 2, buf, buflen);
 #if (0)
     char tempbuf[256];
-    CommHeaderType *packet = (CommHeaderType *)(&tempsend[2]);
+    CommHeaderType* packet = (CommHeaderType*)(&tempsend[2]);
     static char pcode[4][18] = {
         "PACKET_DATA_ACK",    // this is a data packet requiring an ACK
         "PACKET_DATA_NOACK",  // this is a data packet not requiring an ACK
@@ -599,10 +599,10 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
     CCDebugString(tempbuf);
 #endif  //(0)
 
-    Winsock.Write((void *)tempsend, buflen + sizeof(target_mask));
+    Winsock.Write((void*)tempsend, buflen + sizeof(target_mask));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
-    Winsock.Write((void *)buf, buflen);
+    Winsock.Write((void*)buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
 
     return (true);
@@ -633,8 +633,8 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
     }
   }
 
-  return (IPX_Send_Packet95(&send_address[0], (unsigned char *)buf, buflen,
-                            (unsigned char *)net, (unsigned char *)node));
+  return (IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen,
+                            (unsigned char*)net, (unsigned char*)node));
 }
 
 /***************************************************************************
@@ -656,16 +656,16 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Broadcast(char *buf, int buflen) {
+int IPXConnClass::Broadcast(char* buf, int buflen) {
   if (Winsock.Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
-    char *tempsend = new char[buflen + sizeof(unsigned short)];
+    char* tempsend = new char[buflen + sizeof(unsigned short)];
     memcpy(tempsend + 2, buf, buflen);
     *tempsend = 0;
     *(tempsend + 1) = 0;
 #if (0)
     char tempbuf[256];
-    CommHeaderType *packet = (CommHeaderType *)(&tempsend[2]);
+    CommHeaderType* packet = (CommHeaderType*)(&tempsend[2]);
     static char pcode[4][18] = {
         "PACKET_DATA_ACK",    // this is a data packet requiring an ACK
         "PACKET_DATA_NOACK",  // this is a data packet not requiring an ACK
@@ -680,13 +680,13 @@ int IPXConnClass::Broadcast(char *buf, int buflen) {
     CCDebugString(tempbuf);
 #endif  //(0)
 
-    Winsock.Write((void *)tempsend, buflen + sizeof(unsigned short));
+    Winsock.Write((void*)tempsend, buflen + sizeof(unsigned short));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
-    Winsock.Write((void *)buf, buflen);
+    Winsock.Write((void*)buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
     return (true);
   } else {
-    return (IPX_Broadcast_Packet95((unsigned char *)buf, buflen));
+    return (IPX_Broadcast_Packet95((unsigned char*)buf, buflen));
   }
 }

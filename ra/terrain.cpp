@@ -129,8 +129,8 @@ TerrainClass::~TerrainClass(void) {
  *handler for techno objects.                           * 12/11/1994 JLB :
  *Shortens attached burning animations.                                    *
  *=============================================================================================*/
-ResultType TerrainClass::Take_Damage(int &damage, int distance,
-                                     WarheadType warhead, TechnoClass *source,
+ResultType TerrainClass::Take_Damage(int& damage, int distance,
+                                     WarheadType warhead, TechnoClass* source,
                                      bool forced) {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
@@ -187,10 +187,10 @@ ResultType TerrainClass::Take_Damage(int &damage, int distance,
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void *TerrainClass::operator new(size_t) throw() {
-  void *ptr = Terrains.Allocate();
+void* TerrainClass::operator new(size_t) throw() {
+  void* ptr = Terrains.Allocate();
   if (ptr) {
-    ((TerrainClass *)ptr)->IsActive = true;
+    ((TerrainClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -209,11 +209,11 @@ void *TerrainClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::operator delete(void *ptr) {
+void TerrainClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TerrainClass *)ptr)->IsActive = false;
+    ((TerrainClass*)ptr)->IsActive = false;
   }
-  Terrains.Free((TerrainClass *)ptr);
+  Terrains.Free((TerrainClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -313,7 +313,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  void const *shapedata;
+  void const* shapedata;
 
   shapedata = Get_Image_Data();
   if (shapedata) {
@@ -382,7 +382,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  short const *offset;  // Pointer to cell offset list.
+  short const* offset;  // Pointer to cell offset list.
 
   if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
 
@@ -422,7 +422,7 @@ bool TerrainClass::Catch_Fire(void) {
   assert(IsActive);
 
   if (!IsCrumbling && !IsOnFire && Class->Armor == ARMOR_WOOD) {
-    AnimClass *anim =
+    AnimClass* anim =
         new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {
       anim->Attach_To(this);
@@ -525,7 +525,7 @@ void TerrainClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Debug_Dump(MonoClass *mono) const {
+void TerrainClass::Debug_Dump(MonoClass* mono) const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -653,14 +653,14 @@ COORDINATE TerrainClass::Center_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char *TerrainClass::Radar_Icon(CELL cell) {
+unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
-  unsigned char *icon =
-      (unsigned char *)Class->Get_Radar_Data();  // get a pointer to radar icons
-  int width = *icon++;                           // extract the width from data
-  int height = *icon++;                          // extract the width from data
+  unsigned char* icon =
+      (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
+  int width = *icon++;                          // extract the width from data
+  int height = *icon++;                         // extract the width from data
 
   /*
   ** Icon number that we need can be found by converting the cell and base
@@ -714,11 +714,11 @@ COORDINATE TerrainClass::Target_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Read_INI(CCINIClass &ini) {
+void TerrainClass::Read_INI(CCINIClass& ini) {
   int len = ini.Entry_Count(INI_Name());
 
   for (int index = 0; index < len; index++) {
-    char const *entry = ini.Get_Entry(INI_Name(), index);
+    char const* entry = ini.Get_Entry(INI_Name(), index);
     TerrainType terrain = ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
     CELL cell = atoi(entry);
 
@@ -745,7 +745,7 @@ void TerrainClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Write_INI(CCINIClass &ini) {
+void TerrainClass::Write_INI(CCINIClass& ini) {
   /*
   **	First, clear out all existing terrain data from the ini file.
   */
@@ -755,7 +755,7 @@ void TerrainClass::Write_INI(CCINIClass &ini) {
   **	Write the terrain data out.
   */
   for (int index = 0; index < Terrains.Count(); index++) {
-    TerrainClass *terrain;
+    TerrainClass* terrain;
 
     terrain = Terrains.Ptr(index);
     if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {

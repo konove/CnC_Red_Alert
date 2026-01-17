@@ -128,7 +128,7 @@ class IndexClass {
   **	This is the pointer to the allocated index table. It contains all valid
   *nodes in *	a sorted order.
   */
-  NodeElement *IndexTable;
+  NodeElement* IndexTable;
 
   /*
   **	This records the number of valid nodes within the index table.
@@ -153,11 +153,11 @@ class IndexClass {
   *function. Using *	this last recorded value can allow quick fetches of data
   *whenever possible.
   */
-  NodeElement const *Archive;
+  NodeElement const* Archive;
 
   //-------------------------------------------------------------------------------------
-  IndexClass(IndexClass const &rvalue);
-  IndexClass *operator=(IndexClass const &rvalue);
+  IndexClass(IndexClass const& rvalue);
+  IndexClass* operator=(IndexClass const& rvalue);
 
   /*
   **	Increase size of internal index table by amount specified.
@@ -177,14 +177,14 @@ class IndexClass {
   /*
   **	Set archive to specified value.
   */
-  void Set_Archive(NodeElement const *node);
+  void Set_Archive(NodeElement const* node);
 
   /*
   **	Search for the node in the index table.
   */
-  NodeElement const *Search_For_Node(int id) const;
+  NodeElement const* Search_For_Node(int id) const;
 
-  static int _USERENTRY search_compfunc(void const *ptr, void const *ptr2);
+  static int _USERENTRY search_compfunc(void const* ptr, void const* ptr2);
 };
 
 /***********************************************************************************************
@@ -278,7 +278,7 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
   */
   if (amount < 0) return (false);
 
-  NodeElement *table = new NodeElement[IndexSize + amount];
+  NodeElement* table = new NodeElement[IndexSize + amount];
   if (table != nullptr) {
     /*
     **	Copy all valid nodes into the new table.
@@ -365,14 +365,14 @@ bool IndexClass<T>::Is_Present(int id) const {
   **	Perform a binary search on the index nodes in order to look for a
   **	matching index value.
   */
-  NodeElement const *nodeptr = Search_For_Node(id);
+  NodeElement const* nodeptr = Search_For_Node(id);
 
   /*
   **	If a matching index was found, then record it for future reference and
   *return success.
   */
   if (nodeptr != nullptr) {
-    ((IndexClass<T> *)this)->Set_Archive(nodeptr);
+    ((IndexClass<T>*)this)->Set_Archive(nodeptr);
     return (true);
   }
 
@@ -470,7 +470,7 @@ void IndexClass<T>::Invalidate_Archive(void) {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-void IndexClass<T>::Set_Archive(NodeElement const *node) {
+void IndexClass<T>::Set_Archive(NodeElement const* node) {
   Archive = node;
 }
 
@@ -592,12 +592,12 @@ bool IndexClass<T>::Remove_Index(int id) {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int _USERENTRY IndexClass<T>::search_compfunc(void const *ptr1,
-                                              void const *ptr2) {
-  if (*(int const *)ptr1 == *(int const *)ptr2) {
+int _USERENTRY IndexClass<T>::search_compfunc(void const* ptr1,
+                                              void const* ptr2) {
+  if (*(int const*)ptr1 == *(int const*)ptr2) {
     return (0);
   }
-  if (*(int const *)ptr1 < *(int const *)ptr2) {
+  if (*(int const*)ptr1 < *(int const*)ptr2) {
     return (-1);
   }
   return (1);
@@ -621,7 +621,7 @@ int _USERENTRY IndexClass<T>::search_compfunc(void const *ptr1,
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-typename IndexClass<T>::NodeElement const *IndexClass<T>::Search_For_Node(
+typename IndexClass<T>::NodeElement const* IndexClass<T>::Search_For_Node(
     int id) const {
   /*
   **	If there are no elements in the list, then it certainly can't find any
@@ -637,8 +637,8 @@ typename IndexClass<T>::NodeElement const *IndexClass<T>::Search_For_Node(
   */
   if (!IsSorted) {
     qsort(&IndexTable[0], IndexCount, sizeof(IndexTable[0]), search_compfunc);
-    ((IndexClass<T> *)this)->Invalidate_Archive();
-    ((IndexClass<T> *)this)->IsSorted = true;
+    ((IndexClass<T>*)this)->Invalidate_Archive();
+    ((IndexClass<T>*)this)->IsSorted = true;
   }
 
   /*
@@ -646,8 +646,8 @@ typename IndexClass<T>::NodeElement const *IndexClass<T>::Search_For_Node(
   */
   NodeElement node;
   node.ID = id;
-  return ((NodeElement const *)bsearch(&node, &IndexTable[0], IndexCount,
-                                       sizeof(IndexTable[0]), search_compfunc));
+  return ((NodeElement const*)bsearch(&node, &IndexTable[0], IndexCount,
+                                      sizeof(IndexTable[0]), search_compfunc));
 }
 
 #endif

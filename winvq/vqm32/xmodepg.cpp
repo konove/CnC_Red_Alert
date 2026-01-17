@@ -161,8 +161,8 @@ void DisplayXPage(long page) {
  *
  ****************************************************************************/
 
-unsigned char *GetXHidPage(void) {
-  return ((unsigned char *)PageStartOffsets[NonDisplayedPage]);
+unsigned char* GetXHidPage(void) {
+  return ((unsigned char*)PageStartOffsets[NonDisplayedPage]);
 }
 
 /****************************************************************************
@@ -185,6 +185,6 @@ unsigned char *GetXHidPage(void) {
  *
  ****************************************************************************/
 
-unsigned char *GetXSeenPage(void) {
-  return ((unsigned char *)PageStartOffsets[DisplayedPage]);
+unsigned char* GetXSeenPage(void) {
+  return ((unsigned char*)PageStartOffsets[DisplayedPage]);
 }

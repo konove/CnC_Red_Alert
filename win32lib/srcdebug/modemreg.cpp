@@ -50,9 +50,10 @@
  *- - - - - - - */
 
 #include "modemreg.h"
+
 #include <cstdio>
 
-extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
+extern HKEY Get_Registry_Sub_Key(HKEY base_key, char* search_key, BOOL close);
 
 /***********************************************************************************************
  * Search_Registry_Key -- Search a registry key and all its subkeys for a given
@@ -69,18 +70,18 @@ extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
  *                                                                                             *
  * HISTORY: * 10/18/96 4:01AM ST : Created *
  *=============================================================================================*/
-HKEY Search_Registry_Key(HKEY key_in, char *value_name, char *search_string) {
+HKEY Search_Registry_Key(HKEY key_in, char* value_name, char* search_string) {
   int top_key_index = 0;  // Index of topmost key
   int retval;             // Result of registry api calls
   HKEY next_key;          // handle of next key examine
   HKEY next_search;       // handle of next key to search
 
-  char *subkey_name =
+  char* subkey_name =
       new char[256];  // Area to contain result of key enumeration
   unsigned long subkey_name_length = 256;  // Length of enumeration result area
   FILETIME filetime;         // Time key was last touched. Not used.
   unsigned long value_type;  // Type of data that is contained in a key.
-  unsigned char *key_value =
+  unsigned char* key_value =
       new unsigned char[256];            // Area to return key values into
   unsigned long key_value_length = 256;  // Length of key value area
 
@@ -114,7 +115,7 @@ HKEY Search_Registry_Key(HKEY key_in, char *value_name, char *search_string) {
           *are looking for
           */
           if (value_type == REG_SZ &&
-              !strcmp((char *)key_value, search_string)) {
+              !strcmp((char*)key_value, search_string)) {
             /*
             ** This is our man. Delete our workspace and return the key handle
             */

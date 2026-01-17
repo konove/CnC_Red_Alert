@@ -148,14 +148,14 @@
 
 #define SHAPE_TRANS 0x40
 
-void *Get_Shape_Header_Data(void *ptr);
+void* Get_Shape_Header_Data(void* ptr);
 
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
-void Keyboard_Process(KeyNumType &input);
+void Keyboard_Process(KeyNumType& input);
 #ifndef DEMO
-static void Message_Input(KeyNumType &input);
+static void Message_Input(KeyNumType& input);
 #endif
 static bool Color_Cycle(void);
 bool Map_Edit_Loop(void);
@@ -166,16 +166,16 @@ bool UseOldShapeDraw = false;
 }
 
 #ifdef CHEAT_KEYS
-void Heap_Dump_Check(char *string);
+void Heap_Dump_Check(char* string);
 void Dump_Heap_Pointers(void);
-void Error_In_Heap_Pointers(char *string);
+void Error_In_Heap_Pointers(char* string);
 #endif
 static void Do_Record_Playback(void);
 extern void Register_Game_Start_Time(void);
 extern void Register_Game_End_Time(void);
 extern void Send_Statistics_Packet(void);
 extern "C" {
-extern char *__nheapbeg;
+extern char* __nheapbeg;
 }
 bool InMainLoop = false;
 
@@ -211,7 +211,7 @@ bool InMainLoop = false;
 extern int TotalLocks;
 extern bool Spawn_WChat(bool can_launch);
 extern bool SpawnedFromWChat;
-void Main_Game(int argc, char *argv[]) {
+void Main_Game(int argc, char* argv[]) {
   bool fade = false;  // don't fade title screen the first time through
 
   /*
@@ -500,8 +500,8 @@ void Main_Game(int argc, char *argv[]) {
  *control hotkeys.                                    *
  *=============================================================================================*/
 extern int DebugColour;
-void Keyboard_Process(KeyNumType &input) {
-  ObjectClass *obj;
+void Keyboard_Process(KeyNumType& input) {
+  ObjectClass* obj;
   int index;
 
   /*
@@ -603,7 +603,7 @@ void Keyboard_Process(KeyNumType &input) {
     */
     case VK_H:
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *unit = Units.Ptr(index);
+        UnitClass* unit = Units.Ptr(index);
 
         if (unit && !unit->IsInLimbo && unit->House == PlayerPtr &&
             *unit == UNIT_MCV) {
@@ -613,7 +613,7 @@ void Keyboard_Process(KeyNumType &input) {
         }
       }
       for (index = 0; index < Buildings.Count(); index++) {
-        BuildingClass *building = Buildings.Ptr(index);
+        BuildingClass* building = Buildings.Ptr(index);
 
         if (building && !building->IsInLimbo && building->House == PlayerPtr &&
             *building == STRUCT_CONST) {
@@ -721,7 +721,7 @@ void Keyboard_Process(KeyNumType &input) {
     case VK_S:
       if (CurrentObject.Count()) {
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass const *tech = CurrentObject[index];
+          ObjectClass const* tech = CurrentObject[index];
 
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
@@ -738,7 +738,7 @@ void Keyboard_Process(KeyNumType &input) {
     case VK_X:
       if (CurrentObject.Count()) {
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass const *tech = CurrentObject[index];
+          ObjectClass const* tech = CurrentObject[index];
 
           if (tech && tech->Can_Player_Move()) {
             OutList.Add(EventClass(EventClass::SCATTER, tech->As_Target()));
@@ -753,7 +753,7 @@ void Keyboard_Process(KeyNumType &input) {
     case VK_G:
       if (CurrentObject.Count()) {
         for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass const *tech = CurrentObject[index];
+          ObjectClass const* tech = CurrentObject[index];
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
             OutList.Add(EventClass(tech->As_Target(), MISSION_GUARD_AREA));
@@ -784,7 +784,7 @@ void Keyboard_Process(KeyNumType &input) {
   **	If the <TAB> key is pressed, then select the next object.
   */
   if (input == KN_TAB) {
-    ObjectClass *obj = Map.Next_Object(CurrentObject);
+    ObjectClass* obj = Map.Next_Object(CurrentObject);
     if (obj) {
       if (CurrentObject) {
         CurrentObject->Unselect();
@@ -823,11 +823,11 @@ void Keyboard_Process(KeyNumType &input) {
  * HISTORY: * 05/22/1995 BRR : Created. * 03/26/1995  ST : Modified to break up
  *longer messages into multiple packets               *
  *=============================================================================================*/
-static void Message_Input(KeyNumType &input) {
+static void Message_Input(KeyNumType& input) {
   int rc;
   char txt[MAX_MESSAGE_LENGTH + 12];
   int id;
-  SerialPacketType *serial_packet;
+  SerialPacketType* serial_packet;
   int i;
   int message_length;
   int sent_so_far;
@@ -944,7 +944,7 @@ static void Message_Input(KeyNumType &input) {
     message_length = strlen(Messages.Get_Edit_Buf());
 
     long actual_message_size;
-    char *the_string;
+    char* the_string;
 
     /*
     **	Serial game: fill in a SerialPacketType & send it.
@@ -960,7 +960,7 @@ static void Message_Input(KeyNumType &input) {
                              0xffff);
 
       while (sent_so_far < message_length) {
-        serial_packet = (SerialPacketType *)NullModem.BuildBuf;
+        serial_packet = (SerialPacketType*)NullModem.BuildBuf;
 
         serial_packet->Command = SERIAL_MESSAGE;
         port::SafeCopy(serial_packet->Name, MPlayerName);
@@ -993,10 +993,10 @@ static void Message_Input(KeyNumType &input) {
         /*
         ** Flag this message segment as either a message head or a message tail.
         */
-        *((unsigned short *)(serial_packet->Message + COMPAT_MESSAGE_LENGTH -
-                             4)) = magic_number;
-        *((unsigned short *)(serial_packet->Message + COMPAT_MESSAGE_LENGTH -
-                             2)) = crc;
+        *((unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH -
+                            4)) = magic_number;
+        *((unsigned short*)(serial_packet->Message + COMPAT_MESSAGE_LENGTH -
+                            2)) = crc;
         serial_packet->ID = MPlayerLocalID;
 
         NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
@@ -1048,10 +1048,10 @@ static void Message_Input(KeyNumType &input) {
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          *((unsigned short *)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                               4)) = magic_number;
-          *((unsigned short *)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
-                               2)) = crc;
+          *((unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
+                              4)) = magic_number;
+          *((unsigned short*)(GPacket.Message.Buf + COMPAT_MESSAGE_LENGTH -
+                              2)) = crc;
 
           GPacket.Message.ID = MPlayerLocalID;
           GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
@@ -1268,10 +1268,10 @@ void Call_Back(void) {
               if (msg_ok) {
                 sprintf(txt, Text_String(TXT_FROM), GPacket.Name,
                         GPacket.Message.Buf);
-                magic_number = *((unsigned short *)(GPacket.Message.Buf +
-                                                    COMPAT_MESSAGE_LENGTH - 4));
-                crc = *((unsigned short *)(GPacket.Message.Buf +
-                                           COMPAT_MESSAGE_LENGTH - 2));
+                magic_number = *((unsigned short*)(GPacket.Message.Buf +
+                                                   COMPAT_MESSAGE_LENGTH - 4));
+                crc = *((unsigned short*)(GPacket.Message.Buf +
+                                          COMPAT_MESSAGE_LENGTH - 2));
                 color = MPlayerID_To_ColorIndex(GPacket.Message.ID);
                 Messages.Add_Message(
                     txt, MPlayerTColors[color],
@@ -1331,7 +1331,7 @@ void Call_Back(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-char const *Language_Name(char const *basename) {
+char const* Language_Name(char const* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
   if (!basename) return (nullptr);
@@ -1355,7 +1355,7 @@ char const *Language_Name(char const *basename) {
  *                                                                                             *
  * HISTORY: * 04/17/1994 JLB : Created. *
  *=============================================================================================*/
-SourceType Source_From_Name(char const *name) {
+SourceType Source_From_Name(char const* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
       if (stricmp(SourceName[source], name) == 0) {
@@ -1381,7 +1381,7 @@ SourceType Source_From_Name(char const *name) {
  *                                                                         						  *
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
-char const *Name_From_Source(SourceType source) {
+char const* Name_From_Source(SourceType source) {
   if ((unsigned)source < SOURCE_COUNT) {
     return (SourceName[source]);
   }
@@ -1403,7 +1403,7 @@ char const *Name_From_Source(SourceType source) {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-TheaterType Theater_From_Name(char const *name) {
+TheaterType Theater_From_Name(char const* name) {
   TheaterType index;
 
   if (name) {
@@ -1866,14 +1866,14 @@ void Go_Editor(bool flag) {
 #if (0)
 #define VQ_THREAD_BUFFER_SIZE 1024 * 1024
 #define VQ_THREAD_BUFFER_CHUNK VQ_THREAD_BUFFER_SIZE / 4
-unsigned char *VQThreadBuffer = NULL;
+unsigned char* VQThreadBuffer = NULL;
 volatile bool ThreadReading = false;
 unsigned long VQThreadBlockHead;
 unsigned long VQThreadBlockTail;
 unsigned long VQBytesLeft;
 unsigned long VQBytesRead;
 
-void Init_VQ_Threading(CCFileClass *file) {
+void Init_VQ_Threading(CCFileClass* file) {
   if (!VQThreadBuffer) {
     VQThreadBuffer = new unsigned char[VQ_THREAD_BUFFER_SIZE];
   }
@@ -1893,14 +1893,14 @@ void Cleanup_VQ_Threading(void) {
   }
 }
 
-unsigned long __stdcall Thread_Read(void *file) {
+unsigned long __stdcall Thread_Read(void* file) {
   int bytes_to_read;
   int left_to_read;
   int read_this_time;
   unsigned long head;
   int sleep_time;
 
-  CCFileClass *ccfile = (CCFileClass *)file;
+  CCFileClass* ccfile = (CCFileClass*)file;
 
   bytes_to_read = std::min(VQBytesLeft, VQ_THREAD_BUFFER_CHUNK);
 
@@ -1942,21 +1942,21 @@ unsigned long __stdcall Thread_Read(void *file) {
   return (0);
 }
 
-void Read_VQ_Thread_Block(CCFileClass *file) {
+void Read_VQ_Thread_Block(CCFileClass* file) {
   HANDLE thread_handle;
   DWORD thread_id;
   if (!ThreadReading) {
     //_beginthreadex (&Thread_Read, NULL, 16*1024, NULL);
     ThreadReading = true;
     thread_handle =
-        CreateThread(NULL, 0, &Thread_Read, (void *)file, 0, &thread_id);
+        CreateThread(NULL, 0, &Thread_Read, (void*)file, 0, &thread_id);
     // SetThreadPriority (thread_handle, THREAD_PRIORITY_IDLE);
 
     CloseHandle(thread_handle);
   }
 }
 
-int VQ_Thread_Read(CCFileClass *file, void *buffer, long bytes) {
+int VQ_Thread_Read(CCFileClass* file, void* buffer, long bytes) {
   long bytes_to_read;
 
   do {
@@ -1975,7 +1975,7 @@ int VQ_Thread_Read(CCFileClass *file, void *buffer, long bytes) {
     int second_chunk = bytes_to_read - first_chunk;
 
     memcpy(buffer, VQThreadBuffer + VQThreadBlockTail, first_chunk);
-    memcpy((unsigned char *)buffer + first_chunk, VQThreadBuffer, second_chunk);
+    memcpy((unsigned char*)buffer + first_chunk, VQThreadBuffer, second_chunk);
   } else {
     memcpy(buffer, VQThreadBuffer + VQThreadBlockTail, bytes_to_read);
   }
@@ -2019,12 +2019,12 @@ int VQ_Thread_Seek(long bytes) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
                        int64_t nbytes) {
-  CCFileClass *file;
+  CCFileClass* file;
   int64_t error;
 
-  file = (CCFileClass *)vqa->VQAio;
+  file = (CCFileClass*)vqa->VQAio;
 
   /*
   **	Perform the action specified by the stream command.
@@ -2073,10 +2073,10 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
     **	VQACMD_OPEN asks that you open your stream for access.
     */
     case VQACMD_OPEN:
-      file = new CCFileClass((char *)buffer);
+      file = new CCFileClass((char*)buffer);
 
       if (file != NULL && file->Is_Available()) {
-        error = file->Open((char *)buffer, READ);
+        error = file->Open((char*)buffer, READ);
 
         if (error != -1) {
           vqa->VQAio = (unsigned long)file;
@@ -2153,12 +2153,12 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
                        int64_t nbytes) {
-  CCFileClass *file;
+  CCFileClass* file;
   int64_t error = 0;
 
-  file = (CCFileClass *)vqa->VQAio;
+  file = (CCFileClass*)vqa->VQAio;
 
   /*
   **	Perform the action specified by the stream command.
@@ -2203,10 +2203,10 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
     **	VQACMD_OPEN asks that you open your stream for access.
     */
     case VQACMD_OPEN:
-      file = new CCFileClass((char *)buffer);
+      file = new CCFileClass((char*)buffer);
 
       if (file != nullptr && file->Is_Available()) {
-        error = file->Open((char *)buffer, READ);
+        error = file->Open((char*)buffer, READ);
 
         if (error != -1) {
           vqa->VQAio = (unsigned long)file;
@@ -2253,7 +2253,7 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
 
 // #endif	//(0)
 
-void Rebuild_Interpolated_Palette(unsigned char *interpal) {
+void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
       *(interpal + (y * 256 + x)) = *(interpal + (x * 256 + y));
@@ -2261,11 +2261,11 @@ void Rebuild_Interpolated_Palette(unsigned char *interpal) {
   }
 }
 
-unsigned char *InterpolatedPalettes[100];
+unsigned char* InterpolatedPalettes[100];
 bool PalettesRead;
 unsigned PaletteCounter;
 
-int Load_Interpolated_Palettes(char const *filename, bool add) {
+int Load_Interpolated_Palettes(char const* filename, bool add) {
   int num_palettes = 0;
   int i;
   int start_palette;
@@ -2294,7 +2294,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
   file.Read(&num_palettes, 4);
 
   for (i = 0; i < num_palettes; i++) {
-    InterpolatedPalettes[i + start_palette] = (unsigned char *)malloc(65536);
+    InterpolatedPalettes[i + start_palette] = (unsigned char*)malloc(65536);
     memset(InterpolatedPalettes[i + start_palette], 0, 65536);
     for (int y = 0; y < 256; y++) {
       file.Read(InterpolatedPalettes[i + start_palette] + y * 256, y + 1);
@@ -2343,7 +2343,7 @@ extern bool InMovie;
 extern bool VQPaletteChange;
 extern void Suspend_Audio_Thread(void);
 extern void Resume_Audio_Thread(void);
-void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
+void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
   /*
   ** Don't play movies in editor mode
   */
@@ -2398,7 +2398,7 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
     PreserveVQAScreen = 0;
     Keyboard::Clear();
 
-    VQAHandle *vqa = nullptr;
+    VQAHandle* vqa = nullptr;
 
     if (!Debug_Quiet && Get_Digi_Handle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
@@ -2529,7 +2529,7 @@ void Unselect_All(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-std::string Fading_Table_Name(char const *base, TheaterType theater) {
+std::string Fading_Table_Name(char const* base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
   const auto root = std::string(1, Theaters[theater].Root[0]) + base;
@@ -2548,16 +2548,16 @@ std::string Fading_Table_Name(char const *base, TheaterType theater) {
  * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
  *shapefile pointer.                                        *
  *=============================================================================================*/
-void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
+void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
                            int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   int lp, framelp;
   char pixel;
 
-  char *retval = nullptr;
-  char *buffer = nullptr;
-  void *ptr;
+  char* retval = nullptr;
+  char* buffer = nullptr;
+  void* ptr;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
@@ -2596,7 +2596,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   ** Save off the return value so that we can return it to the calling
   ** function.
   */
-  retval = (char *)buffer;
+  retval = (char*)buffer;
   *buffer++ = (char)icon_width;
   *buffer++ = (char)icon_height;
   int val = 24 / zoomfactor;
@@ -2623,7 +2623,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
               int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
               if ((getx < pixel_width) && (gety < pixel_height)) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *((char *)(Add_Long_To_Pointer(
+                  pixel = *((char*)(Add_Long_To_Pointer(
                       ptr,
                       ((gety - _offy[lp]) * pixel_width) + getx - _offx[lp])));
                   if (pixel == LTGREEN) pixel = 0;
@@ -2646,11 +2646,11 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   return (retval);
 }
 
-void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos, int ypos,
+void CC_Texture_Fill(void const* shapefile, int shapenum, int xpos, int ypos,
                      int width, int height) {
-  unsigned char *shape_pointer;
+  unsigned char* shape_pointer;
   // unsigned char	*shape_save;
-  void *shape_size;
+  void* shape_size;
   // int x,y;
 
   if (shapefile && shapenum != -1) {
@@ -2666,8 +2666,7 @@ void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos, int ypos,
     }
 
     if (shape_size) {
-      shape_pointer =
-          (unsigned char *)Get_Shape_Header_Data((void *)shape_size);
+      shape_pointer = (unsigned char*)Get_Shape_Header_Data((void*)shape_size);
       int source_width = Get_Build_Frame_Width(shapefile);
       int source_height = Get_Build_Frame_Height(shapefile);
 
@@ -2677,11 +2676,11 @@ void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos, int ypos,
       // source_width, source_height);
 #if (1)
       if (LogicPage->Lock()) {
-        unsigned char *shape_end = shape_pointer + source_width * source_height;
+        unsigned char* shape_end = shape_pointer + source_width * source_height;
 
         for (int y = ypos; y < ypos + height; y++) {
-          unsigned char *shape_save = shape_pointer;
-          unsigned char *line_end = shape_save + source_width;
+          unsigned char* shape_save = shape_pointer;
+          unsigned char* line_end = shape_save + source_width;
 
           for (int x = xpos; x < xpos + width; x++) {
             LogicPage->Put_Pixel(x, y, *shape_pointer++);
@@ -2734,13 +2733,13 @@ void CC_Texture_Fill(void const *shapefile, int shapenum, int xpos, int ypos,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata, void const *ghostdata) {
+                   void const* fadingdata, void const* ghostdata) {
 #if (true)
   int predoffset;
-  char *shape_pointer;
-  void *shape_size;
+  char* shape_pointer;
+  void* shape_size;
 
   if (shapefile && shapenum != -1) {
     /*
@@ -2762,7 +2761,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
           WindowList[window][WINDOWWIDTH] << 3,
           WindowList[window][WINDOWHEIGHT]);
 
-      shape_pointer = (char *)shape_size;
+      shape_pointer = (char*)shape_size;
 
       /*
       **	Special shadow drawing code (used for aircraft and bullets).
@@ -2834,7 +2833,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
+TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
@@ -3006,7 +3005,7 @@ void Trap_Object(void) {
  *=============================================================================================*/
 void Check_VQ_Palette_Set(void);
 
-long VQ_Call_Back(unsigned char *, long) {
+long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
   if (Keyboard::Check()) {
     key = Keyboard::Get();
@@ -3043,7 +3042,7 @@ long VQ_Call_Back(unsigned char *, long) {
   return (false);
 }
 
-long VQ_Event_Handler(unsigned long event, void * /*buffer*/, long /*nbytes*/) {
+long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) Video_End_Frame();
@@ -3093,14 +3092,14 @@ void Handle_Team(int team, int action) {
           case RTTI_UNIT:
           case RTTI_INFANTRY:
           case RTTI_AIRCRAFT:
-            if (((FootClass *)CurrentObject[0])->Group != team) {
+            if (((FootClass*)CurrentObject[0])->Group != team) {
               Unselect_All();
             }
             break;
         }
       }
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
@@ -3110,7 +3109,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
@@ -3120,7 +3119,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass *obj = Aircraft.Ptr(index);
+        AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
@@ -3144,7 +3143,7 @@ void Handle_Team(int team, int action) {
     */
     case 1:
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
@@ -3154,7 +3153,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
@@ -3164,7 +3163,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass *obj = Aircraft.Ptr(index);
+        AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House == PlayerPtr) {
           if (!obj->IsSelected) {
@@ -3180,21 +3179,21 @@ void Handle_Team(int team, int action) {
     */
     case 2:
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (obj->Group == team) obj->Group = -1;
           if (obj->IsSelected) obj->Group = team;
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (obj->Group == team) obj->Group = -1;
           if (obj->IsSelected) obj->Group = team;
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass *obj = Aircraft.Ptr(index);
+        AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
           if (obj->Group == team) obj->Group = -1;
           if (obj->IsSelected) obj->Group = team;
@@ -3234,7 +3233,7 @@ void Handle_View(int view, int action) {
 }
 
 #ifdef CHEAT_KEYS
-void Heap_Dump_Check(char *string) {
+void Heap_Dump_Check(char* string) {
 #if 0
 	struct _heapinfo h_info;
 	int heap_status;
@@ -3322,7 +3321,7 @@ void Dump_Heap_Pointers(void) {
   int numallocs, numfrees, sizefree;
   static char _freeorused[2][5] = {"FREE", "USED"};
 
-  ptr = (char *)__nheapbeg;
+  ptr = (char*)__nheapbeg;
 
   while (ptr) {
     if (Debug_Heap_Dump) {
@@ -3333,14 +3332,14 @@ void Dump_Heap_Pointers(void) {
       Hex_Dump_Data(ptr, 0x30);
     }
 
-    dptr = (char *)*(int *)(ptr + 0x0c);
+    dptr = (char*)*(int*)(ptr + 0x0c);
 
-    sizefree = *(int *)(ptr + 0x14);
-    numallocs = *(int *)(ptr + 0x18);
-    numfrees = *(int *)(ptr + 0x1c);
+    sizefree = *(int*)(ptr + 0x14);
+    numallocs = *(int*)(ptr + 0x18);
+    numfrees = *(int*)(ptr + 0x1c);
 
-    cptr = (char *)*(int *)(ptr + 0x24);
-    lptr = (char *)*(int *)(ptr + 0x28);
+    cptr = (char*)*(int*)(ptr + 0x24);
+    lptr = (char*)*(int*)(ptr + 0x28);
 
     if (((int)cptr & 0xff000000) || ((int)dptr & 0xff000000) ||
         ((int)lptr & 0xff000000)) {
@@ -3353,18 +3352,18 @@ void Dump_Heap_Pointers(void) {
       }
     }
 
-    nptr = (char *)*(int *)(ptr + 8);  // next block
+    nptr = (char*)*(int*)(ptr + 8);  // next block
 
     if (((int)nptr & 0xFF000000)) {
       Error_In_Heap_Pointers("next block ptr too large");
     }
 
     if (lptr != (ptr + 0x20)) {
-      if (!(*((int *)(ptr + 0x20)))) {  // allocated
+      if (!(*((int*)(ptr + 0x20)))) {  // allocated
         aptr = (ptr + 0x2c);
 
         while (aptr < lptr) {
-          if ((*(int *)(aptr)) == -1) {
+          if ((*(int*)(aptr)) == -1) {
             //						Smart_Printf( "end alloc
             // chain %p.\n", aptr );
             // Hex_Dump_Data( aptr, 0x10);
@@ -3374,15 +3373,15 @@ void Dump_Heap_Pointers(void) {
           if (Debug_Heap_Dump) {
             Smart_Printf("%p chain %s, size %X.\n", aptr,
                          _freeorused[((*aptr) & 1)],
-                         ((*(int *)(aptr)) & 0xfffffffe));
+                         ((*(int*)(aptr)) & 0xfffffffe));
             Hex_Dump_Data(aptr, 0x10);
           }
 
-          if (((*(int *)(aptr)) & 0xff000000)) {
+          if (((*(int*)(aptr)) & 0xff000000)) {
             Error_In_Heap_Pointers("alloc block size way too large");
           }
 
-          aptr += ((*(int *)(aptr)) & 0xfffffffe);
+          aptr += ((*(int*)(aptr)) & 0xfffffffe);
 
           if (((int)aptr & 0xff000000)) {
             Error_In_Heap_Pointers("next alloc block ptr way too large");
@@ -3396,7 +3395,7 @@ void Dump_Heap_Pointers(void) {
         }
       } else {
         if (sizefree != -1) {
-          sizefree -= ((*(int *)(ptr + 0x20)) & 0xfffffffe);
+          sizefree -= ((*(int*)(ptr + 0x20)) & 0xfffffffe);
         }
         numfrees--;
       }
@@ -3407,21 +3406,21 @@ void Dump_Heap_Pointers(void) {
         if (Debug_Heap_Dump) {
           Smart_Printf("%p link %s, size %X.\n", wlptr,
                        _freeorused[((*wlptr) & 1)],
-                       ((*(int *)(wlptr)) & 0xfffffffe));
+                       ((*(int*)(wlptr)) & 0xfffffffe));
           Hex_Dump_Data(wlptr, 0x10);
         }
 
-        nlptr = (char *)*(int *)(wlptr + 8);
+        nlptr = (char*)*(int*)(wlptr + 8);
 
-        if (!(*((int *)(wlptr)))) {  // allocated
+        if (!(*((int*)(wlptr)))) {  // allocated
           aptr = (wlptr + 0x0c);
         } else {
           if (sizefree != -1) {
-            sizefree -= ((*(int *)(wlptr)) & 0xfffffffe);
+            sizefree -= ((*(int*)(wlptr)) & 0xfffffffe);
           }
           numfrees--;
 
-          aptr = (wlptr + ((*(int *)(wlptr)) & 0xfffffffe));
+          aptr = (wlptr + ((*(int*)(wlptr)) & 0xfffffffe));
         }
 
         if (nlptr == (ptr + 0x20)) {
@@ -3431,7 +3430,7 @@ void Dump_Heap_Pointers(void) {
         }
 
         while (aptr < clptr) {
-          if ((*(int *)(aptr)) == -1) {
+          if ((*(int*)(aptr)) == -1) {
             //						Smart_Printf( "end alloc
             // chain %p.\n", aptr );
             // Hex_Dump_Data( aptr, 0x10);
@@ -3441,15 +3440,15 @@ void Dump_Heap_Pointers(void) {
           if (Debug_Heap_Dump) {
             Smart_Printf("%p chain %s, size %X.\n", aptr,
                          _freeorused[((*aptr) & 1)],
-                         ((*(int *)(aptr)) & 0xfffffffe));
+                         ((*(int*)(aptr)) & 0xfffffffe));
             Hex_Dump_Data(aptr, 0x10);
           }
 
-          if (((*(int *)(aptr)) & 0xff000000)) {
+          if (((*(int*)(aptr)) & 0xff000000)) {
             Error_In_Heap_Pointers("alloc block size way too large");
           }
 
-          aptr += ((*(int *)(aptr)) & 0xfffffffe);
+          aptr += ((*(int*)(aptr)) & 0xfffffffe);
 
           if (((int)aptr & 0xff000000)) {
             Error_In_Heap_Pointers("next alloc block ptr way too large");
@@ -3469,11 +3468,11 @@ void Dump_Heap_Pointers(void) {
       //				_freeorused[ ((*lptr) & 1) ],
       //				((*(int *)(lptr)) & 0xfffffffe) );
 
-      if (!(*((int *)(lptr)))) {  // allocated
+      if (!(*((int*)(lptr)))) {  // allocated
         aptr = (ptr + 0x2c);
 
         while (aptr < nptr) {
-          if ((*(int *)(aptr)) == -1) {
+          if ((*(int*)(aptr)) == -1) {
             //						Smart_Printf( "end alloc
             // chain %p.\n", aptr );
             // Hex_Dump_Data( aptr, 0x10);
@@ -3483,15 +3482,15 @@ void Dump_Heap_Pointers(void) {
           if (Debug_Heap_Dump) {
             Smart_Printf("%p chain %s, size %X.\n", aptr,
                          _freeorused[((*aptr) & 1)],
-                         ((*(int *)(aptr)) & 0xfffffffe));
+                         ((*(int*)(aptr)) & 0xfffffffe));
             Hex_Dump_Data(aptr, 0x10);
           }
 
-          if (((*(int *)(aptr)) & 0xff000000)) {
+          if (((*(int*)(aptr)) & 0xff000000)) {
             Error_In_Heap_Pointers("alloc block size way too large");
           }
 
-          aptr += ((*(int *)(aptr)) & 0xfffffffe);
+          aptr += ((*(int*)(aptr)) & 0xfffffffe);
 
           if (((int)aptr & 0xff000000)) {
             Error_In_Heap_Pointers("next alloc block ptr way too large");
@@ -3505,7 +3504,7 @@ void Dump_Heap_Pointers(void) {
         }
       } else {
         if (sizefree != -1) {
-          sizefree -= ((*(int *)(ptr + 0x20)) & 0xfffffffe);
+          sizefree -= ((*(int*)(ptr + 0x20)) & 0xfffffffe);
         }
         numfrees--;
       }
@@ -3527,7 +3526,7 @@ void Dump_Heap_Pointers(void) {
   }
 }
 
-void Error_In_Heap_Pointers(char *string) {
+void Error_In_Heap_Pointers(char* string) {
   Smart_Printf("Error in Heap for %s\n", string);
 }
 #endif
@@ -3561,7 +3560,7 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
 
   CountDownTimerClass timer;
 
-  static char *_volid[] = {"GDI95", "NOD95", "COVERT"};
+  static char* _volid[] = {"GDI95", "NOD95", "COVERT"};
   static int num_volumes = 3;
 
   char buffer[128];
@@ -3577,9 +3576,9 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
     sprintf(buffer, "%c:\\", 'A' + cd_drive);
 
     if (GetVolumeInformation(
-            (char const *)buffer, &volume_name[0], (unsigned long)128,
-            (unsigned long *)NULL, (unsigned long *)&filename_length,
-            (unsigned long *)&misc_dword, (char *)NULL, (unsigned long)0)) {
+            (char const*)buffer, &volume_name[0], (unsigned long)128,
+            (unsigned long*)NULL, (unsigned long*)&filename_length,
+            (unsigned long*)&misc_dword, (char*)NULL, (unsigned long)0)) {
       /*
       ** Try opening 'movies.mix' to verify that the CD is really there and is
       *what
@@ -3641,8 +3640,8 @@ bool Force_CD_Available(int cd) {
 #endif
   static char _palette[768];
   static char _hold[256];
-  static void *font;
-  static char *_volid[] = {"GDI", "NOD", "COVERT"};
+  static void* font;
+  static char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
   int cd_index;
@@ -3760,11 +3759,11 @@ bool Force_CD_Available(int cd) {
           sprintf(buffer, Text_String(TXT_CD_DIALOG_2), cd + 1, _volid[cd]);
         }
       }
-      GraphicViewPortClass *oldpage = Set_Logic_Page(SeenBuff);
+      GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);
       theme_playing = Theme.What_Is_Playing();
       Theme.Stop();
       int hidden = Get_Mouse_State();
-      font = (void *)FontPtr;
+      font = (void*)FontPtr;
       Mem_Copy(CurrentPalette, _palette, 768);
       Mem_Copy(Get_Font_Palette_Ptr(), _hold, 256);
 
@@ -3847,7 +3846,7 @@ bool Force_CD_Available(int cd) {
  *                                                                                             *
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
-void Validate_Error(char * /*name*/) {
+void Validate_Error(char* /*name*/) {
 #ifdef CHEAT_KEYS
   Prog_End();
   printf("%s object error!\n", name);
@@ -3874,7 +3873,7 @@ static void Do_Record_Playback(void) {
   TARGET tgt;
   int i;
   COORDINATE coord;
-  ObjectClass *obj;
+  ObjectClass* obj;
   unsigned long sum;
   unsigned long sum2;
   unsigned long ltgt;
@@ -3992,7 +3991,7 @@ static void Do_Record_Playback(void) {
  * HISTORY:                                                                *
  *   01/25/1996     : Created.                                             *
  *=========================================================================*/
-void const *Hires_Retrieve(const char *name) {
+void const* Hires_Retrieve(const char* name) {
   char filename[30];
 
   if (SeenBuff.Get_Width() != 320) {

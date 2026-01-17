@@ -320,7 +320,7 @@ HANDLE DebugFile = INVALID_HANDLE_VALUE;
  *                                                                                             *
  * HISTORY: * 10/28/96 12:48PM ST : Created *
  *=============================================================================================*/
-void WWDebugString(char const *string) {
+void WWDebugString(char const* string) {
 #if (0)
   char outstr[256];
 
@@ -576,7 +576,7 @@ void Colour_Debug(int call_number) {
  * HISTORY: * 4/17/96 9:58AM ST : Created *
  *=============================================================================================*/
 
-void Assert_Failure(char *expression, int line, char *file) {
+void Assert_Failure(char* expression, int line, char* file) {
   char assertbuf[256];
   char timebuff[512];
   SYSTEMTIME time;

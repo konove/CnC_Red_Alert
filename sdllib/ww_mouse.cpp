@@ -17,9 +17,9 @@
 // Global flag to disable mouse grabbing (for debugging)
 bool NoMouseGrab = false;
 
-static WWMouseClass *_Mouse = nullptr;
+static WWMouseClass* _Mouse = nullptr;
 
-WWMouseClass::WWMouseClass(GraphicViewPortClass * /*scr*/, int mouse_max_width,
+WWMouseClass::WWMouseClass(GraphicViewPortClass* /*scr*/, int mouse_max_width,
                            int mouse_max_height)
     : MaxWidth(mouse_max_width), MaxHeight(mouse_max_height), State(0) {
   Set_Cursor_Clip();
@@ -32,19 +32,19 @@ WWMouseClass::~WWMouseClass() {
   Clear_Cursor_Clip();
 
   if (SDLCursor) {
-    SDL_FreeCursor(static_cast<SDL_Cursor *>(SDLCursor));
+    SDL_FreeCursor(static_cast<SDL_Cursor*>(SDLCursor));
   }
   if (SDLSurface) {
-    SDL_FreeSurface(static_cast<SDL_Surface *>(SDLSurface));
+    SDL_FreeSurface(static_cast<SDL_Surface*>(SDLSurface));
   }
 
   delete[] MouseCursor;
 }
 
-void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
+void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   if (!cursor || PrevCursor == cursor) return cursor;
 
-  auto cursor_shape = (Shape_Type *)cursor;
+  auto cursor_shape = (Shape_Type*)cursor;
 
   if (cursor_shape->Width > MaxWidth ||
       cursor_shape->OriginalHeight > MaxHeight)
@@ -58,7 +58,7 @@ void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
 
   // decompress it
   auto decompressed_data = new uint8_t[cursor_shape->DataLength];
-  LCW_Uncompress((uint8_t *)cursor + 10, decompressed_data,
+  LCW_Uncompress((uint8_t*)cursor + 10, decompressed_data,
                  cursor_shape->DataLength);
 
   // now we have an uncmpressed, but still encoded shape
@@ -92,7 +92,7 @@ void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
 
   if (WindowBuffer) {
     // copy palette from window surface, but make index 0 transparent
-    auto window_pal = (const SDL_Palette *)WindowBuffer->Get_Palette();
+    auto window_pal = (const SDL_Palette*)WindowBuffer->Get_Palette();
     SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
                          255);
     sdl_surf->format->palette->colors[0].a = 0;
@@ -104,11 +104,11 @@ void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
   auto old_cursor = PrevCursor;
   SDL_SetCursor(sdl_cursor);
 
-  if (SDLCursor) SDL_FreeCursor((SDL_Cursor *)SDLCursor);
+  if (SDLCursor) SDL_FreeCursor((SDL_Cursor*)SDLCursor);
 
-  if (SDLSurface) SDL_FreeSurface((SDL_Surface *)SDLSurface);
+  if (SDLSurface) SDL_FreeSurface((SDL_Surface*)SDLSurface);
 
-  PrevCursor = (char *)cursor;
+  PrevCursor = (char*)cursor;
   SDLCursor = sdl_cursor;
   SDLSurface = sdl_surf;
   MouseXHot = xhotspot;
@@ -139,21 +139,21 @@ int WWMouseClass::Get_Mouse_X(void) { return LastX; }
 
 int WWMouseClass::Get_Mouse_Y(void) { return LastY; }
 
-void WWMouseClass::Draw_Mouse(GraphicViewPortClass * /*scr*/) {
+void WWMouseClass::Draw_Mouse(GraphicViewPortClass* /*scr*/) {
   // we're using a "hardware" cursor, so don't need to do anything
 }
 
-void WWMouseClass::Erase_Mouse(GraphicViewPortClass * /*scr*/,
-                               bool /*forced*/) {}
+void WWMouseClass::Erase_Mouse(GraphicViewPortClass* /*scr*/, bool /*forced*/) {
+}
 
 void WWMouseClass::Set_Cursor_Clip(void) {
   if (!NoMouseGrab) {
-    SDL_SetWindowGrab((SDL_Window *)MainWindow, SDL_TRUE);
+    SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_TRUE);
   }
 }
 
 void WWMouseClass::Clear_Cursor_Clip(void) {
-  SDL_SetWindowGrab((SDL_Window *)MainWindow, SDL_FALSE);
+  SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_FALSE);
 }
 
 void WWMouseClass::Update_Palette() {
@@ -167,10 +167,10 @@ void WWMouseClass::Update_Palette() {
 
   PaletteDirty = false;
 
-  auto sdl_surf = (SDL_Surface *)SDLSurface;
+  auto sdl_surf = (SDL_Surface*)SDLSurface;
 
   // copy palette from window surface
-  auto window_pal = (const SDL_Palette *)WindowBuffer->Get_Palette();
+  auto window_pal = (const SDL_Palette*)WindowBuffer->Get_Palette();
   SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
                        255);
 
@@ -179,7 +179,7 @@ void WWMouseClass::Update_Palette() {
   SDL_SetCursor(sdl_cursor);
 
   // clean up old cursor
-  if (SDLCursor) SDL_FreeCursor((SDL_Cursor *)SDLCursor);
+  if (SDLCursor) SDL_FreeCursor((SDL_Cursor*)SDLCursor);
   SDLCursor = sdl_cursor;
 }
 
@@ -209,7 +209,7 @@ int Get_Mouse_State(void) {
   return 0;
 }
 
-void *Set_Mouse_Cursor(int hotx, int hoty, void *cursor) {
+void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
   if (_Mouse) return _Mouse->Set_Cursor(hotx, hoty, cursor);
   return nullptr;
 }

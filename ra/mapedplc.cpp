@@ -99,7 +99,7 @@
  *=========================================================================*/
 int MapEditClass::Placement_Dialog(void) {
   HousesType house;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Dialog & button dimensions
@@ -224,10 +224,10 @@ int MapEditClass::Placement_Dialog(void) {
   **	Dialog variables
   */
   bool cancel = false;            // true = user cancels
-  const ObjectTypeClass *curobj;  // Working object pointer.
+  const ObjectTypeClass* curobj;  // Working object pointer.
   int x, y;                       // for drawing the grid
   KeyNumType input;               // user input
-  short const *occupy;            // ptr into object's OccupyList
+  short const* occupy;            // ptr into object's OccupyList
   int cell;                       // cell index for parsing OccupyList
   int i;
   int typeindex;  // index of class type
@@ -235,7 +235,7 @@ int MapEditClass::Placement_Dialog(void) {
   /*
   **	Buttons
   */
-  ControlClass *commands;
+  ControlClass* commands;
 
   ListClass housebtn(BUTTON_HOUSE, D_GDI_X, D_GDI_Y, 60, 8 * 16,
                      TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
@@ -788,8 +788,8 @@ int MapEditClass::Place_Object(void) {
   CELL template_cell;        // cell being checked for template
   COORDINATE obj_coord;      // coord of occupier object
   int okflag;                // OK to place a template?
-  short const *occupy;       // ptr into template's OccupyList
-  ObjectClass *occupier;     // occupying object
+  short const* occupy;       // ptr into template's OccupyList
+  ObjectClass* occupier;     // occupying object
   TemplateType save_ttype;   // for saving cell's TType
   unsigned char save_ticon;  // for saving cell's TIcon
                              //	BaseNodeClass node;
@@ -832,10 +832,10 @@ int MapEditClass::Place_Object(void) {
         save_ttype = (*this)[template_cell].TType;
         save_ticon = (*this)[template_cell].TIcon;
         (*this)[template_cell].TType =
-            ((TemplateTypeClass *)PendingObject)->Type;
+            ((TemplateTypeClass*)PendingObject)->Type;
         (*this)[template_cell].TIcon =
             Cell_X(*occupy) +
-            Cell_Y(*occupy) * ((TemplateTypeClass *)PendingObject)->Width;
+            Cell_Y(*occupy) * ((TemplateTypeClass*)PendingObject)->Width;
         (*this)[template_cell].Recalc_Attributes();
 
         /*
@@ -947,7 +947,7 @@ int MapEditClass::Place_Object(void) {
     **	Unlimbo the object
     */
     if (PendingObjectPtr->Unlimbo(obj_coord)) {
-      ((InfantryClass *)PendingObjectPtr)->Set_Occupy_Bit(obj_coord);
+      ((InfantryClass*)PendingObjectPtr)->Set_Occupy_Bit(obj_coord);
       //			Map[obj_coord].Flag.Composite |=
       //				(1 << CellClass::Spot_Index(obj_coord));
       PendingObjectPtr = 0;
@@ -970,7 +970,7 @@ int MapEditClass::Place_Object(void) {
     ** Update the Tiberium computation if we're placing an overlay
     */
     if (PendingObject->What_Am_I() == RTTI_OVERLAYTYPE &&
-        ((OverlayTypeClass *)PendingObject)->IsTiberium) {
+        ((OverlayTypeClass*)PendingObject)->IsTiberium) {
       TotalValue = Overpass();
       Flag_To_Redraw(false);
     }
@@ -982,7 +982,7 @@ int MapEditClass::Place_Object(void) {
       //			node.Type = ((BuildingTypeClass
       //*)PendingObject)->Type; 			node.Cell =
       // Coord_Cell(PendingObjectPtr->Coord);
-      Base.Nodes.Add(BaseNodeClass(((BuildingTypeClass *)PendingObject)->Type,
+      Base.Nodes.Add(BaseNodeClass(((BuildingTypeClass*)PendingObject)->Type,
                                    Coord_Cell(PendingObjectPtr->Coord)));
     }
 
@@ -1466,7 +1466,7 @@ void MapEditClass::Place_Home(void) {
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Toggle_House(void) {
-  TechnoClass *tp;
+  TechnoClass* tp;
 
   /*
   ** Don't allow this command if we're building a base; the only valid
@@ -1491,7 +1491,7 @@ void MapEditClass::Toggle_House(void) {
   /*
   **	Change the house
   */
-  tp = (TechnoClass *)PendingObjectPtr;
+  tp = (TechnoClass*)PendingObjectPtr;
   tp->House = HouseClass::As_Pointer(LastHouse);
 
   /*
@@ -1522,7 +1522,7 @@ void MapEditClass::Toggle_House(void) {
  *   11/23/1994 BR : Created.                                              *
  *   01/26/1996 JLB : Uses new house selection list method.                *
  *=========================================================================*/
-void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass *, int)
+void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass*, int)
 // void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass * btnlist,
 // int base_id)
 {
@@ -1531,7 +1531,7 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass *, int)
 #ifdef NEVER
   HousesType h;
   int id;
-  TextButtonClass *btn;
+  TextButtonClass* btn;
 
   /*
   **	Loop through all houses, searching the button list for each one.
@@ -1541,7 +1541,7 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass *, int)
     **	Compute the desired button ID; get a pointer to the button
     */
     id = (int)h + base_id;
-    btn = (TextButtonClass *)btnlist->Extract_Gadget(id);
+    btn = (TextButtonClass*)btnlist->Extract_Gadget(id);
     if (btn) {
       /*
       **	If this house value is the desired one, turn the button on;
@@ -1611,7 +1611,7 @@ void MapEditClass::Stop_Trigger_Placement(void) {
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Trigger(void) {
-  ObjectClass *object = NULL;  // Generic object clicked on.
+  ObjectClass* object = NULL;  // Generic object clicked on.
   int x, y;
   CELL cell;  // Cell that was selected.
 
@@ -1643,7 +1643,7 @@ void MapEditClass::Place_Trigger(void) {
   AttachType a1 = CurTrigger->Attaches_To();
   if (object && (a1 & ATTACH_OBJECT) != 0) {
     if (CurTrigger) {
-      TriggerClass *tt = Find_Or_Make(CurTrigger);
+      TriggerClass* tt = Find_Or_Make(CurTrigger);
       if (tt) {
         object->Trigger = tt;
       }
@@ -1654,7 +1654,7 @@ void MapEditClass::Place_Trigger(void) {
     */
     if ((a1 & ATTACH_CELL) != 0) {
       if (CurTrigger) {
-        TriggerClass *tt = Find_Or_Make(CurTrigger);
+        TriggerClass* tt = Find_Or_Make(CurTrigger);
         Map[cell].Trigger = tt;
       }
       //			CellTriggers[cell] = CurTrigger;
@@ -1754,8 +1754,8 @@ void MapEditClass::Cancel_Base_Building(void) {
 void MapEditClass::Build_Base_To(int percent) {
   int i;
   int num_buildings;
-  BuildingTypeClass const *objtype;
-  BuildingClass *obj;
+  BuildingTypeClass const* objtype;
+  BuildingClass* obj;
 
   // ScenarioInit++;
 
@@ -1782,7 +1782,7 @@ void MapEditClass::Build_Base_To(int percent) {
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
     objtype = &BuildingTypeClass::As_Reference(Base.Nodes[i].Type);
-    obj = (BuildingClass *)objtype->Create_One_Of(
+    obj = (BuildingClass*)objtype->Create_One_Of(
         HouseClass::As_Pointer(Base.House));
 
     /*

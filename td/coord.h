@@ -3,7 +3,7 @@
 
 #include "td/defines.h"
 
-void Move_Point(short &x, short &y, DirType dir, unsigned short distance);
+void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
 COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir);
 COORDINATE Coord_Move(COORDINATE start, DirType facing,
                       unsigned short distance);
@@ -15,7 +15,7 @@ DirType Direction256(COORDINATE coord1, COORDINATE coord2);
 DirType Direction8(COORDINATE coord1, COORDINATE coord2);
 int Distance(CELL coord1, CELL coord2);
 int Distance(COORDINATE coord1, COORDINATE coord2);
-short const *Coord_Spillage_List(COORDINATE coord, int maxsize);
+short const* Coord_Spillage_List(COORDINATE coord, int maxsize);
 // void Move_Point(unsigned short &x, unsigned short &y, DirType dir, unsigned
 // short distance);
 

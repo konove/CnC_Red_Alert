@@ -46,11 +46,13 @@
  *
  ****************************************************************************/
 
+#include <vqm32\all.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
 #include "vqaplayp.h"
-#include <vqm32\all.h>
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
@@ -213,7 +215,7 @@ enum VMTAGS {
 };
 
 typedef struct _VideoModeTag {
-  char const *token;
+  char const* token;
   long id;
 } VideoModeTag;
 
@@ -264,8 +266,8 @@ VideoModeTag VideoModeTags[] = {{"NONE", VMTAG_NONE},
  *
  ****************************************************************************/
 
-void VQA_INIConfig(VQAConfig *config) {
-  char *ininame;
+void VQA_INIConfig(VQAConfig* config) {
+  char* ininame;
   char buf[80];
   long i;
 
@@ -489,6 +491,6 @@ void VQA_INIConfig(VQAConfig *config) {
  *
  ****************************************************************************/
 
-void VQA_DefaultConfig(VQAConfig *config) {
+void VQA_DefaultConfig(VQAConfig* config) {
   memcpy(config, &_defaultconfig, sizeof(VQAConfig));
 }

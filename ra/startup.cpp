@@ -90,8 +90,8 @@
 // #include "WolDebug.h"
 #endif
 
-bool Read_Private_Config_Struct(FileClass &file, NewConfigType *config);
-void Print_Error_Exit(char *string);
+bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
+void Print_Error_Exit(char* string);
 
 #ifdef WIN32
 // WinTimerClass * WinTimer;
@@ -102,14 +102,14 @@ extern bool RA95AlreadyRunning;
 HINSTANCE ProgramInstance;
 #endif
 void Check_Use_Compressed_Shapes(void);
-void Read_Setup_Options(RawFileClass *config_file);
+void Read_Setup_Options(RawFileClass* config_file);
 bool VideoBackBufferAllowed = true;
 #else
 BOOL Init_Timer_System(unsigned int freq, int partial = false);
 BOOL Remove_Timer_System(VOID);
 #endif  // WIN32
 
-const char *Game_Registry_Key();
+const char* Game_Registry_Key();
 
 // #if (ENGLISH)
 // #define WINDOW_NAME "Red Alert"
@@ -142,10 +142,10 @@ const char *Game_Registry_Key();
  *=============================================================================================*/
 #ifdef _WIN32
 // int PASCAL WinMain(HINSTANCE, HINSTANCE, char *, int )
-int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *command_line,
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
 #else   // WIN32
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 #endif  // WIN32
 
 {
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
   int argc;  // Command line argument count
   unsigned command_scan;
   char command_char;
-  char *argv[20];  // Pointers to command line arguments
+  char* argv[20];  // Pointers to command line arguments
   char path_to_exe[132];
 
   ProgramInstance = instance;
@@ -873,13 +873,13 @@ void Prog_End(void) {
 }
 #endif  // WIN32
 
-void Print_Error_End_Exit(char *string) {
+void Print_Error_End_Exit(char* string) {
   Prog_End();
   printf("%s\n", string);
   exit(1);
 }
 
-void Print_Error_Exit(char *string) {
+void Print_Error_Exit(char* string) {
   printf("%s\n", string);
   exit(1);
 }
@@ -957,7 +957,7 @@ void Emergency_Exit(int code) {
  *                                                                                             *
  * HISTORY: * 6/7/96 4:09PM ST : Created * 09/30/1996 JLB : Uses INI class. *
  *=============================================================================================*/
-void Read_Setup_Options(RawFileClass *config_file) {
+void Read_Setup_Options(RawFileClass* config_file) {
   if (config_file->Is_Available()) {
     INIClass ini;
 
@@ -989,7 +989,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
     */
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
-    char *netptr = netbuf;
+    char* netptr = netbuf;
     bool found =
         ini.Get_String("Options", "DestNet", nullptr, netbuf, sizeof(netbuf));
 
@@ -1001,7 +1001,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
       ** Scan the string, pulling off each address piece
       */
       int i = 0;
-      char *p = strtok(netbuf, ".");
+      char* p = strtok(netbuf, ".");
       int x;
       while (p != nullptr) {
         sscanf(p, "%x", &x);  // convert from hex string to int

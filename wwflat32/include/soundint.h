@@ -107,13 +107,13 @@ typedef struct {
   ** conjunction with original size to unlock a sample which has been DPMI
   ** locked.
   */
-  void const *Original;
+  void const* Original;
   long OriginalSize;
 
   /*
   **	These are pointers to the double buffers in low ram.
   */
-  VOID *Buffer[2];
+  VOID* Buffer[2];
 
   /*
   **	The number of bytes in the buffer that has been filled but is not
@@ -133,7 +133,7 @@ typedef struct {
   **	Pointer to the sound data that has not yet been copied
   **	to the playback buffers.
   */
-  VOID *Source;
+  VOID* Source;
 
   /*
   **	This is the number of bytes remaining in the source data as
@@ -190,8 +190,8 @@ typedef struct {
   /*
   **	Streaming control handlers.
   */
-  BOOL (*Callback)(WORD id, WORD *odd, VOID **buffer, LONG *size);
-  VOID *QueueBuffer;     // Pointer to continued sample data.
+  BOOL (*Callback)(WORD id, WORD* odd, VOID** buffer, LONG* size);
+  VOID* QueueBuffer;     // Pointer to continued sample data.
   LONG QueueSize;        // Size of queue buffer attached.
   WORD Odd;              // Block number tracker (0..StreamBufferCount-1).
   int FilePending;       // Number of buffers already filled ahead.
@@ -202,7 +202,7 @@ typedef struct {
   **	hard drive.
   */
   WORD FileHandle;   // Streaming file handle (ERROR = not in use).
-  VOID *FileBuffer;  // Temporary streaming buffer (allowed to be freed).
+  VOID* FileBuffer;  // Temporary streaming buffer (allowed to be freed).
   /*
   ** The following structure is used if the sample if compressed using
   ** the sos 16 bit compression Codec.
@@ -215,7 +215,7 @@ typedef struct LockedData {
   unsigned int DigiHandle;  // = -1;
   BOOL ServiceSomething;    // = FALSE;
   long MagicNumber;         // = 0xDEAF;
-  VOID *UncompBuffer;       // = NULL;
+  VOID* UncompBuffer;       // = NULL;
   long StreamBufferSize;    // = (2*SFX_MINI_STAGE_BUFFER_SIZE)+128;
   short StreamBufferCount;  // = 32;
   SampleTrackerType SampleTracker[MAX_SFX];
@@ -231,21 +231,21 @@ extern LockedDataType LockedData;
 
 void Init_Locked_Data(void);
 void Unlock_Locked_Data(void);
-long Simple_Copy(void **source, long *ssize, void **alternate, long *altsize,
-                 void **dest, long size);
-long Sample_Copy(SampleTrackerType *st, void **source, long *ssize,
-                 void **alternate, long *altsize, void *dest, long size,
-                 SCompressType scomp, void *trailer, WORD *trailersize);
+long Simple_Copy(void** source, long* ssize, void** alternate, long* altsize,
+                 void** dest, long size);
+long Sample_Copy(SampleTrackerType* st, void** source, long* ssize,
+                 void** alternate, long* altsize, void* dest, long size,
+                 SCompressType scomp, void* trailer, WORD* trailersize);
 VOID far cdecl maintenance_callback(VOID);
 VOID cdecl far DigiCallback(unsigned int driverhandle, unsigned int callsource,
                             unsigned int sampleid);
 void far HMI_TimerCallback(void);
-void *Audio_Add_Long_To_Pointer(void const *ptr, long size);
-void DPMI_Unlock(VOID const *ptr, long const size);
+void* Audio_Add_Long_To_Pointer(void const* ptr, long size);
+void DPMI_Unlock(VOID const* ptr, long const size);
 extern "C" {
-void Audio_Mem_Set(void const *ptr, unsigned char value, long size);
-void Mem_Copy(void const *source, void *dest, unsigned long bytes_to_copy);
-long Decompress_Frame(void *source, void *dest, long size);
+void Audio_Mem_Set(void const* ptr, unsigned char value, long size);
+void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy);
+long Decompress_Frame(void* source, void* dest, long size);
 int Decompress_Frame_Lock(void);
 int Decompress_Frame_Unlock(void);
 int sosCODEC_Lock(void);

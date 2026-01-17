@@ -76,34 +76,34 @@ class MessageListClass {
   **	Initialization
   */
   void Init(int x, int y, int max_msg, int maxchars, int height);
-  TextLabelClass *Add_Message(char *txt, int color, TextPrintType style,
+  TextLabelClass* Add_Message(char* txt, int color, TextPrintType style,
                               int timeout, unsigned short magic_number,
                               unsigned short crc);
 
   /*
   **	Message-editing routines
   */
-  TextLabelClass *Add_Edit(int color, TextPrintType style, char *to, int width);
-  char *Get_Edit_Buf(void);
+  TextLabelClass* Add_Edit(int color, TextPrintType style, char* to, int width);
+  char* Get_Edit_Buf(void);
 
   /*
   **	Maintenance routines
   */
   int Manage(void);
-  int Input(KeyNumType &input);
+  int Input(KeyNumType& input);
   void Draw(void);
   int Num_Messages(void);
   void Set_Width(int width);
 
  private:
-  TextLabelClass *MessageList;  // list of messages
+  TextLabelClass* MessageList;  // list of messages
   int MessageX;                 // x-coord of upper-left
   int MessageY;                 // y-coord of upper-left
   int MaxMessages;              // max messages allowed
   int MaxChars;                 // max allowed chars per message
   int Height;                   // height in pixels
-  TextLabelClass *EditLabel;    // ptr to current edit label
-  char *EditBuf;                // ptr to current edit buffer
+  TextLabelClass* EditLabel;    // ptr to current edit label
+  char* EditBuf;                // ptr to current edit buffer
   int EditCurPos;               // current edit position
   int EditInitPos;              // initial edit position
   int Width;                    // Maximum width in pixels of editable string

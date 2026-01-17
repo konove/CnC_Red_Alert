@@ -203,8 +203,8 @@ class TeamClass : public AbstractClass {
   CCPtr<TriggerClass> Trigger;
 
   //------------------------------------------------------------
-  TeamClass(TeamTypeClass const *team = nullptr, HouseClass *owner = nullptr);
-  TeamClass(NoInitClass const &x)
+  TeamClass(TeamTypeClass const* team = nullptr, HouseClass* owner = nullptr);
+  TeamClass(NoInitClass const& x)
       : AbstractClass(x),
         Class(x),
         House(x),
@@ -213,33 +213,33 @@ class TeamClass : public AbstractClass {
         TimeOut(x),
         Member(x) {};
   virtual ~TeamClass(void);
-  static void operator delete(void *ptr);
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void Init(void);
-  static void Suspend_Teams(int priority, HouseClass const *house);
-  void Debug_Dump(MonoClass *mono) const;
+  static void Suspend_Teams(int priority, HouseClass const* house);
+  void Debug_Dump(MonoClass* mono) const;
 
   /*
   **	File I/O.
   */
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
-  bool Is_Empty(void) const { return (Member == (void *)nullptr); }
+  bool Is_Empty(void) const { return (Member == (void*)nullptr); }
   bool Has_Entered_Map(void) const;
   void Force_Active(void) {
     IsForcedActive = true;
     IsUnderStrength = false;
   };
-  bool Remove(FootClass *, int typeindex = -1);
+  bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
   void AI(void);
-  void Took_Damage(FootClass *obj, ResultType result, TechnoClass *source);
-  bool Add(FootClass *);
-  bool Can_Add(FootClass *obj, int &typeindex) const;
+  void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
+  bool Add(FootClass*);
+  bool Can_Add(FootClass* obj, int& typeindex) const;
   void Assign_Mission_Target(TARGET new_target);
   bool Is_Leaving_Map(void) const;
   void Scan_Limit(void);
@@ -270,13 +270,13 @@ class TeamClass : public AbstractClass {
   bool Coordinate_Regroup(void);
   void Coordinate_Attack(void);
   void Coordinate_Move(void);
-  bool Coordinate_Conscript(FootClass *unit);
+  bool Coordinate_Conscript(FootClass* unit);
   void Coordinate_Do(void);
-  void Calc_Center(TARGET &center, TARGET &obj_center) const;
+  void Calc_Center(TARGET& center, TARGET& obj_center) const;
   int Recruit(int typeindex);
-  bool Is_A_Member(void const *who) const;
+  bool Is_A_Member(void const* who) const;
   bool Lagging_Units(void);
-  FootClass *Fetch_A_Leader(void) const;
+  FootClass* Fetch_A_Leader(void) const;
 
   /*
   **	Points to the first member in the list of members for this team.

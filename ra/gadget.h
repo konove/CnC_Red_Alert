@@ -106,9 +106,9 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass(NoInitClass const &x) : LinkClass(x) {};
+  GadgetClass(NoInitClass const& x) : LinkClass(x) {};
   GadgetClass() {};
-  GadgetClass(GadgetClass const &gadget) = default;
+  GadgetClass(GadgetClass const& gadget) = default;
   virtual ~GadgetClass(void);
 
   /*
@@ -117,11 +117,11 @@ class GadgetClass : public LinkClass {
   virtual KeyNumType Input(void);
   virtual void Draw_All(bool forced = true);
   virtual void Delete_List(void);
-  virtual ControlClass *Extract_Gadget(unsigned id);
+  virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw(void) { LastList = nullptr; };
-  virtual GadgetClass *Remove(void);
-  virtual GadgetClass *Get_Next(void) const;
-  virtual GadgetClass *Get_Prev(void) const;
+  virtual GadgetClass* Remove(void);
+  virtual GadgetClass* Get_Next(void) const;
+  virtual GadgetClass* Get_Prev(void) const;
 
   /*
   **	Manages individual gadget states and actions.
@@ -130,7 +130,7 @@ class GadgetClass : public LinkClass {
   virtual void Enable(void);
   virtual unsigned Get_ID(void) const { return 0; };
   virtual void Flag_To_Redraw(void);
-  virtual void Peer_To_Peer(unsigned, KeyNumType &, ControlClass &) {};
+  virtual void Peer_To_Peer(unsigned, KeyNumType&, ControlClass&) {};
   virtual void Set_Focus(void);
   virtual void Clear_Focus(void);
   virtual bool Has_Focus(void);
@@ -146,11 +146,11 @@ class GadgetClass : public LinkClass {
   /*
   ** Sets the current color scheme
   */
-  static void Set_Color_Scheme(RemapControlType *scheme) {
+  static void Set_Color_Scheme(RemapControlType* scheme) {
     ColorScheme = scheme;
   }
 
-  static RemapControlType *Get_Color_Scheme(void) { return (ColorScheme); }
+  static RemapControlType* Get_Color_Scheme(void) { return (ColorScheme); }
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are
@@ -176,7 +176,7 @@ class GadgetClass : public LinkClass {
   *mouse *	input indicates. This is the main method by which this button
   *performs a useful *	function.
   */
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
 
   /*
   **	This is a record of the last list passed to the Input() function. If a
@@ -185,13 +185,13 @@ class GadgetClass : public LinkClass {
   *buttons to be redrawn the *	fire time Input() is called without forced a
   *manual call to Draw_All().
   */
-  static GadgetClass *LastList;
+  static GadgetClass* LastList;
 
   /*
   **	This points to the gadget that has the keyboard focus. All keyboard only
   **	events are fed to this gadget to the exclusion of all others.
   */
-  static GadgetClass *Focused;
+  static GadgetClass* Focused;
 
   /*
   **	This button should call the Draw_Me function because some graphic
@@ -216,7 +216,7 @@ class GadgetClass : public LinkClass {
   *A sticky *	button is one that will ONLY be processed while the mouse button
   *is being *	held down.
   */
-  static GadgetClass *StuckOn;
+  static GadgetClass* StuckOn;
 
  protected:
   /*
@@ -239,10 +239,10 @@ class GadgetClass : public LinkClass {
   /*
   ** This is the current color scheme; it must be initialized by the app.
   */
-  static RemapControlType *ColorScheme;
+  static RemapControlType* ColorScheme;
 
  private:
-  virtual int Clicked_On(KeyNumType &key, unsigned flags, int x, int y);
+  virtual int Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
 };
 
 #endif

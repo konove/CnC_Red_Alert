@@ -63,7 +63,7 @@ class RadarClass : public DisplayClass {
   int RadPHeight;
 
   RadarClass(void);
-  RadarClass(NoInitClass const &x) : DisplayClass(x) {};
+  RadarClass(NoInitClass const& x) : DisplayClass(x) {};
 
   /*
   ** Initialization
@@ -71,25 +71,25 @@ class RadarClass : public DisplayClass {
   virtual void One_Time(void);    // One-time inits
   virtual void Init_Clear(void);  // Clears all to known state
 
-  virtual bool Map_Cell(CELL cell, HouseClass *house);
+  virtual bool Map_Cell(CELL cell, HouseClass* house);
   virtual CELL Click_Cell_Calc(int x, int y);
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
-  virtual void Refresh_Cells(CELL cell, short const *list);
+  virtual void Refresh_Cells(CELL cell, short const* list);
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
   // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
   virtual void Set_Tactical_Position(COORDINATE coord);
   void Zoom_Mode(CELL cell);
-  int Click_In_Radar(int &x, int &y, bool change = false);
-  void Cell_XY_To_Radar_Pixel(int cellx, int celly, int &x, int &y);
+  int Click_In_Radar(int& x, int& y, bool change = false);
+  void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
 
   void Set_Radar_Position(CELL cell);
   CELL Radar_Position(void);
   bool Radar_Activate(int control);
   void Plot_Radar_Pixel(CELL cell);
   void Radar_Pixel(CELL cell);
-  void Coord_To_Radar_Pixel(COORDINATE coord, int &x, int &y);
+  void Coord_To_Radar_Pixel(COORDINATE coord, int& x, int& y);
   void Cursor_Cell(CELL cell, int value);
   void Mark_Radar(int x1, int y1, int x2, int y2, int value, int barlen);
   void Radar_Cursor(int forced = false);
@@ -146,7 +146,7 @@ class RadarClass : public DisplayClass {
   unsigned SpecialRadarFrame : 3;
   unsigned RadarAnimFrame : 6;
 
-  static void const *RadarAnim;
+  static void const* RadarAnim;
 
   /*
   **	This gadget class is used for capturing input to the tactical map. All
@@ -160,7 +160,7 @@ class RadarClass : public DisplayClass {
                       true) {};
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType &key);
+    virtual int Action(unsigned flags, KeyNumType& key);
     friend class RadarClass;
   };
   friend class TacticalClass;

@@ -70,7 +70,7 @@ typedef struct _FontInfo {
 extern "C" {
 #endif
 
-extern void const *FontPtr;
+extern void const* FontPtr;
 extern int FontXSpacing;
 extern int FontYSpacing;
 
@@ -80,12 +80,12 @@ extern int FontYSpacing;
 
 extern char FontWidth;
 extern char FontHeight;
-extern char *FontWidthBlockPtr;
+extern char* FontWidthBlockPtr;
 
 /* Function prototypes. */
-void *cdecl Load_Font(char const *name);
-void *cdecl Set_Font(void const *font);
-unsigned short cdecl String_Pixel_Width(char const *string);
+void* cdecl Load_Font(char const* name);
+void* cdecl Set_Font(void const* font);
+unsigned short cdecl String_Pixel_Width(char const* string);
 
 #ifdef __cplusplus
 extern "C" {

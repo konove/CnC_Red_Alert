@@ -131,27 +131,27 @@ EZERO,                 // Non-error.
   */
   int Rights;
 
-  RawFileClass(char const *filename);
+  RawFileClass(char const* filename);
   RawFileClass(void);
-  RawFileClass(RawFileClass const &f);
-  RawFileClass &operator=(RawFileClass const &f);
+  RawFileClass(RawFileClass const& f);
+  RawFileClass& operator=(RawFileClass const& f);
   virtual ~RawFileClass(void);
 
-  virtual char const *File_Name(void) const;
-  virtual char const *Set_Name(char const *filename);
+  virtual char const* File_Name(void) const;
+  virtual char const* Set_Name(char const* filename);
   virtual int Create(void);
   virtual int Delete(void);
   virtual int Is_Available(int forced = false);
   virtual int Is_Open(void) const;
-  virtual int Open(char const *filename, int rights = READ);
+  virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);
-  virtual long Read(void *buffer, long size);
+  virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
   virtual long Size(void);
-  virtual long Write(void const *buffer, long size);
+  virtual long Write(void const* buffer, long size);
   virtual void Close(void);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = nullptr);
+                     char const* filename = nullptr);
 
  protected:
   /*
@@ -163,7 +163,7 @@ EZERO,                 // Non-error.
 
  private:
 #ifdef PORTABLE
-  void *Handle;
+  void* Handle;
 #else
   /*
   **	This is the low level DOS handle. A -1 indicates an empty condition.
@@ -175,7 +175,7 @@ EZERO,                 // Non-error.
   *either a *	constant or an allocated string as indicated by the "Allocated"
   *flag.
   */
-  char const *Filename;
+  char const* Filename;
 
   /*
   **	Filenames that were assigned as part of the construction process
@@ -206,7 +206,7 @@ object or NULL   *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline char const *RawFileClass::File_Name(void) const { return (Filename); }
+inline char const* RawFileClass::File_Name(void) const { return (Filename); }
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *

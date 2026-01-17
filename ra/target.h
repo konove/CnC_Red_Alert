@@ -60,11 +60,11 @@ class UnitClass;
 class VesselClass;
 
 inline RTTIType Target_Kind(TARGET a) {
-  return (RTTIType(((TARGET_COMPOSITE &)a).Sub.Exponent));
+  return (RTTIType(((TARGET_COMPOSITE&)a).Sub.Exponent));
 }
 
 inline unsigned Target_Value(TARGET a) {
-  return (((TARGET_COMPOSITE &)a).Sub.Mantissa);
+  return (((TARGET_COMPOSITE&)a).Sub.Mantissa);
 }
 
 inline bool Is_Target_Team(TARGET a) { return (Target_Kind(a) == RTTI_TEAM); }
@@ -130,7 +130,7 @@ class xTargetClass {
   operator RTTIType(void) const { return (RTTIType(Target.Sub.Exponent)); }
 
   // comparison operator
-  int operator==(xTargetClass &tgt) {
+  int operator==(xTargetClass& tgt) {
     return (tgt.Target.Target == Target.Target ? 1 : 0);
   }
 
@@ -146,58 +146,58 @@ class xTargetClass {
   bool Is_Valid(void) const { return (Target.Sub.Exponent != RTTI_NONE); }
 
   TARGET As_Target(void) const { return (Target.Target); }
-  AbstractTypeClass *As_TypeClass(void) const;
-  AbstractClass *As_Abstract(void) const;
-  TechnoClass *As_Techno(void) const;
-  ObjectClass *As_Object(void) const;
-  CellClass *As_Cell(void) const;
+  AbstractTypeClass* As_TypeClass(void) const;
+  AbstractClass* As_Abstract(void) const;
+  TechnoClass* As_Techno(void) const;
+  ObjectClass* As_Object(void) const;
+  CellClass* As_Cell(void) const;
 
   /*
   **	Helper routines to combine testing for, and fetching a pointer to, the
   **	type of object indicated.
   */
-  TriggerTypeClass *As_TriggerType(void) const {
-    if (*this == RTTI_TRIGGERTYPE) return ((TriggerTypeClass *)As_TypeClass());
+  TriggerTypeClass* As_TriggerType(void) const {
+    if (*this == RTTI_TRIGGERTYPE) return ((TriggerTypeClass*)As_TypeClass());
     return (nullptr);
   }
-  TeamTypeClass *As_TeamType(void) const {
-    if (*this == RTTI_TEAMTYPE) return ((TeamTypeClass *)As_TypeClass());
+  TeamTypeClass* As_TeamType(void) const {
+    if (*this == RTTI_TEAMTYPE) return ((TeamTypeClass*)As_TypeClass());
     return (nullptr);
   }
-  TerrainClass *As_Terrain(void) const {
-    if (*this == RTTI_TERRAIN) return ((TerrainClass *)As_Abstract());
+  TerrainClass* As_Terrain(void) const {
+    if (*this == RTTI_TERRAIN) return ((TerrainClass*)As_Abstract());
     return (nullptr);
   }
-  BulletClass *As_Bullet(void) const {
-    if (*this == RTTI_BULLET) return ((BulletClass *)As_Abstract());
+  BulletClass* As_Bullet(void) const {
+    if (*this == RTTI_BULLET) return ((BulletClass*)As_Abstract());
     return (nullptr);
   }
-  AnimClass *As_Anim(void) const {
-    if (*this == RTTI_ANIM) return ((AnimClass *)As_Abstract());
+  AnimClass* As_Anim(void) const {
+    if (*this == RTTI_ANIM) return ((AnimClass*)As_Abstract());
     return (nullptr);
   }
-  TeamClass *As_Team(void) const {
-    if (*this == RTTI_TEAM) return ((TeamClass *)As_Abstract());
+  TeamClass* As_Team(void) const {
+    if (*this == RTTI_TEAM) return ((TeamClass*)As_Abstract());
     return (nullptr);
   }
-  InfantryClass *As_Infantry(void) const {
-    if (*this == RTTI_INFANTRY) return ((InfantryClass *)As_Techno());
+  InfantryClass* As_Infantry(void) const {
+    if (*this == RTTI_INFANTRY) return ((InfantryClass*)As_Techno());
     return (nullptr);
   }
-  UnitClass *As_Unit(void) const {
-    if (*this == RTTI_UNIT) return ((UnitClass *)As_Techno());
+  UnitClass* As_Unit(void) const {
+    if (*this == RTTI_UNIT) return ((UnitClass*)As_Techno());
     return (nullptr);
   }
-  BuildingClass *As_Building(void) const {
-    if (*this == RTTI_BUILDING) return ((BuildingClass *)As_Techno());
+  BuildingClass* As_Building(void) const {
+    if (*this == RTTI_BUILDING) return ((BuildingClass*)As_Techno());
     return (nullptr);
   }
-  AircraftClass *As_Aircraft(void) const {
-    if (*this == RTTI_AIRCRAFT) return ((AircraftClass *)As_Techno());
+  AircraftClass* As_Aircraft(void) const {
+    if (*this == RTTI_AIRCRAFT) return ((AircraftClass*)As_Techno());
     return (nullptr);
   }
-  VesselClass *As_Vessel(void) const {
-    if (*this == RTTI_VESSEL) return ((VesselClass *)As_Techno());
+  VesselClass* As_Vessel(void) const {
+    if (*this == RTTI_VESSEL) return ((VesselClass*)As_Techno());
     return (nullptr);
   }
 };
@@ -215,7 +215,7 @@ class xTargetClass {
 class TargetClass : public xTargetClass {
  public:
   TargetClass(void) { Invalidate(); }
-  TargetClass(NoInitClass const &) {}
+  TargetClass(NoInitClass const&) {}
   TargetClass(RTTIType rtti, int id) {
     Target.Sub.Exponent = rtti;
     Target.Sub.Mantissa = id;
@@ -225,28 +225,28 @@ class TargetClass : public xTargetClass {
     Target.Sub.Mantissa = cell;
   }
   TargetClass(TARGET target);
-  TargetClass(AbstractClass const *ptr);
-  TargetClass(AbstractTypeClass const *ptr);
-  TargetClass(CellClass const *ptr);
+  TargetClass(AbstractClass const* ptr);
+  TargetClass(AbstractTypeClass const* ptr);
+  TargetClass(CellClass const* ptr);
 };
 
-TechnoTypeClass const *As_TechnoType(TARGET target);
+TechnoTypeClass const* As_TechnoType(TARGET target);
 COORDINATE As_Movement_Coord(TARGET target);
-AircraftClass *As_Aircraft(TARGET target);
-AnimClass *As_Animation(TARGET target);
-BuildingClass *As_Building(TARGET target);
-BulletClass *As_Bullet(TARGET target);
+AircraftClass* As_Aircraft(TARGET target);
+AnimClass* As_Animation(TARGET target);
+BuildingClass* As_Building(TARGET target);
+BulletClass* As_Bullet(TARGET target);
 CELL As_Cell(TARGET target);
 COORDINATE As_Coord(TARGET target);
-InfantryClass *As_Infantry(TARGET target);
-TeamClass *As_Team(TARGET target);
-TeamTypeClass *As_TeamType(TARGET target);
-TechnoClass *As_Techno(TARGET target);
-TriggerClass *As_Trigger(TARGET target);
-TriggerTypeClass *As_TriggerType(TARGET target);
-UnitClass *As_Unit(TARGET target);
-VesselClass *As_Vessel(TARGET target);
+InfantryClass* As_Infantry(TARGET target);
+TeamClass* As_Team(TARGET target);
+TeamTypeClass* As_TeamType(TARGET target);
+TechnoClass* As_Techno(TARGET target);
+TriggerClass* As_Trigger(TARGET target);
+TriggerTypeClass* As_TriggerType(TARGET target);
+UnitClass* As_Unit(TARGET target);
+VesselClass* As_Vessel(TARGET target);
 inline bool Target_Legal(TARGET target) { return (target != TARGET_NONE); };
-ObjectClass *As_Object(TARGET target);
+ObjectClass* As_Object(TARGET target);
 
 #endif

@@ -43,9 +43,10 @@
 ********************************* Includes **********************************
 */
 #include <wwstd.h>
-#include "wwstd.h"
+
 #include "iff.h"
 #include "palette.h"
+#include "wwstd.h"
 
 /*
 ********************************* Constants *********************************
@@ -76,7 +77,7 @@
  *   06/20/1991 BS : Created.                                              *
  *   04/27/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-VOID cdecl Load_Palette(BYTE *palette_file_name, VOID *palette_pointer) {
+VOID cdecl Load_Palette(BYTE* palette_file_name, VOID* palette_pointer) {
 #if (IBM)
   Load_Data(palette_file_name, palette_pointer, 768);
 #else

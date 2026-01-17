@@ -67,7 +67,7 @@ typedef enum {
 } TokenTag;
 
 typedef struct _Token {
-  char *name;
+  char* name;
   long tag;
 } Token;
 
@@ -99,9 +99,9 @@ Token colors[] = {
 };
 
 /* Prototypes. */
-static long GetColorNum(char *name);
-static long IsNumeric(char *string);
-static void FormatString(char *string);
+static long GetColorNum(char* name);
+static long IsNumeric(char* string);
+static void FormatString(char* string);
 
 /****************************************************************************
  *
@@ -125,10 +125,10 @@ static void FormatString(char *string);
  *
  ****************************************************************************/
 
-long BuildCaptions(char *name, char *buffer) {
-  FILE *fp;
-  char *ptr;
-  char *ptr1;
+long BuildCaptions(char* name, char* buffer) {
+  FILE* fp;
+  char* ptr;
+  char* ptr1;
   long size = 0;
   long error;
   long i;
@@ -315,7 +315,7 @@ long BuildCaptions(char *name, char *buffer) {
  *
  ****************************************************************************/
 
-static long GetColorNum(char *name) {
+static long GetColorNum(char* name) {
   long color = -1;
   long i;
 
@@ -355,7 +355,7 @@ static long GetColorNum(char *name) {
  *
  ****************************************************************************/
 
-static long IsNumeric(char *string) {
+static long IsNumeric(char* string) {
   long flag = 1;
 
   /* Ignore any proceeding sign designation. */
@@ -400,8 +400,8 @@ static long IsNumeric(char *string) {
  *
  ****************************************************************************/
 
-static void FormatString(char *string) {
-  char *ptr;
+static void FormatString(char* string) {
+  char* ptr;
 
   /* NULL strings are invalid. */
   if (string != nullptr) {

@@ -156,7 +156,7 @@ extern "C" char CPUType;
 bool GameTimerInUse = false;
 TimerClass GameTimer;
 long GameEndTime;
-void *PacketLater = nullptr;
+void* PacketLater = nullptr;
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
@@ -177,10 +177,10 @@ void Send_Statistics_Packet(void) {
 #ifndef DEMO
 
   PacketClass stats;
-  HouseClass *player;
+  HouseClass* player;
   static int packet_size;
   int index;
-  void *packet;
+  void* packet;
 
   static char field_player_handle[5] = {"NAM?"};
   static char field_player_team[5] = {"SID?"};
@@ -202,7 +202,7 @@ void Send_Statistics_Packet(void) {
   static char field_player_crates_found[5] = {"CRA?"};
   static char field_player_harvested[5] = {"HRV?"};
 
-  static char const *houses[] = {"GDI", "NOD", "NUT", "JUR", "M01",
+  static char const* houses[] = {"GDI", "NOD", "NUT", "JUR", "M01",
                                  "M02", "M03", "M04", "M05", "M06"};
 
   CCDebugString("C&C95 - In Send_Statistics_Packet.\n");
@@ -267,7 +267,7 @@ void Send_Statistics_Packet(void) {
     */
     char fname[128];
     char namebuffer[40];
-    char *abuffer = (char *)_ShapeBuffer;
+    char* abuffer = (char*)_ShapeBuffer;
     memset(abuffer, '\0', _ShapeBufferSize);
     sprintf(fname, "%s.INI", ScenarioName);
     CCFileClass fileo;
@@ -292,8 +292,8 @@ void Send_Statistics_Packet(void) {
     **
     */
     CCDebugString("C&C95 - Adding stats field for completion status.\n");
-    HouseClass *player1 = HouseClass::As_Pointer(MPlayerHouses[0]);
-    HouseClass *player2 = HouseClass::As_Pointer(MPlayerHouses[1]);
+    HouseClass* player1 = HouseClass::As_Pointer(MPlayerHouses[0]);
+    HouseClass* player2 = HouseClass::As_Pointer(MPlayerHouses[1]);
 
     int completion = -1;
 
@@ -433,7 +433,7 @@ void Send_Statistics_Packet(void) {
       if (GetFileTime(handle, NULL, NULL, &write_time)) {
         write_time.dwLowDateTime = htonl(write_time.dwLowDateTime);
         write_time.dwHighDateTime = htonl(write_time.dwHighDateTime);
-        stats.Add_Field(FIELD_GAME_BUILD_DATE, (void *)&write_time,
+        stats.Add_Field(FIELD_GAME_BUILD_DATE, (void*)&write_time,
                         sizeof(write_time));
       }
     }
@@ -457,7 +457,7 @@ void Send_Statistics_Packet(void) {
         ** Player handle.
         */
         field_player_handle[3] = '1' + (char)house;
-        stats.Add_Field(field_player_handle, (char *)MPlayerNames[house]);
+        stats.Add_Field(field_player_handle, (char*)MPlayerNames[house]);
 
         /*
         ** Player team. (NOD or GDI)
@@ -493,16 +493,16 @@ void Send_Statistics_Packet(void) {
         player->BuildingTotals->To_Network_Format();
 
         stats.Add_Field(field_player_infantry_bought,
-                        (void *)player->InfantryTotals->Get_All_Totals(),
+                        (void*)player->InfantryTotals->Get_All_Totals(),
                         player->InfantryTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_units_bought,
-                        (void *)player->UnitTotals->Get_All_Totals(),
+                        (void*)player->UnitTotals->Get_All_Totals(),
                         player->UnitTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_planes_bought,
-                        (void *)player->AircraftTotals->Get_All_Totals(),
+                        (void*)player->AircraftTotals->Get_All_Totals(),
                         player->AircraftTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_buildings_bought,
-                        (void *)player->BuildingTotals->Get_All_Totals(),
+                        (void*)player->BuildingTotals->Get_All_Totals(),
                         player->BuildingTotals->Get_Unit_Count() * 4);
 
         player->InfantryTotals->To_PC_Format();
@@ -523,21 +523,21 @@ void Send_Statistics_Packet(void) {
         ** Number of units remaining to player
         */
         for (index = 0; index < Units.Count(); index++) {
-          UnitClass const *unit = Units.Ptr(index);
+          UnitClass const* unit = Units.Ptr(index);
           if (unit->House == player) {
             player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
           }
         }
 
         for (index = 0; index < Infantry.Count(); index++) {
-          InfantryClass const *infantry = Infantry.Ptr(index);
+          InfantryClass const* infantry = Infantry.Ptr(index);
           if (infantry->House == player && !infantry->Class->IsCivilian) {
             player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
           }
         }
 
         for (index = 0; index < Aircraft.Count(); index++) {
-          AircraftClass const *aircraft = Aircraft.Ptr(index);
+          AircraftClass const* aircraft = Aircraft.Ptr(index);
           if (aircraft->House == player &&
               aircraft->Class->Type != AIRCRAFT_CARGO) {
             player->AircraftTotals->Increment_Unit_Total(aircraft->Class->Type);
@@ -545,7 +545,7 @@ void Send_Statistics_Packet(void) {
         }
 
         for (index = 0; index < Buildings.Count(); index++) {
-          BuildingClass const *building = Buildings.Ptr(index);
+          BuildingClass const* building = Buildings.Ptr(index);
           if (building->House == player) {
             player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
           }
@@ -561,16 +561,16 @@ void Send_Statistics_Packet(void) {
         field_player_planes_left[3] = '1' + (char)house;
         field_player_buildings_left[3] = '1' + (char)house;
         stats.Add_Field(field_player_infantry_left,
-                        (void *)player->InfantryTotals->Get_All_Totals(),
+                        (void*)player->InfantryTotals->Get_All_Totals(),
                         player->InfantryTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_units_left,
-                        (void *)player->UnitTotals->Get_All_Totals(),
+                        (void*)player->UnitTotals->Get_All_Totals(),
                         player->UnitTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_planes_left,
-                        (void *)player->AircraftTotals->Get_All_Totals(),
+                        (void*)player->AircraftTotals->Get_All_Totals(),
                         player->AircraftTotals->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_buildings_left,
-                        (void *)player->BuildingTotals->Get_All_Totals(),
+                        (void*)player->BuildingTotals->Get_All_Totals(),
                         player->BuildingTotals->Get_Unit_Count() * 4);
 
         /*
@@ -587,16 +587,16 @@ void Send_Statistics_Packet(void) {
         field_player_planes_killed[3] = '1' + (char)house;
         field_player_buildings_killed[3] = '1' + (char)house;
         stats.Add_Field(field_player_infantry_killed,
-                        (void *)player->DestroyedInfantry->Get_All_Totals(),
+                        (void*)player->DestroyedInfantry->Get_All_Totals(),
                         player->DestroyedInfantry->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_units_killed,
-                        (void *)player->DestroyedUnits->Get_All_Totals(),
+                        (void*)player->DestroyedUnits->Get_All_Totals(),
                         player->DestroyedUnits->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_planes_killed,
-                        (void *)player->DestroyedAircraft->Get_All_Totals(),
+                        (void*)player->DestroyedAircraft->Get_All_Totals(),
                         player->DestroyedAircraft->Get_Unit_Count() * 4);
         stats.Add_Field(field_player_buildings_killed,
-                        (void *)player->DestroyedBuildings->Get_All_Totals(),
+                        (void*)player->DestroyedBuildings->Get_All_Totals(),
                         player->DestroyedBuildings->Get_Unit_Count() * 4);
 
         /*
@@ -605,7 +605,7 @@ void Send_Statistics_Packet(void) {
         field_player_buildings_captured[3] = '1' + (char)house;
         player->CapturedBuildings->To_Network_Format();
         stats.Add_Field(field_player_buildings_captured,
-                        (void *)player->CapturedBuildings->Get_All_Totals(),
+                        (void*)player->CapturedBuildings->Get_All_Totals(),
                         player->CapturedBuildings->Get_Unit_Count() * 4);
 
         /*
@@ -614,7 +614,7 @@ void Send_Statistics_Packet(void) {
         field_player_crates_found[3] = '1' + (char)house;
         player->TotalCrates->To_Network_Format();
         stats.Add_Field(field_player_crates_found,
-                        (void *)player->TotalCrates->Get_All_Totals(),
+                        (void*)player->TotalCrates->Get_All_Totals(),
                         player->TotalCrates->Get_Unit_Count() * 4);
 
         /*
@@ -662,7 +662,7 @@ void Send_Statistics_Packet(void) {
 
 #ifdef _WIN32
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");
-  while (!Send_Data_To_DDE_Server((char *)packet, packet_size,
+  while (!Send_Data_To_DDE_Server((char*)packet, packet_size,
                                   DDEServerClass::DDE_PACKET_GAME_RESULTS)) {
     CCDebugString("C&C95 - Stats packet send failed.\n");
     send_timer.Set(60, true);

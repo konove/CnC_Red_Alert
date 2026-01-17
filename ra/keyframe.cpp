@@ -47,7 +47,7 @@
 #define SUBFRAMEOFFS 7  // 3 1/2 frame offsets loaded (2 offsets/frame)
 
 #define Apply_Delta(buffer, delta) \
-  Apply_XOR_Delta((char *)(buffer), (char *)(delta))
+  Apply_XOR_Delta((char*)(buffer), (char*)(delta))
 
 typedef struct {
   unsigned short frames;
@@ -65,27 +65,27 @@ typedef struct {
 
 unsigned BigShapeBufferLength = INITIAL_BIG_SHAPE_BUFFER_SIZE;
 extern "C" {
-char *BigShapeBufferStart = nullptr;
+char* BigShapeBufferStart = nullptr;
 bool UseBigShapeBuffer = false;
 }
-char *BigShapeBufferPtr = nullptr;
+char* BigShapeBufferPtr = nullptr;
 int TotalBigShapes = 0;
 bool ReallocShapeBufferFlag = false;
 
-char **KeyFrameSlots[1000];
+char** KeyFrameSlots[1000];
 int TotalSlotsUsed = 0;
 
 typedef struct tShapeHeaderType {
   unsigned draw_flags;
-  char *shape_data;
+  char* shape_data;
 } ShapeHeaderType;
 
 static int Length;
 
-void *Get_Shape_Header_Data(void *ptr) {
+void* Get_Shape_Header_Data(void* ptr) {
   if (UseBigShapeBuffer) {
-    return ((void *)(((ShapeHeaderType *)ptr)->shape_data +
-                     (long)BigShapeBufferStart));
+    return ((void*)(((ShapeHeaderType*)ptr)->shape_data +
+                    (long)BigShapeBufferStart));
   } else {
     return (ptr);
   }
@@ -98,7 +98,7 @@ void Reallocate_Big_Shape_Buffer(void) {
     BigShapeBufferLength += 2000000;  // Extra 2 Mb of uncompressed shape space
     BigShapeBufferPtr -= (unsigned)BigShapeBufferStart;
     BigShapeBufferStart =
-        (char *)Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength);
+        (char*)Resize_Alloc(BigShapeBufferStart, BigShapeBufferLength);
     BigShapeBufferPtr += (unsigned)BigShapeBufferStart;
     ReallocShapeBufferFlag = false;
   }
@@ -115,12 +115,12 @@ void Check_Use_Compressed_Shapes(void) {
 
 #endif
 
-unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
-                          void *buffptr) {
-  char *ptr;
+unsigned long Build_Frame(void const* dataptr, unsigned short framenumber,
+                          void* buffptr) {
+  char* ptr;
   unsigned long offcurr, offdiff;
   unsigned long offset[SUBFRAMEOFFS];
-  KeyFrameHeaderType *keyfr;
+  KeyFrameHeaderType* keyfr;
   unsigned short buffsize, currframe, subframe;
   unsigned long length = 0;
   char frameflags;
@@ -136,7 +136,7 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
   // look at header then check that frame to build is not greater
   // than total frames
   //
-  keyfr = (KeyFrameHeaderType *)dataptr;
+  keyfr = (KeyFrameHeaderType*)dataptr;
 
   if (framenumber >= keyfr->frames) {
     return (nullptr);
@@ -146,16 +146,16 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
   buffsize = keyfr->width * keyfr->height;
 
   // get offset into data
-  ptr = (char *)dataptr +
+  ptr = (char*)dataptr +
         (((unsigned long)framenumber << 3) + sizeof(KeyFrameHeaderType));
   Mem_Copy(ptr, &offset[0], 12L);
   frameflags = (char)(offset[0] >> 24);
 
   if ((frameflags & KF_KEYFRAME)) {
-    ptr = (char *)Add_Long_To_Pointer(dataptr, (offset[0] & 0x00FFFFFFL));
+    ptr = (char*)Add_Long_To_Pointer(dataptr, (offset[0] & 0x00FFFFFFL));
 
     if (keyfr->flags & 1) {
-      ptr = (char *)Add_Long_To_Pointer(ptr, 768L);
+      ptr = (char*)Add_Long_To_Pointer(ptr, 768L);
     }
 
     length = LCW_Uncompress(ptr, buffptr, buffsize);
@@ -164,7 +164,7 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
     if ((frameflags & KF_DELTA)) {
       currframe = (unsigned short)offset[1];
 
-      ptr = (char *)Add_Long_To_Pointer(
+      ptr = (char*)Add_Long_To_Pointer(
           dataptr,
           (((unsigned long)currframe << 3) + sizeof(KeyFrameHeaderType)));
       Mem_Copy(ptr, &offset[0], (long)(SUBFRAMEOFFS * sizeof(unsigned long)));
@@ -176,10 +176,10 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
     // key delta
     offdiff = (offset[0] & 0x00FFFFFFL) - offcurr;
 
-    ptr = (char *)Add_Long_To_Pointer(dataptr, offcurr);
+    ptr = (char*)Add_Long_To_Pointer(dataptr, offcurr);
 
     if (keyfr->flags & 1) {
-      ptr = (char *)Add_Long_To_Pointer(ptr, 768L);
+      ptr = (char*)Add_Long_To_Pointer(ptr, 768L);
     }
 
     length = LCW_Uncompress(ptr, buffptr, buffsize);
@@ -255,23 +255,23 @@ unsigned long Build_Frame(void const *dataptr, unsigned short framenumber,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented. *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Count(void const *dataptr) {
+unsigned short Get_Build_Frame_Count(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const *)dataptr)->frames);
+    return (((KeyFrameHeaderType const*)dataptr)->frames);
   }
   return (0);
 }
 
-unsigned short Get_Build_Frame_X(void const *dataptr) {
+unsigned short Get_Build_Frame_X(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const *)dataptr)->x);
+    return (((KeyFrameHeaderType const*)dataptr)->x);
   }
   return (0);
 }
 
-unsigned short Get_Build_Frame_Y(void const *dataptr) {
+unsigned short Get_Build_Frame_Y(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const *)dataptr)->y);
+    return (((KeyFrameHeaderType const*)dataptr)->y);
   }
   return (0);
 }
@@ -291,9 +291,9 @@ unsigned short Get_Build_Frame_Y(void const *dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Width(void const *dataptr) {
+unsigned short Get_Build_Frame_Width(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const *)dataptr)->width);
+    return (((KeyFrameHeaderType const*)dataptr)->width);
   }
   return (0);
 }
@@ -313,18 +313,18 @@ unsigned short Get_Build_Frame_Width(void const *dataptr) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented *
  *=============================================================================================*/
-unsigned short Get_Build_Frame_Height(void const *dataptr) {
+unsigned short Get_Build_Frame_Height(void const* dataptr) {
   if (dataptr) {
-    return (((KeyFrameHeaderType const *)dataptr)->height);
+    return (((KeyFrameHeaderType const*)dataptr)->height);
   }
   return (0);
 }
 
-bool Get_Build_Frame_Palette(void const *dataptr, void *palette) {
-  if (dataptr && (((KeyFrameHeaderType const *)dataptr)->flags & 1)) {
-    char const *ptr = (char const *)Add_Long_To_Pointer(
+bool Get_Build_Frame_Palette(void const* dataptr, void* palette) {
+  if (dataptr && (((KeyFrameHeaderType const*)dataptr)->flags & 1)) {
+    char const* ptr = (char const*)Add_Long_To_Pointer(
         dataptr, ((((long)sizeof(unsigned long) << 1) *
-                   ((KeyFrameHeaderType *)dataptr)->frames) +
+                   ((KeyFrameHeaderType*)dataptr)->frames) +
                   16 + sizeof(KeyFrameHeaderType)));
 
     memcpy(palette, ptr, 768L);

@@ -64,8 +64,8 @@
 #define isspace(c) \
   ((c == ' ') || (c == '\t') || (c == '\n') || (c == '\r') ? 1 : 0)
 
-static char *strtrim(char *string);
-static long FileGets(FILE *fp, char *buf, long buflen);
+static char* strtrim(char* string);
+static long FileGets(FILE* fp, char* buf, long buflen);
 
 /****************************************************************************
  *
@@ -90,16 +90,16 @@ static long FileGets(FILE *fp, char *buf, long buflen);
  *
  ***************************************************************************/
 
-long Get_Frame_Pathname(char *inifile, long anim_frame, char *ext,
-                        char *outbuf) {
+long Get_Frame_Pathname(char* inifile, long anim_frame, char* ext,
+                        char* outbuf) {
   char rootdir[_MAX_PATH];  // Root directory from INI file
   char extdir[_MAX_PATH];   // this extension's directory
   char entry_name[40];      // INI entry name
   char inibuf[80];          // string returned from INI file
-  char *prefix;             // 4-char prefix for this scene
-  char *startstr;           // starting frame #, string
-  char *endstr;             // ending frame #, string
-  char *palstr;             // palette filename string
+  char* prefix;             // 4-char prefix for this scene
+  char* startstr;           // starting frame #, string
+  char* endstr;             // ending frame #, string
+  char* palstr;             // palette filename string
   long startnum;            // scene's starting frame #
   long endnum;              // scene's ending frame #
   long total_frames;        // accumulated frame total
@@ -217,8 +217,8 @@ long Get_Frame_Pathname(char *inifile, long anim_frame, char *ext,
  *
  ****************************************************************************/
 
-long GetINIInt(char const *section, char const *entry, long deflt,
-               char *fname) {
+long GetINIInt(char const* section, char const* entry, long deflt,
+               char* fname) {
   char buffer[20];
 
   sprintf(buffer, "%d", deflt);
@@ -254,14 +254,14 @@ long GetINIInt(char const *section, char const *entry, long deflt,
  *
  ****************************************************************************/
 
-long GetINIString(char const *section, char const *entry, char const *def,
-                  char *retbuffer, long retlen, char *fname) {
-  FILE *fp;
+long GetINIString(char const* section, char const* entry, char const* def,
+                  char* retbuffer, long retlen, char* fname) {
+  FILE* fp;
   long retval;
   char txt[80];
   char secname[40];
   long len;
-  char *workptr;
+  char* workptr;
 
   /* Copy default value in case entry isn't found */
   strncpy(retbuffer, def, (retlen - 1));
@@ -362,7 +362,7 @@ long GetINIString(char const *section, char const *entry, char const *def,
  *
  ****************************************************************************/
 
-static char *strtrim(char *string) {
+static char* strtrim(char* string) {
   long i;
 
   /* Return if NULL ptr or zero-length string */
@@ -406,7 +406,7 @@ static char *strtrim(char *string) {
  *
  ****************************************************************************/
 
-static long FileGets(FILE *fp, char *buf, long buflen) {
+static long FileGets(FILE* fp, char* buf, long buflen) {
   if (fgets(buf, buflen, fp)) {
     buf[(strlen(buf) - 1)] = 0;
     return (0);

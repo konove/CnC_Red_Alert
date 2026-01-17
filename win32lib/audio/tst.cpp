@@ -23,8 +23,8 @@
 #define WIN32
 #define __WIN32
 
+#include <ole2.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <ole2.h>
 
 main {}

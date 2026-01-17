@@ -12,7 +12,7 @@
 // should match 2keyfram.cpp
 struct ShapeHeaderType {
   unsigned draw_flags;  // only 16 bits used
-  char *shape_data;     // really an offset
+  char* shape_data;     // really an offset
   int shape_buffer;     // 0 or 1
 };
 
@@ -38,8 +38,8 @@ inline constexpr BlitFlags operator|(BlitFlags t1, BlitFlags t2) {
 #define PRED_MASK 0xE
 
 extern "C" bool UseOldShapeDraw;
-extern "C" char *BigShapeBufferStart;
-extern "C" char *TheaterShapeBufferStart;
+extern "C" char* BigShapeBufferStart;
+extern "C" char* TheaterShapeBufferStart;
 extern "C" bool UseBigShapeBuffer;
 
 static int BFPredOffset;
@@ -57,13 +57,13 @@ inline int Make_Code(int x, int y, int w, int h) {
          (y >= h ? 0b0001 : 0);
 }
 
-static void Setup_Shape_Header(int pixel_width, int pixel_height, char *src,
-                               ShapeHeaderType *headers, int flags,
-                               uint8_t * /*Translucent*/,
-                               uint8_t *IsTranslucent) {
+static void Setup_Shape_Header(int pixel_width, int pixel_height, char* src,
+                               ShapeHeaderType* headers, int flags,
+                               uint8_t* /*Translucent*/,
+                               uint8_t* IsTranslucent) {
   headers->draw_flags =
       flags & (SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
-  auto ptr = (uint8_t *)headers + sizeof(ShapeHeaderType);
+  auto ptr = (uint8_t*)headers + sizeof(ShapeHeaderType);
   do {
     int line_flags = 0;
     int trans_count = 0;
@@ -95,11 +95,11 @@ static void Setup_Shape_Header(int pixel_width, int pixel_height, char *src,
 // single helper that handles all combinations
 // templated on flags to avoid writing every combination
 template <int flags>
-inline void Do_Old_Blit(int line_count, int pixel_count, uint8_t *src_offset,
-                        uint8_t *dst_offset, int src_adjust_width,
-                        int dst_adjust_width, uint8_t *Translucent,
-                        uint8_t *IsTranslucent, int FadingNum,
-                        uint8_t *FadingTable) {
+inline void Do_Old_Blit(int line_count, int pixel_count, uint8_t* src_offset,
+                        uint8_t* dst_offset, int src_adjust_width,
+                        int dst_adjust_width, uint8_t* Translucent,
+                        uint8_t* IsTranslucent, int FadingNum,
+                        uint8_t* FadingTable) {
   do {
     // original asm unrolled this 32 times
     for (int x = 0; x < pixel_count; x++) {
@@ -138,26 +138,26 @@ inline void Do_Old_Blit(int line_count, int pixel_count, uint8_t *src_offset,
   } while (--line_count);
 }
 
-extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
-                                     GraphicViewPortClass &dest, int flags,
+extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void* src,
+                                     GraphicViewPortClass& dest, int flags,
                                      ...) {
   if (!src) return 0;
 
-  uint8_t *IsTranslucent = nullptr;
-  uint8_t *Translucent = nullptr;
-  uint8_t *FadingTable = nullptr;
+  uint8_t* IsTranslucent = nullptr;
+  uint8_t* Translucent = nullptr;
+  uint8_t* FadingTable = nullptr;
   int FadingNum = 0;
 
-  ShapeHeaderType *header_pointer;
+  ShapeHeaderType* header_pointer;
 
   bool use_new_draw = !UseOldShapeDraw && UseBigShapeBuffer;
 
   // Save the line attributes pointers and modify the src pointer to point to
   // the actual image.
   if (use_new_draw) {
-    header_pointer = (ShapeHeaderType *)src;
+    header_pointer = (ShapeHeaderType*)src;
 
-    auto *shape_buffer_start = header_pointer->shape_buffer
+    auto* shape_buffer_start = header_pointer->shape_buffer
                                    ? TheaterShapeBufferStart
                                    : BigShapeBufferStart;
 
@@ -183,7 +183,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
   if (flags & SHAPE_GHOST)  // are we ghosting this shape
   {
     jflags |= BLIT_GHOST;
-    IsTranslucent = va_arg(args, uint8_t *);
+    IsTranslucent = va_arg(args, uint8_t*);
     Translucent = IsTranslucent + 256;
   }
 
@@ -196,7 +196,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
       (header_pointer->draw_flags == -1 ||
        header_pointer->draw_flags != ((flags & SHAPE_TRANS) | SHAPE_FADING |
                                       SHAPE_PREDATOR | SHAPE_GHOST))) {
-    Setup_Shape_Header(w, h, (char *)src, header_pointer, flags, Translucent,
+    Setup_Shape_Header(w, h, (char*)src, header_pointer, flags, Translucent,
                        IsTranslucent);
     // ShapeJumpTableAddress = AllFlagsJumpTable;
     use_all_flags = true;
@@ -214,7 +214,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
   // are we fading this shape
   if (flags & SHAPE_FADING) {
     // save address of fading tbl
-    FadingTable = va_arg(args, uint8_t *);
+    FadingTable = va_arg(args, uint8_t*);
     // get fade num, no need for more than 63
     FadingNum = va_arg(args, int) & 0x3F;
     jflags |= BLIT_FADING;
@@ -300,7 +300,7 @@ extern "C" long Buffer_Frame_To_Page(int x, int y, int w, int h, void *src,
   }
 
   // do blit
-  auto src_offset = (uint8_t *)src + src_x0 + src_y0 * w;
+  auto src_offset = (uint8_t*)src + src_x0 + src_y0 * w;
   int src_adjust_width = w - (dst_x1 - dst_x0);
 
   int dst_area = dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();

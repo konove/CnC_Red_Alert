@@ -42,8 +42,9 @@
 
 #define WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <wwlib32.h>
 #include <direct.h>
+#include <wwlib32.h>
+
 #include "..\mouse.h"
 #define NAME "KEYBOARD/MOUSE test"
 #define TITLE "KEYBOARD/MOUSE library test"
@@ -58,12 +59,12 @@ BOOL AllDone = FALSE;  // Flag that we should exit
 
 int ScreenWidth = MODE_WIDTH;
 
-GraphicBufferClass *ScreenBuffer =
+GraphicBufferClass* ScreenBuffer =
     NULL;  // Global pointer to screen GraphicBufferClass
-GraphicBufferClass *HidBuffer = NULL;
+GraphicBufferClass* HidBuffer = NULL;
 GraphicBufferClass SysMemPage(320, 200);  // page in real memory
-WWMouseClass *Mouse = NULL;               // Global pointer to mouse information
-WinTimerClass *WindowsTimer = NULL;
+WWMouseClass* Mouse = NULL;               // Global pointer to mouse information
+WinTimerClass* WindowsTimer = NULL;
 PALETTEENTRY pe[256];                   // DD Palette entries
 unsigned char Palette[256 * 3];         // Place to load palette to
 extern LPDIRECTDRAWPALETTE PalettePtr;  // Pointer to direct draw palette object
@@ -78,7 +79,7 @@ long FAR PASCAL _export WndProc(HWND, UINT, UINT, LONG);
 //
 extern LPDIRECTDRAW DirectDrawObject;
 extern HWND MainWindow;
-VOID *ShapeFile;
+VOID* ShapeFile;
 int CurrentShape;
 
 /***********************************************************************************************

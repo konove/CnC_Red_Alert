@@ -46,7 +46,7 @@
  */
 /*=========================================================================*/
 VOID cdecl Prog_End(VOID);
-VOID cdecl Exit(INT errorval, const BYTE *message, ...);
+VOID cdecl Exit(INT errorval, const BYTE* message, ...);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: DELAY.CPP
@@ -60,25 +60,25 @@ void Vsync(void);
  */
 /*=========================================================================*/
 
-BYTE *cdecl Find_Argv(BYTE const *str);
+BYTE* cdecl Find_Argv(BYTE const* str);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LIB.CPP
  */
 /*=========================================================================*/
-char *Find_Argv(char const *str);
-void Mono_Mem_Dump(void const *databuf, int bytes, int y);
+char* Find_Argv(char const* str);
+void Mono_Mem_Dump(void const* databuf, int bytes, int y);
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int *h, unsigned int *s, unsigned int *v);
+                        unsigned int* h, unsigned int* s, unsigned int* v);
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int *r, unsigned int *g, unsigned int *b);
+                        unsigned int* r, unsigned int* g, unsigned int* b);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: VERSION.CPP
  */
 /*=========================================================================*/
 
-BYTE *cdecl Version(VOID);
+BYTE* cdecl Version(VOID);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: IRANDOM.CPP
@@ -150,7 +150,7 @@ int Desired_Facing256(int x1, int y1, int x2, int y2);
  */
 /*=========================================================================*/
 
-void *Build_Fading_Table(void const *palette, void const *dest, long int color,
+void* Build_Fading_Table(void const* palette, void const* dest, long int color,
                          long int frac);
 
 /*=========================================================================*/
@@ -158,7 +158,7 @@ void *Build_Fading_Table(void const *palette, void const *dest, long int color,
  */
 /*=========================================================================*/
 
-long Calculate_CRC(void *buffer, long length);
+long Calculate_CRC(void* buffer, long length);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: DETPROC.ASM
@@ -170,8 +170,8 @@ extern WORD Operating_System(VOID);
 extern ULONG random(ULONG mod);
 extern void randomize(void);
 
-extern int Clip_Rect(int *x, int *y, int *dw, int *dh, int width, int height);
-extern int Confine_Rect(int *x, int *y, int dw, int dh, int width, int height);
+extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);
+extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: OPSYS.ASM

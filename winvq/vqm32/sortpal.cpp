@@ -65,10 +65,10 @@
 #define VALUE_WEIGHT 1000L
 
 /* Prototypes */
-static int Comp_Luminance(const void *elem1, const void *elem2);
-static int Comp_HSV(const void *elem1, const void *elem2);
+static int Comp_Luminance(const void* elem1, const void* elem2);
+static int Comp_HSV(const void* elem1, const void* elem2);
 static void RGB_To_HSV(unsigned short r, unsigned short g, unsigned short b,
-                       unsigned short *h, unsigned short *s, unsigned short *v);
+                       unsigned short* h, unsigned short* s, unsigned short* v);
 
 /****************************************************************************
  *
@@ -92,7 +92,7 @@ static void RGB_To_HSV(unsigned short r, unsigned short g, unsigned short b,
  *
  ****************************************************************************/
 
-void SortPalette(unsigned char *pal, long numcolors) {
+void SortPalette(unsigned char* pal, long numcolors) {
   qsort(pal, numcolors, 3, Comp_Luminance);
 
   pal[0] = 0;
@@ -126,20 +126,20 @@ void SortPalette(unsigned char *pal, long numcolors) {
  *
  ****************************************************************************/
 
-static int Comp_Luminance(const void *elem1, const void *elem2) {
-  unsigned char *pal;
+static int Comp_Luminance(const void* elem1, const void* elem2) {
+  unsigned char* pal;
   long r, g, b;
   long total1, total2;
 
   /* Compute luminance for color1 */
-  pal = (unsigned char *)elem1;
+  pal = (unsigned char*)elem1;
   r = ((long)pal[0]);
   g = ((long)pal[1]);
   b = ((long)pal[2]);
   total1 = ((r * 19595L) + (g * 38470L) + (b * 7471L));
 
   /* Compute luminance for color2 */
-  pal = (unsigned char *)elem2;
+  pal = (unsigned char*)elem2;
   r = ((long)pal[0]);
   g = ((long)pal[1]);
   b = ((long)pal[2]);
@@ -177,15 +177,15 @@ static int Comp_Luminance(const void *elem1, const void *elem2) {
  *
  ****************************************************************************/
 
-static int Comp_HSV(const void *elem1, const void *elem2) {
-  unsigned char *pal;
+static int Comp_HSV(const void* elem1, const void* elem2) {
+  unsigned char* pal;
   unsigned char r, g, b;
   unsigned short h, s, v;
   unsigned long key1, key2;
   long retval;
 
   /* Convert 1st element to HSV */
-  pal = (unsigned char *)elem1;
+  pal = (unsigned char*)elem1;
   r = pal[0];
   g = pal[1];
   b = pal[2];
@@ -195,7 +195,7 @@ static int Comp_HSV(const void *elem1, const void *elem2) {
   key1 = ((h * HUE_WEIGHT) + (s * SATURATION_WEIGHT) + (v * VALUE_WEIGHT));
 
   /* Convert 2nd element to HSV */
-  pal = (unsigned char *)elem2;
+  pal = (unsigned char*)elem2;
   r = pal[0];
   g = pal[1];
   b = pal[2];
@@ -243,8 +243,8 @@ static int Comp_HSV(const void *elem1, const void *elem2) {
  ***************************************************************************/
 
 static void RGB_To_HSV(unsigned short r, unsigned short g, unsigned short b,
-                       unsigned short *h, unsigned short *s,
-                       unsigned short *v) {
+                       unsigned short* h, unsigned short* s,
+                       unsigned short* v) {
   unsigned short m;
   unsigned short r1;
   unsigned short g1;

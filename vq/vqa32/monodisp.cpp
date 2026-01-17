@@ -46,11 +46,13 @@
  *
  ****************************************************************************/
 
+#include <vqm32\all.h>
+
 #include <cstdio>
 #include <cstring>
+
 #include "vq.h"
 #include "vqaplayp.h"
-#include <vqm32\all.h>
 
 #if (VQAMONO_ON)
 
@@ -89,7 +91,7 @@
 #define FLIPPER_WY2 24
 #define FLIPPER_TITLE " Frame Flipper "
 
-extern char *HMIDevName;
+extern char* HMIDevName;
 
 /****************************************************************************
  *
@@ -112,9 +114,9 @@ extern char *HMIDevName;
  ****************************************************************************/
 
 #pragma argsused
-void VQA_InitMono(VQAHandleP *vqap) {
-  VQAData *vqabuf;
-  VQAConfig *config;
+void VQA_InitMono(VQAHandleP* vqap) {
+  VQAData* vqabuf;
+  VQAConfig* config;
   char txt[80];
 
   /* Dereference commonly used data members of quick access. */
@@ -335,11 +337,11 @@ void VQA_InitMono(VQAHandleP *vqap) {
  ****************************************************************************/
 
 #pragma argsused
-void VQA_UpdateMono(VQAHandleP *vqap) {
-  VQAData *vqabuf;
-  VQAConfig *config;
-  VQAFrameNode *frame;
-  VQACBNode *cbook;
+void VQA_UpdateMono(VQAHandleP* vqap) {
+  VQAData* vqabuf;
+  VQAConfig* config;
+  VQAFrameNode* frame;
+  VQACBNode* cbook;
   long frameindex = -1;
   long loadcb = -1;
   long drawcb = -1;

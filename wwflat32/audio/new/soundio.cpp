@@ -50,18 +50,20 @@
  *- - - - - - - */
 
 #pragma pack(4)
-#include "soundint.h"
-#include <dos.h>
-#include <mem.h>
-#include <cstdio>
-#include <cstring>
 #include <direct.h>
-#include <cstdlib>
-#include <wwmem.h>
-#include <keyboard.h>
+#include <dos.h>
 #include <file.h>
 #include <i86.h>
+#include <keyboard.h>
+#include <mem.h>
 #include <timer.h>
+#include <wwmem.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "soundint.h"
 #pragma pack(1)
 #include "audio.h"
 #pragma pack(4)
@@ -118,7 +120,7 @@ static unsigned int far DigiTimer = 0;
 static unsigned int far MaintainTimer = 0;
 static unsigned int far SystemTimer = 0;
 static int Bits_Per_Sample;
-VOID *DigiBuffer = NULL;
+VOID* DigiBuffer = NULL;
 static BOOL StartingFileStream = FALSE;
 short StreamLowImpact = FALSE;
 MemoryFlagType StreamBufferFlag = MEM_NORMAL;
@@ -131,14 +133,14 @@ int ReverseChannels = FALSE;
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-static BOOL File_Callback(WORD id, WORD *odd, VOID **buffer, LONG *size);
-static int cdecl Stream_Sample_Vol(void *buffer, long size,
-                                   BOOL (*callback)(WORD id, WORD *odd,
-                                                    VOID **buffer, LONG *size),
+static BOOL File_Callback(WORD id, WORD* odd, VOID** buffer, LONG* size);
+static int cdecl Stream_Sample_Vol(void* buffer, long size,
+                                   BOOL (*callback)(WORD id, WORD* odd,
+                                                    VOID** buffer, LONG* size),
                                    int volume, int handle);
-static int cdecl Stream_Sample(void *buffer, long size,
-                               BOOL (*callback)(WORD id, WORD *odd,
-                                                VOID **buffer, LONG *size));
+static int cdecl Stream_Sample(void* buffer, long size,
+                               BOOL (*callback)(WORD id, WORD* odd,
+                                                VOID** buffer, LONG* size));
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 /***************************************************************************
@@ -160,9 +162,9 @@ static int cdecl Stream_Sample(void *buffer, long size,
  * HISTORY:                                                                *
  *   07/17/1995 PWG : Created.                                             *
  *=========================================================================*/
-static BOOL File_Callback(WORD id, WORD *odd, VOID **buffer, LONG *size) {
-  SampleTrackerType *st;  // Pointer to sample playback control struct.
-  VOID *ptr;              // Pointer to working portion of file buffer.
+static BOOL File_Callback(WORD id, WORD* odd, VOID** buffer, LONG* size) {
+  SampleTrackerType* st;  // Pointer to sample playback control struct.
+  VOID* ptr;              // Pointer to working portion of file buffer.
 
   if (id != -1) {
     st = &LockedData.SampleTracker[id];
@@ -298,12 +300,12 @@ static BOOL File_Callback(WORD id, WORD *odd, VOID **buffer, LONG *size) {
  * HISTORY:                                                                *
  *   07/17/1995 PWG : Created.                                             *
  *=========================================================================*/
-static int cdecl Stream_Sample_Vol(void *buffer, long size,
-                                   BOOL (*callback)(WORD id, WORD *odd,
-                                                    VOID **buffer, LONG *size),
+static int cdecl Stream_Sample_Vol(void* buffer, long size,
+                                   BOOL (*callback)(WORD id, WORD* odd,
+                                                    VOID** buffer, LONG* size),
                                    int volume, int handle) {
   int playid = -1;        // Sample play ID.
-  SampleTrackerType *st;  // Working pointer to sample control structure.
+  SampleTrackerType* st;  // Working pointer to sample control structure.
   long oldsize;           // Copy of original sound size.
   AUDHeaderType header;
 
@@ -346,9 +348,9 @@ static int cdecl Stream_Sample_Vol(void *buffer, long size,
  * HISTORY:                                                                *
  *   07/17/1995 PWG : Created.                                             *
  *=========================================================================*/
-static int cdecl Stream_Sample(void *buffer, long size,
-                               BOOL (*callback)(WORD id, WORD *odd,
-                                                VOID **buffer, LONG *size),
+static int cdecl Stream_Sample(void* buffer, long size,
+                               BOOL (*callback)(WORD id, WORD* odd,
+                                                VOID** buffer, LONG* size),
                                int handle) {
   return Stream_Sample_Vol(buffer, size, callback, 0xFF, handle);
 }
@@ -370,7 +372,7 @@ static int cdecl Stream_Sample(void *buffer, long size,
  *                                                                                             *
  * HISTORY: * 01/06/1994 JLB : Created. *
  *=============================================================================================*/
-int File_Stream_Sample(char const *filename, BOOL real_time_start) {
+int File_Stream_Sample(char const* filename, BOOL real_time_start) {
   return File_Stream_Sample_Vol(filename, 0xFF, real_time_start);
 }
 
@@ -397,10 +399,10 @@ int File_Stream_Sample(char const *filename, BOOL real_time_start) {
  *=========================================================================*/
 
 void File_Stream_Preload(int handle) {
-  SampleTrackerType *st = &LockedData.SampleTracker[handle];
+  SampleTrackerType* st = &LockedData.SampleTracker[handle];
   int fh = st->FileHandle;
   int maxnum = (LockedData.StreamBufferCount >> 1) + STREAM_CUSHION_BLOCKS;
-  void *buffer = st->FileBuffer;
+  void* buffer = st->FileBuffer;
   int num;
 
   /*
@@ -542,10 +544,10 @@ void File_Stream_Preload(int handle) {
  *                                                                                             *
  * HISTORY: * 01/06/1994 JLB : Created. *
  *=============================================================================================*/
-int File_Stream_Sample_Vol(char const *filename, int volume,
+int File_Stream_Sample_Vol(char const* filename, int volume,
                            BOOL real_time_start) {
-  static VOID *buffer = NULL;
-  SampleTrackerType *st;
+  static VOID* buffer = NULL;
+  SampleTrackerType* st;
   int fh;
   int handle = -1;
   long size;
@@ -630,7 +632,7 @@ int File_Stream_Sample_Vol(char const *filename, int volume,
  *=============================================================================================*/
 VOID cdecl __saveregs __loadds Sound_Callback(VOID) {
   int index;
-  SampleTrackerType *st;
+  SampleTrackerType* st;
 
   if (LockedData.DigiHandle != -1) {
     st = &LockedData.SampleTracker[0];
@@ -707,8 +709,8 @@ VOID cdecl __saveregs __loadds Sound_Callback(VOID) {
  *                                                                                             *
  * HISTORY: * 04/17/1992 JLB : Created. * 01/06/1994 JLB : HMI version. *
  *=============================================================================================*/
-VOID *Load_Sample(char const *filename) {
-  void *buffer = NULL;
+VOID* Load_Sample(char const* filename) {
+  void* buffer = NULL;
   long size;
   int fh;
 
@@ -750,7 +752,7 @@ VOID *Load_Sample(char const *filename) {
  *                                                                                             *
  * HISTORY: * 01/06/1994 JLB : Created. *
  *=============================================================================================*/
-long Load_Sample_Into_Buffer(char const *filename, void *buffer, long size) {
+long Load_Sample_Into_Buffer(char const* filename, void* buffer, long size) {
   int fh;
 
   /*
@@ -790,9 +792,9 @@ long Load_Sample_Into_Buffer(char const *filename, void *buffer, long size) {
  *                                                                                             *
  * HISTORY: * 01/06/1994 JLB : Created. *
  *=============================================================================================*/
-long Sample_Read(int fh, void *buffer, long size) {
+long Sample_Read(int fh, void* buffer, long size) {
   AUDHeaderType RawHeader;
-  VOID *outbuffer;         // Pointer to start of raw data.
+  VOID* outbuffer;         // Pointer to start of raw data.
   long actual_bytes_read;  // Actual bytes read in, including header
 
   /*
@@ -828,8 +830,8 @@ long Sample_Read(int fh, void *buffer, long size) {
  *                                                                                             *
  * HISTORY: * 04/17/1992 JLB : Created. *
  *=============================================================================================*/
-VOID Free_Sample(VOID const *sample) {
-  if (sample) Free((void *)sample);
+VOID Free_Sample(VOID const* sample) {
+  if (sample) Free((void*)sample);
 }
 
 BOOL Sound_Init(int sfx, int score, int sample, RateType rate,
@@ -968,7 +970,7 @@ BOOL Audio_Init(int sample, int address, int inter, int dma, RateType rate,
       LockedData.SampleTracker[index].QueueBuffer = NULL;
     }
     error = sosTIMERRegisterEvent(MAINTENANCE_RATE,
-                                  (void(__far *)(void))maintenance_callback,
+                                  (void(__far*)(void))maintenance_callback,
                                   &MaintainTimer);
     if (error) {
       printf("Unable to initialize the maintenance callback.\n");
@@ -1108,7 +1110,7 @@ BOOL Sample_Status(int handle) {
                              LockedData.SampleTracker[handle].Handle));
 }
 
-BOOL Is_Sample_Playing(void const *sample) {
+BOOL Is_Sample_Playing(void const* sample) {
   int index;
 
   if (!sample) return FALSE;
@@ -1121,7 +1123,7 @@ BOOL Is_Sample_Playing(void const *sample) {
   return (FALSE);
 }
 
-VOID Stop_Sample_Playing(void const *sample) {
+VOID Stop_Sample_Playing(void const* sample) {
   int index;
 
   if (sample) {
@@ -1177,7 +1179,7 @@ int Get_Free_Sample_Handle(int priority) {
   return (id);
 }
 
-int Play_Sample(void const *sample, int priority, int volume,
+int Play_Sample(void const* sample, int priority, int volume,
                 signed short panloc) {
   return (Play_Sample_Handle(sample, priority, volume, panloc,
                              Get_Free_Sample_Handle(priority)));
@@ -1199,11 +1201,11 @@ int Play_Sample(void const *sample, int priority, int volume,
  *Soundblaster Pro                                       * 04/22/1994 JLB :
  *Multiple sample playback rates.                                          *
  *=============================================================================================*/
-int Play_Sample_Handle(void const *sample, int priority, int volume,
+int Play_Sample_Handle(void const* sample, int priority, int volume,
                        signed short panloc, int id) {
   AUDHeaderType RawHeader;
   _SOS_START_SAMPLE start;
-  SampleTrackerType *st = NULL;  // Working pointer to sample tracker structure.
+  SampleTrackerType* st = NULL;  // Working pointer to sample tracker structure.
 
   if (!sample || LockedData.DigiHandle == -1) {
     return (-1);
@@ -1216,7 +1218,7 @@ int Play_Sample_Handle(void const *sample, int priority, int volume,
   /*
   **	Fetch the control bytes from the start of the sample data.
   */
-  Mem_Copy((void *)sample, (void *)&RawHeader, sizeof(RawHeader));
+  Mem_Copy((void*)sample, (void*)&RawHeader, sizeof(RawHeader));
 
   /*
   **	Prepare the sample tracker structure for processing of this
@@ -1239,7 +1241,7 @@ int Play_Sample_Handle(void const *sample, int priority, int volume,
   st->QueueSize = NULL;
   st->TrailerLen = 0;
   st->Remainder = RawHeader.Size;
-  st->Source = Add_Long_To_Pointer((void *)sample, sizeof(RawHeader));
+  st->Source = Add_Long_To_Pointer((void*)sample, sizeof(RawHeader));
   st->Service = FALSE;
 
   /*
@@ -1287,7 +1289,7 @@ int Play_Sample_Handle(void const *sample, int priority, int volume,
     start.dwSampleSize = st->DataLength - 1;
   }
   start.lpCallback =
-      (void cdecl(far *)(unsigned int, unsigned int, unsigned int)) &
+      (void cdecl(far*)(unsigned int, unsigned int, unsigned int)) &
       DigiCallback;
   start.wLoopCount = 0;
   start.wSampleID = id;
@@ -1395,7 +1397,7 @@ VOID Fade_Sample(int handle, int ticks) {
     if (!ticks || LockedData.SampleTracker[handle].Loading) {
       Stop_Sample(handle);
     } else {
-      SampleTrackerType *st;
+      SampleTrackerType* st;
 
       st = &LockedData.SampleTracker[handle];
       st->Reducer = (st->Volume / ticks) + 1;
@@ -1417,12 +1419,12 @@ int Get_Digi_Handle(void) { return (LockedData.DigiHandle); }
  * HISTORY:                                                                *
  *   07/05/1995 PWG : Created.                                             *
  *=========================================================================*/
-long Sample_Length(void const *sample) {
+long Sample_Length(void const* sample) {
   AUDHeaderType RawHeader;
 
   if (!sample) return (0);
 
-  Mem_Copy((void *)sample, (void *)&RawHeader, sizeof(RawHeader));
+  Mem_Copy((void*)sample, (void*)&RawHeader, sizeof(RawHeader));
 
   long time = RawHeader.UncompSize;
 

@@ -68,7 +68,7 @@
  * HISTORY:                                                                *
  *   05/09/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass *gbuffer, int x,
+GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* gbuffer, int x,
                                            int y, int w, int h) {
   Attach(gbuffer, x, y, w, h);
 }
@@ -112,7 +112,7 @@ GraphicViewPortClass::~GraphicViewPortClass(void) {}
  * HISTORY:                                                                *
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
-void GraphicViewPortClass::Attach(GraphicBufferClass *gbuffer, int x, int y,
+void GraphicViewPortClass::Attach(GraphicBufferClass* gbuffer, int x, int y,
                                   int w, int h) {
   /*======================================================================*/
   /* Verify that the x and y coordinates are valid and placed within the
@@ -216,12 +216,12 @@ BOOL GraphicViewPortClass::Change(int x, int y, int w, int h) {
  * HISTORY:                                                                *
  *   05/13/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass::GraphicBufferClass(long size, int w, int h, void *buffer) {
+GraphicBufferClass::GraphicBufferClass(long size, int w, int h, void* buffer) {
   Size = size;  // find size of physical buffer
 
-  if (buffer) {               // if buffer is specified
-    Buffer = (BYTE *)buffer;  //		point to it and mark
-    Allocated = FALSE;        //		it as user allocated
+  if (buffer) {              // if buffer is specified
+    Buffer = (BYTE*)buffer;  //		point to it and mark
+    Allocated = FALSE;       //		it as user allocated
   } else {
     Buffer = new BYTE[Size];  // otherwise allocate it and
     Allocated = TRUE;         //		mark it system alloced
@@ -248,12 +248,12 @@ GraphicBufferClass::GraphicBufferClass(long size, int w, int h, void *buffer) {
  * HISTORY:                                                                *
  *   05/03/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass::GraphicBufferClass(int w, int h, void *buffer) {
+GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer) {
   Size = w * h;  // find size of physical buffer
 
-  if (buffer) {               // if buffer is specified
-    Buffer = (BYTE *)buffer;  //		point to it and mark
-    Allocated = FALSE;        //		it as user allocated
+  if (buffer) {              // if buffer is specified
+    Buffer = (BYTE*)buffer;  //		point to it and mark
+    Allocated = FALSE;       //		it as user allocated
   } else {
     Buffer = new BYTE[Size];  // otherwise allocate it and
     Allocated = TRUE;         //		mark it system alloced
@@ -293,8 +293,8 @@ GraphicBufferClass::~GraphicBufferClass() {}
  * HISTORY:                                                                *
  *   02/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass *Set_Logic_Page(GraphicBufferClass *ptr) {
-  GraphicBufferClass *old = LogicPage;
+GraphicBufferClass* Set_Logic_Page(GraphicBufferClass* ptr) {
+  GraphicBufferClass* old = LogicPage;
   LogicPage = ptr;
   return (old);
 }
@@ -312,8 +312,8 @@ GraphicBufferClass *Set_Logic_Page(GraphicBufferClass *ptr) {
  * HISTORY:                                                                *
  *   02/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass *Set_Logic_Page(GraphicBufferClass &ptr) {
-  GraphicBufferClass *old = LogicPage;
+GraphicBufferClass* Set_Logic_Page(GraphicBufferClass& ptr) {
+  GraphicBufferClass* old = LogicPage;
   LogicPage = &ptr;
   return (old);
 }

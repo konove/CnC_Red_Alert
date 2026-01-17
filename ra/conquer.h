@@ -584,11 +584,11 @@
 #define TXT_THEME_WASTELND 553                     // Chaos
 #define TXT_CARRIER 554                            // Héliport Mobile
 
-void List_Copy(short const *source, int len, short *dest);
+void List_Copy(short const* source, int len, short* dest);
 int Get_CD_Index(int cd_drive, int timeout);
-int Owner_From_Name(char const *text);
-CrateType Crate_From_Name(char const *name);
-Rect const Shape_Dimensions(void const *shapedata, int shapenum);
+int Owner_From_Name(char const* text);
+CrateType Crate_From_Name(char const* name);
+Rect const Shape_Dimensions(void const* shapedata, int shapenum);
 void IPX_Call_Back(void);
 bool Is_Counterstrike_Installed(void);
 bool Is_Aftermath_Installed(void);
@@ -605,46 +605,46 @@ void Center_About_Objects(void);
 bool Force_CD_Available(int cd);
 void Handle_View(int view, int action = 0);
 void Handle_Team(int team, int action = 0);
-TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id);
-std::string Fading_Table_Name(char const *base, TheaterType theater);
+TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id);
+std::string Fading_Table_Name(char const* base, TheaterType theater);
 void Unselect_All(void);
-void Play_Movie(char const *name, ThemeType theme = THEME_NONE,
+void Play_Movie(char const* name, ThemeType theme = THEME_NONE,
                 bool clrscrn = true);
 void Play_Movie(VQType name, ThemeType theme = THEME_NONE, bool clrscrn = true);
 bool Main_Loop(void);
-TheaterType Theater_From_Name(char const *name);
-void Main_Game(int argc, char *argv[]);
-long VQ_Call_Back(unsigned char *buffer = nullptr, long frame = 0);
-long VQ_Event_Handler(unsigned long event, void *buffer, long nbytes);
+TheaterType Theater_From_Name(char const* name);
+void Main_Game(int argc, char* argv[]);
+long VQ_Call_Back(unsigned char* buffer = nullptr, long frame = 0);
+long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
 void Call_Back(void);
-char const *Language_Name(char const *basename);
-SourceType Source_From_Name(char const *name);
-char const *Name_From_Source(SourceType source);
+char const* Language_Name(char const* basename);
+SourceType Source_From_Name(char const* name);
+char const* Name_From_Source(SourceType source);
 FacingType KN_To_Facing(int input);
-void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
+void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
                            int zoomfactor);
-void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata = nullptr,
-                   void const *ghostdata = nullptr, DirType rotation = DIR_N,
+                   void const* fadingdata = nullptr,
+                   void const* ghostdata = nullptr, DirType rotation = DIR_N,
                    long scale = 0x0100);
 void Go_Editor(bool flag);
-int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
                        int64_t nbytes);
-char *CC_Get_Shape_Filename(void const *shapeptr);
-void CC_Add_Shape_To_Global(void const *shapeptr, char *filename, char code);
-void Bubba_Print(char *format, ...);
-void Heap_Dump_Check(char *string);
+char* CC_Get_Shape_Filename(void const* shapeptr);
+void CC_Add_Shape_To_Global(void const* shapeptr, char* filename, char code);
+void Bubba_Print(char* format, ...);
+void Heap_Dump_Check(char* string);
 void Dump_Heap_Pointers(void);
-void *Hires_Load(char *name);
+void* Hires_Load(char* name);
 void Shake_The_Screen(int shakes);
-void Rebuild_Interpolated_Palette(unsigned char *interpal);
-int Load_Interpolated_Palettes(char const *filename, bool add = false);
+void Rebuild_Interpolated_Palette(unsigned char* interpal);
+int Load_Interpolated_Palettes(char const* filename, bool add = false);
 void Free_Interpolated_Palettes(void);
 
 // Denzil 5/18/98 - Mpeg movie playback
 #ifdef MPEGMOVIE
-bool PlayMpegMovie(const char *name);
+bool PlayMpegMovie(const char* name);
 #endif
 
 #endif  // CNC_RED_ALERT_RA_CONQUER_H_

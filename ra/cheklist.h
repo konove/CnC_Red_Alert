@@ -49,10 +49,10 @@
 
 class CheckObject {
  public:
-  CheckObject(char const *text = nullptr, bool checked = false)
+  CheckObject(char const* text = nullptr, bool checked = false)
       : Text(text), IsChecked(checked) {};
 
-  char const *Text;
+  char const* Text;
   bool IsChecked;
 };
 
@@ -62,16 +62,16 @@ class CheckListClass : public ListClass {
   **	Constructor/Destructor
   */
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const *up, void const *down);
+                 void const* up, void const* down);
   ~CheckListClass(void);
 
   virtual int Add_Item(int text) { return ListClass::Add_Item(text); }
-  virtual int Add_Item(char const *text);
-  virtual char const *Current_Item(void) const;
-  virtual char const *Get_Item(int index) const;
-  virtual void Remove_Item(char const *text);
+  virtual int Add_Item(char const* text);
+  virtual char const* Current_Item(void) const;
+  virtual char const* Get_Item(int index) const;
+  virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int text) { ListClass::Remove_Item(text); }
-  virtual void Set_Selected_Index(char const *text);
+  virtual void Set_Selected_Index(char const* text);
   virtual void Set_Selected_Index(int index) {
     ListClass::Set_Selected_Index(index);
   };
@@ -94,7 +94,7 @@ class CheckListClass : public ListClass {
   } CheckListClassEnum;
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
 
  private:

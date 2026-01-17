@@ -158,7 +158,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This is the house that the unit belongs to.
   */
-  HouseClass *House;
+  HouseClass* House;
 
   /*
   **	This records the current cloak state for this vehicle.
@@ -204,7 +204,7 @@ class TechnoClass : public RadioClass,
   */
   TechnoClass(void);
   TechnoClass(HousesType house);
-  TechnoClass(NoInitClass const &x)
+  TechnoClass(NoInitClass const& x)
       : RadioClass(x),
         FlasherClass(x),
         StageClass(x),
@@ -218,14 +218,14 @@ class TechnoClass : public RadioClass,
   **	Query functions.
   */
   virtual int Refund_Amount(void) const;
-  virtual CELL Find_Exit_Cell(TechnoClass const *techno) const;
-  virtual BuildingClass *Find_Docking_Bay(StructType b, bool friendly) const;
+  virtual CELL Find_Exit_Cell(TechnoClass const* techno) const;
+  virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
   virtual int Threat_Range(int control) const;
   virtual InfantryType Crew_Type(void) const;
-  TechnoTypeClass const *Techno_Type_Class(void) const {
-    return ((TechnoTypeClass const *)&Class_Of());
+  TechnoTypeClass const* Techno_Type_Class(void) const {
+    return ((TechnoTypeClass const*)&Class_Of());
   };
-  CELL Nearby_Location(TechnoClass const *from = nullptr) const;
+  CELL Nearby_Location(TechnoClass const* from = nullptr) const;
   virtual unsigned char Get_Ownable(void) const;
   virtual bool Can_Player_Fire(void) const;
   virtual bool Can_Player_Move(void) const;
@@ -236,10 +236,10 @@ class TechnoClass : public RadioClass,
   virtual int Risk(void) const;
   virtual int Value(void) const;
   virtual int Rearm_Delay(bool second = true) const;
-  virtual ActionType What_Action(ObjectClass *target) const;
+  virtual ActionType What_Action(ObjectClass* target) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual int Tiberium_Load(void) const;
-  virtual DirType Desired_Load_Dir(ObjectClass *, CELL &moveto) const;
+  virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
   virtual int Pip_Count(void) const;
   virtual DirType Fire_Direction(void) const;
 
@@ -258,46 +258,46 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  void Base_Is_Attacked(TechnoClass const *enemy);
-  void Kill_Cargo(TechnoClass *source);
-  virtual void Record_The_Kill(TechnoClass *source);
+  void Base_Is_Attacked(TechnoClass const* enemy);
+  void Kill_Cargo(TechnoClass* source);
+  virtual void Record_The_Kill(TechnoClass* source);
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun(void);
   virtual bool In_Range(COORDINATE coord, int which = 0) const;
   virtual bool In_Range(TARGET target, int which = 0) const;
-  virtual bool In_Range(ObjectClass const *target, int which = 0) const;
+  virtual bool In_Range(ObjectClass const* target, int which = 0) const;
   virtual void Death_Announcement(
-      TechnoClass const *source = nullptr) const = 0;
+      TechnoClass const* source = nullptr) const = 0;
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);
   virtual void Override_Mission(MissionType mission, TARGET tarcom,
                                 TARGET navcom);
   virtual bool Restore_Mission(void);
-  virtual BulletClass *Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(TARGET target, int which = 0);
   virtual int Weapon_Range(int which) const;
-  virtual bool Captured(HouseClass *newowner);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source);
+  virtual bool Captured(HouseClass* newowner);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source);
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
-                     TechnoClass const **object, int &value) const;
+                     TechnoClass const** object, int& value) const;
   bool Evaluate_Object(ThreatType method, int mask, int range,
-                       TechnoClass const *object, int &value) const;
+                       TechnoClass const* object, int& value) const;
 
   /*
   **	AI.
   */
   virtual void AI(void);
-  virtual bool Revealed(HouseClass *house);
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual bool Revealed(HouseClass* house);
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
 
 /*
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
@@ -310,15 +310,15 @@ class TechnoClass : public RadioClass,
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table(void);
+  virtual void const* Remap_Table(void);
   VisualType Visual_Character(bool raw = false);
-  void Techno_Draw_Object(void const *shapefile, int shapenum, int x, int y,
+  void Techno_Draw_Object(void const* shapefile, int shapenum, int x, int y,
                           WindowNumberType window);
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual void Draw_Pips(int x, int y, WindowNumberType window);
   virtual void Hidden(void);
   virtual bool Mark(MarkType mark);
-  virtual int Exit_Object(TechnoClass *);
+  virtual int Exit_Object(TechnoClass*);
   virtual void Do_Uncloak(void);
   virtual void Do_Cloak(void);
   virtual void Do_Shimmer(void);

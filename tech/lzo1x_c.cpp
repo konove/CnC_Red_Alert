@@ -82,14 +82,14 @@
 // compress a block of data.
 ************************************************************************/
 
-static int do_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
-                       lzo_uint *out_len, lzo_voidp wrkmem) {
-  const lzo_byte *ip;
+static int do_compress(const lzo_byte* in, lzo_uint in_len, lzo_byte* out,
+                       lzo_uint* out_len, lzo_voidp wrkmem) {
+  const lzo_byte* ip;
   lzo_uint dv;
-  lzo_byte *op;
-  const lzo_byte *const in_end = in + in_len;
-  const lzo_byte *const ip_end = in + in_len - 9 - 4;
-  const lzo_byte *ii;
+  lzo_byte* op;
+  const lzo_byte* const in_end = in + in_len;
+  const lzo_byte* const ip_end = in + in_len - 9 - 4;
+  const lzo_byte* ii;
   const lzo_bytepp const dict = (const lzo_bytepp)wrkmem;
 
   op = out;
@@ -110,7 +110,7 @@ static int do_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
   ip++;
 
   while (1) {
-    const lzo_byte *m_pos;
+    const lzo_byte* m_pos;
     lzo_uint m_len;
     lzo_ptrdiff_t m_off;
     lzo_uint lit;
@@ -123,7 +123,7 @@ static int do_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
     if (LZO_CHECK_MPOS_NON_DET(m_pos, m_off, in, ip, M4_MAX_OFFSET)) {
     }
 #if defined(LZO_UNALIGNED_OK_2)
-    else if (*(unsigned short *)m_pos != *(unsigned short *)ip)
+    else if (*(unsigned short*)m_pos != *(unsigned short*)ip)
 #else
     else if (m_pos[0] != ip[0] || m_pos[1] != ip[1])
 #endif
@@ -221,7 +221,7 @@ static int do_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
         }
       }
     } else {
-      const lzo_byte *end;
+      const lzo_byte* end;
       end = in_end;
       while (ip < end && *m_pos == *ip) {
         m_pos++;
@@ -308,9 +308,9 @@ static int do_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
 // public entry point
 ************************************************************************/
 
-int lzo1x_1_compress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
-                     lzo_uint *out_len, lzo_voidp wrkmem) {
-  lzo_byte *op = out;
+int lzo1x_1_compress(const lzo_byte* in, lzo_uint in_len, lzo_byte* out,
+                     lzo_uint* out_len, lzo_voidp wrkmem) {
+  lzo_byte* op = out;
   int r = LZO_E_OK;
 
   if (in_len <= 0)

@@ -38,14 +38,15 @@
 #define _WIN32
 #endif  // _WIN32
 #define WIN32
+#include <mem.h>
+#include <objbase.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <objbase.h>
+
 #include "dsound.h"
-#include <mem.h>
+#include "soundint.h"
 #include "wwmem.h"
 #include "wwstd.h"
-#include "soundint.h"
 
 LockedDataType LockedData;
 
@@ -88,9 +89,9 @@ void Init_Locked_Data(void) {
   DPMI_Lock(&LockedData, 4096L);
   DPMI_Lock(Simple_Copy, 4096L);
   DPMI_Lock(Sample_Copy, 4096L);
-  DPMI_Lock((void *)maintenance_callback, 4096L);
-  DPMI_Lock((void *)DigiCallback, 4096L);
-  DPMI_Lock((void *)HMI_TimerCallback, 4096L);
+  DPMI_Lock((void*)maintenance_callback, 4096L);
+  DPMI_Lock((void*)DigiCallback, 4096L);
+  DPMI_Lock((void*)HMI_TimerCallback, 4096L);
   DPMI_Lock(Audio_Add_Long_To_Pointer, 4096L);
   DPMI_Lock(DPMI_Unlock, 4096L);
 

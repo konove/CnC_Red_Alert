@@ -154,7 +154,7 @@ int WOL_Main() {
           case RESULT_WOLGSUP_FATALERROR:
             //					debugprint(
             //"RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
-            //Fatal( "RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
+            // Fatal( "RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
             if (pWolapi->pChatSink->bConnected) pWolapi->Logout();
             bKeepGoing = false;
             break;

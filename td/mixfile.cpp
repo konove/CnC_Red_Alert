@@ -31,18 +31,18 @@
 #include "tech/crc.h"
 
 template <class T>
-int Compare(T const *obj1, T const *obj2) {
+int Compare(T const* obj1, T const* obj2) {
   if (*obj1 < *obj2) return (-1);
   if (*obj1 > *obj2) return (1);
   return (0);
 };
 
 // Head of the global linked list of registered mixfiles.
-MixFileClass *MixFileClass::First = nullptr;
+MixFileClass* MixFileClass::First = nullptr;
 
 // Looks up the mixfile by name and delegates to the instance Free() method.
-bool MixFileClass::Free(char const *filename) {
-  MixFileClass *ptr = Finder(filename);
+bool MixFileClass::Free(char const* filename) {
+  MixFileClass* ptr = Finder(filename);
 
   if (ptr) {
     ptr->Free();
@@ -62,10 +62,10 @@ void MixFileClass::Free_All(void) {
 MixFileClass::~MixFileClass(void) {
   // Deallocate any allocated memory.
   if (Filename) {
-    free((char *)Filename);
+    free((char*)Filename);
   }
   if (Data) {
-    delete[] static_cast<char *>(Data);
+    delete[] static_cast<char*>(Data);
   }
   if (Buffer) {
     delete[] Buffer;
@@ -73,7 +73,7 @@ MixFileClass::~MixFileClass(void) {
 
   // Unlink from the global mixfile chain.
   if (this == First) {
-    First = (MixFileClass *)Get_Next();
+    First = (MixFileClass*)Get_Next();
   } else {
     Remove();
   }
@@ -82,9 +82,9 @@ MixFileClass::~MixFileClass(void) {
 
 // Factory method: returns existing instance if already registered, otherwise
 // creates a new MixFileClass and appends it to the global linked list.
-MixFileClass *MixFileClass::Register(char const *filename) {
+MixFileClass* MixFileClass::Register(char const* filename) {
   // Check if already registered
-  MixFileClass *existing = Finder(filename);
+  MixFileClass* existing = Finder(filename);
   if (existing != nullptr) {
     return existing;
   }
@@ -103,8 +103,8 @@ MixFileClass *MixFileClass::Register(char const *filename) {
 
 // Finds the mixfile by name and deletes it. The destructor handles list
 // removal.
-bool MixFileClass::Unregister(char const *filename) {
-  MixFileClass *mix = Finder(filename);
+bool MixFileClass::Unregister(char const* filename) {
+  MixFileClass* mix = Finder(filename);
   if (mix) {
     delete mix;  // Destructor handles list removal
     return true;
@@ -115,7 +115,7 @@ bool MixFileClass::Unregister(char const *filename) {
 // Opens the mixfile and reads the FileHeader and SubBlock index array.
 // Does NOT load the raw data (call Cache() for that). Link pointers are
 // initialized but registration in the global list happens in Register().
-MixFileClass::MixFileClass(const char *filename) {
+MixFileClass::MixFileClass(const char* filename) {
   CCFileClass file;
 
   // Initialize members and read the header.
@@ -154,21 +154,21 @@ MixFileClass::MixFileClass(const char *filename) {
 }
 
 // Thin wrapper around Offset() that returns just the data pointer.
-const void *MixFileClass::Retrieve(const char *filename) {
-  void *ptr = nullptr;
+const void* MixFileClass::Retrieve(const char* filename) {
+  void* ptr = nullptr;
   Offset(filename, &ptr);
   return (ptr);
 }
 
 // Searches registered mixfiles by suffix-matching the filename. This allows
 // matching "general.mix" even if stored as "c:\data\general.mix".
-MixFileClass *MixFileClass::Finder(const char *filename) {
-  MixFileClass *ptr;
+MixFileClass* MixFileClass::Finder(const char* filename) {
+  MixFileClass* ptr;
 
   ptr = First;
   while (ptr) {
     if (strlen(ptr->Filename) < strlen(filename)) {
-      ptr = (MixFileClass *)ptr->Get_Next();
+      ptr = (MixFileClass*)ptr->Get_Next();
       continue;
     }
 
@@ -176,14 +176,14 @@ MixFileClass *MixFileClass::Finder(const char *filename) {
                 filename) == 0) {
       return (ptr);
     }
-    ptr = (MixFileClass *)ptr->Get_Next();
+    ptr = (MixFileClass*)ptr->Get_Next();
   }
   return (nullptr);
 }
 
 // Looks up the mixfile by name and delegates to the instance Cache() method.
-bool MixFileClass::Cache(char const *filename) {
-  MixFileClass *mixer = Finder(filename);
+bool MixFileClass::Cache(char const* filename) {
+  MixFileClass* mixer = Finder(filename);
 
   if (mixer) {
     return (mixer->Cache());
@@ -241,15 +241,15 @@ bool MixFileClass::Cache(void) {
 // re-caching later without re-reading the index from disk.
 void MixFileClass::Free(void) {
   if (Data) {
-    delete[] static_cast<char *>(Data);
+    delete[] static_cast<char*>(Data);
     Data = nullptr;
   }
 }
 
 // Comparison function for bsearch() on SubBlock CRC values.
-int compfunc(void const *ptr1, void const *ptr2) {
-  if (*(int32_t const *)ptr1 < *(int32_t const *)ptr2) return (-1);
-  if (*(int32_t const *)ptr1 > *(int32_t const *)ptr2) return (1);
+int compfunc(void const* ptr1, void const* ptr2) {
+  if (*(int32_t const*)ptr1 < *(int32_t const*)ptr2) return (-1);
+  if (*(int32_t const*)ptr1 > *(int32_t const*)ptr2) return (1);
   return (0);
 }
 
@@ -257,14 +257,14 @@ int compfunc(void const *ptr1, void const *ptr2) {
 // a binary search on each mixfile's SubBlock index. If found, populates the
 // output parameters. For uncached mixfiles, the offset is adjusted to include
 // the header and index size so it can be used for direct file seeks.
-bool MixFileClass::Offset(char const *filename, void **realptr,
-                          MixFileClass **mixfile, long *offset, long *size) {
-  MixFileClass *ptr;
+bool MixFileClass::Offset(char const* filename, void** realptr,
+                          MixFileClass** mixfile, long* offset, long* size) {
+  MixFileClass* ptr;
 
   if (!filename) return (false);
 
   // Compute CRC of uppercase filename for index lookup.
-  char *upperFilename = strupr(strdup(filename));
+  char* upperFilename = strupr(strdup(filename));
   long crc = CrcEngine::Compute(upperFilename);
   free(upperFilename);
   SubBlock key;
@@ -273,11 +273,11 @@ bool MixFileClass::Offset(char const *filename, void **realptr,
   // Search each registered mixfile.
   ptr = First;
   while (ptr) {
-    SubBlock *block;
+    SubBlock* block;
 
     // Binary search the index for matching CRC.
-    block = (SubBlock *)bsearch(&key, ptr->Buffer, ptr->Count, sizeof(SubBlock),
-                                compfunc);
+    block = (SubBlock*)bsearch(&key, ptr->Buffer, ptr->Count, sizeof(SubBlock),
+                               compfunc);
     if (block) {
       if (mixfile) *mixfile = ptr;
       if (size) *size = block->Size;
@@ -293,7 +293,7 @@ bool MixFileClass::Offset(char const *filename, void **realptr,
       return (true);
     }
 
-    ptr = (MixFileClass *)ptr->Get_Next();
+    ptr = (MixFileClass*)ptr->Get_Next();
   }
 
   return (false);

@@ -51,18 +51,18 @@
 ** Types for function pointers
 */
 typedef int __stdcall (*IPXInitialiseType)(void);
-typedef int __stdcall (*IPXGetOutstandingBuffer95Type)(unsigned char *);
+typedef int __stdcall (*IPXGetOutstandingBuffer95Type)(unsigned char*);
 typedef void __stdcall (*IPXShutDown95Type)(void);
-typedef int __stdcall (*IPXSendPacket95Type)(unsigned char *, unsigned char *,
-                                             int, unsigned char *,
-                                             unsigned char *);
-typedef int __stdcall (*IPXBroadcastPacket95Type)(unsigned char *, int);
+typedef int __stdcall (*IPXSendPacket95Type)(unsigned char*, unsigned char*,
+                                             int, unsigned char*,
+                                             unsigned char*);
+typedef int __stdcall (*IPXBroadcastPacket95Type)(unsigned char*, int);
 typedef int __stdcall (*IPXStartListening95Type)(void);
 typedef int __stdcall (*IPXOpenSocket95Type)(int);
 typedef void __stdcall (*IPXCloseSocket95Type)(int);
 typedef int __stdcall (*IPXGetConnectionNumber95Type)(void);
-typedef int __stdcall (*IPXGetLocalTarget95)(unsigned char *, unsigned char *,
-                                             unsigned short, unsigned char *);
+typedef int __stdcall (*IPXGetLocalTarget95)(unsigned char*, unsigned char*,
+                                             unsigned short, unsigned char*);
 
 /*
 ** Function pointers
@@ -89,17 +89,17 @@ void Unload_IPX_Dll(void);
 #if (0)
 extern "C" {
 extern BOOL __stdcall IPX_Initialise(void);
-extern BOOL __stdcall IPX_Get_Outstanding_Buffer95(unsigned char *buffer);
+extern BOOL __stdcall IPX_Get_Outstanding_Buffer95(unsigned char* buffer);
 extern void __stdcall IPX_Shut_Down95(void);
-extern int __stdcall IPX_Send_Packet95(unsigned char *, unsigned char *, int,
-                                       unsigned char *, unsigned char *);
-extern int __stdcall IPX_Broadcast_Packet95(unsigned char *, int);
+extern int __stdcall IPX_Send_Packet95(unsigned char*, unsigned char*, int,
+                                       unsigned char*, unsigned char*);
+extern int __stdcall IPX_Broadcast_Packet95(unsigned char*, int);
 extern BOOL __stdcall IPX_Start_Listening95(void);
 extern int __stdcall IPX_Open_Socket95(int socket);
 extern void __stdcall IPX_Close_Socket95(int socket);
 extern int __stdcall IPX_Get_Connection_Number95(void);
-extern int __stdcall IPX_Get_Local_Target95(unsigned char *, unsigned char *,
-                                            unsigned short, unsigned char *);
+extern int __stdcall IPX_Get_Local_Target95(unsigned char*, unsigned char*,
+                                            unsigned short, unsigned char*);
 }
 #endif  //(0)
 

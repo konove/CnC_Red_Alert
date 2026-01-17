@@ -337,7 +337,7 @@ STDMETHODIMP RAChatEventSink::OnChannelJoin(HRESULT hRes, Channel* /*pChannel*/,
   //	if( SUCCEEDED( hRes ) )
   //		debugprint( ">>> OnChannelJoin got: channel '%s', user '%s', %i
   //", (char*)pChannel->name, (char*)pUser->name, hRes ); 	else
-  //debugprint( ">>> OnChannelJoin got: %i ", hRes );
+  // debugprint( ">>> OnChannelJoin got: %i ", hRes );
   DebugChatDef(hRes);
 
   //	//	Special case - ignore OnChannelJoin when waiting for a UserList.
@@ -1361,7 +1361,7 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
   // reason) doesn't hold valid ipaddr's, so we have to go through 	all this
   // rigamarole... 	(List is cleared when entering game channel. Users are
   // added initially and on joins, not removed on leaves.) 	debugprint( ">>>
-  //OnUserIP got: " );
+  // OnUserIP got: " );
   DebugChatDef(hRes);
 
   if (SUCCEEDED(hRes)) {
@@ -1694,7 +1694,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
           if (!pLadderTail) {
             //	First Ladder in list.
             pLadderList = pLadderNew;  //	This is the head of our Ladder
-                                       //list.
+                                       // list.
             pLadderTail = pLadderNew;
           } else {
             pLadderTail->next = pLadderNew;
@@ -1712,7 +1712,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(HRESULT hRes,
           if (!pLadderTailAM) {
             //	First Ladder in list.
             pLadderListAM = pLadderNew;  //	This is the head of our Ladder
-                                         //list.
+                                         // list.
             pLadderTailAM = pLadderNew;
           } else {
             pLadderTailAM->next = pLadderNew;

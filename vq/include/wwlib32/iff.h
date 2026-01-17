@@ -101,19 +101,19 @@ typedef struct {
  */
 /*=========================================================================*/
 
-WORD cdecl Open_Iff_File(BYTE const *filename);
+WORD cdecl Open_Iff_File(BYTE const* filename);
 VOID cdecl Close_Iff_File(WORD fh);
 ULONG cdecl Get_Iff_Chunk_Size(WORD fh, LONG id);
-ULONG cdecl Read_Iff_Chunk(WORD fh, LONG id, VOID *buffer, ULONG maxsize);
-VOID cdecl Write_Iff_Chunk(WORD file, LONG id, VOID *buffer, LONG length);
+ULONG cdecl Read_Iff_Chunk(WORD fh, LONG id, VOID* buffer, ULONG maxsize);
+VOID cdecl Write_Iff_Chunk(WORD file, LONG id, VOID* buffer, LONG length);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LOADPICT.CPP
  */
 /*=========================================================================*/
 
-WORD cdecl Load_Picture(BYTE const *filename, BufferClass &scratchbuf,
-                        BufferClass &destbuf, UBYTE *palette = nullptr,
+WORD cdecl Load_Picture(BYTE const* filename, BufferClass& scratchbuf,
+                        BufferClass& destbuf, UBYTE* palette = nullptr,
                         PicturePlaneType format = BM_DEFAULT);
 
 /*=========================================================================*/
@@ -121,12 +121,13 @@ WORD cdecl Load_Picture(BYTE const *filename, BufferClass &scratchbuf,
  */
 /*=========================================================================*/
 
-ULONG cdecl Load_Data(BYTE const *name, VOID *ptr, ULONG size);
-ULONG cdecl Write_Data(BYTE const *name, VOID *ptr, ULONG size);
-VOID *cdecl Load_Alloc_Data(BYTE const *name, MemoryFlagType flags);
-ULONG cdecl Load_Uncompress(BYTE const *file, BufferClass &uncomp_buff,
-                            BufferClass &dest_buff, VOID *reserved_data = nullptr);
-ULONG cdecl Uncompress_Data(VOID const *src, VOID *dst);
+ULONG cdecl Load_Data(BYTE const* name, VOID* ptr, ULONG size);
+ULONG cdecl Write_Data(BYTE const* name, VOID* ptr, ULONG size);
+VOID* cdecl Load_Alloc_Data(BYTE const* name, MemoryFlagType flags);
+ULONG cdecl Load_Uncompress(BYTE const* file, BufferClass& uncomp_buff,
+                            BufferClass& dest_buff,
+                            VOID* reserved_data = nullptr);
+ULONG cdecl Uncompress_Data(VOID const* src, VOID* dst);
 VOID cdecl Set_Uncomp_Buffer(WORD buffer_segment, UWORD size_of_buffer);
 
 /*=========================================================================*/
@@ -134,8 +135,8 @@ VOID cdecl Set_Uncomp_Buffer(WORD buffer_segment, UWORD size_of_buffer);
  */
 /*=========================================================================*/
 
-PUBLIC BOOL Write_LBM_File(WORD lbmhandle, BufferClass &buff, WORD bitplanes,
-                           UBYTE *palette);
+PUBLIC BOOL Write_LBM_File(WORD lbmhandle, BufferClass& buff, WORD bitplanes,
+                           UBYTE* palette);
 
 /*========================= Assembly Functions ============================*/
 
@@ -148,21 +149,21 @@ extern "C" {
  */
 /*=========================================================================*/
 
-extern VOID Pack_2_Plane(VOID *buffer, VOID *pageptr, WORD planebit);
+extern VOID Pack_2_Plane(VOID* buffer, VOID* pageptr, WORD planebit);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LCWCOMP.ASM
  */
 /*=========================================================================*/
 
-extern ULONG LCW_Compress(VOID *source, VOID *dest, ULONG length);
+extern ULONG LCW_Compress(VOID* source, VOID* dest, ULONG length);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LCWUNCMP.ASM
  */
 /*=========================================================================*/
 
-extern ULONG LCW_Uncompress(VOID *source, VOID *dest, ULONG length);
+extern ULONG LCW_Uncompress(VOID* source, VOID* dest, ULONG length);
 
 #ifdef __cplusplus
 }

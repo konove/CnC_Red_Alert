@@ -71,7 +71,7 @@
 */
 short HelpClass::OverlapList[60] = {REFRESH_EOL};
 
-char const *HelpClass::HelpText;
+char const* HelpClass::HelpText;
 
 /***********************************************************************************************
  * HelpClass::HelpClass -- Default constructor for the help processor. *
@@ -138,9 +138,9 @@ void HelpClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-short const *HelpClass::Overlap_List(void) const {
+short const* HelpClass::Overlap_List(void) const {
   if (Text == TXT_NONE || CountDownTimer) {
-    ((short &)(OverlapList[0])) = REFRESH_EOL;
+    ((short&)(OverlapList[0])) = REFRESH_EOL;
   }
   return (OverlapList);
 }
@@ -165,7 +165,7 @@ short const *HelpClass::Overlap_List(void) const {
  * HISTORY: * 11/18/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse
  *coordinates as passed in.                                     *
  *=============================================================================================*/
-void HelpClass::AI(KeyNumType &key, int x, int y) {
+void HelpClass::AI(KeyNumType& key, int x, int y) {
   if (!CountDownTimer && !IsRight && (x != X || y != Y)) {
     Help_Text(TXT_NONE);
   }
@@ -332,10 +332,10 @@ void HelpClass::Set_Text(int text) {
       if (DrawX < TacPixelX + 1) DrawX = TacPixelX + 1;
       if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
     }
-    memcpy((void *)OverlapList,
+    memcpy((void*)OverlapList,
            Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
            sizeof(OverlapList));
-    *(short *)&OverlapList[ARRAY_SIZE(OverlapList) - 1] = REFRESH_EOL;
+    *(short*)&OverlapList[ARRAY_SIZE(OverlapList) - 1] = REFRESH_EOL;
   }
 }
 
@@ -358,7 +358,7 @@ void HelpClass::Set_Text(int text) {
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-bool HelpClass::Scroll_Map(DirType facing, int &distance, bool really) {
+bool HelpClass::Scroll_Map(DirType facing, int& distance, bool really) {
   if (really) {
     Help_Text(TXT_NONE);
   }

@@ -40,9 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstdlib>
-
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 
@@ -89,19 +88,19 @@
 #else
 #endif
 
-bool Read_Private_Config_Struct(char *profile, NewConfigType *config);
+bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
 void Delete_Swap_Files(void);
-void Print_Error_End_Exit(char *string);
-void Print_Error_Exit(char *string);
-WinTimerClass *WinTimer;
+void Print_Error_End_Exit(char* string);
+void Print_Error_Exit(char* string);
+WinTimerClass* WinTimer;
 extern void Create_Main_Window(HANDLE instance, int command_show, int width,
                                int height);
 
 extern bool ReadyToQuit;
-void Read_Setup_Options(RawFileClass *config_file);
+void Read_Setup_Options(RawFileClass* config_file);
 
 bool VideoBackBufferAllowed = true;
-void Check_From_WChat(char *wchat_name);
+void Check_From_WChat(char* wchat_name);
 bool SpawnedFromWChat = false;
 
 extern "C" {
@@ -156,15 +155,15 @@ void CD_Test(void) {
 HINSTANCE ProgramInstance;
 #endif
 extern bool CC95AlreadyRunning;
-void Move_Point(short &x, short &y, DirType dir, unsigned short distance);
+void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
 
 void Check_Use_Compressed_Shapes(void);
 
 #ifdef _WIN32
-int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *command_line,
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
 #else   // WIN32
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 #endif  // WIN32
 {
   // Heap_Dump_Check( "first thing in main" );
@@ -225,7 +224,7 @@ int main(int argc, char *argv[])
   int argc;  // Command line argument count
   unsigned command_scan;
   char command_char;
-  char *argv[20];  // Pointers to command line arguments
+  char* argv[20];  // Pointers to command line arguments
   char path_to_exe[280];
 
   ProgramInstance = instance;
@@ -393,7 +392,7 @@ int main(int argc, char *argv[])
 #endif
 
     if (cfile.Is_Available()) {
-      char *cdata = (char *)Load_Alloc_Data(cfile);
+      char* cdata = (char*)Load_Alloc_Data(cfile);
       Read_Private_Config_Struct(cdata, &NewConfig);
       delete[] cdata;
       Read_Setup_Options(&cfile);
@@ -566,8 +565,8 @@ int main(int argc, char *argv[])
       ** See if we should run the intro
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
-      char *buffer =
-          (char *)Alloc(64000, MEM_NORMAL);  //(char *)HidPage.Get_Buffer();
+      char* buffer =
+          (char*)Alloc(64000, MEM_NORMAL);  //(char *)HidPage.Get_Buffer();
       cfile.Read(buffer, cfile.Size());
       buffer[cfile.Size()] = '\0';
 
@@ -765,7 +764,7 @@ void Delete_Swap_Files(void) {
 }
 #endif
 
-void Print_Error_End_Exit(char *string) {
+void Print_Error_End_Exit(char* string) {
   printf("%s\n", string);
   Get_Key();
   Prog_End();
@@ -773,7 +772,7 @@ void Print_Error_End_Exit(char *string) {
   exit(1);
 }
 
-void Print_Error_Exit(char *string) {
+void Print_Error_Exit(char* string) {
   printf("%s\n", string);
   exit(1);
 }
@@ -792,8 +791,8 @@ void Print_Error_Exit(char *string) {
  *                                                                                             *
  * HISTORY: * 6/7/96 4:09PM ST : Created *
  *=============================================================================================*/
-void Read_Setup_Options(RawFileClass *config_file) {
-  char *buffer = new char[config_file->Size() + 1];
+void Read_Setup_Options(RawFileClass* config_file) {
+  char* buffer = new char[config_file->Size() + 1];
   buffer[config_file->Size()] = 0;
 
   if (config_file->Is_Available()) {
@@ -825,7 +824,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
     */
     char netbuf[512];
     memset(netbuf, 0, sizeof(netbuf));
-    char *netptr = WWGetPrivateProfileString("Options", "DestNet", nullptr,
+    char* netptr = WWGetPrivateProfileString("Options", "DestNet", nullptr,
                                              netbuf, sizeof(netbuf), buffer);
 
     if (netptr && strlen(netbuf)) {
@@ -836,7 +835,7 @@ void Read_Setup_Options(RawFileClass *config_file) {
       ** Scan the string, pulling off each address piece
       */
       int i = 0;
-      char *p = strtok(netbuf, ".");
+      char* p = strtok(netbuf, ".");
       int x;
       while (p) {
         sscanf(p, "%x", &x);  // convert from hex string to int

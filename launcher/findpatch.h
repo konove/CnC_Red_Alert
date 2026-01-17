@@ -19,15 +19,17 @@
 #ifndef FINDPATCH_HEADER
 #define FINDPATCH_HEADER
 
-#include <cstdlib>
-#include <cstdio>
-#include <windows.h>
 #include <direct.h>
-#include "wstypes.h"
-#include "configfile.h"
+#include <windows.h>
 
-int Find_Patch(OUT char *file, int maxlen, ConfigFile &config);
-bit8 Get_App_Dir(OUT char *file, int maxlen, ConfigFile &config, int index);
-void Delete_Patches(ConfigFile &config);
+#include <cstdio>
+#include <cstdlib>
+
+#include "configfile.h"
+#include "wstypes.h"
+
+int Find_Patch(OUT char* file, int maxlen, ConfigFile& config);
+bit8 Get_App_Dir(OUT char* file, int maxlen, ConfigFile& config, int index);
+void Delete_Patches(ConfigFile& config);
 
 #endif

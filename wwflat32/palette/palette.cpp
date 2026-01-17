@@ -49,11 +49,13 @@
 /*
 ********************************* Includes **********************************
 */
-#include <mem.h>
-#include "wwstd.h"
-#include "video.h"
 #include "palette.h"
+
+#include <mem.h>
+
 #include "timer.h"
+#include "video.h"
+#include "wwstd.h"
 
 /*
 ********************************* Constants *********************************
@@ -68,9 +70,9 @@ extern "C" extern UBYTE CurrentPalette[]; /* in pal.asm */
 ******************************** Prototypes *********************************
 */
 
-PRIVATE VOID cdecl Determine_Bump_Rate(VOID *palette, WORD delay, WORD *ticks,
-                                       WORD *rate);
-PRIVATE BOOL cdecl Bump_Palette(VOID *palette1, UWORD step);
+PRIVATE VOID cdecl Determine_Bump_Rate(VOID* palette, WORD delay, WORD* ticks,
+                                       WORD* rate);
+PRIVATE BOOL cdecl Bump_Palette(VOID* palette1, UWORD step);
 
 /*
 ******************************** Code *********************************
@@ -94,7 +96,7 @@ PRIVATE BOOL cdecl Bump_Palette(VOID *palette1, UWORD step);
  *   04/25/1994 SKB : Created.                                             *
  *   04/27/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-VOID cdecl Set_Palette(VOID *palette) {
+VOID cdecl Set_Palette(VOID* palette) {
 #if (IBM)
   Set_Palette_Range(palette);
 #else
@@ -125,7 +127,7 @@ VOID cdecl Set_Palette(VOID *palette) {
  *   04/25/1994 SKB : Created.                                             *
  *   04/27/1994 BR : Converted to 32-bit                                   *
  *=========================================================================*/
-VOID cdecl Set_Palette_Color(VOID *palette, WORD color, VOID *data) {
+VOID cdecl Set_Palette_Color(VOID* palette, WORD color, VOID* data) {
   /*
   ---------------------- Return if 'palette' is NULL -----------------------
   */
@@ -135,10 +137,10 @@ VOID cdecl Set_Palette_Color(VOID *palette, WORD color, VOID *data) {
 ------------------- Change the color & set the palette -------------------
 */
 #if (IBM)
-  memcpy(&((UBYTE *)palette)[color * RGB_BYTES], data, RGB_BYTES);
+  memcpy(&((UBYTE*)palette)[color * RGB_BYTES], data, RGB_BYTES);
   Set_Palette_Range(palette);
 #else
-  palette[color] = *(UWORD *)data;
+  palette[color] = *(UWORD*)data;
   Set_Palette(palette);
 #endif
 
@@ -164,7 +166,7 @@ VOID cdecl Set_Palette_Color(VOID *palette, WORD color, VOID *data) {
  * HISTORY:                                                                *
  *   06/20/1991  BS : Created.                                             *
  *=========================================================================*/
-VOID Fade_Palette_To(VOID *palette1, UWORD delay, VOID (*callback)()) {
+VOID Fade_Palette_To(VOID* palette1, UWORD delay, VOID (*callback)()) {
   BOOL changed;   // Flag that palette has changed this tick.
   WORD jump;      // Gun values to jump per palette set.
   ULONG timer;    // Tick count timer used for timing.
@@ -251,8 +253,8 @@ VOID Fade_Palette_To(VOID *palette1, UWORD delay, VOID (*callback)()) {
  *   04/27/1994 BR : Converted to 32-bit                                   *
  *   08/02/1994 SKB : Made private                                         *
  *=========================================================================*/
-PRIVATE VOID cdecl Determine_Bump_Rate(VOID *palette, WORD delay, WORD *ticks,
-                                       WORD *rate) {
+PRIVATE VOID cdecl Determine_Bump_Rate(VOID* palette, WORD delay, WORD* ticks,
+                                       WORD* rate) {
   WORD gun1;   // Palette 1 gun value.
   WORD gun2;   // Palette 2 gun value.
   WORD diff;   // Maximum color gun difference.
@@ -266,7 +268,7 @@ PRIVATE VOID cdecl Determine_Bump_Rate(VOID *palette, WORD delay, WORD *ticks,
   */
   diff = 0;
   for (index = 0; index < PALETTE_BYTES; index++) {
-    gun1 = ((UBYTE *)palette)[index];
+    gun1 = ((UBYTE*)palette)[index];
     gun2 = CurrentPalette[index];
     adiff = ABS(gun1 - gun2);
     diff = MAX(diff, adiff);
@@ -320,7 +322,7 @@ PRIVATE VOID cdecl Determine_Bump_Rate(VOID *palette, WORD delay, WORD *ticks,
  *   08/02/1994 SKB : Made private                                         *
  *=========================================================================*/
 #if (IBM)
-PRIVATE BOOL cdecl Bump_Palette(VOID *palette1, UWORD step) {
+PRIVATE BOOL cdecl Bump_Palette(VOID* palette1, UWORD step) {
   BOOL changed = FALSE;          // Flag that palette has changed this tick.
   WORD index;                    // Index to DAC register gun.
   WORD gun1, gun2;               // Palette 1 gun value.
@@ -348,7 +350,7 @@ PRIVATE BOOL cdecl Bump_Palette(VOID *palette1, UWORD step) {
   ----------------------- Loop through palette bytes -----------------------
   */
   for (index = 0; index < PALETTE_BYTES; index++) {
-    gun1 = ((UBYTE *)palette1)[index];
+    gun1 = ((UBYTE*)palette1)[index];
     gun2 = palette[index];
 
     /*

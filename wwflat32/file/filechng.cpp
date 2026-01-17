@@ -70,7 +70,7 @@
  * HISTORY:                                                                *
  *   05/24/1992 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Create_File(BYTE const *file_name) {
+WORD cdecl Create_File(BYTE const* file_name) {
   WORD fd;
 
   if (!file_name) return (FALSE);
@@ -97,9 +97,9 @@ WORD cdecl Create_File(BYTE const *file_name) {
  * HISTORY:                                                                *
  *   05/24/1992 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Delete_File(BYTE const *file_name) {
+WORD cdecl Delete_File(BYTE const* file_name) {
   WORD index;
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
   FileDataType hold;       // Hold buffer for record (DO NOT ACCESS DIRECTLY)
 
   if (!file_name) return (FALSE);

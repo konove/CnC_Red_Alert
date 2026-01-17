@@ -67,12 +67,12 @@ class UnitClass : public TarComClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   UnitClass(void) {};
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(NoInitClass const &x) : TarComClass(x) {};
+  UnitClass(NoInitClass const& x) : TarComClass(x) {};
   operator UnitType(void) const { return Class->Type; };
   virtual ~UnitClass(void);
   virtual RTTIType What_Am_I(void) const;
@@ -85,7 +85,7 @@ class UnitClass : public TarComClass {
   bool Goto_Clear_Spot(void);
   bool Try_To_Deploy(void);
 
-  bool Tiberium_Check(CELL &center, int x, int y);
+  bool Tiberium_Check(CELL& center, int x, int y);
   bool Flag_Attach(HousesType house);
   bool Flag_Remove(void);
   void Find_LZ(void);
@@ -118,17 +118,17 @@ class UnitClass : public TarComClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table(void);
+  virtual void const* Remap_Table(void);
   virtual void Look(bool incremental = false);
-  virtual short const *Overlap_List(void) const;
+  virtual short const* Overlap_List(void) const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
 
   /*
   **	User I/O.
   */
   virtual ActionType What_Action(CELL cell) const;
-  virtual ActionType What_Action(ObjectClass *object) const;
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual ActionType What_Action(ObjectClass* object) const;
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell);
   virtual void Response_Select(void);
   virtual void Response_Move(void);
@@ -138,8 +138,8 @@ class UnitClass : public TarComClass {
   **	Combat related.
   */
   virtual COORDINATE Target_Coord(void) const;
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr);
   virtual TARGET As_Target(void) const;
   virtual void Stun(void);
 
@@ -148,15 +148,15 @@ class UnitClass : public TarComClass {
   **	occupation flags and driver instructions.
   */
   virtual bool Stop_Driver(void);
-  virtual bool Start_Driver(COORDINATE &coord);
+  virtual bool Start_Driver(COORDINATE& coord);
 
   /*
   **	AI.
   */
-  virtual DirType Desired_Load_Dir(ObjectClass *passenger, CELL &moveto) const;
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual void AI(void);
   virtual int Mission_Attack(void);
   virtual int Mission_Unload(void);
@@ -170,7 +170,7 @@ class UnitClass : public TarComClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
@@ -188,11 +188,11 @@ class UnitClass : public TarComClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static char const *INI_Name(void) { return "UNITS"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static char const* INI_Name(void) { return "UNITS"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -205,7 +205,7 @@ class UnitClass : public TarComClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

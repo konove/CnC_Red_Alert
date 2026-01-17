@@ -165,7 +165,7 @@
 // #include "WolDebug.h"
 #include "WolStrng.h"
 #include "WolapiOb.h"
-extern WolapiObject *pWolapi;
+extern WolapiObject* pWolapi;
 #define PAGE_RESPOND_KEY KN_RETURN  // KN_COMMA
 #endif
 
@@ -179,13 +179,13 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 
 #define SHAPE_TRANS 0x40
 
-void *Get_Shape_Header_Data(void *ptr);
+void* Get_Shape_Header_Data(void* ptr);
 extern bool Spawn_WChat(bool can_launch);
 
 void Enable_Secret_Units(void);
 
-extern bool Is_Mission_Aftermath(char *file_name);
-extern bool Is_Mission_Counterstrike(char *file_name);
+extern bool Is_Mission_Aftermath(char* file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
 extern void Do_Draw(void);
 
 #ifdef CHEAT_KEYS
@@ -195,8 +195,8 @@ bool bNoMovies = false;
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
-void Keyboard_Process(KeyNumType &input);
-static void Message_Input(KeyNumType &input);
+void Keyboard_Process(KeyNumType& input);
+static void Message_Input(KeyNumType& input);
 static void Color_Cycle(void);
 bool Map_Edit_Loop(void);
 
@@ -206,14 +206,14 @@ bool UseOldShapeDraw = false;
 
 #ifdef CHEAT_KEYS
 void Dump_Heap_Pointers(void);
-void Error_In_Heap_Pointers(char *string);
+void Error_In_Heap_Pointers(char* string);
 #endif
 static void Do_Record_Playback(void);
 
 void Toggle_Formation(void);
 
 extern "C" {
-extern char *__nheapbeg;
+extern char* __nheapbeg;
 }
 
 //
@@ -260,7 +260,7 @@ void MPATH_Call_Back(void);
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-void Main_Game(int argc, char *argv[]) {
+void Main_Game(int argc, char* argv[]) {
   static bool fade = true;
 
   /*
@@ -562,8 +562,8 @@ void Main_Game(int argc, char *argv[]) {
  * HISTORY: * 01/21/1992 JLB : Created. * 07/04/1995 JLB : Handles team and map
  *control hotkeys.                                    *
  *=============================================================================================*/
-void Keyboard_Process(KeyNumType &input) {
-  ObjectClass *obj;
+void Keyboard_Process(KeyNumType& input) {
+  ObjectClass* obj;
   int index;
 
   /*
@@ -702,7 +702,7 @@ void Keyboard_Process(KeyNumType &input) {
   if (key != 0 && key == Options.KeyStop) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
-        ObjectClass const *tech = CurrentObject[index];
+        ObjectClass const* tech = CurrentObject[index];
 
         if (tech != nullptr &&
             (tech->Can_Player_Move() ||
@@ -720,7 +720,7 @@ void Keyboard_Process(KeyNumType &input) {
   if (key != 0 && key == Options.KeyGuard) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
-        ObjectClass const *tech = CurrentObject[index];
+        ObjectClass const* tech = CurrentObject[index];
 
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
@@ -737,7 +737,7 @@ void Keyboard_Process(KeyNumType &input) {
   if (key != 0 && key == Options.KeyScatter) {
     if (CurrentObject.Count()) {
       for (index = 0; index < CurrentObject.Count(); index++) {
-        ObjectClass const *tech = CurrentObject[index];
+        ObjectClass const* tech = CurrentObject[index];
 
         if (tech != nullptr && tech->Can_Player_Move()) {
           OutList.Add(EventClass(EventClass::SCATTER, TargetClass(tech)));
@@ -771,7 +771,7 @@ void Keyboard_Process(KeyNumType &input) {
     Unselect_All();
     if (PlayerPtr->CurBuildings) {
       for (index = 0; index < Buildings.Count(); index++) {
-        BuildingClass *building = Buildings.Ptr(index);
+        BuildingClass* building = Buildings.Ptr(index);
 
         if (building != nullptr && !building->IsInLimbo &&
             building->House == PlayerPtr && *building == STRUCT_CONST) {
@@ -783,7 +783,7 @@ void Keyboard_Process(KeyNumType &input) {
     }
     if (CurrentObject.Count() == 0 && PlayerPtr->CurUnits) {
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *unit = Units.Ptr(index);
+        UnitClass* unit = Units.Ptr(index);
 
         if (unit != nullptr && !unit->IsInLimbo && unit->House == PlayerPtr &&
             *unit == UNIT_MCV) {
@@ -1016,7 +1016,7 @@ void Toggle_Formation(void) {
   ** illegal offsets (as in 0x80000000), then we're setting.
   */
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass *obj = Units.Ptr(index);
+    UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
       if (team != -1) {
@@ -1029,7 +1029,7 @@ void Toggle_Formation(void) {
   }
   if (team == -1) {
     for (index = 0; index < Infantry.Count(); index++) {
-      InfantryClass *obj = Infantry.Ptr(index);
+      InfantryClass* obj = Infantry.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
@@ -1045,7 +1045,7 @@ void Toggle_Formation(void) {
 
   if (team == -1) {
     for (index = 0; index < Vessels.Count(); index++) {
-      VesselClass *obj = Vessels.Ptr(index);
+      VesselClass* obj = Vessels.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
@@ -1064,7 +1064,7 @@ void Toggle_Formation(void) {
   ** Now that we have a team, let's go set (or clear) the formation offsets.
   */
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass *obj = Units.Ptr(index);
+    UnitClass* obj = Units.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
@@ -1086,7 +1086,7 @@ void Toggle_Formation(void) {
   }
 
   for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass *obj = Infantry.Ptr(index);
+    InfantryClass* obj = Infantry.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
@@ -1107,7 +1107,7 @@ void Toggle_Formation(void) {
   }
 
   for (index = 0; index < Vessels.Count(); index++) {
-    VesselClass *obj = Vessels.Ptr(index);
+    VesselClass* obj = Vessels.Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         obj->Group == team) {
       obj->Mark(MARK_CHANGE);
@@ -1137,7 +1137,7 @@ void Toggle_Formation(void) {
     int centery = (int)((maxy - miny) / 2) + miny;
 
     for (index = 0; index < Units.Count(); index++) {
-      UnitClass *obj = Units.Ptr(index);
+      UnitClass* obj = Units.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->Group == team) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -1149,7 +1149,7 @@ void Toggle_Formation(void) {
     }
 
     for (index = 0; index < Infantry.Count(); index++) {
-      InfantryClass *obj = Infantry.Ptr(index);
+      InfantryClass* obj = Infantry.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->Group == team) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -1161,7 +1161,7 @@ void Toggle_Formation(void) {
     }
 
     for (index = 0; index < Vessels.Count(); index++) {
-      VesselClass *obj = Vessels.Ptr(index);
+      VesselClass* obj = Vessels.Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->Group == team) {
         long xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -1188,11 +1188,11 @@ void Toggle_Formation(void) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 BRR : Created. *
  *=============================================================================================*/
-static void Message_Input(KeyNumType &input) {
+static void Message_Input(KeyNumType& input) {
   int rc;
   char txt[MAX_MESSAGE_LENGTH + 32];
   int id;
-  SerialPacketType *serial_packet;
+  SerialPacketType* serial_packet;
   int i;
   KeyNumType copy_input;
   // char *msg;
@@ -1409,7 +1409,7 @@ static void Message_Input(KeyNumType &input) {
     **	the EventClass.Type!)
     */
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      serial_packet = (SerialPacketType *)NullModem.BuildBuf;
+      serial_packet = (SerialPacketType*)NullModem.BuildBuf;
 
       serial_packet->Command = SERIAL_MESSAGE;
       port::SafeCopy(serial_packet->Name, Session.Players[0]->Name);
@@ -1430,7 +1430,7 @@ static void Message_Input(KeyNumType &input) {
       */
       NullModem.Send_Message(NullModem.BuildBuf, sizeof(SerialPacketType), 1);
 
-      char *ptr = &serial_packet->Message.Message[0];
+      char* ptr = &serial_packet->Message.Message[0];
       if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
         Enable_Secret_Units();
       }
@@ -1478,7 +1478,7 @@ static void Message_Input(KeyNumType &input) {
         *send *	the message to every player we have a connection with.
         */
         if (Session.MessageAddress.Is_Broadcast()) {
-          char *ptr = &Session.GPacket.Message.Buf[0];
+          char* ptr = &Session.GPacket.Message.Buf[0];
           if (!strncmp(ptr, "SECRET UNITS ON ", 15) && NewUnitsEnabled) {
             *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
             Enable_Secret_Units();
@@ -1960,7 +1960,7 @@ void MPATH_Call_Back(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-char const *Language_Name(char const *basename) {
+char const* Language_Name(char const* basename) {
   static char _fullname[_MAX_FNAME + _MAX_EXT];
 
   if (!basename) return (nullptr);
@@ -1984,7 +1984,7 @@ char const *Language_Name(char const *basename) {
  *                                                                                             *
  * HISTORY: * 04/17/1994 JLB : Created. *
  *=============================================================================================*/
-SourceType Source_From_Name(char const *name) {
+SourceType Source_From_Name(char const* name) {
   if (name) {
     for (SourceType source = SOURCE_FIRST; source < SOURCE_COUNT; source++) {
       if (stricmp(SourceName[source], name) == 0) {
@@ -2010,7 +2010,7 @@ SourceType Source_From_Name(char const *name) {
  *                                                                         						  *
  * HISTORY: * 11/15/1994 BR : Created. *
  *=============================================================================================*/
-char const *Name_From_Source(SourceType source) {
+char const* Name_From_Source(SourceType source) {
   if ((unsigned)source < SOURCE_COUNT) {
     return (SourceName[source]);
   }
@@ -2032,7 +2032,7 @@ char const *Name_From_Source(SourceType source) {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-TheaterType Theater_From_Name(char const *name) {
+TheaterType Theater_From_Name(char const* name) {
   TheaterType index;
 
   if (name) {
@@ -2413,13 +2413,13 @@ bool Main_Loop() {
 
 #ifdef WIN32
   if (Debug_MotionCapture) {
-    static void **_array = nullptr;
+    static void** _array = nullptr;
     static int _sequence = 0;
     static int _seqsize = Rule.MovieTime * TICKS_PER_MINUTE;
 
     if (_array == nullptr) {
-      _array = new void *[_seqsize];
-      memset(_array, '\0', _seqsize * sizeof(void *));
+      _array = new void*[_seqsize];
+      memset(_array, '\0', _seqsize * sizeof(void*));
     }
 
     if (_array == nullptr) {
@@ -2616,12 +2616,12 @@ void Go_Editor(bool flag) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
                        int64_t nbytes) {
-  CCFileClass *file;
+  CCFileClass* file;
   int64_t error;
 
-  file = (CCFileClass *)vqa->VQAio;
+  file = (CCFileClass*)vqa->VQAio;
 
   /*
   **	Perform the action specified by the stream command.
@@ -2666,10 +2666,10 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
     **	VQACMD_OPEN asks that you open your stream for access.
     */
     case VQACMD_OPEN:
-      file = new CCFileClass((char *)buffer);
+      file = new CCFileClass((char*)buffer);
 
       if (file != nullptr && file->Is_Available()) {
-        error = file->Open((char *)buffer, READ);
+        error = file->Open((char*)buffer, READ);
 
         if (error != -1) {
           vqa->VQAio = (uintptr_t)file;
@@ -2717,7 +2717,7 @@ int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
   return (error);
 }
 
-void Rebuild_Interpolated_Palette(unsigned char *interpal) {
+void Rebuild_Interpolated_Palette(unsigned char* interpal) {
   for (int y = 0; y < 255; y++) {
     for (int x = y + 1; x < 256; x++) {
       *(interpal + (y * 256 + x)) = *(interpal + (x * 256 + y));
@@ -2725,7 +2725,7 @@ void Rebuild_Interpolated_Palette(unsigned char *interpal) {
   }
 }
 
-unsigned char *InterpolatedPalettes[100];
+unsigned char* InterpolatedPalettes[100];
 bool PalettesRead;
 unsigned PaletteCounter;
 
@@ -2743,7 +2743,7 @@ unsigned PaletteCounter;
  *                                                                                             *
  * HISTORY: * 5/7/96 9:49AM ST : Created *
  *=============================================================================================*/
-int Load_Interpolated_Palettes(char const *filename, bool add) {
+int Load_Interpolated_Palettes(char const* filename, bool add) {
   int num_palettes = 0;
   int i;
   int start_palette;
@@ -2776,7 +2776,7 @@ int Load_Interpolated_Palettes(char const *filename, bool add) {
     file.Read(&num_palettes, 4);
 
     for (i = 0; i < num_palettes; i++) {
-      InterpolatedPalettes[i + start_palette] = (unsigned char *)malloc(65536);
+      InterpolatedPalettes[i + start_palette] = (unsigned char*)malloc(65536);
       memset(InterpolatedPalettes[i + start_palette], 0, 65536);
       for (int y = 0; y < 256; y++) {
         file.Read(InterpolatedPalettes[i + start_palette] + y * 256, y + 1);
@@ -2829,7 +2829,7 @@ extern void Resume_Audio_Thread(void);
 extern GraphicBufferClass VQ640;
 #endif
 #endif
-void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
+void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
 #ifdef MPEGMOVIE
   // theme = theme;
   // clrscrn = clrscrn;
@@ -2901,18 +2901,18 @@ void Play_Movie(char const *name, ThemeType theme, bool clrscrn) {
     PreserveVQAScreen = 0;
     Keyboard->Clear();
 
-    VQAHandle *vqa = nullptr;
+    VQAHandle* vqa = nullptr;
 
 #ifdef WIN32
 #ifdef MOVIE640
     if (IsVQ640) {
       AnimControl.ImageWidth = 640;
       AnimControl.ImageHeight = 400;
-      AnimControl.ImageBuf = (unsigned char *)VQ640.Get_Offset();
+      AnimControl.ImageBuf = (unsigned char*)VQ640.Get_Offset();
     } else {
       AnimControl.ImageWidth = 320;
       AnimControl.ImageHeight = 200;
-      AnimControl.ImageBuf = (unsigned char *)SysMemPage.Get_Offset();
+      AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
     }
 #endif
 #endif
@@ -3017,10 +3017,10 @@ void Play_Movie(VQType name, ThemeType theme, bool clrscrn) {
 #ifdef MPEGMOVIE
 extern LPDIRECTDRAWPALETTE PalettePtr;
 
-bool PlayMpegMovie(const char *name) {
+bool PlayMpegMovie(const char* name) {
   char path[MAX_PATH];
   CCFileClass file;
-  const char *filename;
+  const char* filename;
 
 #ifdef CHEAT_KEYS
   if (bNoMovies) return true;
@@ -3062,7 +3062,7 @@ bool PlayMpegMovie(const char *name) {
 #endif
   {
     DDSURFACEDESC ddsd;
-    IDirectDrawSurface *primary = nullptr;
+    IDirectDrawSurface* primary = nullptr;
     bool modeChange = false;
     RECT rect;
 
@@ -3103,13 +3103,13 @@ bool PlayMpegMovie(const char *name) {
 }
 
 MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
-  static IDirectDrawPalette *_palette = nullptr;
+  static IDirectDrawPalette* _palette = nullptr;
 
   user = user;
 
   switch (cmd) {
     case MPGCMD_ERROR:
-      WWMessageBox().Process((char const *)data);
+      WWMessageBox().Process((char const*)data);
       break;
 
     case MPGCMD_INIT:
@@ -3130,7 +3130,7 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
       if (FAILED(PaletteSurface->GetPalette(&_palette))) {
         WWMessageBox().Process("Couldn't get primary palette.\n");
       } else {
-        if (FAILED(PaletteSurface->SetPalette((IDirectDrawPalette *)data))) {
+        if (FAILED(PaletteSurface->SetPalette((IDirectDrawPalette*)data))) {
           WWMessageBox().Process("Couldn't set movie palette.\n");
         }
       }
@@ -3203,7 +3203,7 @@ void Unselect_All(void) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *          * 12/30/2025 : Modernized to use C++23 features. *
  *=============================================================================================*/
-std::string Fading_Table_Name(const char *base, TheaterType theater) {
+std::string Fading_Table_Name(const char* base, TheaterType theater) {
   // Build filename: first character of theater root + base name + .MRF
   // extension
   const auto root = std::string(1, Theaters[theater].Root[0]) + base;
@@ -3222,15 +3222,15 @@ std::string Fading_Table_Name(const char *base, TheaterType theater) {
  * HISTORY: * 04/12/1995 PWG : Created. * 05/10/1995 JLB : Handles a null
  *shapefile pointer.                                        *
  *=============================================================================================*/
-void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
+void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
                            int zoomfactor) {
   static int _offx[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   static int _offy[] = {0, 0, -1, 1, 0, -1, 1, -1, 1};
   int lp, framelp;
   char pixel;
 
-  char *retval = nullptr;
-  char *buffer = nullptr;
+  char* retval = nullptr;
+  char* buffer = nullptr;
 
   /*
   **	If there is no shape file, then there can be no radar icon imagery.
@@ -3275,7 +3275,7 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
   ** Save off the return value so that we can return it to the calling
   ** function.
   */
-  retval = (char *)buffer;
+  retval = (char*)buffer;
   *buffer++ = (char)icon_width;
   *buffer++ = (char)icon_height;
   int val = 24 / zoomfactor;
@@ -3287,10 +3287,10 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
     ** next frame.
     */
 #ifdef WIN32
-    void *ptr;
+    void* ptr;
 #ifdef LORES
-    if ((ptr = (void *)(Build_Frame(shapefile, shapenum + framelp,
-                                    HiddenPage.Get_Buffer()))) != nullptr) {
+    if ((ptr = (void*)(Build_Frame(shapefile, shapenum + framelp,
+                                   HiddenPage.Get_Buffer()))) != nullptr) {
 #else
     ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
@@ -3316,9 +3316,9 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
               int gety = (icony * 24) + (y * val) + (zoomfactor / 2);
               if ((getx < pixel_width) && (gety < pixel_height)) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *(char *)((char *)ptr +
-                                    ((gety - _offy[lp]) * pixel_width) + getx -
-                                    _offx[lp]);
+                  pixel =
+                      *(char*)((char*)ptr + ((gety - _offy[lp]) * pixel_width) +
+                               getx - _offx[lp]);
 
 #else   // WIN32
           for (int y = 0; y < 3; y++) {
@@ -3327,9 +3327,9 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
               int gety = (icony * 24) + (y << 3) + 4;
               if ((getx < pixel_width) && (gety < pixel_height)) {
                 for (lp = 0; lp < 9; lp++) {
-                  pixel = *(char *)((char *)HidPage.Get_Buffer(),
-                                    ((gety - _offy[lp]) * pixel_width) + getx -
-                                        _offx[lp]);
+                  pixel = *(char*)((char*)HidPage.Get_Buffer(),
+                                   ((gety - _offy[lp]) * pixel_width) + getx -
+                                       _offx[lp]);
 #endif  // WIN32
                   if (pixel == LTGREEN) pixel = 0;
                   if (pixel) {
@@ -3388,13 +3388,13 @@ void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata, void const *ghostdata,
+                   void const* fadingdata, void const* ghostdata,
                    DirType rotation, long scale) {
   int predoffset;
 #ifdef WIN32
-  void *shape_pointer;
+  void* shape_pointer;
 #endif  // WIN32
 
   /*
@@ -3407,7 +3407,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
     fadingdata = DisplayClass::FadingShade;
   }
 
-  static unsigned char *_xbuffer = nullptr;
+  static unsigned char* _xbuffer = nullptr;
 
   if (!_xbuffer) {
     _xbuffer = new unsigned char[SHAPE_BUFFER_SIZE];
@@ -3446,7 +3446,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
           WindowList[window][WINDOWX] + LogicPage->Get_XPos(),
           WindowList[window][WINDOWY] + LogicPage->Get_YPos(),
           WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-      unsigned char *buffer = (unsigned char *)
+      unsigned char* buffer = (unsigned char*)
           shape_pointer;  // Get_Shape_Header_Data((void*)shape_pointer);
 
 #else   // WIN32
@@ -3455,7 +3455,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
       GraphicViewPortClass draw_window(
           LogicPage, WindowList[window][WINDOWX], WindowList[window][WINDOWY],
           WindowList[window][WINDOWWIDTH], WindowList[window][WINDOWHEIGHT]);
-      unsigned char *buffer = (unsigned char *)_ShapeBuffer;
+      unsigned char* buffer = (unsigned char*)_ShapeBuffer;
 #endif  // WIN32
 
       UseOldShapeDraw = false;
@@ -3469,7 +3469,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
         */
         UseOldShapeDraw = true;
 #ifdef WIN32
-        buffer = (unsigned char *)Get_Shape_Header_Data((void *)shape_pointer);
+        buffer = (unsigned char*)Get_Shape_Header_Data((void*)shape_pointer);
 #endif
 
         if (Debug_Rotate) {
@@ -3558,7 +3558,7 @@ void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
  *                                                                                             *
  * HISTORY: * 07/22/1996 JLB : Created. *
  *=============================================================================================*/
-Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
+Rect const Shape_Dimensions(void const* shapedata, int shapenum) {
   Rect rect;
 
   if (shapedata == nullptr || shapenum < 0 ||
@@ -3566,16 +3566,16 @@ Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
     return (rect);
   }
 
-  char *shape;
+  char* shape;
 #ifdef WIN32
-  void *sh = Build_Frame(shapedata, shapenum, _ShapeBuffer);
+  void* sh = Build_Frame(shapedata, shapenum, _ShapeBuffer);
   if (sh == nullptr) {
     return rect;
   }
-  shape = static_cast<char *>(Get_Shape_Header_Data(sh));
+  shape = static_cast<char*>(Get_Shape_Header_Data(sh));
 #else
   Build_Frame(shapedata, shapenum, _ShapeBuffer);
-  shape = (char *)_ShapeBuffer;
+  shape = (char*)_ShapeBuffer;
 #endif
 
   int width = Get_Build_Frame_Width(shapedata);
@@ -3670,7 +3670,7 @@ Rect const Shape_Dimensions(void const *shapedata, int shapenum) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
+TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
   switch (type) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
@@ -3717,7 +3717,7 @@ TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id) {
 #ifdef WIN32
 void Check_VQ_Palette_Set(void);
 
-long VQ_Call_Back(unsigned char *, long) {
+long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get();
@@ -3760,7 +3760,7 @@ long VQ_Call_Back(unsigned char *, long) {
 
 #else   // WIN32
 
-long VQ_Call_Back(unsigned char *, long) {
+long VQ_Call_Back(unsigned char*, long) {
   Call_Back();
   if ((BreakoutAllowed || Debug_Flag) && Keyboard->Check()) {
     if (Keyboard->Get() == KN_ESC) {
@@ -3774,7 +3774,7 @@ long VQ_Call_Back(unsigned char *, long) {
 }
 #endif  // WIN32
 
-long VQ_Event_Handler(unsigned long event, void * /*buffer*/, long /*nbytes*/) {
+long VQ_Event_Handler(unsigned long event, void* /*buffer*/, long /*nbytes*/) {
 #ifdef PORTABLE
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) Video_End_Frame();
@@ -3829,12 +3829,12 @@ void Handle_Team(int team, int action) {
       */
       if (CurrentObject.Count()) {
         if (CurrentObject[0]->Is_Foot() &&
-            ((FootClass *)CurrentObject[0])->Group != team) {
+            ((FootClass*)CurrentObject[0])->Group != team) {
           Unselect_All();
         }
       }
       for (index = 0; index < Vessels.Count(); index++) {
-        VesselClass *obj = Vessels.Ptr(index);
+        VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3844,7 +3844,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3854,7 +3854,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3864,7 +3864,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass *obj = Aircraft.Ptr(index);
+        AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3890,7 +3890,7 @@ void Handle_Team(int team, int action) {
     */
     case 1:
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3900,7 +3900,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Vessels.Count(); index++) {
-        VesselClass *obj = Vessels.Ptr(index);
+        VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3910,7 +3910,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3920,7 +3920,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass *obj = Aircraft.Ptr(index);
+        AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->Group == team &&
             obj->House->IsPlayerControl) {
           if (!obj->IsSelected) {
@@ -3940,7 +3940,7 @@ void Handle_Team(int team, int action) {
       TeamSpeed[team] = SPEED_WHEEL;
       TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) obj->Group = 0xFF;
           if (obj->IsSelected) {
@@ -3961,7 +3961,7 @@ void Handle_Team(int team, int action) {
       }
 
       for (index = 0; index < Vessels.Count(); index++) {
-        VesselClass *obj = Vessels.Ptr(index);
+        VesselClass* obj = Vessels.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) obj->Group = -1;
           if (obj->IsSelected) {
@@ -3982,7 +3982,7 @@ void Handle_Team(int team, int action) {
       }
 
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) obj->Group = 0xFF;
           if (obj->IsSelected) {
@@ -4001,7 +4001,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass *obj = Aircraft.Ptr(index);
+        AircraftClass* obj = Aircraft.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) obj->Group = 0xFF;
           if (obj->IsSelected) {
@@ -4012,7 +4012,7 @@ void Handle_Team(int team, int action) {
       }
 
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass *obj = Units.Ptr(index);
+        UnitClass* obj = Units.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl &&
             (obj->Group == team) && (obj->IsSelected)) {
           /*
@@ -4042,7 +4042,7 @@ void Handle_Team(int team, int action) {
       }
 
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (obj->Group == team) obj->Group = 0xFF;
           if (obj->IsSelected) obj->Group = team;
@@ -4152,10 +4152,10 @@ int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) {
   for (;;) {
     sprintf(buffer, "%c:\\", 'A' + cd_drive);
 
-    if (GetVolumeInformation((char const *)buffer, &volume_name[0],
+    if (GetVolumeInformation((char const*)buffer, &volume_name[0],
                              (unsigned long)sizeof(volume_name), nullptr,
-                             (DWORD *)&filename_length, (DWORD *)&misc_dword,
-                             (char *)nullptr, (unsigned long)0)) {
+                             (DWORD*)&filename_length, (DWORD*)&misc_dword,
+                             (char*)nullptr, (unsigned long)0)) {
       /*
       ** Try opening 'movies.mix' to verify that the CD is really there and is
       *what
@@ -4237,21 +4237,21 @@ typedef enum {
 bool Force_CD_Available(int cd_desired)  //	ajw
 {
   static int _last = -1;
-  static void *font;
+  static void* font;
 #ifdef FRENCH
-  static char const *_cd_name[] = {
+  static char const* _cd_name[] = {
       "ALERTE ROUGE CD1",   "ALERTE ROUGE CD2", "CD Missions Taiga",
       "CD Missions M.A.D.", "ALERTE ROUGE DVD",
   };
 #endif
 #ifdef GERMAN
-  static char const *_cd_name[] = {
+  static char const* _cd_name[] = {
       "ALARMSTUFE ROT CD1", "ALARMSTUFE ROT CD2", "CD Gegenangriff einlegen",
       "CD TRANS einlegen",  "ALARMSTUFE ROT DVD",
   };
 #endif
 #ifdef ENGLISH
-  static char const *_cd_name[] = {
+  static char const* _cd_name[] = {
       "RED ALERT DISK 1", "RED ALERT DISK 2", "CounterStrike CD",
       "Aftermath CD",     "RED ALERT DVD",
   };
@@ -4438,10 +4438,10 @@ bool Force_CD_Available(int cd_desired)  //	ajw
                 _cd_name[cd_desired]);
       }
 
-      GraphicViewPortClass *oldpage = Set_Logic_Page(SeenBuff);
+      GraphicViewPortClass* oldpage = Set_Logic_Page(SeenBuff);
       Theme.Stop();
       int hidden = Get_Mouse_State();
-      font = (void *)FontPtr;
+      font = (void*)FontPtr;
 
       /*
       **	Only set the palette if necessary.
@@ -4534,7 +4534,7 @@ static void Do_Record_Playback(void) {
   TARGET tgt;
   int i;
   COORDINATE coord;
-  ObjectClass *obj;
+  ObjectClass* obj;
   unsigned long sum;
   unsigned long sum2;
   unsigned long ltgt;
@@ -4675,10 +4675,10 @@ static void Do_Record_Playback(void) {
  *                                                                                             *
  * HISTORY: * 5/13/96 3:20PM ST : Created *
  *=============================================================================================*/
-void *Hires_Load(char *name) {
+void* Hires_Load(char* name) {
   char filename[30];
   int length;
-  void *return_ptr;
+  void* return_ptr;
 
   sprintf(filename, "H%s", name);
   CCFileClass file(filename);
@@ -4709,7 +4709,7 @@ void *Hires_Load(char *name) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-CrateType Crate_From_Name(char const *name) {
+CrateType Crate_From_Name(char const* name) {
   if (name != nullptr) {
     for (CrateType crate = CRATE_FIRST; crate < CRATE_COUNT; crate++) {
       if (stricmp(name, CrateNames[crate]) == 0) return (crate);
@@ -4734,7 +4734,7 @@ CrateType Crate_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-int Owner_From_Name(char const *text) {
+int Owner_From_Name(char const* text) {
   int ownable = 0;
   if (stricmp(text, "soviet") == 0) {
     ownable |= HOUSEF_SOVIET;
@@ -4825,7 +4825,7 @@ void Shake_The_Screen(int shakes) {
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void List_Copy(short const *source, int len, short *dest) {
+void List_Copy(short const* source, int len, short* dest) {
   if (dest == nullptr || dest == nullptr) {
     return;
   }
@@ -4856,7 +4856,7 @@ void Crummy(int crumb1, int crumb2)
  *for the game. This is located under HKEY_LOCAL_MACHINE. HISTORY: 11/19/98 ajw
  *: Created
  *=============================================================================================*/
-const char *Game_Registry_Key() {
+const char* Game_Registry_Key() {
 #ifdef ENGLISH
   static char szKey[] = "SOFTWARE\\Westwood\\Red Alert Windows 95 Edition";
 #else
@@ -4956,13 +4956,13 @@ void Enable_Secret_Units(void) {
 #endif
 }
 
-bool Force_Scenario_Available(const char *szName) {
+bool Force_Scenario_Available(const char* szName) {
   //	Calls Force_CD_Available based on type of scenario. szName is assumed to
   // be an official scenario here.
-  if (Is_Mission_Counterstrike((char *)szName)) {
+  if (Is_Mission_Counterstrike((char*)szName)) {
     //		debugprint( "Force_Scenario_Available requiring disk 4...\n" );
     return Force_CD_Available(4);
-  } else if (Is_Mission_Aftermath((char *)szName)) {
+  } else if (Is_Mission_Aftermath((char*)szName)) {
     //		debugprint( "Force_Scenario_Available requiring disk 3...\n" );
     return Force_CD_Available(3);
   }

@@ -210,7 +210,7 @@ int const TechnoClass::BodyShape[32] = {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 TechnoTypeClass::TechnoTypeClass(
-    int name, char const *ininame, unsigned char level, long pre,
+    int name, char const* ininame, unsigned char level, long pre,
     bool is_leader, bool is_scanner, bool is_nominal, bool is_transporter,
     bool is_flammable, bool is_crushable, bool is_stealthy, bool is_selectable,
     bool is_legal_target, bool is_insignificant, bool is_immune,
@@ -360,7 +360,7 @@ int TechnoTypeClass::Cost_Of(void) const { return (Cost); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void const *TechnoTypeClass::Get_Cameo_Data(void) const { return (CameoData); }
+void const* TechnoTypeClass::Get_Cameo_Data(void) const { return (CameoData); }
 
 /***********************************************************************************************
  * TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step. *
@@ -414,7 +414,7 @@ int TechnoTypeClass::Repair_Step(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Debug_Dump(MonoClass *mono) const {
+void TechnoClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(0, 0);
   mono->Printf("(%04X)p=%d,d=%d", House->Power_Fraction(), House->Power,
                House->Drain);
@@ -495,7 +495,7 @@ TechnoClass::TechnoClass(void) : TarCom(TARGET_NONE), House(nullptr) {
  * HISTORY: * 06/02/1994 JLB : Created. * 12/27/1994 JLB : Discovered trigger
  *event processing.                                     *
  *=============================================================================================*/
-bool TechnoClass::Revealed(HouseClass *house) {
+bool TechnoClass::Revealed(HouseClass* house) {
   if (house == PlayerPtr && IsDiscoveredByPlayer) return (false);
   if (house != PlayerPtr && IsDiscoveredByComputer) return (false);
 
@@ -615,9 +615,9 @@ bool TechnoClass::Mark(MarkType mark) {
  * HISTORY: * 10/17/1994 JLB : Created. * 06/17/1995 JLB : Handles tether
  *contact messages.                                         *
  *=============================================================================================*/
-RadioMessageType TechnoClass::Receive_Message(RadioClass *from,
+RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
-                                              long &param) {
+                                              long& param) {
   switch (message) {
     /*
     **	Just received instructions to attack the specified target.
@@ -802,7 +802,7 @@ void TechnoClass::Per_Cell_Process(bool) {
   */
   if (Map.In_Radar(cell)) {
     if (What_Am_I() == RTTI_UNIT) {
-      UnitClass *u = (UnitClass *)this;
+      UnitClass* u = (UnitClass*)this;
 
       if (*u != UNIT_HOVER && *u != UNIT_GUNBOAT) {
         IsLocked = true;
@@ -856,7 +856,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     if (What_Am_I() == RTTI_BUILDING &&
-        ((BuildingTypeClass const &)Class_Of()).Type == STRUCT_BARRACKS) {
+        ((BuildingTypeClass const&)Class_Of()).Type == STRUCT_BARRACKS) {
       y -= 5;
     }
 
@@ -987,7 +987,7 @@ bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
 bool TechnoClass::In_Range(TARGET target, int which) const {
   if (IsLocked && Target_Legal(target)) {
     int range = Weapon_Range(which);
-    BuildingClass const *building = As_Building(target);
+    BuildingClass const* building = As_Building(target);
     if (building) {
       range += ((building->Class->Width() + building->Class->Height()) *
                 (ICON_LEPTON_W / 4));
@@ -1018,11 +1018,11 @@ bool TechnoClass::In_Range(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::In_Range(ObjectClass const *target, int which) const {
+bool TechnoClass::In_Range(ObjectClass const* target, int which) const {
   if (IsLocked && target) {
     int range = Weapon_Range(which);
     if (target->What_Am_I() == RTTI_BUILDING) {
-      BuildingClass const *building = (BuildingClass const *)target;
+      BuildingClass const* building = (BuildingClass const*)target;
       range += ((building->Class->Width() + building->Class->Height()) *
                 (ICON_LEPTON_W / 4));
     }
@@ -1095,7 +1095,7 @@ bool TechnoClass::In_Range(COORDINATE coord, int which) const {
  *not fire on landed aircraft.                          *
  *=============================================================================================*/
 bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
-                                  TechnoClass const *object, int &value) const {
+                                  TechnoClass const* object, int& value) const {
   /*
   **	An object in limbo can never be a valid target.
   */
@@ -1140,14 +1140,14 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	Determine if the target is theoretically allowed to be a target. If
   **	not, then bail.
   */
-  TechnoTypeClass const *tclass = object->Techno_Type_Class();
+  TechnoTypeClass const* tclass = object->Techno_Type_Class();
   if (!tclass->IsLegalTarget) return (false);  // Legality failure.
 
   /*
   **	Never consider agent Delphi a valid target.
   */
   if (otype == RTTI_INFANTRY &&
-      ((InfantryTypeClass const *)tclass)->Type == INFANTRY_DELPHI) {
+      ((InfantryTypeClass const*)tclass)->Type == INFANTRY_DELPHI) {
     return (false);
   }
 
@@ -1155,8 +1155,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	Special case so that SAM site doesn't fire on aircraft that are landed.
   */
   if (otype == RTTI_AIRCRAFT && What_Am_I() == RTTI_BUILDING &&
-      *((BuildingClass *)this) == STRUCT_SAM) {
-    if (((AircraftClass *)object)->Altitude == 0) return (false);
+      *((BuildingClass*)this) == STRUCT_SAM) {
+    if (((AircraftClass*)object)->Altitude == 0) return (false);
   }
 
   /*
@@ -1172,7 +1172,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   */
   if ((method & THREAT_CAPTURE) &&
       (otype != RTTI_BUILDING ||
-       !((BuildingTypeClass const *)tclass)->IsCaptureable)) {
+       !((BuildingTypeClass const*)tclass)->IsCaptureable)) {
     return (false);
   }
 
@@ -1180,8 +1180,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	If not allowed to attack boats, then eliminate them from consideration.
   */
   if (!(method & THREAT_BOATS) && otype == RTTI_UNIT &&
-      (((UnitTypeClass const *)tclass)->Speed == SPEED_HOVER ||
-       ((UnitTypeClass const *)tclass)->Speed == SPEED_FLOAT)) {
+      (((UnitTypeClass const*)tclass)->Speed == SPEED_HOVER ||
+       ((UnitTypeClass const*)tclass)->Speed == SPEED_FLOAT)) {
     return (false);
   }
 
@@ -1200,11 +1200,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   if (method & THREAT_TIBERIUM) {
     switch (otype) {
       case RTTI_UNIT:
-        if (!((UnitTypeClass const *)tclass)->IsToHarvest) return (false);
+        if (!((UnitTypeClass const*)tclass)->IsToHarvest) return (false);
         break;
 
       case RTTI_BUILDING:
-        if (!((BuildingTypeClass const *)tclass)->Capacity) return (false);
+        if (!((BuildingTypeClass const*)tclass)->Capacity) return (false);
         break;
 
       default:
@@ -1284,8 +1284,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
-                                int range, TechnoClass const **object,
-                                int &value) const {
+                                int range, TechnoClass const** object,
+                                int& value) const {
   *object = nullptr;
   value = 0;
 
@@ -1299,11 +1299,11 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
   **	Fetch the techno object from the cell. If there is no
   **	techno object there, then bail.
   */
-  CellClass *cellptr = &Map[cell];
-  TechnoClass const *tentative = (TechnoClass const *)cellptr->Cell_Occupier();
+  CellClass* cellptr = &Map[cell];
+  TechnoClass const* tentative = (TechnoClass const*)cellptr->Cell_Occupier();
   while (tentative) {
     if (tentative->Is_Techno() && !House->Is_Ally(tentative)) break;
-    tentative = (TechnoClass const *)tentative->Next;
+    tentative = (TechnoClass const*)tentative->Next;
   }
 
   if (!tentative) return (false);
@@ -1334,7 +1334,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, int mask, CELL cell,
  *scan method.                                           *
  *=============================================================================================*/
 TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
-  ObjectClass const *bestobject = nullptr;
+  ObjectClass const* bestobject = nullptr;
   int bestval = -1;
 
   /*
@@ -1377,7 +1377,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     */
     if (method & THREAT_AIR) {
       for (int index = 0; index < Aircraft.Count(); index++) {
-        TechnoClass *object = Aircraft.Ptr(index);
+        TechnoClass* object = Aircraft.Ptr(index);
 
         int value = 0;
         if (Evaluate_Object(method, mask, range, object, value)) {
@@ -1402,7 +1402,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     **	Radiate outward from the object's location, looking for the best
     **	target.
     */
-    TechnoClass const *object;
+    TechnoClass const* object;
     int value;
     for (int radius = 1; radius < crange; radius++) {
       /*
@@ -1482,7 +1482,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     *bullets and animations *	than aircraft.
     */
     for (int index = 0; index < Aircraft.Count(); index++) {
-      TechnoClass *object = Aircraft.Ptr(index);
+      TechnoClass* object = Aircraft.Ptr(index);
 
       int value = 0;
       if (Evaluate_Object(method, mask, -1, object, value)) {
@@ -1498,11 +1498,11 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     *other *	choice is there?
     */
     for (int index = 0; index < Map.Layer[LAYER_GROUND].Count(); index++) {
-      ObjectClass const *object = Map.Layer[LAYER_GROUND][index];
+      ObjectClass const* object = Map.Layer[LAYER_GROUND][index];
 
       int value = 0;
       if (object->Is_Techno() &&
-          Evaluate_Object(method, mask, -1, (TechnoClass const *)object,
+          Evaluate_Object(method, mask, -1, (TechnoClass const*)object,
                           value)) {
         if (value > bestval) {
           bestobject = object;
@@ -1649,7 +1649,7 @@ void TechnoClass::AI(void) {
               *captured *	flag, it will never fully cloak.
               */
               if (What_Am_I() == RTTI_UNIT &&
-                  ((UnitClass *)this)->Flagged != HOUSE_NONE) {
+                  ((UnitClass*)this)->Flagged != HOUSE_NONE) {
                 Do_Shimmer();
               } else {
                 Detach_All(false);
@@ -1758,7 +1758,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
     return (FIRE_ILLEGAL);
   }
 
-  ObjectClass *object = As_Object(target);
+  ObjectClass* object = As_Object(target);
 
   /*
   **	If the object is completely cloaked, then you can't fire on it.
@@ -1770,7 +1770,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   // Mono_Printf("object=%p, Strength=%d, IsActive=%d, IsInLimbo=%d.\n", object,
   // (long)object->Strength, object->IsActive, object->IsInLimbo);Get_Key();
   if (object && /*(object->IsActive || GameToPlay != GAME_NORMAL) &&*/
-      object->Is_Techno() && ((TechnoClass *)object)->Cloak == CLOAKED) {
+      object->Is_Techno() && ((TechnoClass*)object)->Cloak == CLOAKED) {
     return (FIRE_CANT);
   }
 
@@ -1789,7 +1789,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   */
   if (object && object->What_Am_I() == RTTI_AIRCRAFT &&
       !BulletTypeClass::As_Reference(Weapons[weap].Fires).IsAntiAircraft &&
-      ((AircraftClass *)object)->Altitude > 0) {
+      ((AircraftClass*)object)->Altitude > 0) {
     return (FIRE_CANT);
   }
 
@@ -1875,7 +1875,7 @@ void TechnoClass::Assign_Target(TARGET target) {
       /*
       **	Make sure that the target is not already dead.
       */
-      ObjectClass *object = As_Object(target);
+      ObjectClass* object = As_Object(target);
       if (object && (object->IsActive == false || object->Strength == 0)) {
         target = TARGET_NONE;
       }
@@ -1933,16 +1933,16 @@ int TechnoClass::Rearm_Delay(bool second) const {
  * HISTORY: * 12/26/1994 JLB : Created. * 07/03/1995 JLB : Moving platforms fire
  *inaccurate projectiles.                            *
  *=============================================================================================*/
-BulletClass *TechnoClass::Fire_At(TARGET target, int which) {
-  BulletClass *bullet;      // Projectile.
+BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
+  BulletClass* bullet;      // Projectile.
   DirType dir;              // The facing to impart upon the projectile.
   COORDINATE target_coord;  // Coordinate of the target.
   COORDINATE fire_coord;    // Coordinate of firing position.
-  TechnoTypeClass const &tclass = *Techno_Type_Class();
-  ObjectClass *object;
-  WeaponTypeClass const *weapon =
+  TechnoTypeClass const& tclass = *Techno_Type_Class();
+  ObjectClass* object;
+  WeaponTypeClass const* weapon =
       (which == 0) ? &Weapons[tclass.Primary] : &Weapons[tclass.Secondary];
-  BulletTypeClass const &btype = BulletTypeClass::As_Reference(weapon->Fires);
+  BulletTypeClass const& btype = BulletTypeClass::As_Reference(weapon->Fires);
 
   /*
   **	Perform a quick legality check to see if firing can occur.
@@ -1996,7 +1996,7 @@ BulletClass *TechnoClass::Fire_At(TARGET target, int which) {
     *inaccurate.
     */
     if (Special.IsDefenderAdvantage && What_Am_I() != RTTI_BUILDING &&
-        ((FootClass const *)this)->IsDriving) {
+        ((FootClass const*)this)->IsDriving) {
       bullet->IsInaccurate = true;
     }
 
@@ -2038,7 +2038,7 @@ BulletClass *TechnoClass::Fire_At(TARGET target, int which) {
     **	now.
     */
     if (a != ANIM_NONE) {
-      AnimClass *anim = new AnimClass(a, Fire_Coord(which));
+      AnimClass* anim = new AnimClass(a, Fire_Coord(which));
       if (anim) {
         anim->Attach_To(this);
       }
@@ -2068,7 +2068,7 @@ BulletClass *TechnoClass::Fire_At(TARGET target, int which) {
       if (GameToPlay == GAME_NORMAL) {
         Map.Sight_From(Coord_Cell(Center_Coord()), 1, false);
       } else {
-        ObjectClass *obj = As_Object(target);
+        ObjectClass* obj = As_Object(target);
         if (obj) {
           HousesType tgt_owner = obj->Owner();
 
@@ -2136,7 +2136,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
  * HISTORY: * 01/19/1995 JLB : Created. * 03/21/1995 JLB : Special target
  *control for trees.                                        *
  *=============================================================================================*/
-ActionType TechnoClass::What_Action(ObjectClass *object) const {
+ActionType TechnoClass::What_Action(ObjectClass* object) const {
   if (object) {
     /*
     **	Return the ACTION_SELF flag if clicking on itself. However, if this
@@ -2226,8 +2226,8 @@ ActionType TechnoClass::What_Action(ObjectClass *object) const {
  *buildings is explicitely disabled.                        *
  *=============================================================================================*/
 ActionType TechnoClass::What_Action(CELL cell) const {
-  CellClass const *cellptr = &Map[cell];
-  OverlayTypeClass const *optr = nullptr;
+  CellClass const* cellptr = &Map[cell];
+  OverlayTypeClass const* optr = nullptr;
 
   bool ctrldown = Keyboard::Down(KN_LCTRL) || Keyboard::Down(KN_RCTRL);
   bool shiftdown = Keyboard::Down(KN_LSHIFT) || Keyboard::Down(KN_RSHIFT);
@@ -2254,7 +2254,7 @@ ActionType TechnoClass::What_Action(CELL cell) const {
 
   if (IsOwnedByPlayer && Techno_Type_Class()->Primary != WEAPON_NONE &&
       (ctrldown || (optr && optr->IsLegalTarget))) {
-    WarheadTypeClass const *whead =
+    WarheadTypeClass const* whead =
         &Warheads[BulletTypeClass::As_Reference(
                       Weapons[Techno_Type_Class()->Primary].Fires)
                       .Warhead];
@@ -2397,7 +2397,7 @@ bool TechnoClass::Can_Repair(void) const {
  *=============================================================================================*/
 int TechnoClass::Weapon_Range(int which) const {
   WeaponType weapon = WEAPON_NONE;
-  TechnoTypeClass const &ttype = *Techno_Type_Class();
+  TechnoTypeClass const& ttype = *Techno_Type_Class();
 
   switch (which) {
     case 0:
@@ -2477,7 +2477,7 @@ bool TechnoClass::Restore_Mission(void) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Captured(HouseClass *newowner) {
+bool TechnoClass::Captured(HouseClass* newowner) {
   if (newowner != House) {
     /*
     **	Capture attempt springs any "entered" trigger. The entered trigger
@@ -2553,8 +2553,8 @@ bool TechnoClass::Captured(HouseClass *newowner) {
  *                                                                                             *
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
-ResultType TechnoClass::Take_Damage(int &damage, int distance,
-                                    WarheadType warhead, TechnoClass *source) {
+ResultType TechnoClass::Take_Damage(int& damage, int distance,
+                                    WarheadType warhead, TechnoClass* source) {
   ResultType result =
       ObjectClass::Take_Damage(damage, distance, warhead, source);
 
@@ -2620,7 +2620,7 @@ int TechnoTypeClass::Max_Passengers(void) const {
  * HISTORY: * 07/08/1995 JLB : Created. * 08/23/1995 JLB : Building loss is only
  *counted if it received damage.                     *
  *=============================================================================================*/
-void TechnoClass::Record_The_Kill(TechnoClass *source) {
+void TechnoClass::Record_The_Kill(TechnoClass* source) {
   /*
   **	Handle any trigger event associated with this object.
   */
@@ -2638,19 +2638,19 @@ void TechnoClass::Record_The_Kill(TechnoClass *source) {
     */
     switch (source->What_Am_I()) {
       case RTTI_INFANTRY:
-        ((InfantryClass *)source)->Made_A_Kill();
+        ((InfantryClass*)source)->Made_A_Kill();
         break;
 
       case RTTI_UNIT:
-        ((UnitClass *)source)->Made_A_Kill();
+        ((UnitClass*)source)->Made_A_Kill();
         break;
 
       case RTTI_BUILDING:
-        ((BuildingClass *)source)->Made_A_Kill();
+        ((BuildingClass*)source)->Made_A_Kill();
         break;
 
       case RTTI_AIRCRAFT:
-        ((AircraftClass *)source)->Made_A_Kill();
+        ((AircraftClass*)source)->Made_A_Kill();
         break;
     }
 
@@ -2659,13 +2659,13 @@ void TechnoClass::Record_The_Kill(TechnoClass *source) {
 
   switch (What_Am_I()) {
     case RTTI_BUILDING:
-      if (((BuildingClass *)this)->WhoLastHurtMe != HOUSE_NONE) {
+      if (((BuildingClass*)this)->WhoLastHurtMe != HOUSE_NONE) {
         House->BuildingsLost++;
       }
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedBuildings->Increment_Unit_Total(
-              ((BuildingClass *)this)->Class->Type);
+              ((BuildingClass*)this)->Class->Type);
         }
         source->House->BuildingsKilled[Owner()]++;
       }
@@ -2684,7 +2684,7 @@ void TechnoClass::Record_The_Kill(TechnoClass *source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedAircraft->Increment_Unit_Total(
-              ((AircraftClass *)this)->Class->Type);
+              ((AircraftClass*)this)->Class->Type);
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2702,7 +2702,7 @@ void TechnoClass::Record_The_Kill(TechnoClass *source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedInfantry->Increment_Unit_Total(
-              ((InfantryClass *)this)->Class->Type);
+              ((InfantryClass*)this)->Class->Type);
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2720,7 +2720,7 @@ void TechnoClass::Record_The_Kill(TechnoClass *source) {
       if (source) {
         if (GameToPlay == GAME_INTERNET) {
           source->House->DestroyedUnits->Increment_Unit_Total(
-              ((UnitClass *)this)->Class->Type);
+              ((UnitClass*)this)->Class->Type);
         }
         source->House->UnitsKilled[Owner()]++;
       }
@@ -2755,7 +2755,7 @@ void TechnoClass::Record_The_Kill(TechnoClass *source) {
  *                                                                                             *
  * HISTORY: * 07/06/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Nearby_Location(TechnoClass const *) const {
+CELL TechnoClass::Nearby_Location(TechnoClass const*) const {
   /*
   **	Radiate outward from the object's location, looking for the best
   **	target.
@@ -2941,11 +2941,11 @@ VisualType TechnoClass::Visual_Character(bool raw) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Techno_Draw_Object(void const *shapefile, int shapenum, int x,
+void TechnoClass::Techno_Draw_Object(void const* shapefile, int shapenum, int x,
                                      int y, WindowNumberType window) {
   if (shapefile) {
     VisualType visual = Visual_Character();
-    void const *remap = Remap_Table();
+    void const* remap = Remap_Table();
 
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
@@ -2986,7 +2986,7 @@ void TechnoClass::Techno_Draw_Object(void const *shapefile, int shapenum, int x,
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const *TechnoClass::Remap_Table(void) {
+void const* TechnoClass::Remap_Table(void) {
   return (House->Remap_Table(IsBlushing, true));
 }
 
@@ -3050,9 +3050,9 @@ void TechnoClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Kill_Cargo(TechnoClass *source) {
+void TechnoClass::Kill_Cargo(TechnoClass* source) {
   while (Is_Something_Attached()) {
-    FootClass *foot = Detach_Object();
+    FootClass* foot = Detach_Object();
     if (foot) {
       foot->Record_The_Kill(source);
       delete foot;
@@ -3115,11 +3115,11 @@ int TechnoClass::Value(void) const {
   */
   if (BuildLevel > 8 || GameToPlay != GAME_NORMAL) {
     if (Is_Something_Attached()) {
-      FootClass *object = Attached_Object();
+      FootClass* object = Attached_Object();
 
       while (object) {
         value += object->Value();
-        object = (FootClass *)object->Next;
+        object = (FootClass*)object->Next;
       }
     }
   }
@@ -3176,8 +3176,8 @@ int TechnoClass::Threat_Range(int control) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Commented. *
  *=============================================================================================*/
-void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
-  FootClass *defender[6];
+void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
+  FootClass* defender[6];
   int value[6];
   int count = 0;
   int weakest = 0;
@@ -3209,8 +3209,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
   */
   // This should allow helicopters to retaliate however. Hmmm.
   if (enemy->What_Am_I() == RTTI_UNIT &&
-      (*((UnitClass const *)enemy) == UNIT_GUNBOAT ||
-       *((UnitClass const *)enemy) == UNIT_HOVER)) {
+      (*((UnitClass const*)enemy) == UNIT_GUNBOAT ||
+       *((UnitClass const*)enemy) == UNIT_HOVER)) {
     return;
   }
 
@@ -3218,7 +3218,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
   ** If the threat has already been dealt with then we don't need to do
   ** any work.  Check for that here.
   */
-  if (!((FootClass *)enemy)->BaseAttackTimer.Expired()) {
+  if (!((FootClass*)enemy)->BaseAttackTimer.Expired()) {
     return;
   }
 
@@ -3233,7 +3233,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
   ** on a rescue mission.
   */
   for (int index = 0; index < Infantry.Count() && desired > 0; index++) {
-    InfantryClass *infantry = Infantry.Ptr(index);
+    InfantryClass* infantry = Infantry.Ptr(index);
     if (infantry && infantry->Owner() == Owner()) {
       /*
       **	Never recruite sticky guard units to defend a base.
@@ -3267,7 +3267,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
       }
 
       if (count < 6) {
-        defender[count] = (FootClass *)infantry;
+        defender[count] = (FootClass*)infantry;
         value[count] = threat;
         count++;
         continue;
@@ -3279,7 +3279,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
         for (int lp = 0; lp < count; lp++) {
           if (value[lp] == weakest) {
             value[lp] = threat;
-            defender[lp] = (FootClass *)infantry;
+            defender[lp] = (FootClass*)infantry;
             continue;
           }
           if (value[lp] < newweakest) {
@@ -3296,7 +3296,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
   ** on a rescue mission.
   */
   for (int index = 0; index < Units.Count() && desired > 0; index++) {
-    UnitClass *unit = Units.Ptr(index);
+    UnitClass* unit = Units.Ptr(index);
     if (unit && unit->Owner() == Owner()) {
       /*
       **	Never recruite sticky guard units to defend a base.
@@ -3329,7 +3329,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
       }
 
       if (count < 6) {
-        defender[count] = (FootClass *)unit;
+        defender[count] = (FootClass*)unit;
         value[count] = threat;
         count++;
         continue;
@@ -3340,7 +3340,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
         for (int lp = 0; lp < count; lp++) {
           if (value[lp] == weakest) {
             value[lp] = threat;
-            defender[lp] = (FootClass *)unit;
+            defender[lp] = (FootClass*)unit;
             continue;
           }
           if (value[lp] < newweakest) {
@@ -3364,7 +3364,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
           value[lp2] ^= value[lp];
           value[lp] ^= value[lp2];
 
-          FootClass *temp;
+          FootClass* temp;
           temp = defender[lp];
           defender[lp] = defender[lp2];
           defender[lp2] = temp;
@@ -3383,7 +3383,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
   }
 
   if (risktotal > desired) {
-    ((FootClass *)enemy)->BaseAttackTimer.Set(15 * 15);
+    ((FootClass*)enemy)->BaseAttackTimer.Set(15 * 15);
   }
 }
 
@@ -3402,7 +3402,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const *enemy) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 unsigned char TechnoClass::Get_Ownable(void) const {
-  return ((TechnoTypeClass const &)Class_Of()).Ownable;
+  return ((TechnoTypeClass const&)Class_Of()).Ownable;
 }
 
 /***********************************************************************************************
@@ -3480,7 +3480,7 @@ int TechnoClass::Tiberium_Load(void) const { return (0x0000); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Desired_Load_Dir(ObjectClass *, CELL &moveto) const {
+DirType TechnoClass::Desired_Load_Dir(ObjectClass*, CELL& moveto) const {
   moveto = 0;
   return (DIR_N);
 }
@@ -3638,7 +3638,7 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Exit_Object(TechnoClass *) { return (0); }
+int TechnoClass::Exit_Object(TechnoClass*) { return (0); }
 
 /***********************************************************************************************
  * TechnoClass::Random_Animate -- Performs some idle animation for the object. *
@@ -3742,7 +3742,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
   *pips. The *	pip color represents the type of occupant.
   */
   if (Techno_Type_Class()->IsTransporter) {
-    ObjectClass const *object = Attached_Object();
+    ObjectClass const* object = Attached_Object();
 
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       PipEnum pip = PIP_EMPTY;
@@ -3750,13 +3750,13 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
       if (object) {
         pip = PIP_FULL;
         if (object->What_Am_I() == RTTI_INFANTRY) {
-          if (*((InfantryClass *)object) == INFANTRY_RAMBO) {
+          if (*((InfantryClass*)object) == INFANTRY_RAMBO) {
             pip = PIP_COMMANDO;
           }
-          if (*((InfantryClass *)object) == INFANTRY_E7) {
+          if (*((InfantryClass*)object) == INFANTRY_E7) {
             pip = PIP_ENGINEER;
           }
-          if (((InfantryClass *)object)->Class->IsCivilian) {
+          if (((InfantryClass*)object)->Class->IsCivilian) {
             pip = PIP_CIVILIAN;
           }
         }
@@ -3808,9 +3808,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
  * HISTORY: * 07/18/1995 JLB : Created. * 08/13/1995 JLB : Recognizes the
  *"IsLeader" method of building preference.                 *
  *=============================================================================================*/
-BuildingClass *TechnoClass::Find_Docking_Bay(StructType b,
+BuildingClass* TechnoClass::Find_Docking_Bay(StructType b,
                                              bool friendly) const {
-  BuildingClass *best = nullptr;
+  BuildingClass* best = nullptr;
 
   /*
   **	First check to see if there are ANY buildings of the specified
@@ -3825,7 +3825,7 @@ BuildingClass *TechnoClass::Find_Docking_Bay(StructType b,
     *specification *	and is willing to dock with this object.
     */
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *building = Buildings.Ptr(index);
+      BuildingClass* building = Buildings.Ptr(index);
 
       /*
       **	Check to see if the building qualifies (preliminary scan).
@@ -3834,7 +3834,7 @@ BuildingClass *TechnoClass::Find_Docking_Bay(StructType b,
           (friendly ? building->House->Is_Ally(this)
                     : building->House == House) &&
           !building->IsInLimbo && *building == b &&
-          ((TechnoClass *)this)->Transmit_Message(RADIO_CAN_LOAD, building) ==
+          ((TechnoClass*)this)->Transmit_Message(RADIO_CAN_LOAD, building) ==
               RADIO_ROGER) {
         /*
         **	If the building qualifies and this building is better than the
@@ -3869,7 +3869,7 @@ BuildingClass *TechnoClass::Find_Docking_Bay(StructType b,
  *                                                                                             *
  * HISTORY: * 08/12/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Find_Exit_Cell(TechnoClass const *) const {
+CELL TechnoClass::Find_Exit_Cell(TechnoClass const*) const {
   return (Coord_Cell(Docking_Coord()));
 }
 

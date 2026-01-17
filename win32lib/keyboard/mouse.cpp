@@ -34,9 +34,10 @@
  *- - - - - - - */
 
 #include "mouse.h"
+
 #include <mmsystem.h>
 
-static WWMouseClass *_Mouse = NULL;
+static WWMouseClass* _Mouse = NULL;
 void CALLBACK Process_Mouse(UINT event_id, UINT res1, DWORD user, DWORD res2,
                             DWORD res3);
 extern BOOL GameInFocus;
@@ -51,7 +52,7 @@ extern BOOL GameInFocus;
  *                                                                                             *
  * HISTORY: * 12/12/1995 PWG : Created. *
  *=============================================================================================*/
-WWMouseClass::WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
+WWMouseClass::WWMouseClass(GraphicViewPortClass* scr, int mouse_max_width,
                            int mouse_max_height) {
   MouseCursor = new char[mouse_max_width * mouse_max_height];
   MouseXHot = 0;
@@ -117,25 +118,25 @@ WWMouseClass::~WWMouseClass() {
   Clear_Cursor_Clip();
 }
 
-void Block_Mouse(GraphicBufferClass *buffer) {
+void Block_Mouse(GraphicBufferClass* buffer) {
   if (_Mouse) {
     _Mouse->Block_Mouse(buffer);
   }
 }
 
-void Unblock_Mouse(GraphicBufferClass *buffer) {
+void Unblock_Mouse(GraphicBufferClass* buffer) {
   if (_Mouse) {
     _Mouse->Unblock_Mouse(buffer);
   }
 }
 
-void WWMouseClass::Block_Mouse(GraphicBufferClass *buffer) {
+void WWMouseClass::Block_Mouse(GraphicBufferClass* buffer) {
   if (buffer == Screen->Get_Graphic_Buffer()) {
     EnterCriticalSection(&MouseCriticalSection);
   }
 }
 
-void WWMouseClass::Unblock_Mouse(GraphicBufferClass *buffer) {
+void WWMouseClass::Unblock_Mouse(GraphicBufferClass* buffer) {
   if (buffer == Screen->Get_Graphic_Buffer()) {
     LeaveCriticalSection(&MouseCriticalSection);
   }
@@ -229,7 +230,7 @@ void WWMouseClass::Process_Mouse(void) {
   // Unblock_Mouse(Screen->Get_Graphic_Buffer());
 }
 
-void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
+void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   //
   // If the pointer to the cursor we got is invalid, or its the same as the
   // currently set cursor then just return.
@@ -248,7 +249,7 @@ void *WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void *cursor) {
   // Now convert the shape to a mouse cursor with the given hotspots and
   // set it as our current mouse.
   //
-  void *retval = ASM_Set_Mouse_Cursor(this, xhotspot, yhotspot, cursor);
+  void* retval = ASM_Set_Mouse_Cursor(this, xhotspot, yhotspot, cursor);
   //
   // Show the mouse which will force it to appear with the new shape we
   // have assigned.
@@ -419,7 +420,7 @@ void WWMouseClass::Conditional_Show_Mouse(void) {
   MouseUpdate--;
 }
 
-void WWMouseClass::Draw_Mouse(GraphicViewPortClass *scr) {
+void WWMouseClass::Draw_Mouse(GraphicViewPortClass* scr) {
   POINT pt;
 
   if (State != 0) return;
@@ -473,7 +474,7 @@ void WWMouseClass::Draw_Mouse(GraphicViewPortClass *scr) {
   MouseUpdate--;
 }
 
-void WWMouseClass::Erase_Mouse(GraphicViewPortClass *scr, int forced) {
+void WWMouseClass::Erase_Mouse(GraphicViewPortClass* scr, int forced) {
   //
   // If we are forcing the redraw of a mouse we already managed to
   // restore then just get outta here.
@@ -570,7 +571,7 @@ int WWMouseClass::Get_Mouse_Y(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-void WWMouseClass::Get_Mouse_XY(int &x, int &y) {
+void WWMouseClass::Get_Mouse_XY(int& x, int& y) {
   POINT pt;
 
   GetCursorPos(&pt);
@@ -617,7 +618,7 @@ int Get_Mouse_State(void) {
   return (_Mouse->Get_Mouse_State());
 }
 
-void *Set_Mouse_Cursor(int hotx, int hoty, void *cursor) {
+void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
   if (!_Mouse) return (0);
   return (_Mouse->Set_Cursor(hotx, hoty, cursor));
 }

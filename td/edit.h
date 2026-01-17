@@ -55,12 +55,12 @@ class EditClass : public ControlClass {
     ALPHANUMERIC = (int)ALPHA | (int)NUMERIC | (int)MISC,
   } EditStyle;
 
-  EditClass(int id, char *text, int max_len, TextPrintType flags, int x, int y,
+  EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
             int w = -1, int h = -1, EditStyle style = ALPHANUMERIC);
   virtual ~EditClass(void);
 
   virtual int Draw_Me(int forced);
-  virtual void Set_Text(char *text, int max_len);
+  virtual void Set_Text(char* text, int max_len);
   void Set_Color(int color) { Color = color; }
 
   void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
@@ -81,7 +81,7 @@ class EditClass : public ControlClass {
   **	Pointer to text staging buffer and the maximum length of the string it
   **	can contain.
   */
-  char *String;
+  char* String;
   int MaxLength;
 
   /*
@@ -95,9 +95,9 @@ class EditClass : public ControlClass {
   */
   int Color;
 
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
   virtual void Draw_Background(void);
-  virtual void Draw_Text(char const *text);
+  virtual void Draw_Text(char const* text);
   virtual bool Handle_Key(KeyASCIIType ascii);
 
  private:

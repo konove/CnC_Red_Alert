@@ -71,8 +71,8 @@
 #include "ra/object.h"
 #include "ra/type.h"
 
-void const *AircraftTypeClass::LRotorData = nullptr;
-void const *AircraftTypeClass::RRotorData = nullptr;
+void const* AircraftTypeClass::LRotorData = nullptr;
+void const* AircraftTypeClass::RRotorData = nullptr;
 
 // Badger bomber
 static AircraftTypeClass const BadgerPlane(
@@ -249,7 +249,7 @@ static AircraftTypeClass const OrcaHeli(
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass::AircraftTypeClass(
-    AircraftType airtype, int name, char const *ininame, int verticaloffset,
+    AircraftType airtype, int name, char const* ininame, int verticaloffset,
     int primaryoffset, int primarylateral, bool is_fixedwing,
     bool is_rotorequipped, bool is_rotorcustom, bool is_landable,
     bool is_stealthy, bool is_selectable, bool is_legal_target,
@@ -292,7 +292,7 @@ AircraftTypeClass::AircraftTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *AircraftTypeClass::operator new(size_t) throw() {
+void* AircraftTypeClass::operator new(size_t) throw() {
   return (AircraftTypes.Alloc());
 }
 
@@ -311,8 +311,8 @@ void *AircraftTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void AircraftTypeClass::operator delete(void *pointer) {
-  AircraftTypes.Free((AircraftTypeClass *)pointer);
+void AircraftTypeClass::operator delete(void* pointer) {
+  AircraftTypes.Free((AircraftTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -364,7 +364,7 @@ void AircraftTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-AircraftType AircraftTypeClass::From_Name(char const *name) {
+AircraftType AircraftTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (AircraftType classid = AIRCRAFT_FIRST; classid < AIRCRAFT_COUNT;
          classid++) {
@@ -381,11 +381,11 @@ AircraftType AircraftTypeClass::From_Name(char const *name) {
 /// WARNING: Reads from disk - must only be called ONCE
 void AircraftTypeClass::One_Time() {
   for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
-    auto &uclass = As_Reference(index);
+    auto& uclass = As_Reference(index);
 
     // Load cameo icon: "<GraphicName>ICON.SHP"
     auto cameo_file = std::string(uclass.Graphic_Name()) + "ICON.SHP";
-    const_cast<void const *&>(uclass.CameoData) = MFCD::Retrieve(cameo_file);
+    const_cast<void const*&>(uclass.CameoData) = MFCD::Retrieve(cameo_file);
 
     // Load aircraft shape: "<GraphicName>.SHP"
     auto shape_file = std::string(uclass.Graphic_Name()) + ".SHP";
@@ -413,7 +413,7 @@ void AircraftTypeClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *AircraftTypeClass::Create_One_Of(HouseClass *house) const {
+ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
   return (new AircraftClass(Type, house->Class->House));
 }
 
@@ -465,7 +465,7 @@ void AircraftTypeClass::Prep_For_Add(void) {
 void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType) const {
   int shape = 0;
-  void const *ptr = Get_Cameo_Data();
+  void const* ptr = Get_Cameo_Data();
   if (ptr == nullptr) {
     ptr = Get_Image_Data();
     shape = 5;
@@ -490,7 +490,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const *AircraftTypeClass::Occupy_List(bool) const {
+short const* AircraftTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
   return (_list);
 }
@@ -510,7 +510,7 @@ short const *AircraftTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const *AircraftTypeClass::Overlap_List(void) const {
+short const* AircraftTypeClass::Overlap_List(void) const {
   static short const _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
@@ -577,7 +577,7 @@ bool AircraftTypeClass::Create_And_Place(CELL, HousesType) const {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftTypeClass::Dimensions(int &width, int &height) const {
+void AircraftTypeClass::Dimensions(int& width, int& height) const {
   if (Type == AIRCRAFT_BADGER) {
     width = 56;
     height = 56;
@@ -605,6 +605,6 @@ void AircraftTypeClass::Dimensions(int &width, int &height) const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-AircraftTypeClass &AircraftTypeClass::As_Reference(AircraftType aircraft) {
+AircraftTypeClass& AircraftTypeClass::As_Reference(AircraftType aircraft) {
   return (*AircraftTypes.Ptr(aircraft));
 }

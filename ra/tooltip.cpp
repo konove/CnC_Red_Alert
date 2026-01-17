@@ -184,7 +184,7 @@ void ToolTipClass::Unshow() {
       //	(Can't rely on iconlist being the same as when Show() occurred.)
       //			IconListClass* pIconList =
       //(IconListClass*)pGadget; 			yShowUse =
-      //pIconList->OffsetToIndex( iLastIconListIndex, yShow );
+      // pIconList->OffsetToIndex( iLastIconListIndex, yShow );
       // const char* szTipUsed = pIconList->Get_Item_Help( iLastIconListIndex );
       // if( !szTipUsed || *szTipUsed == 0 )
       //			{
@@ -195,7 +195,8 @@ void ToolTipClass::Unshow() {
       //			Fancy_Text_Print( TXT_NONE, 0, 0, TBLACK,
       // TBLACK, TPF_TYPE );	//	Required before String_Pixel_Width()
       // call, for god's sake. 			wShowUse = String_Pixel_Width(
-      // szTipUsed ) + 2; 			if( bRightAlign ) 				xShowUse -= wShowUse;
+      // szTipUsed ) + 2; 			if( bRightAlign )
+      // xShowUse -= wShowUse;
       xShowUse = xLastShow;
       yShowUse = yLastShow;
       wShowUse = wLastShow;

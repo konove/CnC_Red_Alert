@@ -63,7 +63,7 @@ class TurretClass : public DriveClass {
   FacingClass SecondaryFacing;
 
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
 
@@ -76,11 +76,11 @@ class TurretClass : public DriveClass {
  protected:
   TurretClass(UnitType classid, HousesType house);
   TurretClass() = default;
-  TurretClass(NoInitClass const &x)
+  TurretClass(NoInitClass const& x)
       : DriveClass(x), Reload(x), SecondaryFacing(x) {};
   ~TurretClass() override = default;
 
-  BulletClass *Fire_At(TARGET target, int which);
+  BulletClass* Fire_At(TARGET target, int which);
 
   virtual DirType Fire_Direction(void) const;
   virtual FireErrorType Can_Fire(TARGET target, int which) const;

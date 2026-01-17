@@ -40,10 +40,10 @@
 
 class WWMouseClass {
  public:
-  WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
+  WWMouseClass(GraphicViewPortClass* scr, int mouse_max_width,
                int mouse_max_height);
   ~WWMouseClass();
-  void *Set_Cursor(int xhotspot, int yhotspot, void *cursor);
+  void* Set_Cursor(int xhotspot, int yhotspot, void* cursor);
   void Process_Mouse(void);
   void Hide_Mouse(void);
   void Show_Mouse(void);
@@ -52,16 +52,16 @@ class WWMouseClass {
   int Get_Mouse_State(void);
   int Get_Mouse_X(void);
   int Get_Mouse_Y(void);
-  void Get_Mouse_XY(int &x, int &y);
+  void Get_Mouse_XY(int& x, int& y);
   //
   // The following two routines can be used to render the mouse onto a
   // graphicbuffer other than the hidpage.
   //
-  void Draw_Mouse(GraphicViewPortClass *scr);
-  void Erase_Mouse(GraphicViewPortClass *scr, int forced = FALSE);
+  void Draw_Mouse(GraphicViewPortClass* scr);
+  void Erase_Mouse(GraphicViewPortClass* scr, int forced = FALSE);
 
-  void Block_Mouse(GraphicBufferClass *buffer);
-  void Unblock_Mouse(GraphicBufferClass *buffer);
+  void Block_Mouse(GraphicBufferClass* buffer);
+  void Unblock_Mouse(GraphicBufferClass* buffer);
   void Set_Cursor_Clip(void);
   void Clear_Cursor_Clip(void);
 
@@ -73,13 +73,13 @@ class WWMouseClass {
   void Low_Hide_Mouse(void);
   void Low_Show_Mouse(int x, int y);
 
-  char *MouseCursor;  // pointer to the mouse cursor in memory
+  char* MouseCursor;  // pointer to the mouse cursor in memory
   int MouseXHot;      // X hot spot of the current mouse cursor
   int MouseYHot;      // Y hot spot of the current mouse cursor
   int CursorWidth;    // width of the mouse cursor in pixels
   int CursorHeight;   // height of the mouse cursor in pixels
 
-  char *MouseBuffer;  // pointer to background buffer in memory
+  char* MouseBuffer;  // pointer to background buffer in memory
   int MouseBuffX;     // pixel x mouse buffer was preserved at
   int MouseBuffY;     // pixel y mouse buffer was preserved at
   int MaxWidth;       // maximum width of mouse background buffer
@@ -92,12 +92,12 @@ class WWMouseClass {
   char MCFlags;      // conditional hide mouse flags
   char MCCount;      // nesting count for conditional hide mouse
 
-  GraphicViewPortClass *Screen;  // pointer to the surface mouse was init'd with
-  char *PrevCursor;              // pointer to previous cursor shape
+  GraphicViewPortClass* Screen;  // pointer to the surface mouse was init'd with
+  char* PrevCursor;              // pointer to previous cursor shape
   int MouseUpdate;
   int State;
 
-  char *EraseBuffer;  // Buffer which holds background to restore to hidden page
+  char* EraseBuffer;  // Buffer which holds background to restore to hidden page
   int EraseBuffX;     // X position of the hidden page background
   int EraseBuffY;     // Y position of the hidden page background
   int EraseBuffHotX;  // X position of the hidden page background
@@ -110,13 +110,13 @@ class WWMouseClass {
 };
 
 extern "C" {
-void __cdecl Mouse_Shadow_Buffer(void *thisptr, GraphicViewPortClass *srcdst,
-                                 void *buffer, int x, int y, int hotx, int hoty,
+void __cdecl Mouse_Shadow_Buffer(void* thisptr, GraphicViewPortClass* srcdst,
+                                 void* buffer, int x, int y, int hotx, int hoty,
                                  int store);
-void __cdecl Draw_Mouse(void *thisptr, GraphicViewPortClass *srcdst, int x,
+void __cdecl Draw_Mouse(void* thisptr, GraphicViewPortClass* srcdst, int x,
                         int y);
-void *__cdecl ASM_Set_Mouse_Cursor(void *thisptr, int hotspotx, int hotspoty,
-                                   VOID *cursor);
+void* __cdecl ASM_Set_Mouse_Cursor(void* thisptr, int hotspotx, int hotspoty,
+                                   VOID* cursor);
 };
 
 void Hide_Mouse(void);
@@ -124,7 +124,7 @@ void Show_Mouse(void);
 void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
 void Conditional_Show_Mouse(void);
 int Get_Mouse_State(void);
-void *Set_Mouse_Cursor(int hotx, int hoty, void *cursor);
+void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor);
 int Get_Mouse_X(void);
 int Get_Mouse_Y(void);
 

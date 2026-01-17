@@ -134,11 +134,11 @@ UDPInterfaceClass::~UDPInterfaceClass(void) {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Set_Broadcast_Address(void *address) {
-  char *ip_addr = (char *)address;
+void UDPInterfaceClass::Set_Broadcast_Address(void* address) {
+  char* ip_addr = (char*)address;
   assert(strlen(ip_addr) <= strlen("xxx.xxx.xxx.xxx"));
 
-  unsigned char *baddr = new unsigned char[4];
+  unsigned char* baddr = new unsigned char[4];
 
   uint32_t addr = inet_addr(ip_addr);
   memcpy(baddr, &addr, 4);
@@ -189,7 +189,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
       (unsigned short)htons((unsigned short)PlanetWestwoodPortNumber);
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(Socket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+  if (bind(Socket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket();
     return (false);
   }
@@ -202,7 +202,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   char hostname[128];
   gethostname(hostname, 128);
   WWDebugString(hostname);
-  struct hostent *host_info = gethostbyname(hostname);
+  struct hostent* host_info = gethostbyname(hostname);
 
   /*
   ** Clear out any old local addresses from the local address list.
@@ -217,7 +217,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   *any packets that
   ** we send to ourselves.
   */
-  uint32_t **addresses = (uint32_t **)(host_info->h_addr_list);
+  uint32_t** addresses = (uint32_t**)(host_info->h_addr_list);
 
   for (;;) {
     if (!*addresses) break;
@@ -231,8 +231,8 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
             (address & 0xff000000) >> 24);
     OutputDebugString(temp);
 
-    unsigned char *a = new unsigned char[4];
-    *((uint32_t *)a) = address;
+    unsigned char* a = new unsigned char[4];
+    *((uint32_t*)a) = address;
     if (!LocalAddresses.Add(a)) {
       delete[] a;
     }
@@ -243,11 +243,11 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   */
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)
-  setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
+  setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling));
 
   // enable broadcast
   int yes = 1;
-  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, (char *)&yes, sizeof(int));
+  setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, (char*)&yes, sizeof(int));
 
   WinsockInterfaceClass::Set_Socket_Options();
 
@@ -267,12 +267,12 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void UDPInterfaceClass::Broadcast(void *buffer, int buffer_len) {
+void UDPInterfaceClass::Broadcast(void* buffer, int buffer_len) {
   for (int i = 0; i < BroadcastAddresses.Count(); i++) {
     /*
     ** Create a temporary holding area for the packet.
     */
-    WinsockBufferType *packet = new WinsockBufferType;
+    WinsockBufferType* packet = new WinsockBufferType;
 
     /*
     ** Copy the packet into the holding buffer.
@@ -321,7 +321,7 @@ void UDPInterfaceClass::Broadcast(void *buffer, int buffer_len) {
 // like below, but less windows-y
 void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
   struct sockaddr_in addr;
-  WinsockBufferType *packet;
+  WinsockBufferType* packet;
 
   switch (event) {
     case SOCKEV_READ: {
@@ -329,8 +329,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Call the recvfrom function to get the outstanding packet.
       */
       socklen_t addr_len = sizeof(addr);
-      int rc = recvfrom(Socket, (char *)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
-                        (sockaddr *)&addr, &addr_len);
+      int rc = recvfrom(Socket, (char*)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
+                        (sockaddr*)&addr, &addr_len);
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
         return;
@@ -394,8 +394,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       *Winsock will
       ** send us another WRITE message when it is ready to receive more data.
       */
-      int rc = sendto(Socket, (const char *)packet->Buffer, packet->BufferLen,
-                      0, (sockaddr *)&addr, sizeof(addr));
+      int rc = sendto(Socket, (const char*)packet->Buffer, packet->BufferLen, 0,
+                      (sockaddr*)&addr, sizeof(addr));
 
       if (rc == -1) {
         if (Get_Last_Error() == EWOULDBLOCK) {
@@ -434,7 +434,7 @@ long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
   struct sockaddr_in addr;
   int rc;
   int addr_len;
-  WinsockBufferType *packet;
+  WinsockBufferType* packet;
 
   /*
   ** We only handle UDP events.
@@ -463,7 +463,7 @@ long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
       ** Call the Winsock recvfrom function to get the outstanding packet.
       */
       addr_len = sizeof(addr);
-      rc = recvfrom(Socket, (char *)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
+      rc = recvfrom(Socket, (char*)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
                     (LPSOCKADDR)&addr, &addr_len);
       if (rc == SOCKET_ERROR) {
         Clear_Socket_Error(Socket);
@@ -539,7 +539,7 @@ long UDPInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
       *Winsock will
       ** send us another WRITE message when it is ready to receive more data.
       */
-      rc = sendto(Socket, (const char *)packet->Buffer, packet->BufferLen, 0,
+      rc = sendto(Socket, (const char*)packet->Buffer, packet->BufferLen, 0,
                   (LPSOCKADDR)&addr, sizeof(addr));
 
       if (rc == SOCKET_ERROR) {

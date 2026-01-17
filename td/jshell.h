@@ -70,9 +70,9 @@ class Keyboard {
 };
 
 #ifdef NEVER
-inline void *operator delete(void *data) { Free(data); }
+inline void* operator delete(void* data) { Free(data); }
 
-inline void *operator delete[](void *data) { Free(data); }
+inline void* operator delete[](void* data) { Free(data); }
 #endif
 
 /*
@@ -81,23 +81,23 @@ inline void *operator delete[](void *data) { Free(data); }
 **	enumerated types desired.
 */
 template <class T>
-inline T operator++(T &a) {
+inline T operator++(T& a) {
   a = (T)((int)a + (int)1);
   return (a);
 }
 template <class T>
-inline T operator++(T &a, int) {
+inline T operator++(T& a, int) {
   T aa = a;
   a = (T)((int)a + (int)1);
   return (aa);
 }
 template <class T>
-inline T operator--(T &a) {
+inline T operator--(T& a) {
   a = (T)((int)a - (int)1);
   return (a);
 }
 template <class T>
-inline T operator--(T &a, int) {
+inline T operator--(T& a, int) {
   T aa = a;
   a = (T)((int)a - (int)1);
   return (aa);
@@ -115,7 +115,7 @@ inline T operator~(T t1) {
   return ((T)(~(int)t1));
 }
 
-inline void Set_Bit(void *array, int bit, int value) {
+inline void Set_Bit(void* array, int bit, int value) {
   /*
   #pragma aux Set_Bit parm [esi] [ecx] [eax] \
           modify [esi ebx] = 			\
@@ -129,12 +129,12 @@ inline void Set_Bit(void *array, int bit, int value) {
           "ok:"
   */
   if (value)
-    ((uint32_t *)array)[(unsigned)bit >> 5] |= (1 << (bit & 0x1F));
+    ((uint32_t*)array)[(unsigned)bit >> 5] |= (1 << (bit & 0x1F));
   else
-    ((uint32_t *)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
+    ((uint32_t*)array)[(unsigned)bit >> 5] &= ~(1 << (bit & 0x1F));
 }
 
-inline int Get_Bit(void const *array, int bit) {
+inline int Get_Bit(void const* array, int bit) {
   /*
           "mov	ebx,eax"					\
           "shr	ebx,5"					\
@@ -142,11 +142,10 @@ inline int Get_Bit(void const *array, int bit) {
           "bt	[esi+ebx*4],eax"		\
           "setc	al"
   */
-  return !!(((const uint32_t *)array)[(unsigned)bit >> 5] &
-            (1 << (bit & 0x1F)));
+  return !!(((const uint32_t*)array)[(unsigned)bit >> 5] & (1 << (bit & 0x1F)));
 }
 
-inline int First_True_Bit(void const *array) {
+inline int First_True_Bit(void const* array) {
   /*
   #pragma aux First_True_Bit parm [esi] \
           modify [esi ebx] \
@@ -160,7 +159,7 @@ inline int First_True_Bit(void const *array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t *array32 = (const uint32_t *)array;
+  const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
     uint32_t v = *array32++;
@@ -174,7 +173,7 @@ inline int First_True_Bit(void const *array) {
     off += 32;
   }
 }
-inline int First_False_Bit(void const *array) {
+inline int First_False_Bit(void const* array) {
   /*
   #pragma aux First_False_Bit parm [esi] \
           modify [esi ebx] \
@@ -189,7 +188,7 @@ inline int First_False_Bit(void const *array) {
           "jz	again"					\
           "add	eax,ebx"
   */
-  const uint32_t *array32 = (const uint32_t *)array;
+  const uint32_t* array32 = (const uint32_t*)array;
   int off = 0;
   while (true) {
     uint32_t v = *array32++;
@@ -263,7 +262,7 @@ unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal);
                                 "div	ebx"     \
                                 "fini:"
 
-extern void Fatal(char const *message, ...);
+extern void Fatal(char const* message, ...);
 
 typedef struct {
   unsigned char SourceColor;
@@ -272,19 +271,19 @@ typedef struct {
   unsigned char reserved;
 } TLucentType;
 
-int Load_Picture(char const *filename, BufferClass &scratchbuf,
-                 BufferClass &destbuf, unsigned char *palette,
+int Load_Picture(char const* filename, BufferClass& scratchbuf,
+                 BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType format);
-void *Small_Icon(void const *iconptr, int iconnum);
+void* Small_Icon(void const* iconptr, int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-void *Load_Alloc_Data(FileClass &file);
-long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
-                     BuffType &dest_buff, void *reserved_data);
+void* Load_Alloc_Data(FileClass& file);
+long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
+                     BuffType& dest_buff, void* reserved_data);
 long Translucent_Table_Size(int count);
-void *Build_Translucent_Table(void const *palette, TLucentType const *control,
-                              int count, void *buffer);
-void *Conquer_Build_Translucent_Table(void const *palette,
-                                      TLucentType const *control, int count,
-                                      void *buffer);
+void* Build_Translucent_Table(void const* palette, TLucentType const* control,
+                              int count, void* buffer);
+void* Conquer_Build_Translucent_Table(void const* palette,
+                                      TLucentType const* control, int count,
+                                      void* buffer);
 
 #endif

@@ -140,13 +140,13 @@ void GameControlsClass::Process(void) {
   int selection;
   bool pressed = false;
   int curbutton = 0;
-  TextButtonClass *buttons[BUTTON_COUNT - BUTTON_FIRST];
+  TextButtonClass* buttons[BUTTON_COUNT - BUTTON_FIRST];
   TextPrintType style;
 
   /*
   **	Buttons
   */
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   SliderClass gspeed_btn(BUTTON_SPEED, d_speed_x, d_speed_y, d_speed_w,
                          d_speed_h);

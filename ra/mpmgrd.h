@@ -38,21 +38,21 @@ class MPlayerManClass : public ConnManClass {
   void Flush_All(void);
 
   // send/receive data
-  int Send_Private_Message(void *buf, int buflen, int ack_req = 1,
+  int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
                            int conn_id = CONNECTION_NONE);
-  int Get_Private_Message(void *buf, int *buflen, int *conn_id);
+  int Get_Private_Message(void* buf, int* buflen, int* conn_id);
 
-  int Send_Global_Message(void *buf, int buflen, int ack_req = 0,
+  int Send_Global_Message(void* buf, int buflen, int ack_req = 0,
                           int address = 0);
-  int Get_Global_Message(void *buf, int *buflen, int *address = nullptr);
+  int Get_Global_Message(void* buf, int* buflen, int* address = nullptr);
 
   // manage connections
   int Num_Connections(void);
   int Connection_ID(int index);
   int Connection_Index(int id);
-  int Create_Connection(int id, char *name, int address);
+  int Create_Connection(int id, char* name, int address);
   int Delete_Connection(int id);
-  char *Connection_Name(int id);
+  char* Connection_Name(int id);
   int Connection_Address(int id);
 
   // queueing routines
@@ -69,7 +69,7 @@ class MPlayerManClass : public ConnManClass {
                   unsigned long timeout);
 
   // debug
-  void Configure_Debug(int index, int type_offset, int type_size, char **names,
+  void Configure_Debug(int index, int type_offset, int type_size, char** names,
                        int namestart, int namecount);
   void Mono_Debug_Print(int index, int refresh);
 

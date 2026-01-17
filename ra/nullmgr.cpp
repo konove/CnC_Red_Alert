@@ -88,7 +88,7 @@
 #include <windows.h>
 #endif
 
-extern ModemRegistryEntryClass *ModemRegistry;
+extern ModemRegistryEntryClass* ModemRegistry;
 
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
 // because of other define conflicts
@@ -113,7 +113,7 @@ extern void (*_AbortModemFunctionPtr)(int);
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
 KeyNumType NullModemClass::Input;
-GadgetClass *NullModemClass::Commands;  // button list
+GadgetClass* NullModemClass::Commands;  // button list
 
 /***************************************************************************
  * NullModemClass::NullModemClass -- class constructor                     *
@@ -234,7 +234,7 @@ NullModemClass::~NullModemClass() {
  *   12/20/1994 BR : Created.                                              *
  *   10/9/1996  ST : Modified to take device name in win32                 *
  *=========================================================================*/
-int NullModemClass::Init(int port, int /*irq*/, char *dev_name, int baud,
+int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
                          char parity, int wordlen, int stopbits,
                          int flowcontrol) {
 #ifdef _WIN32
@@ -293,7 +293,7 @@ int NullModemClass::Init(int port, int /*irq*/, char *dev_name, int baud,
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
 
-  char *device;
+  char* device;
 
   switch (port) {
     case 0x3f8:
@@ -454,7 +454,7 @@ int NullModemClass::Init_Send_Queue(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 11:47AM ST : Documented / Win32 support *
  *=============================================================================================*/
-DetectPortType NullModemClass::Detect_Port(SerialSettingsType *settings) {
+DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
 
@@ -479,7 +479,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType *settings) {
   /*
   ** Translate the port address into a usable device name
   */
-  char *device;
+  char* device;
 
   switch (settings->Port) {
     case 0x3f8:
@@ -648,7 +648,7 @@ void NullModemClass::Set_Timing(unsigned long retrydelta,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemClass::Send_Message(void *buf, int buflen, int ack_req) {
+int NullModemClass::Send_Message(void* buf, int buflen, int ack_req) {
   int rc;
 
   if (NumConnections == 0) {
@@ -682,7 +682,7 @@ int NullModemClass::Send_Message(void *buf, int buflen, int ack_req) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemClass::Get_Message(void *buf, int *buflen) {
+int NullModemClass::Get_Message(void* buf, int* buflen) {
   if (NumConnections == 0) {
     return (false);
   }
@@ -713,8 +713,8 @@ int NullModemClass::Service(void) {
   int pos;  // current position in RXBuf
   int i;    // loop counter
   unsigned short length;
-  SerialHeaderType *header;  // decoded packet start, length
-  SerialCRCType *crc;        // decoded packet CRC
+  SerialHeaderType* header;  // decoded packet start, length
+  SerialCRCType* crc;        // decoded packet CRC
   char moredata = 0;
 
   if (NumConnections == 0) {
@@ -722,7 +722,7 @@ int NullModemClass::Service(void) {
   }
 
   RXCount += SerialPort->Read_From_Serial_Port(
-      (unsigned char *)(RXBuf + RXCount), int(RXSize - RXCount));
+      (unsigned char*)(RXBuf + RXCount), int(RXSize - RXCount));
 
   // minimum packet size
 
@@ -735,7 +735,7 @@ int NullModemClass::Service(void) {
   ------------------------------------------------------------------------*/
   pos = -1;
   for (i = 0; i <= RXCount - sizeof(short); i++) {
-    if (*((unsigned short *)(RXBuf + i)) == PACKET_SERIAL_START) {
+    if (*((unsigned short*)(RXBuf + i)) == PACKET_SERIAL_START) {
       pos = i;
       break;
     }
@@ -767,7 +767,7 @@ int NullModemClass::Service(void) {
   /*------------------------------------------------------------------------
   A start code was found; check the packet's length & CRC
   ------------------------------------------------------------------------*/
-  header = (SerialHeaderType *)(RXBuf + pos);
+  header = (SerialHeaderType*)(RXBuf + pos);
 
   /*------------------------------------------------------------------------
   If we lost a byte in the length, we may end up waiting a very long time
@@ -827,7 +827,7 @@ int NullModemClass::Service(void) {
   start-code, move the rest to the front of the buffer, & return.
   We'll continue parsing this data when we're called next time.
   ------------------------------------------------------------------------*/
-  crc = (SerialCRCType *)(RXBuf + pos + sizeof(SerialHeaderType) + length);
+  crc = (SerialCRCType*)(RXBuf + pos + sizeof(SerialHeaderType) + length);
   if (NullModemConnClass::Compute_CRC(RXBuf + pos + sizeof(SerialHeaderType),
                                       length) != crc->SerialCRC) {
     CRCErrors++;
@@ -982,16 +982,16 @@ void NullModemClass::Reset_Response_Time(void) {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-void *NullModemClass::Oldest_Send(void) {
+void* NullModemClass::Oldest_Send(void) {
   int i;
-  SendQueueType *send_entry;  // ptr to send entry header
-  CommHeaderType *packet;
-  void *buf = nullptr;
+  SendQueueType* send_entry;  // ptr to send entry header
+  CommHeaderType* packet;
+  void* buf = nullptr;
 
   for (i = 0; i < Connection->Queue->Num_Send(); i++) {
     send_entry = Connection->Queue->Get_Send(i);
     if (send_entry) {
-      packet = (CommHeaderType *)send_entry->Buffer;
+      packet = (CommHeaderType*)send_entry->Buffer;
       if (packet->Code == ConnectionClass::PACKET_DATA_ACK &&
           send_entry->IsACK == 0) {
         buf = send_entry->Buffer;
@@ -1036,7 +1036,7 @@ void *NullModemClass::Oldest_Send(void) {
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
 void NullModemClass::Configure_Debug(int, int type_offset, int type_size,
-                                     char **names, int namestart,
+                                     char** names, int namestart,
                                      int namecount) {
   if (Connection)
     Connection->Queue->Configure_Debug(type_offset, type_size, names, namestart,
@@ -1097,7 +1097,7 @@ void NullModemClass::Mono_Debug_Print(int, int refresh) {
  *   06/02/1995 DRD : Created.                                             *
  *   8/2/96      ST : Added Win32 support                                  *
  *=========================================================================*/
-int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
+int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*------------------------------------------------------------------------
   Button Enumerations
   ------------------------------------------------------------------------*/
@@ -1225,7 +1225,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
   if (settings->Port == 1 && ModemRegistry) {
     // Helper lambda to handle the "Append AT -> Send -> Check Error" pattern.
     // Captures context to access 'buffer' and other necessary variables.
-    auto sendInitCommand = [&](const char *cmdSuffix, int errorMsgId,
+    auto sendInitCommand = [&](const char* cmdSuffix, int errorMsgId,
                                int timeout = DEFAULT_TIMEOUT) -> bool {
       if (!cmdSuffix) return true;  // Nothing to send, proceed.
 
@@ -1245,7 +1245,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
     };
 
     // 1. Flow Control
-    const char *flowCmd = settings->HardwareFlowControl
+    const char* flowCmd = settings->HardwareFlowControl
                               ? ModemRegistry->Get_Modem_Hardware_Flow_Control()
                               : ModemRegistry->Get_Modem_No_Flow_Control();
     int flowTimeout = settings->HardwareFlowControl ? 300 : DEFAULT_TIMEOUT;
@@ -1255,7 +1255,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
     }
 
     // 2. Compression
-    const char *compCmd = settings->Compression
+    const char* compCmd = settings->Compression
                               ? ModemRegistry->Get_Modem_Compression_Enable()
                               : ModemRegistry->Get_Modem_Compression_Disable();
 
@@ -1264,7 +1264,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
     }
 
     // 3. Error Correction
-    const char *errCmd =
+    const char* errCmd =
         settings->ErrorCorrection
             ? ModemRegistry->Get_Modem_Error_Correction_Enable()
             : ModemRegistry->Get_Modem_Error_Correction_Disable();
@@ -1315,7 +1315,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType *settings, bool reconnect) {
  *   06/02/1995 DRD : Created.                                             *
  *   8/2/96      ST : Win32 support                                        *
  *=========================================================================*/
-DialStatusType NullModemClass::Dial_Modem(const char *string,
+DialStatusType NullModemClass::Dial_Modem(const char* string,
                                           DialMethodType method,
                                           bool reconnect) {
   /*
@@ -1342,7 +1342,7 @@ DialStatusType NullModemClass::Dial_Modem(const char *string,
   Determine the dimensions of the text to be used for the dialog box.
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
-  const char *buffer_const =
+  const char* buffer_const =
       Text_String(reconnect ? TXT_MODEM_CONNERR_REDIALING : TXT_DIALING);
 
   std::string buffer(buffer_const);
@@ -1665,7 +1665,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         x = (SeenBuff.Get_Width() - width) / 2;
         y = (SeenBuff.Get_Height() - height) / 2;
 
-        SerialPort->Write_To_Serial_Port((unsigned char *)"ATA\r",
+        SerialPort->Write_To_Serial_Port((unsigned char*)"ATA\r",
                                          strlen("ATA\r"));
 
         ring = true;
@@ -1775,7 +1775,7 @@ bool NullModemClass::Hangup_Modem(void) {
   escape[2] = ModemEscapeCode;
   escape[3] = 0;
 
-  SerialPort->Write_To_Serial_Port((unsigned char *)escape, 3);
+  SerialPort->Write_To_Serial_Port((unsigned char*)escape, 3);
 
   delay = ModemGuardTime;
   while (delay > 0) {
@@ -2035,8 +2035,8 @@ int NullModemClass::Get_Modem_Status(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:09PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Send_Modem_Command(const char *command, char terminator,
-                                       char *buffer, int buflen, int delay,
+int NullModemClass::Send_Modem_Command(const char* command, char terminator,
+                                       char* buffer, int buflen, int delay,
                                        int retries) {
   return (SerialPort->Send_Command_To_Modem(command, terminator, buffer, buflen,
                                             delay, retries));
@@ -2056,7 +2056,7 @@ int NullModemClass::Send_Modem_Command(const char *command, char terminator,
  *                                                                                             *
  * HISTORY: * 8/2/96 3:13PM ST : Documented *
  *=============================================================================================*/
-int NullModemClass::Verify_And_Convert_To_Int(char *buffer) {
+int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   int value = 0;
   int len = strlen(buffer);
 

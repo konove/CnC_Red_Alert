@@ -71,7 +71,7 @@
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-void AbstractClass::Debug_Dump(MonoClass *mono) const {
+void AbstractClass::Debug_Dump(MonoClass* mono) const {
   assert(IsActive);
 
   mono->Set_Cursor(11, 5);
@@ -107,7 +107,7 @@ int AbstractClass::Distance(TARGET target) const {
   /*
   **	Should subtract a fudge-factor distance for building targets.
   */
-  BuildingClass *obj = As_Building(target);
+  BuildingClass* obj = As_Building(target);
   int dist = Distance(As_Coord(target));
 
   /*
@@ -143,10 +143,10 @@ int AbstractClass::Distance(TARGET target) const {
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
 AbstractTypeClass::AbstractTypeClass(RTTIType rtti, int id, int name,
-                                     char const *ini)
+                                     char const* ini)
     : RTTI(rtti), ID(id), FullName(name) {
-  strncpy((char *)IniName, ini, sizeof(IniName));
-  ((char &)IniName[sizeof(IniName) - 1]) = '\0';
+  strncpy((char*)IniName, ini, sizeof(IniName));
+  ((char&)IniName[sizeof(IniName) - 1]) = '\0';
 }
 
 /***********************************************************************************************

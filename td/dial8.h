@@ -67,7 +67,7 @@ class Dial8Class : public ControlClass {
   /*
   ** Overloaded event processing routine
   */
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
 
  private:
   int FaceX;             // x-coord of center of face

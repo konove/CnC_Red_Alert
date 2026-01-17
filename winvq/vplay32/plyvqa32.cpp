@@ -86,13 +86,13 @@ char VerTag[] = {"$VER$VQAPlay 2.6 (07/07/95) 32Bit"};
 char ReqTag[] = {"$REQ$VQA32 Version 2.37 & VQM32 Version 2.11 or better."};
 
 /* Prototypes */
-void main(long argc, char **argv);
+void main(long argc, char** argv);
 static void Usage(long showall);
-static void Options(long argc, char *argv[], VQAConfig *config);
-static char *Find_File_Name(long argc, char *argv[], char *desired_ext);
-static char *GetFilePart(char *path);
-void Print_Play_Stats(VQAConfig *config, VQAStatistics *stats);
-long VQCallback(unsigned char *screen, long framenum);
+static void Options(long argc, char* argv[], VQAConfig* config);
+static char* Find_File_Name(long argc, char* argv[], char* desired_ext);
+static char* GetFilePart(char* path);
+void Print_Play_Stats(VQAConfig* config, VQAStatistics* stats);
+long VQCallback(unsigned char* screen, long framenum);
 
 extern "C" {
 int __cdecl Check_Key(void);
@@ -121,11 +121,11 @@ int __cdecl Get_Key(void);
  *
  ****************************************************************************/
 
-void main(long argc, char **argv) {
+void main(long argc, char** argv) {
   VQAConfig myconfig;
   VQAStatistics stats;
-  VQAHandle *vqa;
-  char *name;
+  VQAHandle* vqa;
+  char* name;
   long i;
 
   /* Parse command-line */
@@ -149,7 +149,7 @@ void main(long argc, char **argv) {
   myconfig.HMIBufSize = 2048 * 2;
 
 #if (CAPTIONS)
-  myconfig.CapFont = (char *)Load_Font("caption.fnt");
+  myconfig.CapFont = (char*)Load_Font("caption.fnt");
   myconfig.OptionFlags |= VQAOPTF_CAPTIONS;
   Set_Font(myconfig.CapFont);
   SetDAC(251, 255, 255, 255);  // WHITE
@@ -348,7 +348,7 @@ static void Usage(long showall) {
  *
  ****************************************************************************/
 
-static void Options(long argc, char *argv[], VQAConfig *config) {
+static void Options(long argc, char* argv[], VQAConfig* config) {
   long l;
   long i;
 
@@ -474,7 +474,7 @@ static void Options(long argc, char *argv[], VQAConfig *config) {
  * @param desired_ext Extension to add if none present
  * @return Pointer to filename, or nullptr if not found
  ****************************************************************************/
-static char *Find_File_Name(long argc, char *argv[], char *desired_ext) {
+static char* Find_File_Name(long argc, char* argv[], char* desired_ext) {
   static std::string pathname;  // Static to preserve lifetime
 
   // Find first argument that isn't an option (doesn't start with '/' or '-')
@@ -518,7 +518,7 @@ static char *Find_File_Name(long argc, char *argv[], char *desired_ext) {
  *
  ****************************************************************************/
 
-void Print_Play_Stats(VQAConfig *config, VQAStatistics *stats) {
+void Print_Play_Stats(VQAConfig* config, VQAStatistics* stats) {
   long tim1, tim2;
   long fps1, fps2;
 
@@ -790,7 +790,7 @@ int HardErr_Handler(int errval, int ax, int bp, int si) {
  ****************************************************************************/
 
 int __far HardErr_Handler(unsigned deverror, unsigned errcode,
-                          unsigned __far *devhdr) {
+                          unsigned __far* devhdr) {
   /* Prevent compiler warnings. */
   errcode = errcode;
   devhdr = devhdr;
@@ -841,8 +841,8 @@ int __far HardErr_Handler(unsigned deverror, unsigned errcode,
  *
  ****************************************************************************/
 
-static char *GetFilePart(char *path) {
-  char *ptr;
+static char* GetFilePart(char* path) {
+  char* ptr;
 
   ptr = strrchr(path, '\\');
 

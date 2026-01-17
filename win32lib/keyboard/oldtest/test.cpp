@@ -40,7 +40,9 @@
  *- - - - - - - */
 
 #include <misc.h>
+
 #include <cstdio>
+
 #include "keyboard.h"
 
 #define NAME "DRAWBUFF test"
@@ -312,7 +314,7 @@ WWKeyboardClass Kbd;
 #define VK_NONE_FF 0xFF
 #endif
 
-char *VK_Name[] = {
+char* VK_Name[] = {
     "VK_NONE_00", "VK_LBUTTON",  "VK_RBUTTON", "VK_CANCEL",    "VK_MBUTTON",
     "VK_NONE_05", "VK_NONE_06",  "VK_NONE_07", "VK_BACK",      "VK_TAB",
     "VK_NONE_0A", "VK_NONE_0B",  "VK_CLEAR",   "VK_RETURN",    "VK_NONE_0E",
@@ -367,7 +369,7 @@ char *VK_Name[] = {
     "VK_NONE_FF",
 };
 
-char *_keyname[] = {"KN_NONE",
+char* _keyname[] = {"KN_NONE",
                     "KN_GRAVE",
                     "KN_1",
                     "KN_2",
@@ -498,7 +500,7 @@ char *_keyname[] = {"KN_NONE",
                     "KN_PRNTSCRN",
                     "KN_SCROLLLOCK",
                     "KN_PAUSE"};
-char *_steve_translate[] = {
+char* _steve_translate[] = {
     "?", "ESC-27", "1", "2", "3", "4",         "5",   "6",   "7",
     "8", "9",      "0", "-", "=", "BACKSPACE", "TAB", "q",   "w",
     "e", "r",      "t", "y", "u", "i",         "o",   "p",   "[",

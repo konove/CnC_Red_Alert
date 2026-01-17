@@ -103,36 +103,28 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
     {"INTRO", TXT_THEME_INTRO, 0, 205, false, true, true, HOUSEF_NONE},
     {"CREDITS", TXT_THEME_CREDITS, 0, 163, false, true, true, HOUSEF_NONE},
 
-    {"2ND_HAND", TXT_THEME_2ND_HAND, 0, 268, true, false, true,
-     HOUSEF_ALLIES},
+    {"2ND_HAND", TXT_THEME_2ND_HAND, 0, 268, true, false, true, HOUSEF_ALLIES},
     {"ARAZOID", TXT_THEME_ARAZOID, 0, 257, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"BACKSTAB", TXT_THEME_BACKSTAB, 0, 278, true, false, true,
-     HOUSEF_ALLIES},
+    {"BACKSTAB", TXT_THEME_BACKSTAB, 0, 278, true, false, true, HOUSEF_ALLIES},
     {"CHAOS2", TXT_THEME_CHAOS2, 0, 250, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"SHUT_IT", TXT_THEME_SHUT_IT, 0, 261, true, false, true,
-     HOUSEF_ALLIES},
+    {"SHUT_IT", TXT_THEME_SHUT_IT, 0, 261, true, false, true, HOUSEF_ALLIES},
     {"TWINMIX1", TXT_THEME_TWINMIX1, 0, 222, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"UNDER3", TXT_THEME_UNDER3, 0, 246, true, false, true,
-     HOUSEF_ALLIES},
+    {"UNDER3", TXT_THEME_UNDER3, 0, 246, true, false, true, HOUSEF_ALLIES},
     {"VR2", TXT_THEME_VR2, 0, 255, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"BOG", TXT_THEME_BOG, 0, 212, true, false, true,
-     HOUSEF_ALLIES},
+    {"BOG", TXT_THEME_BOG, 0, 212, true, false, true, HOUSEF_ALLIES},
     {"FLOAT_V2", TXT_THEME_FLOAT_V2, 0, 274, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"GLOOM", TXT_THEME_GLOOM, 0, 236, true, false, true,
-     HOUSEF_ALLIES},
+    {"GLOOM", TXT_THEME_GLOOM, 0, 236, true, false, true, HOUSEF_ALLIES},
     {"GRNDWIRE", TXT_THEME_GRNDWIRE, 0, 228, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"RPT", TXT_THEME_RPT, 0, 275, true, false, true,
-     HOUSEF_ALLIES},
+    {"RPT", TXT_THEME_RPT, 0, 275, true, false, true, HOUSEF_ALLIES},
     {"SEARCH", TXT_THEME_SEARCH, 0, 276, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
-    {"TRACTION", TXT_THEME_TRACTION, 0, 237, true, false, true,
-     HOUSEF_ALLIES},
+    {"TRACTION", TXT_THEME_TRACTION, 0, 237, true, false, true, HOUSEF_ALLIES},
     {"WASTELND", TXT_THEME_WASTELND, 0, 242, true, false, true,
      HOUSEF_SOVIET | HOUSEF_SPAIN},
 };
@@ -153,7 +145,7 @@ ThemeClass::ThemeControl ThemeClass::_themes[THEME_COUNT] = {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-char const *ThemeClass::Base_Name(ThemeType theme) const {
+char const* ThemeClass::Base_Name(ThemeType theme) const {
   if (theme != THEME_NONE) {
     return (_themes[theme].Name);
   }
@@ -191,7 +183,7 @@ ThemeClass::ThemeClass(void)
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const *ThemeClass::Full_Name(ThemeType theme) const {
+char const* ThemeClass::Full_Name(ThemeType theme) const {
   if (theme >= THEME_FIRST && theme < THEME_COUNT) {
     return (Text_String(_themes[theme].Fullname));
   }
@@ -377,7 +369,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. * 05/09/1995 JLB : Theme variation
  *support.                                                 *
  *=============================================================================================*/
-char const *ThemeClass::Theme_File_Name(ThemeType theme) {
+char const* ThemeClass::Theme_File_Name(ThemeType theme) {
   if (theme >= THEME_FIRST && theme < THEME_COUNT) {
     static const auto name = std::filesystem::path(_themes[theme].Name)
                                  .replace_extension(".AUD")
@@ -535,7 +527,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) const {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeType ThemeClass::From_Name(char const *name) const {
+ThemeType ThemeClass::From_Name(char const* name) const {
   if (name && strlen(name) > 0) {
     /*
     **	First search for an exact name match with the filename

@@ -36,16 +36,13 @@
 #ifndef WWLIB32_H
 #define WWLIB32_H
 
-#include <wwstd.h>
-
 #include <buffer.h>
 #include <descmgmt.h>
 #include <file.h>
+#include <filepcx.h>
 #include <font.h>
 #include <gbuffer.h>
-#include <vbuffer.h>
 #include <iff.h>
-#include <filepcx.h>
 #include <keyboard.h>
 #include <mcgaprim.h>
 #include <misc.h>
@@ -54,8 +51,10 @@
 #include <playcd.h>
 #include <shape.h>
 #include <timer.h>
+#include <vbuffer.h>
 #include <video.h>
 #include <wsa.h>
 #include <wwmem.h>
+#include <wwstd.h>
 
 #endif  // WWLIB32_H

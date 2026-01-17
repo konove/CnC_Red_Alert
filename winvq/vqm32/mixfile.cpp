@@ -78,7 +78,7 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-int compfunc(void const *ptr1, void const *ptr2);
+int compfunc(void const* ptr1, void const* ptr2);
 
 /****************************************************************************
  *
@@ -101,9 +101,9 @@ int compfunc(void const *ptr1, void const *ptr2);
  *
  ****************************************************************************/
 
-MIXHandle *OpenMix(char *name) {
+MIXHandle* OpenMix(char* name) {
   MIXHeader mfhdr;
-  MIXHandle *mix = NULL;
+  MIXHandle* mix = NULL;
   long fh;
   long sbsize;
   long size;
@@ -115,7 +115,7 @@ MIXHandle *OpenMix(char *name) {
       sbsize = (mfhdr.Count * sizeof(MIXSubBlock));
       size = sbsize + sizeof(MIXHandle);
 
-      if ((mix = (MIXHandle *)malloc(size)) != NULL) {
+      if ((mix = (MIXHandle*)malloc(size)) != NULL) {
         memset(mix, 0, size);
         mix->Name = name;
         mix->Size = mfhdr.Size;
@@ -156,7 +156,7 @@ MIXHandle *OpenMix(char *name) {
  *
  ****************************************************************************/
 
-void CloseMix(MIXHandle *mix) { free(mix); }
+void CloseMix(MIXHandle* mix) { free(mix); }
 
 /****************************************************************************
  *
@@ -181,15 +181,15 @@ void CloseMix(MIXHandle *mix) { free(mix); }
  *
  ****************************************************************************/
 
-long OpenMixEntry(MIXHandle *mix, char *name) {
+long OpenMixEntry(MIXHandle* mix, char* name) {
   MIXSubBlock key;
-  MIXSubBlock *block;
+  MIXSubBlock* block;
   long fh;
 
   /* Search for the specified file in the mix file. */
   key.CRC = Calculate_CRC(name, strlen(name));
-  block = (MIXSubBlock *)bsearch(&key, &mix->Entries[0], mix->Count,
-                                 sizeof(MIXSubBlock), compfunc);
+  block = (MIXSubBlock*)bsearch(&key, &mix->Entries[0], mix->Count,
+                                sizeof(MIXSubBlock), compfunc);
 
   /* If the block exists for the requested filename. */
   if (block != NULL) {
@@ -231,8 +231,8 @@ long OpenMixEntry(MIXHandle *mix, char *name) {
  *
  ****************************************************************************/
 
-int compfunc(void const *ptr1, void const *ptr2) {
-  if (((MIXSubBlock *)ptr1)->CRC < ((MIXSubBlock *)ptr2)->CRC) return -1;
-  if (((MIXSubBlock *)ptr1)->CRC > ((MIXSubBlock *)ptr2)->CRC) return 1;
+int compfunc(void const* ptr1, void const* ptr2) {
+  if (((MIXSubBlock*)ptr1)->CRC < ((MIXSubBlock*)ptr2)->CRC) return -1;
+  if (((MIXSubBlock*)ptr1)->CRC > ((MIXSubBlock*)ptr2)->CRC) return 1;
   return (0);
 }

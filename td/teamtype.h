@@ -94,7 +94,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass(void);
-  TeamTypeClass(NoInitClass const &x) : AbstractTypeClass(x) {};
+  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {};
   virtual ~TeamTypeClass(void) {};
 
   /*
@@ -105,34 +105,34 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	File I/O routines
   */
-  static void Read_INI(char *buffer);
-  void Fill_In(char *name, char *entry);
-  static void Write_INI(char *buffer, bool refresh);
-  static void Read_Old_INI(char *buffer);
-  static char const *INI_Name(void) { return "TeamTypes"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  void Fill_In(char* name, char* entry);
+  static void Write_INI(char* buffer, bool refresh);
+  static void Read_Old_INI(char* buffer);
+  static char const* INI_Name(void) { return "TeamTypes"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
   */
-  static TeamTypeClass *As_Pointer(char *name);
+  static TeamTypeClass* As_Pointer(char* name);
 
   /*
   **	Processing routines
   */
   void Remove(void);
-  TeamClass *Create_One_Of(void) const;
+  TeamClass* Create_One_Of(void) const;
   void Destroy_All_Of(void) const;
 
   /*
   **	Utility routines
   */
-  static char const *Name_From_Mission(TeamMissionType order);
-  static TeamMissionType Mission_From_Name(char const *name);
-  static TeamTypeClass const *Suggested_New_Team(HouseClass *house, long utypes,
+  static char const* Name_From_Mission(TeamMissionType order);
+  static TeamMissionType Mission_From_Name(char const* name);
+  static TeamTypeClass const* Suggested_New_Team(HouseClass* house, long utypes,
                                                  long itypes, bool alerted);
 
   TARGET As_Target(void) const;
@@ -140,9 +140,9 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Overloaded operators
   */
-  void *operator new(size_t) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  void operator delete(void *ptr);
+  void* operator new(size_t) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  void operator delete(void* ptr);
 
   /*
   **	Dee-buggin' support.
@@ -244,7 +244,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Array of object types comprising the team
   */
-  TechnoTypeClass const *Class[MAX_TEAM_CLASSCOUNT];
+  TechnoTypeClass const* Class[MAX_TEAM_CLASSCOUNT];
 
   /*
   **	Desired # of each type of object comprising the team
@@ -252,12 +252,12 @@ class TeamTypeClass : public AbstractTypeClass {
   unsigned char DesiredNum[MAX_TEAM_CLASSCOUNT];
 
  private:
-  static char const *TMissions[TMISSION_COUNT];
+  static char const* TMissions[TMISSION_COUNT];
 
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

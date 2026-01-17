@@ -117,13 +117,13 @@ class ObjectClass : public AbstractClass {
   *the *	next object in the cell list. The objects in this list are not
   *in any *	significant order.
   */
-  ObjectClass *Next;
+  ObjectClass* Next;
 
   /*
   ** Every object can be assigned a trigger; the same trigger can be assigned
   ** to multiple objects.
   */
-  TriggerClass *Trigger;
+  TriggerClass* Trigger;
 
   /*
   **	This is the current strength of this object.
@@ -134,13 +134,13 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass(void);
-  ObjectClass(NoInitClass const &x) : AbstractClass(x) {};
+  ObjectClass(NoInitClass const& x) : AbstractClass(x) {};
   virtual ~ObjectClass(void) {};
   virtual RTTIType What_Am_I(void) const;
-  int operator<(ObjectClass const &object) const {
+  int operator<(ObjectClass const& object) const {
     return Sort_Y() < object.Sort_Y();
   };
-  int operator>(ObjectClass const &object) const {
+  int operator>(ObjectClass const& object) const {
     return Sort_Y() > object.Sort_Y();
   };
 
@@ -152,13 +152,13 @@ class ObjectClass : public AbstractClass {
   /*
   **	Query functions.
   */
-  virtual ActionType What_Action(ObjectClass *) const;
+  virtual ActionType What_Action(ObjectClass*) const;
   virtual ActionType What_Action(CELL) const;
   virtual LayerType In_Which_Layer(void) const;
   virtual bool Is_Infantry(void) const;
   virtual bool Is_Techno(void) const;
   virtual unsigned char Get_Ownable(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const = 0;
+  virtual ObjectTypeClass const& Class_Of(void) const = 0;
   virtual int Full_Name(void) const;
   virtual bool Can_Repair(void) const;
   virtual bool Can_Demolish(void) const;
@@ -184,17 +184,17 @@ class ObjectClass : public AbstractClass {
   virtual void Detach(TARGET, bool) {};
   virtual void Detach_All(bool all = true);
   static void Detach_This_From_All(TARGET target, bool all = true);
-  virtual void Record_The_Kill(TechnoClass *);
+  virtual void Record_The_Kill(TechnoClass*);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
   virtual void Do_Shimmer(void);
-  virtual int Exit_Object(TechnoClass *);
+  virtual int Exit_Object(TechnoClass*);
   virtual bool Render(bool forced);
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual short const *Overlap_List(void) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual short const* Overlap_List(void) const;
   virtual unsigned Health_Ratio(void) const;
   virtual void Draw_It(int x, int y, WindowNumberType) = 0;
   virtual void Hidden(void);
@@ -208,7 +208,7 @@ class ObjectClass : public AbstractClass {
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType, ObjectClass *);
+  virtual void Active_Click_With(ActionType, ObjectClass*);
   virtual void Active_Click_With(ActionType, CELL);
   virtual void Clicked_As_Target(int = 7);
   virtual bool Select(void);
@@ -219,8 +219,8 @@ class ObjectClass : public AbstractClass {
   */
   virtual bool In_Range(COORDINATE, int = 0) const;
   virtual int Weapon_Range(int = 0) const;
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr);
   virtual TARGET As_Target(void) const;
   virtual void Scatter(COORDINATE, bool = false);
   virtual bool Catch_Fire(void);
@@ -231,11 +231,11 @@ class ObjectClass : public AbstractClass {
   /*
   **	AI.
   */
-  virtual BuildingClass *Who_Can_Build_Me(bool intheory, bool legal) const;
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal) const;
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
-  virtual bool Revealed(HouseClass *house);
+                                           long& param);
+  virtual bool Revealed(HouseClass* house);
   virtual void Repair(int);
   virtual void Sell_Back(int);
 
@@ -249,7 +249,7 @@ class ObjectClass : public AbstractClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   virtual void Move(FacingType);
 };

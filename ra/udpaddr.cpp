@@ -99,13 +99,13 @@ bool Get_Broadcast_Addresses(void) {
   int width;
   int height;
 
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String("IP Addresses", SeenBuff.Get_Height(), width, height);
 
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
   ColorListClass ip_address_list(
       BUTTON_IPLIST, d_ip_address_list_x, d_ip_address_list_y,
       d_ip_address_list_w, d_ip_address_list_h, TPF_TEXT,
@@ -135,7 +135,7 @@ bool Get_Broadcast_Addresses(void) {
     char entry_name[16];
     do {
       entry++;
-      char *temp = new char[128];
+      char* temp = new char[128];
       sprintf(entry_name, "%d", entry);
       res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "", temp, 128);
       if (res) {
@@ -237,8 +237,8 @@ bool Get_Broadcast_Addresses(void) {
   Show_Mouse();
 
   for (int i = 0; i < ip_address_list.Count(); i++) {
-    char const *temp = ip_address_list.Get_Item(i);
-    char *cut = strdup(temp);
+    char const* temp = ip_address_list.Get_Item(i);
+    char* cut = strdup(temp);
     cut = strchr(cut, '#');
     if (cut) *cut = 0;
     PacketTransport->Set_Broadcast_Address(cut);

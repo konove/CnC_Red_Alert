@@ -35,6 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <wwstd.h>
+
 #include "_file.h"
 
 /* Global varaiables */

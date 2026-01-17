@@ -73,19 +73,19 @@
 #include "td/jshell.h"
 #include "td/link.h"
 
-GadgetClass *GadgetClass::StuckOn = nullptr;
+GadgetClass* GadgetClass::StuckOn = nullptr;
 
 /*
 **	This is a copy of a pointer to the last list used by the gadget input
 *system. *	If a change of list is detected, then all gadgets are forced to
 *be redrawn.
 */
-GadgetClass *GadgetClass::LastList = nullptr;
+GadgetClass* GadgetClass::LastList = nullptr;
 
 /*
 **	This points to the gadget that is intercepting all keyboard events.
 */
-GadgetClass *GadgetClass::Focused = nullptr;
+GadgetClass* GadgetClass::Focused = nullptr;
 
 /***********************************************************************************************
  * GadgetClass::GadgetClass -- Constructor for gadget object. *
@@ -157,7 +157,7 @@ GadgetClass::~GadgetClass(void) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-int GadgetClass::Clicked_On(KeyNumType &key, unsigned flags, int mousex,
+int GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
                             int mousey) {
   /*
   **	Set flags to match only those events that occur AND are being looked
@@ -238,9 +238,9 @@ void GadgetClass::Disable(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass *GadgetClass::Remove(void) {
+GadgetClass* GadgetClass::Remove(void) {
   Clear_Focus();
-  return (GadgetClass *)LinkClass::Remove();
+  return (GadgetClass*)LinkClass::Remove();
 }
 
 /***********************************************************************************************
@@ -257,8 +257,8 @@ GadgetClass *GadgetClass::Remove(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass *GadgetClass::Get_Next(void) const {
-  return (GadgetClass *)LinkClass::Get_Next();
+GadgetClass* GadgetClass::Get_Next(void) const {
+  return (GadgetClass*)LinkClass::Get_Next();
 }
 
 /***********************************************************************************************
@@ -276,8 +276,8 @@ GadgetClass *GadgetClass::Get_Next(void) const {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass *GadgetClass::Get_Prev(void) const {
-  return (GadgetClass *)LinkClass::Get_Prev();
+GadgetClass* GadgetClass::Get_Prev(void) const {
+  return (GadgetClass*)LinkClass::Get_Prev();
 }
 
 /***********************************************************************************************
@@ -296,7 +296,7 @@ GadgetClass *GadgetClass::Get_Prev(void) const {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 void GadgetClass::Delete_List(void) {
-  GadgetClass *g = this;
+  GadgetClass* g = this;
 
   /*
   **	Move to head of the list.
@@ -314,7 +314,7 @@ void GadgetClass::Delete_List(void) {
   while (g) {
     g->Clear_Focus();
 
-    GadgetClass *temp = g;
+    GadgetClass* temp = g;
     g = g->Get_Next();
     delete temp;
   }
@@ -339,7 +339,7 @@ void GadgetClass::Delete_List(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int GadgetClass::Action(unsigned flags, KeyNumType &) {
+int GadgetClass::Action(unsigned flags, KeyNumType&) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,
@@ -392,7 +392,7 @@ int GadgetClass::Draw_Me(int forced) {
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
 void GadgetClass::Draw_All(bool forced) {
-  GadgetClass *gadget = this;
+  GadgetClass* gadget = this;
 
   while (gadget != nullptr) {
     gadget->Draw_Me(forced);
@@ -457,7 +457,7 @@ KeyNumType GadgetClass::Input(void) {
       if (access(filename, F_OK) == -1) break;
     }
 
-    Write_PCX_File(filename, temp_page, (unsigned char *)CurrentPalette);
+    Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
     // Map.Place_Random_Crate();
   }
 
@@ -560,7 +560,7 @@ KeyNumType GadgetClass::Input(void) {
       *that an appropriate return value is use for this *	processing
       *routine.
       */
-      GadgetClass *next_button = this;
+      GadgetClass* next_button = this;
       while (next_button != nullptr) {
         /*
         **	Maybe redraw the button if it needs to or is being forced to
@@ -612,13 +612,13 @@ KeyNumType GadgetClass::Input(void) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-ControlClass *GadgetClass::Extract_Gadget(unsigned id) {
-  GadgetClass *g = this;
+ControlClass* GadgetClass::Extract_Gadget(unsigned id) {
+  GadgetClass* g = this;
 
   if (id) {
     while (g) {
       if (g->Get_ID() == id) {
-        return ((ControlClass *)g);
+        return ((ControlClass*)g);
       }
       g = g->Get_Next();
     }
@@ -751,7 +751,7 @@ bool GadgetClass::Has_Focus(void) { return (this == Focused); }
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
 int GadgetClass::Is_List_To_Redraw(void) {
-  GadgetClass *gadget = this;
+  GadgetClass* gadget = this;
 
   while (gadget != nullptr) {
     if (gadget->IsToRepaint) return (true);

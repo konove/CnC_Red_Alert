@@ -54,7 +54,7 @@ class CheckListClass : public ListClass {
   Constructor/Destructor
   ---------------------------------------------------------------------*/
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const *up, void const *down);
+                 void const* up, void const* down);
   ~CheckListClass(void) {};
 
   /*---------------------------------------------------------------------
@@ -75,7 +75,7 @@ class CheckListClass : public ListClass {
   void Set_Read_Only(int rdonly) { IsReadOnly = rdonly; }
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
 
  private:
   bool IsReadOnly;

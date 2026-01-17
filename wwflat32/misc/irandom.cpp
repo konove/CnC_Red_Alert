@@ -34,8 +34,9 @@
 
 #include <cstdlib>
 #include <ctime>
-#include "wwstd.h"
+
 #include "misc.h"
+#include "wwstd.h"
 
 /* IRANDOM ----------------------------------------------------------
 

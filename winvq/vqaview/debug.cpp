@@ -63,8 +63,8 @@ PRIVATE BOOL Debug_Rig_Roll_Dialog_Procedure(WindowHandle window_handle,
 /*
         public functions
 */
-VOID Get_And_Display_Windows_Debug_Info(BYTE *command_line_string);
-VOID Debug_Mono_Message(BYTE *message);
+VOID Get_And_Display_Windows_Debug_Info(BYTE* command_line_string);
+VOID Debug_Mono_Message(BYTE* message);
 // VOID Debug_Window_Message( BYTE *message );
 VOID Debug_Show_Palette(VOID);
 VOID Debug_Draw_Line_Test(VOID);
@@ -73,7 +73,7 @@ VOID Debug_Shape_Test(VOID);
 VOID Debug_Print_Game_Stats(VOID);
 VOID Debug_Adjust_Players_Cash(WindowHandle window_handle);
 VOID Debug_Mono_Print_Whose_Turn(PlayerType player);
-VOID Build_Debug_Log_File_Name(BYTE *name_string);
+VOID Build_Debug_Log_File_Name(BYTE* name_string);
 
 /*
         private functions
@@ -104,10 +104,10 @@ PRIVATE VOID Give_To_The_Mikes(VOID);
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
 #pragma argsused
-VOID Debug_Mono_Message(BYTE *message) {
+VOID Debug_Mono_Message(BYTE* message) {
 #if (DEBUG_LOG_TO_MONO_DISPLAY)
-  BYTE *temp_string;
-  BYTE *temp_null_position;
+  BYTE* temp_string;
+  BYTE* temp_null_position;
   BYTE temp_char;
   INT length_left;
 #endif
@@ -135,7 +135,7 @@ VOID Debug_Mono_Message(BYTE *message) {
         _errored_once = TRUE;
       } else {
         Seek_File(fh, 0, SEEK_END);
-        Write_File((INT)fh, (BYTE *)message, (ULONG)(strlen(message)));
+        Write_File((INT)fh, (BYTE*)message, (ULONG)(strlen(message)));
         Close_File(fh);
       }
     }
@@ -358,7 +358,7 @@ VOID Debug_Shape_Test(VOID) {
 #if (0)
   BYTE *shapebuf, *shapes;
   LONG fsize;
-  CHAR *shape_ptr[37];
+  CHAR* shape_ptr[37];
   INT i, j, x;
 
   INT wwfh;
@@ -368,7 +368,7 @@ VOID Debug_Shape_Test(VOID) {
           Ram_Free(MEM_NORMAL));
   Debug_Mono_Message(Text_String);
 
-  shapebuf = (char *)Alloc(5000, MEM_NORMAL);
+  shapebuf = (char*)Alloc(5000, MEM_NORMAL);
 
   sprintf(Text_String, "Mem after shape buff alloc(5000): %ld\r\n",
           Ram_Free(MEM_NORMAL));
@@ -389,7 +389,7 @@ VOID Debug_Shape_Test(VOID) {
   sprintf(Text_String, "File_Size( %d ) = %d\r\n", wwfh, fsize);
   Debug_Mono_Message(Text_String);
   if (fsize > 0) {
-    shapes = (char *)Alloc(fsize, MEM_NORMAL);
+    shapes = (char*)Alloc(fsize, MEM_NORMAL);
     if (shapes == NULL) {
       Debug_Mono_Message("shapes alloc failed\n");
     }
@@ -543,8 +543,9 @@ VOID Debug_Print_Game_Stats(VOID) {
       //			y += DEBUG_TEXT_SPACING;
       //			sprintf( Text_String, "   Tradable Assets: $%u
       //", Players[ i ].Get_Tradable_Assets() ); 			TextOut(
-      //Screen_DC, 						x,
-      //y, 						Text_String, 						strlen( Text_String ) );
+      // Screen_DC, 						x,
+      // y, 						Text_String,
+      // strlen( Text_String ) );
       y += DEBUG_TEXT_SPACING;
       sprintf(Text_String, "     Total Assets: $%u       ",
               Players[i].Get_Total_Assets(FALSE));
@@ -553,8 +554,9 @@ VOID Debug_Print_Game_Stats(VOID) {
       //			sprintf( Text_String, "     Monopolies: %u ",
       // Players[ i ].Get_Monopolies() ); 			TextOut(
       // Screen_DC, 						x,
-      // y, 						Text_String, 						strlen(
-      //Text_String ) ); 			y += DEBUG_TEXT_SPACING;
+      // y, 						Text_String,
+      // strlen(
+      // Text_String ) ); 			y += DEBUG_TEXT_SPACING;
     }
   }
 
@@ -671,7 +673,7 @@ PRIVATE BOOL Debug_Adjust_Cash_Dialog_Procedure(WindowHandle window_handle,
 }
 
 // TC
-extern BYTE *Debug_Chance_Card_Text[];
+extern BYTE* Debug_Chance_Card_Text[];
 
 VOID Debug_Show_Chance_Deck(VOID) {
   ChanceCardType card;
@@ -690,7 +692,7 @@ VOID Debug_Show_Chance_Deck(VOID) {
 }
 
 // TC
-extern BYTE *Debug_CC_Card_Text[];
+extern BYTE* Debug_CC_Card_Text[];
 
 VOID Debug_Show_CC_Deck(VOID) {
   CommunityChestCardType card;
@@ -737,17 +739,17 @@ VOID Debug_Display_Bank_Status(VOID) {
 }
 
 VOID Debug_Show_Player_Info(VOID) {
-  BYTE *tokens[TOTAL_TOKENS] = {
+  BYTE* tokens[TOTAL_TOKENS] = {
       "CANNON ", "CAR    ", "DOG    ", "HAT    ", "IRON   ",
       "HORSE  ", "SHIP   ", "SHOE   ", "THIMBLE", "WBARROW",
   };
-  BYTE *ais[TOTAL_AI_TYPES] = {
+  BYTE* ais[TOTAL_AI_TYPES] = {
       "LOCAL HUMAN ",
       "LOCAL AI    ",
       "REMOTE HUMAN",
       "REMOTE AI   ",
   };
-  BYTE *status[TOTAL_ACTIVE_STATUSES] = {
+  BYTE* status[TOTAL_ACTIVE_STATUSES] = {
       "INACTIVE",
       "ACTIVE  ",
       "BANKRUPT",
@@ -796,13 +798,13 @@ VOID Debug_Broadcast_Save_Game_Checksum_Other_Sites(VOID) {
   INT fh;
   INT i;
   ULONG check_sum;
-  BYTE *buffer;
+  BYTE* buffer;
   //	SOCKET temp_socket;
   //	INT status;
   INT low_int;
   INT high_int;
   UBYTE add_byte;
-  BYTE *file_name;
+  BYTE* file_name;
 
   /*
           don't do this unless we are multi-site
@@ -824,7 +826,7 @@ VOID Debug_Broadcast_Save_Game_Checksum_Other_Sites(VOID) {
   fh = Open_File(file_name, READ);
   if (fh != -1) {
     file_size = File_Size(fh);
-    buffer = (BYTE *)Alloc((ULONG)file_size + 10, MEM_NORMAL);
+    buffer = (BYTE*)Alloc((ULONG)file_size + 10, MEM_NORMAL);
     if (buffer == NULL) {
       Close_File(fh);
 #if (DEBUG_CODE)
@@ -879,11 +881,11 @@ VOID Debug_Compare_Local_Checksum_With_Received_Checksum(INT received_file_size,
   INT fh;
   ULONG received_check_sum;
   ULONG local_check_sum;
-  BYTE *buffer = NULL;
+  BYTE* buffer = NULL;
   INT local_file_size;
   INT i;
   UBYTE add_byte;
-  BYTE *file_name;
+  BYTE* file_name;
   static BOOL _errored_already = FALSE;
 
   if (_errored_already) {
@@ -926,7 +928,7 @@ VOID Debug_Compare_Local_Checksum_With_Received_Checksum(INT received_file_size,
   fh = Open_File(file_name, READ);
   if (fh != -1) {
     local_file_size = File_Size(fh);
-    buffer = (BYTE *)Alloc((ULONG)local_file_size + 10, MEM_NORMAL);
+    buffer = (BYTE*)Alloc((ULONG)local_file_size + 10, MEM_NORMAL);
     if (buffer == NULL) {
       Close_File(fh);
 #if (DEBUG_CODE)
@@ -1012,7 +1014,7 @@ PRIVATE VOID Give_To_The_Mikes(VOID) {
 #endif
 
 #if (DEBUG_WRITE_IDS_IN_SAVES)
-LONG Debug_Write_ID_Save_Game_File(INT file_handle, BYTE *three_byte_id) {
+LONG Debug_Write_ID_Save_Game_File(INT file_handle, BYTE* three_byte_id) {
   LONG bytes_read_or_written = 0L;
 
   if (file_handle > -1) {
@@ -1038,11 +1040,11 @@ LONG Debug_Read_ID_Save_Game_File(INT file_handle) {
 
 #if (DEBUG_WRITE_IDS_IN_SAVES)
 LONG Debug_Write_ID_Save_Game_Memory(MemorySaveBufferType buffer_num,
-                                     BYTE *three_byte_id) {
+                                     BYTE* three_byte_id) {
   LONG bytes_read_or_written = 0L;
 
   bytes_read_or_written +=
-      Memory_Save_Games[buffer_num].Write_Data((UBYTE *)three_byte_id, 3);
+      Memory_Save_Games[buffer_num].Write_Data((UBYTE*)three_byte_id, 3);
 
   return (bytes_read_or_written);
 }
@@ -1054,7 +1056,7 @@ LONG Debug_Read_ID_Save_Game_Memory(MemorySaveBufferType buffer_num) {
   BYTE junk[4];
 
   bytes_read_or_written +=
-      Memory_Save_Games[buffer_num].Read_Data((UBYTE *)&junk, 3);
+      Memory_Save_Games[buffer_num].Read_Data((UBYTE*)&junk, 3);
 
   return (bytes_read_or_written);
 }
@@ -1072,12 +1074,12 @@ LONG Debug_Read_ID_Save_Game_Memory(MemorySaveBufferType buffer_num) {
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
 #if (DEBUG_LOG_TO_FILE)
-VOID Build_Debug_Log_File_Name(BYTE *name_string_buffer,
-                               BYTE *system_id_string_buffer) {
+VOID Build_Debug_Log_File_Name(BYTE* name_string_buffer,
+                               BYTE* system_id_string_buffer) {
   SYSTEMTIME data;
-  BYTE *ptr;
+  BYTE* ptr;
   INT fh;
-  BYTE *file_name;
+  BYTE* file_name;
 
   /*
           build file in following format:
@@ -1120,7 +1122,7 @@ VOID Build_Debug_Log_File_Name(BYTE *name_string_buffer,
   //		sprintf( Text_String,
   //					"Log file name for this session:
   //%s\r\n", 					name_string );
-  //Debug_Mono_Message( Text_String ); 	#endif
+  // Debug_Mono_Message( Text_String ); 	#endif
 
   /*
           build .INI file name (with directory path) in Text_String_2
@@ -1156,7 +1158,7 @@ VOID Build_Debug_Log_File_Name(BYTE *name_string_buffer,
   //		sprintf( Text_String,
   //					"Legal DebugSystemName for this session:
   //%s\r\n", 					Text_String_3 );
-  //Debug_Mono_Message( Text_String ); 	#endif
+  // Debug_Mono_Message( Text_String ); 	#endif
 
   /*
           open and write header to the log file
@@ -1182,9 +1184,9 @@ VOID Build_Debug_Log_File_Name(BYTE *name_string_buffer,
   sprintf(file_name, "%s%s", Executable_Path, name_string_buffer);
 
   fh = Open_File(file_name, WRITE);
-  Write_File((INT)fh, (BYTE *)Text_String_2, (ULONG)(strlen(Text_String_2)));
-  Write_File((INT)fh, (BYTE *)Text_String, (ULONG)(strlen(Text_String)));
-  Write_File((INT)fh, (BYTE *)Text_String_2, (ULONG)(strlen(Text_String_2)));
+  Write_File((INT)fh, (BYTE*)Text_String_2, (ULONG)(strlen(Text_String_2)));
+  Write_File((INT)fh, (BYTE*)Text_String, (ULONG)(strlen(Text_String)));
+  Write_File((INT)fh, (BYTE*)Text_String_2, (ULONG)(strlen(Text_String_2)));
   Close_File(fh);
 }
 
@@ -1244,8 +1246,8 @@ BOOL Get_Windows_System_Info(VOID) {
   // WDI_ALLOC_BREAK ); 	sprintf( Text_String,
   // "Debug info:\r\nflags = %d, options = %d, filter = %d, alloc module = %s,
   //\r\nalloc break = %ld, alloc count = %ld.\r\n",
-  //current_windows_debug_info.flags, 				current_windows_debug_info.dwOptions,
-  //				current_windows_debug_info.dwFilter,
+  // current_windows_debug_info.flags,
+  // current_windows_debug_info.dwOptions, 				current_windows_debug_info.dwFilter,
   //				current_windows_debug_info.achAllocModule,
   //				current_windows_debug_info.dwAllocBreak,
   //				current_windows_debug_info.dwAllocCount );
@@ -1405,9 +1407,11 @@ BOOL Get_Windows_System_Info(VOID) {
 //			for ( i = 0; i <= Waiting_Socket_Index; i ++ ) {
 //				temp_socket = Hosts_Waiting_Sockets[ i
 //].accepted_connection_waiting_socket; 				if (
-//temp_socket != INVALID_SOCKET ) { 					status = WINSOCK_SEND( temp_socket, buffer,
+// temp_socket != INVALID_SOCKET ) { 					status =
+// WINSOCK_SEND( temp_socket, buffer,
 // file_size, 0 ); 					if ( status ==
-// SOCKET_ERROR ) { 						Generic_Window_Message( "Bad send() of save game data", " "
+// SOCKET_ERROR ) {
+// Generic_Window_Message( "Bad send() of save game data", " "
 // );
 //					}
 //					else {
@@ -1424,7 +1428,8 @@ BOOL Get_Windows_System_Info(VOID) {
 //			if ( WC_Temp_Waiter_Socket != INVALID_SOCKET ) {
 //				status = WINSOCK_SEND( WC_Temp_Waiter_Socket,
 // buffer, file_size, 0 ); 				if ( status ==
-// SOCKET_ERROR ) { 					Generic_Window_Message( "Bad send() of save game data", " "
+// SOCKET_ERROR ) { 					Generic_Window_Message(
+// "Bad send() of save game data", " "
 // );
 //				}
 //				else {
@@ -1435,11 +1440,11 @@ BOOL Get_Windows_System_Info(VOID) {
 //			}
 //			/* then send the command to all other connected webbees
 //*/ 			for ( i = 0; i <= Web_Accepted_Socket_Index; i ++ ) {
-//temp_socket = Web_Accepted_Sockets[ i ]; 				if (
+// temp_socket = Web_Accepted_Sockets[ i ]; 				if (
 // temp_socket != INVALID_SOCKET ) { 					status =
 // WINSOCK_SEND( temp_socket, buffer, file_size, 0 );
 // if ( status == SOCKET_ERROR ) {
-//Generic_Window_Message( "Bad send() of save game data", " " );
+// Generic_Window_Message( "Bad send() of save game data", " " );
 //					}
 //					else {
 //						sprintf( Text_String, "%d size
@@ -1470,9 +1475,9 @@ BOOL Get_Windows_System_Info(VOID) {
 //
 //	Incoming_Save_Game_Data = (BYTE *) Alloc( (buffer_size) + 10, MEM_NORMAL
 //); 	Incoming_Save_Game_Data_Size = buffer_size; 	if ( !
-//Incoming_Save_Game_Data ) { 		Generic_Window_Message( "Unable to
-//allocate Incoming_Save_Game_Data\r\n", " " );
-//Incoming_Save_Game_Data_Size = 0;
+// Incoming_Save_Game_Data ) { 		Generic_Window_Message( "Unable to
+// allocate Incoming_Save_Game_Data\r\n", " " );
+// Incoming_Save_Game_Data_Size = 0;
 //	}
 //	else {
 //		Debug_Mono_Message( "Incoming_Save_Game_Data allocated and ready
@@ -1531,11 +1536,12 @@ BOOL Get_Windows_System_Info(VOID) {
 // Debug_Mono_Message( "File error occured w/ file compare!\r\n" ); break;
 // case -1L: Generic_Window_Message( "Error! Data verification file sizes
 // different!", " " ); 		default: 			sprintf(
-// Text_String, 						"Error! Data verification files differ at byte %ld",
-// file_compare ); 			Generic_Window_Message( Text_String, " "
+// Text_String, 						"Error! Data
+// verification files differ at byte %ld", file_compare );
+// Generic_Window_Message( Text_String, " "
 //); 			sprintf( Text_String,
-//"Compare %s (our system) and TEMPRECV.MNO (rec'd)!", 						file_name );
-//			Generic_Window_Message( Text_String, " " );
+//"Compare %s (our system) and TEMPRECV.MNO (rec'd)!",
+//file_name ); 			Generic_Window_Message( Text_String, " " );
 //	}
 //
 //	/*
@@ -1607,8 +1613,8 @@ BOOL Get_Windows_System_Info(VOID) {
 //	sprintf( Text_String,
 //				"File_Size() of %s = %d bytes, File_Size() of %s
 //= %d bytes\r\n", 				file_name_1,
-//file_size_1, 				file_name_2,
-//file_size_2 ); 	Debug_Mono_Message( Text_String );
+// file_size_1, 				file_name_2,
+// file_size_2 ); 	Debug_Mono_Message( Text_String );
 //
 //	if ( file_size_1 != file_size_2 ) {
 ////		Debug_Mono_Message( "About to call Close_File()\r\n" );
@@ -1650,8 +1656,8 @@ BOOL Get_Windows_System_Info(VOID) {
 //	sprintf( Text_String,
 //				"Bytes read of %s = %d bytes, bytes read of %s =
 //%d bytes\r\n", 				file_name_1,
-//bytes_read_1, 				file_name_2,
-//bytes_read_2 ); 	Debug_Mono_Message( Text_String );
+// bytes_read_1, 				file_name_2,
+// bytes_read_2 ); 	Debug_Mono_Message( Text_String );
 //
 //	if ( bytes_read_1 != bytes_read_2 ) {
 ////		Debug_Mono_Message( "Error, About to call Free()\r\n" );
@@ -1704,7 +1710,7 @@ BOOL Get_Windows_System_Info(VOID) {
 //}
 // #endif
 
-BYTE *Debug_Get_Time_String(VOID) {
+BYTE* Debug_Get_Time_String(VOID) {
   SYSTEMTIME data;
   static BYTE _time_string[20];
 

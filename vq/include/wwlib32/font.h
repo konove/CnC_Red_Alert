@@ -70,7 +70,7 @@
  */
 /*=========================================================================*/
 
-VOID *cdecl Set_Font(VOID const *fontptr);
+VOID* cdecl Set_Font(VOID const* fontptr);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FONT.CPP
@@ -78,18 +78,18 @@ VOID *cdecl Set_Font(VOID const *fontptr);
 /*=========================================================================*/
 
 WORD cdecl Char_Pixel_Width(BYTE chr);
-UWORD cdecl String_Pixel_Width(BYTE const *string);
-VOID cdecl Get_Next_Text_Print_XY(GraphicViewPortClass &vp, ULONG offset,
-                                  INT *x, INT *y);
-VOID cdecl Get_Next_Text_Print_XY(VideoViewPortClass &vp, ULONG offset, INT *x,
-                                  INT *y);
+UWORD cdecl String_Pixel_Width(BYTE const* string);
+VOID cdecl Get_Next_Text_Print_XY(GraphicViewPortClass& vp, ULONG offset,
+                                  INT* x, INT* y);
+VOID cdecl Get_Next_Text_Print_XY(VideoViewPortClass& vp, ULONG offset, INT* x,
+                                  INT* y);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LOADFONT.CPP
  */
 /*=========================================================================*/
 
-VOID *cdecl Load_Font(BYTE const *name);
+VOID* cdecl Load_Font(BYTE const* name);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: TEXTPRNT.ASM
@@ -100,7 +100,7 @@ VOID *cdecl Load_Font(BYTE const *name);
 extern "C" {
 #endif
 
-VOID Set_Font_Palette_Range(VOID *palette, INT start_idx, INT end_idx);
+VOID Set_Font_Palette_Range(VOID* palette, INT start_idx, INT end_idx);
 
 #ifdef __cplusplus
 }
@@ -114,8 +114,8 @@ extern "C" int FontXSpacing;
 extern "C" int FontYSpacing;
 extern BYTE FontWidth;
 extern BYTE FontHeight;
-extern BYTE *FontWidthBlockPtr;
+extern BYTE* FontWidthBlockPtr;
 
-extern "C" VOID const *FontPtr;
+extern "C" VOID const* FontPtr;
 
 #endif  // FONT_H

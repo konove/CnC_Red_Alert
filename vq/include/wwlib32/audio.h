@@ -120,23 +120,23 @@ typedef enum {
 /* The following prototypes are for the file: SOUNDIO.CPP
  */
 /*=========================================================================*/
-int File_Stream_Sample(char const *filename);
-int File_Stream_Sample_Vol(char const *filename, int volume);
+int File_Stream_Sample(char const* filename);
+int File_Stream_Sample_Vol(char const* filename, int volume);
 void cdecl _saveregs Sound_Callback(void);
 void cdecl far __saveregs __loadds maintenance_callback(void);
-void *Load_Sample(char const *filename);
-long Load_Sample_Into_Buffer(char const *filename, void *buffer, long size);
-long Sample_Read(int fh, void *buffer, long size);
-void Free_Sample(void const *sample);
+void* Load_Sample(char const* filename);
+long Load_Sample_Into_Buffer(char const* filename, void* buffer, long size);
+long Sample_Read(int fh, void* buffer, long size);
+void Free_Sample(void const* sample);
 BOOL Sound_Init(int sfx, int score, int sample, int reverse_channels = FALSE);
 BOOL Audio_Init(int sample, int address, int inter, int dma,
                 int reverse_channels = FALSE);
 void Sound_End(void);
 void Stop_Sample(int handle);
 BOOL Sample_Status(int handle);
-BOOL Is_Sample_Playing(void const *sample);
-void Stop_Sample_Playing(void const *sample);
-int Play_Sample(void const *sample, int priority = 0xFF, int volume = 0xFF,
+BOOL Is_Sample_Playing(void const* sample);
+void Stop_Sample_Playing(void const* sample);
+int Play_Sample(void const* sample, int priority = 0xFF, int volume = 0xFF,
                 signed short panloc = 0x0);
 int Set_Sound_Vol(int volume);
 int Set_Score_Vol(int volume);

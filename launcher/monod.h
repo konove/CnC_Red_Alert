@@ -19,8 +19,9 @@
 #ifndef MONOD_HEADER
 #define MONOD_HEADER
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
+
 #include "odevice.h"
 
 ///////////////////////// WIN32 ONLY ///////////////////////////////////
@@ -75,7 +76,7 @@ class MonoD : public OutputDevice {
   MonoD();
   ~MonoD();
 
-  virtual int print(const char *str, int len);
+  virtual int print(const char* str, int len);
 
  private:
 #ifdef _WIN32

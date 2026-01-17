@@ -1,17 +1,17 @@
 #include "sdllib/include/shape.h"
 
-char *_ShapeBuffer;
+char* _ShapeBuffer;
 long _ShapeBufferSize;
 
-int Extract_Shape_Count(void const *buffer) {
-  ShapeBlock_Type *block = (ShapeBlock_Type *)buffer;
+int Extract_Shape_Count(void const* buffer) {
+  ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
   return block->NumShapes;
 }
 
-void *Extract_Shape(void const *buffer, int shape) {
-  ShapeBlock_Type *block = (ShapeBlock_Type *)buffer;
+void* Extract_Shape(void const* buffer, int shape) {
+  ShapeBlock_Type* block = (ShapeBlock_Type*)buffer;
   long offset;  // Offset of shape data, from start of block
-  char *bytebuf = (char *)buffer;
+  char* bytebuf = (char*)buffer;
 
   /*
   ----------------------- Return if invalid argument -----------------------
@@ -23,7 +23,7 @@ void *Extract_Shape(void const *buffer, int shape) {
   return bytebuf + 2 + offset;
 }
 
-void Set_Shape_Buffer(void *buffer, int size) {
-  _ShapeBuffer = (char *)buffer;
+void Set_Shape_Buffer(void* buffer, int size) {
+  _ShapeBuffer = (char*)buffer;
   _ShapeBufferSize = size;
 }

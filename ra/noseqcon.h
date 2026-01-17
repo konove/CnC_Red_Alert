@@ -83,15 +83,15 @@ class NonSequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  virtual int Send_Packet(void *buf, int buflen, int ack_req);
-  virtual int Receive_Packet(void *buf, int buflen);
-  virtual int Get_Packet(void *buf, int *buflen);
+  virtual int Send_Packet(void* buf, int buflen, int ack_req);
+  virtual int Receive_Packet(void* buf, int buflen);
+  virtual int Get_Packet(void* buf, int* buflen);
 
   /*.....................................................................
   The packet "queue"; this non-sequenced version isn't really much of
   a queue, but more of a repository.
   .....................................................................*/
-  CommBufferClass *Queue;
+  CommBufferClass* Queue;
 
   /*
   -------------------------- Protected Interface ---------------------------

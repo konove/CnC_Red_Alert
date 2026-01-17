@@ -261,7 +261,7 @@ static HouseTypeClass const HouseMulti8(
 );
 
 #ifdef OBSOLETE
-HouseTypeClass const *const HouseTypeClass::Pointers[HOUSE_COUNT] = {
+HouseTypeClass const* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
     &HouseSpain,    &HouseGreece, &HouseUSSR,   &HouseEngland, &HouseUkraine,
     &HouseGermany,  &HouseFrance, &HouseTurkey, &HouseGood,    &HouseBad,
     &HouseCivilian, &HouseJP,     &HouseMulti1, &HouseMulti2,  &HouseMulti3,
@@ -283,8 +283,8 @@ HouseTypeClass const *const HouseTypeClass::Pointers[HOUSE_COUNT] = {
  *                                                                                             *
  * HISTORY: * 06/21/1994 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass::HouseTypeClass(HousesType house, char const *ini, int fullname,
-                               char const *ext, int lemon,
+HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
+                               char const* ext, int lemon,
                                PlayerColorType remapcolor, char prefix)
     : AbstractTypeClass(RTTI_HOUSETYPE, house, fullname, ini),
       //	RTTI(RTTI_HOUSETYPE),
@@ -321,7 +321,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, char const *ini, int fullname,
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void *HouseTypeClass::operator new(size_t) throw() {
+void* HouseTypeClass::operator new(size_t) throw() {
   return (HouseTypes.Alloc());
 }
 
@@ -340,8 +340,8 @@ void *HouseTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseTypeClass::operator delete(void *ptr) {
-  HouseTypes.Free((HouseTypeClass *)ptr);
+void HouseTypeClass::operator delete(void* ptr) {
+  HouseTypes.Free((HouseTypeClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -404,7 +404,7 @@ void HouseTypeClass::Init_Heap(void) {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/21/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-HousesType HouseTypeClass::From_Name(char const *name) {
+HousesType HouseTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(As_Reference(house).IniName, name) == 0) {
@@ -445,7 +445,7 @@ void HouseTypeClass::One_Time(void) {}
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass &HouseTypeClass::As_Reference(HousesType house) {
+HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
   return (*HouseTypes.Ptr(house));
 }
 
@@ -464,7 +464,7 @@ HouseTypeClass &HouseTypeClass::As_Reference(HousesType house) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned char const *HouseTypeClass::Remap_Table(void) const {
+unsigned char const* HouseTypeClass::Remap_Table(void) const {
   return (ColorRemaps[RemapColor].RemapTable);
 }
 
@@ -484,7 +484,7 @@ unsigned char const *HouseTypeClass::Remap_Table(void) const {
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-bool HouseTypeClass::Read_INI(CCINIClass &ini) {
+bool HouseTypeClass::Read_INI(CCINIClass& ini) {
   if (ini.Is_Present(Name())) {
     FirepowerBias = ini.Get_Fixed(Name(), "Firepower", FirepowerBias);
     GroundspeedBias = ini.Get_Fixed(Name(), "Groundspeed", GroundspeedBias);

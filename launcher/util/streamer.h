@@ -19,10 +19,11 @@
 #ifndef STREAMER_HEADER
 #define STREAMER_HEADER
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstdarg>
 #include <iostream.h>
+
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "odevice.h"
@@ -40,18 +41,18 @@ class Streamer : public streambuf {
   Streamer();
   virtual ~Streamer();
 
-  int setOutputDevice(OutputDevice *output_device);
+  int setOutputDevice(OutputDevice* output_device);
 
  protected:
   // Virtual methods from streambuf
-  int xsputn(const char *s, int n);  // buffer some characters
+  int xsputn(const char* s, int n);  // buffer some characters
   int overflow(int = EOF);           // flush buffer and make more room
   int underflow(void);               // Does nothing
   int sync();
 
   int doallocate();  // allocate a buffer
 
-  OutputDevice *Output_Device;
+  OutputDevice* Output_Device;
 };
 
 #endif

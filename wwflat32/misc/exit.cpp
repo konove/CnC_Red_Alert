@@ -35,13 +35,13 @@
  *   Exit -- Exit routine with message.                                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "wwstd.h"
-#include "misc.h"
-
-#include <ctime>
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdarg>
+#include <ctime>
+
+#include "misc.h"
+#include "wwstd.h"
 
 /***************************************************************************
  * EXIT -- Exit routine with message.                                      *
@@ -57,7 +57,7 @@
  * HISTORY:                                                                *
  *   08/03/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID cdecl Exit(INT errorval, const BYTE *message, ...) {
+VOID cdecl Exit(INT errorval, const BYTE* message, ...) {
   va_list argptr;
   BYTE errstring[256];
 
@@ -65,7 +65,7 @@ VOID cdecl Exit(INT errorval, const BYTE *message, ...) {
 
   if (message && *message) {
     va_start(argptr, message);
-    vsprintf((char *)errstring, (const char *)message, argptr);
+    vsprintf((char*)errstring, (const char*)message, argptr);
     va_end(argptr);
     printf(errstring);
   }

@@ -782,12 +782,12 @@
 #define TXT_BONUS_MISSION_4 753                      // Bonus Mission 4
 #define TXT_BONUS_MISSION_5 754                      // Bonus Mission 5
 
-extern unsigned char *InterpolatedPalettes[100];
+extern unsigned char* InterpolatedPalettes[100];
 extern bool PalettesRead;
 extern unsigned PaletteCounter;
 
 extern void Free_Interpolated_Palettes(void);
-extern int Load_Interpolated_Palettes(char const *filename, bool add = false);
+extern int Load_Interpolated_Palettes(char const* filename, bool add = false);
 
 void Center_About_Objects(void);
 bool Force_CD_Available(int cd);
@@ -796,42 +796,42 @@ void Handle_Team(int team, int action = 0);
 
 class TechnoTypeClass;
 
-TechnoTypeClass const *Fetch_Techno_Type(RTTIType type, int id);
-std::string Fading_Table_Name(char const *base, TheaterType theater);
+TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id);
+std::string Fading_Table_Name(char const* base, TheaterType theater);
 void Unselect_All(void);
-void Play_Movie(char const *name, ThemeType theme = THEME_NONE,
+void Play_Movie(char const* name, ThemeType theme = THEME_NONE,
                 bool clrscrn = true);
 bool Main_Loop();
-TheaterType Theater_From_Name(char const *name);
+TheaterType Theater_From_Name(char const* name);
 // DirType Rotation_Calc(DirType current, DirType desired, int rate);
-void Main_Game(int argc, char *argv[]);
-long VQ_Call_Back(unsigned char *buffer = nullptr, long frame = 0);
-long VQ_Event_Handler(unsigned long event, void *buffer, long nbytes);
+void Main_Game(int argc, char* argv[]);
+long VQ_Call_Back(unsigned char* buffer = nullptr, long frame = 0);
+long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
 void Call_Back(void);
-char const *Language_Name(char const *basename);
-SourceType Source_From_Name(char const *name);
-char const *Name_From_Source(SourceType source);
+char const* Language_Name(char const* basename);
+SourceType Source_From_Name(char const* name);
+char const* Name_From_Source(SourceType source);
 FacingType KN_To_Facing(int input);
-void const *Get_Radar_Icon(void const *shapefile, int shapenum, int frames,
+void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
                            int zoomfactor);
-void CC_Draw_Shape(void const *shapefile, int shapenum, int x, int y,
+void CC_Draw_Shape(void const* shapefile, int shapenum, int x, int y,
                    WindowNumberType window, ShapeFlags_Type flags,
-                   void const *fadingdata = nullptr,
-                   void const *ghostdata = nullptr);
+                   void const* fadingdata = nullptr,
+                   void const* ghostdata = nullptr);
 void Go_Editor(bool flag);
-int64_t MixFileHandler(VQAHandle *vqa, int64_t action, void *buffer,
+int64_t MixFileHandler(VQAHandle* vqa, int64_t action, void* buffer,
                        int64_t nbytes);
 
-char *CC_Get_Shape_Filename(void const *shapeptr);
-void CC_Add_Shape_To_Global(void const *shapeptr, char *filename, char code);
+char* CC_Get_Shape_Filename(void const* shapeptr);
+void CC_Add_Shape_To_Global(void const* shapeptr, char* filename, char code);
 
-void Bubba_Print(char *format, ...);
+void Bubba_Print(char* format, ...);
 
-void Heap_Dump_Check(char *string);
+void Heap_Dump_Check(char* string);
 void Dump_Heap_Pointers(void);
 
-void Validate_Error(char *name);
-void const *Hires_Retrieve(const char *name);
+void Validate_Error(char* name);
+void const* Hires_Retrieve(const char* name);
 int Get_Resolution_Factor(void);
 
 #endif  // CNC_RED_ALERT_TD_CONQUER_H_

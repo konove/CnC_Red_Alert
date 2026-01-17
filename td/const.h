@@ -15,7 +15,7 @@ extern unsigned char const RemapRed[256];
 extern unsigned char const RemapBlueGreen[256];
 extern WeaponTypeClass const Weapons[WEAPON_COUNT];
 extern WarheadTypeClass const Warheads[WARHEAD_COUNT];
-extern char const *SourceName[SOURCE_COUNT];
+extern char const* SourceName[SOURCE_COUNT];
 extern GroundType Ground[LAND_COUNT];
 extern TheaterDataType const Theaters[THEATER_COUNT];
 extern unsigned char const Facing32[256];

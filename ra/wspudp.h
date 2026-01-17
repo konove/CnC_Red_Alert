@@ -58,8 +58,8 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
                                LONG lParam);
 #endif
   virtual bool Open_Socket(SOCKET socketnum);
-  virtual void Set_Broadcast_Address(void *address);
-  virtual void Broadcast(void *buffer, int buffer_len);
+  virtual void Set_Broadcast_Address(void* address);
+  virtual void Broadcast(void* buffer, int buffer_len);
 
   virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_UDP); };
 
@@ -69,12 +69,12 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   /*
   ** Address to use when broadcasting a packet.
   */
-  DynamicVectorClass<unsigned char *> BroadcastAddresses;
+  DynamicVectorClass<unsigned char*> BroadcastAddresses;
 
   /*
   ** List of local addresses.
   */
-  DynamicVectorClass<unsigned char *> LocalAddresses;
+  DynamicVectorClass<unsigned char*> LocalAddresses;
 };
 
 #endif

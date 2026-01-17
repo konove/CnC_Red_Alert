@@ -121,7 +121,7 @@ LCWStraw::~LCWStraw(void) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LCWStraw::Get(void *destbuf, int slen) {
+int LCWStraw::Get(void* destbuf, int slen) {
   assert(Buffer != nullptr);
 
   int total = 0;
@@ -148,7 +148,7 @@ int LCWStraw::Get(void *destbuf, int slen) {
             &Buffer2[(BlockHeader.CompCount + sizeof(BlockHeader)) - Counter],
             len);
       }
-      destbuf = ((char *)destbuf) + len;
+      destbuf = ((char*)destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -159,7 +159,7 @@ int LCWStraw::Get(void *destbuf, int slen) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) break;
 
-      void *ptr = &Buffer[(BlockSize + SafetyMargin) - BlockHeader.CompCount];
+      void* ptr = &Buffer[(BlockSize + SafetyMargin) - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (incount != BlockHeader.CompCount) break;
 

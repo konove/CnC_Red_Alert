@@ -192,7 +192,7 @@ static HouseTypeClass const HouseMulti6(
     'M'                    // VOICE:		Voice prefix character.
 );
 
-HouseTypeClass const *const HouseTypeClass::Pointers[HOUSE_COUNT] = {
+HouseTypeClass const* const HouseTypeClass::Pointers[HOUSE_COUNT] = {
     &HouseGood,   &HouseBad,    &HouseCivilian, &HouseJP,     &HouseMulti1,
     &HouseMulti2, &HouseMulti3, &HouseMulti4,   &HouseMulti5, &HouseMulti6,
 };
@@ -219,10 +219,10 @@ HouseTypeClass const *const HouseTypeClass::Pointers[HOUSE_COUNT] = {
  *                                                                                             *
  * HISTORY: * 06/21/1994 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass::HouseTypeClass(HousesType house, char const *ini, int fullname,
-                               char const *ext, int lemon, int color,
+HouseTypeClass::HouseTypeClass(HousesType house, char const* ini, int fullname,
+                               char const* ext, int lemon, int color,
                                int bright_color, PlayerColorType remapcolor,
-                               unsigned char const *remap, char prefix) {
+                               unsigned char const* remap, char prefix) {
   RemapTable = remap;
   RemapColor = remapcolor;
   House = house;
@@ -252,7 +252,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, char const *ini, int fullname,
  * HISTORY: * 10/07/1992 JLB : Created. * 05/21/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-HousesType HouseTypeClass::From_Name(char const *name) {
+HousesType HouseTypeClass::From_Name(char const* name) {
   if (name) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (stricmp(Pointers[house]->IniName, name) == 0) {
@@ -280,8 +280,8 @@ void HouseTypeClass::One_Time(void) {
   ** color as the player!
   */
   if (Special.IsJurassic && AreThingiesEnabled) {
-    ((unsigned char &)HouseJP.Color) = (unsigned char)COLOR_BAD;
-    ((unsigned char &)HouseJP.BrightColor) = (unsigned char)COLOR_BRIGHT_BAD;
+    ((unsigned char&)HouseJP.Color) = (unsigned char)COLOR_BAD;
+    ((unsigned char&)HouseJP.BrightColor) = (unsigned char)COLOR_BRIGHT_BAD;
   }
 }
 
@@ -299,6 +299,6 @@ void HouseTypeClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-HouseTypeClass const &HouseTypeClass::As_Reference(HousesType house) {
+HouseTypeClass const& HouseTypeClass::As_Reference(HousesType house) {
   return (*Pointers[house]);
 }

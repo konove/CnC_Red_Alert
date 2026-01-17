@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-void UnVQ_4x2(unsigned char *codebook, unsigned char *pointers,
-              unsigned char *buffer, unsigned long blocksperrow,
+void UnVQ_4x2(unsigned char* codebook, unsigned char* pointers,
+              unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth) {
   // Compute the offset to the next row of blocks
   auto rowoffset = bufwidth * 2;
@@ -28,17 +28,16 @@ void UnVQ_4x2(unsigned char *codebook, unsigned char *pointers,
       {
         // Draw 1-color block
         uint32_t col32 = v | v << 8 | v << 16 | v << 24;  // Duplicate colour
-        *(uint32_t *)dst_ptr = col32;               // Write 1st row to dest
-        *(uint32_t *)(dst_ptr + bufwidth) = col32;  // Write 2st row to dest
+        *(uint32_t*)dst_ptr = col32;               // Write 1st row to dest
+        *(uint32_t*)(dst_ptr + bufwidth) = col32;  // Write 2st row to dest
       } else {
         // Draw multi-color block
         int index = (cb << 8 | v) * 8;
-        auto row1 =
-            *(uint32_t *)(codebook + index);  // Read 1st row of codeword
+        auto row1 = *(uint32_t*)(codebook + index);  // Read 1st row of codeword
         auto row2 =
-            *(uint32_t *)(codebook + index + 4);   // Read 2nd row of codeword
-        *(uint32_t *)dst_ptr = row1;               // Write 1st row to dest
-        *(uint32_t *)(dst_ptr + bufwidth) = row2;  // Write 2st row to dest
+            *(uint32_t*)(codebook + index + 4);   // Read 2nd row of codeword
+        *(uint32_t*)dst_ptr = row1;               // Write 1st row to dest
+        *(uint32_t*)(dst_ptr + bufwidth) = row2;  // Write 2st row to dest
       }
 
       dst_ptr += 4;
@@ -49,8 +48,8 @@ void UnVQ_4x2(unsigned char *codebook, unsigned char *pointers,
   } while (src_ptr < data_end);
 }
 
-void UnVQ_4x4(unsigned char *codebook, unsigned char *pointers,
-              unsigned char *buffer, unsigned long blocksperrow,
+void UnVQ_4x4(unsigned char* codebook, unsigned char* pointers,
+              unsigned char* buffer, unsigned long blocksperrow,
               unsigned long numrows, unsigned long bufwidth) {
   // Compute the offset to the next row of blocks
   auto rowoffset = bufwidth * 4;
@@ -75,26 +74,25 @@ void UnVQ_4x4(unsigned char *codebook, unsigned char *pointers,
       {
         // Draw 1-color block
         uint32_t col32 = v | v << 8 | v << 16 | v << 24;  // Duplicate colour
-        *(uint32_t *)dst_ptr = col32;                   // Write 1st row to dest
-        *(uint32_t *)(dst_ptr + bufwidth) = col32;      // Write 2nd row to dest
-        *(uint32_t *)(dst_ptr + bufwidth * 2) = col32;  // Write 3rd row to dest
-        *(uint32_t *)(dst_ptr + bufwidth * 3) = col32;  // Write 4th row to dest
+        *(uint32_t*)dst_ptr = col32;                   // Write 1st row to dest
+        *(uint32_t*)(dst_ptr + bufwidth) = col32;      // Write 2nd row to dest
+        *(uint32_t*)(dst_ptr + bufwidth * 2) = col32;  // Write 3rd row to dest
+        *(uint32_t*)(dst_ptr + bufwidth * 3) = col32;  // Write 4th row to dest
       } else {
         // Draw multi-color block
         int index = (cb << 8 | v) * 16;
-        auto row1 =
-            *(uint32_t *)(codebook + index);  // Read 1st row of codeword
+        auto row1 = *(uint32_t*)(codebook + index);  // Read 1st row of codeword
         auto row2 =
-            *(uint32_t *)(codebook + index + 4);  // Read 2nd row of codeword
+            *(uint32_t*)(codebook + index + 4);  // Read 2nd row of codeword
         auto row3 =
-            *(uint32_t *)(codebook + index + 8);  // Read 3rd row of codeword
+            *(uint32_t*)(codebook + index + 8);  // Read 3rd row of codeword
         auto row4 =
-            *(uint32_t *)(codebook + index + 12);  // Read 4th row of codeword
+            *(uint32_t*)(codebook + index + 12);  // Read 4th row of codeword
 
-        *(uint32_t *)dst_ptr = row1;                   // Write 1st row to dest
-        *(uint32_t *)(dst_ptr + bufwidth) = row2;      // Write 2nd row to dest
-        *(uint32_t *)(dst_ptr + bufwidth * 2) = row3;  // Write 3rt row to dest
-        *(uint32_t *)(dst_ptr + bufwidth * 3) = row4;  // Write 4th row to dest
+        *(uint32_t*)dst_ptr = row1;                   // Write 1st row to dest
+        *(uint32_t*)(dst_ptr + bufwidth) = row2;      // Write 2nd row to dest
+        *(uint32_t*)(dst_ptr + bufwidth * 2) = row3;  // Write 3rt row to dest
+        *(uint32_t*)(dst_ptr + bufwidth * 3) = row4;  // Write 4th row to dest
       }
 
       dst_ptr += 4;

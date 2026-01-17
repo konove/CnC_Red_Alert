@@ -56,7 +56,7 @@
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Handle_Teams(char const *caption) {
+void MapEditClass::Handle_Teams(char const* caption) {
   int rc;
 
   /*
@@ -172,7 +172,7 @@ void MapEditClass::Handle_Teams(char const *caption) {
  *   12/08/1994 BR : Created.                                              *
  *   05/07/1996 JLB : Streamlined and sorted team list.                    *
  *=========================================================================*/
-int MapEditClass::Select_Team(char const *) {
+int MapEditClass::Select_Team(char const*) {
   /*
   **	Dialog & button dimensions
   */
@@ -236,12 +236,12 @@ int MapEditClass::Select_Team(char const *) {
   bool new_team = false;                  // true = user wants to new
   bool del_team = false;                  // true = user wants to new
   static int tabs[] = {35, 60, 80, 100};  // list box tab stops
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Buttons
   */
-  GadgetClass *commands = NULL;  // the button list
+  GadgetClass* commands = NULL;  // the button list
 
   TListClass<CCPtr<TeamTypeClass> > teamlist(
       TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
@@ -476,13 +476,13 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   KeyNumType input;     // user input
   bool cancel = false;  // true = user cancels
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Team display variables
   */
-  const TechnoTypeClass **teamclass;  // array of team classes
-  int *teamcount;                     // array of class counts
+  const TechnoTypeClass** teamclass;  // array of team classes
+  int* teamcount;                     // array of class counts
   int numcols;                        // # units displayed horizontally
   int numrows;                        // # units displayed vertically
 
@@ -511,7 +511,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Buttons.
   */
-  ControlClass *commands;
+  ControlClass* commands;
 
   TextButtonClass okbtn(BUTTON_OK, TXT_OK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                         D_OK_X, D_OK_Y, D_OK_W, D_OK_H);
@@ -523,13 +523,13 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
 #ifdef WIN32
-  teamclass = (const TechnoTypeClass **)SysMemPage.Get_Buffer();
-  teamcount = (int *)SysMemPage.Get_Buffer() +
-              MAX_TEAM_CLASSES * sizeof(ObjectTypeClass *);
+  teamclass = (const TechnoTypeClass**)SysMemPage.Get_Buffer();
+  teamcount = (int*)SysMemPage.Get_Buffer() +
+              MAX_TEAM_CLASSES * sizeof(ObjectTypeClass*);
 #else
-  teamclass = (const TechnoTypeClass **)HidPage.Get_Buffer();
-  teamcount = (int *)HidPage.Get_Buffer() +
-              MAX_TEAM_CLASSES * sizeof(ObjectTypeClass *);
+  teamclass = (const TechnoTypeClass**)HidPage.Get_Buffer();
+  teamcount =
+      (int*)HidPage.Get_Buffer() + MAX_TEAM_CLASSES * sizeof(ObjectTypeClass*);
 #endif
 
   /*
@@ -897,7 +897,7 @@ int MapEditClass::Team_Members(HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/02/1995 JLB : Created. *
  *=============================================================================================*/
-void MapEditClass::Draw_Member(TechnoTypeClass const *ptr, int index, int quant,
+void MapEditClass::Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
                                HousesType house) {
   int numcols = (D_DIALOG_W - 64) / D_PICTURE_W;
   int col = index % numcols;
@@ -905,7 +905,7 @@ void MapEditClass::Draw_Member(TechnoTypeClass const *ptr, int index, int quant,
   int dlg_y = 0;
   int x = D_DIALOG_X + 32 + col * D_PICTURE_W;
   int y = dlg_y + 8 + 13 + row * D_ROW_H;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Change the window to this box.

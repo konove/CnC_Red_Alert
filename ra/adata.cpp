@@ -1978,7 +1978,7 @@ static AnimTypeClass const AntDeath(
  *                                                                                             *
  * HISTORY: * 08/23/1994 JLB : Created. *
  *=============================================================================================*/
-AnimTypeClass::AnimTypeClass(AnimType anim, char const *name, int size,
+AnimTypeClass::AnimTypeClass(AnimType anim, char const* name, int size,
                              int biggest, bool istheater, bool isnormal,
                              bool iswhitetrans, bool isscorcher, bool iscrater,
                              bool issticky, bool ground, bool istrans,
@@ -2024,7 +2024,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, char const *name, int size,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *AnimTypeClass::operator new(size_t) throw() {
+void* AnimTypeClass::operator new(size_t) throw() {
   return (AnimTypes.Alloc());
 }
 
@@ -2044,8 +2044,8 @@ void *AnimTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void AnimTypeClass::operator delete(void *pointer) {
-  AnimTypes.Free((AnimTypeClass *)pointer);
+void AnimTypeClass::operator delete(void* pointer) {
+  AnimTypes.Free((AnimTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -2167,7 +2167,7 @@ void AnimTypeClass::Init_Heap(void) {
  *=============================================================================================*/
 void AnimTypeClass::One_Time(void) {
   for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; ++index) {
-    const AnimTypeClass &anim = As_Reference(index);
+    const AnimTypeClass& anim = As_Reference(index);
 
     if (!anim.IsTheater) {
       auto fullname = std::filesystem::path(As_Reference(index).IniName)
@@ -2182,7 +2182,7 @@ void AnimTypeClass::One_Time(void) {
         As_Reference(index).SetBorrowedImage(MFCD::RetrieveData(fullname));
       }
 #else
-      const_cast<AnimTypeClass &>(As_Reference(index))
+      const_cast<AnimTypeClass&>(As_Reference(index))
           .SetBorrowedImage(MFCD::RetrieveData(fullname));
 #endif
     }
@@ -2207,7 +2207,7 @@ void AnimTypeClass::One_Time(void) {
 void AnimTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; index++) {
-      AnimTypeClass &anim = As_Reference(index);
+      AnimTypeClass& anim = As_Reference(index);
 
       if (anim.IsTheater) {
         auto fullname = std::filesystem::path(anim.IniName)
@@ -2235,7 +2235,7 @@ void AnimTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-char const *Anim_Name(AnimType anim) {
+char const* Anim_Name(AnimType anim) {
   if (anim == ANIM_NONE) return ("");
 
   return (AnimTypeClass::As_Reference(anim).IniName);
@@ -2257,6 +2257,6 @@ char const *Anim_Name(AnimType anim) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-AnimTypeClass &AnimTypeClass::As_Reference(AnimType type) {
+AnimTypeClass& AnimTypeClass::As_Reference(AnimType type) {
   return (*AnimTypes.Ptr(type));
 }

@@ -65,7 +65,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BufferPipe::Put(void const *source, int slen) {
+int BufferPipe::Put(void const* source, int slen) {
   int total = 0;
 
   if (Is_Valid() && source != nullptr && slen > 0) {
@@ -76,7 +76,7 @@ int BufferPipe::Put(void const *source, int slen) {
     }
 
     if (len > 0) {
-      memmove(((char *)BufferPtr.Get_Buffer()) + Index, source, len);
+      memmove(((char*)BufferPtr.Get_Buffer()) + Index, source, len);
     }
 
     Index += len;
@@ -144,7 +144,7 @@ int FilePipe::End(void) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int FilePipe::Put(void const *source, int slen) {
+int FilePipe::Put(void const* source, int slen) {
   if (Valid_File() && source != nullptr && slen > 0) {
     if (!File->Is_Open()) {
       HasOpened = true;

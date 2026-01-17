@@ -56,7 +56,7 @@ typedef enum {
 ** Prototypes for VMPAGEIN.ASM
 */
 extern "C" {
-void Force_VM_Page_In(void *buffer, int length);
+void Force_VM_Page_In(void* buffer, int length);
 }
 
 /*=========================================================================*/
@@ -64,17 +64,17 @@ void Force_VM_Page_In(void *buffer, int length);
  */
 /*=========================================================================*/
 
-void *operator new(size_t size, MemoryFlagType flag);
-void *operator new[](size_t size, MemoryFlagType flag);
-void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
-void Free(void const *pointer);
-void *Resize_Alloc(void *original_ptr, unsigned long new_size_in_bytes);
+void* operator new(size_t size, MemoryFlagType flag);
+void* operator new[](size_t size, MemoryFlagType flag);
+void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags);
+void Free(void const* pointer);
+void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes);
 long Ram_Free(MemoryFlagType flag);
 
-inline void *operator new(size_t size, MemoryFlagType flag) {
+inline void* operator new(size_t size, MemoryFlagType flag) {
   return (Alloc(size, flag));
 }
-inline void *operator new[](size_t size, MemoryFlagType flag) {
+inline void* operator new[](size_t size, MemoryFlagType flag) {
   return (Alloc(size, flag));
 }
 
@@ -84,14 +84,14 @@ inline void *operator new[](size_t size, MemoryFlagType flag) {
 /*=========================================================================*/
 
 extern "C" {
-void Mem_Copy(void const *source, void *dest, unsigned long bytes_to_copy);
+void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy);
 }
 
-inline void *Add_Long_To_Pointer(void const *ptr, long size) {
-  return ((void *)((char const *)ptr + size));
+inline void* Add_Long_To_Pointer(void const* ptr, long size) {
+  return ((void*)((char const*)ptr + size));
 }
 
 extern void (*Memory_Error)(void);
-extern void (*Memory_Error_Exit)(char *string);
+extern void (*Memory_Error_Exit)(char* string);
 
 #endif

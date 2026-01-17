@@ -58,18 +58,18 @@
 */
 class TerrainClass : public ObjectClass, public StageClass {
  public:
-  TerrainTypeClass const *const Class;
+  TerrainTypeClass const* const Class;
   operator TerrainType(void) const { return Class->Type; };
 
   /*
   **	Constructor for terrain object class.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   TerrainClass(void);
   TerrainClass(TerrainType id, CELL cell);
-  TerrainClass(NoInitClass const &x)
+  TerrainClass(NoInitClass const& x)
       : ObjectClass(x), Class(Class), StageClass(x) {};
   virtual ~TerrainClass(void);
   virtual RTTIType What_Am_I(void) const { return RTTI_TERRAIN; };
@@ -84,7 +84,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -111,7 +111,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual bool Mark(MarkType mark = MARK_CHANGE);
-  unsigned char *Radar_Icon(CELL cell);
+  unsigned char* Radar_Icon(CELL cell);
 
   /*
   **	User I/O.
@@ -123,8 +123,8 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   virtual void Fire_Out(void);
   virtual bool Catch_Fire(void);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source);
   virtual TARGET As_Target(void) const;
 
   /*
@@ -136,17 +136,17 @@ class TerrainClass : public ObjectClass, public StageClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static char const *INI_Name(void) { return "TERRAIN"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static char const* INI_Name(void) { return "TERRAIN"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -186,7 +186,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

@@ -35,8 +35,9 @@
  *   Set_Font -- Changes the default text printing font.                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "font.h"
 #include <wwstd.h>
+
+#include "font.h"
 
 /***************************************************************************
  * SET_FONT -- Changes the default text printing font.                     *
@@ -56,23 +57,23 @@
  *   01/31/1992 DRD : Modified to use new font format.                     *
  *   06/29/1994 SKB : modified for 32 bit library                          *
  *=========================================================================*/
-void *__cdecl Set_Font(void const *fontptr) {
-  void *oldfont;
-  char const *blockptr;
+void* __cdecl Set_Font(void const* fontptr) {
+  void* oldfont;
+  char const* blockptr;
 
-  oldfont = (void *)FontPtr;
+  oldfont = (void*)FontPtr;
 
   if (fontptr) {
-    FontPtr = (void *)fontptr;
+    FontPtr = (void*)fontptr;
 
     /*
     **	Inform the system about the new font.
     */
 
     FontWidthBlockPtr =
-        (char *)fontptr + *(unsigned short *)((char *)fontptr + FONTWIDTHBLOCK);
+        (char*)fontptr + *(unsigned short*)((char*)fontptr + FONTWIDTHBLOCK);
     blockptr =
-        (char *)fontptr + *(unsigned short *)((char *)fontptr + FONTINFOBLOCK);
+        (char*)fontptr + *(unsigned short*)((char*)fontptr + FONTINFOBLOCK);
     FontHeight = *(blockptr + FONTINFOMAXHEIGHT);
     FontWidth = *(blockptr + FONTINFOMAXWIDTH);
     // Draw_Char_Setup();

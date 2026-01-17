@@ -139,7 +139,7 @@ void SoundControlsClass::Process(void) {
   int fxslider_w = FXSLIDER_W * RESFACTOR;
   int fxslider_height = FXSLIDER_HEIGHT * RESFACTOR;
 
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   //	ThemeType theme;
 
   /*
@@ -249,7 +249,7 @@ void SoundControlsClass::Process(void) {
   /*
   **	Create Buttons.
   */
-  GadgetClass *optionsbtn = &returnto;
+  GadgetClass* optionsbtn = &returnto;
   listbox.Add_Tail(*optionsbtn);
   stopbtn.Add_Tail(*optionsbtn);
   playbtn.Add_Tail(*optionsbtn);
@@ -268,13 +268,13 @@ void SoundControlsClass::Process(void) {
     if (Theme.Is_Allowed(index)) {
       char buffer[100];
       int length = Theme.Track_Length(index);
-      char const *fullname = Theme.Full_Name(index);
+      char const* fullname = Theme.Full_Name(index);
 
-      void *ptr = new char[sizeof(buffer)];
+      void* ptr = new char[sizeof(buffer)];
       if (ptr) {
-        sprintf((char *)ptr, "%cTrack %d\t%d:%02d\t%s", index,
+        sprintf((char*)ptr, "%cTrack %d\t%d:%02d\t%s", index,
                 listbox.Count() + 1, length / 60, length % 60, fullname);
-        listbox.Add_Item((char const *)ptr);
+        listbox.Add_Item((char const*)ptr);
       }
 
       if (Theme.What_Is_Playing() == index) {
@@ -404,7 +404,7 @@ void SoundControlsClass::Process(void) {
       case KN_SPACE:
       case BUTTON_PLAY | KN_BUTTON:
         Theme.Queue_Song((ThemeType) *
-                         ((unsigned char *)listbox.Current_Item()));
+                         ((unsigned char*)listbox.Current_Item()));
         break;
 
       /*
@@ -437,7 +437,7 @@ void SoundControlsClass::Process(void) {
   **	Free the items from the list box.
   */
   while (listbox.Count()) {
-    char const *ptr = listbox.Get_Item(0);
+    char const* ptr = listbox.Get_Item(0);
     listbox.Remove_Item(ptr);
     delete[] ptr;
   }
@@ -466,7 +466,7 @@ void SoundControlsClass::Process(void) {
  *=============================================================================================*/
 void MusicListClass::Draw_Entry(int index, int x, int y, int width,
                                 int selected) {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   if (TextFlags & TPF_6PT_GRAD) {
     TextPrintType flags = TextFlags;
@@ -481,11 +481,11 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print((char *)List[index] + 1, x, y, scheme, TBLACK,
-                            flags, width, Tabs);
+    Conquer_Clip_Text_Print((char*)List[index] + 1, x, y, scheme, TBLACK, flags,
+                            width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print((char *)List[index] + 1, x, y,
+    Conquer_Clip_Text_Print((char*)List[index] + 1, x, y,
                             (selected ? &ColorRemaps[PCOLOR_DIALOG_BLUE]
                                       : &ColorRemaps[PCOLOR_GREY]),
                             TBLACK, TextFlags, width, Tabs);

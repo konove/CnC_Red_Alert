@@ -94,7 +94,7 @@ class OptionsClass {
   unsigned IsFreeScroll : 1;     // Allow free direction scrolling?
 
  protected:
-  void Adjust_Palette(void *oldpal, void *newpal, unsigned char brightness,
+  void Adjust_Palette(void* oldpal, void* newpal, unsigned char brightness,
                       unsigned char color, unsigned char tint,
                       unsigned char contrast) const;
 

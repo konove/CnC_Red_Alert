@@ -174,8 +174,8 @@ typedef struct _VESAModeInfo {
 
 long InitVESA(void);
 void UninitVESA(void);
-VESAModeInfo *SetVESAMode(long mode);
-VESAModeInfo *ReadVESAModeInfo(long mode);
+VESAModeInfo* SetVESAMode(long mode);
+VESAModeInfo* ReadVESAModeInfo(long mode);
 void SetVESAWindow(long grain_num);
 
 #endif /* VQMVESAVID_H */

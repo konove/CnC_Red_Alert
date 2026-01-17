@@ -39,11 +39,13 @@
  *   Find_Argv -- Checks to see if string is in arguement *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "wwstd.h"
 #include <dos.h>
+#include <process.h>
+
 #include <cstdio>
 #include <cstring>
-#include <process.h>
+
+#include "wwstd.h"
 
 /***************************************************************************
  * Find_Argv -- Checks to see if string is in arguement *
@@ -60,8 +62,8 @@
 
 static char command[256];
 
-BYTE *cdecl Find_Argv(BYTE const *str) {
-  char *ptr;
+BYTE* cdecl Find_Argv(BYTE const* str) {
+  char* ptr;
   static startup_flag = 0;
 
   if (!startup_flag) {

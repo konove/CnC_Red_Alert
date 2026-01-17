@@ -198,16 +198,16 @@
 #define TXT_HACKHACK Text_String(TXT_CONNECTING)
 #endif
 
-bool Is_Mission_126x126(char *file_name);
-bool Is_Mission_Aftermath(char *file_name);
-bool Is_Mission_Counterstrike(char *file_name);
-bool bSpecialAftermathScenario(const char *szScenarioDescription);
+bool Is_Mission_126x126(char* file_name);
+bool Is_Mission_Aftermath(char* file_name);
+bool Is_Mission_Counterstrike(char* file_name);
+bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
-bool Force_Scenario_Available(const char *szName);
+bool Force_Scenario_Available(const char* szName);
 #ifdef WOLAPI_INTEGRATION
 #include "WolStrng.h"
 #include "WolapiOb.h"
-extern WolapiObject *pWolapi;
+extern WolapiObject* pWolapi;
 #endif
 
 //---------------------------------------------------------------------------
@@ -250,7 +250,7 @@ typedef enum {
 } RejectType;
 
 #ifdef ENGLISH
-char const *EngMisStr[] = {"Coastal Influence (Med)",
+char const* EngMisStr[] = {"Coastal Influence (Med)",
                            "Middle Mayhem (Sm)",
                            "Equal Opportunity (Sm)",
                            "Marooned II (Med)",
@@ -487,7 +487,7 @@ char const *EngMisStr[] = {"Coastal Influence (Med)",
 #endif
 
 #ifdef GERMAN
-char const *EngMisStr[] = {
+char const* EngMisStr[] = {
 
     "A Path Beyond (Lg)", "Weg ins Jenseits (Gr)", "Central Conflict (Lg)",
     "Der zentrale Konflikt (Gr)", "Coastal Influence (Med)",
@@ -699,7 +699,7 @@ char const *EngMisStr[] = {
     nullptr};
 #endif
 #ifdef FRENCH
-char const *EngMisStr[] = {
+char const* EngMisStr[] = {
 
     "A Path Beyond (Lg)", "Le Passage (Max)", "Central Conflict (Lg)",
     "Conflit Central (Max)", "Coastal Influence (Med)",
@@ -906,24 +906,24 @@ char const *EngMisStr[] = {
 ******************************** Prototypes *********************************
 */
 static int Net_Join_Dialog(void);
-static int Request_To_Join(char *playername, int join_index, HousesType house,
+static int Request_To_Join(char* playername, int join_index, HousesType house,
                            PlayerColorType color);
-static void Unjoin_Game(char *namebuf, JoinStateType joinstate,
-                        ListClass *gamelist, ColorListClass *playerlist,
+static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
+                        ListClass* gamelist, ColorListClass* playerlist,
                         int game_index, int goto_lobby, int msg_x, int msg_y,
                         int msg_h, int send_x, int send_y, int msg_len);
 static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
-                              int playernow, int chatnow, char *myname,
+                              int playernow, int chatnow, char* myname,
                               int init = 0);
-static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
-                                        ListClass *gamelist,
-                                        ColorListClass *playerlist,
-                                        int join_index, char *my_name,
-                                        RejectType *why);
+static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
+                                        ListClass* gamelist,
+                                        ColorListClass* playerlist,
+                                        int join_index, char* my_name,
+                                        RejectType* why);
 static int Net_New_Dialog(void);
-static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
-                                           int *color_used);
-void Start_WWChat(ColorListClass *playerlist);
+static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
+                                           int* color_used);
+void Start_WWChat(ColorListClass* playerlist);
 int Update_WWChat(void);
 
 #define PCOLOR_BROWN PCOLOR_GREY
@@ -1068,7 +1068,7 @@ void Shutdown_Network(void) {
  *                                                                         						  *
  * HISTORY: * 02/15/1995 BR : Created. *
  *=============================================================================================*/
-bool Process_Global_Packet(GlobalPacketType *packet, IPXAddressClass *address) {
+bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   GlobalPacketType mypacket;
 
   //------------------------------------------------------------------------
@@ -1147,7 +1147,7 @@ bool Process_Global_Packet(GlobalPacketType *packet, IPXAddressClass *address) {
  *=============================================================================================*/
 void Destroy_Connection(int id, int error) {
   int i;
-  HouseClass *housep;
+  HouseClass* housep;
   char txt[80];
 
   if (Debug_Print_Events) {
@@ -1549,18 +1549,18 @@ static int Net_Join_Dialog(void) {
   JoinEventType event;                     // event from incoming packet
   int i;                                   // loop counter
   char txt[128];
-  char const *p;
+  char const* p;
   int parms_received = 0;  // 1 = game options received
   int found;
-  NodeNameType *who;                              // node to add to Players
+  NodeNameType* who;                              // node to add to Players
   RejectType why;                                 // reason for rejection
   TTimerClass<SystemTimerClass> lastclick_timer;  // time b/w send periods
   int lastclick_idx = 0;  // index of item last clicked on
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
 
-  char *item;
+  char* item;
   unsigned long starttime;
   int load_game = 0;  // 1 = load saved game
   int goto_lobby;
@@ -1569,7 +1569,7 @@ static int Net_Join_Dialog(void) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
@@ -2110,7 +2110,7 @@ static int Net_Join_Dialog(void) {
                Get_Mouse_Y() >= d_options_y &&
                Get_Mouse_Y() <= d_options_y + d_options_h)) {
             Session.Messages.Add_Message(
-                nullptr, 0, (char *)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                nullptr, 0, (char*)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                 PCOLOR_BROWN, TPF_TEXT, 1200);
             Sound_Effect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
@@ -2351,7 +2351,7 @@ static int Net_Join_Dialog(void) {
         //...............................................................
         if (strlen(namebuf) == 0) {
           Session.Messages.Add_Message(nullptr, 0,
-                                       (char *)Text_String(TXT_NAME_ERROR),
+                                       (char*)Text_String(TXT_NAME_ERROR),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -2366,7 +2366,7 @@ static int Net_Join_Dialog(void) {
           if (!stricmp(Session.Games[i]->Name, namebuf)) {
             found = 1;
             Session.Messages.Add_Message(
-                nullptr, 0, (char *)Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
+                nullptr, 0, (char*)Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
                 PCOLOR_BROWN, TPF_TEXT, 1200);
             Sound_Effect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
@@ -2572,7 +2572,7 @@ static int Net_Join_Dialog(void) {
               ** We should have the scenario but the wrong disk is in.
               ** Tell the host that I am ready to go anyway.
               */
-              memset((void *)&(Session.GPacket), 0, sizeof(Session.GPacket));
+              memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
@@ -2612,7 +2612,7 @@ static int Net_Join_Dialog(void) {
           ** We have the scenario. Tell the host that I am ready to go.
           */
           if (!ready_packet_was_sent) {
-            memset((void *)&(Session.GPacket), 0, sizeof(Session.GPacket));
+            memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
             Session.GPacket.Command = NET_READY_TO_GO;
             Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType),
                                     1, &Session.HostAddress);
@@ -2705,23 +2705,23 @@ static int Net_Join_Dialog(void) {
                                   TPF_TEXT, nullptr, '_', d_message2_w);
 
         Session.Messages.Add_Message(nullptr, 0,
-                                     (char *)Text_String(TXT_REQUEST_DENIED),
+                                     (char*)Text_String(TXT_REQUEST_DENIED),
                                      PCOLOR_BROWN, TPF_TEXT, 1200);
         Sound_Effect(VOC_SYS_ERROR);
 
         item = nullptr;
         if (why == REJECT_DUPLICATE_NAME) {
-          item = (char *)Text_String(TXT_NAME_MUSTBE_UNIQUE);
+          item = (char*)Text_String(TXT_NAME_MUSTBE_UNIQUE);
         } else if (why == REJECT_GAME_FULL) {
-          item = (char *)Text_String(TXT_GAME_FULL);
+          item = (char*)Text_String(TXT_GAME_FULL);
         } else if (why == REJECT_VERSION_TOO_OLD) {
-          item = (char *)Text_String(TXT_YOURGAME_OUTDATED);
+          item = (char*)Text_String(TXT_YOURGAME_OUTDATED);
         } else if (why == REJECT_VERSION_TOO_NEW) {
-          item = (char *)Text_String(TXT_DESTGAME_OUTDATED);
+          item = (char*)Text_String(TXT_DESTGAME_OUTDATED);
         } else if (why == REJECT_MISMATCH) {
-          item = (char *)Text_String(TXT_MISMATCH);
+          item = (char*)Text_String(TXT_MISMATCH);
         } else if (why == REJECT_DISBANDED) {
-          item = (char *)Text_String(TXT_GAME_CANCELLED);
+          item = (char*)Text_String(TXT_GAME_CANCELLED);
         }
         if (item) {
           Session.Messages.Add_Message(nullptr, 0, item, PCOLOR_BROWN, TPF_TEXT,
@@ -2817,7 +2817,7 @@ static int Net_Join_Dialog(void) {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
-          item = (char *)(gamelist.Get_Item(i));
+          item = (char*)(gamelist.Get_Item(i));
           gamelist.Remove_Item(item);
           delete[] item;
 
@@ -2890,7 +2890,7 @@ static int Net_Join_Dialog(void) {
             playerlist.Flag_To_Redraw();
           }
           while (playerlist.Count() > Session.Chat.Count()) {
-            item = (char *)playerlist.Get_Item(0);
+            item = (char*)playerlist.Get_Item(0);
             playerlist.Remove_Item(item);
             delete[] item;
             playerlist.Flag_To_Redraw();
@@ -2905,7 +2905,7 @@ static int Net_Join_Dialog(void) {
               if (playerlist.Colors[i] == &ColorRemaps[PCOLOR_DIALOG_BLUE]) {
                 playerlist.Colors[i] = &ColorRemaps[PCOLOR_REALLY_BLUE];
               }
-              port::SafeCopy((char *)playerlist.Get_Item(i),
+              port::SafeCopy((char*)playerlist.Get_Item(i),
                              Session.Chat[i]->Name, MPLAYER_NAME_MAX);
               playerlist.Flag_To_Redraw();
             }
@@ -2915,8 +2915,8 @@ static int Net_Join_Dialog(void) {
               &ColorRemaps[Session.Chat[0]->Chat.Color] !=
                   playerlist.Colors[0]) {
             playerlist.Colors[0] = &ColorRemaps[Session.Chat[0]->Chat.Color];
-            port::SafeCopy((char *)playerlist.Get_Item(0),
-                           Session.Chat[0]->Name, MPLAYER_NAME_MAX);
+            port::SafeCopy((char*)playerlist.Get_Item(0), Session.Chat[0]->Name,
+                           MPLAYER_NAME_MAX);
             playerlist.Flag_To_Redraw();
           }
           if (Update_WWChat()) {
@@ -3073,21 +3073,21 @@ static int Net_Join_Dialog(void) {
  *                                                                         *
  * HISTORY:                                                                *
  *=========================================================================*/
-static int Request_To_Join(char *playername, int join_index, HousesType house,
+static int Request_To_Join(char* playername, int join_index, HousesType house,
                            PlayerColorType color) {
   //------------------------------------------------------------------------
   //	Validate join_index
   //------------------------------------------------------------------------
   if (join_index < 1) {
     Session.Messages.Add_Message(nullptr, 0,
-                                 (char *)Text_String(TXT_MUST_SELECT_GAME),
+                                 (char*)Text_String(TXT_MUST_SELECT_GAME),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return (false);
   }
   if ((Session.Games.Count() <= 1) || join_index > Session.Games.Count()) {
     Session.Messages.Add_Message(nullptr, 0,
-                                 (char *)Text_String(TXT_NOTHING_TO_JOIN),
+                                 (char*)Text_String(TXT_NOTHING_TO_JOIN),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return (false);
@@ -3097,8 +3097,7 @@ static int Request_To_Join(char *playername, int join_index, HousesType house,
   //	Force user to enter a name
   //------------------------------------------------------------------------
   if (strlen(playername) == 0) {
-    Session.Messages.Add_Message(nullptr, 0,
-                                 (char *)Text_String(TXT_NAME_ERROR),
+    Session.Messages.Add_Message(nullptr, 0, (char*)Text_String(TXT_NAME_ERROR),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return (false);
@@ -3109,7 +3108,7 @@ static int Request_To_Join(char *playername, int join_index, HousesType house,
   //------------------------------------------------------------------------
   if (!Session.Games[join_index]->Game.IsOpen) {
     Session.Messages.Add_Message(nullptr, 0,
-                                 (char *)Text_String(TXT_GAME_IS_CLOSED),
+                                 (char*)Text_String(TXT_GAME_IS_CLOSED),
                                  PCOLOR_BROWN, TPF_TEXT, 1200);
     Sound_Effect(VOC_SYS_ERROR);
     return (false);
@@ -3170,12 +3169,12 @@ static int Request_To_Join(char *playername, int join_index, HousesType house,
  * HISTORY:                                                                *
  *   12/12/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Unjoin_Game(char *namebuf, JoinStateType joinstate,
-                        ListClass *gamelist, ColorListClass *playerlist,
+static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
+                        ListClass* gamelist, ColorListClass* playerlist,
                         int game_index, int goto_lobby, int msg_x, int msg_y,
                         int msg_h, int send_x, int send_y, int msg_len) {
   int i;
-  char *item;
+  char* item;
 
   //------------------------------------------------------------------------
   // Fill in a SIGN_OFF packet
@@ -3214,7 +3213,7 @@ static void Unjoin_Game(char *namebuf, JoinStateType joinstate,
   // Remove myself from the player list, and reset my game name
   //------------------------------------------------------------------------
   if (playerlist->Count()) {
-    item = (char *)(playerlist->Get_Item(0));
+    item = (char*)(playerlist->Get_Item(0));
     playerlist->Remove_Item(item);
     delete[] item;
     playerlist->Flag_To_Redraw();
@@ -3272,7 +3271,7 @@ static void Unjoin_Game(char *namebuf, JoinStateType joinstate,
  * HISTORY: * 02/14/1995 BR : Created. * 04/15/1995 BRR : Created. *
  *=============================================================================================*/
 static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
-                              int playernow, int chatnow, char *myname,
+                              int playernow, int chatnow, char* myname,
                               int init) {
   //........................................................................
   // These values control the timeouts for sending various types of packets;
@@ -3418,14 +3417,14 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. * 04/15/1995 BRR : Created. *
  *=============================================================================================*/
-static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
-                                        ListClass *gamelist,
-                                        ColorListClass *playerlist,
-                                        int join_index, char *my_name,
-                                        RejectType *why) {
+static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
+                                        ListClass* gamelist,
+                                        ColorListClass* playerlist,
+                                        int join_index, char* my_name,
+                                        RejectType* why) {
   int rc;
-  char *item;         // general-purpose string
-  NodeNameType *who;  // node to add to Games or Players
+  char* item;         // general-purpose string
+  NodeNameType* who;  // node to add to Games or Players
   int i;
   int found;
   JoinEventType retcode = EV_NONE;
@@ -3467,7 +3466,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
         //...............................................................
         Session.Games[i]->Game.LastTime = TickCount;
         if (Session.Games[i]->Game.IsOpen != Session.GPacket.GameInfo.IsOpen) {
-          item = (char *)gamelist->Get_Item(i);
+          item = (char*)gamelist->Get_Item(i);
           if (Session.GPacket.GameInfo.IsOpen) {
             sprintf(item, Text_String(TXT_THATGUYS_GAME), Session.GPacket.Name);
           } else {
@@ -3720,7 +3719,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       //..................................................................
       // remove myself from the player list
       //..................................................................
-      item = (char *)(playerlist->Get_Item(0));
+      item = (char*)(playerlist->Get_Item(0));
       playerlist->Remove_Item(item);
       delete[] item;
       playerlist->Flag_To_Redraw();
@@ -3798,10 +3797,10 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
                      Session.GPacket.ScenarioInfo.ShortFileName);
 #ifdef WOLAPI_INTEGRATION
       port::SafeCopy(Session.ScenarioDigest,
-                     (char *)Session.GPacket.ScenarioInfo.FileDigest);
+                     (char*)Session.GPacket.ScenarioInfo.FileDigest);
 #else
       port::SafeCopy(Session.ScenarioDigest,
-                     (char *)Session.GPacket.ScenarioInfo.FileDigest);
+                     (char*)Session.GPacket.ScenarioInfo.FileDigest);
 #endif
       Session.ScenarioIsOfficial =
           Session.GPacket.ScenarioInfo.OfficialScenario;
@@ -3858,7 +3857,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
         //...............................................................
         delete Session.Games[i];
         Session.Games.Delete(Session.Games[i]);
-        item = (char *)(gamelist->Get_Item(i));
+        item = (char*)(gamelist->Get_Item(i));
         gamelist->Remove_Item(item);
         delete[] item;
         gamelist->Flag_To_Redraw();
@@ -3873,7 +3872,7 @@ static JoinEventType Get_Join_Responses(JoinStateType *joinstate,
       //	Name found; remove it
       //..................................................................
       if (Session.Players[i]->Address == Session.GAddress) {
-        item = (char *)(playerlist->Get_Item(i));
+        item = (char*)(playerlist->Get_Item(i));
         playerlist->Remove_Item(item);
         delete[] item;
 
@@ -4213,11 +4212,11 @@ static int Net_New_Dialog(void) {
   int index;          // index for rejecting a player
   int rc;
   int i, j;
-  char *item;
+  char* item;
   int tabs[] = {77 * RESFACTOR};       // tabs for player list box
   int optiontabs[] = {8 * RESFACTOR};  // tabs for option list box
 
-  NodeNameType *who;    // node to add to Players
+  NodeNameType* who;    // node to add to Players
   long ping_timer = 0;  // for sending Ping packets
 
   int color_used[MAX_MPLAYER_COLORS];  // 1 = color has been used
@@ -4226,12 +4225,12 @@ static int Net_New_Dialog(void) {
   static int first_time = 1;  // 1 = 1st time this dialog is run
   CCFileClass loadfile("SAVEGAME.NET");
   int load_game = 0;  // 1 = load a saved game
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   //------------------------------------------------------------------------
   // Buttons
   //------------------------------------------------------------------------
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, TPF_TEXT,
@@ -4361,10 +4360,10 @@ static int Net_New_Dialog(void) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
         if (!((Is_Mission_Counterstrike(
-                   (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                   (char*)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Counterstrike_Installed()) ||
               (Is_Mission_Aftermath(
-                   (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                   (char*)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Aftermath_Installed())))
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
@@ -4381,10 +4380,10 @@ static int Net_New_Dialog(void) {
       // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
           !((Is_Mission_Counterstrike(
-                 (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                 (char*)(Session.Scenarios[i]->Get_Filename())) &&
              !Is_Counterstrike_Installed()) ||
             (Is_Mission_Aftermath(
-                 (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                 (char*)(Session.Scenarios[i]->Get_Filename())) &&
              !Is_Aftermath_Installed()))) {
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
       }
@@ -4645,16 +4644,16 @@ static int Net_New_Dialog(void) {
         index = playerlist.Current_Index();
 
         if (index == 0) {
-          Session.Messages.Add_Message(
-              nullptr, 0, (char *)Text_String(TXT_CANT_REJECT_SELF),
-              PCOLOR_BROWN, TPF_TEXT, 1200);
+          Session.Messages.Add_Message(nullptr, 0,
+                                       (char*)Text_String(TXT_CANT_REJECT_SELF),
+                                       PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
           break;
 
         } else if (index < 0 || index >= playerlist.Count()) {
           Session.Messages.Add_Message(
-              nullptr, 0, (char *)Text_String(TXT_SELECT_PLAYER_REJECT),
+              nullptr, 0, (char*)Text_String(TXT_SELECT_PLAYER_REJECT),
               PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -4794,7 +4793,7 @@ static int Net_New_Dialog(void) {
           process = false;
         } else {
           Session.Messages.Add_Message(nullptr, 0,
-                                       (char *)Text_String(TXT_ONLY_ONE),
+                                       (char*)Text_String(TXT_ONLY_ONE),
                                        PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -5004,7 +5003,7 @@ static int Net_New_Dialog(void) {
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
-        strncpy((char *)Session.GPacket.ScenarioInfo.FileDigest,
+        strncpy((char*)Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
                 sizeof(Session.GPacket.ScenarioInfo.FileDigest));
         Session.GPacket.ScenarioInfo.OfficialScenario =
@@ -5271,11 +5270,11 @@ static int Net_New_Dialog(void) {
  * HISTORY:                                                                *
  *   04/18/1995 BRR : Created.                                             *
  *=========================================================================*/
-static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
-                                           int *color_used) {
+static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
+                                           int* color_used) {
   int rc;
-  char *item;         // general-purpose string
-  NodeNameType *who;  // node to add to Players Vector
+  char* item;         // general-purpose string
+  NodeNameType* who;  // node to add to Players Vector
   int i;
   int found;
   JoinEventType retval = EV_NONE;
@@ -5515,7 +5514,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
         //...............................................................
         //	Remove from the list box
         //...............................................................
-        item = (char *)(playerlist->Get_Item(i));
+        item = (char*)(playerlist->Get_Item(i));
         playerlist->Remove_Item(item);
         playerlist->Flag_To_Redraw();
         delete[] item;
@@ -5585,7 +5584,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass *playerlist,
  * HISTORY:                                                                *
  *   06/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-uint32_t Compute_Name_CRC(char *name) {
+uint32_t Compute_Name_CRC(char* name) {
   char buf[80];
   uint32_t crc = 0L;
   int i;
@@ -5630,12 +5629,12 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
   int id;
   char buf1[40] = {0};
   char buf2[40] = {0};
-  char const *buf3 = "";
+  char const* buf3 = "";
 
   int d_txt6_h = 6 * RESFACTOR + 1;
   int d_margin = 5 * RESFACTOR;
 
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
 #ifdef WIN32
   /*
@@ -7290,8 +7289,8 @@ struct WWPerson WWPersons[] = {
 
 CDTimerClass<SystemTimerClass> wwperson_timer;
 
-void Start_WWChat(ColorListClass *playerlist) {
-  char *item;
+void Start_WWChat(ColorListClass* playerlist) {
+  char* item;
   int i;
   HousesType house;
 
@@ -7404,14 +7403,14 @@ int Update_WWChat(void) {
 #if (0)
 /*****************************************************************************/
 void Start_Logging(void) {
-  FILE *fp;
-  static char *ColorNames[6] = {
+  FILE* fp;
+  static char* ColorNames[6] = {
       "Yellow", "Red", "BlueGreen", "Orange", "Green", "Blue",
   };
   int i;
   int id;
   HousesType house;
-  char *housenames[] = {
+  char* housenames[] = {
       "ALLIES", "SOVIET", "Neutral", "Special",
       "Multi1", "Multi2", "Multi3",  "Multi4",
   };
@@ -7475,8 +7474,8 @@ void Start_Logging(void) {
 
 } /* end of Start_Logging */
 
-void Log_Message(char *msg) {
-  FILE *fp;
+void Log_Message(char* msg) {
+  FILE* fp;
 
   fp = fopen("NETPLAY.LOG", "at");
   if (!fp) return;
@@ -7596,17 +7595,17 @@ static int Net_Fake_New_Dialog(void) {
   long ok_timer = 0;  // for timing OK button
   int rc;
   int i;
-  char *item;
+  char* item;
   int tabs[] = {77};  // tabs for player list box
 
-  NodeNameType *who;    // node to add to Players
+  NodeNameType* who;    // node to add to Players
   long ping_timer = 0;  // for sending Ping packets
 
   int color_used[MAX_MPLAYER_COLORS];  // 1 = color has been used
   JoinEventType whahoppa;              // event generated by received packets
   CCFileClass loadfile("SAVEGAME.NET");
   int load_game = 0;  // 1 = load a saved game
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   int width;
   int height;
@@ -7616,13 +7615,13 @@ static int Net_Fake_New_Dialog(void) {
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String((char *)TXT_HACKHACK, SeenBuff.Get_Height(), width,
+  Format_Window_String((char*)TXT_HACKHACK, SeenBuff.Get_Height(), width,
                        height);
 
   //------------------------------------------------------------------------
   // Buttons
   //------------------------------------------------------------------------
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   ColorListClass playerlist(BUTTON_PLAYERLIST, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h, TPF_TEXT,
@@ -8019,7 +8018,7 @@ static int Net_Fake_New_Dialog(void) {
             Session.GPacket.ScenarioInfo.ShortFileName,
             Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
-        strncpy((char *)Session.GPacket.ScenarioInfo.FileDigest,
+        strncpy((char*)Session.GPacket.ScenarioInfo.FileDigest,
                 Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
                 sizeof(Session.GPacket.ScenarioInfo.FileDigest));
         Session.GPacket.ScenarioInfo.OfficialScenario =
@@ -8397,10 +8396,10 @@ static int Net_Fake_Join_Dialog(void) {
   int rc = 0;                              // -1 = user cancelled, 1 = New
   JoinEventType event;                     // event from incoming packet
   int i;                                   // loop counter
-  NodeNameType *who;                       // node to add to Players
+  NodeNameType* who;                       // node to add to Players
   RejectType why;                          // reason for rejection
   TTimerClass<SystemTimerClass> lastclick_timer;  // time b/w send periods
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
   int width;
@@ -8408,16 +8407,16 @@ static int Net_Fake_Join_Dialog(void) {
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String((char *)TXT_HACKHACK, SeenBuff.Get_Height(), width,
+  Format_Window_String((char*)TXT_HACKHACK, SeenBuff.Get_Height(), width,
                        height);
-  char *item;
+  char* item;
   unsigned long starttime;
   int load_game = 0;  // 1 = load saved game
 
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   ListClass gamelist(BUTTON_GAMELIST, d_gamelist_x, d_gamelist_y, d_gamelist_w,
                      d_gamelist_h, TPF_TEXT, MFCD::Retrieve("BTN-UP.SHP"),
@@ -8736,7 +8735,7 @@ static int Net_Fake_Join_Dialog(void) {
                 ** We should have the scenario but the wrong disk is in.
                 ** Tell the host that I am ready to go anyway.
                 */
-                memset((void *)&(Session.GPacket), 0, sizeof(Session.GPacket));
+                memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
                 Session.GPacket.Command = NET_READY_TO_GO;
                 Ipx.Send_Global_Message(&Session.GPacket,
                                         sizeof(GlobalPacketType), 1,
@@ -8790,7 +8789,7 @@ static int Net_Fake_Join_Dialog(void) {
             ** We have the scenario. Tell the host that I am ready to go.
             */
             if (!ready_packet_was_sent) {
-              memset((void *)&(Session.GPacket), 0, sizeof(Session.GPacket));
+              memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
               Ipx.Send_Global_Message(&Session.GPacket,
                                       sizeof(GlobalPacketType), 1,
@@ -8817,7 +8816,7 @@ static int Net_Fake_Join_Dialog(void) {
           /*
           ** Make sure we respond to the host in a load game
           */
-          memset((void *)&(Session.GPacket), 0, sizeof(Session.GPacket));
+          memset((void*)&(Session.GPacket), 0, sizeof(Session.GPacket));
           Session.GPacket.Command = NET_READY_TO_GO;
           Ipx.Send_Global_Message(&Session.GPacket, sizeof(GlobalPacketType), 1,
                                   &Session.HostAddress);
@@ -8936,7 +8935,7 @@ static int Net_Fake_Join_Dialog(void) {
           delete Session.Games[i];
           Session.Games.Delete(Session.Games[i]);
 
-          item = (char *)(gamelist.Get_Item(i));
+          item = (char*)(gamelist.Get_Item(i));
           gamelist.Remove_Item(item);
           delete[] item;
 

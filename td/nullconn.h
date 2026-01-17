@@ -51,7 +51,7 @@
 */
 #include "td/noseqcon.h"
 
-typedef void *HANDLE;
+typedef void* HANDLE;
 
 /*
 ********************************** Defines **********************************
@@ -103,7 +103,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   This routine computes a CRC value for the given buffer.
   .....................................................................*/
-  static int Compute_CRC(char *buf, int buflen);
+  static int Compute_CRC(char* buf, int buflen);
 
   /*.....................................................................
   This routine returns the number of bytes extra added the packet
@@ -118,7 +118,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.
   .....................................................................*/
-  int Send(char *buf, int buflen);
+  int Send(char* buf, int buflen);
 
   /*.....................................................................
   This is the PORT value used by the GreenLeaf calls.
@@ -135,7 +135,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   - 4-byte CRC value (at the end of the buffer)
   This is the actual packet that gets sent across the serial line.
   .....................................................................*/
-  char *SendBuf;
+  char* SendBuf;
 };
 
 #endif

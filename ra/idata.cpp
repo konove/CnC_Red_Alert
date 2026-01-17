@@ -917,11 +917,11 @@ static InfantryTypeClass const Mechanic(
  * HISTORY: * 09/24/1994 JLB : Created. * 02/16/1996 JLB : Greatly simplified. *
  *=============================================================================================*/
 InfantryTypeClass::InfantryTypeClass(
-    InfantryType type, int name, char const *ininame, int verticaloffset,
+    InfantryType type, int name, char const* ininame, int verticaloffset,
     int primaryoffset, bool is_female, bool is_crawling, bool is_civilian,
     bool is_remap_override, bool is_nominal, bool is_theater, PipEnum pip,
-    DoInfoStruct const *control, int firelaunch, int pronelaunch,
-    unsigned char const *override_remap)
+    DoInfoStruct const* control, int firelaunch, int pronelaunch,
+    unsigned char const* override_remap)
     : TechnoTypeClass(RTTI_INFANTRYTYPE, int(type), name, ininame, REMAP_NORMAL,
                       verticaloffset, primaryoffset, 0x0000, 0x0000, 0x0000,
                       is_nominal, true, true, true, false, false, is_theater,
@@ -966,7 +966,7 @@ InfantryTypeClass::InfantryTypeClass(
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-void *InfantryTypeClass::operator new(size_t) throw() {
+void* InfantryTypeClass::operator new(size_t) throw() {
   return (InfantryTypes.Alloc());
 }
 
@@ -984,8 +984,8 @@ void *InfantryTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::operator delete(void *pointer) {
-  InfantryTypes.Free((InfantryTypeClass *)pointer);
+void InfantryTypeClass::operator delete(void* pointer) {
+  InfantryTypes.Free((InfantryTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -1054,7 +1054,7 @@ void InfantryTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *InfantryTypeClass::Create_One_Of(HouseClass *house) const {
+ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
   return (new InfantryClass(Type, house->Class->House));
 }
 
@@ -1077,7 +1077,7 @@ ObjectClass *InfantryTypeClass::Create_One_Of(HouseClass *house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  InfantryClass *i = new InfantryClass(Type, house);
+  InfantryClass* i = new InfantryClass(Type, house);
   if (i != nullptr) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
@@ -1108,7 +1108,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-short const *InfantryTypeClass::Occupy_List(bool) const {
+short const* InfantryTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
 
   return (&_list[0]);
@@ -1141,7 +1141,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
   if (house != HOUSE_NONE) {
     int shape = 0;
-    void const *ptr = Get_Cameo_Data();
+    void const* ptr = Get_Cameo_Data();
     if (ptr == NULL) {
       ptr = Get_Image_Data();
       shape = 2;
@@ -1192,7 +1192,7 @@ void InfantryTypeClass::Prep_For_Add(void) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryType InfantryTypeClass::From_Name(char const *name) {
+InfantryType InfantryTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
          classid++) {
@@ -1224,7 +1224,7 @@ void InfantryTypeClass::One_Time(void) {
   for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
     CCFileClass file;
 
-    InfantryTypeClass *uclass = &As_Reference(index);
+    InfantryTypeClass* uclass = &As_Reference(index);
 
     // Generic shape for all houses load method.
     auto fullname = std::filesystem::path(uclass->Graphic_Name())
@@ -1251,12 +1251,12 @@ void InfantryTypeClass::One_Time(void) {
 #ifndef NDEBUG
     RawFileClass ifile(fullname.c_str());
     if (ifile.Is_Available()) {
-      ((void const *&)uclass->CameoData) = Load_Alloc_Data(ifile);
+      ((void const*&)uclass->CameoData) = Load_Alloc_Data(ifile);
     } else {
-      ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname);
+      ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const *&)uclass->CameoData) = MFCD::Retrieve(fullname);
+    ((void const*&)uclass->CameoData) = MFCD::Retrieve(fullname);
 #endif
   }
 }
@@ -1303,7 +1303,7 @@ int InfantryTypeClass::Full_Name(void) const {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-InfantryTypeClass &InfantryTypeClass::As_Reference(InfantryType type) {
+InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
   return (*InfantryTypes.Ptr(type));
 }
 
@@ -1323,7 +1323,7 @@ InfantryTypeClass &InfantryTypeClass::As_Reference(InfantryType type) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool InfantryTypeClass::Read_INI(CCINIClass &ini) {
+bool InfantryTypeClass::Read_INI(CCINIClass& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     IsFraidyCat = ini.Get_Bool(Name(), "Fraidycat", IsFraidyCat);
     IsCapture = ini.Get_Bool(Name(), "Infiltrate", IsCapture);
@@ -1336,7 +1336,7 @@ bool InfantryTypeClass::Read_INI(CCINIClass &ini) {
   return (false);
 }
 
-void InfantryTypeClass::Dimensions(int &width, int &height) const {
+void InfantryTypeClass::Dimensions(int& width, int& height) const {
 #ifdef WIN32
   width = 14;
   height = 20;

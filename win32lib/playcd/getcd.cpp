@@ -41,15 +41,16 @@
  *		GetCDClass::GetCDDrive	--	returns the logical CD drive *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <dos.h>
+
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <dos.h>
 
-#include "wwstd.h"
 #include "playcd.h"
 #include "wwmem.h"
+#include "wwstd.h"
 
 /***************************************************************************
  * GetCDClass -- default constructor

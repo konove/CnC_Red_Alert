@@ -150,19 +150,19 @@ void Nod_Ending(void) {
 
   char fname[12];
 #ifdef NOT_FOR_WIN95
-  char *satpic = new char[64000];
+  char* satpic = new char[64000];
 #endif  // NOT_FOR_WIN95
   int oldfontxspacing = FontXSpacing;
-  void const *oldfont;
+  void const* oldfont;
 
   Score.Presentation();
 
   oldfont = Set_Font(ScoreFontPtr);
 #ifndef LORES
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
 #endif
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
   SeenBuff.Clear();
@@ -172,7 +172,7 @@ void Nod_Ending(void) {
 #endif
 
   CCFileClass f("SATSEL.PAL");
-  void *localpal = Load_Alloc_Data(f);
+  void* localpal = Load_Alloc_Data(f);
   f.Open("SATSEL.CPS");
   Load_Uncompress(f, SysMemPage, SysMemPage, nullptr);
 #ifdef NOT_FOR_WIN95
@@ -180,8 +180,8 @@ void Nod_Ending(void) {
 #elif !defined(LORES)
   SysMemPage.Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
-  void *kanefinl = Load_Sample("KANEFINL.AUD");
-  void *loopie6m = Load_Sample("LOOPIE6M.AUD");
+  void* kanefinl = Load_Sample("KANEFINL.AUD");
+  void* loopie6m = Load_Sample("LOOPIE6M.AUD");
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
@@ -198,7 +198,7 @@ void Nod_Ending(void) {
   SysMemPage.Blit(HidPage);
 #else
   InterpolationPaletteChanged = true;
-  InterpolationPalette = (unsigned char *)localpal;
+  InterpolationPalette = (unsigned char*)localpal;
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("SATSELIN.PAL");
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SATSELIN.PAL");
@@ -316,7 +316,7 @@ void Nod_Ending(void) {
 
   Play_Movie("CC2TEASE");
 
-  delete[] (char *)localpal;
+  delete[] (char*)localpal;
   delete TextPrintBuffer;
   BlitList.Clear();
 }

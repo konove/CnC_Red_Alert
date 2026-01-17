@@ -36,6 +36,7 @@
 
 #include <dos.h>
 #include <mem.h>
+
 #include "soundint.h"
 #include "wwmem.h"
 
@@ -79,9 +80,9 @@ void Init_Locked_Data(void) {
   DPMI_Lock(&LockedData, 4096L);
   DPMI_Lock(Simple_Copy, 4096L);
   DPMI_Lock(Sample_Copy, 4096L);
-  DPMI_Lock((void *)maintenance_callback, 4096L);
-  DPMI_Lock((void *)DigiCallback, 4096L);
-  DPMI_Lock((void *)HMI_TimerCallback, 4096L);
+  DPMI_Lock((void*)maintenance_callback, 4096L);
+  DPMI_Lock((void*)DigiCallback, 4096L);
+  DPMI_Lock((void*)HMI_TimerCallback, 4096L);
   DPMI_Lock(Audio_Add_Long_To_Pointer, 4096L);
   DPMI_Lock(DPMI_Unlock, 4096L);
 
@@ -110,9 +111,9 @@ void Unlock_Locked_Data(void) {
   DPMI_Unlock(&LockedData, 4096L);
   DPMI_Unlock(Simple_Copy, 4096L);
   DPMI_Unlock(Sample_Copy, 4096L);
-  DPMI_Unlock((void *)maintenance_callback, 4096L);
-  DPMI_Unlock((void *)DigiCallback, 4096L);
-  DPMI_Unlock((void *)HMI_TimerCallback, 4096L);
+  DPMI_Unlock((void*)maintenance_callback, 4096L);
+  DPMI_Unlock((void*)DigiCallback, 4096L);
+  DPMI_Unlock((void*)HMI_TimerCallback, 4096L);
   DPMI_Unlock(Audio_Add_Long_To_Pointer, 4096L);
 
   /*

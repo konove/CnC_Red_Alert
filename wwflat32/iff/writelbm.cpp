@@ -45,10 +45,12 @@
 // At the end of this file there is an IFF definition for a .LBM file.
 
 #include <wwstd.h>
-#include "iff.h"
-#include "file.h"
+
 #include <cstdio>
 #include <cstring>
+
+#include "file.h"
+#include "iff.h"
 
 // A BitMapHeader is stored in a BMHD chunk.  This structure MUST be an even
 // size
@@ -82,9 +84,9 @@ PRIVATE BitMapHeaderType
 /*=========================================================================*/
 
 PRIVATE LONG Write_BMHD(WORD lbmhandle, WORD bitplanes);
-PRIVATE LONG Write_CMAP(WORD lbmhandle, UBYTE *palette, WORD bitplanes);
-PRIVATE LONG Write_BODY(WORD lbmhandle, BufferClass &buff, WORD bitplanes);
-PRIVATE LONG Write_Row(WORD lbmhandle, UBYTE *buffer);
+PRIVATE LONG Write_CMAP(WORD lbmhandle, UBYTE* palette, WORD bitplanes);
+PRIVATE LONG Write_BODY(WORD lbmhandle, BufferClass& buff, WORD bitplanes);
+PRIVATE LONG Write_Row(WORD lbmhandle, UBYTE* buffer);
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -104,8 +106,8 @@ PRIVATE LONG Write_Row(WORD lbmhandle, UBYTE *buffer);
  *   11/18/1991  SB : Created.                                             *
  *=========================================================================*/
 
-PUBLIC BOOL Write_LBM_File(WORD lbmhandle, BufferClass &buff, WORD bitplanes,
-                           UBYTE *palette) {
+PUBLIC BOOL Write_LBM_File(WORD lbmhandle, BufferClass& buff, WORD bitplanes,
+                           UBYTE* palette) {
   LONG filesize;
 
   Seek_File(lbmhandle, 0L, SEEK_SET);  // goto beginning of file
@@ -132,7 +134,7 @@ PUBLIC BOOL Write_LBM_File(WORD lbmhandle, BufferClass &buff, WORD bitplanes,
   Seek_File(lbmhandle, 4L, SEEK_SET);  // goto beginning of file
   filesize =
       Reverse_LONG(filesize - 8L);  // - 8 because of "FORM" + WORD (size)
-  Write_File(lbmhandle, (BYTE *)&filesize, 4L);  // patch in filesize
+  Write_File(lbmhandle, (BYTE*)&filesize, 4L);  // patch in filesize
 
   return (TRUE);
 }
@@ -156,14 +158,14 @@ PRIVATE LONG Write_BMHD(WORD lbmhandle, WORD bitplanes) {
   Write_File(lbmhandle, "BMHD", 4L);  // write out chunk title
   size =
       Reverse_LONG(sizeof(LocalHeader));  // write out size of LocalHeader chunk
-  Write_File(lbmhandle, (BYTE *)&size, 4L);
+  Write_File(lbmhandle, (BYTE*)&size, 4L);
 
   LocalHeader.planes = bitplanes;  // only nonconstant value in LocalHeader
 
   // Make sure size is even. Return 8 = "BMHD" + size of the bitmap header
   // structure
 
-  return (Write_File(lbmhandle, (BYTE *)&LocalHeader,
+  return (Write_File(lbmhandle, (BYTE*)&LocalHeader,
                      (sizeof(LocalHeader) + 1) & 0xFFFE) +
           8L);
 }
@@ -184,17 +186,17 @@ PRIVATE LONG Write_BMHD(WORD lbmhandle, WORD bitplanes) {
  *   11/19/1991  SB : Created.                                             *
  *=========================================================================*/
 
-PRIVATE LONG Write_CMAP(WORD lbmhandle, UBYTE *palette, WORD bitplanes) {
+PRIVATE LONG Write_CMAP(WORD lbmhandle, UBYTE* palette, WORD bitplanes) {
   WORD color, r, g, b, colors;
   LONG size;
-  UBYTE *pal_ptr;
+  UBYTE* pal_ptr;
   BYTE rgb[3];
 
   Write_File(lbmhandle, "CMAP", 4L);  // write out palette info
   colors = 1 << bitplanes;            // colors = 2 to the bitplanes
   size = Reverse_LONG(colors * 3L);   // size = colors * 3 guns
 
-  Write_File(lbmhandle, (BYTE *)&size, 4L);
+  Write_File(lbmhandle, (BYTE*)&size, 4L);
 
   for (pal_ptr = palette, color = 0; color < colors;
        color++) {  // for each color
@@ -233,19 +235,19 @@ PRIVATE LONG Write_CMAP(WORD lbmhandle, UBYTE *palette, WORD bitplanes) {
  *   11/19/1991  SB : Created.                                             *
  *=========================================================================*/
 
-PRIVATE LONG Write_BODY(WORD lbmhandle, BufferClass &buff, WORD bitplanes) {
+PRIVATE LONG Write_BODY(WORD lbmhandle, BufferClass& buff, WORD bitplanes) {
   LONG bodysize = 0;
   LONG actualsize;
   LONG size;
   WORD planebit;
   WORD line, plane;
   UBYTE buffer[40];
-  UBYTE *buffptr;
+  UBYTE* buffptr;
 
   Write_File(lbmhandle, "BODY????",
              8L);  // BODY chunk ID, ???? reserved for chuncksize
 
-  buffptr = (UBYTE *)buff.Get_Buffer();  // point to beginning of buff
+  buffptr = (UBYTE*)buff.Get_Buffer();  // point to beginning of buff
 
   for (line = 0; line < 200; line++) {
     planebit = 1;  // start with bit 1 set
@@ -269,7 +271,7 @@ PRIVATE LONG Write_BODY(WORD lbmhandle, BufferClass &buff, WORD bitplanes) {
 
   Seek_File(lbmhandle, -(actualsize + 4L), SEEK_CUR);  // Patch in chunksize
   size = Reverse_LONG(bodysize);
-  Write_File(lbmhandle, (BYTE *)&size, 4L);
+  Write_File(lbmhandle, (BYTE*)&size, 4L);
 
   return (actualsize + 8L);  // total size of BODY,  "BODY????" = 8 bytes
 }
@@ -291,12 +293,12 @@ PRIVATE LONG Write_BODY(WORD lbmhandle, BufferClass &buff, WORD bitplanes) {
 // 1985 yearbook.  This is the compression method that DP.EXE uses.
 // Change only if DP.EXE changes.
 
-PRIVATE LONG Write_Row(WORD lbmhandle, UBYTE *buffer) {
+PRIVATE LONG Write_Row(WORD lbmhandle, UBYTE* buffer) {
   WORD i;
   WORD chunksize = 0;
   WORD dataLength = 40;  // 320 rows / 8 ( 1 plane per row)
   UBYTE repCode, current, curr_plus_2;
-  UBYTE *buffptr;
+  UBYTE* buffptr;
 
   while (dataLength) {
     // If at least 2 more bytes and they are equal, then replicate

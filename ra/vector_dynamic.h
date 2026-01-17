@@ -13,10 +13,10 @@
 template <typename T>
 class DynamicVectorClass : public VectorClass<T> {
  public:
-  DynamicVectorClass(base::ssize size = 0, const T *array = nullptr);
+  DynamicVectorClass(base::ssize size = 0, const T* array = nullptr);
 
   // Change maximum size of vector.
-  bool Resize(base::ssize newsize, const T *array = nullptr) override;
+  bool Resize(base::ssize newsize, const T* array = nullptr) override;
 
   // Resets and frees the vector array.
   void Clear() override {
@@ -28,14 +28,14 @@ class DynamicVectorClass : public VectorClass<T> {
   base::ssize Count() const { return ActiveCount; }
 
   // Add object to vector (growing as necessary).
-  bool Add(const T &object);
-  bool Add_Head(const T &object);
+  bool Add(const T& object);
+  bool Add_Head(const T& object);
 
   // Delete object by value. Constrained to avoid ambiguity with Delete(index)
   // when T is a pointer type and an integer literal like 0 is passed.
   template <typename U>
     requires(std::is_same_v<std::decay_t<U>, T>)
-  bool Delete(const U &object) {
+  bool Delete(const U& object) {
     return Delete(ID(object));
   }
 
@@ -51,8 +51,8 @@ class DynamicVectorClass : public VectorClass<T> {
   // Fetch current growth step rate.
   base::ssize Growth_Step() const { return GrowthStep; }
 
-  base::ssize ID(const T *ptr) override { return VectorClass<T>::ID(ptr); }
-  base::ssize ID(const T &ptr) override;
+  base::ssize ID(const T* ptr) override { return VectorClass<T>::ID(ptr); }
+  base::ssize ID(const T& ptr) override;
 
  protected:
   // Number of valid elements (may be less than capacity).
@@ -65,7 +65,7 @@ class DynamicVectorClass : public VectorClass<T> {
 // Implementation details only below here
 
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T const *array)
+DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T const* array)
     : VectorClass<T>(size, array) {
   GrowthStep = 10;
   ActiveCount = 0;
@@ -73,7 +73,7 @@ DynamicVectorClass<T>::DynamicVectorClass(base::ssize size, T const *array)
 
 // Resizes capacity. Truncates ActiveCount if new size is smaller.
 template <class T>
-bool DynamicVectorClass<T>::Resize(base::ssize newsize, T const *array) {
+bool DynamicVectorClass<T>::Resize(base::ssize newsize, T const* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -86,7 +86,7 @@ bool DynamicVectorClass<T>::Resize(base::ssize newsize, T const *array) {
 // Appends object to end. Auto-grows if needed and allowed. Returns true on
 // success.
 template <class T>
-bool DynamicVectorClass<T>::Add(T const &object) {
+bool DynamicVectorClass<T>::Add(T const& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -103,7 +103,7 @@ bool DynamicVectorClass<T>::Add(T const &object) {
 // Inserts object at index 0, shifting existing elements. Returns true on
 // success.
 template <class T>
-bool DynamicVectorClass<T>::Add_Head(T const &object) {
+bool DynamicVectorClass<T>::Add_Head(T const& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -144,7 +144,7 @@ bool DynamicVectorClass<T>::Delete(base::ssize index) {
 // unlike the base class version which searches the entire allocated array.
 // Returns -1 if not found.
 template <typename T>
-base::ssize DynamicVectorClass<T>::ID(const T &ptr) {
+base::ssize DynamicVectorClass<T>::ID(const T& ptr) {
   for (base::ssize index = 0; index < Count(); index++) {
     if ((*this)[index] == ptr) {
       return index;

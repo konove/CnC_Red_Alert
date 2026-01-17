@@ -79,7 +79,7 @@ class ToggleClass : public ControlClass {
   unsigned IsToggleType : 1;
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
 };
 
 #endif

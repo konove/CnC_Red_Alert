@@ -64,12 +64,12 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64Straw::Get(void *source, int slen) {
+int Base64Straw::Get(void* source, int slen) {
   int total = 0;
 
-  char *from;
+  char* from;
   int fromsize;
-  char *to;
+  char* to;
   int tosize;
 
   if (Control == ENCODE) {
@@ -97,7 +97,7 @@ int Base64Straw::Get(void *source, int slen) {
       memmove(source, &to[tosize - Counter], len);
       Counter -= len;
       slen -= len;
-      source = ((char *)source) + len;
+      source = ((char*)source) + len;
       total += len;
     }
     if (slen == 0) break;

@@ -82,7 +82,7 @@ typedef struct {
   LONG Start;   // Offset of file from pointer.
   WORD Index;   // FileData[] index.
   WORD Mode;    // Access mode (WW).
-  BYTE *Name;   // File name pointer.
+  BYTE* Name;   // File name pointer.
 } FileHandleType;
 
 /*=========================================================================*/
@@ -93,22 +93,22 @@ typedef struct {
 WORD ibm_getdisk(VOID);
 WORD ibm_setdisk(WORD drive);
 WORD ibm_close(WORD handle);
-WORD ibm_unlink(BYTE const *name);
+WORD ibm_unlink(BYTE const* name);
 LONG ibm_lseek(WORD handle, LONG offset, WORD where);
-UWORD ibm_read(WORD handle, VOID *ptr, UWORD bytes);
-UWORD ibm_write(WORD handle, VOID *ptr, UWORD bytes);
-WORD ibm_open(BYTE const *name, UWORD mode, WORD attrib);
-WORD ibm_chdir(BYTE const *path);
+UWORD ibm_read(WORD handle, VOID* ptr, UWORD bytes);
+UWORD ibm_write(WORD handle, VOID* ptr, UWORD bytes);
+WORD ibm_open(BYTE const* name, UWORD mode, WORD attrib);
+WORD ibm_chdir(BYTE const* path);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FILELIB.CPP
  */
 /*=========================================================================*/
 
-WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const *file_name);
-VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const *filename);
-LONG cdecl Read_File_With_Recovery(WORD handle, VOID *buf, UWORD bytes);
-int cdecl Open_File_With_Recovery(BYTE const *file_name, unsigned int mode);
+WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const* file_name);
+VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const* filename);
+LONG cdecl Read_File_With_Recovery(WORD handle, VOID* buf, UWORD bytes);
+int cdecl Open_File_With_Recovery(BYTE const* file_name, unsigned int mode);
 BOOL cdecl Cache_File(WORD index, WORD file_handle);
 
 /*=========================================================================*/
@@ -136,7 +136,7 @@ extern WORD Is_Device_Real(WORD device);
 extern "C" {
 #endif
 
-extern VOID Init_Device_Table(BYTE *table);
+extern VOID Init_Device_Table(BYTE* table);
 extern WORD Max_Device(VOID);
 
 #ifdef __cplusplus
@@ -167,11 +167,11 @@ extern VOID Remove_Hard_Error_Handler(VOID);
 extern BYTE CallingDOSInt;
 extern "C" extern BYTE MaxDevice, DefaultDrive;
 extern BYTE MultiDriveSearch;
-extern FileDataType *FileDataPtr;
+extern FileDataType* FileDataPtr;
 extern FileHandleType FileHandleTable[TABLE_MAX];
 extern UWORD NumFiles;       // Number of files, except PAK, in file table.
 extern UWORD NumPAKFiles;    // Number of PAK files in filetable.
-extern VOID *FileCacheHeap;  // Pointer to the cache in memory.
+extern VOID* FileCacheHeap;  // Pointer to the cache in memory.
 extern WORD DiskNumber;
 extern WORD MaxDirNum;
 

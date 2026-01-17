@@ -57,22 +57,22 @@ class CargoClass {
     Quantity = 0;
     CargoHold = nullptr;
   };
-  CargoClass(NoInitClass const &) {};
+  CargoClass(NoInitClass const&) {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
 
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const;
+  void Debug_Dump(MonoClass* mono) const;
 #endif
   void AI(void) {};
 
   int How_Many(void) const { return Quantity; };
   bool Is_Something_Attached(void) const { return (CargoHold != nullptr); };
-  FootClass *Attached_Object(void) const;
-  FootClass *Detach_Object(void);
-  void Attach(FootClass *object);
+  FootClass* Attached_Object(void) const;
+  FootClass* Detach_Object(void);
+  void Attach(FootClass* object);
 
   /*
   **	File I/O.
@@ -91,7 +91,7 @@ class CargoClass {
   **	This is the target value of any attached object. A value of zero
   *indicates *	that no object is attached.
   */
-  FootClass *CargoHold;
+  FootClass* CargoHold;
 };
 
 #endif

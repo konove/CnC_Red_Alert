@@ -36,8 +36,6 @@
 #ifndef WWLIB32_H
 #define WWLIB32_H
 
-#include <wwstd.h>
-
 #include <audio.h>
 #include <buffer.h>
 #include <descmgmt.h>
@@ -55,10 +53,11 @@
 #include <shape.h>
 #include <tile.h>
 #include <timer.h>
-#include <video.h>
 #include <vbuffer.h>
+#include <video.h>
 #include <window.h>
 #include <wsa.h>
 #include <wwmem.h>
+#include <wwstd.h>
 
 #endif  // WWLIB32_H

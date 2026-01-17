@@ -42,10 +42,10 @@
 
 class WWMouseClass {
  public:
-  WWMouseClass(GraphicViewPortClass *scr, int mouse_max_width,
+  WWMouseClass(GraphicViewPortClass* scr, int mouse_max_width,
                int mouse_max_height);
   ~WWMouseClass();
-  void *Set_Cursor(int xhotspot, int yhotspot, void *cursor);
+  void* Set_Cursor(int xhotspot, int yhotspot, void* cursor);
   void Process_Mouse(void);
   void Hide_Mouse(void);
   void Show_Mouse(void);
@@ -54,16 +54,16 @@ class WWMouseClass {
   int Get_Mouse_State(void);
   int Get_Mouse_X(void);
   int Get_Mouse_Y(void);
-  void Get_Mouse_XY(int &x, int &y);
+  void Get_Mouse_XY(int& x, int& y);
   //
   // The following two routines can be used to render the mouse onto a
   // graphicbuffer other than the hidpage.
   //
-  void Draw_Mouse(GraphicViewPortClass *scr);
-  void Erase_Mouse(GraphicViewPortClass *scr, bool forced = false);
+  void Draw_Mouse(GraphicViewPortClass* scr);
+  void Erase_Mouse(GraphicViewPortClass* scr, bool forced = false);
 
-  void Block_Mouse(GraphicBufferClass *buffer);
-  void Unblock_Mouse(GraphicBufferClass *buffer);
+  void Block_Mouse(GraphicBufferClass* buffer);
+  void Unblock_Mouse(GraphicBufferClass* buffer);
   void Set_Cursor_Clip(void);
   void Clear_Cursor_Clip(void);
 
@@ -76,9 +76,9 @@ class WWMouseClass {
     CONDHIDDEN = 2,
   };
 
-  uint8_t *MouseCursor = nullptr;  // pointer to the mouse cursor in memory
-  void *SDLCursor = nullptr;
-  void *SDLSurface = nullptr;
+  uint8_t* MouseCursor = nullptr;  // pointer to the mouse cursor in memory
+  void* SDLCursor = nullptr;
+  void* SDLSurface = nullptr;
   int MouseXHot;  // X hot spot of the current mouse cursor
   int MouseYHot;  // Y hot spot of the current mouse cursor
 
@@ -92,8 +92,8 @@ class WWMouseClass {
   char MCFlags;      // conditional hide mouse flags
   char MCCount;      // nesting count for conditional hide mouse
 
-  GraphicViewPortClass *Screen;  // pointer to the surface mouse was init'd with
-  char *PrevCursor;              // pointer to previous cursor shape
+  GraphicViewPortClass* Screen;  // pointer to the surface mouse was init'd with
+  char* PrevCursor;              // pointer to previous cursor shape
   int MouseUpdate;
   int State;
 
@@ -106,7 +106,7 @@ void Show_Mouse(void);
 void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
 void Conditional_Show_Mouse(void);
 int Get_Mouse_State(void);
-void *Set_Mouse_Cursor(int hotx, int hoty, void *cursor);
+void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor);
 int Get_Mouse_X(void);
 int Get_Mouse_Y(void);
 

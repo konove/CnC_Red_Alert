@@ -144,7 +144,7 @@ FixedHeapClass::~FixedHeapClass(void) { FixedHeapClass::Clear(); }
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Set_Heap(int count, void *buffer) {
+int FixedHeapClass::Set_Heap(int count, void* buffer) {
   /*
   **	Clear out the old heap data.
   */
@@ -192,7 +192,7 @@ int FixedHeapClass::Set_Heap(int count, void *buffer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void *FixedHeapClass::Allocate(void) {
+void* FixedHeapClass::Allocate(void) {
   if (ActiveCount < TotalCount) {
     int index = base::first_false(FreeFlag);
 
@@ -220,7 +220,7 @@ void *FixedHeapClass::Allocate(void) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Free(void *pointer) {
+int FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
     int index = ID(pointer);
 
@@ -253,9 +253,9 @@ int FixedHeapClass::Free(void *pointer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::ID(void const *pointer) const {
+int FixedHeapClass::ID(void const* pointer) const {
   if (pointer && Size) {
-    return ((int)(((char *)pointer - (char *)Buffer) / Size));
+    return ((int)(((char*)pointer - (char*)Buffer) / Size));
   }
   return (-1);
 }
@@ -280,7 +280,7 @@ void FixedHeapClass::Clear(void) {
   **	Free the old buffer (if present).
   */
   if (Buffer && IsAllocated) {
-    delete[] (char *)Buffer;
+    delete[] (char*)Buffer;
   }
   Buffer = nullptr;
   IsAllocated = false;
@@ -370,10 +370,10 @@ void FixedIHeapClass::Clear(void) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Set_Heap(int count, void *buffer) {
+int FixedIHeapClass::Set_Heap(int count, void* buffer) {
   // avoid reallocating if possible
   // this is a workaround to prevent use-after-free errors in rule loading
-  void *reuse_buf = nullptr;
+  void* reuse_buf = nullptr;
   if (count == TotalCount && !buffer && IsAllocated) {
     reuse_buf = buffer = Buffer;
     Buffer = nullptr;
@@ -404,8 +404,8 @@ int FixedIHeapClass::Set_Heap(int count, void *buffer) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void *FixedIHeapClass::Allocate(void) {
-  void *ptr = FixedHeapClass::Allocate();
+void* FixedIHeapClass::Allocate(void) {
+  void* ptr = FixedHeapClass::Allocate();
   if (ptr) {
     ActivePointers.Add(ptr);
     memset(ptr, 0, Size);
@@ -429,7 +429,7 @@ void *FixedIHeapClass::Allocate(void) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Free(void *pointer) {
+int FixedIHeapClass::Free(void* pointer) {
   if (FixedHeapClass::Free(pointer)) {
     ActivePointers.Delete(pointer);
   }
@@ -455,7 +455,7 @@ int FixedIHeapClass::Free(void *pointer) {
  *                                                                                             *
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Logical_ID(void const *pointer) const {
+int FixedIHeapClass::Logical_ID(void const* pointer) const {
   if (pointer != nullptr) {
     for (int index = 0; index < Count(); index++) {
       if (Active_Ptr(index) == pointer) {
@@ -479,7 +479,7 @@ int FixedIHeapClass::Logical_ID(void const *pointer) const {
  *operator for virtual table control.                    *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Save(Pipe &file) const {
+int TFixedIHeapClass<T>::Save(Pipe& file) const {
   /*
   ** Save the number of instances of this class
   */
@@ -517,10 +517,10 @@ int TFixedIHeapClass<T>::Save(Pipe &file) const {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Load(Straw &file) {
+int TFixedIHeapClass<T>::Load(Straw& file) {
   int i;    // loop counter
   int idx;  // object index
-  T *ptr;   // object pointer
+  T* ptr;   // object pointer
   int a_count;
 
   /*
@@ -551,7 +551,7 @@ int TFixedIHeapClass<T>::Load(Straw &file) {
     /*
     ** Get a pointer to the object, activate that object
     */
-    ptr = (T *)(*this)[idx];
+    ptr = (T*)(*this)[idx];
     FreeFlag[idx] = true;
     ActiveCount++;
     ActivePointers.Add(ptr);

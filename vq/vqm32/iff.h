@@ -125,18 +125,18 @@ typedef struct _IFFHandle {
 #define ID_NULL MAKE_ID(' ', ' ', ' ', ' ')
 
 /* Prototypes */
-IFFHandle *OpenIFF(char *, long);
-void CloseIFF(IFFHandle *);
-long ReadForm(IFFHandle *, FormHeader *);
-long WriteForm(IFFHandle *, FormHeader *);
-long ReadChunkHeader(IFFHandle *);
-long WriteChunkHeader(IFFHandle *, long, long);
-long WriteChunk(IFFHandle *, long, char *, long);
-long WriteChunkBytes(IFFHandle *, char *, long);
-long ReadChunkBytes(IFFHandle *, char *, long);
-long SkipChunkBytes(IFFHandle *, long);
-long FindChunk(IFFHandle *, long);
-char *IDtoStr(long, char *);
-long CurrentFilePos(IFFHandle *);
+IFFHandle* OpenIFF(char*, long);
+void CloseIFF(IFFHandle*);
+long ReadForm(IFFHandle*, FormHeader*);
+long WriteForm(IFFHandle*, FormHeader*);
+long ReadChunkHeader(IFFHandle*);
+long WriteChunkHeader(IFFHandle*, long, long);
+long WriteChunk(IFFHandle*, long, char*, long);
+long WriteChunkBytes(IFFHandle*, char*, long);
+long ReadChunkBytes(IFFHandle*, char*, long);
+long SkipChunkBytes(IFFHandle*, long);
+long FindChunk(IFFHandle*, long);
+char* IDtoStr(long, char*);
+long CurrentFilePos(IFFHandle*);
 
 #endif /* VQMIFF_H */

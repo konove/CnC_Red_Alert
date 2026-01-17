@@ -12,16 +12,16 @@ extern unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE]
                                               [SIZE_OF_PALETTE];
 }
 
-extern "C" void ModeX_Blit(GraphicBufferClass * /*source*/) {
+extern "C" void ModeX_Blit(GraphicBufferClass* /*source*/) {
   printf("%s\n", __func__);
 }
 
-extern "C" void Asm_Interpolate(unsigned char *src_ptr, unsigned char *dest_ptr,
+extern "C" void Asm_Interpolate(unsigned char* src_ptr, unsigned char* dest_ptr,
                                 int lines, int src_width, int dest_width) {
   // this one line doubles by skipping every other line
   auto old_dest = dest_ptr;
 
-  auto interp_table_flat = (uint8_t *)PaletteInterpolationTable;
+  auto interp_table_flat = (uint8_t*)PaletteInterpolationTable;
 
   do {
     int pixel_count =
@@ -33,7 +33,7 @@ extern "C" void Asm_Interpolate(unsigned char *src_ptr, unsigned char *dest_ptr,
     // convert 2 pixels of source into 4 pixels of destination
     do {
       // read four pixels (we use three)
-      auto in_pixels = *(uint32_t *)src_ptr;
+      auto in_pixels = *(uint32_t*)src_ptr;
       src_ptr += 2;
 
       auto interped = interp_table_flat[in_pixels & 0xFFFF];
@@ -42,13 +42,13 @@ extern "C" void Asm_Interpolate(unsigned char *src_ptr, unsigned char *dest_ptr,
       auto out_pixels = (in_pixels & 0xFF) | interped << 8 |
                         (in_pixels & 0xFF00) << 8 | interped2 << 24;
 
-      *(uint32_t *)out_ptr = out_pixels;
+      *(uint32_t*)out_ptr = out_pixels;
       out_ptr += 4;
 
     } while (--pixel_count);
 
     // do the last three pixels and a blank
-    auto in_pixels = *(uint16_t *)src_ptr;
+    auto in_pixels = *(uint16_t*)src_ptr;
     src_ptr += 2;
     *out_ptr++ = in_pixels & 0xFF;
     *out_ptr++ = interp_table_flat[in_pixels];
@@ -59,12 +59,12 @@ extern "C" void Asm_Interpolate(unsigned char *src_ptr, unsigned char *dest_ptr,
   } while (--lines);
 }
 
-extern "C" void Asm_Interpolate_Line_Double(unsigned char *src_ptr,
-                                            unsigned char *dest_ptr, int lines,
+extern "C" void Asm_Interpolate_Line_Double(unsigned char* src_ptr,
+                                            unsigned char* dest_ptr, int lines,
                                             int src_width, int dest_width) {
   auto old_dest = dest_ptr;
 
-  auto interp_table_flat = (uint8_t *)PaletteInterpolationTable;
+  auto interp_table_flat = (uint8_t*)PaletteInterpolationTable;
 
   do {
     int pixel_count =
@@ -78,7 +78,7 @@ extern "C" void Asm_Interpolate_Line_Double(unsigned char *src_ptr,
     // convert 2 pixels of source into 4 pixels of destination
     do {
       // read four pixels (we use three)
-      auto in_pixels = *(uint32_t *)src_ptr;
+      auto in_pixels = *(uint32_t*)src_ptr;
       src_ptr += 2;
 
       auto interped = interp_table_flat[in_pixels & 0xFFFF];
@@ -87,14 +87,14 @@ extern "C" void Asm_Interpolate_Line_Double(unsigned char *src_ptr,
       auto out_pixels = (in_pixels & 0xFF) | interped << 8 |
                         (in_pixels & 0xFF00) << 8 | interped2 << 24;
 
-      *(uint32_t *)out_ptr = out_pixels;
+      *(uint32_t*)out_ptr = out_pixels;
       out_ptr += 4;
-      *(uint32_t *)out2_ptr = out_pixels;
+      *(uint32_t*)out2_ptr = out_pixels;
       out2_ptr += 4;
     } while (--pixel_count);
 
     // do the last three pixels and a blank
-    auto in_pixels = *(uint16_t *)src_ptr;
+    auto in_pixels = *(uint16_t*)src_ptr;
     src_ptr += 2;
     *out_ptr++ = *out2_ptr++ = in_pixels & 0xFF;
     *out_ptr++ = *out2_ptr++ = interp_table_flat[in_pixels];
@@ -105,8 +105,8 @@ extern "C" void Asm_Interpolate_Line_Double(unsigned char *src_ptr,
   } while (--lines);
 }
 
-extern "C" void Asm_Interpolate_Line_Interpolate(unsigned char * /*src_ptr*/,
-                                                 unsigned char * /*dest_ptr*/,
+extern "C" void Asm_Interpolate_Line_Interpolate(unsigned char* /*src_ptr*/,
+                                                 unsigned char* /*dest_ptr*/,
                                                  int /*lines*/,
                                                  int /*src_width*/,
                                                  int /*dest_width*/) {

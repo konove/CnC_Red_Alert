@@ -62,8 +62,8 @@
  *   04/24/1996 PWG : Created.                                            *
  *========================================================================*/
 PacketClass::~PacketClass(void) {
-  FieldClass *current;
-  FieldClass *next;
+  FieldClass* current;
+  FieldClass* next;
   //
   // Loop through the entire field list and delete each entry.
   //
@@ -84,7 +84,7 @@ PacketClass::~PacketClass(void) {
  * HISTORY:                                                               *
  *   04/24/1996 PWG : Created.                                            *
  *========================================================================*/
-void PacketClass::Add_Field(FieldClass *field) {
+void PacketClass::Add_Field(FieldClass* field) {
   field->Next = Head;
   Head = field;
 }
@@ -101,7 +101,7 @@ void PacketClass::Add_Field(FieldClass *field) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-PacketClass::PacketClass(char *curbuf) {
+PacketClass::PacketClass(char* curbuf) {
   int remaining_size;
   //
   // Pull the size and packet ID out of the linear packet stream.
@@ -125,7 +125,7 @@ PacketClass::PacketClass(char *curbuf) {
   // create a field for each.
   //
   while (remaining_size > 0) {
-    FieldClass *field = new FieldClass;
+    FieldClass* field = new FieldClass;
 
     //
     // Copy the adjusted header into the buffer and then advance the buffer
@@ -177,8 +177,8 @@ PacketClass::PacketClass(char *curbuf) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-char *PacketClass::Create_Comms_Packet(int &size) {
-  FieldClass *current;
+char* PacketClass::Create_Comms_Packet(int& size) {
+  FieldClass* current;
 
   //
   // Size starts at four because that is the size of the packet header.
@@ -200,15 +200,15 @@ char *PacketClass::Create_Comms_Packet(int &size) {
   // Now that we know the size allocate a buffer big enough to hold the
   // packet.
   //
-  char *retval = new char[size];
-  char *curbuf = retval;
+  char* retval = new char[size];
+  char* curbuf = retval;
 
   //
   // write the size into the packet header
   //
-  *(unsigned short *)curbuf = (unsigned short)htons((unsigned short)size);
+  *(unsigned short*)curbuf = (unsigned short)htons((unsigned short)size);
   curbuf += sizeof(unsigned short);
-  *(short *)curbuf = htons(ID);
+  *(short*)curbuf = htons(ID);
   curbuf += sizeof(short);
 
   //
@@ -264,8 +264,8 @@ char *PacketClass::Create_Comms_Packet(int &size) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-FieldClass *PacketClass::Find_Field(char const *id) {
-  for (FieldClass *current = Head; current; current = current->Next) {
+FieldClass* PacketClass::Find_Field(char const* id) {
+  for (FieldClass* current = Head; current; current = current->Next) {
     if (strncmp(id, current->ID, 4) == 0) return current;
   }
   return nullptr;
@@ -286,10 +286,10 @@ FieldClass *PacketClass::Find_Field(char const *id) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, char &data) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, char& data) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((char *)field->Data);
+    data = *((char*)field->Data);
   }
   return ((field) ? true : false);
 }
@@ -309,10 +309,10 @@ bool PacketClass::Get_Field(char const *id, char &data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, unsigned char &data) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, unsigned char& data) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((unsigned char *)field->Data);
+    data = *((unsigned char*)field->Data);
   }
   return ((field) ? true : false);
 }
@@ -332,10 +332,10 @@ bool PacketClass::Get_Field(char const *id, unsigned char &data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, short &data) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, short& data) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((short *)field->Data);
+    data = *((short*)field->Data);
   }
   return ((field) ? true : false);
 }
@@ -355,10 +355,10 @@ bool PacketClass::Get_Field(char const *id, short &data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, unsigned short &data) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, unsigned short& data) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((unsigned short *)field->Data);
+    data = *((unsigned short*)field->Data);
   }
   return ((field) ? true : false);
 }
@@ -378,10 +378,10 @@ bool PacketClass::Get_Field(char const *id, unsigned short &data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, long &data) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, long& data) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((long *)field->Data);
+    data = *((long*)field->Data);
   }
   return ((field) ? true : false);
 }
@@ -404,10 +404,10 @@ bool PacketClass::Get_Field(char const *id, long &data) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, char *data, size_t data_size) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, char* data, size_t data_size) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    port::SafeCopy(data, (char *)field->Data, data_size);
+    port::SafeCopy(data, (char*)field->Data, data_size);
   }
   return ((field) ? true : false);
 }
@@ -427,10 +427,10 @@ bool PacketClass::Get_Field(char const *id, char *data, size_t data_size) {
  * HISTORY:                                                               *
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, unsigned long &data) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, unsigned long& data) {
+  FieldClass* field = Find_Field(id);
   if (field) {
-    data = *((unsigned long *)field->Data);
+    data = *((unsigned long*)field->Data);
   }
   return ((field) ? true : false);
 }
@@ -451,8 +451,8 @@ bool PacketClass::Get_Field(char const *id, unsigned long &data) {
  * HISTORY:                                                               *
  *   6/4/96 4:46PM ST : Created                                           *
  *========================================================================*/
-bool PacketClass::Get_Field(char const *id, void *data, int &length) {
-  FieldClass *field = Find_Field(id);
+bool PacketClass::Get_Field(char const* id, void* data, int& length) {
+  FieldClass* field = Find_Field(id);
   if (field) {
     memcpy(data, field->Data, std::min(int(field->Size), length));
     length = (int)field->Size;

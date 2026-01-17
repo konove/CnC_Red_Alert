@@ -75,9 +75,9 @@
 #ifndef DEMO
 
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
-                      GraphicBufferClass *src, GraphicBufferClass *dest);
+                      GraphicBufferClass* src, GraphicBufferClass* dest);
 void Print_Statistics(int country, int xpos, int ypos);
-void Cycle_Call_Back_Delay(int time, unsigned char *pal);
+void Cycle_Call_Back_Delay(int time, unsigned char* pal);
 int LowMedHiStr(int percentage);
 extern int ControlQ;
 
@@ -505,8 +505,8 @@ void Map_Selection(void) {
                                  8, 9, 10, 11, 12, 13, 14, 15};
   GraphicBufferClass backpage(20 * 6, 8);
 
-  unsigned char *grey2palette = new unsigned char[768];
-  unsigned char *progresspalette = new unsigned char[768];
+  unsigned char* grey2palette = new unsigned char[768];
+  unsigned char* progresspalette = new unsigned char[768];
 
   Keyboard::Clear();
   Set_Font(ScoreFontPtr);
@@ -540,14 +540,14 @@ void Map_Selection(void) {
   Theme.Queue_Song(THEME_MAP1);
 
 #ifndef LORES
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
 #endif
 
   /*
   ** Extra graphic buffer to draw text into
   */
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -598,19 +598,19 @@ void Map_Selection(void) {
 #endif
   }
 
-  void const *appear1 = MixFileClass::Retrieve("APPEAR1.AUD");
-  void const *sfx4 = MixFileClass::Retrieve("SFX4.AUD");
-  void const *text2 = MixFileClass::Retrieve("TEXT2.AUD");
-  void const *target1 = MixFileClass::Retrieve("TARGET1.AUD");
-  void const *target2 = MixFileClass::Retrieve("TARGET2.AUD");
+  void const* appear1 = MixFileClass::Retrieve("APPEAR1.AUD");
+  void const* sfx4 = MixFileClass::Retrieve("SFX4.AUD");
+  void const* text2 = MixFileClass::Retrieve("TEXT2.AUD");
+  void const* target1 = MixFileClass::Retrieve("TARGET1.AUD");
+  void const* target2 = MixFileClass::Retrieve("TARGET2.AUD");
   //	void const * target3 = MixFileClass::Retrieve("TARGET3.AUD");
-  void const *newtarg1 = MixFileClass::Retrieve("NEWTARG1.AUD");
-  void const *beepy2 = MixFileClass::Retrieve("BEEPY2.AUD");
-  void const *beepy3 = MixFileClass::Retrieve("BEEPY3.AUD");
-  void const *beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
-  void const *world2 = MixFileClass::Retrieve("WORLD2.AUD");
-  void const *country1 = MixFileClass::Retrieve("COUNTRY1.AUD");
-  void const *scold1 = MixFileClass::Retrieve("SCOLD1.AUD");
+  void const* newtarg1 = MixFileClass::Retrieve("NEWTARG1.AUD");
+  void const* beepy2 = MixFileClass::Retrieve("BEEPY2.AUD");
+  void const* beepy3 = MixFileClass::Retrieve("BEEPY3.AUD");
+  void const* beepy6 = MixFileClass::Retrieve("BEEPY6.AUD");
+  void const* world2 = MixFileClass::Retrieve("WORLD2.AUD");
+  void const* country1 = MixFileClass::Retrieve("COUNTRY1.AUD");
+  void const* scold1 = MixFileClass::Retrieve("SCOLD1.AUD");
 
   SysMemPage.Clear();
 #ifndef LORES
@@ -876,7 +876,7 @@ void Map_Selection(void) {
   Read_Interpolation_Palette("MAP_PROG.PAL");
 #endif
 
-  GraphicBufferClass *europe =
+  GraphicBufferClass* europe =
       new GraphicBufferClass(SysMemPage.Get_Width(), SysMemPage.Get_Height());
   SysMemPage.Blit(*europe);
 
@@ -1230,7 +1230,7 @@ void Map_Selection(void) {
     /*
     ** Now it's time to highlight the country we're going to.
     */
-    void const *countryshape = MixFileClass::Retrieve(
+    void const* countryshape = MixFileClass::Retrieve(
         house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
 
     Hide_Mouse();
@@ -1368,7 +1368,7 @@ void Map_Selection(void) {
  *=========================================================================*/
 void Print_Statistics(int country, int xpos, int ypos) {
   int index, newx;
-  void *oldfont;
+  void* oldfont;
   static int const _gdistatnames[] = {
       TXT_MAP_GDISTAT0, TXT_MAP_GDISTAT1, TXT_MAP_GDISTAT2, TXT_MAP_GDISTAT3,
       TXT_MAP_GDISTAT4, TXT_MAP_GDISTAT5, TXT_MAP_GDISTAT6};
@@ -1588,7 +1588,7 @@ void Print_Statistics(int country, int xpos, int ypos) {
  **
  *=========================================================================*/
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
-                      GraphicBufferClass *src, GraphicBufferClass *dest) {
+                      GraphicBufferClass* src, GraphicBufferClass* dest) {
   unsigned int xindex,  // Working array index var.
       yindex;           // Working y index var.
   unsigned int x, y;    // Extraction position indexes.
@@ -1654,7 +1654,7 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
 }
 #endif
 
-void Cycle_Call_Back_Delay(int time, unsigned char *pal) {
+void Cycle_Call_Back_Delay(int time, unsigned char* pal) {
   static int _counter;
   unsigned char r, g, b;
   int i;
@@ -1717,15 +1717,15 @@ int LowMedHiStr(int percentage) {
  *   04/17/1995 BWG : Adapted to C++ library.                              *
  *=========================================================================*/
 
-void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass *src,
-                     GraphicBufferClass *dest, GraphicViewPortClass * /*seen*/,
+void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
+                     GraphicBufferClass* dest, GraphicViewPortClass* /*seen*/,
                      int delay, int dagger) {
   short int *xindex, *yindex;
   int n;
   unsigned int i, j, k, m, j1;
   short ScaleBuffer[320 + 200];
 
-  xindex = (short int *)ScaleBuffer;
+  xindex = (short int*)ScaleBuffer;
   yindex = xindex + 320;
 
   for (i = 0; i < w; i++) xindex[i] = i; /* init the index array */
@@ -1786,7 +1786,7 @@ void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass *src,
   }
 }
 
-void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass *src,
-               GraphicBufferClass *dest, int delay, int dagger) {
+void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
+               GraphicBufferClass* dest, int delay, int dagger) {
   Bit_It_In_Scale(x, y, w, h, src, dest, nullptr, delay, dagger);
 }

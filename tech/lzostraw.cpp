@@ -121,7 +121,7 @@ LZOStraw::~LZOStraw(void) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZOStraw::Get(void *destbuf, int slen) {
+int LZOStraw::Get(void* destbuf, int slen) {
   assert(Buffer != nullptr);
 
   int total = 0;
@@ -148,7 +148,7 @@ int LZOStraw::Get(void *destbuf, int slen) {
             &Buffer2[(BlockHeader.CompCount + sizeof(BlockHeader)) - Counter],
             len);
       }
-      destbuf = ((char *)destbuf) + len;
+      destbuf = ((char*)destbuf) + len;
       slen -= len;
       Counter -= len;
       total += len;
@@ -159,22 +159,22 @@ int LZOStraw::Get(void *destbuf, int slen) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) break;
 
-      char *staging_buffer = new char[BlockHeader.CompCount];
+      char* staging_buffer = new char[BlockHeader.CompCount];
       incount = Straw::Get(staging_buffer, BlockHeader.CompCount);
       if (incount != BlockHeader.CompCount) break;
       unsigned int length = sizeof(Buffer);
-      lzo1x_decompress((unsigned char *)staging_buffer, BlockHeader.CompCount,
-                       (unsigned char *)Buffer, &length, nullptr);
+      lzo1x_decompress((unsigned char*)staging_buffer, BlockHeader.CompCount,
+                       (unsigned char*)Buffer, &length, nullptr);
       delete[] staging_buffer;
       Counter = BlockHeader.UncompCount;
     } else {
       BlockHeader.UncompCount = (unsigned short)Straw::Get(Buffer, BlockSize);
       if (BlockHeader.UncompCount == 0) break;
-      char *dictionary = new char[64 * 1024];
+      char* dictionary = new char[64 * 1024];
       unsigned int length = sizeof(Buffer2) - sizeof(BlockHeader);
-      lzo1x_1_compress((unsigned char *)Buffer, BlockHeader.UncompCount,
-                       (unsigned char *)(&Buffer2[sizeof(BlockHeader)]),
-                       &length, dictionary);
+      lzo1x_1_compress((unsigned char*)Buffer, BlockHeader.UncompCount,
+                       (unsigned char*)(&Buffer2[sizeof(BlockHeader)]), &length,
+                       dictionary);
       BlockHeader.CompCount = (unsigned short)length;
       delete[] dictionary;
       memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));

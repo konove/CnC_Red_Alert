@@ -97,7 +97,7 @@ TurretClass::TurretClass(UnitType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
-void TurretClass::Debug_Dump(MonoClass *mono) const {
+void TurretClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(36, 3);
   mono->Printf("%02X:%02X", SecondaryFacing.Current(),
                SecondaryFacing.Desired());
@@ -212,8 +212,8 @@ void TurretClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass *TurretClass::Fire_At(TARGET target, int which) {
-  BulletClass *bullet = nullptr;
+BulletClass* TurretClass::Fire_At(TARGET target, int which) {
+  BulletClass* bullet = nullptr;
 
   if (Can_Fire(target, which) == FIRE_OK) {
     bullet = DriveClass::Fire_At(target, which);
@@ -256,7 +256,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
   FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == FIRE_OK) {
-    WeaponTypeClass const *weapon =
+    WeaponTypeClass const* weapon =
         (which == 0) ? &Weapons[Class->Primary] : &Weapons[Class->Secondary];
 
     /*

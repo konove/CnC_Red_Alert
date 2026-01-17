@@ -89,8 +89,8 @@ CCMessageBox::CCMessageBox(int caption, bool pict)
 #define BUTTON_2 2
 #define BUTTON_3 3
 #define BUTTON_FLAG 0x8000
-int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
-                          const char *b3txt, bool preserve) {
+int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
+                          const char* b3txt, bool preserve) {
 #define BUFFSIZE (511)
   // #define BUFFSIZE (255)
   char buffer[BUFFSIZE];
@@ -100,13 +100,13 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[3];
-  void *back;
+  TextButtonClass* buttons[3];
+  void* back;
   bool display;  // display level
   int realval[5];
 
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void *)nullptr);
+                                    VisiblePage.Get_Height(), (void*)nullptr);
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
@@ -200,7 +200,7 @@ int CCMessageBox::Process(const char *msg, const char *b1txt, const char *b2txt,
                           y + height - (bheight + (5 * factor)));
   button3.X = x + ((width - button3.Width) >> 1);
 
-  TextButtonClass *buttonlist = nullptr;
+  TextButtonClass* buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -489,7 +489,7 @@ int CCMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  *                                                                                             *
  * HISTORY: * 06/18/1995 JLB : Created. *
  *=============================================================================================*/
-int CCMessageBox::Process(char const *msg, int b1txt, int b2txt, int b3txt,
+int CCMessageBox::Process(char const* msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) {
   return (Process(msg, Text_String(b1txt), Text_String(b2txt),
                   Text_String(b3txt), preserve));

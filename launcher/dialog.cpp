@@ -19,10 +19,11 @@
 //
 // Create the dialog used during the patching process.
 //
-#include "winblows.h"
-#include "resource.h"
-#include "loadbmp.h"
 #include <commctrl.h>
+
+#include "loadbmp.h"
+#include "resource.h"
+#include "winblows.h"
 
 HWND PatchDialog;
 BOOL CALLBACK Patch_Window_Proc(HWND hwnd, UINT iMsg, WPARAM wParam,

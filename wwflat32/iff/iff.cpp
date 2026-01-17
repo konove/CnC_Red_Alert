@@ -42,8 +42,10 @@
  *   Write_Iff_Chunk -- Writes an IFF chuck out.                           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
 #include "iff.h"
+
+#include <wwstd.h>
+
 #include "file.h"
 
 #define ID_FORM MAKE_ID('F', 'O', 'R', 'M')
@@ -68,7 +70,7 @@
  *   05/16/1991 JLB : Created.                                             *
  *   04/19/1994 SKB : Update to 32 bit library.                            *
  *=========================================================================*/
-WORD cdecl Open_Iff_File(BYTE const *filename) {
+WORD cdecl Open_Iff_File(BYTE const* filename) {
   WORD fh;    // File handle.
   LONG type;  // IFF file type.
 
@@ -144,7 +146,7 @@ ULONG cdecl Get_Iff_Chunk_Size(WORD fh, LONG id) {
   for (;;) {
     if (Read_File(fh, &form, 4L) != 4L && !first_iteration) break;
 
-    if (Read_File(fh, (BYTE *)&chunksize, 4L) != 4L && !first_iteration) break;
+    if (Read_File(fh, (BYTE*)&chunksize, 4L) != 4L && !first_iteration) break;
 
 #if (IBM)
     chunksize = Reverse_LONG(chunksize);
@@ -196,7 +198,7 @@ ULONG cdecl Get_Iff_Chunk_Size(WORD fh, LONG id) {
  *   05/16/1991 JLB : Created.                                             *
  *   04/19/1994 SKB : Update to 32 bit library.                            *
  *=========================================================================*/
-ULONG cdecl Read_Iff_Chunk(WORD fh, LONG id, VOID *buffer, ULONG maxsize) {
+ULONG cdecl Read_Iff_Chunk(WORD fh, LONG id, VOID* buffer, ULONG maxsize) {
   LONG form;             // Chunk iff form name.
   ULONG chunksize;       // Size of the chunk.
   BYTE first_iteration;  // Check once the current chunk name
@@ -206,7 +208,7 @@ ULONG cdecl Read_Iff_Chunk(WORD fh, LONG id, VOID *buffer, ULONG maxsize) {
   for (;;) {
     if (Read_File(fh, &form, 4L) != 4L && !first_iteration) break;
 
-    if (Read_File(fh, (BYTE *)&chunksize, 4L) != 4L && !first_iteration) break;
+    if (Read_File(fh, (BYTE*)&chunksize, 4L) != 4L && !first_iteration) break;
 
 #if (IBM)
     chunksize = Reverse_LONG(chunksize);
@@ -250,7 +252,7 @@ ULONG cdecl Read_Iff_Chunk(WORD fh, LONG id, VOID *buffer, ULONG maxsize) {
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID cdecl Write_Iff_Chunk(WORD file, LONG id, VOID *buffer, LONG length) {
+VOID cdecl Write_Iff_Chunk(WORD file, LONG id, VOID* buffer, LONG length) {
   LONG pos;     // Current position in the IFF file.
   LONG oldpos;  // Record of start of chunk offset.
   LONG endpos;  // end of file offset before we write our data

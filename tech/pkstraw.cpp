@@ -69,7 +69,7 @@
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-PKStraw::PKStraw(CryptControl control, RandomStraw &rnd)
+PKStraw::PKStraw(CryptControl control, RandomStraw& rnd)
     : IsGettingKey(true),
       Rand(rnd),
       BF((control == ENCRYPT) ? BlowStraw::ENCRYPT : BlowStraw::DECRYPT),
@@ -96,7 +96,7 @@ PKStraw::PKStraw(CryptControl control, RandomStraw &rnd)
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-void PKStraw::Get_From(Straw *straw) {
+void PKStraw::Get_From(Straw* straw) {
   if (BF.ChainTo != straw) {
     if (straw != nullptr && straw->ChainFrom != nullptr) {
       straw->ChainFrom->Get_From(nullptr);
@@ -135,7 +135,7 @@ void PKStraw::Get_From(Straw *straw) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-void PKStraw::Key(PKey const *key) {
+void PKStraw::Key(PKey const* key) {
   CipherKey = key;
   if (key != nullptr) {
     IsGettingKey = true;
@@ -164,7 +164,7 @@ void PKStraw::Key(PKey const *key) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-int PKStraw::Get(void *source, int length) {
+int PKStraw::Get(void* source, int length) {
   /*
   **	If the parameters seem invalid, then pass the request on so that someone
   **	else can deal with it.
@@ -235,7 +235,7 @@ int PKStraw::Get(void *source, int length) {
   if (BytesLeft > 0) {
     int tocopy = (length < BytesLeft) ? length : BytesLeft;
     memmove(source, &Buffer[Counter - BytesLeft], tocopy);
-    source = (char *)source + tocopy;
+    source = (char*)source + tocopy;
     BytesLeft -= tocopy;
     length -= tocopy;
     total += tocopy;

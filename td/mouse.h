@@ -51,7 +51,7 @@
 class MouseClass : public ScrollClass {
  public:
   MouseClass(void);
-  MouseClass(NoInitClass const &x) : ScrollClass(x) {};
+  MouseClass(NoInitClass const& x) : ScrollClass(x) {};
 
   /*
   ** Initialization
@@ -59,7 +59,7 @@ class MouseClass : public ScrollClass {
   virtual void One_Time(void);    // One-time inits
   virtual void Init_Clear(void);  // Clears all to known state
 
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual bool Override_Mouse_Shape(MouseType mouse, bool wwsmall = false);
   virtual void Revert_Mouse_Shape(void);
   virtual MouseType Get_Mouse_Shape(void) const { return NormalMouseShape; };
@@ -68,8 +68,8 @@ class MouseClass : public ScrollClass {
   /*
   **	File I/O.
   */
-  virtual bool Load(FileClass &file);
-  virtual bool Save(FileClass &file);
+  virtual bool Load(FileClass& file);
+  virtual bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -109,7 +109,7 @@ class MouseClass : public ScrollClass {
   /*
   **	This points to the loaded mouse shapes.
   */
-  static void const *MouseShapes;
+  static void const* MouseShapes;
 
   /*
   **	The mouse shape is controlled by these variables. These
@@ -130,7 +130,7 @@ class MouseClass : public ScrollClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif  // CNC_RED_ALERT_TD_MOUSE_H_

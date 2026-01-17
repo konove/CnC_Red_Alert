@@ -113,20 +113,20 @@ typedef struct {
 
 extern "C" {
 extern long _ShapeBufferSize;
-extern char *_ShapeBuffer;
+extern char* _ShapeBuffer;
 }
 
 /*
 ---------------------------------- shape.c ----------------------------------
 */
-int Extract_Shape_Count(void const *buffer);
-void *Extract_Shape(void const *buffer, int shape);
+int Extract_Shape_Count(void const* buffer);
+void* Extract_Shape(void const* buffer, int shape);
 
 /*
 ------------------------------- setshape.asm --------------------------------
 */
 extern "C" {
-void Set_Shape_Buffer(void *buffer, int size);
+void Set_Shape_Buffer(void* buffer, int size);
 }
 
 #endif  // SHAPE_H

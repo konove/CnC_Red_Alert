@@ -131,11 +131,11 @@ class UnitClass : public DriveClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(NoInitClass const &x)
+  UnitClass(NoInitClass const& x)
       : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {};
   operator UnitType(void) const { return Class->Type; };
   virtual ~UnitClass(void);
@@ -143,7 +143,7 @@ class UnitClass : public DriveClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual ObjectTypeClass const &Class_Of(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const;
   static void Init(void);
 
   bool Goto_Clear_Spot(void);
@@ -151,7 +151,7 @@ class UnitClass : public DriveClass {
   virtual void Scatter(COORDINATE threat, bool forced = false,
                        bool nokidding = false);
 
-  bool Tiberium_Check(CELL &center, int x, int y);
+  bool Tiberium_Check(CELL& center, int x, int y);
   bool Flag_Attach(HousesType house);
   bool Flag_Remove(void);
   bool Goto_Tiberium(int radius);
@@ -162,7 +162,7 @@ class UnitClass : public DriveClass {
   /*
   **	Query functions.
   */
-  bool Should_Crush_It(TechnoClass const *it) const;
+  bool Should_Crush_It(TechnoClass const* it) const;
   int Credit_Load(void) const;
   virtual DirType Turret_Facing(void) const {
     if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
@@ -192,39 +192,39 @@ class UnitClass : public DriveClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual short const *Overlap_List(bool redraw = false) const;
+  virtual short const* Overlap_List(bool redraw = false) const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
 
   /*
   **	User I/O.
   */
   virtual ActionType What_Action(CELL cell) const;
-  virtual ActionType What_Action(ObjectClass const *object) const;
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual ActionType What_Action(ObjectClass const* object) const;
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell);
 
   /*
   **	Combat related.
   */
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr,
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr,
                                  bool forced = false);
-  virtual BulletClass *Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(TARGET target, int which = 0);
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Start_Driver(COORDINATE &coord);
+  virtual bool Start_Driver(COORDINATE& coord);
 
   /*
   **	AI.
   */
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
-  virtual DirType Desired_Load_Dir(ObjectClass *passenger, CELL &moveto) const;
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual void AI(void);
   virtual int Mission_Guard_Area(void);
   virtual int Mission_Unload(void);
@@ -242,7 +242,7 @@ class UnitClass : public DriveClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
@@ -262,11 +262,11 @@ class UnitClass : public DriveClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "UNITS"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  static char const* INI_Name(void) { return "UNITS"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 };
 
 #endif

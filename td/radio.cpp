@@ -53,7 +53,7 @@
 #include "td/mission.h"
 #include "td/techno.h"
 
-char const *RadioClass::Messages[RADIO_COUNT] = {
+char const* RadioClass::Messages[RADIO_COUNT] = {
     "hisssss",
     "Roger.",
     "Come in.",
@@ -103,7 +103,7 @@ char const *RadioClass::Messages[RADIO_COUNT] = {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void RadioClass::Debug_Dump(MonoClass *mono) const {
+void RadioClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(34, 5);
   mono->Printf(Messages[LastMessage]);
   if (Radio) {
@@ -138,9 +138,9 @@ void RadioClass::Debug_Dump(MonoClass *mono) const {
  *only a communications carrier.                         * 05/22/1995 JLB :
  *Recognized who is sending the message                                    *
  *=============================================================================================*/
-RadioMessageType RadioClass::Receive_Message(RadioClass *from,
+RadioMessageType RadioClass::Receive_Message(RadioClass* from,
                                              RadioMessageType message,
-                                             long &param) {
+                                             long& param) {
   /*
   **	Keep a record of the last message received by this radio.
   */
@@ -197,7 +197,7 @@ RadioMessageType RadioClass::Receive_Message(RadioClass *from,
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
-                                              long &param, RadioClass *to) {
+                                              long& param, RadioClass* to) {
   if (!to) {
     to = Contact_With_Whom();
   }
@@ -255,6 +255,6 @@ bool RadioClass::Limbo(void) {
 }
 
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
-                                              RadioClass *to) {
+                                              RadioClass* to) {
   return (Transmit_Message(message, LParam, to));
 };

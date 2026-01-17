@@ -58,7 +58,7 @@
  * HISTORY: * 05/31/1994 JLB : Created. * 05/31/1994 JLB : Allows sorted insert.
  ** 01/02/1995 JLB : Fixed to work with EMSListOf template. *
  *=============================================================================================*/
-bool LayerClass::Submit(ObjectClass const *object, bool sort) {
+bool LayerClass::Submit(ObjectClass const* object, bool sort) {
   /*
   **	Add the object to the layer. Either at the end (if "sort" is false) or
   *at the *	appropriately sorted position.
@@ -66,7 +66,7 @@ bool LayerClass::Submit(ObjectClass const *object, bool sort) {
   if (sort) {
     return (Sorted_Add(object));
   }
-  return (Add((ObjectClass *)object));
+  return (Add((ObjectClass*)object));
 }
 
 /***********************************************************************************************
@@ -89,7 +89,7 @@ bool LayerClass::Submit(ObjectClass const *object, bool sort) {
 void LayerClass::Sort(void) {
   for (int index = 0; index < Count() - 1; index++) {
     if (*(*this)[index + 1] < *(*this)[index]) {
-      ObjectClass *temp;
+      ObjectClass* temp;
 
       temp = (*this)[index + 1];
       (*this)[index + 1] = (*this)[index];
@@ -114,7 +114,7 @@ void LayerClass::Sort(void) {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-int LayerClass::Sorted_Add(ObjectClass const *const object) {
+int LayerClass::Sorted_Add(ObjectClass const* const object) {
   if (ActiveCount >= Length()) {
     if ((IsAllocated || !VectorMax) && GrowthStep > 0) {
       if (!Resize(Length() + GrowthStep)) {
@@ -150,7 +150,7 @@ int LayerClass::Sorted_Add(ObjectClass const *const object) {
   for (int i = ActiveCount - 1; i >= index; i--) {
     (*this)[i + 1] = (*this)[i];
   }
-  (*this)[index] = (ObjectClass *)object;
+  (*this)[index] = (ObjectClass*)object;
   ActiveCount++;
   return (true);
 }

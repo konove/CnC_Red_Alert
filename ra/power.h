@@ -52,7 +52,7 @@
 class PowerClass : public RadarClass {
  public:
   PowerClass(void);
-  PowerClass(NoInitClass const &x) : RadarClass(x), FlashTimer(x) {};
+  PowerClass(NoInitClass const& x) : RadarClass(x), FlashTimer(x) {};
 
   /*
   ** Initialization
@@ -61,8 +61,8 @@ class PowerClass : public RadarClass {
 
   virtual void Init_Clear(void);  // Clears all to known state
   virtual void Draw_It(bool complete = false);
-  virtual void AI(KeyNumType &input, int x, int y);
-  virtual void Refresh_Cells(CELL cell, short const *list);
+  virtual void AI(KeyNumType& input, int x, int y);
+  virtual void Refresh_Cells(CELL cell, short const* list);
   void Flash_Power(void);
 
   unsigned IsToRedraw : 1;
@@ -79,7 +79,7 @@ class PowerClass : public RadarClass {
                       true) {};
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType &key);
+    virtual int Action(unsigned flags, KeyNumType& key);
     friend class PowerClass;
   };
 
@@ -130,8 +130,8 @@ class PowerClass : public RadarClass {
   /*
   **	Points to the shape to use for the "desired" power level indicator.
   */
-  static void const *PowerShape;
-  static void const *PowerBarShape;
+  static void const* PowerShape;
+  static void const* PowerBarShape;
 };
 
 #endif

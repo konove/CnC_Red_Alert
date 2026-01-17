@@ -54,18 +54,18 @@
 #include <windowsx.h>
 #include <wwmem.h>
 
-extern void VQA_Test(char *filename);
+extern void VQA_Test(char* filename);
 
 //==========================================================================
 // Public data
 //==========================================================================
 
-GraphicBufferClass *Screen_Buffer = NULL;
+GraphicBufferClass* Screen_Buffer = NULL;
 int ScreenWidth = VIDEO_MODE_WIDTH;
 
 BOOL GameInFocus = TRUE;
-void Block_Mouse(GraphicBufferClass *) {}
-void Unblock_Mouse(GraphicBufferClass *) {}
+void Block_Mouse(GraphicBufferClass*) {}
+void Unblock_Mouse(GraphicBufferClass*) {}
 
 /***********************************************************************************************
  * WinMain -- Program entry point *

@@ -82,16 +82,16 @@ class FixedHeapClass {
   int Length(void) const { return TotalCount; };
   int Avail(void) const { return TotalCount - ActiveCount; };
 
-  virtual int ID(void const *pointer) const;
-  virtual int Set_Heap(int count, void *buffer = nullptr);
-  virtual void *Allocate(void);
+  virtual int ID(void const* pointer) const;
+  virtual int Set_Heap(int count, void* buffer = nullptr);
+  virtual void* Allocate(void);
   virtual void Clear(void);
-  virtual int Free(void *pointer);
+  virtual int Free(void* pointer);
   virtual int Free_All(void);
 
-  void *operator[](int index) { return ((char *)Buffer) + (index * Size); };
-  void const *operator[](int index) const {
-    return ((char *)Buffer) + (index * Size);
+  void* operator[](int index) { return ((char*)Buffer) + (index * Size); };
+  void const* operator[](int index) const {
+    return ((char*)Buffer) + (index * Size);
   };
 
  protected:
@@ -120,7 +120,7 @@ class FixedHeapClass {
   /*
   **	Pointer to the heap's memory buffer.
   */
-  void *Buffer;
+  void* Buffer;
 
   /*
   **	This is a boolean vector array of allocation flag bits.
@@ -129,10 +129,10 @@ class FixedHeapClass {
 
  private:
   // The assignment operator is not supported.
-  FixedHeapClass &operator=(FixedHeapClass const &);
+  FixedHeapClass& operator=(FixedHeapClass const&);
 
   // The copy constructor is not supported.
-  FixedHeapClass(FixedHeapClass const &);
+  FixedHeapClass(FixedHeapClass const&);
 };
 
 // Type-safe wrapper around FixedHeapClass that provides automatic type
@@ -145,17 +145,15 @@ class TFixedHeapClass : public FixedHeapClass {
   TFixedHeapClass(void) : FixedHeapClass(sizeof(T)) {};
   virtual ~TFixedHeapClass(void) {};
 
-  virtual int ID(T const *pointer) const {
+  virtual int ID(T const* pointer) const {
     return FixedHeapClass::ID(pointer);
   };
-  virtual T *Alloc(void) { return (T *)FixedHeapClass::Allocate(); };
-  virtual int Free(T *pointer) { return (FixedHeapClass::Free(pointer)); };
+  virtual T* Alloc(void) { return (T*)FixedHeapClass::Allocate(); };
+  virtual int Free(T* pointer) { return (FixedHeapClass::Free(pointer)); };
 
-  T &operator[](int index) {
-    return *(T *)(((char *)Buffer) + (index * Size));
-  };
-  T const &operator[](int index) const {
-    return *(T *)(((char *)Buffer) + (index * Size));
+  T& operator[](int index) { return *(T*)(((char*)Buffer) + (index * Size)); };
+  T const& operator[](int index) const {
+    return *(T*)(((char*)Buffer) + (index * Size));
   };
 };
 
@@ -169,16 +167,16 @@ class FixedIHeapClass : public FixedHeapClass {
   FixedIHeapClass(int size) : FixedHeapClass(size) {};
   virtual ~FixedIHeapClass(void) {};
 
-  virtual int Set_Heap(int count, void *buffer = nullptr);
-  virtual void *Allocate(void);
+  virtual int Set_Heap(int count, void* buffer = nullptr);
+  virtual void* Allocate(void);
   virtual void Clear(void);
-  virtual int Free(void *pointer);
+  virtual int Free(void* pointer);
   virtual int Free_All(void);
-  virtual int Logical_ID(void const *pointer) const;
+  virtual int Logical_ID(void const* pointer) const;
   virtual int Logical_ID(int id) const { return (Logical_ID((*this)[id])); }
 
-  virtual void *Active_Ptr(int index) { return ActivePointers[index]; };
-  virtual void const *Active_Ptr(int index) const {
+  virtual void* Active_Ptr(int index) { return ActivePointers[index]; };
+  virtual void const* Active_Ptr(int index) const {
     return ActivePointers[index];
   };
 
@@ -188,7 +186,7 @@ class FixedIHeapClass : public FixedHeapClass {
   *processing. *	It also allows access to this array so that custom
   *sorting can be *	performed.
   */
-  DynamicVectorClass<void *> ActivePointers;
+  DynamicVectorClass<void*> ActivePointers;
 };
 
 // Type-safe wrapper around FixedIHeapClass with automatic type conversion.
@@ -200,27 +198,25 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass(void) : FixedIHeapClass(sizeof(T)) {};
   virtual ~TFixedIHeapClass(void) {};
 
-  virtual int ID(T const *pointer) const {
+  virtual int ID(T const* pointer) const {
     return FixedIHeapClass::ID(pointer);
   };
-  virtual int Logical_ID(T const *pointer) const {
+  virtual int Logical_ID(T const* pointer) const {
     return (FixedIHeapClass::Logical_ID(pointer));
   }
   virtual int Logical_ID(int id) const {
     return (FixedIHeapClass::Logical_ID(id));
   }
-  virtual T *Alloc(void) { return (T *)FixedIHeapClass::Allocate(); };
-  virtual int Free(T *pointer) { return FixedIHeapClass::Free(pointer); };
-  virtual int Free(void *pointer) { return FixedIHeapClass::Free(pointer); };
-  virtual int Save(Pipe &file) const;
-  virtual int Load(Straw &file);
+  virtual T* Alloc(void) { return (T*)FixedIHeapClass::Allocate(); };
+  virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); };
+  virtual int Free(void* pointer) { return FixedIHeapClass::Free(pointer); };
+  virtual int Save(Pipe& file) const;
+  virtual int Load(Straw& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
-  virtual T *Ptr(std::size_t index) const {
-    return (T *)ActivePointers[index];
-  };
-  virtual T *Raw_Ptr(std::size_t index) { return (T *)((*this)[index]); };
+  virtual T* Ptr(std::size_t index) const { return (T*)ActivePointers[index]; };
+  virtual T* Raw_Ptr(std::size_t index) { return (T*)((*this)[index]); };
 };
 
 #endif

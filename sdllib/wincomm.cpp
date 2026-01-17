@@ -9,15 +9,15 @@
 #include <libserialport.h>
 #endif
 
-WinModemClass *SerialPort = nullptr;
+WinModemClass* SerialPort = nullptr;
 
 WinModemClass::WinModemClass() : PortHandle(nullptr) {}
 
-HANDLE WinModemClass::Serial_Port_Open(char * /*device_name*/, int /*baud*/,
+HANDLE WinModemClass::Serial_Port_Open(char* /*device_name*/, int /*baud*/,
                                        int /*parity*/, int /*wordlen*/,
                                        int /*stopbits*/, int /*flowcontrol*/) {
 #ifdef LIBSERIALPORT
-  sp_port *port;
+  sp_port* port;
   sp_return result = sp_get_port_by_name(device_name, &port);
 
   if (result != SP_OK) return NULL;
@@ -97,7 +97,7 @@ HANDLE WinModemClass::Serial_Port_Open(char * /*device_name*/, int /*baud*/,
 void WinModemClass::Serial_Port_Close() {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
-    sp_port *port = (sp_port *)PortHandle;
+    sp_port* port = (sp_port*)PortHandle;
     sp_close(port);
     sp_free_port(port);
     PortHandle = NULL;
@@ -105,12 +105,12 @@ void WinModemClass::Serial_Port_Close() {
 #endif
 }
 
-int WinModemClass::Read_From_Serial_Port(unsigned char * /*dest_ptr*/,
+int WinModemClass::Read_From_Serial_Port(unsigned char* /*dest_ptr*/,
                                          int /*buffer_len*/) {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
     sp_return result =
-        sp_nonblocking_read((sp_port *)PortHandle, dest_ptr, buffer_len);
+        sp_nonblocking_read((sp_port*)PortHandle, dest_ptr, buffer_len);
 
     if (result > 0) {
       return result;
@@ -120,10 +120,10 @@ int WinModemClass::Read_From_Serial_Port(unsigned char * /*dest_ptr*/,
   return 0;
 }
 
-void WinModemClass::Write_To_Serial_Port(unsigned char * /*buffer*/,
+void WinModemClass::Write_To_Serial_Port(unsigned char* /*buffer*/,
                                          int /*length*/) {
 #ifdef LIBSERIALPORT
-  if (PortHandle) sp_blocking_write((sp_port *)PortHandle, buffer, length, 0);
+  if (PortHandle) sp_blocking_write((sp_port*)PortHandle, buffer, length, 0);
 #endif
 }
 
@@ -140,18 +140,18 @@ void WinModemClass::Set_Serial_DTR(bool /*state*/) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-int WinModemClass::Get_Modem_Result(int /*delay*/, const char * /*buffer*/,
+int WinModemClass::Get_Modem_Result(int /*delay*/, const char* /*buffer*/,
                                     int /*buffer_len*/) {
   printf("WinModemClass::%s\n", __func__);
   return 0;
 }
 
-void WinModemClass::Dial_Modem(const char * /*dial_number*/) {
+void WinModemClass::Dial_Modem(const char* /*dial_number*/) {
   printf("WinModemClass::%s\n", __func__);
 }
 
-int WinModemClass::Send_Command_To_Modem(const char * /*command*/,
-                                         char /*terminator*/, char * /*buffer*/,
+int WinModemClass::Send_Command_To_Modem(const char* /*command*/,
+                                         char /*terminator*/, char* /*buffer*/,
                                          int /*buflen*/, int /*delay*/,
                                          int /*retries*/) {
   printf("WinModemClass::%s\n", __func__);
@@ -178,7 +178,7 @@ ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/)
       HardwareFlowControl(nullptr),
       NoFlowControl(nullptr) {
 #ifdef LIBSERIALPORT
-  struct sp_port **port_list;
+  struct sp_port** port_list;
 
   sp_return result = sp_list_ports(&port_list);
 

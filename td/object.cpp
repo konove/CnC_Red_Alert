@@ -125,9 +125,9 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-void const *ObjectTypeClass::SelectShapes = nullptr;
+void const* ObjectTypeClass::SelectShapes = nullptr;
 
-void const *ObjectTypeClass::PipShapes = nullptr;
+void const* ObjectTypeClass::PipShapes = nullptr;
 
 bool ObjectClass::Is_Infantry(void) const { return (false); }
 
@@ -152,7 +152,7 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
                                  bool is_crushable, bool is_stealthy,
                                  bool is_selectable, bool is_legal_target,
                                  bool is_insignificant, bool is_immune,
-                                 int name, char const *ini, ArmorType armor,
+                                 int name, char const* ini, ArmorType armor,
                                  unsigned short strength)
     : AbstractTypeClass(name, ini) {
   IsSentient = is_sentient;
@@ -207,7 +207,7 @@ int ObjectTypeClass::Max_Pips(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectTypeClass::Dimensions(int &width, int &height) const {
+void ObjectTypeClass::Dimensions(int& width, int& height) const {
   width = 10;
   height = 10;
 }
@@ -265,7 +265,7 @@ int ObjectTypeClass::Time_To_Build(HousesType) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
+BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
   return (nullptr);
 }
 
@@ -285,7 +285,7 @@ BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
+void const* ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -353,7 +353,7 @@ RTTIType ObjectClass::What_Am_I(void) const { return (RTTI_OBJECT); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(ObjectClass *) const {
+ActionType ObjectClass::What_Action(ObjectClass*) const {
   return (ACTION_NONE);
 }
 
@@ -529,12 +529,12 @@ COORDINATE ObjectClass::Render_Coord(void) const { return (Center_Coord()); }
 COORDINATE ObjectClass::Docking_Coord(void) const { return (Center_Coord()); }
 COORDINATE ObjectClass::Sort_Y(void) const { return Coord; };
 COORDINATE ObjectClass::Fire_Coord(int) const { return Coord; };
-void ObjectClass::Record_The_Kill(TechnoClass *) {};
+void ObjectClass::Record_The_Kill(TechnoClass*) {};
 void ObjectClass::Do_Shimmer(void) {};
-int ObjectClass::Exit_Object(TechnoClass *) { return 0; };
+int ObjectClass::Exit_Object(TechnoClass*) { return 0; };
 void ObjectClass::Hidden(void) {};
 void ObjectClass::Look(bool) {};
-void ObjectClass::Active_Click_With(ActionType, ObjectClass *) {};
+void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {};
 void ObjectClass::Active_Click_With(ActionType, CELL){};
 void ObjectClass::Clicked_As_Target(int) {};
 bool ObjectClass::In_Range(COORDINATE, int) const { return false; };
@@ -716,7 +716,7 @@ void ObjectClass::Unselect(void) {
 bool ObjectClass::Select(void) {
   if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) return (false);
 
-  if (Can_Player_Move() && Is_Techno() && ((TechnoClass *)this)->IsALoaner)
+  if (Can_Player_Move() && Is_Techno() && ((TechnoClass*)this)->IsALoaner)
     return (false);
 
   /*
@@ -734,7 +734,7 @@ bool ObjectClass::Select(void) {
       Unselect_All();
     }
   }
-  if (((TechnoTypeClass const &)Class_Of()).IsLeader) {
+  if (((TechnoTypeClass const&)Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
     CurrentObject.Add(this);
@@ -784,7 +784,7 @@ bool ObjectClass::Render(bool forced) {
       switch (What_Am_I()) {
         case RTTI_INFANTRY:
         case RTTI_UNIT:
-          FootClass *foot = (FootClass *)this;
+          FootClass* foot = (FootClass*)this;
           CELL cell;
           int oldx, oldy;
 
@@ -846,7 +846,7 @@ bool ObjectClass::Render(bool forced) {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Debug_Dump(MonoClass *mono) const {
+void ObjectClass::Debug_Dump(MonoClass* mono) const {
   mono->Text_Print("X", 16 + (IsToDisplay ? 2 : 0), 18);
   mono->Text_Print("X", 16 + (IsActive ? 2 : 0), 3);
   mono->Text_Print("X", 16 + (IsInLimbo ? 2 : 0), 4);
@@ -877,7 +877,7 @@ void ObjectClass::Debug_Dump(MonoClass *mono) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const *ObjectTypeClass::Occupy_List(bool) const {
+short const* ObjectTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
   return (_list);
 }
@@ -900,7 +900,7 @@ short const *ObjectTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const *ObjectTypeClass::Overlap_List(void) const {
+short const* ObjectTypeClass::Overlap_List(void) const {
   static short const _list[] = {REFRESH_EOL};
   return (_list);
 }
@@ -1152,9 +1152,8 @@ void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType ObjectClass::Receive_Message(RadioClass *,
-                                              RadioMessageType message,
-                                              long &) {
+RadioMessageType ObjectClass::Receive_Message(RadioClass*,
+                                              RadioMessageType message, long&) {
   switch (message) {
     /*
     **	This message serves as a rendering convenience. It lets the system
@@ -1198,8 +1197,8 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass *,
  *processing for attacked or destroyed.                      * 01/01/1995 JLB :
  *Reduces damage greatly depending on range.                               *
  *=============================================================================================*/
-ResultType ObjectClass::Take_Damage(int &damage, int distance,
-                                    WarheadType warhead, TechnoClass *source) {
+ResultType ObjectClass::Take_Damage(int& damage, int distance,
+                                    WarheadType warhead, TechnoClass* source) {
   ResultType result = RESULT_NONE;
   int oldstrength = Strength;
 
@@ -1301,7 +1300,7 @@ ResultType ObjectClass::Take_Damage(int &damage, int distance,
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Mark(MarkType mark) {
-  TechnoClass *tech;
+  TechnoClass* tech;
   CELL cell;
   int threat;
   HousesType house;
@@ -1344,7 +1343,7 @@ bool ObjectClass::Mark(MarkType mark) {
     ** or not to see if we have to adjust the regional threat ratings
     */
     if (Is_Techno()) {
-      tech = (TechnoClass *)this;
+      tech = (TechnoClass*)this;
       threat = tech->Risk();
       house = tech->Owner();
       cell = Coord_Cell(Coord);
@@ -1411,16 +1410,16 @@ void ObjectClass::Init(void) { CurrentObject.Clear(); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Revealed(HouseClass *house) { return (house != nullptr); }
+bool ObjectClass::Revealed(HouseClass* house) { return (house != nullptr); }
 
 // These can't be made inline (for various reasons).
-short const *ObjectClass::Occupy_List(bool placement) const {
+short const* ObjectClass::Occupy_List(bool placement) const {
   return (Class_Of().Occupy_List(placement));
 };
-short const *ObjectClass::Overlap_List(void) const {
+short const* ObjectClass::Overlap_List(void) const {
   return (Class_Of().Overlap_List());
 };
-BuildingClass *ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
+BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return (Class_Of().Who_Can_Build_Me(intheory, legal, Owner()));
 };
 unsigned ObjectClass::Health_Ratio(void) const {

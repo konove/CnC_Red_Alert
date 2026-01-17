@@ -35,13 +35,12 @@
  *   Exit -- Exit routine with message.                                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "misc.h"
-
-#include <cstdio>
-
-#include <cstdlib>
 #include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 #include <ctime>
+
+#include "misc.h"
 
 /***************************************************************************
  * EXIT -- Exit routine with message.                                      *
@@ -57,7 +56,7 @@
  * HISTORY:                                                                *
  *   08/03/1994 SKB : Created.                                             *
  *=========================================================================*/
-void __cdecl Exit(INT errorval, const char *message, ...) {
+void __cdecl Exit(INT errorval, const char* message, ...) {
   va_list argptr;
   char errstring[256];
 
@@ -65,7 +64,7 @@ void __cdecl Exit(INT errorval, const char *message, ...) {
 
   if (message && *message) {
     va_start(argptr, message);
-    vsprintf((char *)errstring, (const char *)message, argptr);
+    vsprintf((char*)errstring, (const char*)message, argptr);
     va_end(argptr);
     printf(errstring);
   }

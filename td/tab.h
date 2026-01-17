@@ -49,9 +49,9 @@
 class TabClass : public SidebarClass {
  public:
   TabClass(void);
-  TabClass(NoInitClass const &x) : SidebarClass(x), Credits(x) {};
+  TabClass(NoInitClass const& x) : SidebarClass(x), Credits(x) {};
 
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
 
   virtual void One_Time(void);  // One-time inits
@@ -82,7 +82,7 @@ class TabClass : public SidebarClass {
  private:
   void Set_Active(int select);
 
-  static void const *TabShape;
+  static void const* TabShape;
 };
 
 #endif

@@ -84,7 +84,7 @@ TarComClass::~TarComClass(void) {}
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void TarComClass::Debug_Dump(MonoClass *mono) const {
+void TarComClass::Debug_Dump(MonoClass* mono) const {
   TurretClass::Debug_Dump(mono);
 }
 #endif
@@ -112,7 +112,7 @@ void TarComClass::AI(void) {
     *weapon can fire, then the *	failure code returned is that from the
     *primary weapon.
     */
-    WeaponTypeClass const *weapon = &Weapons[Class->Primary];
+    WeaponTypeClass const* weapon = &Weapons[Class->Primary];
     int primary = 0;
     FireErrorType ok = Can_Fire(TarCom, 0);
     if (ok != FIRE_OK) {
@@ -128,7 +128,7 @@ void TarComClass::AI(void) {
         if (What_Am_I() != RTTI_UNIT) {
           IsFiring = false;
         } else {
-          if (!((UnitClass *)this)->Class->IsFireAnim) {
+          if (!((UnitClass*)this)->Class->IsFireAnim) {
             IsFiring = false;
           }
         }

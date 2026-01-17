@@ -50,7 +50,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Constructor/Destructor
   */
-  TextLabelClass(char *txt, int x, int y, RemapControlType *color,
+  TextLabelClass(char* txt, int x, int y, RemapControlType* color,
                  TextPrintType style);
 
   /*
@@ -61,7 +61,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Sets the displayed text of the label
   */
-  virtual void Set_Text(char *txt) { Text = txt; };
+  virtual void Set_Text(char* txt) { Text = txt; };
 
   /*
   ** General-purpose data fields
@@ -69,8 +69,8 @@ class TextLabelClass : public GadgetClass {
   unsigned long UserData1;
   unsigned long UserData2;
   TextPrintType Style;
-  char *Text;
-  RemapControlType *Color;
+  char* Text;
+  RemapControlType* Color;
   int PixWidth;
 };
 

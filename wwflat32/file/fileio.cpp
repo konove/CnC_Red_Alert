@@ -42,8 +42,8 @@
 #include "_file.h"
 #endif
 
-#include <dos.h>
 #include <direct.h>
+#include <dos.h>
 #include <io.h>
 
 /*=========================================================================*/
@@ -82,7 +82,7 @@ WORD ibm_close(WORD handle) {
   return (success);
 }
 
-WORD ibm_unlink(BYTE const *name) {
+WORD ibm_unlink(BYTE const* name) {
   WORD success;
 
   CallingDOSInt++;
@@ -100,7 +100,7 @@ LONG ibm_lseek(WORD handle, LONG offset, WORD where) {
   return (new_offset);
 }
 
-UWORD ibm_read(WORD handle, VOID *ptr, UWORD bytes) {
+UWORD ibm_read(WORD handle, VOID* ptr, UWORD bytes) {
   UWORD bytes_read;
 
   CallingDOSInt++;
@@ -109,7 +109,7 @@ UWORD ibm_read(WORD handle, VOID *ptr, UWORD bytes) {
   return (bytes_read);
 }
 
-UWORD ibm_write(WORD handle, VOID *ptr, UWORD bytes) {
+UWORD ibm_write(WORD handle, VOID* ptr, UWORD bytes) {
   UWORD bytes_written;
 
   CallingDOSInt++;
@@ -118,7 +118,7 @@ UWORD ibm_write(WORD handle, VOID *ptr, UWORD bytes) {
   return (bytes_written);
 }
 
-WORD ibm_open(BYTE const *name, UWORD mode, WORD attrib) {
+WORD ibm_open(BYTE const* name, UWORD mode, WORD attrib) {
   WORD handle;
 
   CallingDOSInt++;
@@ -127,7 +127,7 @@ WORD ibm_open(BYTE const *name, UWORD mode, WORD attrib) {
   return (handle);
 }
 
-WORD ibm_chdir(BYTE const *path) {
+WORD ibm_chdir(BYTE const* path) {
   WORD retval;
 
   CallingDOSInt++;

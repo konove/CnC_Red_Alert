@@ -189,28 +189,28 @@ class MapEditClass : public MouseClass {
   **	mapedit.cpp
   */
   MapEditClass(void);
-  MapEditClass(NoInitClass const &x) : MouseClass(x) {};
+  MapEditClass(NoInitClass const& x) : MouseClass(x) {};
   bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_index);
 
   virtual void One_Time(void);  // One-time init
   virtual void Init_IO(void);   // Inits button list
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool forced = true);
-  virtual bool Scroll_Map(DirType facing, int &distance, bool really = true);
-  virtual void Read_INI(CCINIClass &ini);
-  virtual void Write_INI(CCINIClass &ini);
-  virtual void Detach(ObjectClass *object);
+  virtual bool Scroll_Map(DirType facing, int& distance, bool really = true);
+  virtual void Read_INI(CCINIClass& ini);
+  virtual void Write_INI(CCINIClass& ini);
+  virtual void Detach(ObjectClass* object);
   void Detach(TARGET target, bool all = true) {
     MouseClass::Detach(target, all);
   }
   void Clear_List(void);
-  bool Add_To_List(ObjectTypeClass const *object);
+  bool Add_To_List(ObjectTypeClass const* object);
   void Main_Menu(void);
   void AI_Menu(void);
   bool Mouse_Moved(void);
-  bool Verify_House(HousesType house, ObjectTypeClass const *objtype);
-  HousesType Cycle_House(HousesType curhouse, ObjectTypeClass const *objtype);
+  bool Verify_House(HousesType house, ObjectTypeClass const* objtype);
+  HousesType Cycle_House(HousesType curhouse, ObjectTypeClass const* objtype);
   //		int Trigger_Needs_Team(TriggerClass *trigger);
   void Fatal(int txt);
 
@@ -220,9 +220,9 @@ class MapEditClass : public MouseClass {
   int New_Scenario(void);
   int Load_Scenario(void);
   int Save_Scenario(void);
-  int Pick_Scenario(char const *caption, int &scen_nump,
-                    ScenarioPlayerType &playerp, ScenarioDirType &dirp,
-                    ScenarioVarType &varp);
+  int Pick_Scenario(char const* caption, int& scen_nump,
+                    ScenarioPlayerType& playerp, ScenarioDirType& dirp,
+                    ScenarioVarType& varp);
   int Size_Map(int x, int y, int w, int h);
   int Scenario_Dialog(void);
   void Handle_Triggers(void);
@@ -241,7 +241,7 @@ class MapEditClass : public MouseClass {
   void Place_Prev_Category(void);
   void Place_Home(void);
   void Toggle_House(void);
-  void Set_House_Buttons(HousesType house, GadgetClass *btnlist, int base_id);
+  void Set_House_Buttons(HousesType house, GadgetClass* btnlist, int base_id);
   void Start_Trigger_Placement(void);
   void Stop_Trigger_Placement(void);
   void Place_Trigger(void);
@@ -262,10 +262,10 @@ class MapEditClass : public MouseClass {
   /*
   **	mapedtm.cpp
   */
-  void Draw_Member(TechnoTypeClass const *ptr, int index, int quant,
+  void Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
                    HousesType house);
-  void Handle_Teams(char const *caption);
-  int Select_Team(char const *caption);
+  void Handle_Teams(char const* caption);
+  int Select_Team(char const* caption);
   int Team_Members(HousesType house);
 
   /*
@@ -281,7 +281,7 @@ class MapEditClass : public MouseClass {
   **	Array of all TypeClasses the user can add to the map; cleared by
   **	Clear_List(), added to by Add_To_List()
   */
-  ObjectTypeClass const *Objects[MAX_EDIT_OBJECTS];
+  ObjectTypeClass const* Objects[MAX_EDIT_OBJECTS];
   int ObjCount;  // # of objects in the Objects array
 
   /*
@@ -293,7 +293,7 @@ class MapEditClass : public MouseClass {
   /*
   **	Variables for grabbing/moving objects
   */
-  ObjectClass *GrabbedObject;   // object "grabbed" with mouse
+  ObjectClass* GrabbedObject;   // object "grabbed" with mouse
   CELL GrabOffset;              // offset to grabbed obj's upper-left
   unsigned long LastClickTime;  // time of last LMOUSE click
 
@@ -319,12 +319,12 @@ class MapEditClass : public MouseClass {
   /*
   **	The "current" trigger for point-and-click trigger setting
   */
-  TriggerTypeClass *CurTrigger;  // current trigger
+  TriggerTypeClass* CurTrigger;  // current trigger
 
   /*
   **	The "current" team type for editing & associating with a trigger
   */
-  TeamTypeClass *CurTeam;  // current team
+  TeamTypeClass* CurTeam;  // current team
 
   /*
   **	Bitfields for flags & such
@@ -342,17 +342,17 @@ class MapEditClass : public MouseClass {
   /*
   **	Variables for supporting the object-editing controls at screen bottom
   */
-  ListClass *HouseList;
-  ListClass *MissionList;
-  TriColorGaugeClass *HealthGauge;
-  Dial8Class *FacingDial;
-  ControlClass *MapArea;
-  TextLabelClass *HealthText;
-  TextButtonClass *Sellable;
-  TextButtonClass *Rebuildable;
+  ListClass* HouseList;
+  ListClass* MissionList;
+  TriColorGaugeClass* HealthGauge;
+  Dial8Class* FacingDial;
+  ControlClass* MapArea;
+  TextLabelClass* HealthText;
+  TextButtonClass* Sellable;
+  TextButtonClass* Rebuildable;
   static char HealthBuf[20];
-  GaugeClass *BaseGauge;
-  TextLabelClass *BaseLabel;
+  GaugeClass* BaseGauge;
+  TextLabelClass* BaseLabel;
   static MissionType MapEditMissions[];
 };
 

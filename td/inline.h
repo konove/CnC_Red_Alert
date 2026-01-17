@@ -63,37 +63,36 @@ inline int Coord_Y(COORDINATE coord) { return (short)(HighWord(coord)); }
 inline int Cell_X(CELL cell) { return (int)(((unsigned)cell) & 0x3F); }
 inline int Cell_Y(CELL cell) { return (int)(((unsigned)cell) >> 6); }
 inline int Dir_Diff(DirType dir1, DirType dir2) {
-  return (int)(*((signed char *)&dir2) - *((signed char *)&dir1));
+  return (int)(*((signed char*)&dir2) - *((signed char*)&dir1));
 }
 inline CELL Coord_XLepton(COORDINATE coord) {
-  return (CELL)(*((unsigned char *)&coord));
+  return (CELL)(*((unsigned char*)&coord));
 }
 inline CELL Coord_YLepton(COORDINATE coord) {
-  return (CELL)(*(((unsigned char *)&coord) + 2));
+  return (CELL)(*(((unsigned char*)&coord) + 2));
 }
 // inline COORD CellXY_Coord(unsigned x, unsigned y) {return
 // (COORD)(MAKE_LONG(y<<8, x<<8));}
 inline COORDINATE Coord_Add(COORDINATE coord1, COORDINATE coord2) {
   return (COORDINATE)MakeLong(
-      (*((short *)(&coord1) + 1) + *((short *)(&coord2) + 1)),
-      (*((short *)(&coord1)) + *((short *)(&coord2))));
+      (*((short*)(&coord1) + 1) + *((short*)(&coord2) + 1)),
+      (*((short*)(&coord1)) + *((short*)(&coord2))));
 }
 inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
   return (COORDINATE)MakeLong(
-      (*((short *)(&coord1) + 1) - *((short *)(&coord2) + 1)),
-      (*((short *)(&coord1)) - *((short *)(&coord2))));
+      (*((short*)(&coord1) + 1) - *((short*)(&coord2) + 1)),
+      (*((short*)(&coord1)) - *((short*)(&coord2))));
 }
 inline COORDINATE Coord_Snap(COORDINATE coord) {
   return (COORDINATE)MakeLong(
-      (((*(((unsigned short *)&coord) + 1)) & 0xFF00) | 0x80),
-      (((*((unsigned short *)&coord)) & 0xFF00) | 0x80));
+      (((*(((unsigned short*)&coord) + 1)) & 0xFF00) | 0x80),
+      (((*((unsigned short*)&coord)) & 0xFF00) | 0x80));
 }
 inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
   return (COORDINATE)MakeLong(
-      (*((unsigned short *)(&coord1) + 1) +
-       *((unsigned short *)(&coord2) + 1)) >>
+      (*((unsigned short*)(&coord1) + 1) + *((unsigned short*)(&coord2) + 1)) >>
           1,
-      (*((unsigned short *)(&coord1)) + *((unsigned short *)(&coord2))) >> 1);
+      (*((unsigned short*)(&coord1)) + *((unsigned short*)(&coord2))) >> 1);
 }
 inline COORDINATE Cell_Coord(CELL cell) {
   return (COORDINATE)MakeLong((((cell & 0x0FC0) << 2) | 0x80),
@@ -145,10 +144,10 @@ inline COORDINATE XYP_Coord(int x, int y) {
 };
 
 inline CELL Coord_XCell(COORDINATE coord) {
-  return (CELL)(*(((unsigned char *)&coord) + 1));
+  return (CELL)(*(((unsigned char*)&coord) + 1));
 }
 inline CELL Coord_YCell(COORDINATE coord) {
-  return (CELL)(*(((unsigned char *)&coord) + 3));
+  return (CELL)(*(((unsigned char*)&coord) + 3));
 }
 [[nodiscard]] constexpr CELL Coord_Cell(const COORDINATE coord) noexcept {
   // Capture the 'High Word' processing:

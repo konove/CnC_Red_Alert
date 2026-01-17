@@ -187,7 +187,7 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Debug_Dump(MonoClass *mono) const {
+void InfantryClass::Debug_Dump(MonoClass* mono) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -308,10 +308,10 @@ InfantryClass::~InfantryClass(void) {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void *InfantryClass::operator new(size_t) throw() {
-  void *ptr = Infantry.Allocate();
+void* InfantryClass::operator new(size_t) throw() {
+  void* ptr = Infantry.Allocate();
   if (ptr != nullptr) {
-    ((InfantryClass *)ptr)->IsActive = true;
+    ((InfantryClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -330,11 +330,11 @@ void *InfantryClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::operator delete(void *ptr) {
+void InfantryClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((InfantryClass *)ptr)->IsActive = false;
+    ((InfantryClass*)ptr)->IsActive = false;
   }
-  Infantry.Free((InfantryClass *)ptr);
+  Infantry.Free((InfantryClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -363,8 +363,8 @@ void InfantryClass::operator delete(void *ptr) {
  *handler for techno objects.                           * 03/31/1995 JLB :
  *Revenge factor.                                                          *
  *=============================================================================================*/
-ResultType InfantryClass::Take_Damage(int &damage, int distance,
-                                      WarheadType warhead, TechnoClass *source,
+ResultType InfantryClass::Take_Damage(int& damage, int distance,
+                                      WarheadType warhead, TechnoClass* source,
                                       bool forced) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
@@ -385,7 +385,7 @@ ResultType InfantryClass::Take_Damage(int &damage, int distance,
   ** we're not the target, or the dog doesn't exist, then take no damage.
   */
   if (source != nullptr && source->What_Am_I() == RTTI_INFANTRY &&
-      ((InfantryClass *)source)->Class->IsDog) {
+      ((InfantryClass*)source)->Class->IsDog) {
     if (source->TarCom == As_Target()) {
       damage = Strength;
     } else {
@@ -590,7 +590,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
   *imagery for it. If *	there is no shape image, then it certainly can't be
   *drawn -- bail.
   */
-  void const *shapefile = Get_Image_Data();
+  void const* shapefile = Get_Image_Data();
 
   if (shapefile == nullptr) return;
 
@@ -629,7 +629,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
   assert(IsActive);
 
   BStart(BENCH_PCP);
-  CellClass *cellptr = &Map[Coord];
+  CellClass* cellptr = &Map[Coord];
 
   if (why == PCP_END) {
     /*
@@ -637,7 +637,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     *trying to *	capture, then capture it.
     */
     if (Mission == MISSION_CAPTURE) {
-      TechnoClass *tech = cellptr->Cell_Building();
+      TechnoClass* tech = cellptr->Cell_Building();
 
       if (tech == nullptr) tech = cellptr->Cell_Techno();
       if (tech != nullptr &&
@@ -658,7 +658,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           } else {
             bool iscapturable = false;
             if (tech->What_Am_I() == RTTI_BUILDING) {
-              iscapturable = ((BuildingClass *)tech)->Class->IsCaptureable;
+              iscapturable = ((BuildingClass*)tech)->Class->IsCaptureable;
             }
             if (tech->Health_Ratio() <= EngineerCaptureLevel && iscapturable) {
               if (tech->Trigger.Is_Valid()) {
@@ -697,7 +697,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
             tech->SpiedBy |= housespy;
             tech->Mark(MARK_OVERLAP_DOWN);
             if (tech->What_Am_I() == RTTI_BUILDING) {
-              StructType build = *(BuildingClass *)tech;
+              StructType build = *(BuildingClass*)tech;
               if (build == STRUCT_RADAR /* || build == STRUCT_EYE */) {
                 tech->House->RadarSpied |= housespy;
               }
@@ -717,7 +717,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->House->IsThieved = true;
 
               if (tech->What_Am_I() == RTTI_BUILDING) {
-                BuildingClass *bldg = (BuildingClass *)tech;
+                BuildingClass* bldg = (BuildingClass*)tech;
                 if (bldg->Class->Capacity) {
                   /*
                   ** If we just raided a storage facility (refinery or silo)
@@ -859,7 +859,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     **	Infantry entering a transport vehicle will break radio contact
     **	at attach itself to the transporter.
     */
-    TechnoClass *techno = Contact_With_Whom();
+    TechnoClass* techno = Contact_With_Whom();
     if (Mission == MISSION_ENTER && techno != nullptr &&
         Coord_Cell(Coord) == Coord_Cell(techno->Coord) &&
         techno == As_Techno(NavCom)) {
@@ -876,7 +876,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     *trying to *	sabotage, then sabotage it.
     */
     if (Mission == MISSION_SABOTAGE) {
-      BuildingClass *building = cellptr->Cell_Building();
+      BuildingClass* building = cellptr->Cell_Building();
       if (building != nullptr && building->As_Target() == NavCom) {
         if (!building->IronCurtainCountDown &&
             building->Mission != MISSION_DECONSTRUCTION) {
@@ -959,7 +959,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     /*
     ** If entering a cell with a land mine in it, blow up the mine.
     */
-    BuildingClass *bldng = cellptr->Cell_Building();
+    BuildingClass* bldng = cellptr->Cell_Building();
     if (bldng != nullptr && *bldng == STRUCT_APMINE) {
       /*
       ** Show the animation and get rid of the land mine
@@ -971,7 +971,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       delete bldng;
       int damage;
       for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *obj = Infantry.Ptr(index);
+        InfantryClass* obj = Infantry.Ptr(index);
         if (obj != nullptr && !obj->IsInLimbo) {
           int dist = ::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
@@ -1109,7 +1109,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
     **	wait until radio contact can be established.
     */
     if (!In_Radio_Contact()) {
-      TechnoClass *techno = As_Techno(target);
+      TechnoClass* techno = As_Techno(target);
       if (techno != nullptr) {
         /*
         **	Determine if the transport is already in radio contact. If so,
@@ -1176,7 +1176,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   *destination to the *	target specified.
   */
   if (!Target_Legal(NavCom) && Class->IsCapture && !Is_Weapon_Equipped()) {
-    BuildingClass const *building = As_Building(target);
+    BuildingClass const* building = As_Building(target);
     if (building != nullptr && building->Class->IsCaptureable) {
       Assign_Destination(target);
     }
@@ -1316,14 +1316,14 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
     return (MOVE_NO);
   }
 
-  CellClass *cellptr = &Map[cell];
+  CellClass* cellptr = &Map[cell];
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
   **	in it.
   */
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const &otype =
+    OverlayTypeClass const& otype =
         OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (otype.IsCrate && House &&
@@ -1352,7 +1352,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
   ** for how they affect movement.
   */
   MoveType retval = MOVE_OK;
-  ObjectClass *obj = cellptr->Cell_Occupier();
+  ObjectClass* obj = cellptr->Cell_Occupier();
   while (obj != nullptr) {
     if (obj != this) {
       /*
@@ -1378,13 +1378,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
       ** If object is a land mine, allow movement
       */
       if (obj->What_Am_I() == RTTI_BUILDING) {
-        if ((*(BuildingClass *)obj) == STRUCT_AVMINE) {
+        if ((*(BuildingClass*)obj) == STRUCT_AVMINE) {
           obj = obj->Next;
           continue;
         } else {
           if (!Rule.IsMineAware ||
-              !((BuildingClass *)obj)->House->Is_Ally(House)) {
-            if ((*(BuildingClass *)obj) == STRUCT_APMINE) {
+              !((BuildingClass*)obj)->House->Is_Ally(House)) {
+            if ((*(BuildingClass*)obj) == STRUCT_APMINE) {
               obj = obj->Next;
               continue;
             }
@@ -1435,8 +1435,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           *not.
           */
           case RTTI_UNIT:
-            if (((UnitClass *)obj)->IsDriving ||
-                Target_Legal(((UnitClass *)obj)->NavCom)) {
+            if (((UnitClass*)obj)->IsDriving ||
+                Target_Legal(((UnitClass*)obj)->NavCom)) {
               if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
             } else {
               if (retval < MOVE_TEMP) retval = MOVE_TEMP;
@@ -1462,7 +1462,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
         **	Cloaked enemy objects are not considered if this is a
         *Find_Path() *	call.
         */
-        if (!obj->Is_Techno() || ((TechnoClass *)obj)->Cloak != CLOAKED) {
+        if (!obj->Is_Techno() || ((TechnoClass*)obj)->Cloak != CLOAKED) {
           /*
           **	Any non-allied blockage is considered impassible if the infantry
           **	is not equipped with a weapon.
@@ -1477,7 +1477,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
           switch (obj->What_Am_I()) {
             case RTTI_TERRAIN:
 #ifdef OBSOLETE
-              if (((TerrainClass *)obj)->Class->Armor == ARMOR_WOOD &&
+              if (((TerrainClass*)obj)->Class->Armor == ARMOR_WOOD &&
                   Class->PrimaryWeapon->WarheadPtr->IsWoodDestroyer) {
                 if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
               } else {
@@ -1488,7 +1488,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
               return (MOVE_NO);
 #endif
             case RTTI_INFANTRY:
-              if (*(InfantryClass *)obj == INFANTRY_SPY && !Class->IsDog) {
+              if (*(InfantryClass*)obj == INFANTRY_SPY && !Class->IsDog) {
                 retval = MOVE_TEMP;
                 break;
               }
@@ -1594,9 +1594,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 #ifdef PARTIAL
-short const *InfantryClass::Overlap_List(bool redraw) const
+short const* InfantryClass::Overlap_List(bool redraw) const
 #else
-short const *InfantryClass::Overlap_List(bool) const
+short const* InfantryClass::Overlap_List(bool) const
 #endif
 {
   assert(Infantry.ID(this) == ID);
@@ -1674,7 +1674,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   ** illegal so he won't be constantly healing healed infantrymen.
   */
   if (Combat_Damage() < 0) {
-    TechnoClass *targ = As_Techno(target);
+    TechnoClass* targ = As_Techno(target);
     if (targ == nullptr || targ->Health_Ratio() >= Rule.ConditionGreen) {
       return (FIRE_ILLEGAL);
     }
@@ -2123,7 +2123,7 @@ bool InfantryClass::Stop_Driver(void) {
  *closest spot possible.                                  * 05/15/1995 JLB :
  *Uses closest spot if moving onto transport.                              *
  *=============================================================================================*/
-bool InfantryClass::Start_Driver(COORDINATE &headto) {
+bool InfantryClass::Start_Driver(COORDINATE& headto) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2206,7 +2206,7 @@ bool InfantryClass::Limbo(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass *InfantryClass::Fire_At(TARGET target, int which) {
+BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2214,7 +2214,7 @@ BulletClass *InfantryClass::Fire_At(TARGET target, int which) {
   IsFiring = false;
   Mark(MARK_OVERLAP_DOWN);
 
-  BulletClass *bullet = FootClass::Fire_At(target, which);
+  BulletClass* bullet = FootClass::Fire_At(target, which);
   if (bullet != nullptr && !IsInLimbo) {
     /*
     **	For fraidycat infantry that run out of ammo, always go into
@@ -2430,7 +2430,7 @@ void InfantryClass::Response_Select(void) {
     static VocType _shock_response[] = {VOC_STYES1, VOC_STJUMP1, VOC_STJUICE1};
 
     int size = 0;
-    VocType *response = nullptr;
+    VocType* response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2554,7 +2554,7 @@ void InfantryClass::Response_Move(void) {
     static VocType _shock[] = {VOC_STPOWER1, VOC_STDANCE1, VOC_STCHRGE1};
 
     int size = 0;
-    VocType *response = nullptr;
+    VocType* response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2685,7 +2685,7 @@ void InfantryClass::Response_Attack(void) {
                                VOC_STSHOCK1};
 
     int size = 0;
-    VocType *response = nullptr;
+    VocType* response = nullptr;
     HousesType house = PlayerPtr->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
@@ -2777,7 +2777,7 @@ void InfantryClass::Response_Attack(void) {
  *                                                                                             *
  * HISTORY: * 03/01/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType InfantryClass::What_Action(ObjectClass const *object) const {
+ActionType InfantryClass::What_Action(ObjectClass const* object) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
   assert(object != nullptr);
@@ -2793,7 +2793,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   */
   if (*this == INFANTRY_RENOVATOR && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
-    BuildingClass const *bldg = (BuildingClass *)object;
+    BuildingClass const* bldg = (BuildingClass*)object;
     if (bldg->Class->IsRepairable) {
       if (House->Is_Ally(bldg)) {
         if (bldg->Health_Ratio() == 1) {
@@ -2826,7 +2826,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
         if (object->Health_Ratio() < Rule.ConditionGreen) {
           // If it's a mechanic force-moving into an APC, don't try to heal it.
           if (*this == INFANTRY_MECHANIC && object->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass *)object == UNIT_APC &&
+              *(UnitClass*)object == UNIT_APC &&
               (Keyboard->Down(Options.KeyForceMove1) ||
                Keyboard->Down(Options.KeyForceMove2))) {
           } else {
@@ -2835,7 +2835,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
         }
       }
       if (!object->Is_Techno() ||
-          !((TechnoClass *)object)->Techno_Type_Class()->Max_Passengers()) {
+          !((TechnoClass*)object)->Techno_Type_Class()->Max_Passengers()) {
         if (action == ACTION_GUARD_AREA || action == ACTION_MOVE) {
           return (action);
         }
@@ -2851,7 +2851,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   ** See if it's a thief attacking an enemy vehicle, let him CAPTURE it.
   */
   if (*this == INFANTRY_THIEF && object->What_Am_I() == RTTI_UNIT) {
-    if (((UnitClass *)object)->House != House) {
+    if (((UnitClass*)object)->House != House) {
       return (ACTION_CAPTURE);
     }
   }
@@ -2871,7 +2871,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   */
   if (Class->IsBomber && action == ACTION_ATTACK &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass const *obj = (BuildingClass *)object;
+    BuildingClass const* obj = (BuildingClass*)object;
     /*
     ** Hack: Tanya should shoot barrels, bomb other structures.
     */
@@ -2888,7 +2888,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   */
   if (action == ACTION_NONE && object->What_Am_I() == RTTI_BUILDING &&
       House->IsPlayerControl) {
-    StructType blah = *((BuildingClass *)object);
+    StructType blah = *((BuildingClass*)object);
     if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE) return (ACTION_MOVE);
   }
 
@@ -2904,9 +2904,9 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
   */
   if (House->Is_Ally(object) && House->IsPlayerControl && object->Is_Techno()) {
     if (object->What_Am_I() != RTTI_VESSEL ||
-        *(VesselClass *)object != VESSEL_CARRIER) {
-      switch (((InfantryClass *)this)
-                  ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass *)object)) {
+        *(VesselClass*)object != VESSEL_CARRIER) {
+      switch (((InfantryClass*)this)
+                  ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object)) {
         case RADIO_ROGER:
           action = ACTION_ENTER;
           break;
@@ -2929,10 +2929,10 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
             // *)object)->Pip_Count() == 0 && *((AircraftClass *)object) ==
             // AIRCRAFT_TRANSPORT) ||
             (object->What_Am_I() == RTTI_BUILDING &&
-             ((BuildingClass *)object)->Class->IsCaptureable))) {
+             ((BuildingClass*)object)->Class->IsCaptureable))) {
       if (*this == INFANTRY_THIEF &&
           (object->What_Am_I() == RTTI_BUILDING &&
-           ((BuildingClass *)object)->Class->Capacity == 0)) {
+           ((BuildingClass*)object)->Class->Capacity == 0)) {
         action = ACTION_NONE;
       } else {
         /*
@@ -2946,8 +2946,8 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
         if (object->What_Am_I() == RTTI_BUILDING) {
           CELL cell = ::As_Cell(object->As_Target());
           int targzone = Map[::As_Cell(As_Target())].Zones[Class->MZone];
-          short const *list =
-              ((BuildingClass *)object)->Class->Occupy_List(false);
+          short const* list =
+              ((BuildingClass*)object)->Class->Occupy_List(false);
           bool found = false;
           while (*list != REFRESH_EOL && !found) {
             CELL newcell = cell + *list++;
@@ -2999,7 +2999,7 @@ ActionType InfantryClass::What_Action(ObjectClass const *object) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Active_Click_With(ActionType action, ObjectClass *object) {
+void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3286,7 +3286,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const &InfantryClass::Class_Of(void) const {
+ObjectTypeClass const& InfantryClass::Class_Of(void) const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3311,18 +3311,18 @@ ObjectTypeClass const &InfantryClass::Class_Of(void) const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Read_INI(CCINIClass &ini) {
-  InfantryClass *infantry;  // Working infantry pointer.
+void InfantryClass::Read_INI(CCINIClass& ini) {
+  InfantryClass* infantry;  // Working infantry pointer.
   HousesType inhouse;       // Infantry house.
   InfantryType classid;     // Infantry class.
   char buf[128];
-  char *validation;
+  char* validation;
   DirType dir;
-  TriggerTypeClass *tp;
+  TriggerTypeClass* tp;
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const *entry = ini.Get_Entry(INI_Name(), index);
+    char const* entry = ini.Get_Entry(INI_Name(), index);
 
     /*
     **	Get an infantry entry
@@ -3380,7 +3380,7 @@ void InfantryClass::Read_INI(CCINIClass &ini) {
 
           infantry->Trigger = nullptr;
           if (tp != nullptr) {
-            TriggerClass *tt = Find_Or_Make(tp);
+            TriggerClass* tt = Find_Or_Make(tp);
             if (tt != nullptr) {
               tt->AttachCount++;
               infantry->Trigger = tt;
@@ -3427,7 +3427,7 @@ void InfantryClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Write_INI(CCINIClass &ini) {
+void InfantryClass::Write_INI(CCINIClass& ini) {
   /*
   **	First, clear out all existing infantry data from the ini file.
   */
@@ -3437,7 +3437,7 @@ void InfantryClass::Write_INI(CCINIClass &ini) {
   **	Write the infantry data out.
   */
   for (int index = 0; index < Infantry.Count(); index++) {
-    InfantryClass *infantry = Infantry.Ptr(index);
+    InfantryClass* infantry = Infantry.Ptr(index);
     if (!infantry->IsInLimbo) {
       char uname[10];
       char buf[128];
@@ -3573,7 +3573,7 @@ void InfantryClass::Firing_AI(void) {
       switch (Can_Fire(TarCom, primary)) {
         case FIRE_ILLEGAL:
           if (Combat_Damage(primary) < 0) {
-            ObjectClass *targ = As_Object(TarCom);
+            ObjectClass* targ = As_Object(TarCom);
             if (targ) {
               if ((targ->What_Am_I() == RTTI_INFANTRY &&
                    *this == INFANTRY_MEDIC) ||
@@ -4051,7 +4051,7 @@ void InfantryClass::Movement_AI(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const *InfantryClass::Get_Image_Data(void) const {
+void const* InfantryClass::Get_Image_Data(void) const {
   if (!IsOwnedByPlayer && *this == INFANTRY_SPY) {
     return (MFCD::Retrieve("E1.SHP"));
   }

@@ -78,15 +78,15 @@ typedef enum {
  */
 /*=========================================================================*/
 
-void *Open_Animation(char const *file_name, char *user_buffer,
+void* Open_Animation(char const* file_name, char* user_buffer,
                      long user_buffer_size, WSAOpenType user_flags,
-                     unsigned char *palette = nullptr);
-void Close_Animation(void *handle);
-bool Animate_Frame(void *handle, GraphicViewPortClass &view, int frame_number,
+                     unsigned char* palette = nullptr);
+void Close_Animation(void* handle);
+bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number,
                    int x_pixel = 0, int y_pixel = 0,
                    WSAType flags_and_prio = WSA_NORMAL,
-                   void *magic_cols = nullptr, void *magic = nullptr);
-int Get_Animation_Frame_Count(void *handle);
+                   void* magic_cols = nullptr, void* magic = nullptr);
+int Get_Animation_Frame_Count(void* handle);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LP_ASM.ASM
@@ -94,8 +94,8 @@ int Get_Animation_Frame_Count(void *handle);
 /*=========================================================================*/
 
 extern "C" {
-unsigned int Apply_XOR_Delta(char *source_ptr, char *delta_ptr);
-void Apply_XOR_Delta_To_Page_Or_Viewport(void *target, void *delta, int width,
+unsigned int Apply_XOR_Delta(char* source_ptr, char* delta_ptr);
+void Apply_XOR_Delta_To_Page_Or_Viewport(void* target, void* delta, int width,
                                          int nextrow, int copy);
 }
 

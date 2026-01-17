@@ -70,7 +70,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
 
-unsigned char *Font_Palette(int color);
+unsigned char* Font_Palette(int color);
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *
@@ -103,9 +103,9 @@ void Dialog_Box(int x, int y, int w, int h) {
   **	Always draw to the hidpage and then blit forward.
   */
 #ifdef WIN32
-  GraphicViewPortClass *oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 #else
-  GraphicBufferClass *oldpage = Set_Logic_Page(HidPage);
+  GraphicBufferClass* oldpage = Set_Logic_Page(HidPage);
 #endif
 
   /*
@@ -113,7 +113,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   */
   int cx = w / 2;
   int cy = h / 2;
-  void const *shapedata = MFCD::Retrieve("DD-BKGND.SHP");
+  void const* shapedata = MFCD::Retrieve("DD-BKGND.SHP");
 #if RESFACTOR == 2
   CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
@@ -213,7 +213,7 @@ void Dialog_Box(int x, int y, int w, int h) {
  ** 07/31/1992 JLB : Depressed option added. *
  *=============================================================================================*/
 void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   // Filler, Shadow, Hilite, Corner colors
 
@@ -230,7 +230,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   w--;
   h--;
-  BoxStyleType const &style = ButtonColors[up];
+  BoxStyleType const& style = ButtonColors[up];
 
   if (filled) {
     LogicPage->Fill_Rect(x, y, x + w, y + h, style.Filler);
@@ -276,8 +276,8 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
  *new font system.                                     * 09/04/1996 BWG : Added
  *'@' is treated as a carriage return for width calculations.		  *
  *=============================================================================================*/
-int Format_Window_String(char *string, int maxlinelen, int &width,
-                         int &height) {
+int Format_Window_String(char* string, int maxlinelen, int& width,
+                         int& height) {
   int linelen;
   int lines = 0;
   width = 0;
@@ -409,12 +409,12 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(char const *text, unsigned x, unsigned y,
-                       RemapControlType *fore, unsigned back,
+void Simple_Text_Print(char const* text, unsigned x, unsigned y,
+                       RemapControlType* fore, unsigned back,
                        TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
-  void const *font = nullptr;     // Font to use.
+  void const* font = nullptr;     // Font to use.
   int shadow;                     // Requested shadow value.
   unsigned char fontpalette[16];  // Working font palette array.
   int forecolor;
@@ -680,7 +680,7 @@ void Simple_Text_Print(char const *text, unsigned x, unsigned y,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
-void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType *fore,
+void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType* fore,
                       unsigned back, TextPrintType flag, ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -695,7 +695,7 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType *fore,
     **	The text string must be locked since the vsprintf function doesn't know
     **	how to handle EMS pointers.
     */
-    char const *tptr = Text_String(text);
+    char const* tptr = Text_String(text);
     vsprintf(buffer, tptr, arg);
     va_end(arg);
 
@@ -734,8 +734,8 @@ void Fancy_Text_Print(int text, unsigned x, unsigned y, RemapControlType *fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(char const *text, unsigned x, unsigned y,
-                      RemapControlType *fore, unsigned back, TextPrintType flag,
+void Fancy_Text_Print(char const* text, unsigned x, unsigned y,
+                      RemapControlType* fore, unsigned back, TextPrintType flag,
                       ...) {
   char buffer[512];  // Working staging buffer.
   va_list arg;       // Argument list var.
@@ -793,9 +793,9 @@ void Fancy_Text_Print(char const *text, unsigned x, unsigned y,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
-                             RemapControlType *fore, unsigned back,
-                             TextPrintType flag, int width, int const *tabs) {
+void Conquer_Clip_Text_Print(char const* text, unsigned x, unsigned y,
+                             RemapControlType* fore, unsigned back,
+                             TextPrintType flag, int width, int const* tabs) {
   char buffer[512];
 
   if (text) {
@@ -807,11 +807,11 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
     */
     Simple_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK, flag);
 
-    char *source = &buffer[0];
+    char* source = &buffer[0];
     unsigned offset = 0;
     int processing = true;
     while (processing && offset < width) {
-      char *ptr = strchr(source, '\t');
+      char* ptr = strchr(source, '\t');
 
       /*
       **	Zap the tab character. It will be processed later.
@@ -826,7 +826,7 @@ void Conquer_Clip_Text_Print(char const *text, unsigned x, unsigned y,
         **	maximum width, whichever comes first.
         */
         int w = 0;
-        char *bptr = source;
+        char* bptr = source;
         do {
           w += Char_Pixel_Width(*bptr++);
         } while (*bptr && offset + w < width);
@@ -941,7 +941,7 @@ void Plain_Text_Print(int text, unsigned x, unsigned y, unsigned fore,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Plain_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
+void Plain_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
                       unsigned back, TextPrintType flag, ...) {
   RemapControlType scheme;
 
@@ -962,7 +962,7 @@ void Plain_Text_Print(char const *text, unsigned x, unsigned y, unsigned fore,
   Fancy_Text_Print(text, x, y, &scheme, back, flag);
 }
 
-unsigned char *Font_Palette(int color) {
+unsigned char* Font_Palette(int color) {
   static unsigned char _fpalette[16];
 
   memset(_fpalette, '\0', sizeof(_fpalette));
@@ -993,7 +993,7 @@ void Draw_Caption(int text, int x, int y, int w) {
   Draw_Caption(Text_String(text), x, y, w);
 }
 
-void Draw_Caption(char const *text, int x, int y, int w) {
+void Draw_Caption(char const* text, int x, int y, int w) {
   /*
   **	Draw the caption.
   */

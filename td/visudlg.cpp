@@ -98,8 +98,8 @@ void VisualControlsClass::Process(void) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[NUM_OF_BUTTONS];
-  SliderClass *buttonsliders[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS];
+  SliderClass* buttonsliders[NUM_OF_BUTTONS];
 
   Set_Logic_Page(SeenBuff);
 
@@ -115,7 +115,8 @@ void VisualControlsClass::Process(void) {
   /*
   **	Centers options button.
   */
-  optionsbtn.X = option_x + (option_width - optionsbtn.Width - (15 * RESFACTOR));
+  optionsbtn.X =
+      option_x + (option_width - optionsbtn.Width - (15 * RESFACTOR));
   resetbtn.X = option_x + (15 * RESFACTOR);
 
   resetbtn.Add_Tail(optionsbtn);

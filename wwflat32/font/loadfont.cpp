@@ -35,10 +35,11 @@
  *   Load_Font -- Loads a font from disk.                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
-#include "font.h"
 #include <file.h>
 #include <wwmem.h>
+#include <wwstd.h>
+
+#include "font.h"
 
 #if (IBM)
 #include <fcntl.h>
@@ -47,18 +48,19 @@
 
 int FontXSpacing = 0;
 int FontYSpacing = 0;
-void const *FontPtr = NULL;
+void const* FontPtr = NULL;
 BYTE FontWidth = 8;
 BYTE FontHeight = 8;
 
 // only font.c and set_font.c use the following
-BYTE *FontWidthBlockPtr = NULL;
+BYTE* FontWidthBlockPtr = NULL;
 
 /***************************************************************************
  * LOAD_FONT -- Loads a font from disk.                                    *
  *                                                                         *
  *    This loads a font from disk.  This function must be called as a *
- *    precursor to calling Set_Font().  You need only call this function * once per desired font at the beginning of your code, but AFTER     	*
+ *    precursor to calling Set_Font().  You need only call this function * once
+ * per desired font at the beginning of your code, but AFTER     	*
  *    Prog_Init() is called. *
  *                                                                         *
  * INPUT:      name  - Pointer to font name to use (eg. "topaz.font") *
@@ -77,18 +79,18 @@ BYTE *FontWidthBlockPtr = NULL;
  *verification.                        * 06/29/1994 SKB : modified for 32 bit
  *library                          *
  *=========================================================================*/
-VOID *cdecl Load_Font(BYTE const *name) {
+VOID* cdecl Load_Font(BYTE const* name) {
   BYTE valid;
   WORD fh;           // DOS file handle for font file.
   UWORD size;        // Size of the data in the file (-2);
-  BYTE *ptr = NULL;  // Pointer to newly loaded font.
+  BYTE* ptr = NULL;  // Pointer to newly loaded font.
 
   if (Find_File(name)) {
     fh = Open_File(name, READ);
-    if (Read_File(fh, (BYTE *)&size, 2) != 2) return (NULL);
+    if (Read_File(fh, (BYTE*)&size, 2) != 2) return (NULL);
 
-    ptr = (BYTE *)Alloc(size, MEM_NORMAL);
-    *(WORD *)ptr = size;
+    ptr = (BYTE*)Alloc(size, MEM_NORMAL);
+    *(WORD*)ptr = size;
     Read_File(fh, ptr + 2, size - 2);
     Close_File(fh);
   } else {

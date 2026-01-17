@@ -22,10 +22,10 @@
 #include "sdllib/include/gbuffer.h"
 
 #define MAKE_PTR(vp, x, y) \
-  (char *)(vp->Get_Offset() + ((y) * (vp->Get_Width() + vp->Get_XAdd())) + (x))
-#define MAKE_PTR2(vp, x, y)   \
-  (char *)(vp->Get_Offset() + \
-           (((y) << 1) * (vp->Get_Width() + vp->Get_XAdd())) + ((x) << 1))
+  (char*)(vp->Get_Offset() + ((y) * (vp->Get_Width() + vp->Get_XAdd())) + (x))
+#define MAKE_PTR2(vp, x, y)  \
+  (char*)(vp->Get_Offset() + \
+          (((y) << 1) * (vp->Get_Width() + vp->Get_XAdd())) + ((x) << 1))
 
 inline long Cos256[] = {
     128,  127,  127,  127,  127,  127,  126,  126,  125,  124,  124,  123,
@@ -76,7 +76,7 @@ inline long Sin256[] = {
     -9,   -6,   -3,   0,
 };
 
-int Rotate_Bitmap(GraphicViewPortClass *srcvp, GraphicViewPortClass *destvp,
+int Rotate_Bitmap(GraphicViewPortClass* srcvp, GraphicViewPortClass* destvp,
                   int angle);
 
 #endif  // CNC_RED_ALERT_JSHELL_ROTBMP_H_

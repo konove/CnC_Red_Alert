@@ -47,8 +47,8 @@
 
 #ifndef __FLAT__
 
-void DOSSegmentClass::Swap(DOSSegmentClass &src, int soffset,
-                           DOSSegmentClass &dest, int doffset, int size) {
+void DOSSegmentClass::Swap(DOSSegmentClass& src, int soffset,
+                           DOSSegmentClass& dest, int doffset, int size) {
   if (!size) return;
 
   unsigned short ssel = src.Selector;
@@ -78,9 +78,9 @@ void DOSSegmentClass::Swap(DOSSegmentClass &src, int soffset,
 }
 #endif
 
-void DOSSegmentClass::Swap(DOSSegmentClass &src, int soffset,
-                           DOSSegmentClass &dest, int doffset, int size) {
-  extern void dss_swap(char *src, char *dest, int size);
+void DOSSegmentClass::Swap(DOSSegmentClass& src, int soffset,
+                           DOSSegmentClass& dest, int doffset, int size) {
+  extern void dss_swap(char* src, char* dest, int size);
 
 #pragma aux dss_swap =    \
     "again: mov	al,[esi]" \
@@ -91,14 +91,14 @@ void DOSSegmentClass::Swap(DOSSegmentClass &src, int soffset,
     "loop	again" parm[esi][edi][ecx] modify[ax];
 
   if (!size) return;
-  dss_swap((char *)(src.Selector + soffset), (char *)(dest.Selector + doffset),
+  dss_swap((char*)(src.Selector + soffset), (char*)(dest.Selector + doffset),
            size);
 }
 
 #ifdef OBSOLETE
-void DOSSegmentClass::Copy(DOSSegmentClass &src, int soffset,
-                           DOSSegmentClass &dest, int doffset, int size) {
-  extern void dss_copy(char *src, char *dest, int size);
+void DOSSegmentClass::Copy(DOSSegmentClass& src, int soffset,
+                           DOSSegmentClass& dest, int doffset, int size) {
+  extern void dss_copy(char* src, char* dest, int size);
 #pragma aux dss_copy =      \
     "mov		ebx,ecx"          \
     "shr		ecx,2"            \
@@ -111,14 +111,14 @@ void DOSSegmentClass::Copy(DOSSegmentClass &src, int soffset,
     "copskip2:" parm[esi edi ecx] modify[ebx];
 
   if (!size) return;
-  dss_copy((char *)(src.Selector + soffset), (char *)(dest.Selector + doffset),
+  dss_copy((char*)(src.Selector + soffset), (char*)(dest.Selector + doffset),
            size);
 }
 #endif
 
 #ifdef OBSOLETE
-void DOSSegmentClass::Copy_To(void *source, int dest, int size) {
-  extern void dss_copy_to(void *src, (void *)dest, int size);
+void DOSSegmentClass::Copy_To(void* source, int dest, int size) {
+  extern void dss_copy_to(void* src, (void*)dest, int size);
 
 #pragma aux dss_copy_to =    \
     "mov		ebx,ecx"           \
@@ -132,13 +132,13 @@ void DOSSegmentClass::Copy_To(void *source, int dest, int size) {
     "cop2skip2:" parm[esi edi ecx] modify[ebx];
 
   if (!size) return;
-  dss_copy_to(src, (void *)(Selector + dest), size);
+  dss_copy_to(src, (void*)(Selector + dest), size);
 }
 #endif
 
 #ifdef OBSOLETE
-void DOSSegmentClass::Copy_From(void *dest, int source, int size) {
-  extern void dss_copy_from(void *dest, (void *)source, int size);
+void DOSSegmentClass::Copy_From(void* dest, int source, int size) {
+  extern void dss_copy_from(void* dest, (void*)source, int size);
 
 #pragma aux dss_copy_from =  \
     "mov		ebx,ecx"           \
@@ -152,6 +152,6 @@ void DOSSegmentClass::Copy_From(void *dest, int source, int size) {
     "copfskip2:" parm[edi esi ecx] modify[ebx];
 
   if (!size) return;
-  dss_copy_from(dest, (void *)(Selector + source), size);
+  dss_copy_from(dest, (void*)(Selector + source), size);
 }
 #endif

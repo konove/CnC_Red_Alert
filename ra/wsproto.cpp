@@ -90,8 +90,8 @@ typedef int socklen_t;
 #endif
 
 #ifdef PORTABLE
-static void Socket_Event_Handler(int socket, SocketEvent event, void *data) {
-  ((WinsockInterfaceClass *)data)->Event_Handler(socket, event);
+static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
+  ((WinsockInterfaceClass*)data)->Event_Handler(socket, event);
 }
 #endif
 
@@ -260,7 +260,7 @@ void WinsockInterfaceClass::Stop_Listening(void) {
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Discard_In_Buffers(void) {
-  WinsockBufferType *packet;
+  WinsockBufferType* packet;
 
   while (InBuffers.Count()) {
     packet = InBuffers[0];
@@ -284,7 +284,7 @@ void WinsockInterfaceClass::Discard_In_Buffers(void) {
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
 void WinsockInterfaceClass::Discard_Out_Buffers(void) {
-  WinsockBufferType *packet;
+  WinsockBufferType* packet;
 
   while (OutBuffers.Count()) {
     packet = OutBuffers[0];
@@ -318,8 +318,8 @@ bool WinsockInterfaceClass::Init(void) {
   *Bounds Checker
   ** says that a buffer of that size gets overrun.
   */
-  char *buffer = new char[sizeof(WSADATA) + 1024];
-  WSADATA *winsock_info = (WSADATA *)(&buffer[0]);
+  char* buffer = new char[sizeof(WSADATA) + 1024];
+  WSADATA* winsock_info = (WSADATA*)(&buffer[0]);
 #endif
 
   /*
@@ -382,8 +382,8 @@ bool WinsockInterfaceClass::Init(void) {
  *                                                                                             *
  * HISTORY: * 3/20/96 2:58PM ST : Created *
  *=============================================================================================*/
-int WinsockInterfaceClass::Read(void *buffer, int &buffer_len, void *address,
-                                int &address_len) {
+int WinsockInterfaceClass::Read(void* buffer, int& buffer_len, void* address,
+                                int& address_len) {
   /*
   ** Call the message loop in case there are any outstanding winsock READ
   *messages.
@@ -399,7 +399,7 @@ int WinsockInterfaceClass::Read(void *buffer, int &buffer_len, void *address,
   ** Get the oldest packet for reading
   */
   int packetnum = 0;
-  WinsockBufferType *packet = InBuffers[packetnum];
+  WinsockBufferType* packet = InBuffers[packetnum];
 
   assert(buffer_len >= packet->BufferLen);
   assert(address_len >= sizeof(packet->Address));
@@ -439,12 +439,12 @@ int WinsockInterfaceClass::Read(void *buffer, int &buffer_len, void *address,
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::WriteTo(void *buffer, int buffer_len,
-                                    void *address) {
+void WinsockInterfaceClass::WriteTo(void* buffer, int buffer_len,
+                                    void* address) {
   /*
   ** Create a temporary holding area for the packet.
   */
-  WinsockBufferType *packet = new WinsockBufferType;
+  WinsockBufferType* packet = new WinsockBufferType;
 
   /*
   ** Copy the packet into the holding buffer.
@@ -496,11 +496,11 @@ void WinsockInterfaceClass::WriteTo(void *buffer, int buffer_len,
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Broadcast(void *buffer, int buffer_len) {
+void WinsockInterfaceClass::Broadcast(void* buffer, int buffer_len) {
   /*
   ** Create a temporary holding area for the packet.
   */
-  WinsockBufferType *packet = new WinsockBufferType;
+  WinsockBufferType* packet = new WinsockBufferType;
 
   /*
   ** Copy the packet into the holding buffer.
@@ -552,9 +552,9 @@ void WinsockInterfaceClass::Clear_Socket_Error(SOCKET socket) {
   unsigned long error_code;
   socklen_t length = 4;
 
-  getsockopt(socket, SOL_SOCKET, SO_ERROR, (char *)&error_code, &length);
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, &length);
   error_code = 0;
-  setsockopt(socket, SOL_SOCKET, SO_ERROR, (char *)&error_code, length);
+  setsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, length);
 }
 
 /***********************************************************************************************
@@ -579,7 +579,7 @@ bool WinsockInterfaceClass::Set_Socket_Options(void) {
   ** Specify the size of the receive buffer.
   */
   int err = setsockopt(Socket, SOL_SOCKET, SO_RCVBUF,
-                       (char *)&socket_receive_buffer_size, 4);
+                       (char*)&socket_receive_buffer_size, 4);
   if (err == INVALID_SOCKET) {
     char out[128];
     sprintf(out,
@@ -593,7 +593,7 @@ bool WinsockInterfaceClass::Set_Socket_Options(void) {
   ** Specify the size of the send buffer.
   */
   err = setsockopt(Socket, SOL_SOCKET, SO_SNDBUF,
-                   (char *)&socket_transmit_buffer_size, 4);
+                   (char*)&socket_transmit_buffer_size, 4);
   if (err == INVALID_SOCKET) {
     char out[128];
     sprintf(out,

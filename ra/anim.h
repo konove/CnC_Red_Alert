@@ -66,21 +66,21 @@ class AnimClass : public ObjectClass, public StageClass {
  public:
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
-  AnimClass(NoInitClass const &x) : ObjectClass(x), Class(x), StageClass(x) {};
+  AnimClass(NoInitClass const& x) : ObjectClass(x), Class(x), StageClass(x) {};
   virtual ~AnimClass(void);
 
   operator AnimType(void) const { return Class->Type; };
 
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
   static void Init(void);
 
-  void Attach_To(ObjectClass *obj);
+  void Attach_To(ObjectClass* obj);
   void Make_Invisible(void) { IsInvisible = true; };
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
@@ -90,9 +90,9 @@ class AnimClass : public ObjectClass, public StageClass {
   virtual COORDINATE Center_Coord(void) const;
   virtual COORDINATE Sort_Y(void) const;
   virtual LayerType In_Which_Layer(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
-  virtual short const *Occupy_List(bool = false) const;
-  virtual short const *Overlap_List(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual short const* Occupy_List(bool = false) const;
+  virtual short const* Overlap_List(void) const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual void AI(void);
   virtual void Detach(TARGET target, bool all);
@@ -100,8 +100,8 @@ class AnimClass : public ObjectClass, public StageClass {
   /*
   **	File I/O.
   */
-  bool Load(Straw &file);
-  bool Save(FileClass &file);
+  bool Load(Straw& file);
+  bool Save(FileClass& file);
 
   /*
   **	If this animation is attached to an object, then this points to that
@@ -163,7 +163,7 @@ class AnimClass : public ObjectClass, public StageClass {
   fixed Accum;
 };
 
-void Shorten_Attached_Anims(ObjectClass *obj);
-AnimType Anim_From_Name(char const *name);
+void Shorten_Attached_Anims(ObjectClass* obj);
+AnimType Anim_From_Name(char const* name);
 
 #endif

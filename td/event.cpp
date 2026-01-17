@@ -109,7 +109,7 @@ unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
     size_of(EventClass, Data.ProcessTime),      // PROCESS_TIME
 };
 
-char *EventClass::EventNames[EventClass::LAST_EVENT] = {
+char* EventClass::EventNames[EventClass::LAST_EVENT] = {
     "EMPTY",        "ALLY",      "MEGAMISSION",   "IDLE",      "SCATTER",
     "DESTRUCT",     "DEPLOY",    "PLACE",         "OPTIONS",   "GAMESPEED",
     "PRODUCE",      "SUSPEND",   "ABANDON",       "PRIMARY",   "SPECIAL_PLACE",
@@ -379,9 +379,9 @@ EventClass::EventClass(EventType type, int id, CELL cell) {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 void EventClass::Execute(void) {
-  TechnoClass *techno;
-  AnimClass *anim = nullptr;
-  HouseClass *house = nullptr;
+  TechnoClass* techno;
+  AnimClass* anim = nullptr;
+  HouseClass* house = nullptr;
   char txt[80];
   int i;
   // #if (0)
@@ -432,7 +432,7 @@ void EventClass::Execute(void) {
     */
     case SPECIAL: {
       Special = Data.Options.Data;
-      HouseClass *house = Houses.Raw_Ptr(ID);
+      HouseClass* house = Houses.Raw_Ptr(ID);
 
       sprintf(txt, Text_String(TXT_SPECIAL_WARNING), house->Name);
       Messages.Add_Message(txt, MPlayerTColors[house->RemapColor],
@@ -530,7 +530,7 @@ void EventClass::Execute(void) {
     */
     case PRIMARY: {
       CCDebugString("C&C95 - Primary building packet received\n");
-      BuildingClass *building = As_Building(Data.Target.Whom);
+      BuildingClass* building = As_Building(Data.Target.Whom);
       if (building && building->IsActive) {
         building->Toggle_Primary();
       }
@@ -547,7 +547,7 @@ void EventClass::Execute(void) {
         /*
         **	Fetch a pointer to the object of the mission.
         */
-        ObjectClass *object;
+        ObjectClass* object;
         if (Target_Legal(Data.MegaMission.Target)) {
           object = As_Object(Data.MegaMission.Target);
         } else {
@@ -563,8 +563,8 @@ void EventClass::Execute(void) {
         switch (techno->What_Am_I()) {
           case RTTI_INFANTRY:
           case RTTI_UNIT:
-            if (((FootClass *)techno)->Team) {
-              ((FootClass *)techno)->Team->Remove((FootClass *)techno);
+            if (((FootClass*)techno)->Team) {
+              ((FootClass*)techno)->Team->Remove((FootClass*)techno);
             }
             break;
         }
@@ -588,7 +588,7 @@ void EventClass::Execute(void) {
             (techno->What_Am_I() == RTTI_INFANTRY ||
              techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_AIRCRAFT)) {
-          ((FootClass *)techno)->ArchiveTarget = Data.MegaMission.Target;
+          ((FootClass*)techno)->ArchiveTarget = Data.MegaMission.Target;
           techno->Assign_Target(TARGET_NONE);
           techno->Assign_Destination(Data.MegaMission.Target);
         } else {
@@ -600,7 +600,7 @@ void EventClass::Execute(void) {
         if ((techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_INFANTRY) &&
             Data.MegaMission.Mission == MISSION_GUARD_AREA) {
-          ((FootClass *)techno)->ArchiveTarget = Data.MegaMission.Destination;
+          ((FootClass*)techno)->ArchiveTarget = Data.MegaMission.Destination;
         }
 #endif
       }

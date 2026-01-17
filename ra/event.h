@@ -213,7 +213,7 @@ class EventClass {
     ** bloating the size of this union (and thus all other event types).
     */
     struct {
-      void *Pointer;
+      void* Pointer;
       uint32_t Size;
     } Variable;
 
@@ -256,16 +256,16 @@ class EventClass {
   EventClass(EventType type, RTTIType object, CELL cell);
   EventClass(EventType type, int id, CELL cell);
   EventClass(AnimType anim, HousesType owner, COORDINATE coord);
-  EventClass(void *ptr, unsigned long size);
-  EventClass(EventType type, void *ptr, unsigned long size);
+  EventClass(void* ptr, unsigned long size);
+  EventClass(EventType type, void* ptr, unsigned long size);
 
   // Process the event.
   void Execute(void);
 
-  int operator==(EventClass &q) { return memcmp(this, &q, sizeof(q)) == 0; };
+  int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; };
 
   static unsigned char EventLength[LAST_EVENT];
-  static char *EventNames[LAST_EVENT];
+  static char* EventNames[LAST_EVENT];
 };
 
 #endif

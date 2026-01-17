@@ -46,28 +46,28 @@ class PhoneEntryClass {
 
   PhoneEntryClass() = default;
 
-  bool operator==(PhoneEntryClass &obj) {
+  bool operator==(PhoneEntryClass& obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) == 0);
   }
-  bool operator!=(PhoneEntryClass &obj) {
+  bool operator!=(PhoneEntryClass& obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) != 0);
   }
-  bool operator>(PhoneEntryClass &obj) {
+  bool operator>(PhoneEntryClass& obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) > 0);
   }
-  bool operator<(PhoneEntryClass &obj) {
+  bool operator<(PhoneEntryClass& obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) < 0);
   }
-  bool operator>=(PhoneEntryClass &obj) {
+  bool operator>=(PhoneEntryClass& obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) >= 0);
   }
-  bool operator<=(PhoneEntryClass &obj) {
+  bool operator<=(PhoneEntryClass& obj) {
     return (memcmp(Name, obj.Name, strlen(Name)) <= 0);
   }
 
   SerialSettingsType Settings = {};
-  char Name[PHONE_MAX_NAME] = {};    // destination person's name
-  char Number[PHONE_MAX_NUM] = {};   // phone #
+  char Name[PHONE_MAX_NAME] = {};   // destination person's name
+  char Number[PHONE_MAX_NUM] = {};  // phone #
 };
 
 #endif

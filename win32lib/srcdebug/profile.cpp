@@ -57,13 +57,13 @@
 #ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
 #endif  // _WIN32
+#include "profile.h"
+
+#include <file.h>
+#include <rawfile.h>
 #include <windows.h>
 #include <windowsx.h>
-
 #include <wwstd.h>
-#include <rawfile.h>
-#include <file.h>
-#include "profile.h"
 
 extern "C" {
 unsigned ProfileList[PROFILE_RATE * 60 * MAX_PROFILE_TIME];

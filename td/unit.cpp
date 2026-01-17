@@ -162,7 +162,7 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *UnitClass::VTable;
+void* UnitClass::VTable;
 
 /***********************************************************************************************
  * UnitClass::Validate -- validates unit pointer.
@@ -213,7 +213,7 @@ int UnitClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void Recoil_Adjust(DirType dir, int &x, int &y) {
+void Recoil_Adjust(DirType dir, int& x, int& y) {
   static struct {
     signed char X, Y;
   } _adjust[32] = {{0, 1},                                  // N
@@ -248,7 +248,7 @@ void Recoil_Adjust(DirType dir, int &x, int &y) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void Turret_Adjust(DirType dir, int &x, int &y) {
+void Turret_Adjust(DirType dir, int& x, int& y) {
   static struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N
@@ -302,7 +302,7 @@ TARGET UnitClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Debug_Dump(MonoClass *mono) const {
+void UnitClass::Debug_Dump(MonoClass* mono) const {
   Validate();
   mono->Set_Cursor(0, 0);
   mono->Print(
@@ -558,9 +558,9 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     */
     if (Class->IsFireAnim) {
       if (!IsFiring) {
-        UnitClass *nonconst;
+        UnitClass* nonconst;
 
-        nonconst = (UnitClass *)this;
+        nonconst = (UnitClass*)this;
         nonconst->Set_Rate(Options.Normalize_Delay(2));
         nonconst->Set_Stage(0);
         IsFiring = true;
@@ -593,9 +593,9 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType UnitClass::Receive_Message(RadioClass *from,
+RadioMessageType UnitClass::Receive_Message(RadioClass* from,
                                             RadioMessageType message,
-                                            long &param) {
+                                            long& param) {
   Validate();
   switch (message) {
     /*
@@ -815,8 +815,8 @@ bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
  *do maximum damage against gunboat.                                * 08/16/1995
  *JLB : Harvester crushing doesn't occur on early missions. *
  *=============================================================================================*/
-ResultType UnitClass::Take_Damage(int &damage, int distance,
-                                  WarheadType warhead, TechnoClass *source) {
+ResultType UnitClass::Take_Damage(int& damage, int distance,
+                                  WarheadType warhead, TechnoClass* source) {
   Validate();
   ResultType res = RESULT_NONE;
 
@@ -884,7 +884,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     Mark(MARK_UP);
     if (Class->IsCrew && !Class->IsTransporter) {
       if (Random_Pick(0, 1) == 0) {
-        InfantryClass *i = nullptr;
+        InfantryClass* i = nullptr;
         if (Class->Primary == WEAPON_NONE) {
           i = new InfantryClass(INFANTRY_C1, House->Class->House);
           i->IsTechnician = true;
@@ -909,7 +909,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     } else {
       if (*this != UNIT_HOVER) {
         while (Is_Something_Attached()) {
-          FootClass *object = Detach_Object();
+          FootClass* object = Detach_Object();
 
           if (!object) break;  // How can this happen?
 
@@ -953,7 +953,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     if (Health_Ratio() < 0x0080 && !IsAnimAttached && *this != UNIT_VICE &&
         *this != UNIT_STEG && *this != UNIT_TREX && *this != UNIT_TRIC &&
         *this != UNIT_RAPT) {
-      AnimClass *anim =
+      AnimClass* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim) anim->Attach_To(this);
     }
@@ -963,7 +963,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
     */
     if (res == RESULT_HALF) {
       if (*this == UNIT_GUNBOAT) {
-        AnimClass *anim = new AnimClass(
+        AnimClass* anim = new AnimClass(
             ANIM_ON_FIRE_MED,
             Coord_Add(Coord, XYP_Coord(Random_Pick(0, 16) - 8, -2)));
         if (anim) anim->Attach_To(this);
@@ -990,7 +990,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
           (GameToPlay != GAME_NORMAL || *this != UNIT_HARVESTER ||
            BuildLevel > 8 || Special.IsDifficult) &&
           !Special.IsEasy && Class->IsCrusher && source->Is_Techno() &&
-          ((TechnoTypeClass const &)source->Class_Of()).IsCrushable) {
+          ((TechnoTypeClass const&)source->Class_Of()).IsCrushable) {
         Assign_Destination(source->As_Target());
         Assign_Mission(MISSION_MOVE);
       } else {
@@ -1001,7 +1001,7 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
           /*
           **	Find nearby refinery and head to it?
           */
-          BuildingClass *building = Find_Docking_Bay(STRUCT_REFINERY, false);
+          BuildingClass* building = Find_Docking_Bay(STRUCT_REFINERY, false);
 
           /*
           **	Since the refinery said it was ok to load, establish radio
@@ -1042,10 +1042,10 @@ ResultType UnitClass::Take_Damage(int &damage, int distance,
  * HISTORY: * 04/11/1994 JLB : Created. * 04/21/1994 JLB : Converted to operator
  *new.                                               *
  *=============================================================================================*/
-void *UnitClass::operator new(size_t) throw() {
-  void *ptr = (UnitClass *)Units.Allocate();
+void* UnitClass::operator new(size_t) throw() {
+  void* ptr = (UnitClass*)Units.Allocate();
   if (ptr) {
-    ((UnitClass *)ptr)->IsActive = true;
+    ((UnitClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -1065,11 +1065,11 @@ void *UnitClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 04/21/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::operator delete(void *ptr) {
+void UnitClass::operator delete(void* ptr) {
   if (ptr) {
-    ((UnitClass *)ptr)->IsActive = false;
+    ((UnitClass*)ptr)->IsActive = false;
   }
-  Units.Free((UnitClass *)ptr);
+  Units.Free((UnitClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -1153,7 +1153,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Active_Click_With(ActionType action, ObjectClass *object) {
+void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
   Validate();
   if (action != What_Action(object)) {
     switch (action) {
@@ -1309,7 +1309,7 @@ void UnitClass::Find_LZ(void) {
 bool UnitClass::Unload_Hovercraft_Process(void) {
   Validate();
   bool unloaded = false;
-  FootClass *unit;  // The unit to be unloaded.
+  FootClass* unit;  // The unit to be unloaded.
   CELL cell;        // Cell to unload to.
 
   /*
@@ -1328,7 +1328,7 @@ bool UnitClass::Unload_Hovercraft_Process(void) {
       cell =
           Coord_Cell(Adjacent_Cell(Coord, Dir_Facing(PrimaryFacing.Current())));
 
-      unit = (FootClass *)Attached_Object();
+      unit = (FootClass*)Attached_Object();
 
       Mark(MARK_UP);
       if (Map.In_Radar(cell) && !Map[cell].Cell_Unit()) {
@@ -1338,9 +1338,9 @@ bool UnitClass::Unload_Hovercraft_Process(void) {
           */
           int count = 0;
           bool first = true;
-          FootClass *secondary = nullptr;
+          FootClass* secondary = nullptr;
           while (Attached_Object()) {
-            FootClass *u = (FootClass *)Detach_Object();
+            FootClass* u = (FootClass*)Detach_Object();
 
             if (!first && !secondary) secondary = u;
             first = false;
@@ -1446,7 +1446,7 @@ bool UnitClass::Goto_Clear_Spot(void) {
         -(MAP_CELL_W * 3) - 1, -(MAP_CELL_W * 3) + 2, -(MAP_CELL_W * 3) - 2,
         -MAP_CELL_W * 4,       -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
         -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2, 0};
-    int *ptr;
+    int* ptr;
 
     ptr = &_offsets[0];
     while (*ptr) {
@@ -1523,7 +1523,7 @@ bool UnitClass::Try_To_Deploy(void) {
       *delete the *	unit, just mark it as not deploying.
       */
       Mark(MARK_UP);
-      BuildingClass *building =
+      BuildingClass* building =
           new BuildingClass(STRUCT_CONST, House->Class->House);
       if (building) {
         if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
@@ -1587,7 +1587,7 @@ bool UnitClass::Try_To_Deploy(void) {
 void UnitClass::Per_Cell_Process(bool center) {
   Validate();
   CELL cell = Coord_Cell(Coord);
-  TechnoClass *whom;
+  TechnoClass* whom;
   HousesType house;
 
   /*
@@ -1678,7 +1678,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   ** destination, then start him repairing.
   */
   if (center && !IsRepairing) {
-    BuildingClass *b = As_Building(NavCom);
+    BuildingClass* b = As_Building(NavCom);
     if (b && *b == STRUCT_REPAIR && Coord == b->Center_Coord()) {
       NavCom = 0;
       IsRepairing = true;
@@ -1733,10 +1733,10 @@ void UnitClass::Per_Cell_Process(bool center) {
   /*
   **	Destroy any crushable wall that is driven over by a tracked vehicle.
   */
-  CellClass *cellptr = &Map[cell];
+  CellClass* cellptr = &Map[cell];
   if (center && Class->Speed == SPEED_TRACK &&
       cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const *optr =
+    OverlayTypeClass const* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrushable) {
@@ -1846,7 +1846,7 @@ void UnitClass::Per_Cell_Process(bool center) {
 void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
   int shapenum;           // Working shape number.
-  void const *shapefile;  // Working shape file pointer.
+  void const* shapefile;  // Working shape file pointer.
   int facing = Facing_To_32(PrimaryFacing.Current());
   int tfacing = Facing_To_32(SecondaryFacing.Current());
 
@@ -2035,7 +2035,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	If this unit has "piggy back" unit(s), then render it at the same time.
     */
     if (*this == UNIT_HOVER && Is_Something_Attached()) {
-      TechnoClass *u = (TechnoClass *)Attached_Object();
+      TechnoClass* u = (TechnoClass*)Attached_Object();
 
       int counter = 0;
       for (;;) {
@@ -2047,7 +2047,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
           u->Draw_It(x1, y1, WINDOW_TACTICAL);
         }
         if (!u->Next) break;
-        u = (TechnoClass *)u->Next;
+        u = (TechnoClass*)u->Next;
       }
     }
   }
@@ -2083,7 +2083,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Tiberium_Check(CELL &center, int x, int y) {
+bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
   Validate();
   /*
   **	If the specified offset from the origin will cause it
@@ -2167,7 +2167,7 @@ bool UnitClass::Goto_Tiberium(void) {
 bool UnitClass::Harvesting(void) {
   Validate();
   CELL cell = Coord_Cell(Coord);
-  CellClass *ptr = &Map[cell];
+  CellClass* ptr = &Map[cell];
 
   /*
   **	Keep waiting if still heading toward a spot to harvest.
@@ -2259,7 +2259,7 @@ int UnitClass::Mission_Unload(void) {
 
         case UNLOADING:
           if (How_Many()) {
-            FootClass *passenger = Detach_Object();
+            FootClass* passenger = Detach_Object();
 
             if (passenger) {
               DirType toface = DIR_S + PrimaryFacing;
@@ -2445,7 +2445,7 @@ int UnitClass::Mission_Harvest(void) {
         /*
         **	Find nearby refinery and head to it?
         */
-        BuildingClass *nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
+        BuildingClass* nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
 
         /*
         **	Since the refinery said it was ok to load, establish radio
@@ -2597,7 +2597,7 @@ void UnitClass::Look(bool incremental) {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-short const *UnitClass::Overlap_List(void) const {
+short const* UnitClass::Overlap_List(void) const {
   Validate();
   static short const _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
   int size;
@@ -2635,7 +2635,7 @@ short const *UnitClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
-MoveBitType UnitClass::Blocking_Object(TechnoClass const *techno,
+MoveBitType UnitClass::Blocking_Object(TechnoClass const* techno,
                                        CELL cell) const {
   Validate();
   /*
@@ -2643,7 +2643,7 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const *techno,
   */
   bool unit = (techno->What_Am_I() == RTTI_INFANTRY ||
                techno->What_Am_I() == RTTI_UNIT);
-  CellClass const *cellptr = &Map[cell];
+  CellClass const* cellptr = &Map[cell];
 
   if (House->Is_Ally(techno)) {
     if (techno == Contact_With_Whom() && IsTethered) {
@@ -2655,12 +2655,12 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const *techno,
       ** If the unit in question has a destination than we should
       ** be prepared to wait for the unit to get out of our way.
       */
-      if (((FootClass *)techno)->NavCom != TARGET_NONE) {
+      if (((FootClass*)techno)->NavCom != TARGET_NONE) {
         int face = Dir_Facing(PrimaryFacing);
         int techface =
-            Dir_Facing(((FootClass const *)techno)->PrimaryFacing) ^ 4;
+            Dir_Facing(((FootClass const*)techno)->PrimaryFacing) ^ 4;
         if (face != techface &&
-            Distance((AbstractClass const *)techno) > 0x1FF) {
+            Distance((AbstractClass const*)techno) > 0x1FF) {
           return (MOVE_BIT_MOVING_BLOCK);
         } else {
           //					Mono_Printf("Move No!\r");
@@ -2745,7 +2745,7 @@ MoveBitType UnitClass::Blocking_Object(TechnoClass const *techno,
  *=============================================================================================*/
 MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
-  CellClass const *cellptr = &Map[cell];
+  CellClass const* cellptr = &Map[cell];
 
   if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
 
@@ -2770,7 +2770,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   **	and return the appropriate flag. Other units treat walls as impassable.
   */
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const *optr =
+    OverlayTypeClass const* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrate && !House->IsHuman) {
@@ -2779,7 +2779,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
     if (optr->IsWall) {
       if (Class->Primary != WEAPON_NONE) {
-        WarheadTypeClass const *whead =
+        WarheadTypeClass const* whead =
             &Warheads[BulletTypeClass::As_Reference(
                           Weapons[Class->Primary].Fires)
                           .Warhead];
@@ -2818,7 +2818,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
   ** for how they affect movement.
   */
   bool crushable = false;
-  ObjectClass *obj = cellptr->Cell_Occupier();
+  ObjectClass* obj = cellptr->Cell_Occupier();
   while (obj) {
     if (obj != this) {
       /*
@@ -2827,21 +2827,20 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
       */
       if (obj == Contact_With_Whom() &&
           (IsTethered || (obj->What_Am_I() == RTTI_BUILDING &&
-                          *((BuildingClass *)obj) == STRUCT_REPAIR))) {
+                          *((BuildingClass*)obj) == STRUCT_REPAIR))) {
         return (MOVE_OK);
       }
 
       bool is_moving = (obj->What_Am_I() == RTTI_INFANTRY ||
                         obj->What_Am_I() == RTTI_UNIT) &&
-                       Target_Legal(((FootClass *)obj)->NavCom);
+                       Target_Legal(((FootClass*)obj)->NavCom);
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
           int face = Dir_Facing(PrimaryFacing);
-          int techface =
-              Dir_Facing(((FootClass const *)obj)->PrimaryFacing) ^ 4;
+          int techface = Dir_Facing(((FootClass const*)obj)->PrimaryFacing) ^ 4;
           if (face == techface &&
-              Distance((AbstractClass const *)obj) <= 0x1FF) {
+              Distance((AbstractClass const*)obj) <= 0x1FF) {
             return (MOVE_NO);
           }
           if (retval < MOVE_MOVING_BLOCK) retval = MOVE_MOVING_BLOCK;
@@ -2854,7 +2853,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
         **	Cloaked enemy objects are not considered if this is a
         *Find_Path() *	call.
         */
-        if (!obj->Is_Techno() || ((TechnoClass *)obj)->Cloak != CLOAKED) {
+        if (!obj->Is_Techno() || ((TechnoClass*)obj)->Cloak != CLOAKED) {
           /*
           **	If this unit can crush infantry, and there is an enemy infantry
           *in the *	cell, don't consider the cell impassible. This is true
@@ -2874,7 +2873,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
             */
             switch (obj->What_Am_I()) {
               case RTTI_TERRAIN:
-                if (((TerrainClass *)obj)->Class->IsFlammable &&
+                if (((TerrainClass*)obj)->Class->IsFlammable &&
                     BulletTypeClass::As_Reference(Weapons[Class->Primary].Fires)
                             .Warhead == WARHEAD_FIRE) {
                   if (retval < MOVE_DESTROYABLE) retval = MOVE_DESTROYABLE;
@@ -2976,12 +2975,12 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Init(void) {
-  UnitClass *ptr;
+  UnitClass* ptr;
 
   Units.Free_All();
 
   ptr = new UnitClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -3122,7 +3121,7 @@ bool UnitClass::Stop_Driver(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Start_Driver(COORDINATE &headto) {
+bool UnitClass::Start_Driver(COORDINATE& headto) {
   Validate();
   if (TarComClass::Start_Driver(headto)) {
     Mark_Track(headto, MARK_DOWN);
@@ -3264,7 +3263,7 @@ void UnitClass::Response_Attack(void) {
  *                                                                                             *
  * HISTORY: * 01/11/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType UnitClass::What_Action(ObjectClass *object) const {
+ActionType UnitClass::What_Action(ObjectClass* object) const {
   Validate();
   ActionType action = TarComClass::What_Action(object);
 
@@ -3289,13 +3288,13 @@ ActionType UnitClass::What_Action(ObjectClass *object) const {
         action = ACTION_NONE;
       }
     } else {
-      ((ObjectClass &)(*this)).Mark(MARK_UP);
+      ((ObjectClass&)(*this)).Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(
                    Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
         action = ACTION_NONE;
       }
-      ((ObjectClass &)(*this)).Mark(MARK_DOWN);
+      ((ObjectClass&)(*this)).Mark(MARK_DOWN);
     }
   }
 
@@ -3303,10 +3302,10 @@ ActionType UnitClass::What_Action(ObjectClass *object) const {
   **	Special return to friendly refinery action.
   */
   if (IsOwnedByPlayer && object->Is_Techno() &&
-      ((TechnoClass const *)object)->House->Is_Ally(this)) {
+      ((TechnoClass const*)object)->House->Is_Ally(this)) {
     if (object->What_Am_I() == RTTI_BUILDING &&
-        ((UnitClass *)this)
-                ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass *)object) ==
+        ((UnitClass*)this)
+                ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)object) ==
             RADIO_ROGER) {
       action = ACTION_ENTER;
     }
@@ -3317,7 +3316,7 @@ ActionType UnitClass::What_Action(ObjectClass *object) const {
   */
   if (IsOwnedByPlayer && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass *building = (BuildingClass *)object;
+    BuildingClass* building = (BuildingClass*)object;
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_MOVE;
@@ -3378,9 +3377,9 @@ bool UnitClass::Can_Player_Move(void) const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Read_INI(char *buffer) {
-  UnitClass *unit;     // Working unit pointer.
-  char *tbuffer;       // Accumulation buffer of unit IDs.
+void UnitClass::Read_INI(char* buffer) {
+  UnitClass* unit;     // Working unit pointer.
+  char* tbuffer;       // Accumulation buffer of unit IDs.
   HousesType inhouse;  // Unit house.
   UnitType classid;    // Unit class.
   int len;             // Length of data in buffer.
@@ -3469,11 +3468,11 @@ void UnitClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Write_INI(char *buffer) {
+void UnitClass::Write_INI(char* buffer) {
   int index;
   char uname[10];
   char buf[128];
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing unit data from the ini file.
@@ -3490,7 +3489,7 @@ void UnitClass::Write_INI(char *buffer) {
   **	Write the unit data out.
   */
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass *unit;
+    UnitClass* unit;
 
     unit = Units.Ptr(index);
     if (!unit->IsInLimbo && unit->IsActive) {
@@ -3643,8 +3642,8 @@ int UnitClass::Mission_Move(void) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-DirType UnitClass::Desired_Load_Dir(ObjectClass *passenger,
-                                    CELL &moveto) const {
+DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
+                                    CELL& moveto) const {
   Validate();
   /*
   **	Determine the ideal facing that provides the least resistance. This
@@ -3679,7 +3678,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass *passenger,
                   ? 128
                   : -128;
     } else {
-      CellClass *cell = &Map[cellnum];
+      CellClass* cell = &Map[cellnum];
       if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
@@ -3908,7 +3907,7 @@ void UnitClass::APC_Open_Door(void) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const *UnitClass::Remap_Table(void) {
+void const* UnitClass::Remap_Table(void) {
   Validate();
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
     return (House->Remap_Table(IsBlushing, false));

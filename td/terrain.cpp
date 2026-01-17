@@ -99,7 +99,7 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *TerrainClass::VTable;
+void* TerrainClass::VTable;
 
 /***********************************************************************************************
  * TerrainClass::Validate -- validates terrain pointer
@@ -175,8 +175,8 @@ TerrainClass::~TerrainClass(void) {
  *handler for techno objects.                           * 12/11/1994 JLB :
  *Shortens attached burning animations.                                    *
  *=============================================================================================*/
-ResultType TerrainClass::Take_Damage(int &damage, int distance,
-                                     WarheadType warhead, TechnoClass *source) {
+ResultType TerrainClass::Take_Damage(int& damage, int distance,
+                                     WarheadType warhead, TechnoClass* source) {
   Validate();
   ResultType res = RESULT_NONE;
 
@@ -250,10 +250,10 @@ TARGET TerrainClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void *TerrainClass::operator new(size_t) throw() {
-  void *ptr = Terrains.Allocate();
+void* TerrainClass::operator new(size_t) throw() {
+  void* ptr = Terrains.Allocate();
   if (ptr) {
-    ((TerrainClass *)ptr)->IsActive = true;
+    ((TerrainClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -272,11 +272,11 @@ void *TerrainClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::operator delete(void *ptr) {
+void TerrainClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TerrainClass *)ptr)->IsActive = false;
+    ((TerrainClass*)ptr)->IsActive = false;
   }
-  Terrains.Free((TerrainClass *)ptr);
+  Terrains.Free((TerrainClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -330,8 +330,8 @@ TerrainClass::TerrainClass(TerrainType type, CELL cell)
 bool TerrainClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
-    short const *overlap = Class->Overlap_List();
-    short const *occupy = Class->Occupy_List();
+    short const* overlap = Class->Overlap_List();
+    short const* occupy = Class->Occupy_List();
     CELL cell = Coord_Cell(Coord);
 
     switch (mark) {
@@ -376,7 +376,7 @@ bool TerrainClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
   Validate();
-  void const *shapedata;
+  void const* shapedata;
 
   shapedata = Class->Get_Image_Data();
   if (shapedata) {
@@ -421,12 +421,12 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Init(void) {
-  TerrainClass *ptr;
+  TerrainClass* ptr;
 
   Terrains.Free_All();
 
   ptr = new TerrainClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -448,7 +448,7 @@ void TerrainClass::Init(void) {
  *=============================================================================================*/
 MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
   Validate();
-  short const *offset;  // Pointer to cell offset list.
+  short const* offset;  // Pointer to cell offset list.
 
   if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
 
@@ -480,7 +480,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
 bool TerrainClass::Catch_Fire(void) {
   Validate();
   if (!IsCrumbling && !IsOnFire && Class->IsFlammable) {
-    AnimClass *anim =
+    AnimClass* anim =
         new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {
       anim->Attach_To(this);
@@ -591,7 +591,7 @@ void TerrainClass::AI(void) {
       }
     } else {
       // If it hasn't tried to blossom yet, can it do so now?
-      if (Random_Picky((int)1, (int)5000, (char *)nullptr, (int)0) == 1) {
+      if (Random_Picky((int)1, (int)5000, (char*)nullptr, (int)0) == 1) {
         IsBlossoming = true;
         StageClass::Set_Stage(1);
         StageClass::Set_Rate(Options.Normalize_Delay(1));
@@ -615,7 +615,7 @@ void TerrainClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Debug_Dump(MonoClass *mono) const {
+void TerrainClass::Debug_Dump(MonoClass* mono) const {
   Validate();
   ObjectClass::Debug_Dump(mono);
 }
@@ -756,12 +756,12 @@ TerrainClass::TerrainClass(void) : Class(nullptr) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char *TerrainClass::Radar_Icon(CELL cell) {
+unsigned char* TerrainClass::Radar_Icon(CELL cell) {
   Validate();
-  unsigned char *icon =
-      (unsigned char *)Class->Get_Radar_Data();  // get a pointer to radar icons
-  int width = *icon++;                           // extract the width from data
-  int height = *icon++;                          // extract the width from data
+  unsigned char* icon =
+      (unsigned char*)Class->Get_Radar_Data();  // get a pointer to radar icons
+  int width = *icon++;                          // extract the width from data
+  int height = *icon++;                         // extract the width from data
 
   /*
   ** Icon number that we need can be found by converting the cell and base
@@ -795,11 +795,11 @@ unsigned char *TerrainClass::Radar_Icon(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Read_INI(char *buffer) {
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+void TerrainClass::Read_INI(char* buffer) {
+  char* tbuffer;  // Accumulation buffer of unit IDs.
   int len;        // Size of data in buffer.
   char buf[128];
-  TerrainClass *tptr;
+  TerrainClass* tptr;
 
   len = strlen(buffer) + 2;
   tbuffer = buffer + len;
@@ -840,11 +840,11 @@ void TerrainClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Write_INI(char *buffer) {
+void TerrainClass::Write_INI(char* buffer) {
   int index;
   char uname[10];
   char buf[127];
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing terrain data from the ini file.
@@ -861,7 +861,7 @@ void TerrainClass::Write_INI(char *buffer) {
   **	Write the terrain data out.
   */
   for (index = 0; index < Terrains.Count(); index++) {
-    TerrainClass *terrain;
+    TerrainClass* terrain;
 
     terrain = Terrains.Ptr(index);
     if (!terrain->IsInLimbo && terrain->IsActive) {

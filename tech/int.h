@@ -48,10 +48,10 @@
 #include "tech/straw.h"
 
 template <class T>
-T Generate_Prime(Straw &rng, int pbits, T const *);
+T Generate_Prime(Straw& rng, int pbits, T const*);
 
 template <class T>
-T Gcd(const T &a, const T &n);
+T Gcd(const T& a, const T& n);
 
 template <int PRECISION>
 class Int {
@@ -62,10 +62,10 @@ class Int {
   Int(void) { XMP_Init(&reg[0], 0, PRECISION); }
   Int(unsigned long value) { XMP_Init(&reg[0], value, PRECISION); }
 
-  void Randomize(Straw &rng, int bitcount) {
+  void Randomize(Straw& rng, int bitcount) {
     XMP_Randomize(&reg[0], rng, bitcount, PRECISION);
   }
-  void Randomize(Straw &rng, const Int &minval, const Int &maxval) {
+  void Randomize(Straw& rng, const Int& minval, const Int& maxval) {
     XMP_Randomize(&reg[0], rng, minval, maxval, PRECISION);
     reg[0] |= 1;
   }
@@ -75,8 +75,8 @@ class Int {
   **	integers. Big number math is basically manipulation of arbitrary
   **	length arrays.
   */
-  operator uint32_t *() { return &reg[0]; }
-  operator const uint32_t *() const { return &reg[0]; }
+  operator uint32_t*() { return &reg[0]; }
+  operator const uint32_t*() const { return &reg[0]; }
 
   /*
   **	Array access operator (references bit position). Bit 0 is the first bit.
@@ -86,11 +86,11 @@ class Int {
   /*
   **	Unary operators.
   */
-  Int &operator++(void) {
+  Int& operator++(void) {
     XMP_Inc(&reg[0], PRECISION);
     return (*this);
   }
-  Int &operator--(void) {
+  Int& operator--(void) {
     XMP_Dec(&reg[0], PRECISION);
     return (*this);
   }
@@ -124,39 +124,39 @@ class Int {
     return (XMP_Fermat_Test(&reg[0], rounds, PRECISION));
   }
   bool IsPrime(void) const { return (XMP_Is_Prime(&reg[0], PRECISION)); }
-  bool RabinMillerTest(Straw &rng, unsigned int rounds) const {
+  bool RabinMillerTest(Straw& rng, unsigned int rounds) const {
     return (XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION));
   }
 
   /*
   **	'in-place' binary operators.
   */
-  Int &operator+=(const Int &number) {
+  Int& operator+=(const Int& number) {
     Carry = XMP_Add(&reg[0], &reg[0], number, 0, PRECISION);
     return (*this);
   }
-  Int &operator-=(const Int &number) {
+  Int& operator-=(const Int& number) {
     Borrow = XMP_Sub(&reg[0], &reg[0], number, 0, PRECISION);
     return (*this);
   }
-  Int &operator*=(const Int &multiplier) {
+  Int& operator*=(const Int& multiplier) {
     Remainder = *this;
     Error = XMP_Signed_Mult(&reg[0], Remainder, multiplier, PRECISION);
     return (*this);
   }
-  Int &operator/=(const Int &t) {
+  Int& operator/=(const Int& t) {
     *this = (*this) / t;
     return *this;
   }
-  Int &operator%=(const Int &t) {
+  Int& operator%=(const Int& t) {
     *this = (*this) % t;
     return *this;
   }
-  Int &operator<<=(int bits) {
+  Int& operator<<=(int bits) {
     XMP_Shift_Left_Bits(&reg[0], bits, PRECISION);
     return *this;
   }
-  Int &operator>>=(int bits) {
+  Int& operator>>=(int bits) {
     XMP_Shift_Right_Bits(&reg[0], bits, PRECISION);
     return *this;
   }
@@ -164,7 +164,7 @@ class Int {
   /*
   **	Mathematical binary operators.
   */
-  Int operator+(const Int &number) const {
+  Int operator+(const Int& number) const {
     Int term;
     Carry = XMP_Add(term, &reg[0], number, 0, PRECISION);
     return (term);
@@ -176,7 +176,7 @@ class Int {
   }
   //		friend Int<PRECISION> operator + (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) + a);}
-  Int operator-(const Int &number) const {
+  Int operator-(const Int& number) const {
     Int term;
     Borrow = XMP_Sub(term, &reg[0], number, 0, PRECISION);
     return (term);
@@ -188,7 +188,7 @@ class Int {
   }
   //		friend Int<PRECISION> operator - (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) - a);}
-  Int operator*(const Int &multiplier) const {
+  Int operator*(const Int& multiplier) const {
     Int result;
     Error = XMP_Signed_Mult(result, &reg[0], multiplier, PRECISION);
     return result;
@@ -200,7 +200,7 @@ class Int {
   }
   //		friend Int<PRECISION> operator * (digit b, const Int<PRECISION>
   //& a) {return(Int<PRECISION>(b) * a);}
-  Int operator/(const Int &divisor) const {
+  Int operator/(const Int& divisor) const {
     Int quotient = *this;
     XMP_Signed_Div(Remainder, quotient, &reg[0], divisor, PRECISION);
     return (quotient);
@@ -213,7 +213,7 @@ class Int {
   }
   //		friend Int<PRECISION> operator / (digit a, const Int<PRECISION>
   //& b) {return(Int<PRECISION>(a) / b);}
-  Int operator%(const Int &divisor) const {
+  Int operator%(const Int& divisor) const {
     Int remainder;
     XMP_Signed_Div(remainder, Remainder, &reg[0], divisor, PRECISION);
     return (remainder);
@@ -242,20 +242,20 @@ class Int {
   /*
   **	Comparison binary operators.
   */
-  int operator==(const Int &b) const {
+  int operator==(const Int& b) const {
     return (memcmp(&reg[0], &b.reg[0], (MAX_BIT_PRECISION / CHAR_BIT)) == 0);
   }
-  int operator!=(const Int &b) const { return !(*this == b); }
-  int operator>(const Int &number) const {
+  int operator!=(const Int& b) const { return !(*this == b); }
+  int operator>(const Int& number) const {
     return (XMP_Compare(&reg[0], number, PRECISION) > 0);
   }
-  int operator>=(const Int &number) const {
+  int operator>=(const Int& number) const {
     return (XMP_Compare(&reg[0], number, PRECISION) >= 0);
   }
-  int operator<(const Int &number) const {
+  int operator<(const Int& number) const {
     return (XMP_Compare(&reg[0], number, PRECISION) < 0);
   }
-  int operator<=(const Int &number) const {
+  int operator<=(const Int& number) const {
     return (XMP_Compare(&reg[0], number, PRECISION) <= 0);
   }
 
@@ -267,7 +267,7 @@ class Int {
     XMP_Abs(&reg[0], PRECISION);
     return (*this);
   }
-  Int times_b_mod_c(Int const &multiplier, Int const &modulus) const {
+  Int times_b_mod_c(Int const& multiplier, Int const& modulus) const {
     Int result;
     Error = xmp_stage_modulus(modulus, PRECISION);
     Error = XMP_Mod_Mult(result, &reg[0], multiplier, PRECISION);
@@ -275,64 +275,64 @@ class Int {
     return result;
   }
 
-  Int exp_b_mod_c(const Int &e, const Int &m) const {
+  Int exp_b_mod_c(const Int& e, const Int& m) const {
     Int result;
     Error = xmp_exponent_mod(result, &reg[0], e, m, PRECISION);
     return result;
   }
 
-  static Int Unsigned_Mult(Int const &multiplicand, Int const &multiplier) {
+  static Int Unsigned_Mult(Int const& multiplicand, Int const& multiplier) {
     Int product;
     Error = XMP_Unsigned_Mult(&product.reg[0], &multiplicand.reg[0],
                               &multiplier.reg[0], PRECISION);
     return (product);
   }
-  static void Unsigned_Divide(Int &remainder, Int &quotient,
-                              const Int &dividend, const Int &divisor) {
+  static void Unsigned_Divide(Int& remainder, Int& quotient,
+                              const Int& dividend, const Int& divisor) {
     Error = XMP_Unsigned_Div(remainder, quotient, dividend, divisor, PRECISION);
   }
-  static void Signed_Divide(Int &remainder, Int &quotient, const Int &dividend,
-                            const Int &divisor) {
+  static void Signed_Divide(Int& remainder, Int& quotient, const Int& dividend,
+                            const Int& divisor) {
     XMP_Signed_Div(remainder, quotient, dividend, divisor, PRECISION);
   }
-  Int Inverse(const Int &modulus) const {
+  Int Inverse(const Int& modulus) const {
     Int result;
     XMP_Inverse_A_Mod_B(result, &reg[0], modulus, PRECISION);
     return (result);
   }
 
-  static Int Decode_ASCII(char const *string) {
+  static Int Decode_ASCII(char const* string) {
     Int result;
     XMP_Decode_ASCII(string, result, PRECISION);
     return (result);
   }
 
   // Number (sign independand) inserted into buffer.
-  int Encode(unsigned char *output) const {
+  int Encode(unsigned char* output) const {
     return (XMP_Encode(output, &reg[0], PRECISION));
   }
-  int Encode(unsigned char *output, unsigned length) const {
+  int Encode(unsigned char* output, unsigned length) const {
     return (XMP_Encode(output, length, &reg[0], PRECISION));
   }
-  void Signed_Decode(const unsigned char *from, int frombytes) {
+  void Signed_Decode(const unsigned char* from, int frombytes) {
     XMP_Signed_Decode(&reg[0], from, frombytes, PRECISION);
   }
-  void Unsigned_Decode(const unsigned char *from, int frombytes) {
+  void Unsigned_Decode(const unsigned char* from, int frombytes) {
     XMP_Unsigned_Decode(&reg[0], from, frombytes, PRECISION);
   }
 
   // encode Int using Distinguished Encoding Rules, returns size of output
-  int DEREncode(unsigned char *output) const {
+  int DEREncode(unsigned char* output) const {
     return (XMP_DER_Encode(&reg[0], output, PRECISION));
   }
-  void DERDecode(const unsigned char *input) {
+  void DERDecode(const unsigned char* input) {
     XMP_DER_Decode(&reg[0], input, PRECISION);
   }
 
   // Friend helper functions.
-  friend Int<PRECISION> Generate_Prime<>(Straw &rng, int pbits,
-                                         Int<PRECISION> const *);
-  friend Int<PRECISION> Gcd<>(const Int<PRECISION> &a, const Int<PRECISION> &b);
+  friend Int<PRECISION> Generate_Prime<>(Straw& rng, int pbits,
+                                         Int<PRECISION> const*);
+  friend Int<PRECISION> Gcd<>(const Int<PRECISION>& a, const Int<PRECISION>& b);
   //		friend bool NextPrime(Int<PRECISION> & p, const Int<PRECISION> &
   // max, bool blumInt=false); 		friend Int<PRECISION>
   // a_exp_b_mod_pq(const Int<PRECISION> & a, const Int<PRECISION> & ep, const
@@ -354,7 +354,7 @@ class Int {
   uint32_t reg[PRECISION];
 
   struct RemainderTable {
-    RemainderTable(const Int<PRECISION> &p) : HasZeroEntry(false) {
+    RemainderTable(const Int<PRECISION>& p) : HasZeroEntry(false) {
       for (unsigned i = 0; i < ARRAY_SIZE(primeTable); i++) {
         table[i] = p % primeTable[i];
       }
@@ -370,7 +370,7 @@ class Int {
         HasZeroEntry = (HasZeroEntry || !table[i]);
       }
     }
-    void Increment(const RemainderTable &rtQ) {
+    void Increment(const RemainderTable& rtQ) {
       HasZeroEntry = false;
       for (unsigned int i = 0; i < ARRAY_SIZE(primeTable); i++) {
         table[i] += rtQ.table[i];
@@ -387,7 +387,7 @@ class Int {
 };
 
 template <class T>
-T Gcd(const T &a, const T &n) {
+T Gcd(const T& a, const T& n) {
   T g[3] = {n, a, 0UL};
 
   unsigned int i = 1;
@@ -399,7 +399,7 @@ T Gcd(const T &a, const T &n) {
 }
 
 template <class T>
-T Generate_Prime(Straw &rng, int pbits, T const *) {
+T Generate_Prime(Straw& rng, int pbits, T const*) {
   T minQ = (T(1UL) << (unsigned short)(pbits - (unsigned short)2));
   T maxQ = ((T(1UL) << (unsigned short)(pbits - (unsigned short)1)) -
             (unsigned short)1);

@@ -71,7 +71,7 @@ IPXGetConnectionNumber95Type IPX_Get_Connection_Number95 = nullptr;
 IPXGetLocalTarget95 IPX_Get_Local_Target95 = nullptr;
 //}
 
-char const *FunctionNames[] = {"_IPX_Initialise",
+char const* FunctionNames[] = {"_IPX_Initialise",
                                "_IPX_Get_Outstanding_Buffer95",
                                "_IPX_Shut_Down95",
                                "_IPX_Send_Packet95",
@@ -109,8 +109,8 @@ bool Load_IPX_Dll(void) {
   SetErrorMode(0);
 
   if (IpxDllInstance) {
-    const char *function_name;
-    unsigned long *fptr = (unsigned long *)&IPX_Initialise;
+    const char* function_name;
+    unsigned long* fptr = (unsigned long*)&IPX_Initialise;
     int count = 0;
 
     do {
@@ -162,7 +162,7 @@ int IPX_Close_Socket(unsigned short socket) {
 
 int IPX_Get_Connection_Number(void) { return (IPX_Get_Connection_Number95()); }
 
-int IPX_Broadcast_Packet(unsigned char *buf, int buflen) {
+int IPX_Broadcast_Packet(unsigned char* buf, int buflen) {
   return (IPX_Broadcast_Packet95(buf, buflen));
 }
 
@@ -170,9 +170,9 @@ extern "C" {
 extern void __cdecl Int3(void);
 }
 
-int IPX_Get_Local_Target(unsigned char *dest_network, unsigned char *dest_node,
+int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
                          unsigned short dest_socket,
-                         unsigned char *bridge_address) {
+                         unsigned char* bridge_address) {
   // Int3();
   return (IPX_Get_Local_Target95(dest_network, dest_node, dest_socket,
                                  bridge_address));

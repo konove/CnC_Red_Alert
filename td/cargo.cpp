@@ -62,7 +62,7 @@
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void CargoClass::Debug_Dump(MonoClass *mono) const {
+void CargoClass::Debug_Dump(MonoClass* mono) const {
   if (How_Many()) {
     mono->Set_Cursor(63, 3);
     mono->Printf("(%d)%04X", How_Many(), Attached_Object());
@@ -86,7 +86,7 @@ void CargoClass::Debug_Dump(MonoClass *mono) const {
  * HISTORY: * 04/23/1994 JLB : Created. * 10/31/94   JLB : Handles chained
  *objects.                                                 *
  *=============================================================================================*/
-void CargoClass::Attach(FootClass *object) {
+void CargoClass::Attach(FootClass* object) {
   /*
   **	If there is no object, then no action is necessary.
   */
@@ -101,7 +101,7 @@ void CargoClass::Attach(FootClass *object) {
   *several objects may be attached as a result of several calls *	to this
   *routine. Either case must be handled properly.
   */
-  ObjectClass *o = object->Next;
+  ObjectClass* o = object->Next;
   while (o) {
     if (!o->Next) break;
     o = o->Next;
@@ -121,7 +121,7 @@ void CargoClass::Attach(FootClass *object) {
   object = CargoHold;
   while (object) {
     Quantity++;
-    object = (FootClass *)object->Next;
+    object = (FootClass*)object->Next;
   }
 }
 
@@ -142,11 +142,11 @@ void CargoClass::Attach(FootClass *object) {
  * HISTORY: * 04/23/1994 JLB : Created. * 06/07/1994 JLB : Handles generic
  *object types.                                            *
  *=============================================================================================*/
-FootClass *CargoClass::Detach_Object(void) {
-  FootClass *unit = Attached_Object();
+FootClass* CargoClass::Detach_Object(void) {
+  FootClass* unit = Attached_Object();
 
   if (unit) {
-    CargoHold = (FootClass *)unit->Next;
+    CargoHold = (FootClass*)unit->Next;
     unit->Next = nullptr;
     Quantity--;
   }
@@ -170,7 +170,7 @@ FootClass *CargoClass::Detach_Object(void) {
  * HISTORY: * 09/07/1992 JLB : Created. * 06/07/1994 JLB : Handles generic
  *object types.                                            *
  *=============================================================================================*/
-FootClass *CargoClass::Attached_Object(void) const {
+FootClass* CargoClass::Attached_Object(void) const {
   if (Is_Something_Attached()) {
     return (CargoHold);
   }

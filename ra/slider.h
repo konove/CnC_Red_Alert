@@ -72,8 +72,8 @@ class SliderClass : public GaugeClass {
   virtual int Bump(int up);
   virtual int Step(int up);
   virtual int Draw_Me(int forced);
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType &key,
-                            ControlClass &whom);
+  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                            ControlClass& whom);
 
   virtual int Thumb_Pixels(void) { return (ThumbSize); }
 
@@ -82,8 +82,8 @@ class SliderClass : public GaugeClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  ShapeButtonClass *PlusGadget;
-  ShapeButtonClass *MinusGadget;
+  ShapeButtonClass* PlusGadget;
+  ShapeButtonClass* MinusGadget;
 
   /*
   **	If I belong to a listbox, I have to draw myself differently...
@@ -104,7 +104,7 @@ class SliderClass : public GaugeClass {
   int ThumbSize;
   int ThumbStart;  // x or y position for the thumb
 
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
   virtual void Draw_Thumb(void);
 
  private:

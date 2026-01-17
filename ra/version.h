@@ -109,12 +109,12 @@ class VersionClass {
   // Retrieves a pointer to the version # as a text string (#.#), with
   // the trailing 0's trimmed off.
   //.....................................................................
-  char *Version_Name(void);
+  char* Version_Name(void);
 
   //.....................................................................
   // Retrieves a pointer to the current version text.
   //.....................................................................
-  char *Version_Text() { return (VersionText); }
+  char* Version_Text() { return (VersionText); }
 
   //.....................................................................
   // Returns the default comm protocol for a given version number.
@@ -195,7 +195,7 @@ class VersionClass {
   unsigned TextInit : 1;
 };
 
-char const *Version_Name(void);
+char const* Version_Name(void);
 
 #endif
 /************************** end of version.h *******************************/

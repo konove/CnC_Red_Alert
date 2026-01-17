@@ -49,7 +49,7 @@
 #include <netinet/in.h>
 
 typedef int SOCKET;
-typedef void *HANDLE;
+typedef void* HANDLE;
 #define IN_ADDR in_addr
 #define MAXGETHOSTSTRUCT 1024
 #define WM_USER 0x400
@@ -107,11 +107,11 @@ class TcpipManagerClass {
   void Message_Handler(HWND window, UINT message, UINT wParam, LONG lParam);
 #endif
   void Copy_To_In_Buffer(int bytes);
-  int Read(void *buffer, int buffer_len);
-  void Write(void *buffer, int buffer_len);
+  int Read(void* buffer, int buffer_len);
+  void Write(void* buffer, int buffer_len);
   bool Add_Client(void);
   void Close(void);
-  void Set_Host_Address(char *address);
+  void Set_Host_Address(char* address);
   void Set_Protocol_UDP(bool state);
   void Clear_Socket_Error(SOCKET socket);
 
@@ -190,7 +190,7 @@ extern TcpipManagerClass Winsock;
 extern char PlanetWestwoodIPAddress[IP_ADDRESS_MAX];
 extern long PlanetWestwoodPortNumber;
 extern bool PlanetWestwoodIsHost;
-extern int Read_Game_Options(char *);
+extern int Read_Game_Options(char*);
 extern bool UseVirtualSubnetServer;
 extern int InternetMaxPlayers;
 

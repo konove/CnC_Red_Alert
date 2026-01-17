@@ -222,10 +222,10 @@ VesselClass::~VesselClass(void) {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-void *VesselClass::operator new(size_t) throw() {
-  void *ptr = Vessels.Alloc();
+void* VesselClass::operator new(size_t) throw() {
+  void* ptr = Vessels.Alloc();
   if (ptr != nullptr) {
-    ((VesselClass *)ptr)->IsActive = true;
+    ((VesselClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -244,12 +244,12 @@ void *VesselClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::operator delete(void *ptr) {
+void VesselClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    assert(((VesselClass *)ptr)->IsActive);
-    ((VesselClass *)ptr)->IsActive = false;
+    assert(((VesselClass*)ptr)->IsActive);
+    ((VesselClass*)ptr)->IsActive = false;
   }
-  Vessels.Free((VesselClass *)ptr);
+  Vessels.Free((VesselClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -267,7 +267,7 @@ void VesselClass::operator delete(void *ptr) {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const &VesselClass::Class_Of(void) const {
+ObjectTypeClass const& VesselClass::Class_Of(void) const {
   assert(IsActive);
 
   return (*Class);
@@ -295,7 +295,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   if ((unsigned)cell >= MAP_CELL_TOTAL) return (MOVE_NO);
 
-  CellClass const *cellptr = &Map[cell];
+  CellClass const* cellptr = &Map[cell];
 
   /*
   **	Moving off the edge of the map is not allowed unless
@@ -332,7 +332,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
       return (MOVE_NO);
     }
 
-    TechnoClass *techno = cellptr->Cell_Techno();
+    TechnoClass* techno = cellptr->Cell_Techno();
     if (techno != nullptr && techno->Cloak == CLOAKED &&
         !House->Is_Ally(techno)) {
       return (MOVE_CLOAK);
@@ -417,7 +417,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  void const *shapefile = Get_Image_Data();
+  void const* shapefile = Get_Image_Data();
   if (shapefile == nullptr) return;
 
   /*
@@ -518,7 +518,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Debug_Dump(MonoClass *mono) const {
+void VesselClass::Debug_Dump(MonoClass* mono) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -551,7 +551,7 @@ void VesselClass::Debug_Dump(MonoClass *mono) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-short const *VesselClass::Overlap_List(bool redraw) const {
+short const* VesselClass::Overlap_List(bool redraw) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -632,10 +632,10 @@ void VesselClass::AI(void) {
   if (*this == VESSEL_CARRIER && How_Many()) {
     if (!MoebiusCountDown) {
       MoebiusCountDown = Rule.ReloadRate * TICKS_PER_MINUTE;
-      ObjectClass *obj = Attached_Object();
+      ObjectClass* obj = Attached_Object();
       while (obj) {
         long bogus;
-        ((AircraftClass *)obj)->Receive_Message(this, RADIO_RELOAD, bogus);
+        ((AircraftClass*)obj)->Receive_Message(this, RADIO_RELOAD, bogus);
         obj = (obj->Next);
       }
     }
@@ -773,7 +773,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
  *                                                                                             *
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
-ActionType VesselClass::What_Action(ObjectClass const *object) const {
+ActionType VesselClass::What_Action(ObjectClass const* object) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -789,7 +789,7 @@ ActionType VesselClass::What_Action(ObjectClass const *object) const {
         for (FacingType face = FACING_N; face < FACING_COUNT && !found;
              face++) {
           CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
-          CellClass *cell = &Map[cellnum];
+          CellClass* cell = &Map[cellnum];
           if (Map.In_Radar(cellnum) &&
                   Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
@@ -811,7 +811,7 @@ ActionType VesselClass::What_Action(ObjectClass const *object) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       object->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass *building = (BuildingClass *)object;
+    BuildingClass* building = (BuildingClass*)object;
 
     if (building->Class->ToBuild == RTTI_VESSELTYPE &&
         building->House->Is_Ally(this)) {
@@ -850,7 +850,7 @@ ActionType VesselClass::What_Action(ObjectClass const *object) const {
  *                                                                                             *
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
-void VesselClass::Active_Click_With(ActionType action, ObjectClass *object) {
+void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -942,8 +942,8 @@ void VesselClass::Active_Click_With(ActionType action, CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-ResultType VesselClass::Take_Damage(int &damage, int distance,
-                                    WarheadType warhead, TechnoClass *source,
+ResultType VesselClass::Take_Damage(int& damage, int distance,
+                                    WarheadType warhead, TechnoClass* source,
                                     int forced) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
@@ -977,7 +977,7 @@ ResultType VesselClass::Take_Damage(int &damage, int distance,
     */
     Mark(MARK_UP);
     while (Is_Something_Attached()) {
-      FootClass *object = Detach_Object();
+      FootClass* object = Detach_Object();
 
       /*
       **	Only infantry can run from a destroyed vehicle. Even then, it is
@@ -999,7 +999,7 @@ ResultType VesselClass::Take_Damage(int &damage, int distance,
     */
     if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached &&
         (*this != VESSEL_SS && *this != VESSEL_MISSILESUB)) {
-      AnimClass *anim =
+      AnimClass* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim != nullptr) anim->Attach_To(this);
     }
@@ -1045,7 +1045,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     Mono_Set_Cursor(0, 0);
   }
   if (fire == FIRE_OK || fire == FIRE_CLOAKED) {
-    WeaponTypeClass const *weapon =
+    WeaponTypeClass const* weapon =
         (which == 0) ? Class->PrimaryWeapon : Class->SecondaryWeapon;
 
     /*
@@ -1058,7 +1058,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       isbridgetarget = Is_Target_Cell(target);  // enable shooting at bridges
       isseatarget |= isbridgetarget;
     }
-    BuildingClass *bldg = ::As_Building(target);
+    BuildingClass* bldg = ::As_Building(target);
     if (bldg != nullptr && bldg->Class->Speed == SPEED_FLOAT) {
       isseatarget = true;
     }
@@ -1074,7 +1074,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       ** If it's a torpedo, let's check line-of-sight to make sure that
       ** there's only water squares between us and the target.
       */
-      ObjectClass *obj = As_Object(target);
+      ObjectClass* obj = As_Object(target);
       COORDINATE coord = Center_Coord();
       if (obj != nullptr) {
         int totaldist = ::Distance(coord, obj->Center_Coord());
@@ -1089,7 +1089,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
           /*
           ** Check for friendly boats in the way.
           */
-          TechnoClass *tech = Map[coord].Cell_Techno();
+          TechnoClass* tech = Map[coord].Cell_Techno();
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
             return (FIRE_RANGE);
           }
@@ -1354,9 +1354,9 @@ void VesselClass::Enter_Idle_Mode(bool) {
  *                                                                                             *
  * HISTORY: * 05/31/1996 BWG : Created. *
  *=============================================================================================*/
-RadioMessageType VesselClass::Receive_Message(RadioClass *from,
+RadioMessageType VesselClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
-                                              long &param) {
+                                              long& param) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1560,8 +1560,8 @@ RadioMessageType VesselClass::Receive_Message(RadioClass *from,
  *                                                                                             *
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
-DirType VesselClass::Desired_Load_Dir(ObjectClass *passenger,
-                                      CELL &moveto) const {
+DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
+                                      CELL& moveto) const {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1586,7 +1586,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass *passenger,
                   ? 128
                   : -128;
     } else {
-      CellClass *cell = &Map[cellnum];
+      CellClass* cell = &Map[cellnum];
       if (Ground[cell->Land_Type()].Cost[SPEED_FOOT] == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
@@ -1749,7 +1749,7 @@ int VesselClass::Mission_Unload(void) {
             */
             if (In_Radio_Contact()) return (TICKS_PER_SECOND);
 
-            FootClass *passenger = Detach_Object();
+            FootClass* passenger = Detach_Object();
 
             if (passenger != nullptr) {
               DirType toface = DIR_S + PrimaryFacing;
@@ -1770,7 +1770,7 @@ int VesselClass::Mission_Unload(void) {
                   Transmit_Message(RADIO_HELLO, passenger);
                   Transmit_Message(RADIO_TETHER, passenger);
                   if (passenger->What_Am_I() == RTTI_UNIT) {
-                    ((UnitClass *)passenger)->IsToScatter = true;
+                    ((UnitClass*)passenger)->IsToScatter = true;
                   }
                   placed = true;
                   break;
@@ -1788,7 +1788,7 @@ int VesselClass::Mission_Unload(void) {
                 **	Tell everyone around the transport to scatter.
                 */
                 for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
-                  CellClass *cellptr = &Map[Coord].Adjacent_Cell(face);
+                  CellClass* cellptr = &Map[Coord].Adjacent_Cell(face);
                   if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
                     cellptr->Incoming(0, true);
                   }
@@ -1960,15 +1960,15 @@ bool VesselClass::Is_Allowed_To_Recloak(void) const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Read_INI(CCINIClass &ini) {
-  VesselClass *vessel;  // Working vessel pointer.
+void VesselClass::Read_INI(CCINIClass& ini) {
+  VesselClass* vessel;  // Working vessel pointer.
   HousesType inhouse;   // Vessel house.
   VesselType classid;   // Vessel class.
   char buf[128];
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const *entry = ini.Get_Entry(INI_Name(), index);
+    char const* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
@@ -1992,10 +1992,10 @@ void VesselClass::Read_INI(CCINIClass &ini) {
               MissionClass::Mission_From_Name(strtok(nullptr, ",\n\r"));
 
           vessel->Trigger = nullptr;
-          TriggerTypeClass *tp =
+          TriggerTypeClass* tp =
               TriggerTypeClass::From_Name(strtok(nullptr, ",\r\n"));
           if (tp != nullptr) {
-            TriggerClass *tt = Find_Or_Make(tp);
+            TriggerClass* tt = Find_Or_Make(tp);
             if (tt != nullptr) {
               tt->AttachCount++;
               vessel->Trigger = tt;
@@ -2046,7 +2046,7 @@ void VesselClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Write_INI(CCINIClass &ini) {
+void VesselClass::Write_INI(CCINIClass& ini) {
   /*
   **	First, clear out all existing vessel data from the ini file.
   */
@@ -2056,7 +2056,7 @@ void VesselClass::Write_INI(CCINIClass &ini) {
   **	Write the vessel data out.
   */
   for (int index = 0; index < Vessels.Count(); index++) {
-    VesselClass *vessel = Vessels.Ptr(index);
+    VesselClass* vessel = Vessels.Ptr(index);
     if (vessel != nullptr && !vessel->IsInLimbo && vessel->IsActive) {
       char uname[10];
       char buf[128];
@@ -2089,7 +2089,7 @@ void VesselClass::Write_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-bool VesselClass::Start_Driver(COORDINATE &headto) {
+bool VesselClass::Start_Driver(COORDINATE& headto) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -2309,13 +2309,13 @@ void VesselClass::Repair_AI(void) {
  *                                                                                             *
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass *VesselClass::Fire_At(TARGET target, int which) {
+BulletClass* VesselClass::Fire_At(TARGET target, int which) {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
   if (*this == VESSEL_CARRIER) {
     Arm = CarrierLaunchDelay;
-    FootClass *passenger = Detach_Object();
+    FootClass* passenger = Detach_Object();
     if (passenger != nullptr) {
       ScenarioInit++;
       passenger->Unlimbo(Center_Coord());

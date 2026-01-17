@@ -87,12 +87,12 @@ class QueueClass {
   *and entry *	[Count-1] matches the last-in-line. This is ensured regardless
   *of the actual position *	of the object in the circular internal list.
   */
-  T &operator[](int);
+  T& operator[](int);
 
   /*
   **	This function will return a reference to the "head of the line" object.
   */
-  T &First(void);
+  T& First(void);
 
   /*
   **	This function clears the list of objects.
@@ -110,7 +110,7 @@ class QueueClass {
   **	This will add an object to the tail of the line. If there is no more
   *room to add *	the object, then false will be returned.
   */
-  int Add(T const &);
+  int Add(T const&);
 
  private:
   int Head;  // Index of element in list the longest.
@@ -154,7 +154,7 @@ inline QueueClass<T, size>::QueueClass(void) : Count(0) {
  *=============================================================================================*/
 template <class T, int size>
 inline void QueueClass<T, size>::Init(void) {
-  ((int &)Count) = 0;
+  ((int&)Count) = 0;
   Head = 0;
   Tail = 0;
 }
@@ -176,11 +176,11 @@ inline void QueueClass<T, size>::Init(void) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline int QueueClass<T, size>::Add(T const &q) {
+inline int QueueClass<T, size>::Add(T const& q) {
   if (Count < size) {
     Array[Tail] = q;
     Tail = (Tail + 1) & (size - 1);
-    ((int &)Count) = Count + 1;
+    ((int&)Count) = Count + 1;
     return (true);
   }
   Mono_Printf("Queue Add failed Count %d size %d tail %d head %d \n", Count,
@@ -209,7 +209,7 @@ template <class T, int size>
 inline int QueueClass<T, size>::Next(void) {
   if (Count) {
     Head = (Head + 1) & (size - 1);
-    ((int &)Count) = Count - 1;
+    ((int&)Count) = Count - 1;
   }
   return (Count);
 }
@@ -237,7 +237,7 @@ inline int QueueClass<T, size>::Next(void) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline T &QueueClass<T, size>::operator[](int index) {
+inline T& QueueClass<T, size>::operator[](int index) {
   return Array[(Head + index) & (size - 1)];
 }
 
@@ -261,7 +261,7 @@ inline T &QueueClass<T, size>::operator[](int index) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline T &QueueClass<T, size>::First(void) {
+inline T& QueueClass<T, size>::First(void) {
   return Array[Head];
 }
 
@@ -273,6 +273,6 @@ bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
 bool Queue_Options(void);
 bool Queue_Exit(void);
 void Queue_AI(void);
-void Add_CRC(unsigned long *crc, unsigned long val);
+void Add_CRC(unsigned long* crc, unsigned long val);
 
 #endif

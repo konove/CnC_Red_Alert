@@ -169,9 +169,9 @@ class ConnectionClass {
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  virtual int Send_Packet(void *buf, int buflen, int ack_req);
-  virtual int Receive_Packet(void *buf, int buflen);
-  virtual int Get_Packet(void *buf, int *buflen);
+  virtual int Send_Packet(void* buf, int buflen, int ack_req);
+  virtual int Receive_Packet(void* buf, int buflen);
+  virtual int Get_Packet(void* buf, int* buflen);
 
   /*.....................................................................
   The main polling routine for the connection.  Should be called as often
@@ -196,13 +196,13 @@ class ConnectionClass {
   unsigned long Time_Out(void) { return (Timeout); }
   void Set_TimeOut(unsigned long t) { Timeout = t; }
   unsigned long Max_Packet_Len(void) { return (MaxPacketLen); }
-  static char *Command_Name(int command);
+  static char* Command_Name(int command);
 
   /*.....................................................................
   The packet "queue"; this non-sequenced version isn't really much of
   a queue, but more of a repository.
   .....................................................................*/
-  CommBufferClass *Queue;
+  CommBufferClass* Queue;
 
   /*
   -------------------------- Protected Interface ---------------------------
@@ -220,7 +220,7 @@ class ConnectionClass {
   is protected; it's only called by the ACK/Retry logic, not the
   application.
   .....................................................................*/
-  virtual int Send(char *buf, int buflen, void *extrabuf, int extralen) = 0;
+  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen) = 0;
 
   /*.....................................................................
   This is the maximum packet length, including our own internal header.
@@ -231,7 +231,7 @@ class ConnectionClass {
   Packet staging area; this is where the CommHeaderType gets tacked onto
   the application's packet before it's sent.
   .....................................................................*/
-  char *PacketBuf;
+  char* PacketBuf;
 
   /*.....................................................................
   This is the magic number assigned to this connection.  It is the first
@@ -281,7 +281,7 @@ class ConnectionClass {
   /*.....................................................................
   Names of all packet commands
   .....................................................................*/
-  static char *Commands[PACKET_COUNT];
+  static char* Commands[PACKET_COUNT];
 };
 
 #endif

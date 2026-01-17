@@ -43,7 +43,7 @@
 #include "sdllib/include/gbuffer.h"
 #include "tech/wwfile.h"
 
-static void Write_Pcx_ScanLine(FileClass &file, int scansize, char *ptr);
+static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -92,12 +92,12 @@ static const unsigned char rle_full_run =
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Write_PCX_File(FileClass &file, GraphicBufferClass &pic,
-                   PaletteClass *palette) {
+int Write_PCX_File(FileClass& file, GraphicBufferClass& pic,
+                   PaletteClass* palette) {
   unsigned char palcopy[256 * sizeof(RGB)];
   int VP_Scan_Line;
-  char *ptr;
-  RGB *pal;
+  char* ptr;
+  RGB* pal;
   PCX_HEADER header = {10,
                        5,
                        1,
@@ -131,7 +131,7 @@ int Write_PCX_File(FileClass &file, GraphicBufferClass &pic,
   **	Write out the picture, line by line.
   */
   VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  ptr = (char *)pic.Get_Buffer();
+  ptr = (char*)pic.Get_Buffer();
   ptr += ((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos());
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line, ptr + line * VP_Scan_Line);
@@ -147,7 +147,7 @@ int Write_PCX_File(FileClass &file, GraphicBufferClass &pic,
   **	Convert the palette from 6 bit to 8 bit format.
   */
   memmove(palcopy, palette, sizeof(PaletteClass));
-  pal = (RGB *)palcopy;
+  pal = (RGB*)palcopy;
   for (int palindex = 0; palindex < 256; palindex++) {
     pal->red = (unsigned char)((pal->red << 2));      // | (pal->red>>6));
     pal->green = (unsigned char)((pal->green << 2));  // | (pal->green>>6));
@@ -187,7 +187,7 @@ int Write_PCX_File(FileClass &file, GraphicBufferClass &pic,
  * HISTORY: * 05/04/1995 JRJ : Created. * 06/03/1996 JLB : Converted to C++ and
  *file class I/O.                                     *
  *=============================================================================================*/
-static void Write_Pcx_ScanLine(FileClass &file, int scansize, char *ptr) {
+static void Write_Pcx_ScanLine(FileClass& file, int scansize, char* ptr) {
   unsigned char last = *ptr;
   unsigned char rle = 1;
   unsigned char c;

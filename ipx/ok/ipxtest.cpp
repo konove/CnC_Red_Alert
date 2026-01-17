@@ -22,4 +22,4 @@
 #endif  // _WIN32
 #include <windows.h>
 
-int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char *, int) {}
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char*, int) {}

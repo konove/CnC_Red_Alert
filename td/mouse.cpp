@@ -62,7 +62,7 @@
 /*
 **	This points to the loaded mouse shapes.
 */
-void const *MouseClass::MouseShapes;
+void const* MouseClass::MouseShapes;
 
 /*
 **	This is the timer that controls the mouse animation. It is always at a
@@ -73,7 +73,7 @@ CountDownTimerClass MouseClass::Timer;
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *MouseClass::VTable;
+void* MouseClass::VTable;
 
 /***********************************************************************************************
  * MouseClass::Set_Default_Mouse -- Sets the mouse to match the shape specified.
@@ -115,7 +115,7 @@ void MouseClass::Revert_Mouse_Shape(void) {
 }
 
 void MouseClass::Mouse_Small(bool wwsmall) {
-  MouseStruct const *control = &MouseControl[CurrentMouseShape];
+  MouseStruct const* control = &MouseControl[CurrentMouseShape];
 
   if (IsSmall == wwsmall) {
     return;
@@ -159,7 +159,7 @@ void MouseClass::Mouse_Small(bool wwsmall) {
  *Added small control parameter.                                           *
  *=============================================================================================*/
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
-  MouseStruct const *control = &MouseControl[mouse];
+  MouseStruct const* control = &MouseControl[mouse];
   static bool startup = false;
   int baseshp;
 
@@ -220,10 +220,10 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
  *   05/28/1995 JLB : Moderates animation so is more steady regardless of speed.
  ** 06/30/1995 JLB : Uses constant timer system. *
  *=============================================================================================*/
-void MouseClass::AI(KeyNumType &input, int x, int y) {
+void MouseClass::AI(KeyNumType& input, int x, int y) {
   //	bool doit = false;
-  void *mouse_shape_ptr;
-  MouseStruct const *control = &MouseControl[CurrentMouseShape];
+  void* mouse_shape_ptr;
+  MouseStruct const* control = &MouseControl[CurrentMouseShape];
 
   if (control->FrameRate && Timer.Time() == 0) {
     Frame++;
@@ -295,7 +295,7 @@ void MouseClass::One_Time(void) {
     MouseShapes = MixFileClass::Retrieve("MOUSE.SHP");
   }
 
-  VTable = ((void **)(((char *)this) + sizeof(VectorClass<CellClass>) - 4))[0];
+  VTable = ((void**)(((char*)this) + sizeof(VectorClass<CellClass>) - 4))[0];
 }
 
 /***********************************************************************************************

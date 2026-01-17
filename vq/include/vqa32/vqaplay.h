@@ -141,12 +141,12 @@
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
 typedef struct _VQAConfig {
-  long (*DrawerCallback)(unsigned char *screen, long framenum);
-  long (*EventHandler)(unsigned long event, void *buffer, long nbytes);
+  long (*DrawerCallback)(unsigned char* screen, long framenum);
+  long (*EventHandler)(unsigned long event, void* buffer, long nbytes);
   unsigned long NotifyFlags;
   long Vmode;
   long VBIBit;
-  unsigned char *ImageBuf;
+  unsigned char* ImageBuf;
   long ImageWidth;
   long ImageHeight;
   long X1, Y1;
@@ -157,8 +157,8 @@ typedef struct _VQAConfig {
   long OptionFlags;
   long NumFrameBufs;
   long NumCBBufs;
-  char *VocFile;
-  unsigned char *AudioBuf;
+  char* VocFile;
+  unsigned char* AudioBuf;
   long AudioBufSize;
   long AudioRate;
   long Volume;
@@ -169,8 +169,8 @@ typedef struct _VQAConfig {
   long DigiIRQ;
   long DigiDMA;
   long Language;
-  char *CapFont;
-  char *EVAFont; /* For C&C Only */
+  char* CapFont;
+  char* EVAFont; /* For C&C Only */
 } VQAConfig;
 
 /* Drawer Configuration flags (DrawFlags) */
@@ -224,7 +224,7 @@ typedef struct _VQAInfo {
   long NumFrames;
   long ImageWidth;
   long ImageHeight;
-  unsigned char *ImageBuf;
+  unsigned char* ImageBuf;
 } VQAInfo;
 
 /* VQAStatistics: Statistics about the VQA movie played.
@@ -273,26 +273,26 @@ typedef struct _VQAHandle {
  *-------------------------------------------------------------------------*/
 
 /* Configuration routines. */
-void VQA_INIConfig(VQAConfig *config);
-void VQA_DefaultConfig(VQAConfig *config);
+void VQA_INIConfig(VQAConfig* config);
+void VQA_DefaultConfig(VQAConfig* config);
 
 /* Handle manipulation routines. */
-VQAHandle *VQA_Alloc(void);
-void VQA_Free(VQAHandle *vqa);
-void VQA_InitAsDOS(VQAHandle *vqa);
-void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
-                                                void *buffer, long nbytes));
+VQAHandle* VQA_Alloc(void);
+void VQA_Free(VQAHandle* vqa);
+void VQA_InitAsDOS(VQAHandle* vqa);
+void VQA_Init(VQAHandle* vqa, long (*iohandler)(VQAHandle* vqa, long action,
+                                                void* buffer, long nbytes));
 
 /* File routines. */
-long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config);
-void VQA_Close(VQAHandle *vqa);
-long VQA_Play(VQAHandle *vqa, long mode);
-long VQA_SeekFrame(VQAHandle *vqa, long frame, long fromwhere);
+long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config);
+void VQA_Close(VQAHandle* vqa);
+long VQA_Play(VQAHandle* vqa, long mode);
+long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);
 
 /* Information/statistics access routines. */
-void VQA_GetInfo(VQAHandle *vqa, VQAInfo *info);
-void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats);
-char *VQA_Version(void);
-char *VQA_IDString(void);
+void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
+void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
+char* VQA_Version(void);
+char* VQA_IDString(void);
 
 #endif /* VQAPLAY_H */

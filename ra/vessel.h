@@ -91,17 +91,17 @@ class VesselClass : public DriveClass {
   CDTimerClass<FrameTimerClass> PulseCountDown;
 
   VesselClass(VesselType classid, HousesType house);
-  VesselClass(NoInitClass const &x)
+  VesselClass(NoInitClass const& x)
       : DriveClass(x), Class(x), SecondaryFacing(x) {};
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   operator VesselType(void) const { return Class->Type; };
 
   static void Init(void);
 
   virtual ~VesselClass(void);
-  virtual ObjectTypeClass const &Class_Of(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const;
 
   virtual MZoneType Zone_Check_Type(void) const { return (MZONE_WATER); }
   int Shape_Number(void) const;
@@ -113,7 +113,7 @@ class VesselClass : public DriveClass {
     if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
     return (PrimaryFacing.Current());
   }
-  virtual bool Start_Driver(COORDINATE &headto);
+  virtual bool Start_Driver(COORDINATE& headto);
   virtual int Mission_Retreat(void);
   virtual int Mission_Unload(void);
   void LST_Open_Door(void);
@@ -122,42 +122,42 @@ class VesselClass : public DriveClass {
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType from = FACING_NONE) const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
-  virtual short const *Overlap_List(bool redraw = false) const;
-  virtual DirType Desired_Load_Dir(ObjectClass *passenger, CELL &moveto) const;
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual short const* Overlap_List(bool redraw = false) const;
+  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual void AI(void);
   virtual void Per_Cell_Process(PCPType why);
   virtual void Assign_Destination(TARGET target);
 
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr,
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr,
                                  int forced = false);
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
 
   virtual void Enter_Idle_Mode(bool initial = false);
-  virtual ActionType What_Action(ObjectClass const *object) const;
+  virtual ActionType What_Action(ObjectClass const* object) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual void Active_Click_With(ActionType action, CELL cell);
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual bool Is_Allowed_To_Recloak(void) const;
-  virtual BulletClass *Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(TARGET target, int which = 0);
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "SHIPS"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  static char const* INI_Name(void) { return "SHIPS"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 
 /*
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
  protected:

@@ -171,16 +171,16 @@ long InitVESA(void) {
   paras = (sizeof(VESAInfo) + 15) >> 4;
 
   /* Allocate real-mode memory for VESA structure. */
-  if (_dx_real_alloc(paras, (unsigned short *)&rseg,
-                     (unsigned short *)&paras) == 0) {
+  if (_dx_real_alloc(paras, (unsigned short*)&rseg, (unsigned short*)&paras) ==
+      0) {
     RP_SET(_rpVInfo, 0, rseg);
 
     /* Calculate size of VESAModeInfo structure in paragraphs */
     paras = (sizeof(VESAModeInfo) + 15) >> 4;
 
     /* Allocate real-mode memory for VESAModeInfo structure. */
-    if (_dx_real_alloc(paras, (unsigned short *)&rseg,
-                       (unsigned short *)&paras) == 0) {
+    if (_dx_real_alloc(paras, (unsigned short*)&rseg,
+                       (unsigned short*)&paras) == 0) {
       RP_SET(_rpModeInfo, 0, rseg);
 
       /* Clear the input buffer */
@@ -290,8 +290,8 @@ void UninitVESA(void) {
  *
  ****************************************************************************/
 
-VESAModeInfo *SetVESAMode(long mode) {
-  VESAModeInfo *vminfo;
+VESAModeInfo* SetVESAMode(long mode) {
+  VESAModeInfo* vminfo;
 
   /* Get mode info */
   if ((vminfo = ReadVESAModeInfo(mode)) != NULL) {
@@ -347,8 +347,8 @@ VESAModeInfo *SetVESAMode(long mode) {
  *
  ****************************************************************************/
 
-VESAModeInfo *ReadVESAModeInfo(long mode) {
-  VESAModeInfo *vminfo = NULL;
+VESAModeInfo* ReadVESAModeInfo(long mode) {
+  VESAModeInfo* vminfo = NULL;
 
 #ifdef __WATCOMC__
   union REGS r;
@@ -375,7 +375,7 @@ VESAModeInfo *ReadVESAModeInfo(long mode) {
     int386x(0x31, &r, &r, &sr);
 
     if ((r.x.cflag == 0) && (rmi.eax == 0x004F)) {
-      vminfo = (VESAModeInfo *)MK_PTR(0, _ModeInfoSeg);
+      vminfo = (VESAModeInfo*)MK_PTR(0, _ModeInfoSeg);
     }
   }
 

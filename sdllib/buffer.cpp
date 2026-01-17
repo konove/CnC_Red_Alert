@@ -8,5 +8,5 @@ BufferClass::BufferClass(long size)
 BufferClass::BufferClass() : Buffer(nullptr), Size(0), Allocated(false) {}
 
 BufferClass::~BufferClass() {
-  if (Allocated) delete[] (uint8_t *)Buffer;
+  if (Allocated) delete[] (uint8_t*)Buffer;
 }

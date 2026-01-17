@@ -62,7 +62,7 @@
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-PKPipe::PKPipe(CryptControl control, RandomStraw &rnd)
+PKPipe::PKPipe(CryptControl control, RandomStraw& rnd)
     : IsGettingKey(true),
       Rand(rnd),
       BF((control == ENCRYPT) ? BlowPipe::ENCRYPT : BlowPipe::DECRYPT),
@@ -88,7 +88,7 @@ PKPipe::PKPipe(CryptControl control, RandomStraw &rnd)
  *                                                                                             *
  * HISTORY: * 07/12/1996 JLB : Created. *
  *=============================================================================================*/
-void PKPipe::Put_To(Pipe *pipe) {
+void PKPipe::Put_To(Pipe* pipe) {
   if (BF.ChainTo != pipe) {
     if (pipe != nullptr && pipe->ChainFrom != nullptr) {
       pipe->ChainFrom->Put_To(nullptr);
@@ -124,7 +124,7 @@ void PKPipe::Put_To(Pipe *pipe) {
  *                                                                                             *
  * HISTORY: * 07/07/1996 JLB : Created. *
  *=============================================================================================*/
-void PKPipe::Key(PKey const *key) {
+void PKPipe::Key(PKey const* key) {
   if (key == nullptr) {
     Flush();
     IsGettingKey = false;
@@ -159,7 +159,7 @@ void PKPipe::Key(PKey const *key) {
  *                                                                                             *
  * HISTORY: * 07/07/1996 JLB : Created. *
  *=============================================================================================*/
-int PKPipe::Put(void const *source, int length) {
+int PKPipe::Put(void const* source, int length) {
   /*
   **	If the parameter seem illegal, then pass the pipe request to the
   **	next pipe in the chain and let them deal with it.
@@ -206,7 +206,7 @@ int PKPipe::Put(void const *source, int length) {
       memmove(&Buffer[Counter - BytesLeft], source, toget);
       length -= toget;
       BytesLeft -= toget;
-      source = (char *)source + toget;
+      source = (char*)source + toget;
 
       /*
       **	If a full key has been accumulated, then decrypt it and feed the

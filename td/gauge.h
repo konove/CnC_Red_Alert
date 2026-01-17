@@ -88,7 +88,7 @@ class GaugeClass : public ControlClass {
 
  protected:
   virtual void Draw_Thumb(void);
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
   virtual int Pixel_To_Value(int pixel);
   virtual int Value_To_Pixel(int value);
 };

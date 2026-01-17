@@ -74,7 +74,7 @@ class MonoClass {
   static void Enable(void) { Enabled = true; };
   static void Disable(void) { Enabled = false; };
   static bool Is_Enabled(void) { return Enabled; };
-  static MonoClass *Get_Current(void) { return PageUsage[0]; };
+  static MonoClass* Get_Current(void) { return PageUsage[0]; };
 
   void Sub_Window(int x = 0, int y = 0, int w = -1, int h = -1);
   void Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib);
@@ -83,11 +83,11 @@ class MonoClass {
   void Set_Default_Attribute(MonoAttribute attrib) { Attrib = attrib; };
   void Clear(void);
   void Set_Cursor(int x, int y);
-  void Print(char const *text);
+  void Print(char const* text);
   void Print(int text);
-  void Printf(char const *text, ...);
+  void Printf(char const* text, ...);
   void Printf(int text, ...);
-  void Text_Print(char const *text, int x, int y,
+  void Text_Print(char const* text, int x, int y,
                   MonoAttribute attrib = NORMAL);
   void Text_Print(int text, int x, int y, MonoAttribute attrib = NORMAL);
   void View(void);
@@ -102,13 +102,13 @@ class MonoClass {
   **	Handles deep copies for the mono class objects. This performs what is
   *essentially *	a screen copy.
   */
-  MonoClass &operator=(MonoClass const &);
+  MonoClass& operator=(MonoClass const&);
 
   /*
   **	This merely makes a duplicate of the mono object into a newly created
   *mono *	object.
   */
-  MonoClass(MonoClass const &);
+  MonoClass(MonoClass const&);
 
  private:
   /*
@@ -192,15 +192,15 @@ class MonoClass {
   *visible, *	they can be shuffled around between the actual locations. The
   *first entry *	in this table is the one that is visible.
   */
-  static MonoClass *PageUsage[MAX_MONO_PAGES];
+  static MonoClass* PageUsage[MAX_MONO_PAGES];
 
   /*
   **	Fetches pointers to the appropriate mono RAM.
   */
-  MonoPageType *Raw_Ptr(int page) const {
-    return &((MonoPageType *)0xB0000)[page];
+  MonoPageType* Raw_Ptr(int page) const {
+    return &((MonoPageType*)0xB0000)[page];
   }
-  MonoPageType *Page_Ptr(void) const { return (Raw_Ptr(Page)); }
+  MonoPageType* Page_Ptr(void) const { return (Raw_Ptr(Page)); }
 
   /*
   **	If this is true, then monochrome output is allowed. It defaults to false
@@ -214,11 +214,11 @@ int Mono_Printf(int string, ...);
 #else
 extern void Mono_Set_Cursor(int x, int y);
 extern int Mono_Printf(int string, ...);
-extern int Mono_Printf(char const *string, ...);
+extern int Mono_Printf(char const* string, ...);
 extern void Mono_Clear_Screen(void);
-extern void Mono_Text_Print(void const *text, int x, int y, int attrib);
+extern void Mono_Text_Print(void const* text, int x, int y, int attrib);
 extern void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);
-extern void Mono_Print(void const *text);
+extern void Mono_Print(void const* text);
 extern int Mono_X(void);
 extern int Mono_Y(void);
 #endif

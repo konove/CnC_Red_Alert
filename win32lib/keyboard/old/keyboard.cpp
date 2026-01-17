@@ -48,7 +48,7 @@
 
 void Message_Loop(void);
 
-WWKeyboardClass *_Kbd;
+WWKeyboardClass* _Kbd;
 
 /***********************************************************************************************
  * WWKeyboardClass::WWKeyBoardClass -- Construction for Westwood Keyboard Class
@@ -123,7 +123,7 @@ WWKeyboardClass::WWKeyboardClass(void) {
  *=============================================================================================*/
 int WWKeyboardClass::Buff_Get(void) {
   while (!Check()) {
-  }                              // wait for key in buffer
+  }  // wait for key in buffer
   int temp = Buffer[Head];       // get key out of the buffer
   int newhead = Head;            // save off head for manipulation
   if (Is_Mouse_Key(temp)) {      // if key is a mouse then
@@ -179,7 +179,7 @@ int WWKeyboardClass::Get(void) {
   int temp, bits;  // store temp holding spot for key
 
   while (!Check()) {
-  }                   // wait for key in buffer
+  }  // wait for key in buffer
   temp = Buff_Get();  // get key from the buffer
 
   bits = temp & 0xFF00;  // save of keyboard bits
@@ -277,8 +277,8 @@ int WWKeyboardClass::To_ASCII(int key) { return (key); }
 
 WWKeyboardClass::Down(int key) { return (GetAsyncKeyState(key & 0xFF)); }
 
-VOID WWKeyboardClass::Split(int &key, int &shift, int &ctrl, int &alt, int &rls,
-                            int &dbl) {
+VOID WWKeyboardClass::Split(int& key, int& shift, int& ctrl, int& alt, int& rls,
+                            int& dbl) {
   shift = (key & WWKEY_SHIFT_BIT) != 0;
   ctrl = (key & WWKEY_CTRL_BIT) != 0;
   alt = (key & WWKEY_ALT_BIT) != 0;

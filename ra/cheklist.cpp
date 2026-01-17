@@ -84,8 +84,8 @@
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, void const *up,
-                               void const *down)
+                               TextPrintType flags, void const* up,
+                               void const* down)
     : ListClass(id, x, y, w, h, flags, up, down), IsReadOnly(false) {}
 
 /***********************************************************************************************
@@ -103,7 +103,7 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *=============================================================================================*/
 CheckListClass::~CheckListClass(void) {
   while (CheckListClass::Count()) {
-    CheckObject *obj = (CheckObject *)ListClass::Get_Item(0);
+    CheckObject* obj = (CheckObject*)ListClass::Get_Item(0);
 
     ListClass::Remove_Item(0);
     delete obj;
@@ -123,13 +123,13 @@ CheckListClass::~CheckListClass(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1996 JLB : Created. *
  *=============================================================================================*/
-int CheckListClass::Add_Item(char const *text) {
-  CheckObject *obj = new CheckObject(text, false);
-  return (ListClass::Add_Item((char const *)obj));
+int CheckListClass::Add_Item(char const* text) {
+  CheckObject* obj = new CheckObject(text, false);
+  return (ListClass::Add_Item((char const*)obj));
 }
 
-char const *CheckListClass::Current_Item(void) const {
-  CheckObject *obj = (CheckObject *)ListClass::Current_Item();
+char const* CheckListClass::Current_Item(void) const {
+  CheckObject* obj = (CheckObject*)ListClass::Current_Item();
   if (obj) {
     return (obj->Text);
   }
@@ -151,8 +151,8 @@ char const *CheckListClass::Current_Item(void) const {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-char const *CheckListClass::Get_Item(int index) const {
-  CheckObject *obj = (CheckObject *)ListClass::Get_Item(index);
+char const* CheckListClass::Get_Item(int index) const {
+  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
   if (obj) {
     return (obj->Text);
   }
@@ -175,9 +175,9 @@ char const *CheckListClass::Get_Item(int index) const {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void CheckListClass::Remove_Item(char const *text) {
+void CheckListClass::Remove_Item(char const* text) {
   for (int index = 0; index < Count(); index++) {
-    CheckObject *obj = (CheckObject *)ListClass::Get_Item(index);
+    CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
     if (obj && stricmp(obj->Text, text) == 0) {
       ListClass::Remove_Item(index);
       delete obj;
@@ -203,9 +203,9 @@ void CheckListClass::Remove_Item(char const *text) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void CheckListClass::Set_Selected_Index(char const *text) {
+void CheckListClass::Set_Selected_Index(char const* text) {
   for (int index = 0; index < Count(); index++) {
-    CheckObject *obj = (CheckObject *)ListClass::Get_Item(index);
+    CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
     if (obj && stricmp(obj->Text, text) == 0) {
       Set_Selected_Index(index);
       break;
@@ -231,7 +231,7 @@ void CheckListClass::Set_Selected_Index(char const *text) {
  *   02/14/1996 JLB : Revamped.                                            *
  *=========================================================================*/
 void CheckListClass::Check_Item(int index, bool checked) {
-  CheckObject *obj = (CheckObject *)ListClass::Get_Item(index);
+  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
   if (obj && obj->IsChecked != checked) {
     obj->IsChecked = checked;
     Flag_To_Redraw();
@@ -255,7 +255,7 @@ void CheckListClass::Check_Item(int index, bool checked) {
  *   02/14/1996 JLB : Revamped.                                            *
  *=========================================================================*/
 bool CheckListClass::Is_Checked(int index) const {
-  CheckObject *obj = (CheckObject *)ListClass::Get_Item(index);
+  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
   if (obj) {
     return (obj->IsChecked);
   }
@@ -278,7 +278,7 @@ bool CheckListClass::Is_Checked(int index) const {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Action(unsigned flags, KeyNumType &key) {
+int CheckListClass::Action(unsigned flags, KeyNumType& key) {
   int rc;
 
   /*
@@ -328,7 +328,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
                                 int selected) {
   if (index >= Count()) return;
 
-  CheckObject *obj = (CheckObject *)ListClass::Get_Item(index);
+  CheckObject* obj = (CheckObject*)ListClass::Get_Item(index);
 
   if (obj) {
     char buffer[100] = "";
@@ -342,7 +342,7 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
     sprintf(&buffer[2], obj->Text);
 
     TextPrintType flags = TextFlags;
-    RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;

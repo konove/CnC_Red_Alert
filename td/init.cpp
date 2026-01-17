@@ -170,8 +170,8 @@ extern bool SpawnedFromWChat;
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Init_Game(int, char *[]) {
-  void const *temp_mouse_shapes;
+bool Init_Game(int, char*[]) {
+  void const* temp_mouse_shapes;
 
 #ifndef PORTABLE
   DLOG(INFO) << "C&C95 - About to load reslib.dll";
@@ -281,7 +281,7 @@ bool Init_Game(int, char *[]) {
   f.Open("8FAT.FNT");
   MapFontPtr = Load_Alloc_Data(f);
   Font8Ptr = MixFileClass::Retrieve(FONT8);
-  FontPtr = (char *)Font8Ptr;
+  FontPtr = (char*)Font8Ptr;
   Set_Font(FontPtr);
   Font3Ptr = MixFileClass::Retrieve(FONT3);
   //	Font6Ptr = MixFileClass::Retrieve(FONT6);
@@ -354,10 +354,10 @@ bool Init_Game(int, char *[]) {
   */
   if (RawFileClass(Language_Name("CONQUER")).Is_Available()) {
     RawFileClass rf(Language_Name("CONQUER"));
-    SystemStrings = (char const *)Load_Alloc_Data(rf);
+    SystemStrings = (char const*)Load_Alloc_Data(rf);
   } else {
     SystemStrings =
-        (char const *)MixFileClass::Retrieve(Language_Name("CONQUER"));
+        (char const*)MixFileClass::Retrieve(Language_Name("CONQUER"));
   }
 
   /*
@@ -472,7 +472,7 @@ bool Init_Game(int, char *[]) {
   */
   FindFileState state;
   if (Find_First_File("SC*.MIX", state)) {
-    char *ptr;
+    char* ptr;
     do {
       // don't cache scores
       if (stricmp(state.name, "scores.mix") == 0) continue;
@@ -483,7 +483,7 @@ bool Init_Game(int, char *[]) {
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
-    char *ptr;
+    char* ptr;
     do {
       ptr = strdup(state.name);
       MixFileClass::Register(ptr);
@@ -534,7 +534,7 @@ bool Init_Game(int, char *[]) {
   /*
   ** Extract a movie from a mixfile.
   */
-  char *file_ptr = (char *)Alloc(32 * 1024 * 1024, MEM_NORMAL);
+  char* file_ptr = (char*)Alloc(32 * 1024 * 1024, MEM_NORMAL);
   CCFileClass whatever("PINTLE.VQA");
 
   int len = whatever.Size();
@@ -754,7 +754,7 @@ void Uninit_Game(void) {
   Map.ShadowPage = NULL;
   Map.Free_Cells();
 
-  delete[] static_cast<char *>(SpeechBuffer);
+  delete[] static_cast<char*>(SpeechBuffer);
 
   CCFileClass::Clear_Search_Drives();
   MixFileClass::Free_All();
@@ -807,7 +807,7 @@ extern int Com_Fake_Scenario_Dialog(void);
 extern int Com_Show_Fake_Scenario_Dialog(void);
 extern int WChatMaxAhead;
 extern int WChatSendRate;
-void Check_From_WChat(char *wchat_name);
+void Check_From_WChat(char* wchat_name);
 
 bool Select_Game(bool fade) {
   enum {
@@ -1328,7 +1328,7 @@ bool Select_Game(bool fade) {
                   */
                   DLOG(INFO) << "C&C95 - About to flush packet queue.";
                   DLOG(INFO) << "C&C95 - Allocating scrap memory.";
-                  char *temp_buffer = new char[1024];
+                  char* temp_buffer = new char[1024];
 
                   DLOG(INFO) << "C&C95 - Creating timer class instance.";
                   CountDownTimerClass ptimer;
@@ -1643,7 +1643,7 @@ bool Select_Game(bool fade) {
   */
   srand(0);
 #ifndef PORTABLE
-  RandSeedPtr = (long *)Get_EAX();
+  RandSeedPtr = (long*)Get_EAX();
 #endif
 
   /*
@@ -1825,7 +1825,7 @@ bool Select_Game(bool fade) {
 static void Play_Intro(bool for_real) {
   bool playright = !Key_Down(KN_LCTRL) || !Key_Down(KN_RCTRL);
   static int _counter = -1;
-  static const char *_names[] = {
+  static const char* _names[] = {
 #ifdef DEMO
       "LOGO",
 
@@ -1915,9 +1915,9 @@ void Anim_Init(void) {
   AnimControl.ImageHeight = 200;
   AnimControl.Vmode = 0;
 #ifdef LORES
-  AnimControl.ImageBuf = (unsigned char *)HidPage.Get_Offset();
+  AnimControl.ImageBuf = (unsigned char*)HidPage.Get_Offset();
 #else
-  AnimControl.ImageBuf = (unsigned char *)SysMemPage.Get_Offset();
+  AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
 #endif
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
@@ -1971,7 +1971,7 @@ void Anim_Init(void) {
  *                                                                                             *
  * HISTORY: * 03/18/1995 JLB : Created. *
  *=============================================================================================*/
-bool Parse_Command_Line(int argc, char *argv[]) {
+bool Parse_Command_Line(int argc, char* argv[]) {
   /*
   **	Parse the command line and set globals to reflect the parameters
   **	passed in.
@@ -1992,7 +1992,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
 
   for (int index = 1; index < argc; index++) {
     std::string original_arg = argv[index];  // Copy for preserving case.
-    char *string = strupr(argv[index]);      // Pointer to argument.
+    char* string = strupr(argv[index]);      // Pointer to argument.
 
     string = strupr(argv[index]);
 
@@ -2249,7 +2249,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      char *p = strtok(string + 8, ".");
+      char* p = strtok(string + 8, ".");
       while (p) {
         int x;
 
@@ -2507,7 +2507,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
  * HISTORY: * 08/18/1995 BRR : Created. *
  *=============================================================================================*/
 void Parse_INI_File(void) {
-  char *buffer;  // INI staging buffer pointer.
+  char* buffer;  // INI staging buffer pointer.
   char buf[128];
   static char section[40];
   static char entry[40];
@@ -2532,7 +2532,7 @@ void Parse_INI_File(void) {
   Fetch working pointer to the INI staging buffer. Make sure that the buffer
   is cleared out before proceeding.
   ------------------------------------------------------------------------*/
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   /*------------------------------------------------------------------------
@@ -2597,13 +2597,13 @@ int Version_Number(void) {
 #ifdef OBSOLETE
   static bool initialized = false;
   static int version;
-  static char *date = __DATE__;
-  static char *time = __TIME__;
-  static char const *months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+  static char* date = __DATE__;
+  static char* time = __TIME__;
+  static char const* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
 
   if (!initialized) {
-    char *ptr;
-    char *tok;
+    char* ptr;
+    char* tok;
 
     /*
     **	Fetch the month and place in the first two digit positions.
@@ -2842,7 +2842,7 @@ void Load_Recording_Values(void) {
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-long Obfuscate(char const *string) {
+long Obfuscate(char const* string) {
   char buffer[128];
 
   if (!string) return (0);

@@ -44,7 +44,7 @@ class TextBlitClass {
   int Count;
 };
 
-extern GraphicBufferClass *TextPrintBuffer;
+extern GraphicBufferClass* TextPrintBuffer;
 extern TextBlitClass BlitList;
 
 #endif  // CNC_RED_ALERT_TD_TEXTBLIT_H_

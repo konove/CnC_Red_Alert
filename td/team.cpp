@@ -96,7 +96,7 @@ unsigned char TeamClass::Success[TEAMTYPE_MAX];
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *TeamClass::VTable;
+void* TeamClass::VTable;
 
 /***********************************************************************************************
  * TeamClass::Validate -- validates team pointer
@@ -143,30 +143,30 @@ int TeamClass::Validate(void) const {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Init(void) {
-  TeamClass *ptr;
+  TeamClass* ptr;
 
   Teams.Free_All();
   memset(Number, 0, sizeof(Number));
   memset(Success, 0, sizeof(Success));
 
   ptr = new TeamClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
-void *TeamClass::operator new(size_t) throw() {
-  void *ptr = Teams.Allocate();
+void* TeamClass::operator new(size_t) throw() {
+  void* ptr = Teams.Allocate();
   if (ptr) {
-    ((TeamClass *)ptr)->IsActive = true;
+    ((TeamClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
 
-void TeamClass::operator delete(void *ptr) {
+void TeamClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TeamClass *)ptr)->IsActive = false;
+    ((TeamClass*)ptr)->IsActive = false;
   }
-  Teams.Free((TeamClass *)ptr);
+  Teams.Free((TeamClass*)ptr);
 }
 
 TeamClass::~TeamClass(void) {
@@ -177,12 +177,12 @@ TeamClass::~TeamClass(void) {
     }
 
     if (Class->IsTransient && !Number[TeamTypes.ID(Class)]) {
-      delete (TeamTypeClass *)Class;
+      delete (TeamTypeClass*)Class;
     }
   }
 }
 
-TeamClass::TeamClass(TeamTypeClass const *type, HouseClass *owner)
+TeamClass::TeamClass(TeamTypeClass const* type, HouseClass* owner)
     : Class(type), House(owner) {
   memset(Quantity, 0, sizeof(Quantity));
   IsAltered = true;
@@ -226,7 +226,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   ** First go through and find anyone who is currently targetting
   ** the old mission target and clear their Tarcom.
   */
-  FootClass *unit = Member;
+  FootClass* unit = Member;
   while (unit) {
     bool tar = (unit->TarCom == MissionTarget);
     bool nav = (unit->NavCom == MissionTarget);
@@ -254,7 +254,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
         unit->Assign_Target(TARGET_NONE);
       }
     }
-    unit = (FootClass *)unit->Member;
+    unit = (FootClass*)unit->Member;
   }
 
   /*
@@ -387,7 +387,7 @@ void TeamClass::AI(void) {
       int max = 0x7FFFFFFF;
 
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass *b = Buildings.Ptr(index);
+        BuildingClass* b = Buildings.Ptr(index);
 
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
@@ -431,11 +431,11 @@ void TeamClass::AI(void) {
     **	Infantry can do a gesture when they start their mission. Pick
     **	a gesture at random.
     */
-    FootClass *techno = Member;
+    FootClass* techno = Member;
     DoType doaction = (Random_Pick(1, 2) == 1) ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (!techno->IsInLimbo && techno->What_Am_I() == RTTI_INFANTRY) {
-        ((InfantryClass *)techno)->Do_Action(doaction);
+        ((InfantryClass*)techno)->Do_Action(doaction);
       }
 
       if (IsReforming || IsForcedActive) {
@@ -488,7 +488,7 @@ void TeamClass::AI(void) {
     IsNextMission = false;
     CurrentMission++;
     if (CurrentMission < Class->MissionCount) {
-      TeamMissionStruct const *mission = &Class->MissionList[CurrentMission];
+      TeamMissionStruct const* mission = &Class->MissionList[CurrentMission];
 
       TimeOut = mission->Argument * (TICKS_PER_MINUTE / 10);
       Target = TARGET_NONE;
@@ -534,7 +534,7 @@ void TeamClass::AI(void) {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    TeamMissionStruct const *mission = &Class->MissionList[CurrentMission];
+    TeamMissionStruct const* mission = &Class->MissionList[CurrentMission];
     switch (mission->Mission) {
       case TMISSION_ATTACKBASE:
         if (!Target_Legal(MissionTarget)) {
@@ -649,7 +649,7 @@ void TeamClass::AI(void) {
  *setup.                                                   * 08/06/1995 JLB :
  *Allows member stealing from lesser priority teams.                       *
  *=============================================================================================*/
-bool TeamClass::Add(FootClass *obj, int typeindex) {
+bool TeamClass::Add(FootClass* obj, int typeindex) {
   Validate();
   /*
   **	If this team doesn't accept new members, then don't accept this one
@@ -664,7 +664,7 @@ bool TeamClass::Add(FootClass *obj, int typeindex) {
     return (false);
   }
 
-  TeamClass *team = obj->Team;
+  TeamClass* team = obj->Team;
 
   /*
   **	Trying to add the team member to itself is an error condition. Just
@@ -765,7 +765,7 @@ bool TeamClass::Add(FootClass *obj, int typeindex) {
  * HISTORY: * 12/29/1994 JLB : Created. * 01/02/1995 JLB : Initiation tracking
  *and team captain selection.                          *
  *=============================================================================================*/
-bool TeamClass::Remove(FootClass *obj, int typeindex) {
+bool TeamClass::Remove(FootClass* obj, int typeindex) {
   Validate();
   /*
   **	Make sure that the object is in fact a member of this team. If not, then
@@ -806,8 +806,8 @@ bool TeamClass::Remove(FootClass *obj, int typeindex) {
   *then *	a new team captain must be chosen.
   */
   bool initiated = false;
-  FootClass *prev = nullptr;
-  FootClass *curr = Member;
+  FootClass* prev = nullptr;
+  FootClass* curr = Member;
   bool found = false;
   while (curr && (!found || !initiated)) {
     if (curr == obj) {
@@ -816,7 +816,7 @@ bool TeamClass::Remove(FootClass *obj, int typeindex) {
       } else {
         Member = curr->Member;
       }
-      FootClass *temp = curr->Member;
+      FootClass* temp = curr->Member;
       curr->Member = nullptr;
       curr->Team = nullptr;
       curr = temp;
@@ -890,7 +890,7 @@ int TeamClass::Recruit(int typeindex) {
     */
     if (Class->Class[typeindex]->What_Am_I() == RTTI_INFANTRYTYPE) {
       for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass *infantry = Infantry.Ptr(index);
+        InfantryClass* infantry = Infantry.Ptr(index);
 
         if (infantry->House == House &&
             infantry->Class == Class->Class[typeindex]) {
@@ -911,7 +911,7 @@ int TeamClass::Recruit(int typeindex) {
 
     if (Class->Class[typeindex]->What_Am_I() == RTTI_UNITTYPE) {
       for (int index = 0; index < Units.Count(); index++) {
-        UnitClass *unit = Units.Ptr(index);
+        UnitClass* unit = Units.Ptr(index);
 
         if (unit->House == House && unit->Class == Class->Class[typeindex]) {
           if (Add(unit, typeindex)) {
@@ -921,10 +921,10 @@ int TeamClass::Recruit(int typeindex) {
             **	If a transport is added to the team, the occupants
             **	are added by default.
             */
-            FootClass *f = unit->Attached_Object();
+            FootClass* f = unit->Attached_Object();
             while (f) {
               Add(f);
-              f = (FootClass *)f->Next;
+              f = (FootClass*)f->Next;
             }
           }
         }
@@ -1014,13 +1014,13 @@ TARGET TeamClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Calc_Center(CELL &center, CELL &obj_center) const {
+void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
   Validate();
   long x = 0;
   long y = 0;
   int dist = 0x7FFFFFFF;
   int quantity = 0;
-  FootClass *unit;
+  FootClass* unit;
 
   obj_center = 0;
   center = 0;
@@ -1067,8 +1067,8 @@ void TeamClass::Calc_Center(CELL &center, CELL &obj_center) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Took_Damage(FootClass *, ResultType result,
-                            TechnoClass *source) {
+void TeamClass::Took_Damage(FootClass*, ResultType result,
+                            TechnoClass* source) {
   Validate();
   if ((result != RESULT_NONE) && (!Class->IsSuicide)) {
     if (!IsMoving) {
@@ -1084,10 +1084,10 @@ void TeamClass::Took_Damage(FootClass *, ResultType result,
           *that have firepower.
           */
           if (Target_Legal(Target)) {
-            TechnoClass *techno = As_Techno(Target);
+            TechnoClass* techno = As_Techno(Target);
 
             if (techno &&
-                ((TechnoTypeClass const &)techno->Class_Of()).Primary !=
+                ((TechnoTypeClass const&)techno->Class_Of()).Primary !=
                     WEAPON_NONE) {
               if (techno->In_Range(Cell_Coord(Center), 0)) {
                 return;
@@ -1125,7 +1125,7 @@ void TeamClass::Coordinate_Attack(void) {
     IsNextMission = true;
 
   } else {
-    FootClass *unit = Member;
+    FootClass* unit = Member;
     while (unit) {
       Coordinate_Conscript(unit);
 
@@ -1164,7 +1164,7 @@ void TeamClass::Coordinate_Attack(void) {
  *=============================================================================================*/
 bool TeamClass::Coordinate_Regroup(void) {
   Validate();
-  FootClass *unit = Member;
+  FootClass* unit = Member;
   bool retval = true;
 
   /*
@@ -1222,7 +1222,7 @@ bool TeamClass::Coordinate_Regroup(void) {
  *=============================================================================================*/
 void TeamClass::Coordinate_Move(void) {
   Validate();
-  FootClass *unit = Member;
+  FootClass* unit = Member;
   bool finished = true;
 
   if (!Target_Legal(Target)) {
@@ -1242,7 +1242,7 @@ void TeamClass::Coordinate_Move(void) {
           } else {
             if ((unit->Distance(Target) / ICON_LEPTON_W) > STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
-                 ((AircraftClass *)unit)->Altitude > 0 &&
+                 ((AircraftClass*)unit)->Altitude > 0 &&
                  Class->MissionList[CurrentMission + 1].Mission !=
                      TMISSION_MOVE)) {
               if (unit->Mission != MISSION_MOVE) {
@@ -1289,7 +1289,7 @@ void TeamClass::Coordinate_Move(void) {
  *=========================================================================*/
 bool TeamClass::Lagging_Units(void) {
   Validate();
-  FootClass *unit = Member;
+  FootClass* unit = Member;
   bool lag = false;
 
   /*
@@ -1352,7 +1352,7 @@ bool TeamClass::Lagging_Units(void) {
  *=============================================================================================*/
 void TeamClass::Coordinate_Unload(void) {
   Validate();
-  FootClass *unit = Member;
+  FootClass* unit = Member;
   bool finished = true;
 
   while (unit) {
@@ -1403,7 +1403,7 @@ void TeamClass::Coordinate_Unload(void) {
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Conscript(FootClass *unit) {
+void TeamClass::Coordinate_Conscript(FootClass* unit) {
   Validate();
   if (unit && !unit->IsInitiated && !unit->IsInLimbo) {
     if (unit->Distance(Center) > STRAY_DISTANCE) {
@@ -1435,9 +1435,9 @@ void TeamClass::Coordinate_Conscript(FootClass *unit) {
  * HISTORY:                                                                *
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool TeamClass::Is_A_Member(void const *who) const {
+bool TeamClass::Is_A_Member(void const* who) const {
   Validate();
-  FootClass *unit = Member;
+  FootClass* unit = Member;
   while (unit) {
     if (unit == who) {
       return (true);
@@ -1461,7 +1461,7 @@ bool TeamClass::Is_A_Member(void const *who) const {
  *=========================================================================*/
 void TeamClass::Suspend_Teams(int priority) {
   for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass *team = Teams.Ptr(index);
+    TeamClass* team = Teams.Ptr(index);
 
     /*
     **	If a team is below the "survival priority level", then it gets

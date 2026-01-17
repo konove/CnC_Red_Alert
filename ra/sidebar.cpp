@@ -132,9 +132,9 @@
 #include "tech/fixed.h"
 #include "tech/noinit.h"
 
-void *SidebarClass::SidebarShape = nullptr;
-void *SidebarClass::SidebarMiddleShape = nullptr;
-void *SidebarClass::SidebarBottomShape = nullptr;
+void* SidebarClass::SidebarShape = nullptr;
+void* SidebarClass::SidebarMiddleShape = nullptr;
+void* SidebarClass::SidebarBottomShape = nullptr;
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock
@@ -172,9 +172,9 @@ SidebarClass::StripClass::SelectClass
 /*
 ** Shape data pointers
 */
-void *SidebarClass::StripClass::LogoShapes = nullptr;
-void const *SidebarClass::StripClass::ClockShapes;
-void const *SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
+void* SidebarClass::StripClass::LogoShapes = nullptr;
+void const* SidebarClass::StripClass::ClockShapes;
+void const* SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
 
 /***********************************************************************************************
  * SidebarClass::SidebarClass -- Default constructor for the sidebar. *
@@ -240,7 +240,7 @@ SidebarClass::SidebarClass(void)
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::SidebarClass(NoInitClass const &x) : PowerClass(x) {
+SidebarClass::SidebarClass(NoInitClass const& x) : PowerClass(x) {
   /*
   **	Set up the coordinates for the sidebar strips. These coordinates are for
   **	the upper left corner.
@@ -302,7 +302,7 @@ void SidebarClass::One_Time(void) {
   *dependant)
   */
   if (SidebarShape == nullptr) {
-    SidebarShape = (void *)MFCD::Retrieve("SIDEBAR.SHP");
+    SidebarShape = (void*)MFCD::Retrieve("SIDEBAR.SHP");
   }
 }
 
@@ -433,7 +433,7 @@ void SidebarClass::Init_Theater(TheaterType theater) {
  * HISTORY: * 9/18/1996 BWG : Created. *
  *=============================================================================================*/
 void SidebarClass::Reload_Sidebar(void) {
-  static const char *sidebarnames[] = {
+  static const char* sidebarnames[] = {
       "SIDE?NA.SHP",  // NATO
       "SIDE?NA.SHP",
       "SIDE?US.SHP",  // USSR
@@ -449,13 +449,13 @@ void SidebarClass::Reload_Sidebar(void) {
     houseloaded = PlayerPtr->ActLike;
   }
 
-  char *sidename = strdup(sidebarnames[houseloaded]);
+  char* sidename = strdup(sidebarnames[houseloaded]);
   *(sidename + 4) = '1';
-  SidebarShape = (void *)MFCD::Retrieve(sidename);
+  SidebarShape = (void*)MFCD::Retrieve(sidename);
   *(sidename + 4) = '2';
-  SidebarMiddleShape = (void *)MFCD::Retrieve(sidename);
+  SidebarMiddleShape = (void*)MFCD::Retrieve(sidename);
   *(sidename + 4) = '3';
-  SidebarBottomShape = (void *)MFCD::Retrieve(sidename);
+  SidebarBottomShape = (void*)MFCD::Retrieve(sidename);
   free(sidename);
 
   Column[0].Reload_LogoShapes();
@@ -532,7 +532,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, short const *list) {
+void SidebarClass::Refresh_Cells(CELL cell, short const* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Column[0].IsToRedraw = true;
@@ -839,7 +839,7 @@ void SidebarClass::Draw_It(bool complete) {
  *   12/31/1994 JLB : Uses mouse coordinate parameters. * 06/27/1995 JLB : <TAB>
  *key toggles sidebar.                                               *
  *=============================================================================================*/
-void SidebarClass::AI(KeyNumType &input, int x, int y) {
+void SidebarClass::AI(KeyNumType& input, int x, int y) {
   bool redraw = false;
 
   /*
@@ -1063,7 +1063,7 @@ bool SidebarClass::Activate(int control) {
  *                                                                                             *
  * HISTORY: * 12/31/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::StripClass(InitClass const &)
+SidebarClass::StripClass::StripClass(InitClass const&)
     : X(0),
       Y(0),
       ID(0),
@@ -1128,7 +1128,7 @@ void SidebarClass::StripClass::One_Time(int) {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : commented *
  *=============================================================================================*/
-void const *SidebarClass::StripClass::Get_Special_Cameo(
+void const* SidebarClass::StripClass::Get_Special_Cameo(
     SpecialWeaponType type) {
   if ((unsigned)type < SPC_COUNT) {
     return (SpecialShapes[type]);
@@ -1213,7 +1213,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
   DownButton[ID].Set_Shape(MFCD::Retrieve("STRIPDN.SHP"));
 
   for (int index = 0; index < MAX_VISIBLE; index++) {
-    SelectClass &g = SelectButton[ID][index];
+    SelectClass& g = SelectButton[ID][index];
     g.ID = BUTTON_SELECT;
     g.X = X;
     g.Y = Y + ((OBJECT_HEIGHT * index) * RESFACTOR);
@@ -1249,7 +1249,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     PaletteClass pal = OriginalPalette;
     memset(&pal[CYCLE_COLOR_START], 0x3f, CYCLE_COLOR_COUNT * 3);
     Build_Translucent_Table(pal, &ClockCols[0], 1,
-                            (void *)ClockTranslucentTable);
+                            (void*)ClockTranslucentTable);
 
     //		Mem_Copy(GamePalette, OriginalPalette, 768);
     //		memset(&GamePalette[CYCLE_COLOR_START*3], 0x3f,
@@ -1270,7 +1270,7 @@ void SidebarClass::StripClass::Reload_LogoShapes(void) {
   /*
   ** Load hi-res strip art here since it is player side specific
   */
-  static char *stripnames[] = {
+  static char* stripnames[] = {
       "stripna.shp",  // Nato
       "stripna.shp",
       "stripus.shp",  // USSR
@@ -1289,7 +1289,7 @@ void SidebarClass::StripClass::Reload_LogoShapes(void) {
   if (PlayerPtr) {
     houseloaded = PlayerPtr->ActLike;
   }
-  LogoShapes = (void *)MFCD::Retrieve(stripnames[houseloaded]);
+  LogoShapes = (void*)MFCD::Retrieve(stripnames[houseloaded]);
 }
 
 /***********************************************************************************************
@@ -1452,7 +1452,7 @@ void SidebarClass::StripClass::Flag_To_Redraw(void) {
  * HISTORY: * 12/31/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
+bool SidebarClass::StripClass::AI(KeyNumType& input, int, int) {
   bool redraw = false;
 
   /*
@@ -1554,7 +1554,7 @@ bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
       int factoryid = Buildables[index].Factory;
 
       if (factoryid != -1) {
-        FactoryClass *factory = Factories.Raw_Ptr(factoryid);
+        FactoryClass* factory = Factories.Raw_Ptr(factoryid);
 
         if (factory && factory->Has_Changed()) {
           redraw = true;
@@ -1565,7 +1565,7 @@ bool SidebarClass::StripClass::AI(KeyNumType &input, int, int) {
             *factory. Buildings are *	the main exception to the ability to
             *leave the factory under their own *	power.
             */
-            TechnoClass *pending = factory->Get_Object();
+            TechnoClass* pending = factory->Get_Object();
             if (pending != nullptr) {
               switch (pending->What_Am_I()) {
                 case RTTI_VESSEL:
@@ -1655,10 +1655,10 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       bool completed = false;
       int stage = 0;
       bool darken = false;
-      void const *shapefile = nullptr;
+      void const* shapefile = nullptr;
       int shapenum = 0;
-      void const *remapper = nullptr;
-      FactoryClass *factory = nullptr;
+      void const* remapper = nullptr;
+      FactoryClass* factory = nullptr;
       int index = i + TopIndex;
       int x = X;
       int y = Y + (i * OBJECT_HEIGHT * RESFACTOR);
@@ -1678,7 +1678,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *underlying graphic there.
       */
       if ((unsigned)index < BuildableCount) {
-        ObjectTypeClass const *obj = nullptr;
+        ObjectTypeClass const* obj = nullptr;
         SpecialWeaponType spc = SPC_NONE;
 
         if (Buildables[index].BuildableType != RTTI_SPECIAL) {
@@ -1690,7 +1690,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             **	type.
             */
             remapper = PlayerPtr->Remap_Table(
-                false, ((TechnoTypeClass const *)obj)->Remap);
+                false, ((TechnoTypeClass const*)obj)->Remap);
 
             /*
             **	If there is already a factory producing this kind of object,
@@ -1875,7 +1875,7 @@ bool SidebarClass::StripClass::Recalc(void) {
   */
   bool redraw = false;
   for (int index = 0; index < BuildableCount; index++) {
-    TechnoTypeClass const *tech = Fetch_Techno_Type(
+    TechnoTypeClass const* tech = Fetch_Techno_Type(
         Buildables[index].BuildableType, Buildables[index].BuildableID);
     if (tech != nullptr) {
       ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
@@ -1957,7 +1957,7 @@ SidebarClass::StripClass::SelectClass::SelectClass(void)
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass &strip,
+void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
                                                       int index) {
   Strip = &strip;
   Index = index;
@@ -1984,14 +1984,14 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass &strip,
  *to regular event type.                             *
  *=============================================================================================*/
 int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
-                                                  KeyNumType &key) {
+                                                  KeyNumType& key) {
   int index = Strip->TopIndex + Index;
   RTTIType otype = Strip->Buildables[index].BuildableType;
   int oid = Strip->Buildables[index].BuildableID;
   int fnumber = Strip->Buildables[index].Factory;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
-  ObjectTypeClass const *choice = nullptr;
+  ObjectTypeClass const* choice = nullptr;
   SpecialWeaponType spc = SPC_NONE;
 
   /*
@@ -2001,7 +2001,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   *that particular *	kind of factory is specified by the "genfactory" value.
   *This can be used to see *	if the factory type is currently busy or not.
   */
-  FactoryClass *factory = PlayerPtr->Fetch_Factory(otype);
+  FactoryClass* factory = PlayerPtr->Fetch_Factory(otype);
 
   Map.Override_Mouse_Shape(MOUSE_NORMAL);
 
@@ -2127,11 +2127,11 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
             *exit *	the factory or go into placement mode.
             */
             if (factory->Has_Completed()) {
-              TechnoClass *pending = factory->Get_Object();
+              TechnoClass* pending = factory->Get_Object();
               if (!pending && factory->Get_Special_Item()) {
                 Map.IsTargettingMode = SPC_ANY;
               } else {
-                BuildingClass *builder =
+                BuildingClass* builder =
                     pending->Who_Can_Build_Me(false, false);
                 if (!builder) {
                   OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
@@ -2144,7 +2144,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                   **	the building is actually placed down.
                   */
                   if (pending->What_Am_I() == RTTI_BUILDING) {
-                    PlayerPtr->Manual_Place(builder, (BuildingClass *)pending);
+                    PlayerPtr->Manual_Place(builder, (BuildingClass*)pending);
                   } else {
                     /*
                     **	For objects that can leave the factory under their own
@@ -2221,7 +2221,7 @@ int SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  *                                                                                             *
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
-int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType &) {
+int SidebarClass::SBGadgetClass::Action(unsigned, KeyNumType&) {
   Map.Help_Text(TXT_NONE);
   Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
   return (true);

@@ -81,13 +81,13 @@
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
-static long Select_Frame(VQAHandleP *vqap);
-static void Prepare_Frame(VQAData *vqabuf);
+static long Select_Frame(VQAHandleP* vqap);
+static void Prepare_Frame(VQAData* vqabuf);
 
-static long DrawFrame_Buffer(VQAHandle *vqa);
+static long DrawFrame_Buffer(VQAHandle* vqa);
 
-static void __cdecl UnVQ_Nop(unsigned char *codebook, unsigned char *pointers,
-                             unsigned char *buffer, unsigned long blocksperrow,
+static void __cdecl UnVQ_Nop(unsigned char* codebook, unsigned char* pointers,
+                             unsigned char* buffer, unsigned long blocksperrow,
                              unsigned long numrows, unsigned long bufwidth);
 
 /****************************************************************************
@@ -112,12 +112,12 @@ static void __cdecl UnVQ_Nop(unsigned char *codebook, unsigned char *pointers,
  *
  ****************************************************************************/
 
-unsigned char *VQA_GetPalette(VQAHandle *vqa) {
-  VQADrawer *drawer;
-  unsigned char *palette = nullptr;
+unsigned char* VQA_GetPalette(VQAHandle* vqa) {
+  VQADrawer* drawer;
+  unsigned char* palette = nullptr;
 
   /* Dereference commonly used data members for quick access. */
-  drawer = &((VQAHandleP *)vqa)->VQABuf->Drawer;
+  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
 
   if (drawer->CurPalSize > 0) {
     palette = drawer->Palette_24;
@@ -148,11 +148,11 @@ unsigned char *VQA_GetPalette(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-long VQA_GetPaletteSize(VQAHandle *vqa) {
-  VQADrawer *drawer;
+long VQA_GetPaletteSize(VQAHandle* vqa) {
+  VQADrawer* drawer;
 
   /* Dereference commonly used data members for quick access. */
-  drawer = &((VQAHandleP *)vqa)->VQABuf->Drawer;
+  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
 
   return (drawer->CurPalSize);
 }
@@ -185,18 +185,18 @@ long VQA_GetPaletteSize(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-void VQA_Set_DrawBuffer(VQAHandle *vqa, unsigned char *buffer,
+void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
                         unsigned long width, unsigned long height, long xpos,
                         long ypos) {
-  VQAHeader *header;
-  VQADrawer *drawer;
-  VQAConfig *config;
+  VQAHeader* header;
+  VQADrawer* drawer;
+  VQAConfig* config;
   long origin;
 
   /* Dereference commonly used data members for quick access. */
-  header = &((VQAHandleP *)vqa)->Header;
-  drawer = &((VQAHandleP *)vqa)->VQABuf->Drawer;
-  config = &((VQAHandleP *)vqa)->Config;
+  header = &((VQAHandleP*)vqa)->Header;
+  drawer = &((VQAHandleP*)vqa)->VQABuf->Drawer;
+  config = &((VQAHandleP*)vqa)->Config;
   origin = (config->DrawFlags & VQACFGF_ORIGIN);
 
   /* Set the drawer buffer information. */
@@ -267,11 +267,11 @@ void VQA_Set_DrawBuffer(VQAHandle *vqa, unsigned char *buffer,
  *
  ****************************************************************************/
 
-void VQA_Configure_Drawer(VQAHandleP *vqap) {
-  VQAData *vqabuf;
-  VQAConfig *config;
-  VQAHeader *header;
-  VQADrawer *drawer;
+void VQA_Configure_Drawer(VQAHandleP* vqap) {
+  VQAData* vqabuf;
+  VQAConfig* config;
+  VQAHeader* header;
+  VQADrawer* drawer;
   long origin;
   long blkdim;
 
@@ -384,11 +384,11 @@ void VQA_Configure_Drawer(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-static long Select_Frame(VQAHandleP *vqap) {
-  VQAData *vqabuf;
-  VQADrawer *drawer;
-  VQAConfig *config;
-  VQAFrameNode *curframe;
+static long Select_Frame(VQAHandleP* vqap) {
+  VQAData* vqabuf;
+  VQADrawer* drawer;
+  VQAConfig* config;
+  VQAFrameNode* curframe;
   long desiredframe;
   // MEG 11.29.95 - changed from long to unsigned long
   unsigned long curtime;
@@ -482,8 +482,8 @@ static long Select_Frame(VQAHandleP *vqap) {
         /* Un-LCW if needed */
         if (curframe->Flags & VQAFRMF_PALCOMP) {
           curframe->PaletteSize =
-              LCW_Uncompress((char *)curframe->Palette + curframe->PalOffset,
-                             (char *)curframe->Palette, vqabuf->Max_Pal_Size);
+              LCW_Uncompress((char*)curframe->Palette + curframe->PalOffset,
+                             (char*)curframe->Palette, vqabuf->Max_Pal_Size);
 
           curframe->Flags &= ~VQAFRMF_PALCOMP;
         }
@@ -539,10 +539,10 @@ static long Select_Frame(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-static void Prepare_Frame(VQAData *vqabuf) {
-  VQADrawer *drawer;
-  VQAFrameNode *curframe;
-  VQACBNode *codebook;
+static void Prepare_Frame(VQAData* vqabuf) {
+  VQADrawer* drawer;
+  VQAFrameNode* curframe;
+  VQACBNode* codebook;
 
   /* Dereference commonly used data members for quicker access. */
   drawer = &vqabuf->Drawer;
@@ -552,8 +552,8 @@ static void Prepare_Frame(VQAData *vqabuf) {
   /* Decompress the codebook, if needed */
   if (codebook->Flags & VQACBF_CBCOMP) {
     /* Decompress the codebook. */
-    LCW_Uncompress((char *)codebook->Buffer + codebook->CBOffset,
-                   (char *)codebook->Buffer, vqabuf->Max_CB_Size);
+    LCW_Uncompress((char*)codebook->Buffer + codebook->CBOffset,
+                   (char*)codebook->Buffer, vqabuf->Max_CB_Size);
 
     /* Mark as uncompressed for the next time we use it */
     codebook->Flags &= (~VQACBF_CBCOMP);
@@ -562,8 +562,8 @@ static void Prepare_Frame(VQAData *vqabuf) {
   /* Decompress the palette, if needed */
   if (curframe->Flags & VQAFRMF_PALCOMP) {
     curframe->PaletteSize =
-        LCW_Uncompress((char *)curframe->Palette + curframe->PalOffset,
-                       (char *)curframe->Palette, vqabuf->Max_Pal_Size);
+        LCW_Uncompress((char*)curframe->Palette + curframe->PalOffset,
+                       (char*)curframe->Palette, vqabuf->Max_Pal_Size);
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PALCOMP;
@@ -571,8 +571,8 @@ static void Prepare_Frame(VQAData *vqabuf) {
 
   /* Decompress the pointer data, if needed */
   if (curframe->Flags & VQAFRMF_PTRCOMP) {
-    LCW_Uncompress((char *)curframe->Pointers + curframe->PtrOffset,
-                   (char *)curframe->Pointers, vqabuf->Max_Ptr_Size);
+    LCW_Uncompress((char*)curframe->Pointers + curframe->PtrOffset,
+                   (char*)curframe->Pointers, vqabuf->Max_Ptr_Size);
 
     /* Mark as uncompressed */
     curframe->Flags &= ~VQAFRMF_PTRCOMP;
@@ -599,28 +599,28 @@ static void Prepare_Frame(VQAData *vqabuf) {
  *
  ****************************************************************************/
 
-extern void __cdecl Set_Palette(void *palette);
-extern void Flag_To_Set_Palette(unsigned char *palette, long numbytes,
+extern void __cdecl Set_Palette(void* palette);
+extern void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
                                 unsigned long slowpal);
-static long DrawFrame_Buffer(VQAHandle *vqa) {
-  VQAData *vqabuf;
-  VQADrawer *drawer;
-  VQAFrameNode *curframe;
-  VQAConfig *config;
-  unsigned char *pal;
+static long DrawFrame_Buffer(VQAHandle* vqa) {
+  VQAData* vqabuf;
+  VQADrawer* drawer;
+  VQAFrameNode* curframe;
+  VQAConfig* config;
+  unsigned char* pal;
   long palsize;
   long slowpal;
-  unsigned char *buff;
+  unsigned char* buff;
 
   /* Dereference data members for quicker access. */
-  config = &((VQAHandleP *)vqa)->Config;
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  config = &((VQAHandleP*)vqa)->Config;
+  vqabuf = ((VQAHandleP*)vqa)->VQABuf;
   drawer = &vqabuf->Drawer;
 
   /* Check our "sleep" state */
   if (!(vqabuf->Flags & VQADATF_DSLEEP)) {
     /* Find the frame to draw */
-    const long result = Select_Frame(dynamic_cast<VQAHandleP *>(vqa));
+    const long result = Select_Frame(dynamic_cast<VQAHandleP*>(vqa));
     if (result != 0) {
       return result;
     }
@@ -643,7 +643,7 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
   /* Dereference current frame for quicker access. */
   curframe = drawer->CurFrame;
 
-  buff = (unsigned char *)(drawer->ImageBuf + drawer->ScreenOffset);
+  buff = (unsigned char*)(drawer->ImageBuf + drawer->ScreenOffset);
 
   pal = curframe->Palette;
   palsize = curframe->PaletteSize;
@@ -707,6 +707,6 @@ static long DrawFrame_Buffer(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-static void UnVQ_Nop(unsigned char * /*codebook*/, unsigned char * /*pointers*/,
-                     unsigned char * /*buffer*/, unsigned long /*blocksperrow*/,
+static void UnVQ_Nop(unsigned char* /*codebook*/, unsigned char* /*pointers*/,
+                     unsigned char* /*buffer*/, unsigned long /*blocksperrow*/,
                      unsigned long /*numrows*/, unsigned long /*bufwidth*/) {}

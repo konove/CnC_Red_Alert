@@ -269,7 +269,7 @@ int GaugeClass::Draw_Me(int forced) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int GaugeClass::Action(unsigned flags, KeyNumType &key) {
+int GaugeClass::Action(unsigned flags, KeyNumType& key) {
   /*
   ** If there's no thumb on this gauge, it's a display-only device.
   */

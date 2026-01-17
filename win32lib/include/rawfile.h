@@ -53,9 +53,10 @@
 #include <windows.h>
 
 // #include	<wwlib32.h>
-#include <climits>
-#include <cerrno>
 #include <windows.h>
+
+#include <cerrno>
+#include <climits>
 // #include	<algo.h>
 #include "wwfile.h"
 
@@ -140,29 +141,29 @@ EZERO,                 // Non-error.
   */
   int Rights;
 
-  RawFileClass(char const *filename);
+  RawFileClass(char const* filename);
   RawFileClass(void);
-  RawFileClass(RawFileClass const &f);
-  RawFileClass &operator=(RawFileClass const &f);
+  RawFileClass(RawFileClass const& f);
+  RawFileClass& operator=(RawFileClass const& f);
   virtual ~RawFileClass(void) {
-    if (Allocated && Filename) free((char *)Filename);
+    if (Allocated && Filename) free((char*)Filename);
   };
 
-  virtual char const *File_Name(void) const;
-  virtual char const *Set_Name(char const *filename);
+  virtual char const* File_Name(void) const;
+  virtual char const* Set_Name(char const* filename);
   virtual int Create(void);
   virtual int Delete(void);
   virtual int Is_Available(int forced = false);
   virtual int Is_Open(void) const;
-  virtual int Open(char const *filename, int rights = READ);
+  virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);
-  virtual long Read(void *buffer, long size);
+  virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
   virtual long Size(void);
-  virtual long Write(void const *buffer, long size);
+  virtual long Write(void const* buffer, long size);
   virtual void Close(void);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = NULL);
+                     char const* filename = NULL);
   virtual void Set_Buffer_Size(int size);
 
  protected:
@@ -184,7 +185,7 @@ EZERO,                 // Non-error.
   *either a *	constant or an allocated string as indicated by the "Allocated"
   *flag.
   */
-  char const *const Filename;
+  char const* const Filename;
 
   /*
   **	Filenames that were assigned as part of the construction process
@@ -215,7 +216,7 @@ object or NULL   *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline char const *RawFileClass::File_Name(void) const { return Filename; }
+inline char const* RawFileClass::File_Name(void) const { return Filename; }
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *

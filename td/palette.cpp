@@ -8,7 +8,7 @@
 
 unsigned char CurrentPalette[3 * 256];
 
-void Fade_Palette_To(unsigned char *palette, int fade, void (*callback)()) {
+void Fade_Palette_To(unsigned char* palette, int fade, void (*callback)()) {
   if (fade) {
     // fade to new palette
     auto start_time = TickCount.Time();
@@ -20,9 +20,9 @@ void Fade_Palette_To(unsigned char *palette, int fade, void (*callback)()) {
 
       if (cur_time > fade) cur_time = fade;
 
-      const unsigned char *old_ptr = CurrentPalette;
-      const unsigned char *new_ptr = palette;
-      unsigned char *out_ptr = fade_palette;
+      const unsigned char* old_ptr = CurrentPalette;
+      const unsigned char* new_ptr = palette;
+      unsigned char* out_ptr = fade_palette;
 
       for (int c = 0; c < 256 * 3; c++) {
         int new_val = *new_ptr++ & 0x3F;
@@ -44,7 +44,7 @@ void Fade_Palette_To(unsigned char *palette, int fade, void (*callback)()) {
   Set_Palette(palette);
 }
 
-void Set_Palette(void *palette) {
+void Set_Palette(void* palette) {
   memcpy(CurrentPalette, palette, 256 * 3);
   Do_Set_Palette(palette);
 }

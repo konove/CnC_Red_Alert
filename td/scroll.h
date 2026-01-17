@@ -75,11 +75,11 @@ class ScrollClass : public HelpClass {
 
  public:
   ScrollClass(void);
-  ScrollClass(NoInitClass const &x) : HelpClass(x) {};
+  ScrollClass(NoInitClass const& x) : HelpClass(x) {};
 
   bool Set_Autoscroll(int control);
 
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Init_IO(void) {
     Counter.Set(0);
     HelpClass::Init_IO();

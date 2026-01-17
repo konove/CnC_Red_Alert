@@ -84,7 +84,7 @@ static DisplayInfo _Display = {-1, 0, 0, 0, NULL};
  *
  ****************************************************************************/
 
-DisplayInfo *SetVideoMode(long mode) {
+DisplayInfo* SetVideoMode(long mode) {
 #ifdef __WATCOMC__
   union REGS regs;
   struct SREGS sregs;
@@ -92,8 +92,8 @@ DisplayInfo *SetVideoMode(long mode) {
   union _REGS regs;
 #endif
 
-  DisplayInfo *di = NULL;
-  VESAModeInfo *vminfo;
+  DisplayInfo* di = NULL;
+  VESAModeInfo* vminfo;
   long error;
 
   /* Initialize the video manager on the first invocation of
@@ -236,7 +236,7 @@ DisplayInfo *SetVideoMode(long mode) {
  *
  ****************************************************************************/
 
-DisplayInfo *GetDisplayInfo(void) {
+DisplayInfo* GetDisplayInfo(void) {
   if (_Display.Mode != 0) {
     return (&_Display);
   } else {

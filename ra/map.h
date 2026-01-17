@@ -55,7 +55,7 @@
 class MapClass : public GScreenClass {
  public:
   MapClass(void) {};
-  MapClass(NoInitClass const &x) : GScreenClass(x), Array(x) {};
+  MapClass(NoInitClass const& x) : GScreenClass(x), Array(x) {};
 
   /*
   ** Initialization
@@ -73,25 +73,25 @@ class MapClass : public GScreenClass {
   */
   CELL Pick_Random_Location(void) const;
   int Intact_Bridge_Count(void) const;
-  bool Base_Region(CELL cell, HousesType &house, ZoneType &zone) const;
+  bool Base_Region(CELL cell, HousesType& house, ZoneType& zone) const;
   CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
                        MZoneType check = MZONE_NORMAL) const;
-  ObjectClass *Close_Object(COORDINATE coord) const;
-  virtual void Detach(ObjectClass *) {};
+  ObjectClass* Close_Object(COORDINATE coord) const;
+  virtual void Detach(ObjectClass*) {};
   int Cell_Region(CELL cell);
   int Cell_Threat(CELL cell, HousesType house);
   bool In_Radar(CELL cell) const;
-  void Sight_From(CELL cell, int sightrange, HouseClass *house,
+  void Sight_From(CELL cell, int sightrange, HouseClass* house,
                   bool incremental = false);
-  void Jam_From(CELL cell, int jamrange, HouseClass *house);
+  void Jam_From(CELL cell, int jamrange, HouseClass* house);
   void Shroud_From(CELL cell, int sightrange);
-  void UnJam_From(CELL cell, int jamrange, HouseClass *house);
-  void Place_Down(CELL cell, ObjectClass *object);
-  void Pick_Up(CELL cell, ObjectClass *object);
-  void Overlap_Down(CELL cell, ObjectClass *object);
-  void Overlap_Up(CELL cell, ObjectClass *object);
-  bool Read_Binary(Straw &straw);
-  int Write_Binary(Pipe &pipe);
+  void UnJam_From(CELL cell, int jamrange, HouseClass* house);
+  void Place_Down(CELL cell, ObjectClass* object);
+  void Pick_Up(CELL cell, ObjectClass* object);
+  void Overlap_Down(CELL cell, ObjectClass* object);
+  void Overlap_Up(CELL cell, ObjectClass* object);
+  bool Read_Binary(Straw& straw);
+  int Write_Binary(Pipe& pipe);
   bool Place_Random_Crate(void);
   bool Remove_Crate(CELL cell);
   bool Zone_Reset(int method);
@@ -132,16 +132,16 @@ class MapClass : public GScreenClass {
   */
   long TotalValue;
 
-  CellClass &operator[](COORDINATE coord) {
+  CellClass& operator[](COORDINATE coord) {
     return (Array[Coord_Cell(coord)]);
   };
-  CellClass &operator[](CELL cell) { return (Array[cell]); };
-  CellClass const &operator[](COORDINATE coord) const {
+  CellClass& operator[](CELL cell) { return (Array[cell]); };
+  CellClass const& operator[](COORDINATE coord) const {
     return (Array[Coord_Cell(coord)]);
   };
-  CellClass const &operator[](CELL cell) const { return (Array[cell]); };
-  int ID(CellClass const *ptr) { return (Array.ID(ptr)); };
-  int ID(CellClass const &ptr) { return (Array.ID(ptr)); };
+  CellClass const& operator[](CELL cell) const { return (Array[cell]); };
+  int ID(CellClass const* ptr) { return (Array.ID(ptr)); };
+  int ID(CellClass const& ptr) { return (Array.ID(ptr)); };
 
  protected:
   /*

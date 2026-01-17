@@ -36,6 +36,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <wwstd.h>
+
 #include "font.h"
 
 /***************************************************************************
@@ -56,22 +57,22 @@
  *   01/31/1992 DRD : Modified to use new font format.                     *
  *   06/29/1994 SKB : modified for 32 bit library                          *
  *=========================================================================*/
-VOID *cdecl Set_Font(VOID const *fontptr) {
-  VOID *oldfont;
-  BYTE const *blockptr;
+VOID* cdecl Set_Font(VOID const* fontptr) {
+  VOID* oldfont;
+  BYTE const* blockptr;
 
-  oldfont = (VOID *)FontPtr;
+  oldfont = (VOID*)FontPtr;
 
   if (fontptr) {
-    FontPtr = (VOID *)fontptr;
+    FontPtr = (VOID*)fontptr;
 
     /*
     **	Inform the system about the new font.
     */
 
     FontWidthBlockPtr =
-        (BYTE *)fontptr + *(UWORD *)((BYTE *)fontptr + FONTWIDTHBLOCK);
-    blockptr = (BYTE *)fontptr + *(UWORD *)((BYTE *)fontptr + FONTINFOBLOCK);
+        (BYTE*)fontptr + *(UWORD*)((BYTE*)fontptr + FONTWIDTHBLOCK);
+    blockptr = (BYTE*)fontptr + *(UWORD*)((BYTE*)fontptr + FONTINFOBLOCK);
     FontHeight = *(blockptr + FONTINFOMAXHEIGHT);
     FontWidth = *(blockptr + FONTINFOMAXWIDTH);
     // Draw_Char_Setup();

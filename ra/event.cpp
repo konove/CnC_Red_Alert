@@ -132,7 +132,7 @@ unsigned char EventClass::EventLength[EventClass::LAST_EVENT] = {
     0,                                          // RETRACT_DRAW
 };
 
-char *EventClass::EventNames[EventClass::LAST_EVENT] = {
+char* EventClass::EventNames[EventClass::LAST_EVENT] = {
     "EMPTY",         "ALLY",      "MEGAMISSION",  "MEGAMISSION_F",
     "IDLE",          "SCATTER",   "DESTRUCT",     "DEPLOY",
     "PLACE",         "OPTIONS",   "GAMESPEED",    "PRODUCE",
@@ -450,7 +450,7 @@ EventClass::EventClass(EventType type, int id, CELL cell) {
  *                                                                                             *
  * HISTORY: * 11/10/1995 BRR : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, void *ptr, unsigned long size) {
+EventClass::EventClass(EventType type, void* ptr, unsigned long size) {
   ID = PlayerPtr->ID;
   Type = type;
   Frame = ::Frame;
@@ -473,9 +473,9 @@ EventClass::EventClass(EventType type, void *ptr, unsigned long size) {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 void EventClass::Execute(void) {
-  TechnoClass *techno;
-  AnimClass *anim = nullptr;
-  HouseClass *house = nullptr;
+  TechnoClass* techno;
+  AnimClass* anim = nullptr;
+  HouseClass* house = nullptr;
   //	CELL cell = 0;
   char txt[80];
   bool formation = false;
@@ -525,7 +525,7 @@ void EventClass::Execute(void) {
     */
     case SPECIAL: {
       Special = Data.Options.Data;
-      HouseClass *house = Houses.Raw_Ptr(ID);
+      HouseClass* house = Houses.Raw_Ptr(ID);
 
       sprintf(txt, Text_String(TXT_SPECIAL_WARNING), house->Name());
       Session.Messages.Add_Message(
@@ -627,7 +627,7 @@ void EventClass::Execute(void) {
     **	Toggles the primary factory state of the specified building.
     */
     case PRIMARY: {
-      BuildingClass *building = Data.Target.Whom.As_Building();
+      BuildingClass* building = Data.Target.Whom.As_Building();
       if (building && building->IsActive) {
         building->Toggle_Primary();
       }
@@ -641,9 +641,9 @@ void EventClass::Execute(void) {
     case MEGAMISSION_F:
       techno = Data.MegaMission_F.Whom.As_Techno();
       if (techno && techno->IsActive && techno->Is_Foot()) {
-        ((FootClass *)techno)->IsFormationMove = true;
-        ((FootClass *)techno)->FormationSpeed = Data.MegaMission_F.Speed;
-        ((FootClass *)techno)->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
+        ((FootClass*)techno)->IsFormationMove = true;
+        ((FootClass*)techno)->FormationSpeed = Data.MegaMission_F.Speed;
+        ((FootClass*)techno)->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
         FormMove = true;
         FormSpeed = Data.MegaMission_F.Speed;
         FormMaxSpeed = Data.MegaMission_F.MaxSpeed;
@@ -664,7 +664,7 @@ void EventClass::Execute(void) {
         **	Fetch a pointer to the object of the mission. If there is an
         *error with *	this object, such as it is dead, then bail.
         */
-        ObjectClass *object = nullptr;
+        ObjectClass* object = nullptr;
         if (Data.MegaMission.Target.Is_Valid()) {
           object = Data.MegaMission.Target.As_Object();
           if (object != nullptr &&
@@ -699,9 +699,9 @@ void EventClass::Execute(void) {
           techno->Transmit_Message(RADIO_OVER_OUT);
         }
         if (techno->Is_Foot()) {
-          if (!formation) ((FootClass *)techno)->IsFormationMove = false;
-          if (((FootClass *)techno)->Team) {
-            ((FootClass *)techno)->Team->Remove((FootClass *)techno);
+          if (!formation) ((FootClass*)techno)->IsFormationMove = false;
+          if (((FootClass*)techno)->Team) {
+            ((FootClass*)techno)->Team->Remove((FootClass*)techno);
           }
         }
 
@@ -722,7 +722,7 @@ void EventClass::Execute(void) {
         techno->Assign_Mission(Data.MegaMission.Mission);
 
         if (techno->Is_Foot()) {
-          ((FootClass *)techno)->SuspendedNavCom = TARGET_NONE;
+          ((FootClass*)techno)->SuspendedNavCom = TARGET_NONE;
         }
         techno->SuspendedTarCom = TARGET_NONE;
 
@@ -739,12 +739,12 @@ void EventClass::Execute(void) {
           techno->ArchiveTarget = Data.MegaMission.Target.As_TARGET();
         } else {
           if (q && techno->Is_Foot()) {
-            ((FootClass *)techno)
+            ((FootClass*)techno)
                 ->Queue_Navigation_List(
                     Data.MegaMission.Destination.As_TARGET());
           } else {
             if (techno->Is_Foot()) {
-              ((FootClass *)techno)->Clear_Navigation_List();
+              ((FootClass*)techno)->Clear_Navigation_List();
             }
             techno->Assign_Target(Data.MegaMission.Target.As_TARGET());
             techno->Assign_Destination(
@@ -763,13 +763,13 @@ void EventClass::Execute(void) {
         if (rt == RTTI_VESSEL && techno != nullptr &&
             techno->What_Am_I() == RTTI_VESSEL &&
             Data.MegaMission.Mission == MISSION_MOVE) {
-          VesselClass *ship = (VesselClass *)techno;
+          VesselClass* ship = (VesselClass*)techno;
           if (object != nullptr) {
             if (object->What_Am_I() == RTTI_BUILDING &&
                 //						if
                 //((RTTIType)Data.MegaMission.Destination == RTTI_BUILDING &&
-                (((BuildingClass *)object)->Class->Type == STRUCT_SHIP_YARD ||
-                 ((BuildingClass *)object)->Class->Type == STRUCT_SUB_PEN)) {
+                (((BuildingClass*)object)->Class->Type == STRUCT_SHIP_YARD ||
+                 ((BuildingClass*)object)->Class->Type == STRUCT_SUB_PEN)) {
               ship->IsToSelfRepair = true;
             } else {
               ship->IsToSelfRepair = false;
@@ -785,7 +785,7 @@ void EventClass::Execute(void) {
         if ((techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_INFANTRY) &&
             Data.MegaMission.Mission == MISSION_GUARD_AREA) {
-          ((FootClass *)techno)->ArchiveTarget = Data.MegaMission.Destination;
+          ((FootClass*)techno)->ArchiveTarget = Data.MegaMission.Destination;
         }
 #endif
       }
@@ -803,7 +803,7 @@ void EventClass::Execute(void) {
         techno->Assign_Target(TARGET_NONE);
         techno->Enter_Idle_Mode();
         if (techno->Is_Foot()) {
-          ((FootClass *)techno)->Clear_Navigation_List();
+          ((FootClass*)techno)->Clear_Navigation_List();
         }
       }
       break;
@@ -816,7 +816,7 @@ void EventClass::Execute(void) {
       techno = Data.Target.Whom.As_Techno();
       if (techno != nullptr && techno->Is_Foot() && techno->IsActive &&
           !techno->IsInLimbo && !techno->IsTethered) {
-        ((FootClass *)techno)->IsScattering = true;
+        ((FootClass*)techno)->IsScattering = true;
         techno->Scatter(0, true, false);
       }
       break;
@@ -883,7 +883,7 @@ void EventClass::Execute(void) {
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 
-        Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
+        Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
 
         while (timer > 0) {
           Call_Back();
@@ -893,7 +893,7 @@ void EventClass::Execute(void) {
         Map.Flag_To_Redraw(true);
         Map.Render();
       } else {
-        Save_Game(-1, (char *)Text_String(TXT_MULTIPLAYER_GAME));
+        Save_Game(-1, (char*)Text_String(TXT_MULTIPLAYER_GAME));
       }
       break;
 
@@ -908,10 +908,10 @@ void EventClass::Execute(void) {
       int i;
       printf("ADDPLAYER EVENT!\n");
       for (i = 0; i < Data.Variable.Size; i++) {
-        printf("%d\n", ((char *)Data.Variable.Pointer)[i]);
+        printf("%d\n", ((char*)Data.Variable.Pointer)[i]);
       }
       if (ID != PlayerPtr->ID) {
-        delete[] static_cast<char *>(Data.Variable.Pointer);
+        delete[] static_cast<char*>(Data.Variable.Pointer);
       }
       break;
 

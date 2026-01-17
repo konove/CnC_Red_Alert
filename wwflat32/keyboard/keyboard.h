@@ -49,9 +49,9 @@
 #endif
 
 extern "C" {
-void Install_Keyboard_Interrupt(void *addr, long size);
+void Install_Keyboard_Interrupt(void* addr, long size);
 void Install_Page_Fault_Handle(void);
-void *Get_RM_Keyboard_Address(void);
+void* Get_RM_Keyboard_Address(void);
 long Get_RM_Keyboard_Size(void);
 void Remove_Keyboard_Interrupt(void);
 int Check_Key_Num(void);
@@ -75,7 +75,7 @@ int Get_Mouse_State(void);
 int Get_Mouse_X(void);
 int Get_Mouse_Y(void);
 int Get_Mouse_Disabled(void);
-void *Set_Mouse_Cursor(int xhotspot, int yhotspot, void *cursor);
+void* Set_Mouse_Cursor(int xhotspot, int yhotspot, void* cursor);
 void Hide_Mouse(void);
 void Show_Mouse(void);
 void Conditional_Hide_Mouse(int sx_pixel, int sy_pixel, int dx_pixel,

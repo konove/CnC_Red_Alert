@@ -191,18 +191,18 @@ void Connect_TEN(void) {
   int size;
   int i;
   CDTimerClass<SystemTimerClass> send_timer;
-  NodeNameType *who;
+  NodeNameType* who;
 
   enum {
     D_TXT6_H = 7,
     D_MARGIN = 5,
   };
   static int x, y, w, h;
-  char const *buf1;
-  char const *buf2;
+  char const* buf1;
+  char const* buf2;
 
   int display = 0;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   //
   // Clear the Players list
@@ -358,7 +358,7 @@ void Connect_TEN(void) {
 void Destroy_TEN_Connection(int /*id*/, int /*error*/) {
 #if (TEN)
   int i;
-  HouseClass *housep;
+  HouseClass* housep;
   char txt[80];
 
   //------------------------------------------------------------------------
@@ -477,7 +477,7 @@ void Send_TEN_Win_Packet(void) {
   char winbuf[80];
   char idbuf[20];
   int first = 1;
-  HouseClass *hptr;
+  HouseClass* hptr;
   int i;
 
   //
@@ -523,7 +523,7 @@ void Send_TEN_Win_Packet(void) {
  * HISTORY:                                                                *
  *   11/27/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Send_TEN_Alliance(char * /*whom*/, int /*ally*/) {
+void Send_TEN_Alliance(char* /*whom*/, int /*ally*/) {
 #if (TEN)
   char buf[80];
 

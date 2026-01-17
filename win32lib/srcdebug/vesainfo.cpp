@@ -38,15 +38,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <dos.h>
-#include "iostream.h"
-#include "video.h"
-#include "descmgmt.h"
-#include "mcgaprim.h"
-#include "gbuffer.h"
-#include "vbuffer.h"
-#include "wwmem.h"
 
+#include "descmgmt.h"
+#include "gbuffer.h"
+#include "iostream.h"
+#include "mcgaprim.h"
 #include "playcd.h"
+#include "vbuffer.h"
+#include "video.h"
+#include "wwmem.h"
 
 /***************************************************************************
  * VESA_INFO -- Debug routine which displays vesa info to stdout           *

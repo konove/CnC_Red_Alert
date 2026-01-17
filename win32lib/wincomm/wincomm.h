@@ -88,7 +88,7 @@ class WinModemClass {
   */
   // virtual	HANDLE	Serial_Port_Open (int port, int baud, int parity, int
   // wordlen, int stopbits);
-  virtual HANDLE Serial_Port_Open(char *device_name, int baud, int parity,
+  virtual HANDLE Serial_Port_Open(char* device_name, int baud, int parity,
                                   int wordlen, int stopbits, int flowcontrol);
 
   /*
@@ -105,14 +105,14 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: ReadBuffer
   */
-  int Read_From_Serial_Port(unsigned char *dest_ptr, int buffer_len);
+  int Read_From_Serial_Port(unsigned char* dest_ptr, int buffer_len);
 
   /*
   ** Write chars to the serial port
   **
   ** Replacement for Greenleaf function: WriteBuffer
   */
-  void Write_To_Serial_Port(unsigned char *buffer, int length);
+  void Write_To_Serial_Port(unsigned char* buffer, int length);
 
   /*
   ** Wait for the outgoing buffer to empty
@@ -146,7 +146,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMInputLine
   */
-  virtual int Get_Modem_Result(int delay, char *buffer, int buffer_len);
+  virtual int Get_Modem_Result(int delay, char* buffer, int buffer_len);
 
   /*
   ** Issue a dial command to the modem.
@@ -154,14 +154,14 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMDial
   */
-  virtual void Dial_Modem(char *dial_number);
+  virtual void Dial_Modem(char* dial_number);
 
   /*
   ** Send a command to the modem. This is usually an 'AT' command.
   ** Function will optionally retry until 'OK' is received.
   */
-  virtual int Send_Command_To_Modem(char *command, char terminator,
-                                    char *buffer, int buflen, int delay,
+  virtual int Send_Command_To_Modem(char* command, char terminator,
+                                    char* buffer, int buflen, int delay,
                                     int retries);
 
   /*
@@ -222,7 +222,7 @@ class WinModemClass {
   /*
   ** Pointer to the internal class circular buffer for incoming data
   */
-  unsigned char *SerialBuffer;
+  unsigned char* SerialBuffer;
 
   /*
   ** Overlap object for asyncronous reads from the serial port
@@ -292,17 +292,16 @@ class WinNullModemClass : public WinModemClass {
   virtual inline void Set_Modem_Dial_Type(int) {};
   virtual inline unsigned Get_Modem_Status(void) { return (0); };
   virtual inline void Set_Serial_DTR(BOOL){};
-  virtual inline int Get_Modem_Result(int, char *, int) { return (0); };
-  virtual inline void Dial_Modem(char *) {};
-  virtual inline int Send_Command_To_Modem(char *, char, char *, int, int,
-                                           int) {
+  virtual inline int Get_Modem_Result(int, char*, int) { return (0); };
+  virtual inline void Dial_Modem(char*) {};
+  virtual inline int Send_Command_To_Modem(char*, char, char*, int, int, int) {
     return (0);
   };
   virtual inline void Set_Echo_Function(void (*)(char)) {};
   virtual inline void Set_Abort_Function(int (*)(void)) {};
 };
 
-extern WinModemClass *SerialPort;
+extern WinModemClass* SerialPort;
 
 //
 //

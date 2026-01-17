@@ -19,10 +19,11 @@
 #ifndef LOADBMP_HEADER
 #define LOADBMP_HEADER
 
-#include <cstdlib>
 #include <cstdio>
-#include "wstypes.h"
+#include <cstdlib>
+
 #include "winblows.h"
+#include "wstypes.h"
 
 //
 // Functions and data assocated with a loaded bitmap on a single window.
@@ -31,7 +32,7 @@ class LoadBmp {
  public:
   LoadBmp();
   ~LoadBmp();
-  bit8 init(char *filename, HWND hwnd);  // must call before the drawBmp
+  bit8 init(char* filename, HWND hwnd);  // must call before the drawBmp
   bit8 drawBmp(void);                    // call this from your WM_PAINT message
 
  private:

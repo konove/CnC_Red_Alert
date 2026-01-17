@@ -54,26 +54,26 @@
 */
 class CCFileClass : public CDFileClass {
  public:
-  CCFileClass(char const *filename);
+  CCFileClass(char const* filename);
   CCFileClass();
   ~CCFileClass() override = default;
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  virtual int Open(char const *filename, int rights = READ) {
+  virtual int Open(char const* filename, int rights = READ) {
     Set_Name(filename);
     return Open(rights);
   };
   virtual int Open(int rights = READ);
   virtual int Is_Open(void) const;
   virtual int Is_Available(int forced = false);
-  virtual long Read(void *buffer, long size);
+  virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
   virtual long Size(void);
-  virtual long Write(void const *buffer, long size);
+  virtual long Write(void const* buffer, long size);
   virtual void Close(void);
   virtual void Error(int error, int canretry = false,
-                     char const *filename = nullptr);
+                     char const* filename = nullptr);
 
  private:
   /*
@@ -90,7 +90,7 @@ class CCFileClass : public CDFileClass {
   *file access actually *	gets routed through the cached version of the
   *file. This is a pointer to the start *	of the RAM image of the file.
   */
-  void *Pointer;
+  void* Pointer;
 
   /*
   **	This is the starting offset of the beginning of the file. This value is
@@ -114,8 +114,8 @@ class CCFileClass : public CDFileClass {
   long Length;
 
   // Force these to never be invoked.
-  CCFileClass const operator=(CCFileClass const &c);
-  CCFileClass(CCFileClass const &) {};
+  CCFileClass const operator=(CCFileClass const& c);
+  CCFileClass(CCFileClass const&) {};
 };
 
 void WWDOS_Shutdown(void);

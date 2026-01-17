@@ -582,7 +582,7 @@ static OverlayTypeClass const SteelCrate(
     true    // Is this a crate?
 );
 
-OverlayTypeClass const *const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
+OverlayTypeClass const* const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
     &Concrete,    //	OVERLAY_CONCRETE
     &Sandbag,     //	OVERLAY_SANDBAG_WALL
     &Cyclone,     //	OVERLAY_CYCLONE_WALL
@@ -628,7 +628,7 @@ OverlayTypeClass const *const OverlayTypeClass::Pointers[OVERLAY_COUNT] = {
  *                                                                                             *
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const *ininame,
+OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const* ininame,
                                    int fullname, LandType ground,
                                    int damagelevels, int damagepoints,
                                    bool isradarvisible, bool iswooden,
@@ -683,7 +683,7 @@ void OverlayTypeClass::One_Time(void) {}
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayType OverlayTypeClass::From_Name(char const *name) {
+OverlayType OverlayTypeClass::From_Name(char const* name) {
   if (name) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
@@ -711,7 +711,7 @@ OverlayType OverlayTypeClass::From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-short const *OverlayTypeClass::Occupy_List(bool) const {
+short const* OverlayTypeClass::Occupy_List(bool) const {
   static short _simple[] = {0, REFRESH_EOL};
 
   return (_simple);
@@ -730,11 +730,11 @@ short const *OverlayTypeClass::Occupy_List(bool) const {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-unsigned char *OverlayTypeClass::Radar_Icon(int data) const {
-  unsigned char *icon =
-      (unsigned char *)Get_Radar_Data();  // Get pointer to radar icons
-  icon += (data * 9) + 2;                 // move icon ptr to correct icon
-  return (icon);                          // Return the correct icon
+unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
+  unsigned char* icon =
+      (unsigned char*)Get_Radar_Data();  // Get pointer to radar icons
+  icon += (data * 9) + 2;                // move icon ptr to correct icon
+  return (icon);                         // Return the correct icon
 }
 
 #ifdef SCENARIO_EDITOR
@@ -788,7 +788,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void OverlayTypeClass::Prep_For_Add(void) {
   for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
-    OverlayTypeClass const &overlay = As_Reference(index);
+    OverlayTypeClass const& overlay = As_Reference(index);
     if (overlay.Get_Image_Data() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_TIBERIUM1)) {
       Map.Add_To_List(&overlay);
@@ -836,7 +836,7 @@ bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *OverlayTypeClass::Create_One_Of(HouseClass *) const {
+ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass*) const {
   return (new OverlayClass(Type, -1));
 }
 
@@ -885,7 +885,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
 void OverlayTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
-      OverlayTypeClass const &overlay = As_Reference(index);
+      OverlayTypeClass const& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.
 
       if (overlay.IsTheater) {
@@ -897,12 +897,12 @@ void OverlayTypeClass::Init(TheaterType theater) {
                        .replace_extension(".SHP")
                        .string();
       }
-      ((void const *&)overlay.ImageData) =
+      ((void const*&)overlay.ImageData) =
           MixFileClass::Retrieve(fullname.c_str());
 
       IsTheaterShape = overlay.IsTheater;
-      if (overlay.RadarIcon) delete[] (char *)overlay.RadarIcon;
-      ((void const *&)overlay.RadarIcon) =
+      if (overlay.RadarIcon) delete[] (char*)overlay.RadarIcon;
+      ((void const*&)overlay.RadarIcon) =
           Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;
     }

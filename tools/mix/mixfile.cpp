@@ -43,16 +43,17 @@
 
 #pragma inline
 
-#include <cstdlib>
-#include <cstdio>
-#include <cctype>
 #include <dir.h>
+
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #define FALSE 0
 #define TRUE 1
 
-long Calc_CRC(void const *data, long size);
+long Calc_CRC(void const* data, long size);
 
 /********************************************************************
 **	This is the data block controlling class.  It is used for every data
@@ -63,47 +64,47 @@ class DataClass {
   long CRC;
   static short Count;
   static long TotalSize;
-  static char *ExtFrom[10];
-  static char *ExtTo[10];
+  static char* ExtFrom[10];
+  static char* ExtTo[10];
   static int ExtCount;
-  static char *AltPath[10];
+  static char* AltPath[10];
   static int AltPathCount;
 
-  DataClass(char const *filename);
+  DataClass(char const* filename);
   ~DataClass(void);
-  static void Process_Input(char const *infile, int quiet, int paths);
-  static void Process_Output(char const *outfile);
+  static void Process_Input(char const* infile, int quiet, int paths);
+  static void Process_Output(char const* outfile);
 
-  char const *Output_Filename(void);
-  char const *Input_Filename(void);
+  char const* Output_Filename(void);
+  char const* Input_Filename(void);
 
  private:
-  DataClass *Next;  // Pointer to next file in chain.
-  char *Filename;   // Raw original filename.
+  DataClass* Next;  // Pointer to next file in chain.
+  char* Filename;   // Raw original filename.
   long Size;        // Size of data element.
   long Offset;      // Offset within mixfile for data start.
   int Index;        // Write order number.
 
-  static DataClass *First;
+  static DataClass* First;
   static int Quiet;
   static int Paths;
 };
 
-char *DataClass::AltPath[10];
-char *DataClass::ExtFrom[10];
-char *DataClass::ExtTo[10];
+char* DataClass::AltPath[10];
+char* DataClass::ExtFrom[10];
+char* DataClass::ExtTo[10];
 int DataClass::ExtCount = 0;
 int DataClass::AltPathCount = 0;
 short DataClass::Count = 0;
-DataClass *DataClass::First = 0;
+DataClass* DataClass::First = 0;
 int DataClass::Quiet = FALSE;
 int DataClass::Paths = FALSE;
 long DataClass::TotalSize = 0;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   class UsageError {};  // Parameter error or usage display desired.
-  char *infile = 0;
-  char *outfile = 0;
+  char* infile = 0;
+  char* outfile = 0;
   int quiet = FALSE;
   int paths = FALSE;
 
@@ -124,7 +125,7 @@ int main(int argc, char **argv) {
 
     try {
       for (int index = 1; index < argc; index++) {
-        char *arg = argv[index];
+        char* arg = argv[index];
 
         switch (*arg) {
           /*
@@ -146,7 +147,7 @@ int main(int argc, char **argv) {
                                                sizeof(DataClass::ExtFrom[0])) {
                   throw "Too many extensions specified";
                 } else {
-                  char *ptr = strupr(strtok(&arg[2], "="));
+                  char* ptr = strupr(strtok(&arg[2], "="));
                   if (*ptr == '.') ptr++;
                   DataClass::ExtFrom[DataClass::ExtCount] = ptr;
 
@@ -186,7 +187,7 @@ int main(int argc, char **argv) {
           default:
             if (outfile) throw "Unrecognized parameter";
             if (!infile) {
-              FILE *file = fopen(arg, "r");
+              FILE* file = fopen(arg, "r");
               if (!file) throw "Unable to open input file";
               fclose(file);
               infile = arg;
@@ -217,7 +218,7 @@ int main(int argc, char **argv) {
             "Created mix file '%s'\nEmbedded objects = %d\nTotal file size = "
             "%ld\n",
             outfile, DataClass::Count, DataClass::TotalSize);
-      } catch (char *message) {
+      } catch (char* message) {
         printf("\nERROR: %s.\n", message);
         exit(EXIT_FAILURE);
       }
@@ -227,7 +228,7 @@ int main(int argc, char **argv) {
     **	This exception is called for any of the various fatal errors that
     **	can occur while parsing the parameters.
     */
-    catch (char *message) {
+    catch (char* message) {
       printf("\nERROR: %s.\n", message);
       throw UsageError();
     }
@@ -275,8 +276,8 @@ int main(int argc, char **argv) {
  *                                                                                             *
  * HISTORY: * 08/06/1994 JLB : Created. *
  *=============================================================================================*/
-void DataClass::Process_Input(char const *infile, int quiet, int paths) {
-  FILE *file;  //	Input file.
+void DataClass::Process_Input(char const* infile, int quiet, int paths) {
+  FILE* file;  //	Input file.
   static char buffer[MAXFILE];
 
   Quiet = quiet;
@@ -308,7 +309,7 @@ void DataClass::Process_Input(char const *infile, int quiet, int paths) {
   **	parsing and verifying the data block filenames.  Errors can include
   **	source filename errors as well as missing source files themselves.
   */
-  catch (char *message) {
+  catch (char* message) {
     fclose(file);
     throw message;
   }
@@ -332,7 +333,7 @@ void DataClass::Process_Input(char const *infile, int quiet, int paths) {
  * HISTORY: * 08/06/1994 JLB : Created. * 10/27/94   JLB : Handles multiple data
  *paths.                                             *
  *=============================================================================================*/
-DataClass::DataClass(char const *filename) {
+DataClass::DataClass(char const* filename) {
   static char buffer[100];
 
   if (!filename) throw "NULL filename";
@@ -343,7 +344,7 @@ DataClass::DataClass(char const *filename) {
   /*
   **	Try to find the data file.
   */
-  FILE *datafile = fopen(Filename, "rb");
+  FILE* datafile = fopen(Filename, "rb");
   if (!datafile) {
     /*
     **	If the file couldn't be found in the current directory, check
@@ -372,7 +373,7 @@ DataClass::DataClass(char const *filename) {
   **	the base filename or the complete path (as indicated by the command
   **	line parameter).
   */
-  char const *name = Output_Filename();
+  char const* name = Output_Filename();
   CRC = Calc_CRC(name, strlen(name));
 
   /*
@@ -412,8 +413,8 @@ DataClass::~DataClass(void) {
   }
 
   Count--;
-  DataClass *ptr = First;
-  DataClass *prev = 0;
+  DataClass* ptr = First;
+  DataClass* prev = 0;
   while (ptr) {
     if (ptr == this) {
       if (prev) {
@@ -442,9 +443,9 @@ DataClass::~DataClass(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1994 JLB : Created. *
  *=============================================================================================*/
-int compfunc(const void *ptr1, const void *ptr2) {
-  DataClass const *obj1 = *(DataClass const **)ptr1;
-  DataClass const *obj2 = *(DataClass const **)ptr2;
+int compfunc(const void* ptr1, const void* ptr2) {
+  DataClass const* obj1 = *(DataClass const**)ptr1;
+  DataClass const* obj2 = *(DataClass const**)ptr2;
 
   if (obj1->CRC < obj2->CRC) {
     return (-1);
@@ -471,11 +472,11 @@ int compfunc(const void *ptr1, const void *ptr2) {
  *                                                                                             *
  * HISTORY: * 08/06/1994 JLB : Created. *
  *=============================================================================================*/
-void DataClass::Process_Output(char const *outname) {
-  FILE *outfile;
+void DataClass::Process_Output(char const* outname) {
+  FILE* outfile;
 
   if (Count) {
-    DataClass **array = new DataClass *[Count];
+    DataClass** array = new DataClass*[Count];
 
     /*
     **	Open the output file for creation.
@@ -489,7 +490,7 @@ void DataClass::Process_Output(char const *outname) {
     /*
     **	Build a working array to the file objects.
     */
-    DataClass *ptr = First;
+    DataClass* ptr = First;
     for (int index = 0; index < Count; index++) {
       array[index] = ptr;
       ptr->Index = index;
@@ -539,10 +540,10 @@ void DataClass::Process_Output(char const *outname) {
     */
     for (int order = 0; order < Count; order++) {
       for (index = 0; index < Count; index++) {
-        DataClass *entry = array[index];
+        DataClass* entry = array[index];
 
         if (entry->Index == order) {
-          FILE *infile;
+          FILE* infile;
           long size;
           static char buffer[1024 * 30];
 
@@ -587,9 +588,9 @@ void DataClass::Process_Output(char const *outname) {
  *                                                                                             *
  * HISTORY: * 08/06/1994 JLB : Created. *
  *=============================================================================================*/
-long Calc_CRC(void const *data, long size) {
+long Calc_CRC(void const* data, long size) {
   long crc = 0;  // Accumulating CRC value.
-  long const *ptr = static_cast<long const *>(data);
+  long const* ptr = static_cast<long const*>(data);
 
   /*
   **	Process the bulk of the data (4 bytes at a time).
@@ -624,7 +625,7 @@ long Calc_CRC(void const *data, long size) {
   return (crc);
 }
 
-char const *DataClass::Output_Filename(void) {
+char const* DataClass::Output_Filename(void) {
   char file[MAXFILE];
   char ext[MAXEXT];
   char path[MAXPATH];
@@ -657,4 +658,4 @@ char const *DataClass::Output_Filename(void) {
   return (&filename[0]);
 }
 
-char const *DataClass::Input_Filename(void) { return (Filename); }
+char const* DataClass::Input_Filename(void) { return (Filename); }

@@ -233,7 +233,7 @@ int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2, int z2) {
  * HISTORY:                                                                *
  *   05/25/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Unravel_Loop(PathType *path, CELL &cell, FacingType &dir,
+bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
                              int sx, int sy, int dx, int dy,
                              MoveType threshhold) {
   /*
@@ -242,7 +242,7 @@ bool FootClass::Unravel_Loop(PathType *path, CELL &cell, FacingType &dir,
   FacingType curr_dir = dir;
   CELL curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
   int idx = path->Length;                      // start at the last position
-  FacingType *list = &path->Command[idx - 1];  // point to the last command
+  FacingType* list = &path->Command[idx - 1];  // point to the last command
   int checkx;
   int checky;
   int last_was_line = false;
@@ -320,9 +320,9 @@ bool FootClass::Unravel_Loop(PathType *path, CELL &cell, FacingType &dir,
  * HISTORY:                                                                *
  *   05/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Register_Cell(PathType *path, CELL cell, FacingType dir,
+bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
                               int cost, MoveType threshhold) {
-  FacingType *list;
+  FacingType* list;
   int pos = cell >> 5;
 #ifdef TEST
   int bit = (cell & 31);
@@ -442,7 +442,7 @@ bool FootClass::Register_Cell(PathType *path, CELL cell, FacingType dir,
  *                                                                                             *
  * HISTORY: * 07/08/1991  CY : Created. *
  *=============================================================================================*/
-PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
+PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                                MoveType threshhold) {
   CELL source = Coord_Cell(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
@@ -460,7 +460,7 @@ PathType *FootClass::Find_Path(CELL dest, FacingType *final_moves, int maxlen,
   FacingType moves_left[MAX_MLIST_SIZE + 2],  // Counterclockwise move list.
       moves_right[MAX_MLIST_SIZE + 2];        // Clockwise move list.
   PathType pleft, pright;                     // Path control structures.
-  PathType *which;                            // Which path to actually use.
+  PathType* which;                            // Which path to actually use.
   int threat;
   int threat_stage = 0;
 
@@ -783,7 +783,7 @@ end_of_list:
  * HISTORY: * 07/08/1991  CY : Created. * 06/01/1992  JLB : Optimized &
  *commented.                                                  *
  *=============================================================================================*/
-bool FootClass::Follow_Edge(CELL start, CELL target, PathType *path,
+bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
                             FacingType search, FacingType olddir, int threat,
                             int, int max_cells, MoveType threshhold) {
   FacingType newdir;  // Direction of facing before surrounding cell check.
@@ -1046,7 +1046,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType *path,
  *commented.                                                *
  *=============================================================================================*/
 #define EMPTY (FacingType) - 2
-int FootClass::Optimize_Moves(PathType *path, MoveType threshhold)
+int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 // int Optimize_Moves(PathType *path, int (*callback)(CELL, FacingType), int
 // threshold)
 {

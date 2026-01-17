@@ -94,7 +94,7 @@ IPXInterfaceClass::IPXInterfaceClass(void) : WinsockInterfaceClass() {
  * HISTORY: * 8/1/97 3:04PM ST : Created *
  *=============================================================================================*/
 bool IPXInterfaceClass::Get_Network_Card_Address(int /*card_number*/,
-                                                 SOCKADDR_IPX * /*addr*/) {
+                                                 SOCKADDR_IPX* /*addr*/) {
 #ifdef PORTABLE
   return false;
 #else
@@ -118,7 +118,7 @@ bool IPXInterfaceClass::Get_Network_Card_Address(int /*card_number*/,
   */
   memset(&Addr, 0, sizeof(Addr));
   Addr.sa_family = AF_IPX;
-  int err = bind(s, (SOCKADDR *)&Addr, cbAddr);
+  int err = bind(s, (SOCKADDR*)&Addr, cbAddr);
   if (err == SOCKET_ERROR) {
     assert(err != SOCKET_ERROR);
     closesocket(s);
@@ -136,7 +136,7 @@ bool IPXInterfaceClass::Get_Network_Card_Address(int /*card_number*/,
   /*
   ** Get information for the current adapter.
   */
-  err = getsockopt(s, NSPROTO_IPX, IPX_ADDRESS, (char *)&IpxData, &cbOpt);
+  err = getsockopt(s, NSPROTO_IPX, IPX_ADDRESS, (char*)&IpxData, &cbOpt);
   if (err == SOCKET_ERROR) {
     assert(err != SOCKET_ERROR);
     closesocket(s);
@@ -228,7 +228,7 @@ bool IPXInterfaceClass::Open_Socket(SOCKET /*socketnum*/) {
   /*
   ** Bind the IPX socket to the network card.
   */
-  if (bind(Socket, (const struct sockaddr *)&addr, 16) == SOCKET_ERROR) {
+  if (bind(Socket, (const struct sockaddr*)&addr, 16) == SOCKET_ERROR) {
     char out[128];
     sprintf(out, "TS: IPX socket bind failed with error code %d.\n",
             GetLastError());
@@ -252,7 +252,7 @@ bool IPXInterfaceClass::Open_Socket(SOCKET /*socketnum*/) {
   *broadcasts to
   ** fail if it isn't set.
   */
-  if (setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, (char *)&optval,
+  if (setsockopt(Socket, SOL_SOCKET, SO_BROADCAST, (char*)&optval,
                  sizeof(optval)) == SOCKET_ERROR) {
     char out[128];
     sprintf(
@@ -266,7 +266,7 @@ bool IPXInterfaceClass::Open_Socket(SOCKET /*socketnum*/) {
   /*
   ** Set the value in the packet type field for outgoing packets.
   */
-  err = setsockopt(Socket, NSPROTO_IPX, IPX_PTYPE, (char *)&packet_type,
+  err = setsockopt(Socket, NSPROTO_IPX, IPX_PTYPE, (char*)&packet_type,
                    sizeof(packet_type));
   if (err == INVALID_SOCKET) {
     char out[128];
@@ -281,7 +281,7 @@ bool IPXInterfaceClass::Open_Socket(SOCKET /*socketnum*/) {
   /*
   ** Ignore all incoming packets not of this type.
   */
-  err = setsockopt(Socket, NSPROTO_IPX, IPX_FILTERPTYPE, (char *)&packet_type,
+  err = setsockopt(Socket, NSPROTO_IPX, IPX_FILTERPTYPE, (char*)&packet_type,
                    sizeof(packet_type));
   if (err == INVALID_SOCKET) {
     char out[128];
@@ -324,7 +324,7 @@ long IPXInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
   int addr_len;               // Length of address structure
   int rc;                     // Result code
   SOCKADDR_IPX addr;          // Winsock IPX addressing structure
-  WinsockBufferType *packet;  // Ptr to packet
+  WinsockBufferType* packet;  // Ptr to packet
   NetNumType netnum;
   NetNodeType nodenum;
 
@@ -351,7 +351,7 @@ long IPXInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
       ** Call the Winsock recvfrom function to get the outstanding packet.
       */
       addr_len = sizeof(addr);
-      rc = recvfrom(Socket, (char *)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
+      rc = recvfrom(Socket, (char*)ReceiveBuffer, sizeof(ReceiveBuffer), 0,
                     (LPSOCKADDR)&addr, &addr_len);
       if (rc == SOCKET_ERROR) {
         if (WSAGetLastError() != WSAEWOULDBLOCK) {
@@ -384,7 +384,7 @@ long IPXInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         packet = new WinsockBufferType;
         packet->BufferLen = rc;
         memcpy(packet->Buffer, ReceiveBuffer, rc);
-        IPXAddressClass *paddress = (IPXAddressClass *)(&packet->Address[0]);
+        IPXAddressClass* paddress = (IPXAddressClass*)(&packet->Address[0]);
         paddress->Set_Address(netnum, nodenum);
         InBuffers.Add(packet);
       }
@@ -430,7 +430,7 @@ long IPXInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
           memcpy(addr.sa_netnum, BroadcastNet, sizeof(BroadcastNet));
           memcpy(addr.sa_nodenum, BroadcastNode, sizeof(BroadcastNode));
         } else {
-          IPXAddressClass *paddress = (IPXAddressClass *)(&packet->Address[0]);
+          IPXAddressClass* paddress = (IPXAddressClass*)(&packet->Address[0]);
           paddress->Get_Address(netnum, nodenum);
           memcpy(addr.sa_netnum, netnum, sizeof(netnum));
           memcpy(addr.sa_nodenum, nodenum, sizeof(nodenum));
@@ -444,7 +444,7 @@ long IPXInterfaceClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         *Winsock will
         ** send us another WRITE message when it is ready to receive more data.
         */
-        rc = sendto(Socket, (const char *)packet->Buffer, packet->BufferLen, 0,
+        rc = sendto(Socket, (const char*)packet->Buffer, packet->BufferLen, 0,
                     (LPSOCKADDR)&addr, sizeof(addr));
 
         if (rc == SOCKET_ERROR) {

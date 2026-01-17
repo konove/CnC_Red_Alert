@@ -215,7 +215,7 @@ static VesselTypeClass const VesselCarrier(
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created *
  *=============================================================================================*/
-VesselTypeClass::VesselTypeClass(VesselType type, int name, char const *ininame,
+VesselTypeClass::VesselTypeClass(VesselType type, int name, char const* ininame,
                                  AnimType exp, int verticaloffset,
                                  int primaryoffset, int primarylateral,
                                  int secondaryoffset, int secondarylateral,
@@ -256,7 +256,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, char const *ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *VesselTypeClass::operator new(size_t) throw() {
+void* VesselTypeClass::operator new(size_t) throw() {
   return (VesselTypes.Alloc());
 }
 
@@ -276,8 +276,8 @@ void *VesselTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::operator delete(void *pointer) {
-  VesselTypes.Free((VesselTypeClass *)pointer);
+void VesselTypeClass::operator delete(void* pointer) {
+  VesselTypes.Free((VesselTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -326,7 +326,7 @@ void VesselTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-VesselTypeClass &VesselTypeClass::As_Reference(VesselType type) {
+VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
   return (*VesselTypes.Ptr(type));
 }
 
@@ -357,12 +357,12 @@ VesselTypeClass &VesselTypeClass::As_Reference(VesselType type) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-BuildingClass *VesselTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
+BuildingClass* VesselTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                  HousesType house) const {
-  BuildingClass *anybuilding = NULL;
+  BuildingClass* anybuilding = NULL;
 
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass *building = Buildings.Ptr(index);
+    BuildingClass* building = Buildings.Ptr(index);
     assert(building != NULL);
 
     if (!building->IsInLimbo && building->House->Class->House == house &&
@@ -405,7 +405,7 @@ BuildingClass *VesselTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
 void VesselTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType) const {
   int shape = 0;
-  void const *ptr = Get_Cameo_Data();
+  void const* ptr = Get_Cameo_Data();
   if (ptr == NULL) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
@@ -456,7 +456,7 @@ void VesselTypeClass::Prep_For_Add(void) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *VesselTypeClass::Create_One_Of(HouseClass *house) const {
+ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
   return (new VesselClass(Type, house->Class->House));
 }
 
@@ -479,7 +479,7 @@ ObjectClass *VesselTypeClass::Create_One_Of(HouseClass *house) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  VesselClass *unit = new VesselClass(Type, house);
+  VesselClass* unit = new VesselClass(Type, house);
   if (unit != nullptr) {
     return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
   }
@@ -504,7 +504,7 @@ bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Dimensions(int &width, int &height) const {
+void VesselTypeClass::Dimensions(int& width, int& height) const {
   width = 48;
   height = 48;
 }
@@ -526,7 +526,7 @@ void VesselTypeClass::Dimensions(int &width, int &height) const {
  *=============================================================================================*/
 void VesselTypeClass::One_Time(void) {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
-    VesselTypeClass &uclass = As_Reference(index);
+    VesselTypeClass& uclass = As_Reference(index);
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
       /*
       **	Fetch the supporting data files for the unit.
@@ -545,7 +545,7 @@ void VesselTypeClass::One_Time(void) {
                         .string();
     uclass.SetBorrowedImage(MFCD::RetrieveData(fullname));
 
-    ((int &)uclass.MaxSize) = 26;
+    ((int&)uclass.MaxSize) = 26;
   }
 }
 
@@ -568,7 +568,7 @@ void VesselTypeClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Turret_Adjust(DirType dir, int &x, int &y) const {
+void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
   short xx = x;
   short yy = y;
 
@@ -609,7 +609,7 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int &x, int &y) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-short const *VesselTypeClass::Overlap_List(void) const {
+short const* VesselTypeClass::Overlap_List(void) const {
   static short const _ship[] = {-3,
                                 -2,
                                 -1,
@@ -652,7 +652,7 @@ short const *VesselTypeClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-VesselType VesselTypeClass::From_Name(char const *name) {
+VesselType VesselTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (VesselType classid = VESSEL_FIRST; classid < VESSEL_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {

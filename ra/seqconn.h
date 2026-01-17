@@ -80,14 +80,14 @@ class SequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  virtual int Send_Packet(void *buf, int buflen, int ack_req);
-  virtual int Receive_Packet(void *buf, int buflen);
-  virtual int Get_Packet(void *buf, int *buflen);
+  virtual int Send_Packet(void* buf, int buflen, int ack_req);
+  virtual int Receive_Packet(void* buf, int buflen);
+  virtual int Get_Packet(void* buf, int* buflen);
 
   /*.....................................................................
   The packet queue.
   .....................................................................*/
-  CommQueueClass *Queue;
+  CommQueueClass* Queue;
 
   /*
   -------------------------- Protected Interface ---------------------------

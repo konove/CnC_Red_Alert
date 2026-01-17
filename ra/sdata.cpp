@@ -175,7 +175,7 @@ static SmudgeTypeClass const Bibx3(SMUDGE_BIB3, "BIB3", TXT_BIB, 2,
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const *ininame,
+SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const* ininame,
                                  int fullname, int width, int height,
                                  bool isbib, bool iscrater)
     : ObjectTypeClass(RTTI_SMUDGETYPE, int(smudge), false, true, false, false,
@@ -203,7 +203,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, char const *ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *SmudgeTypeClass::operator new(size_t) throw() {
+void* SmudgeTypeClass::operator new(size_t) throw() {
   return (SmudgeTypes.Alloc());
 }
 
@@ -223,8 +223,8 @@ void *SmudgeTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void SmudgeTypeClass::operator delete(void *pointer) {
-  SmudgeTypes.Free((SmudgeTypeClass *)pointer);
+void SmudgeTypeClass::operator delete(void* pointer) {
+  SmudgeTypes.Free((SmudgeTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -281,7 +281,7 @@ void SmudgeTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeType SmudgeTypeClass::From_Name(char const *name) {
+SmudgeType SmudgeTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
@@ -309,9 +309,9 @@ SmudgeType SmudgeTypeClass::From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-short const *SmudgeTypeClass::Occupy_List(bool) const {
+short const* SmudgeTypeClass::Occupy_List(bool) const {
   static short _occupy[4 * 4];
-  short *ptr = &_occupy[0];
+  short* ptr = &_occupy[0];
 
   for (int x = 0; x < Width; x++) {
     for (int y = 0; y < Height; y++) {
@@ -339,7 +339,7 @@ short const *SmudgeTypeClass::Occupy_List(bool) const {
 void SmudgeTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
-      SmudgeTypeClass &smudge = As_Reference(index);
+      SmudgeTypeClass& smudge = As_Reference(index);
       // Fully constructed smudge data set name.
       auto fullname = std::filesystem::path(smudge.IniName)
                           .replace_extension(Theaters[theater].Suffix)
@@ -368,7 +368,7 @@ void SmudgeTypeClass::Init(TheaterType theater) {
  *=============================================================================================*/
 void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
                               HousesType) const {
-  void const *ptr = Get_Image_Data();
+  void const* ptr = Get_Image_Data();
 
   x += WindowList[window][WINDOWX];
   y += WindowList[window][WINDOWY];
@@ -452,7 +452,7 @@ bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *SmudgeTypeClass::Create_One_Of(HouseClass *) const {
+ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass*) const {
   return (new SmudgeClass(Type, -1));
 }
 
@@ -474,7 +474,7 @@ ObjectClass *SmudgeTypeClass::Create_One_Of(HouseClass *) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
-  void const *ptr = Get_Image_Data();
+  void const* ptr = Get_Image_Data();
   if (ptr != nullptr) {
     IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
@@ -511,6 +511,6 @@ void SmudgeTypeClass::One_Time(void) {}
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-SmudgeTypeClass &SmudgeTypeClass::As_Reference(SmudgeType type) {
+SmudgeTypeClass& SmudgeTypeClass::As_Reference(SmudgeType type) {
   return (*SmudgeTypes.Ptr(type));
 }

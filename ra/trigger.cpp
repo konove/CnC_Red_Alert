@@ -84,7 +84,7 @@
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-char const *TriggerClass::Description(void) const {
+char const* TriggerClass::Description(void) const {
   return (Class->Description());
 }
 
@@ -105,7 +105,7 @@ char const *TriggerClass::Description(void) const {
  *=============================================================================================*/
 void TriggerClass::Draw_It(int, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
     if (selected) {
@@ -139,7 +139,7 @@ void TriggerClass::Draw_It(int, int x, int y, int width, int height,
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::TriggerClass(TriggerTypeClass *trigtype)
+TriggerClass::TriggerClass(TriggerTypeClass* trigtype)
     : RTTI(RTTI_TRIGGER),
       ID(Triggers.ID(this)),
       Class(trigtype),
@@ -231,7 +231,7 @@ void TriggerClass::Init(void) { Triggers.Free_All(); }
  * HISTORY: * 05/31/1996 JLB : Created. * 08/13/1996 JLB : Linked triggers
  *supported.                                               *
  *=============================================================================================*/
-bool TriggerClass::Spring(TEventType event, ObjectClass *obj, CELL cell,
+bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
                           bool forced) {
   assert(Triggers.ID(this) == ID);
 
@@ -376,10 +376,10 @@ bool TriggerClass::Spring(TEventType event, ObjectClass *obj, CELL cell,
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void *TriggerClass::operator new(size_t) throw() {
-  void *ptr = Triggers.Allocate();
+void* TriggerClass::operator new(size_t) throw() {
+  void* ptr = Triggers.Allocate();
   if (ptr) {
-    ((TriggerClass *)ptr)->IsActive = true;
+    ((TriggerClass*)ptr)->IsActive = true;
   }
 
   return (ptr);
@@ -400,11 +400,11 @@ void *TriggerClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerClass::operator delete(void *pointer) {
+void TriggerClass::operator delete(void* pointer) {
   if (pointer) {
-    ((TriggerClass *)pointer)->IsActive = false;
+    ((TriggerClass*)pointer)->IsActive = false;
   }
-  Triggers.Free((TriggerClass *)pointer);
+  Triggers.Free((TriggerClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -446,7 +446,7 @@ TARGET TriggerClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerClass *Find_Or_Make(TriggerTypeClass *trigtype) {
+TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
   if (!trigtype) return (nullptr);
 
   for (int index = 0; index < Triggers.Count(); index++) {
@@ -458,7 +458,7 @@ TriggerClass *Find_Or_Make(TriggerTypeClass *trigtype) {
   /*
   **	No trigger was found, so make one.
   */
-  TriggerClass *trig = new TriggerClass(trigtype);
+  TriggerClass* trig = new TriggerClass(trigtype);
   return (trig);
 }
 
@@ -482,7 +482,7 @@ TriggerClass *Find_Or_Make(TriggerTypeClass *trigtype) {
  *=============================================================================================*/
 void TriggerClass::Detach(TARGET target, bool) {
   if (Is_Target_TriggerType(target)) {
-    assert((TriggerTypeClass *)Class != As_TriggerType(target));
+    assert((TriggerTypeClass*)Class != As_TriggerType(target));
     //		if (Class == As_TriggerType(target)) {
     //			Class = NULL;
     //		}

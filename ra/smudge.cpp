@@ -78,10 +78,10 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void *SmudgeClass::operator new(size_t) throw() {
-  void *ptr = Smudges.Allocate();
+void* SmudgeClass::operator new(size_t) throw() {
+  void* ptr = Smudges.Allocate();
   if (ptr != nullptr) {
-    ((SmudgeClass *)ptr)->IsActive = true;
+    ((SmudgeClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -100,11 +100,11 @@ void *SmudgeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::operator delete(void *ptr) {
+void SmudgeClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((SmudgeClass *)ptr)->IsActive = false;
+    ((SmudgeClass*)ptr)->IsActive = false;
   }
-  Smudges.Free((SmudgeClass *)ptr);
+  Smudges.Free((SmudgeClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -184,7 +184,7 @@ bool SmudgeClass::Mark(MarkType mark) {
         for (int h = 0; h < Class->Height; h++) {
           CELL newcell = origin + w + (h * MAP_CELL_W);
           if (Map.In_Radar(newcell)) {
-            CellClass *cell = &Map[newcell];
+            CellClass* cell = &Map[newcell];
 
             if (Class->IsBib) {
               cell->Smudge = Class->Type;
@@ -263,7 +263,7 @@ void SmudgeClass::Disown(CELL cell) {
   if (Class->IsBib) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CellClass &cellptr = Map[(CELL)(cell + w + (h * MAP_CELL_W))];
+        CellClass& cellptr = Map[(CELL)(cell + w + (h * MAP_CELL_W))];
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {
@@ -294,18 +294,18 @@ void SmudgeClass::Disown(CELL cell) {
  * HISTORY: * 09/01/1994 JLB : Created. * 07/24/1995 JLB : Sets the smudge data
  *value as well.                                      *
  *=============================================================================================*/
-void SmudgeClass::Read_INI(CCINIClass &ini) {
+void SmudgeClass::Read_INI(CCINIClass& ini) {
   char buf[128];  // Working string staging buffer.
 
   int len = ini.Entry_Count(INI_Name());
   for (int index = 0; index < len; index++) {
-    char const *entry = ini.Get_Entry(INI_Name(), index);
+    char const* entry = ini.Get_Entry(INI_Name(), index);
     SmudgeType smudge;  // Smudge type.
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
-      char *ptr = strtok(nullptr, ",");
+      char* ptr = strtok(nullptr, ",");
       if (ptr != nullptr) {
         int data = 0;
         CELL cell = atoi(ptr);
@@ -333,7 +333,7 @@ void SmudgeClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Write_INI(CCINIClass &ini) {
+void SmudgeClass::Write_INI(CCINIClass& ini) {
   /*
   **	First, clear out all existing template data from the ini file.
   */
@@ -343,11 +343,11 @@ void SmudgeClass::Write_INI(CCINIClass &ini) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass *ptr;
+    CellClass* ptr;
 
     ptr = &Map[index];
     if (ptr->Smudge != SMUDGE_NONE) {
-      SmudgeTypeClass const *stype =
+      SmudgeTypeClass const* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
       if (!stype->IsBib) {
         char uname[10];

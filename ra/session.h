@@ -425,13 +425,13 @@ typedef struct GlobalPacketType {
 //...........................................................................
 typedef struct {
   union {
-    AircraftClass *Aircraft;
-    AnimClass *Anim;
-    BuildingClass *Building;
-    BulletClass *Bullet;
-    InfantryClass *Infantry;
-    UnitClass *Unit;
-    void *All;
+    AircraftClass* Aircraft;
+    AnimClass* Anim;
+    BuildingClass* Building;
+    BulletClass* Bullet;
+    InfantryClass* Infantry;
+    UnitClass* Unit;
+    void* All;
   } Ptr;
 } TrapObjectType;
 
@@ -442,20 +442,20 @@ typedef struct {
 */
 class MultiMission {
  public:
-  MultiMission(char const *filename = nullptr,
-               char const *description = nullptr, char const *digest = nullptr,
+  MultiMission(char const* filename = nullptr,
+               char const* description = nullptr, char const* digest = nullptr,
                bool official = true, bool expansion = false);
 
-  void Set_Description(char const *description);
-  void Set_Filename(char const *filename);
-  void Set_Digest(char const *digest);
+  void Set_Description(char const* description);
+  void Set_Filename(char const* filename);
+  void Set_Digest(char const* digest);
   void Set_Official(bool official);
   void Set_Expansion(bool expansion);
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const *Description(void) const { return (ScenarioDescription); }
-  char const *Get_Filename(void) const { return (Filename); }
-  char const *Get_Digest(void) const { return (Digest); }
+  char const* Description(void) const { return (ScenarioDescription); }
+  char const* Get_Filename(void) const { return (Filename); }
+  char const* Get_Digest(void) const { return (Digest); }
   bool Get_Official(void) { return (IsOfficial); }
   bool Get_Expansion(void) {
     return (IsExpansion);
@@ -527,10 +527,10 @@ class SessionClass {
   //.....................................................................
   // File I/O
   //.....................................................................
-  int Save(Pipe &file) const;
-  int Load(Straw &file);
-  int Save(CCFileClass &file);
-  int Load(CCFileClass &file);
+  int Save(Pipe& file) const;
+  int Load(Straw& file);
+  int Save(CCFileClass& file);
+  int Load(CCFileClass& file);
 
   //.....................................................................
   // Debugging / Sync Bugs
@@ -605,7 +605,7 @@ class SessionClass {
   //.....................................................................
   // List of scenarios & their file numbers
   //.....................................................................
-  DynamicVectorClass<MultiMission *> Scenarios;
+  DynamicVectorClass<MultiMission*> Scenarios;
   //		DynamicVectorClass <char *> Scenarios;
   //		DynamicVectorClass <int> Filenum;
 
@@ -643,8 +643,8 @@ class SessionClass {
   static char Descriptions[100][40];
   static int CountMin[2];
   static int CountMax[2];
-  static char *GlobalPacketNames[];
-  static char *SerialPacketNames[];
+  static char* GlobalPacketNames[];
+  static char* SerialPacketNames[];
 
   //.....................................................................
   // For Recording & Playing back a file
@@ -657,21 +657,21 @@ class SessionClass {
   //.....................................................................
   // IPX-specific variables
   //.....................................................................
-  int IsBridge;                                // 1 = we're crossing a bridge
-  IPXAddressClass BridgeNet;                   // address of bridge
-  bool NetStealth;                             // makes us invisible
-  bool NetProtect;                             // keeps others from messaging us
-  bool NetOpen;                                // 1 = game is open for joining
-  char GameName[MPLAYER_NAME_MAX];             // game's name
-  GlobalPacketType GPacket;                    // global packet
-  int GPacketlen;                              // global packet length
-  IPXAddressClass GAddress;                    // address of sender
-  unsigned short GProductID;                   // product ID of sender
-  char MetaPacket[MAX_IPX_PACKET_SIZE];        // packet building buffer
-  int MetaSize;                                // size of MetaPacket
-  DynamicVectorClass<NodeNameType *> Games;    // list of games
-  DynamicVectorClass<NodeNameType *> Players;  // list of players
-  DynamicVectorClass<NodeNameType *> Chat;     // list of chat nodes
+  int IsBridge;                               // 1 = we're crossing a bridge
+  IPXAddressClass BridgeNet;                  // address of bridge
+  bool NetStealth;                            // makes us invisible
+  bool NetProtect;                            // keeps others from messaging us
+  bool NetOpen;                               // 1 = game is open for joining
+  char GameName[MPLAYER_NAME_MAX];            // game's name
+  GlobalPacketType GPacket;                   // global packet
+  int GPacketlen;                             // global packet length
+  IPXAddressClass GAddress;                   // address of sender
+  unsigned short GProductID;                  // product ID of sender
+  char MetaPacket[MAX_IPX_PACKET_SIZE];       // packet building buffer
+  int MetaSize;                               // size of MetaPacket
+  DynamicVectorClass<NodeNameType*> Games;    // list of games
+  DynamicVectorClass<NodeNameType*> Players;  // list of players
+  DynamicVectorClass<NodeNameType*> Chat;     // list of chat nodes
 
   //.....................................................................
   // Modem-specific variables
@@ -681,10 +681,10 @@ class SessionClass {
   SerialSettingsType SerialDefaults;  // default serial settings
   ModemGameType ModemType;            // caller or answerer?
 
-  DynamicVectorClass<PhoneEntryClass *> PhoneBook;
-  DynamicVectorClass<char *> InitStrings;
-  static char const *DialMethodCheck[DIAL_METHODS];
-  static char *CallWaitStrings[CALL_WAIT_STRINGS_NUM];
+  DynamicVectorClass<PhoneEntryClass*> PhoneBook;
+  DynamicVectorClass<char*> InitStrings;
+  static char const* DialMethodCheck[DIAL_METHODS];
+  static char* CallWaitStrings[CALL_WAIT_STRINGS_NUM];
 
   //.....................................................................
   // For finding Sync Bugs
@@ -694,7 +694,7 @@ class SessionClass {
   TrapObjectType TrapObject;  // ptr to object to trap (watch)
   COORDINATE TrapCoord;       // coord of object, 0 = ignore
   TARGET TrapTarget;          // Target # of object, 0 = ignore
-  CellClass *TrapCell;        // Ptr to cell to trap (watch)
+  CellClass* TrapCell;        // Ptr to cell to trap (watch)
   int TrapCheckHeap;          // true = check the heap as of TrapFrame
   long TrapPrintCRC;          // Frame # to print CRC state file
 
@@ -702,7 +702,7 @@ class SessionClass {
   //
   // TEN-specific variables
   //
-  char *TenPacket;
+  char* TenPacket;
   int TenSize;
   int TenMessageAddress;
   int TenAddress;
@@ -716,7 +716,7 @@ class SessionClass {
   //
   // MPATH-specific variables
   //
-  char *MPathPacket;
+  char* MPathPacket;
   int MPathSize;
   int MPathMessageAddress;
   int MPathAddress;

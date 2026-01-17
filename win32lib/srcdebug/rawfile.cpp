@@ -57,18 +57,18 @@
 
 #define WIN32
 #define _WIN32
-#include <windows.h>
-
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <direct.h>
+#include <dos.h>
 #include <fcntl.h>
 #include <io.h>
-#include <dos.h>
 #include <share.h>
 #include <sys\stat.h>
+#include <windows.h>
 #include <wwstd.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 // #include "wwlib32.h"
 // #include	"compat.h"
@@ -100,7 +100,7 @@
  *=============================================================================================*/
 #pragma argsused
 // void RawFileClass::Error(int error, int canretry, char const * filename)
-void RawFileClass::Error(int error, int, char const *) {
+void RawFileClass::Error(int error, int, char const*) {
   char buffer[256];
 
   wsprintf(buffer, "File Error #%d", error);
@@ -210,10 +210,10 @@ void RawFileClass::Error(int error, int, char const *) {
     *you should replace this *	virtual function with one of your own, that is
     *more aware of the environment *	in which is exists.
     */
-    void *background;             // Pointer to background saving buffer.
-    GraphicBufferClass *oldpage;  // Copy of old logic page.
+    void* background;             // Pointer to background saving buffer.
+    GraphicBufferClass* oldpage;  // Copy of old logic page.
     int oldwindow;                // Copy of old window number.
-    void const *oldfont;          // Copy of old font pointer.
+    void const* oldfont;          // Copy of old font pointer.
     int oldspacing;               // Old font X spacing.
 
     /*
@@ -319,7 +319,7 @@ void RawFileClass::Error(int error, int, char const *) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(char const *filename) : Filename(filename) {
+RawFileClass::RawFileClass(char const* filename) : Filename(filename) {
   Handle = -1;
   Allocated = false;
 }
@@ -343,19 +343,19 @@ RawFileClass::RawFileClass(char const *filename) : Filename(filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-char const *RawFileClass::Set_Name(char const *filename) {
+char const* RawFileClass::Set_Name(char const* filename) {
   if (Filename && Allocated) {
     // Heap_Dump_Check( "Before raw free" );
-    free((char *)Filename);
+    free((char*)Filename);
     // Heap_Dump_Check( "After raw free" );
-    ((char *&)Filename) = 0;
+    ((char*&)Filename) = 0;
     Allocated = false;
   }
 
   if (!filename) return (NULL);
 
   // Heap_Dump_Check( "Before raw strdup" );
-  ((char *&)Filename) = strdup(filename);
+  ((char*&)Filename) = strdup(filename);
   // Heap_Dump_Check( "After raw strdup" );
   if (!Filename) {
     Error(ENOMEM, false, filename);
@@ -385,7 +385,7 @@ char const *RawFileClass::Set_Name(char const *filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(char const *filename, int rights) {
+int RawFileClass::Open(char const* filename, int rights) {
   Set_Name(filename);
   return (Open(rights));
 }
@@ -444,19 +444,18 @@ int RawFileClass::Open(int rights) {
         break;
 
       case READ:
-        Handle = (int)mmioOpen((char *)Filename, NULL, MMIO_READ);
+        Handle = (int)mmioOpen((char*)Filename, NULL, MMIO_READ);
         // Handle = open(Filename, O_RDONLY|O_BINARY);
         break;
 
       case WRITE:
-        Handle =
-            (int)mmioOpen((char *)Filename, NULL, MMIO_WRITE | MMIO_CREATE);
+        Handle = (int)mmioOpen((char*)Filename, NULL, MMIO_WRITE | MMIO_CREATE);
         // Handle = open(Filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY ,
         // S_IWRITE);
         break;
 
       case READ | WRITE:
-        Handle = (int)mmioOpen((char *)Filename, NULL, MMIO_READWRITE);
+        Handle = (int)mmioOpen((char*)Filename, NULL, MMIO_READWRITE);
         // Handle = open(Filename, O_RDWR|O_CREAT|O_BINARY);
         break;
     }
@@ -672,7 +671,7 @@ void RawFileClass::Close(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Read(void *buffer, long size) {
+long RawFileClass::Read(void* buffer, long size) {
   long bytesread =
       0;  // Running count of the number of bytes read into the buffer.
   int opened = false;  // Was the file opened by this routine?
@@ -712,7 +711,7 @@ long RawFileClass::Read(void *buffer, long size) {
 
     //		Hard_Error_Occured = 0;
     readresult = 0;
-    actual = mmioRead((HMMIO)Handle, (char *)buffer, desired);
+    actual = mmioRead((HMMIO)Handle, (char*)buffer, desired);
     // actual = read(Handle, buffer, desired);
     if (actual != desired) readresult = errno;
 
@@ -739,7 +738,7 @@ long RawFileClass::Read(void *buffer, long size) {
     **	No error occurred during the read. Adjust the pointers and size counters
     *and *	loop again if more data is needed to be read.
     */
-    buffer = (void *)((long)buffer + actual);
+    buffer = (void*)((long)buffer + actual);
     bytesread += actual;
     size -= actual;
     if (actual != desired) break;  // No more data?
@@ -773,7 +772,7 @@ long RawFileClass::Read(void *buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(void const *buffer, long size) {
+long RawFileClass::Write(void const* buffer, long size) {
   long bytesread = 0;
   int opened = false;  // Was the file manually opened?
   int writeresult;
@@ -802,7 +801,7 @@ long RawFileClass::Write(void const *buffer, long size) {
     //		desired = (unsigned)MIN(size, Transfer_Block_Size());
     desired = size;
     writeresult = 0;
-    actual = mmioWrite((HMMIO)Handle, (char *)buffer, desired);
+    actual = mmioWrite((HMMIO)Handle, (char*)buffer, desired);
     // actual = write(Handle, buffer, desired);
     if (actual != desired) writeresult = errno;
 
@@ -827,7 +826,7 @@ long RawFileClass::Write(void const *buffer, long size) {
       **	A successful write occurred. Update pointers and byte counter as
       *appropriate.
       */
-      buffer = (void *)((long)buffer + actual);
+      buffer = (void*)((long)buffer + actual);
       bytesread += actual;
       size -= actual;
 
@@ -1108,13 +1107,13 @@ int RawFileClass::Delete(void) {
 static RawFileClass Handles[MAX_HANDLES];
 
 #ifdef NEVER
-bool __cdecl Set_Search_Drives(BYTE const *) {
+bool __cdecl Set_Search_Drives(BYTE const*) {
   RawFileClass::Set_Search_Path(path);
   return (true);
 }
 #endif
 
-int __cdecl Open_File(char const *file_name, int mode) {
+int __cdecl Open_File(char const* file_name, int mode) {
   for (int index = 0; index < MAX_HANDLES; index++) {
     if (!Handles[index].Is_Open()) {
       if (Handles[index].Open(file_name, mode)) {
@@ -1132,39 +1131,39 @@ VOID __cdecl Close_File(int handle) {
   }
 }
 
-LONG __cdecl Read_File(int handle, VOID *buf, ULONG bytes) {
+LONG __cdecl Read_File(int handle, VOID* buf, ULONG bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
     return (Handles[handle].Read(buf, bytes));
   }
   return (0);
 }
 
-LONG __cdecl Write_File(int handle, VOID const *buf, ULONG bytes) {
+LONG __cdecl Write_File(int handle, VOID const* buf, ULONG bytes) {
   if (handle != kInvalidHandle && Handles[handle].Is_Open()) {
     return (Handles[handle].Write(buf, bytes));
   }
   return (0);
 }
 
-int __cdecl Find_File(char const *file_name) {
+int __cdecl Find_File(char const* file_name) {
   RawFileClass file(file_name);
   return (file.Is_Available());
 }
 
 #ifdef NEVER
-int __cdecl Delete_File(BYTE const *file_name) {
+int __cdecl Delete_File(BYTE const* file_name) {
   return (RawFileClass(file_name).Delete());
 }
 
-int __cdecl Create_File(BYTE const *file_name) {
+int __cdecl Create_File(BYTE const* file_name) {
   return (RawFileClass(file_name).Create());
 }
 
-ULONG __cdecl Load_Data(BYTE const *name, VOID *ptr, ULONG size) {
+ULONG __cdecl Load_Data(BYTE const* name, VOID* ptr, ULONG size) {
   return (RawFileClass(name).Read(ptr, size));
 }
 
-VOID *__cdecl Load_Alloc_Data(char const *name, int) {
+VOID* __cdecl Load_Alloc_Data(char const* name, int) {
   RawFileClass file(name);
 
   return (Load_Alloc_Data(file));
@@ -1179,7 +1178,7 @@ ULONG __cdecl File_Size(int handle) {
 }
 
 #ifdef NEVER
-ULONG __cdecl Write_Data(BYTE const *name, VOID const *ptr, ULONG size) {
+ULONG __cdecl Write_Data(BYTE const* name, VOID const* ptr, ULONG size) {
   return (RawFileClass(name).Write(ptr, size));
 }
 #endif
@@ -1201,7 +1200,7 @@ VOID __cdecl WWDOS_Init(VOID) {}
 
 VOID __cdecl WWDOS_Shutdown(VOID) {}
 
-int __cdecl Find_Disk_Number(BYTE const *) { return (0); }
+int __cdecl Find_Disk_Number(BYTE const*) { return (0); }
 #endif
 
 /***********************************************************************************************
@@ -1218,7 +1217,7 @@ int __cdecl Find_Disk_Number(BYTE const *) { return (0); }
  * HISTORY: * 9/28/95 5:09PM ST : Created *
  *=============================================================================================*/
 
-int __cdecl Load_File(const char *file_name, void *load_addr) {
+int __cdecl Load_File(const char* file_name, void* load_addr) {
   int bytes_read = 0;
   int handle;
 

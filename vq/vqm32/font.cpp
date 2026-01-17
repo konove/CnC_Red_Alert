@@ -43,12 +43,14 @@
  *
  ****************************************************************************/
 
-#include <cstdlib>
+#include "font.h"
+
 #include <fcntl.h>
 #include <io.h>
-#include <cstring>
 #include <malloc.h>
-#include "font.h"
+
+#include <cstdlib>
+#include <cstring>
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
@@ -64,12 +66,12 @@
 #endif
 #endif
 
-void const *FontPtr = NULL;
+void const* FontPtr = NULL;
 char FontHeight = 8;
 char FontWidth = 8;
 int FontXSpacing = 0;
 int FontYSpacing = 0;
-char *FontWidthBlockPtr = NULL;
+char* FontWidthBlockPtr = NULL;
 
 /****************************************************************************
  *
@@ -93,8 +95,8 @@ char *FontWidthBlockPtr = NULL;
  *
  ****************************************************************************/
 
-void *cdecl Load_Font(char const *name) {
-  Font *font = NULL;
+void* cdecl Load_Font(char const* name) {
+  Font* font = NULL;
   long fh;
   short size;
   short valid;
@@ -104,7 +106,7 @@ void *cdecl Load_Font(char const *name) {
     /* Get the size of the font. */
     if (read(fh, &size, 2) == 2) {
       /* Allocate memory to contain the font. */
-      if ((font = (Font *)malloc((unsigned long)size)) != NULL) {
+      if ((font = (Font*)malloc((unsigned long)size)) != NULL) {
         valid = 0;
 
         /* Read in the body of the font. */
@@ -129,7 +131,7 @@ void *cdecl Load_Font(char const *name) {
     close(fh);
   }
 
-  return ((char *)font);
+  return ((char*)font);
 }
 
 /****************************************************************************
@@ -153,21 +155,21 @@ void *cdecl Load_Font(char const *name) {
  *
  ****************************************************************************/
 
-void *cdecl Set_Font(void const *font) {
-  void const *oldfont;
-  FontInfo *fi;
+void* cdecl Set_Font(void const* font) {
+  void const* oldfont;
+  FontInfo* fi;
 
   oldfont = FontPtr;
 
   if (font != NULL) {
-    FontWidthBlockPtr = ((char *)font + ((Font *)font)->WidthBlk);
-    fi = (FontInfo *)((char *)font + ((Font *)font)->InfoBlk);
+    FontWidthBlockPtr = ((char*)font + ((Font*)font)->WidthBlk);
+    fi = (FontInfo*)((char*)font + ((Font*)font)->InfoBlk);
     FontHeight = fi->MaxHeight;
     FontWidth = fi->MaxWidth;
     FontPtr = font;
   }
 
-  return ((void *)oldfont);
+  return ((void*)oldfont);
 }
 
 /****************************************************************************
@@ -191,7 +193,7 @@ void *cdecl Set_Font(void const *font) {
  *
  ****************************************************************************/
 
-unsigned short String_Pixel_Width(char const *string) {
+unsigned short String_Pixel_Width(char const* string) {
   long width = 0;
   long largest = 0;
 

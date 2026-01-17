@@ -97,7 +97,7 @@ void test(void) {
   enum nums { one, two, three };
 
   nums x;
-  nums *ptr;
+  nums* ptr;
 
   ptr = &x;
 }
@@ -213,7 +213,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   */
   if (MissionControl[Mission].IsParalyzed) return;
 
-  if ((What_Am_I() != RTTI_UNIT || !((UnitClass *)this)->IsDumping) &&
+  if ((What_Am_I() != RTTI_UNIT || !((UnitClass*)this)->IsDumping) &&
       (!Target_Legal(NavCom) || (nokidding && !IsRotating))) {
     if (!Target_Legal(TarCom) || forced || Random_Pick(1, 4) == 1) {
       FacingType toface;
@@ -405,8 +405,8 @@ bool DriveClass::Teleport_To(CELL cell) {
   /*
   **	A teleported unit will drop the flag right where it's at.
   */
-  if (What_Am_I() == RTTI_UNIT && ((UnitClass *)this)->Flagged != HOUSE_NONE) {
-    HouseClass::As_Pointer(((UnitClass *)this)->Flagged)
+  if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Flagged != HOUSE_NONE) {
+    HouseClass::As_Pointer(((UnitClass*)this)->Flagged)
         ->Flag_Attach(Coord_Cell(Coord));
   }
 
@@ -489,7 +489,7 @@ DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Debug_Dump(MonoClass *mono) const {
+void DriveClass::Debug_Dump(MonoClass* mono) const {
   assert(IsActive);
 
   mono->Fill_Attrib(66, 14, 12, 1,
@@ -519,7 +519,7 @@ void DriveClass::Debug_Dump(MonoClass *mono) const {
  * HISTORY: * 03/14/1994 JLB : Created. * 07/13/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType &dir) {
+COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType& dir) {
   assert(IsActive);
 
   DirType workdir = dir;
@@ -583,14 +583,14 @@ void DriveClass::Assign_Destination(TARGET target) {
   *procedure *	when the harvester is full and an empty refinery is selected as
   *a target.
   */
-  BuildingClass *b = As_Building(target);
+  BuildingClass* b = As_Building(target);
 
   /*
   **	If the player clicked on refinery but it is not busy, then assign
   **	it to unload at the refinery.
   */
   if (b != nullptr && *b == STRUCT_REFINERY && What_Am_I() == RTTI_UNIT &&
-      ((UnitTypeClass *)Techno_Type_Class())->IsToHarvest) {
+      ((UnitTypeClass*)Techno_Type_Class())->IsToHarvest) {
     if (Contact_With_Whom() != b && !b->In_Radio_Contact()) {
       /*
       **	Establish radio contact protocol. If the facility responds
@@ -663,15 +663,15 @@ bool DriveClass::While_Moving(void) {
   if (IsFormationMove) maxspeed = FormationMaxSpeed;
 
   int actual;  // Working movement addition value.
-  if (((UnitClass *)this)->Flagged != HOUSE_NONE) {
+  if (((UnitClass*)this)->Flagged != HOUSE_NONE) {
     actual = SpeedAccum + ((int)maxspeed / 2) * fixed(Speed, 256);
   } else {
     actual = SpeedAccum + maxspeed * fixed(Speed, 256);
   }
 
   if (actual > PIXEL_LEPTON_W) {
-    TurnTrackType const *track;  // Track control pointer.
-    TrackType const *ptr;        // Pointer to coord offset values.
+    TurnTrackType const* track;  // Track control pointer.
+    TrackType const* ptr;        // Pointer to coord offset values.
     int tracknum;                // The track number being processed.
     FacingType nextface;         // Next facing queued in path.
     bool adj;                    // Is a turn coming up?
@@ -731,7 +731,7 @@ bool DriveClass::While_Moving(void) {
         */
         if (/**this != UNIT_GUNBOAT &&*/ nextface != FACING_NONE && adj &&
             RawTracks[tracknum - 1].Jump == TrackIndex && TrackIndex) {
-          TurnTrackType const *newtrack;  // Proposed jump-to track.
+          TurnTrackType const* newtrack;  // Proposed jump-to track.
           int tnum;
 
           tnum =
@@ -762,7 +762,7 @@ bool DriveClass::While_Moving(void) {
                 if (!IsActive) return (false);
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
-                  memmove((char *)&Path[0], (char *)&Path[1],
+                  memmove((char*)&Path[0], (char*)&Path[1],
                           CONQUER_PATH_MAX - 1);
                   Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
                 } else {
@@ -965,8 +965,8 @@ bool DriveClass::Start_Of_Move(void) {
         if (Map.In_Radar(cell)) {
           MoveType ok = Can_Enter_Cell(cell);
           if (ok == MOVE_TEMP) {
-            CellClass *cellptr = &Map[cell];
-            TechnoClass *blockage = cellptr->Cell_Techno();
+            CellClass* cellptr = &Map[cell];
+            TechnoClass* blockage = cellptr->Cell_Techno();
             if (blockage && House->Is_Ally(blockage)) {
               /*
               **	If the target can be told to get out of the way, only
@@ -1027,8 +1027,8 @@ bool DriveClass::Start_Of_Move(void) {
     if (Map.In_Radar(cell)) {
       MoveType ok = Can_Enter_Cell(cell);
       if (ok == MOVE_TEMP) {
-        CellClass *cellptr = &Map[cell];
-        TechnoClass *blockage = cellptr->Cell_Techno();
+        CellClass* cellptr = &Map[cell];
+        TechnoClass* blockage = cellptr->Cell_Techno();
         if (blockage && House->Is_Ally(blockage)) {
           /*
           **	If the target can be told to get out of the way, only bother
@@ -1245,12 +1245,12 @@ bool DriveClass::Start_Of_Move(void) {
               return (true);
             }
           } else {
-            memmove((char *)&Path[0], (char *)&Path[2], CONQUER_PATH_MAX - 2);
+            memmove((char*)&Path[0], (char*)&Path[2], CONQUER_PATH_MAX - 2);
             Path[CONQUER_PATH_MAX - 2] = FACING_NONE;
             IsPlanningToLook = true;
           }
         } else {
-          memmove((char *)&Path[0], (char *)&Path[1], CONQUER_PATH_MAX - 1);
+          memmove((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX - 1);
         }
         Path[CONQUER_PATH_MAX - 1] = FACING_NONE;
       }
@@ -1302,7 +1302,7 @@ void DriveClass::AI(void) {
   */
   if (IsMoebius) {
     if (What_Am_I() != RTTI_UNIT ||
-        ((UnitClass *)this)->Class->Type != UNIT_CHRONOTANK) {
+        ((UnitClass*)this)->Class->Type != UNIT_CHRONOTANK) {
       if (MoebiusCountDown == 0) {
         IsMoebius = false;
         Teleport_To(MoebiusCell);
@@ -1322,7 +1322,7 @@ void DriveClass::AI(void) {
     While_Moving();
     if (!IsActive) return;
     if (TrackNumber == -1 && (Target_Legal(NavCom) || Path[0] != FACING_NONE) &&
-        (What_Am_I() != RTTI_UNIT || !((UnitClass *)this)->IsDumping)) {
+        (What_Am_I() != RTTI_UNIT || !((UnitClass*)this)->IsDumping)) {
       Start_Of_Move();
       if (!IsActive) return;
       While_Moving();
@@ -1407,7 +1407,7 @@ void DriveClass::AI(void) {
  ** 04/10/1994 JLB : Diagonal smooth turn added. * 04/15/1994 JLB : Converted to
  *member function.                                            *
  *=============================================================================================*/
-void DriveClass::Fixup_Path(PathType *path) {
+void DriveClass::Fixup_Path(PathType* path) {
   assert(IsActive);
 
   FacingType stage[6] = {FACING_N, FACING_N, FACING_N, FACING_N,
@@ -1434,8 +1434,8 @@ void DriveClass::Fixup_Path(PathType *path) {
 
   int index;
   int counter;          // Path addition
-  FacingType *ptr;      // Path list pointer.
-  FacingType *ptr2;     // Copy of new path list pointer.
+  FacingType* ptr;      // Path list pointer.
+  FacingType* ptr2;     // Copy of new path list pointer.
   FacingType nextpath;  // Next path value.
   CELL cell;            // Working cell value.
   bool ok;
@@ -1551,7 +1551,7 @@ void DriveClass::Fixup_Path(PathType *path) {
   */
   if (ok) {
     if (path->Length <= 1) {
-      memmove((char *)&stage[0], (char *)path->Command, std::max(counter, 1));
+      memmove((char*)&stage[0], (char*)path->Command, std::max(counter, 1));
       path->Length = counter;
     } else {
       /*
@@ -1570,9 +1570,9 @@ void DriveClass::Fixup_Path(PathType *path) {
       **	insert the rest now.
       */
       if (counter) {
-        memmove((char *)&path->Command[0], (char *)&path->Command[counter],
+        memmove((char*)&path->Command[0], (char*)&path->Command[counter],
                 40 - counter);
-        memmove((char *)&stage[0], (char *)&path->Command[0], counter);
+        memmove((char*)&stage[0], (char*)&path->Command[0], counter);
         path->Length += counter;
       }
     }
@@ -1599,7 +1599,7 @@ void DriveClass::Lay_Track(void) {
   assert(IsActive);
 
 #ifdef NEVER
-  static IconCommandType *_trackdirs[8] = {TrackN_S,   TrackNE_SW, TrackE_W,
+  static IconCommandType* _trackdirs[8] = {TrackN_S,   TrackNE_SW, TrackE_W,
                                            TrackNW_SE, TrackN_S,   TrackNE_SW,
                                            TrackE_W,   TrackNW_SE};
 
@@ -1645,7 +1645,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
       */
       int tracknum = TrackControl[TrackNumber].Track;
       if (tracknum) {
-        TrackType const *ptr = RawTracks[tracknum - 1].Track;
+        TrackType const* ptr = RawTracks[tracknum - 1].Track;
         int cellidx = RawTracks[tracknum - 1].Cell;
         if (cellidx > -1) {
           DirType dir = ptr[cellidx].Facing;

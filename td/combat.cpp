@@ -89,7 +89,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   */
   if (Special.IsInert || !damage || warhead == WARHEAD_NONE) return (0);
 
-  WarheadTypeClass const *whead = &Warheads[warhead];
+  WarheadTypeClass const* whead = &Warheads[warhead];
 
   damage = Fixed_To_Cardinal(damage, whead->Modifier[armor]);
 
@@ -140,11 +140,11 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
  *   06/20/1994 JLB : Uses object pointers to distribute damage. * 06/20/1994
  *JLB : Source is a pointer. *
  *=============================================================================================*/
-void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass *source,
+void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass* source,
                       WarheadType warhead) {
   CELL cell;                 // Cell number under explosion.
-  ObjectClass *object;       // Working object pointer.
-  ObjectClass *objects[32];  // Maximum number of objects that can be damaged.
+  ObjectClass* object;       // Working object pointer.
+  ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
   int distance;              // Distance to unit.
   int range;                 // Damage effect radius.
   int index;
@@ -152,14 +152,14 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass *source,
 
   if (!strength || Special.IsInert || warhead == WARHEAD_NONE) return;
 
-  WarheadTypeClass const *whead = &Warheads[warhead];
+  WarheadTypeClass const* whead = &Warheads[warhead];
   range = ICON_LEPTON_W + (ICON_LEPTON_W >> 1);
   cell = Coord_Cell(coord);
   if ((unsigned)cell >= MAP_CELL_TOTAL) return;
   //	if (!Map.In_Radar(cell)) return;
 
-  CellClass *cellptr = &Map[cell];
-  ObjectClass *impacto = cellptr->Cell_Occupier();
+  CellClass* cellptr = &Map[cell];
+  ObjectClass* impacto = cellptr->Cell_Occupier();
 
   /*
   **	Fill the list of unit IDs that will have damage
@@ -235,7 +235,7 @@ void Explosion_Damage(COORDINATE coord, unsigned strength, TechnoClass *source,
   cellptr = &Map[cell];
   cellptr->Reduce_Tiberium(strength / 10);
   if (cellptr->Overlay != OVERLAY_NONE) {
-    OverlayTypeClass const *optr =
+    OverlayTypeClass const* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsWall) {

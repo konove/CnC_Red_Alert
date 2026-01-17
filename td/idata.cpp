@@ -1423,7 +1423,7 @@ static InfantryTypeClass const DrChan(
 **	This is the array of pointers to the static data associated with each
 **	infantry type.
 */
-InfantryTypeClass const *const InfantryTypeClass::Pointers[INFANTRY_COUNT] = {
+InfantryTypeClass const* const InfantryTypeClass::Pointers[INFANTRY_COUNT] = {
     &E1, &E2, &E3, &E4, &E5,
     //	&E6,
     &E7, &Commando, &C1, &C2, &C3, &C4, &C5, &C6, &C7, &C8, &C9, &C10, &Moebius,
@@ -1446,10 +1446,10 @@ InfantryTypeClass const *const InfantryTypeClass::Pointers[INFANTRY_COUNT] = {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryTypeClass::InfantryTypeClass(
-    InfantryType type, int name, char const *ininame, unsigned char level,
+    InfantryType type, int name, char const* ininame, unsigned char level,
     long pre, bool is_female, bool is_leader, bool is_crawling,
     bool is_civilian, bool is_nominal, bool is_fraidycat, bool is_capture,
-    bool is_theater, int ammo, int *do_table, int firelaunch, int pronelaunch,
+    bool is_theater, int ammo, int* do_table, int firelaunch, int pronelaunch,
     unsigned short strength, int sightrange, int cost, int scenario, int risk,
     int reward, int ownable, WeaponType primary, WeaponType secondary,
     MPHType maxspeed)
@@ -1633,7 +1633,7 @@ InfantryTypeClass::InfantryTypeClass(
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *InfantryTypeClass::Create_One_Of(HouseClass *house) const {
+ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
   return (new InfantryClass(Type, house->Class->House));
 }
 
@@ -1656,7 +1656,7 @@ ObjectClass *InfantryTypeClass::Create_One_Of(HouseClass *house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  InfantryClass *i = new InfantryClass(Type, house);
+  InfantryClass* i = new InfantryClass(Type, house);
   if (i) {
     COORDINATE coord = Map[cell].Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
@@ -1687,7 +1687,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-short const *InfantryTypeClass::Occupy_List(bool) const {
+short const* InfantryTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
 
   return (&_list[0]);
@@ -1720,7 +1720,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
                                 HousesType house) const {
   if (house != HOUSE_NONE) {
     int shape = 0;
-    void const *ptr = Get_Cameo_Data();
+    void const* ptr = Get_Cameo_Data();
     if (!ptr) {
       ptr = Get_Image_Data();
       shape = 2;
@@ -1771,7 +1771,7 @@ void InfantryTypeClass::Prep_For_Add(void) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryType InfantryTypeClass::From_Name(char const *name) {
+InfantryType InfantryTypeClass::From_Name(char const* name) {
   if (name) {
     for (InfantryType classid = INFANTRY_FIRST; classid < INFANTRY_COUNT;
          classid++) {
@@ -1803,7 +1803,7 @@ void InfantryTypeClass::One_Time(void) {
   InfantryType index;
 
   for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
-    InfantryTypeClass const *uclass;
+    InfantryTypeClass const* uclass;
     CCFileClass file;
 
     uclass = &As_Reference(index);
@@ -1814,7 +1814,7 @@ void InfantryTypeClass::One_Time(void) {
     auto fullname = std::filesystem::path(uclass->IniName)
                         .replace_extension(".SHP")
                         .string();
-    ((void const *&)uclass->ImageData) =
+    ((void const*&)uclass->ImageData) =
         MixFileClass::Retrieve(fullname.c_str());
 
     /*
@@ -1828,7 +1828,7 @@ void InfantryTypeClass::One_Time(void) {
     }
     fullname =
         std::filesystem::path(filename).replace_extension(".SHP").string();
-    ((void const *&)uclass->CameoData) =
+    ((void const*&)uclass->CameoData) =
         MixFileClass::Retrieve(fullname.c_str());
   }
 }
@@ -1851,15 +1851,15 @@ void InfantryTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor()) {
     if (theater != LastTheater) {
       InfantryType index;
-      void const *cameo_ptr;
+      void const* cameo_ptr;
 
       for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
-        InfantryTypeClass const *uclass;
+        InfantryTypeClass const* uclass;
         CCFileClass file;
 
         uclass = &As_Reference(index);
 
-        ((void const *&)uclass->CameoData) = nullptr;
+        ((void const*&)uclass->CameoData) = nullptr;
 
         const auto filename =
             std::string(uclass->IniName).substr(0, 4) + "ICNH";
@@ -1869,7 +1869,7 @@ void InfantryTypeClass::Init(TheaterType theater) {
                             .string();
         cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
         if (cameo_ptr) {
-          ((void const *&)uclass->CameoData) = cameo_ptr;
+          ((void const*&)uclass->CameoData) = cameo_ptr;
         }
       }
     }
@@ -1904,12 +1904,12 @@ void InfantryTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created. *
  *=============================================================================================*/
-BuildingClass *InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
+BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                    HousesType house) const {
-  BuildingClass *anybuilding = nullptr;
+  BuildingClass* anybuilding = nullptr;
 
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass *building = Buildings.Ptr(index);
+    BuildingClass* building = Buildings.Ptr(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&

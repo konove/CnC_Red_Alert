@@ -108,9 +108,9 @@ class ConnManClass {
   /*.....................................................................
   Sending & receiving data
   .....................................................................*/
-  virtual int Send_Private_Message(void *buf, int buflen, int ack_req = 1,
+  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
                                    int conn_id = CONNECTION_NONE) = 0;
-  virtual int Get_Private_Message(void *buf, int *buflen, int *conn_id) = 0;
+  virtual int Get_Private_Message(void* buf, int* buflen, int* conn_id) = 0;
 
   /*.....................................................................
   Connection management
@@ -139,7 +139,7 @@ class ConnManClass {
   Debugging
   .....................................................................*/
   virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char **names, int namestart, int namecount) = 0;
+                               char** names, int namestart, int namecount) = 0;
 #ifdef CHEAT_KEYS
   virtual void Mono_Debug_Print(int index, int refresh) = 0;
 #endif

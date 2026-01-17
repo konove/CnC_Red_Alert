@@ -76,7 +76,7 @@
 */
 short HelpClass::OverlapList[30] = {REFRESH_EOL};
 
-char const *HelpClass::HelpText;
+char const* HelpClass::HelpText;
 
 CountDownTimerClass HelpClass::CountDownTimer;
 
@@ -141,9 +141,9 @@ void HelpClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-short const *HelpClass::Overlap_List(void) const {
+short const* HelpClass::Overlap_List(void) const {
   if (Text == TXT_NONE || CountDownTimer.Time()) {
-    ((short &)(OverlapList[0])) = REFRESH_EOL;
+    ((short&)(OverlapList[0])) = REFRESH_EOL;
   }
   return (OverlapList);
 }
@@ -168,7 +168,7 @@ short const *HelpClass::Overlap_List(void) const {
  * HISTORY: * 11/18/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse
  *coordinates as passed in.                                     *
  *=============================================================================================*/
-void HelpClass::AI(KeyNumType &key, int x, int y) {
+void HelpClass::AI(KeyNumType& key, int x, int y) {
   /*
   **	If there is any keyboard input, then the help text goes away.
   */
@@ -356,7 +356,7 @@ void HelpClass::Set_Text(int text) {
       if (DrawY < TacPixelY + 1) DrawY = TacPixelY + 1;
     }
     int lines = (Cost) ? 2 : 1;
-    memcpy((void *)OverlapList,
+    memcpy((void*)OverlapList,
            Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY, lines),
            sizeof(OverlapList));
   }
@@ -381,7 +381,7 @@ void HelpClass::Set_Text(int text) {
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-bool HelpClass::Scroll_Map(DirType facing, int &distance, bool really) {
+bool HelpClass::Scroll_Map(DirType facing, int& distance, bool really) {
   if (really) {
     Help_Text(TXT_NONE);
   }

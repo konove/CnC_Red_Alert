@@ -35,10 +35,11 @@
  *   Load_Font -- Loads a font from disk.                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "font.h"
 #include <file.h>
 #include <wwmem.h>
 #include <wwstd.h>
+
+#include "font.h"
 
 #if (IBM)
 #include <fcntl.h>
@@ -48,12 +49,12 @@
 
 int FontXSpacing = 0;
 int FontYSpacing = 0;
-void const *FontPtr = NULL;
+void const* FontPtr = NULL;
 char FontWidth = 8;
 char FontHeight = 8;
 
 // only font.c and set_font.c use the following
-char *FontWidthBlockPtr = NULL;
+char* FontWidthBlockPtr = NULL;
 
 /***************************************************************************
  * LOAD_FONT -- Loads a font from disk.                                    *
@@ -79,31 +80,31 @@ char *FontWidthBlockPtr = NULL;
  *verification.                        * 06/29/1994 SKB : modified for 32 bit
  *library                          *
  *=========================================================================*/
-void *__cdecl Load_Font(char const *name) {
+void* __cdecl Load_Font(char const* name) {
   char valid;
   int fh;               // DOS file handle for font file.
   unsigned short size;  // Size of the data in the file (-2);
-  char *ptr = NULL;     // Pointer to newly loaded font.
+  char* ptr = NULL;     // Pointer to newly loaded font.
 
   fh = Open_File(name, READ);
   if (fh >= 0) {
-    if (Read_File(fh, (char *)&size, 2) != 2) return (NULL);
+    if (Read_File(fh, (char*)&size, 2) != 2) return (NULL);
 
-    ptr = (char *)Alloc(size, MEM_NORMAL);
-    *(short *)ptr = size;
+    ptr = (char*)Alloc(size, MEM_NORMAL);
+    *(short*)ptr = size;
     Read_File(fh, ptr + 2, size - 2);
     Close_File(fh);
   } else {
-    return ((void *)errno);
+    return ((void*)errno);
   }
 
 #ifdef cuts
   if (Find_File(name)) {
     fh = Open_File(name, READ);
-    if (Read_File(fh, (char *)&size, 2) != 2) return (NULL);
+    if (Read_File(fh, (char*)&size, 2) != 2) return (NULL);
 
-    ptr = (char *)Alloc(size, MEM_NORMAL);
-    *(short *)ptr = size;
+    ptr = (char*)Alloc(size, MEM_NORMAL);
+    *(short*)ptr = size;
     Read_File(fh, ptr + 2, size - 2);
     Close_File(fh);
   } else {

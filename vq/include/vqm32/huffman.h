@@ -69,24 +69,24 @@ typedef struct _HuffCode {
 extern "C" {
 #endif
 
-long cdecl HuffCompress(unsigned char *data, unsigned char *buffer, long length,
-                        char *work);
+long cdecl HuffCompress(unsigned char* data, unsigned char* buffer, long length,
+                        char* work);
 
-long cdecl HuffDecompress(unsigned char *data, unsigned char *buffer,
-                          long length, char *work);
+long cdecl HuffDecompress(unsigned char* data, unsigned char* buffer,
+                          long length, char* work);
 
-void cdecl HuffCount(unsigned char *data, TreeNode *nodes, long length,
+void cdecl HuffCount(unsigned char* data, TreeNode* nodes, long length,
                      long zero);
 
-void cdecl HuffScaleCounts(TreeNode *nodes);
-long cdecl RLEHuffCounts(TreeNode *nodes, unsigned char *buffer);
-long cdecl BuildHuffTree(TreeNode *nodes);
+void cdecl HuffScaleCounts(TreeNode* nodes);
+long cdecl RLEHuffCounts(TreeNode* nodes, unsigned char* buffer);
+long cdecl BuildHuffTree(TreeNode* nodes);
 
-void cdecl ConvertToCodes(TreeNode *nodes, HuffCode *codes, unsigned short code,
+void cdecl ConvertToCodes(TreeNode* nodes, HuffCode* codes, unsigned short code,
                           short bits, short node);
 
-long cdecl HuffEncode(unsigned char *data, unsigned char *buffer,
-                      HuffCode *codes, long length);
+long cdecl HuffEncode(unsigned char* data, unsigned char* buffer,
+                      HuffCode* codes, long length);
 
 #ifdef __cplusplus
 }

@@ -52,7 +52,7 @@
 class MouseClass : public ScrollClass {
  public:
   MouseClass(void);
-  MouseClass(NoInitClass const &x) : ScrollClass(x) {};
+  MouseClass(NoInitClass const& x) : ScrollClass(x) {};
 
   /*
   ** Initialization
@@ -60,7 +60,7 @@ class MouseClass : public ScrollClass {
   virtual void One_Time(void);    // One-time inits
   virtual void Init_Clear(void);  // Clears all to known state
 
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false);
   virtual void Revert_Mouse_Shape(void);
   virtual MouseType Get_Mouse_Shape(void) const { return NormalMouseShape; };
@@ -69,8 +69,8 @@ class MouseClass : public ScrollClass {
   /*
   **	File I/O.
   */
-  virtual bool Load(Straw &file);
-  virtual bool Save(Pipe &file) const;
+  virtual bool Load(Straw& file);
+  virtual bool Save(Pipe& file) const;
 
   virtual void Set_Default_Mouse(MouseType mouse, bool wsmall = false);
 
@@ -83,7 +83,7 @@ class MouseClass : public ScrollClass {
   /*
   **	This points to the loaded mouse shapes.
   */
-  static void const *MouseShapes;
+  static void const* MouseShapes;
 
  private:
   /*

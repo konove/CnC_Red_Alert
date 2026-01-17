@@ -18,7 +18,7 @@ unsigned int WinX;
 unsigned int WinY;
 unsigned int Window;
 
-SDL_Renderer *SDLRenderer;
+SDL_Renderer* SDLRenderer;
 Uint32 ForceRenderEventID;
 
 int Change_Window(int /*windnum*/) {
@@ -26,7 +26,7 @@ int Change_Window(int /*windnum*/) {
   return 0;
 }
 
-void SDL_Create_Main_Window(const char *title, int width, int height) {
+void SDL_Create_Main_Window(const char* title, int width, int height) {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
   // Window scale multiplier (2x = 1280x800 for 640x400 logical resolution)
@@ -40,7 +40,7 @@ void SDL_Create_Main_Window(const char *title, int width, int height) {
 
   ForceRenderEventID = SDL_RegisterEvents(1);
 
-  SDLRenderer = SDL_CreateRenderer((SDL_Window *)MainWindow, -1,
+  SDLRenderer = SDL_CreateRenderer((SDL_Window*)MainWindow, -1,
                                    SDL_RENDERER_PRESENTVSYNC);
 
   // Keep logical size at original resolution, SDL will scale to window size

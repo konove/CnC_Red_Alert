@@ -52,7 +52,7 @@
 /*		later.
  */
 /*=========================================================================*/
-#define HIDBUFF ((void *)(0xA0000))
+#define HIDBUFF ((void*)(0xA0000))
 #define Size_Of_Region(a, b) ((a) * (b))
 
 /*=========================================================================*/
@@ -105,24 +105,24 @@ typedef enum MenuIndexType {
 #define DKGRAY GREY
 #define LTGRAY LTGREY
 
-inline short Get_IconSet_MapWidth(void const *data) {
+inline short Get_IconSet_MapWidth(void const* data) {
   if (data) {
-    return (((IControl_Type *)data)->MapWidth);
+    return (((IControl_Type*)data)->MapWidth);
   }
   return (0);
 }
 
-inline short Get_IconSet_MapHeight(void const *data) {
+inline short Get_IconSet_MapHeight(void const* data) {
   if (data) {
-    return (((IControl_Type *)data)->MapHeight);
+    return (((IControl_Type*)data)->MapHeight);
   }
   return (0);
 }
 
-inline unsigned char const *Get_IconSet_ControlMap(void const *data) {
+inline unsigned char const* Get_IconSet_ControlMap(void const* data) {
   if (data) {
-    return ((unsigned char const *)((char *)data +
-                                    ((IControl_Type *)data)->ColorMap));
+    return (
+        (unsigned char const*)((char*)data + ((IControl_Type*)data)->ColorMap));
   }
   return (nullptr);
 }
@@ -134,48 +134,48 @@ class IconsetClass : protected IControl_Type {
   */
   int Map_Width(void) const { return (MapWidth); };
   int Map_Height(void) const { return (MapHeight); };
-  unsigned char *Control_Map(void) {
-    return ((unsigned char *)this + ColorMap);
+  unsigned char* Control_Map(void) {
+    return ((unsigned char*)this + ColorMap);
   };
-  unsigned char const *Control_Map(void) const {
-    return ((unsigned char const *)this + ColorMap);
+  unsigned char const* Control_Map(void) const {
+    return ((unsigned char const*)this + ColorMap);
   };
   int Icon_Count(void) const { return (Count); };
   int Pixel_Width(void) const { return (Width); };
   int Pixel_Height(void) const { return (Height); };
   int Total_Size(void) const { return (Size); };
-  unsigned char const *Palette_Data(void) const {
-    return ((unsigned char const *)this + Palettes);
+  unsigned char const* Palette_Data(void) const {
+    return ((unsigned char const*)this + Palettes);
   };
-  unsigned char *Palette_Data(void) {
-    return ((unsigned char *)this + Palettes);
+  unsigned char* Palette_Data(void) {
+    return ((unsigned char*)this + Palettes);
   };
-  unsigned char const *Icon_Data(void) const {
-    return ((unsigned char const *)this + Icons);
+  unsigned char const* Icon_Data(void) const {
+    return ((unsigned char const*)this + Icons);
   };
-  unsigned char *Icon_Data(void) { return ((unsigned char *)this + Icons); };
-  unsigned char const *Map_Data(void) const {
-    return ((unsigned char const *)this + Map);
+  unsigned char* Icon_Data(void) { return ((unsigned char*)this + Icons); };
+  unsigned char const* Map_Data(void) const {
+    return ((unsigned char const*)this + Map);
   };
-  unsigned char *Map_Data(void) { return ((unsigned char *)this + Map); };
-  unsigned char const *Remap_Data(void) const {
-    return ((unsigned char const *)this + Remaps);
+  unsigned char* Map_Data(void) { return ((unsigned char*)this + Map); };
+  unsigned char const* Remap_Data(void) const {
+    return ((unsigned char const*)this + Remaps);
   };
-  unsigned char *Remap_Data(void) { return ((unsigned char *)this + Remaps); };
-  unsigned char const *Trans_Data(void) const {
-    return ((unsigned char const *)this + TransFlag);
+  unsigned char* Remap_Data(void) { return ((unsigned char*)this + Remaps); };
+  unsigned char const* Trans_Data(void) const {
+    return ((unsigned char const*)this + TransFlag);
   };
-  unsigned char *Trans_Data(void) {
-    return ((unsigned char *)this + TransFlag);
+  unsigned char* Trans_Data(void) {
+    return ((unsigned char*)this + TransFlag);
   };
 
   /*
   **	Disallow these operations with an IconsetClass object.
   */
  private:
-  IconsetClass &operator=(IconsetClass const &);
+  IconsetClass& operator=(IconsetClass const&);
   IconsetClass(void);
-  static void *operator new(size_t);
+  static void* operator new(size_t);
 };
 
 #endif

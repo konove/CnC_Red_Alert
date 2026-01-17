@@ -74,7 +74,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 
-void const *UnitTypeClass::WakeShapes = nullptr;
+void const* UnitTypeClass::WakeShapes = nullptr;
 
 // Visceroid
 static UnitTypeClass const UnitVisceroid(
@@ -1225,7 +1225,7 @@ static UnitTypeClass const UnitSteg(
 **	This is the array of pointers to the static data associated with each
 **	vehicle type.
 */
-UnitTypeClass const *const UnitTypeClass::Pointers[UNIT_COUNT] = {
+UnitTypeClass const* const UnitTypeClass::Pointers[UNIT_COUNT] = {
     &UnitHTank,      //	UNIT_HTANK
     &UnitMTank,      //	UNIT_MTANK
     &UnitLTank,      //	UNIT_LTANK
@@ -1268,7 +1268,7 @@ UnitTypeClass const *const UnitTypeClass::Pointers[UNIT_COUNT] = {
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass::UnitTypeClass(
-    UnitType type, int name, char const *ininame, AnimType exp,
+    UnitType type, int name, char const* ininame, AnimType exp,
     unsigned char level, long pre, bool is_goodie, bool is_leader,
     bool is_eight, bool is_nominal, bool is_transporter, bool is_crushable,
     bool is_crusher, bool is_harvest, bool is_stealthy, bool is_selectable,
@@ -1322,7 +1322,7 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-short const *UnitTypeClass::Occupy_List(bool) const {
+short const* UnitTypeClass::Occupy_List(bool) const {
   static short const _simple[] = {0, REFRESH_EOL};
   static short const _gun[] = {0, -1, 1, REFRESH_EOL};
 
@@ -1348,7 +1348,7 @@ short const *UnitTypeClass::Occupy_List(bool) const {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-UnitType UnitTypeClass::From_Name(char const *name) {
+UnitType UnitTypeClass::From_Name(char const* name) {
   if (name) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(Pointers[classid]->IniName, name) == 0) {
@@ -1382,7 +1382,7 @@ UnitType UnitTypeClass::From_Name(char const *name) {
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType house) const {
   int shape = 0;
-  void const *ptr = Get_Cameo_Data();
+  void const* ptr = Get_Cameo_Data();
   if (!ptr) {
     ptr = Get_Image_Data();
     shape = IsChunkyShape ? 0 : 5;
@@ -1434,11 +1434,11 @@ void UnitTypeClass::Prep_For_Add(void) {
  *=============================================================================================*/
 void UnitTypeClass::One_Time(void) {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    UnitTypeClass const &uclass = As_Reference(index);
+    UnitTypeClass const& uclass = As_Reference(index);
     CCFileClass file;
     int largest;  // Largest dimension of shape (so far).
 
-    void const *ptr;  // Shape pointer and set pointer.
+    void const* ptr;  // Shape pointer and set pointer.
 
     largest = 0;
     if (uclass.IsBuildable) {
@@ -1453,7 +1453,7 @@ void UnitTypeClass::One_Time(void) {
       }
       auto fullname =
           std::filesystem::path(filename).replace_extension(".SHP").string();
-      ((void const *&)uclass.CameoData) =
+      ((void const*&)uclass.CameoData) =
           MixFileClass::Retrieve(fullname.c_str());
     }
 
@@ -1469,7 +1469,7 @@ void UnitTypeClass::One_Time(void) {
       ptr = nullptr;
     }
 
-    ((void const *&)uclass.ImageData) = ptr;
+    ((void const*&)uclass.ImageData) = ptr;
     if (ptr) {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
@@ -1479,7 +1479,7 @@ void UnitTypeClass::One_Time(void) {
       }
     }
 
-    ((int &)uclass.MaxSize) = std::max(largest, 8);
+    ((int&)uclass.MaxSize) = std::max(largest, 8);
   }
 
   /*
@@ -1507,12 +1507,12 @@ void UnitTypeClass::One_Time(void) {
 void UnitTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor()) {
     if (theater != LastTheater) {
-      void const *cameo_ptr;
+      void const* cameo_ptr;
 
       for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-        UnitTypeClass const &uclass = As_Reference(index);
+        UnitTypeClass const& uclass = As_Reference(index);
 
-        ((void const *&)uclass.CameoData) = nullptr;
+        ((void const*&)uclass.CameoData) = nullptr;
 
         if (uclass.IsBuildable) {
           auto fullname =
@@ -1521,7 +1521,7 @@ void UnitTypeClass::Init(TheaterType theater) {
                   .string();
           cameo_ptr = MixFileClass::Retrieve(fullname.c_str());
           if (cameo_ptr) {
-            ((void const *&)uclass.CameoData) = cameo_ptr;
+            ((void const*&)uclass.CameoData) = cameo_ptr;
           }
         }
       }
@@ -1547,7 +1547,7 @@ void UnitTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  UnitClass *unit = new UnitClass(Type, house);
+  UnitClass* unit = new UnitClass(Type, house);
   if (unit) {
     return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
   }
@@ -1570,7 +1570,7 @@ bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 06/07/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *UnitTypeClass::Create_One_Of(HouseClass *house) const {
+ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
   return (new UnitClass(Type, house->Class->House));
 }
 
@@ -1598,12 +1598,12 @@ ObjectClass *UnitTypeClass::Create_One_Of(HouseClass *house) const {
  *                                                                                             *
  * HISTORY: * 12/12/1994 JLB : Created. *
  *=============================================================================================*/
-BuildingClass *UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
+BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                HousesType house) const {
-  BuildingClass *anybuilding = nullptr;
+  BuildingClass* anybuilding = nullptr;
 
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass *building = Buildings.Ptr(index);
+    BuildingClass* building = Buildings.Ptr(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&
@@ -1635,7 +1635,7 @@ BuildingClass *UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-UnitTypeClass const &UnitTypeClass::As_Reference(UnitType type) {
+UnitTypeClass const& UnitTypeClass::As_Reference(UnitType type) {
   return (*Pointers[type]);
 }
 
@@ -1656,7 +1656,7 @@ UnitTypeClass const &UnitTypeClass::As_Reference(UnitType type) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::Dimensions(int &width, int &height) const {
+void UnitTypeClass::Dimensions(int& width, int& height) const {
   if (Type == UNIT_GUNBOAT) {
     width = 46;
     height = 18;

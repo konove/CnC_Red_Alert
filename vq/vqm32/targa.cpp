@@ -48,17 +48,19 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <malloc.h>
-#include <mem.h>
-#include <io.h>
-#include <fcntl.h>
-#include <sys\stat.h>
 #include "targa.h"
 
+#include <fcntl.h>
+#include <io.h>
+#include <malloc.h>
+#include <mem.h>
+#include <sys\stat.h>
+
+#include <cstdio>
+
 /* Private data declerations. */
-static long DecodeImageData(TGAHandle *, char *);
-static void InvertImageData(TGAHeader *, char *);
+static long DecodeImageData(TGAHandle*, char*);
+static void InvertImageData(TGAHeader*, char*);
 
 /****************************************************************************
  *
@@ -83,15 +85,15 @@ static void InvertImageData(TGAHeader *, char *);
  *
  ****************************************************************************/
 
-TGAHandle *OpenTarga(char *name, unsigned short mode) {
-  TGAHandle *tga;
+TGAHandle* OpenTarga(char* name, unsigned short mode) {
+  TGAHandle* tga;
   long size;
   long error = 0;
 
   /* Allocate TGAHandle */
-  if ((tga = (TGAHandle *)malloc(sizeof(TGAHandle))) != NULL) {
+  if ((tga = (TGAHandle*)malloc(sizeof(TGAHandle))) != NULL) {
     /* Initialize TGAHandle structure. */
-    memset((void *)tga, 0, sizeof(TGAHandle));
+    memset((void*)tga, 0, sizeof(TGAHandle));
     tga->mode = mode;
 
     switch (mode) {
@@ -180,7 +182,7 @@ TGAHandle *OpenTarga(char *name, unsigned short mode) {
  *
  ****************************************************************************/
 
-void CloseTarga(TGAHandle *tga) {
+void CloseTarga(TGAHandle* tga) {
   /* Ensure valid handle. */
   if (tga) {
     /* Close the file if it is open. */
@@ -215,8 +217,8 @@ void CloseTarga(TGAHandle *tga) {
  *
  ****************************************************************************/
 
-long LoadTarga(char *name, char *palette, char *image) {
-  TGAHandle *tga;
+long LoadTarga(char* name, char* palette, char* image) {
+  TGAHandle* tga;
   long size;
   long depth;
   long i, n;
@@ -349,12 +351,12 @@ long LoadTarga(char *name, char *palette, char *image) {
  *
  ****************************************************************************/
 
-long SaveTarga(char *name, TGAHeader *tgahd, char *palette, char *image) {
-  TGAHandle *tga;
+long SaveTarga(char* name, TGAHeader* tgahd, char* palette, char* image) {
+  TGAHandle* tga;
   long size;
   long depth;
-  char *temppal;
-  char *ptr;
+  char* temppal;
+  char* ptr;
   long i, n;
   char c;
   long error = 0;
@@ -374,7 +376,7 @@ long SaveTarga(char *name, TGAHeader *tgahd, char *palette, char *image) {
       size = (tgahd->CMapLength * depth);
 
       /* Allocate temporary buffer for palette manipulation. */
-      if ((temppal = (char *)malloc(size)) != NULL) {
+      if ((temppal = (char*)malloc(size)) != NULL) {
         memcpy(temppal, palette, size);
         ptr = temppal;
 
@@ -448,7 +450,7 @@ long SaveTarga(char *name, TGAHeader *tgahd, char *palette, char *image) {
  *
  ****************************************************************************/
 
-void XFlipTarga(TGAHeader *tga, char *image) {
+void XFlipTarga(TGAHeader* tga, char* image) {
   char *ptr, *ptr1;
   long x, y, d;
   char v, v1;
@@ -497,7 +499,7 @@ void XFlipTarga(TGAHeader *tga, char *image) {
  *
  ****************************************************************************/
 
-void YFlipTarga(TGAHeader *tga, char *image) {
+void YFlipTarga(TGAHeader* tga, char* image) {
   char *ptr, *ptr1;
   long x, y;
   char v, v1;
@@ -547,8 +549,8 @@ void YFlipTarga(TGAHeader *tga, char *image) {
  *
  ****************************************************************************/
 
-static long DecodeImageData(TGAHandle *tga, char *image) {
-  char *packet;
+static long DecodeImageData(TGAHandle* tga, char* image) {
+  char* packet;
   unsigned char count;
   unsigned char depth;
   unsigned long pixel_count;
@@ -563,7 +565,7 @@ static long DecodeImageData(TGAHandle *tga, char *image) {
   pixel_count = (tga->header.Width * tga->header.Height);
 
   /* Allocate packet buffer to hold maximum encoded data run. */
-  if ((packet = (char *)malloc(128 * depth)) != NULL) {
+  if ((packet = (char*)malloc(128 * depth)) != NULL) {
     while ((pixel_count > 0) && !error) {
       /* Read count. */
       if (read(tga->fh, &count, 1) == 1) {
@@ -636,7 +638,7 @@ static long DecodeImageData(TGAHandle *tga, char *image) {
  *
  ****************************************************************************/
 
-static void InvertImageData(TGAHeader *tga, char *image) {
+static void InvertImageData(TGAHeader* tga, char* image) {
   long depth;
   long pixel_count;
   long i;

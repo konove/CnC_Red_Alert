@@ -60,12 +60,12 @@ BOOL UseCD;
 BYTE CallingDOSInt;  // Indicate we are performing a DOS function
 BYTE MaxDevice, DefaultDrive;
 BYTE MultiDriveSearch = TRUE;  // Multiple drive search flag
-FileDataType *FileDataPtr = NULL;
+FileDataType* FileDataPtr = NULL;
 FileHandleType FileHandleTable[TABLE_MAX];
 UWORD NumFiles;              // Number of files, except PAK, in file table.
 UWORD NumPAKFiles;           // Number of PAK files in filetable.
-VOID *FileCacheHeap = NULL;  // Pointer to the cache in memory.
+VOID* FileCacheHeap = NULL;  // Pointer to the cache in memory.
 WORD DiskNumber;             // Where file was found (-1 == current directory).
 WORD MaxDirNum = 0;
 
-WORD (*Open_Error)(FileErrorType, BYTE const *) = NULL;
+WORD (*Open_Error)(FileErrorType, BYTE const*) = NULL;

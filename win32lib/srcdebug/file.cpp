@@ -96,15 +96,15 @@
  * HISTORY:                                                                *
  *   11/11/1991 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Open_File(BYTE const *file_name, WORD mode) {
+WORD cdecl Open_File(BYTE const* file_name, WORD mode) {
   WORD file_handle;                 // Westwood file handle.
   WORD handle;                      // DOS file handle.
   UWORD local_mode;                 // DOS access mode number.
   WORD index;                       // FileData index (if available).
   BOOL immediate;                   // Is the file immediately available?
-  FileDataType *filedata;           // Pointer to the current FileData.
-  FileDataType *parent;             // Pointer to the current FileData.
-  FileHandleType *filehandletable;  // Pointer to the current file handle.
+  FileDataType* filedata;           // Pointer to the current FileData.
+  FileDataType* parent;             // Pointer to the current FileData.
+  FileHandleType* filehandletable;  // Pointer to the current file handle.
 
   CallingDOSInt++;
 
@@ -236,8 +236,8 @@ WORD cdecl Open_File(BYTE const *file_name, WORD mode) {
         LONG offset;                // Offset of sub-file start.
         WORD i;                     // Sub-file FileData index.
         BYTE name[FILENAMESIZE];    // Name of sub-file.
-        FileDataType *cur = NULL;   // Current entry in FileData.
-        FileDataType *last = NULL;  // Last entry in FileData.
+        FileDataType* cur = NULL;   // Current entry in FileData.
+        FileDataType* last = NULL;  // Last entry in FileData.
 
 #if (DEBUGPRINT)
         Mono_Printf("Processing packed file '%s'\r",
@@ -436,9 +436,9 @@ VOID cdecl Close_File(WORD handle) {
   WORD index;            // File data table index.
   BOOL flushed = FALSE;  // If file flushed from cache, do change time stamp.
   BOOL stillopen;
-  FileDataType *parent = NULL;
-  FileDataType *filedata = NULL;
-  VOID *memptr = NULL;
+  FileDataType* parent = NULL;
+  FileDataType* filedata = NULL;
+  VOID* memptr = NULL;
 
 #if (DEBUGPRINT)
   Mono_Printf("Close_File(%d)\r", handle);
@@ -505,7 +505,7 @@ VOID cdecl Close_File(WORD handle) {
     //     the file was not flush AND
     //     is not open AND
     //		 its time stamp should be changed by being a FILEF_KEEP|PROIORTY
-    //file.
+    // file.
     //
     if (!flushed && !stillopen &&
         !(filedata->Flag & (FILEF_KEEP | FILEF_PRIORITY))) {
@@ -544,11 +544,11 @@ VOID cdecl Close_File(WORD handle) {
  * HISTORY:                                                                *
  *   11/13/1991 JLB : Created.                                             *
  *=========================================================================*/
-LONG cdecl Read_File(WORD handle, VOID *buf, ULONG bytes) {
+LONG cdecl Read_File(WORD handle, VOID* buf, ULONG bytes) {
   WORD doshandle;          // DOS file handle.
   WORD fileindex;          // File table index.
   LONG bytesread;          // Accumulation of number of bytes read.
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
 
 #if (DEBUGPRINT)
   Mono_Printf("Read_File(%d, %08lx, %ld)\r", handle, buf, bytes);
@@ -636,7 +636,7 @@ LONG cdecl Read_File(WORD handle, VOID *buf, ULONG bytes) {
         */
         // this is a BCC bug
         // (BYTE *)buf += number;
-        buf = (BYTE *)buf + number;
+        buf = (BYTE*)buf + number;
       }
 
     } else {
@@ -648,8 +648,8 @@ LONG cdecl Read_File(WORD handle, VOID *buf, ULONG bytes) {
       /*
       **	Copy the block of the file into the specified buffer.
       */
-      Mem_Copy((VOID *)((LONG)filedata->Ptr + FileHandleTable[handle].Start +
-                        FileHandleTable[handle].Pos),
+      Mem_Copy((VOID*)((LONG)filedata->Ptr + FileHandleTable[handle].Start +
+                       FileHandleTable[handle].Pos),
                buf, bytes);
       bytesread = bytes;
 
@@ -691,11 +691,11 @@ LONG cdecl Read_File(WORD handle, VOID *buf, ULONG bytes) {
  * HISTORY:                                                                *
  *   11/13/1991 JLB : Created.                                             *
  *=========================================================================*/
-LONG cdecl Write_File(WORD handle, VOID const *buf, ULONG bytes) {
+LONG cdecl Write_File(WORD handle, VOID const* buf, ULONG bytes) {
   WORD doshandle;          // DOS specific file handle.
   WORD fileindex;          // FileData table index (if any).
   LONG byteswritten;       // Accumulated number of bytes written.
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
 
 #if (DEBUGPRINT)
   Mono_Printf("Write_File(%d, %08lx, %ld)\r", handle, buf, bytes);
@@ -733,7 +733,7 @@ LONG cdecl Write_File(WORD handle, VOID const *buf, ULONG bytes) {
     **	Write out one block of data.
     */
     outbytes =
-        FILEWRITE(doshandle, (void *)buf, MIN((LONG)bytes, IO_CHUNK_SIZE));
+        FILEWRITE(doshandle, (void*)buf, MIN((LONG)bytes, IO_CHUNK_SIZE));
 
     /*
     **	Reduce the bytes remaining to output counter and adjust the
@@ -761,7 +761,7 @@ LONG cdecl Write_File(WORD handle, VOID const *buf, ULONG bytes) {
     /*
     **	Adjust the source pointer in anticipation of the next block write.
     */
-    buf = (BYTE *)(((LONG)buf) + outbytes);
+    buf = (BYTE*)(((LONG)buf) + outbytes);
   }
 
   /*
@@ -797,7 +797,7 @@ LONG cdecl Write_File(WORD handle, VOID const *buf, ULONG bytes) {
 ULONG cdecl Seek_File(WORD handle, LONG offset, WORD starting) {
   WORD doshandle;          // DOS specific file handle.
   WORD fileindex;          // FileData index (if any).
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
 
 #if (DEBUGPRINT)
   Mono_Printf("Seek_File(%d, %ld, %d)\r", handle, offset, starting);
@@ -932,7 +932,7 @@ ULONG cdecl Seek_File(WORD handle, LONG offset, WORD starting) {
  * HISTORY:                                                                *
  *   11/14/1991 JLB : Created.                                             *
  *=========================================================================*/
-WORD cdecl File_Exists(BYTE const *file_name) {
+WORD cdecl File_Exists(BYTE const* file_name) {
   /*
   **	If the filename is invalid then it errors out.
   */
@@ -978,7 +978,7 @@ WORD cdecl File_Exists(BYTE const *file_name) {
  *   11/22/1991 JLB : Created.                                             *
  *=========================================================================*/
 ULONG cdecl File_Size(WORD handle) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
 
   if (FileHandleTable[handle].Index != ERROR) {
     filedata = &FileDataPtr[FileHandleTable[handle].Index];
@@ -1013,7 +1013,7 @@ ULONG cdecl File_Size(WORD handle) {
  * HISTORY:                                                                *
  *   11/13/1991 JLB : Created.                                             *
  *=========================================================================*/
-BOOL cdecl Is_Handle_Valid(WORD handle, FileErrorType error, BYTE const *name) {
+BOOL cdecl Is_Handle_Valid(WORD handle, FileErrorType error, BYTE const* name) {
   /*
   **	The handle must be valid or else it is an error.
   */

@@ -65,9 +65,9 @@
 #include "td/mouse.h"
 #include "td/msglist.h"
 
-GadgetClass *GScreenClass::Buttons = nullptr;
+GadgetClass* GScreenClass::Buttons = nullptr;
 
-GraphicBufferClass *GScreenClass::ShadowPage = nullptr;
+GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
 
 /***********************************************************************************************
  * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
@@ -262,7 +262,7 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Input(KeyNumType &key, int &x, int &y) {
+void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
   key = Keyboard::Check();
 
   x = Keyboard::Mouse_X();
@@ -279,7 +279,7 @@ void GScreenClass::Input(KeyNumType &key, int &x, int &y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass *oldpage = Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 
     key = Buttons->Input();
 
@@ -309,7 +309,7 @@ void GScreenClass::Input(KeyNumType &key, int &x, int &y) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Add_A_Button(GadgetClass &gadget) {
+void GScreenClass::Add_A_Button(GadgetClass& gadget) {
   /*------------------------------------------------------------------------
   If this gadget is already in the list, remove it before adding it in:
   - If 1st gadget in list, use Remove_A_Button to remove it, to reset the
@@ -349,7 +349,7 @@ void GScreenClass::Add_A_Button(GadgetClass &gadget) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Remove_A_Button(GadgetClass &gadget) {
+void GScreenClass::Remove_A_Button(GadgetClass& gadget) {
   Buttons = gadget.Remove();
 }
 
@@ -379,7 +379,7 @@ void GScreenClass::Render(void) {
 
   if (IsToUpdate || IsToRedraw) {
     // WWMouse->Erase_Mouse(&HidPage, true);
-    GraphicViewPortClass *oldpage = Set_Logic_Page(HidPage);
+    GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
 
     // if (IsToRedraw) {
     //	Hide_Mouse();
@@ -421,7 +421,7 @@ void GScreenClass::Render(void) {
 
 #define MAX_SCREENS_SAVED 30 * 15  // Enough for 30 seconds @ 15 fps
 
-GraphicBufferClass *ScreenList[MAX_SCREENS_SAVED];
+GraphicBufferClass* ScreenList[MAX_SCREENS_SAVED];
 int CurrentScreen = 0;
 bool ScreenRecording = false;
 
@@ -439,7 +439,7 @@ void Add_Current_Screen(void) {
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
         sprintf(filename, "SCRN%04d.PCX", i);
         Write_PCX_File(filename, *ScreenList[i],
-                       (unsigned char *)CurrentPalette);
+                       (unsigned char*)CurrentPalette);
         delete ScreenList[i];
       }
 

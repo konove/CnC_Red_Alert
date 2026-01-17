@@ -1156,7 +1156,7 @@ static TemplateTypeClass const AntHill(TEMPLATE_HILL01, THEATERF_TEMPERATE,
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
 TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
-                                     char const *ininame, int fullname)
+                                     char const* ininame, int fullname)
     : ObjectTypeClass(RTTI_TEMPLATETYPE, int(iconset), false, true, false,
                       false, true, true, false, fullname, ininame),
       Type(iconset),
@@ -1180,7 +1180,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void *TemplateTypeClass::operator new(size_t) throw() {
+void* TemplateTypeClass::operator new(size_t) throw() {
   return (TemplateTypes.Alloc());
 }
 
@@ -1198,8 +1198,8 @@ void *TemplateTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void TemplateTypeClass::operator delete(void *ptr) {
-  TemplateTypes.Free((TemplateTypeClass *)ptr);
+void TemplateTypeClass::operator delete(void* ptr) {
+  TemplateTypes.Free((TemplateTypeClass*)ptr);
 }
 
 static void _Watcom_Ugh_Hack(void) {
@@ -1646,10 +1646,10 @@ void TemplateTypeClass::Init_Heap(void) {
  * HISTORY: * 12/12/1995 JLB : Created. *
  *=============================================================================================*/
 LandType TemplateTypeClass::Land_Type(int icon) const {
-  IconsetClass const *icontrol = (IconsetClass const *)Get_Image_Data();
+  IconsetClass const* icontrol = (IconsetClass const*)Get_Image_Data();
 
   if (icontrol != nullptr) {
-    unsigned char const *map = icontrol->Control_Map();
+    unsigned char const* map = icontrol->Control_Map();
     if (map != nullptr) {
       static LandType _land[16] = {
           LAND_CLEAR, LAND_CLEAR, LAND_CLEAR,
@@ -1689,7 +1689,7 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-TemplateType TemplateTypeClass::From_Name(char const *name) {
+TemplateType TemplateTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
@@ -1718,12 +1718,12 @@ TemplateType TemplateTypeClass::From_Name(char const *name) {
  * HISTORY: * 05/23/1994 JLB : Created. * 12/12/1995 JLB : Optimized for direct
  *access to iconset data.                             *
  *=============================================================================================*/
-short const *TemplateTypeClass::Occupy_List(bool) const {
+short const* TemplateTypeClass::Occupy_List(bool) const {
   static short _occupy[13 * 8 + 5];
-  short *ptr;
+  short* ptr;
 
-  IconsetClass const *iconset = (IconsetClass const *)Get_Image_Data();
-  unsigned char const *map = iconset->Map_Data();
+  IconsetClass const* iconset = (IconsetClass const*)Get_Image_Data();
+  unsigned char const* map = iconset->Map_Data();
 
   ptr = &_occupy[0];
   for (int index = 0; index < Width * Height; index++) {
@@ -1733,7 +1733,7 @@ short const *TemplateTypeClass::Occupy_List(bool) const {
   }
   *ptr = REFRESH_EOL;
 
-  return ((short const *)&_occupy[0]);
+  return ((short const*)&_occupy[0]);
 }
 
 /***********************************************************************************************
@@ -1755,7 +1755,7 @@ short const *TemplateTypeClass::Occupy_List(bool) const {
  *=============================================================================================*/
 void TemplateTypeClass::Init(TheaterType theater) {
   for (TemplateType index = TEMPLATE_FIRST; index < TEMPLATE_COUNT; index++) {
-    TemplateTypeClass &tplate = As_Reference(index);
+    TemplateTypeClass& tplate = As_Reference(index);
 
     tplate.ClearImage();
     if (tplate.Theater & (1 << theater)) {
@@ -1766,7 +1766,7 @@ void TemplateTypeClass::Init(TheaterType theater) {
       // Working loaded iconset pointer.
       auto data = MFCD::RetrieveData(fullname);
       tplate.SetBorrowedImage(data);
-      const void *ptr = data.data();
+      const void* ptr = data.data();
 
       // Register icon set for video memory caching
       Register_Icon_Set(ptr, true);
@@ -1814,8 +1814,8 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   x += WindowList[window][WINDOWX];
   y += WindowList[window][WINDOWY];
 
-  IconsetClass const *iconset = (IconsetClass const *)Get_Image_Data();
-  unsigned char const *map = iconset->Map_Data();
+  IconsetClass const* iconset = (IconsetClass const*)Get_Image_Data();
+  unsigned char const* map = iconset->Map_Data();
 
   for (index = 0; index < w * h; index++) {
     if (map[index] != 0xFF) {
@@ -1824,7 +1824,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
         HidPage.Scale(
             (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
             y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
-            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, (char *)nullptr);
+            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2, (char*)nullptr);
 
       } else {
         HidPage.Blit((*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
@@ -1902,7 +1902,7 @@ bool TemplateTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *TemplateTypeClass::Create_One_Of(HouseClass *) const {
+ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass*) const {
   return (new TemplateClass(Type, -1));
 }
 
@@ -1934,7 +1934,7 @@ void TemplateTypeClass::One_Time(void) {}
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-TemplateTypeClass &TemplateTypeClass::As_Reference(TemplateType type) {
+TemplateTypeClass& TemplateTypeClass::As_Reference(TemplateType type) {
   return (*TemplateTypes.Ptr(type));
 }
 

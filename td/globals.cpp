@@ -146,7 +146,7 @@ char OverridePath[128] = ".";
 *functions *	are used to control access to this list. Do not modify it
 *directly.
 */
-DynamicVectorClass<ObjectClass *> CurrentObject;
+DynamicVectorClass<ObjectClass*> CurrentObject;
 
 /***************************************************************************
 **	This holds the custom version text that is fetched from the version
@@ -238,7 +238,7 @@ bool PlayerAborts;
 **	is played at a time, this buffer is only as big as the largest speech
 **	sample that can be played.
 */
-void *SpeechBuffer;
+void* SpeechBuffer;
 
 /***************************************************************************
 **	This is a running accumulation of the number of ticks that were unused.
@@ -281,12 +281,12 @@ bool GameInFocus;
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MixFileClass *TheaterData = nullptr;
-MixFileClass *TheaterIcons = nullptr;
-MixFileClass *LowTheaterData;
-MixFileClass *MoviesMix = nullptr;
-MixFileClass *GeneralMix = nullptr;
-MixFileClass *ScoreMix = nullptr;
+MixFileClass* TheaterData = nullptr;
+MixFileClass* TheaterIcons = nullptr;
+MixFileClass* LowTheaterData;
+MixFileClass* MoviesMix = nullptr;
+MixFileClass* GeneralMix = nullptr;
+MixFileClass* ScoreMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
@@ -370,7 +370,7 @@ unsigned long ScenarioCRC;
 **	The various tutor and dialog messages are located in the data block
 **	referenced by this pointer.
 */
-char const *SystemStrings;
+char const* SystemStrings;
 
 /***************************************************************************
 **	The game plays as long as this var is true.
@@ -396,32 +396,32 @@ CELL CurrentCell = 0;
 **	pointers to the fonts. If it is NULL, then the font hasn't been loaded
 **	yet.
 */
-void const *Green12FontPtr;      // Green font for pressed in tabs
-void const *Green12GradFontPtr;  // Graduated green font for tabs
-void const *MapFontPtr;          // Standard very small font.
-void const *Font3Ptr;            // Standard very small font.
-void const *Font6Ptr;            // Standard small font.
-void const *Font8Ptr;            // 8 point proportional.
-void const *FontLEDPtr;          // LED fixed point font.
-void const *VCRFontPtr;          // VCR font pointer.
-void const *ScoreFontPtr;        // font for score & map selection screens
-void const *GradFont6Ptr;        // gradient 6 point font pointer.
+void const* Green12FontPtr;      // Green font for pressed in tabs
+void const* Green12GradFontPtr;  // Graduated green font for tabs
+void const* MapFontPtr;          // Standard very small font.
+void const* Font3Ptr;            // Standard very small font.
+void const* Font6Ptr;            // Standard small font.
+void const* Font8Ptr;            // 8 point proportional.
+void const* FontLEDPtr;          // LED fixed point font.
+void const* VCRFontPtr;          // VCR font pointer.
+void const* ScoreFontPtr;        // font for score & map selection screens
+void const* GradFont6Ptr;        // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.
 */
-HouseClass *PlayerPtr;
+HouseClass* PlayerPtr;
 
 /***************************************************************************
 **	Special palettes for MCGA mode goes here. These palette buffers are used
 **	for pictures that do not use the game palette or are used for fading to
 **	black.
 */
-unsigned char *GamePalette;
-unsigned char *BlackPalette;
-unsigned char *WhitePalette;
-unsigned char *OriginalPalette;
-unsigned char *Palette;
+unsigned char* GamePalette;
+unsigned char* BlackPalette;
+unsigned char* WhitePalette;
+unsigned char* OriginalPalette;
+unsigned char* Palette;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are
@@ -435,8 +435,8 @@ QueueClass<EventClass, (MAX_EVENTS * 8)> DoList;
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
-DynamicVectorClass<TriggerClass *> CellTriggers;
-DynamicVectorClass<TriggerClass *> HouseTriggers[HOUSE_COUNT];
+DynamicVectorClass<TriggerClass*> CellTriggers;
+DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
 
 /***************************************************************************
 **	This is an array of waypoints; each waypoint corresponds to a letter of
@@ -487,18 +487,18 @@ NullModemClass NullModem(16,  // number of send entries
                          0x1234);  // Magic number must have each digit unique
                                    // and different from the queue magic number
 
-DynamicVectorClass<PhoneEntryClass *> PhoneBook;
+DynamicVectorClass<PhoneEntryClass*> PhoneBook;
 int CurPhoneIdx;  // current phonebook index, for dialing
 
-DynamicVectorClass<char *> InitStrings;
+DynamicVectorClass<char*> InitStrings;
 
 SerialSettingsType SerialDefaults;  // serial port default settings
 
 ModemGameType ModemGameToPlay;  // type of modem play Dialer, answerer, null
 
-char *DialMethodCheck[DIAL_METHODS] = {"T", "P"};
+char* DialMethodCheck[DIAL_METHODS] = {"T", "P"};
 
-char *CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {"*70,", "70#,", "1170,",
+char* CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {"*70,", "70#,", "1170,",
                                                 "CUSTOM -                "};
 
 /***************************************************************************
@@ -545,7 +545,7 @@ int MPlayerTColors[MAX_MPLAYER_COLORS] = {
 ** descriptions, and another for actual filenames.
 */
 char MPlayerDescriptions[100][40];
-DynamicVectorClass<char *> MPlayerScenarios;
+DynamicVectorClass<char*> MPlayerScenarios;
 DynamicVectorClass<int> MPlayerFilenum;
 
 /***************************************************************************
@@ -647,13 +647,13 @@ int DesiredFrameRate;
 ** These values are used purely for the Mono debug display.  They show the
 ** names of the Global Channel packet types, and the event types.
 */
-char *GlobalPacketNames[] = {"Game?",    "Game!", "Player?", "Player!",
+char* GlobalPacketNames[] = {"Game?",    "Game!", "Player?", "Player!",
                              "Join?",    "Join!", "Reject",  "GameOptions",
                              "Sign Off", "GO!",   "Message", "Ping"};
 
 // yeah, there's 100 empty names here, because the SerialCommandType starts at
 // 100.
-char *SerialPacketNames[] = {
+char* SerialPacketNames[] = {
     "",
     "",
     "",
@@ -771,8 +771,8 @@ long TrapFrame = 0x7fffffff;       // frame to start trapping object values at
 RTTIType TrapObjType = RTTI_NONE;  // type of object to trap
 TrapObjectType TrapObject = {nullptr};  // ptr to object being trapped
 COORDINATE TrapCoord = 0;               // COORD of object to trap
-void *TrapThis = nullptr;               // 'this' ptr of object to trap
-CellClass *TrapCell = nullptr;          // for trapping a cell
+void* TrapThis = nullptr;               // 'this' ptr of object to trap
+CellClass* TrapCell = nullptr;          // for trapping a cell
 int TrapCheckHeap = 0;                  // start checking the Heap
 
 /***************************************************************************
@@ -851,7 +851,7 @@ unsigned short GProductID;  // sender's Product ID
 ** The packet's size is IPX's max size (546), rounded down to accommodate
 ** the max number of events possible.
 */
-char *MetaPacket = nullptr;
+char* MetaPacket = nullptr;
 int MetaSize =
     ((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass);
 
@@ -860,7 +860,7 @@ int MetaSize =
 ** multiplayer games.
 */
 int Seed = 0;
-long *RandSeedPtr;
+long* RandSeedPtr;
 
 /***************************************************************************
 ** If this value is non-zero, use it as the random # seed instead; this should
@@ -904,7 +904,7 @@ GraphicBufferClass HiddenPage;
 GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicBufferClass ModeXBuff;
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
-GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void *)nullptr);
+GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void*)nullptr);
 int SoundOn;
 CountDownTimerClass FrameTimer(BT_SYSTEM, 0L);
 CountDownTimerClass DebugTimer(BT_SYSTEM, 0L);
@@ -938,7 +938,7 @@ SpecialDialogType SpecialDialog = SDLG_NONE;
 /*
 **	List of all games out there, & the address of the game's owner
 */
-DynamicVectorClass<NodeNameType *> Games;
+DynamicVectorClass<NodeNameType*> Games;
 
 /*
 **	List of names & addresses of all the players in the game I'm joining.
@@ -951,9 +951,9 @@ DynamicVectorClass<NodeNameType *> Games;
 *about him; to prevent *	this, a timer restriction is put on the New Game
 *dialog's GO button.
 */
-DynamicVectorClass<NodeNameType *> Players;
+DynamicVectorClass<NodeNameType*> Players;
 
-char *DebugFname;  // for stoopid debugging purposes
+char* DebugFname;  // for stoopid debugging purposes
 int DebugLine;     // for stoopid debugging purposes
 #ifdef DEMO
 int RequiredCD = -2;
@@ -975,14 +975,14 @@ int AreThingiesEnabled = false;
 **
 */
 
-WinTimerClass *WindowsTimer = nullptr;
+WinTimerClass* WindowsTimer = nullptr;
 
 /*
 ** Command line arguments
 **
 **
 */
-char *Argv[20];  // Pointers to command line arguments
+char* Argv[20];  // Pointers to command line arguments
 int Argc;        // Command line argument count
 
 WWKeyboardClass Kbd;
@@ -993,7 +993,7 @@ int ScreenHeight = 200;
 int ScreenWidth = 640;
 int ScreenHeight = 400;
 #endif
-WWMouseClass *WWMouse = nullptr;
+WWMouseClass* WWMouse = nullptr;
 #ifndef PORTABLE
 HANDLE hInstance;
 #endif
@@ -1009,5 +1009,5 @@ TheaterType LastTheater = THEATER_NONE;
 #ifdef PORTABLE
 // extra glue to SDLLIB
 TimerClass TickCount;
-WWKeyboardClass *_Kbd = &Kbd;
+WWKeyboardClass* _Kbd = &Kbd;
 #endif

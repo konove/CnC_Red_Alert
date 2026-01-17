@@ -45,8 +45,9 @@
 
 // #include	"function.h"
 // #include	"ems.h"
-#include <keyboard.h>
 #include "dipthong.h"
+
+#include <keyboard.h>
 
 /***************************************************************************
  * Fixup_Text -- Converts dipthonged foreign text into normal text.        *
@@ -73,9 +74,9 @@
  *   08/13/1993 JLB : Created.                                             *
  *   10/06/1994 JLB : Handles source string in EMS.                        *
  *=========================================================================*/
-void Fixup_Text(char const *source, char *dest) {
+void Fixup_Text(char const* source, char* dest) {
   if (source && dest) {
-    char const *src;
+    char const* src;
     char temp;
 
     src = source;
@@ -112,7 +113,7 @@ void Fixup_Text(char const *source, char *dest) {
  * HISTORY:                                                                *
  *   08/13/1993 JLB : Created.                                             *
  *=========================================================================*/
-int Dip_Text(char const *source, char *dest) {
+int Dip_Text(char const* source, char* dest) {
   unsigned char first,  // First character in pair.
       next;             // Second character in pair.
   int common,           // Common character index.
@@ -192,11 +193,11 @@ int Dip_Text(char const *source, char *dest) {
  *   08/13/1993 JLB : Created.                                             *
  *   10/06/1994 JLB : Handles source string in EMS.                        *
  *=========================================================================*/
-int UnDip_Text(char const *source, char *dest) {
+int UnDip_Text(char const* source, char* dest) {
   int c;       // Source input character.
   int common;  // Common character index.
   int len;     // Length of output string.
-  char const *src;
+  char const* src;
 
   len = 0;  // Presume no translation.
 
@@ -302,13 +303,13 @@ static char InternetTxt[22][40] = {"Internet H2H",
                                    "Connection lost!",
                                    "Resolving address of host..."};
 
-char *Extract_String(void const *data, int string) {
-  unsigned short int const *ptr;
+char* Extract_String(void const* data, int string) {
+  unsigned short int const* ptr;
 
   if (!data || string < 0) return (nullptr);
 
   if (string >= 4567) return (InternetTxt[string - 4567]);
 
-  ptr = (unsigned short int const *)data;
-  return (((char *)data) + ptr[string]);
+  ptr = (unsigned short int const*)data;
+  return (((char*)data) + ptr[string]);
 }

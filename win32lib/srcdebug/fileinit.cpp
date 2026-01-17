@@ -57,6 +57,7 @@
 
 #include <direct.h>
 #include <search.h>
+
 #include <cstring>
 
 /*=========================================================================*/
@@ -64,10 +65,10 @@
 /*=========================================================================*/
 
 PRIVATE FileInitErrorType cdecl Init_File_Cache(ULONG cachesize);
-PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const *filename);
-PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE *cdpath);
+PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const* filename);
+PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE* cdpath);
 PRIVATE FileInitErrorType cdecl Preload_Files(VOID);
-PRIVATE int QSort_Comp_Func(const void *p1, const void *p2);
+PRIVATE int QSort_Comp_Func(const void* p1, const void* p2);
 PRIVATE VOID Sort_FileData_Table(VOID);
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
@@ -90,8 +91,8 @@ PRIVATE VOID Sort_FileData_Table(VOID);
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-FileInitErrorType cdecl WWDOS_Init(ULONG cachesize, BYTE *filedata,
-                                   BYTE *cdpath) {
+FileInitErrorType cdecl WWDOS_Init(ULONG cachesize, BYTE* filedata,
+                                   BYTE* cdpath) {
   //	FileInitErrorType errors;
   unsigned errors;
 
@@ -131,9 +132,9 @@ FileInitErrorType cdecl WWDOS_Init(ULONG cachesize, BYTE *filedata,
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
 VOID cdecl WWDOS_Shutdown(VOID) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
   WORD file_handle;
-  FileHandleType *filehandletable;  // Pointer to the current file handle.
+  FileHandleType* filehandletable;  // Pointer to the current file handle.
 
   // Close all open files.
   filehandletable = FileHandleTable;
@@ -217,10 +218,10 @@ PRIVATE FileInitErrorType cdecl Init_File_Cache(ULONG cachesize) {
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const *filename) {
+PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const* filename) {
   WORD fd;
   ULONG fsize;
-  FileDataType *ptr;
+  FileDataType* ptr;
   WORD index;
   BYTE fname[13];
 
@@ -255,7 +256,7 @@ PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const *filename) {
 
     // Allocate some system memory.
     // Setup the new FileDataPtr and this time.
-    FileDataPtr = ptr = (FileDataType *)Alloc(fsize, MEM_NORMAL);
+    FileDataPtr = ptr = (FileDataType*)Alloc(fsize, MEM_NORMAL);
 
     // Load the file up into  memory.
     Read_File(fd, FileDataPtr, fsize);
@@ -273,10 +274,10 @@ PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const *filename) {
       if (!ptr->Name) break;
 
       // Adjust the name pointer to point the the correct area.
-      ptr->Name = (BYTE *)FileDataPtr + (LONG)ptr->Name;
+      ptr->Name = (BYTE*)FileDataPtr + (LONG)ptr->Name;
 
       // Count up weather it is a PAK file or a normal file.
-      if (!NumFiles && strstr((char *)ptr->Name, (char *)".PAK")) {
+      if (!NumFiles && strstr((char*)ptr->Name, (char*)".PAK")) {
         NumPAKFiles++;
 
         // Mark that it has been processed so that Open_File() will not do it.
@@ -317,8 +318,8 @@ PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const *filename) {
  *   01/14/1993  SB : Created.                                             *
  *   04/19/1994 SKB : Mods for 32 bit library.                             *
  *=========================================================================*/
-PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE *cdpath) {
-  BYTE *ptr;
+PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE* cdpath) {
+  BYTE* ptr;
 
 #if LIB_EXTERNS_RESOLVED
   // NOTE: THIS IS WRONG, THIS IS NOT THE WAY TO GET THE EXE's PATH.
@@ -326,7 +327,7 @@ PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE *cdpath) {
   strcpy(ExecPath, _argv[0]);
 
   // Find the very last '\' on the path.
-  ptr = strrchr((char *)ExecPath, (int)'\\');
+  ptr = strrchr((char*)ExecPath, (int)'\\');
 #else
   ptr = NULL;
 #endif
@@ -406,7 +407,7 @@ PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE *cdpath) {
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
 PRIVATE FileInitErrorType cdecl Preload_Files(VOID) {
-  FileDataType *filedata;  // Working file data table pointer.
+  FileDataType* filedata;  // Working file data table pointer.
   BOOL oldflag;            // Previous file flag.
 
   if (!FileDataPtr) {
@@ -452,8 +453,8 @@ PRIVATE FileInitErrorType cdecl Preload_Files(VOID) {
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
 
-PRIVATE int QSort_Comp_Func(const void *p1, const void *p2) {
-  return (strcmp(((FileDataType *)p1)->Name, ((FileDataType *)p2)->Name));
+PRIVATE int QSort_Comp_Func(const void* p1, const void* p2) {
+  return (strcmp(((FileDataType*)p1)->Name, ((FileDataType*)p2)->Name));
 }
 PRIVATE VOID Sort_FileData_Table(VOID) {
   /*
@@ -465,7 +466,7 @@ PRIVATE VOID Sort_FileData_Table(VOID) {
   */
   NumPAKFiles = 0;
   strupr(FileData[NumPAKFiles].Name);
-  while (strstr((char *)FileData[NumPAKFiles].Name, (char *)".PAK")) {
+  while (strstr((char*)FileData[NumPAKFiles].Name, (char*)".PAK")) {
     strupr(FileData[NumPAKFiles].Name);
     NumPAKFiles++;
   }

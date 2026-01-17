@@ -69,8 +69,8 @@
 #include "td/vector.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags, void const *up,
-                               void const *down)
+                               TextPrintType flags, void const* up,
+                               void const* down)
     : ListClass(id, x, y, w, h, flags, up, down) {
   IsReadOnly = false;
 }
@@ -93,7 +93,7 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *=========================================================================*/
 void CheckListClass::Check_Item(int index, int checked) {
   if (List[index]) {
-    ((char &)List[index][0]) = checked ? CHECK_CHAR : UNCHECK_CHAR;
+    ((char&)List[index][0]) = checked ? CHECK_CHAR : UNCHECK_CHAR;
   }
 }
 
@@ -135,7 +135,7 @@ int CheckListClass::Is_Checked(int index) const {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-int CheckListClass::Action(unsigned flags, KeyNumType &key) {
+int CheckListClass::Action(unsigned flags, KeyNumType& key) {
   int rc;
 
   /*

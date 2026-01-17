@@ -60,12 +60,12 @@
 */
 unsigned short IPXConnClass::Socket;
 int IPXConnClass::ConnectionNum;
-ECBType *IPXConnClass::ListenECB;
-IPXHeaderType *IPXConnClass::ListenHeader;
-char *IPXConnClass::ListenBuf;
-ECBType *IPXConnClass::SendECB;
-IPXHeaderType *IPXConnClass::SendHeader;
-char *IPXConnClass::SendBuf;
+ECBType* IPXConnClass::ListenECB;
+IPXHeaderType* IPXConnClass::ListenHeader;
+char* IPXConnClass::ListenBuf;
+ECBType* IPXConnClass::SendECB;
+IPXHeaderType* IPXConnClass::SendHeader;
+char* IPXConnClass::SendBuf;
 long IPXConnClass::Handler;
 int IPXConnClass::Configured = 0;
 int IPXConnClass::SocketOpen = 0;
@@ -98,8 +98,8 @@ int IPXConnClass::PacketLen;
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
-                           unsigned short magicnum, IPXAddressClass *address,
-                           int id, char *name, int extralen)
+                           unsigned short magicnum, IPXAddressClass* address,
+                           int id, char* name, int extralen)
     : ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
           2,         // retry delta
@@ -222,10 +222,10 @@ void IPXConnClass::Init(void) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void IPXConnClass::Configure(unsigned short socket, int conn_num,
-                             ECBType *listen_ecb, ECBType *send_ecb,
-                             IPXHeaderType *listen_header,
-                             IPXHeaderType *send_header, char *listen_buf,
-                             char *send_buf, long handler_rm_ptr,
+                             ECBType* listen_ecb, ECBType* send_ecb,
+                             IPXHeaderType* listen_header,
+                             IPXHeaderType* send_header, char* listen_buf,
+                             char* send_buf, long handler_rm_ptr,
                              int maxpacketlen) {
   /*------------------------------------------------------------------------
   Save the values passed in
@@ -310,9 +310,9 @@ int IPXConnClass::Start_Listening(void) {
 
 #else  // WIN32
 
-  void *hdr_ptr;
+  void* hdr_ptr;
   unsigned long hdr_val;
-  void *buf_ptr;
+  void* buf_ptr;
   unsigned long buf_val;
   int rc;
 
@@ -340,10 +340,10 @@ int IPXConnClass::Start_Listening(void) {
   Convert protected-mode ptrs to real-mode ptrs
   ------------------------------------------------------------------------*/
   hdr_val = (unsigned long)ListenHeader;
-  hdr_ptr = (void *)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
+  hdr_ptr = (void*)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
 
   buf_val = (unsigned long)ListenBuf;
-  buf_ptr = (void *)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
+  buf_ptr = (void*)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
 
   /*------------------------------------------------------------------------
   Fill in the ECB
@@ -355,7 +355,7 @@ int IPXConnClass::Start_Listening(void) {
   ListenECB->Packet[1].Address = buf_ptr;
   ListenECB->Packet[1].Length = (unsigned short)PacketLen;
 
-  ((long &)ListenECB->Event_Service_Routine) = Handler;
+  ((long&)ListenECB->Event_Service_Routine) = Handler;
 
   /*------------------------------------------------------------------------
   Command IPX to listen
@@ -457,7 +457,7 @@ int IPXConnClass::Stop_Listening(void) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(char *buf, int buflen, void *, int) {
+int IPXConnClass::Send(char* buf, int buflen, void*, int) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/
@@ -613,12 +613,12 @@ void IPXConnClass::Close_Socket(unsigned short /*socket*/) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
+int IPXConnClass::Send_To(char* buf, int buflen, IPXAddressClass* address,
                           NetNodeType immed) {
 #ifdef WINSOCK_IPX
 
   assert(immed == nullptr);
-  PacketTransport->WriteTo((void *)buf, buflen, (void *)address);
+  PacketTransport->WriteTo((void*)buf, buflen, (void*)address);
   return (true);
 
 #else  // WINSOCK_IPX
@@ -631,7 +631,7 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
   unsigned char send_address[6];
 
   if (Winsock.Get_Connected()) {
-    Winsock.Write((void *)buf, buflen);
+    Winsock.Write((void*)buf, buflen);
     return (true);
   }
 
@@ -658,13 +658,13 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
     }
   }
 
-  return (IPX_Send_Packet95(&send_address[0], (unsigned char *)buf, buflen,
-                            (unsigned char *)net, (unsigned char *)node));
+  return (IPX_Send_Packet95(&send_address[0], (unsigned char*)buf, buflen,
+                            (unsigned char*)net, (unsigned char*)node));
 
 #else  // WIN32
 
-  void *hdr_ptr;
-  void *buf_ptr;
+  void* hdr_ptr;
+  void* buf_ptr;
   unsigned long hdr_val;
   unsigned long buf_val;
 
@@ -683,9 +683,9 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
   Convert protected-mode ptrs to real-mode ptrs
   ------------------------------------------------------------------------*/
   hdr_val = (unsigned long)SendHeader;
-  hdr_ptr = (void *)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
+  hdr_ptr = (void*)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
   buf_val = (unsigned long)SendBuf;
-  buf_ptr = (void *)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
+  buf_ptr = (void*)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
 
   /*------------------------------------------------------------------------
   Fill in ECB
@@ -771,7 +771,7 @@ int IPXConnClass::Send_To(char *buf, int buflen, IPXAddressClass *address,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Broadcast(char *buf, int buflen) {
+int IPXConnClass::Broadcast(char* buf, int buflen) {
 #ifdef WINSOCK_IPX
   PacketTransport->Broadcast(buf, buflen);
   return (true);
@@ -781,16 +781,16 @@ int IPXConnClass::Broadcast(char *buf, int buflen) {
 #ifdef WIN32
 
   if (Winsock.Get_Connected()) {
-    Winsock.Write((void *)buf, buflen);
+    Winsock.Write((void*)buf, buflen);
     return (true);
   } else {
-    return (IPX_Broadcast_Packet95((unsigned char *)buf, buflen));
+    return (IPX_Broadcast_Packet95((unsigned char*)buf, buflen));
   }
 
 #else  // WIN32
 
-  void *hdr_ptr;
-  void *buf_ptr;
+  void* hdr_ptr;
+  void* buf_ptr;
   unsigned long hdr_val;
   unsigned long buf_val;
 
@@ -809,9 +809,9 @@ int IPXConnClass::Broadcast(char *buf, int buflen) {
   Convert protected-mode ptrs to real-mode ptrs
   ------------------------------------------------------------------------*/
   hdr_val = (unsigned long)SendHeader;
-  hdr_ptr = (void *)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
+  hdr_ptr = (void*)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
   buf_val = (unsigned long)SendBuf;
-  buf_ptr = (void *)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
+  buf_ptr = (void*)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
 
   /*------------------------------------------------------------------------
   Fill in ECB

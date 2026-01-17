@@ -73,7 +73,7 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *TemplateClass::VTable;
+void* TemplateClass::VTable;
 
 /***********************************************************************************************
  * TemplateClass::Validate -- validates template pointer
@@ -119,8 +119,8 @@ int TemplateClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Read_INI(char *buffer) {
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+void TemplateClass::Read_INI(char* buffer) {
+  char* tbuffer;  // Accumulation buffer of unit IDs.
   int len;        // Size of data in buffer.
   CELL cell;      // Cell of building.
   char buf[128];  // Working string staging buffer.
@@ -158,10 +158,10 @@ void TemplateClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Write_INI(char *buffer) {
+void TemplateClass::Write_INI(char* buffer) {
   char uname[10];
   char buf[127];
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing template data from the ini file.
@@ -178,7 +178,7 @@ void TemplateClass::Write_INI(char *buffer) {
   **	Find all templates and write them to the file.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass *ptr;
+    CellClass* ptr;
 
     ptr = &Map[index];
     if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
@@ -244,12 +244,12 @@ TARGET TemplateClass::As_Target(void) const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TemplateClass::Init(void) {
-  TemplateClass *ptr;
+  TemplateClass* ptr;
 
   Templates.Free_All();
 
   ptr = new TemplateClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -271,15 +271,15 @@ void TemplateClass::Init(void) {
 bool TemplateClass::Mark(MarkType mark) {
   Validate();
   static bool noup = false;
-  void const *iset = Class->Get_Image_Data();
+  void const* iset = Class->Get_Image_Data();
   if (iset && ObjectClass::Mark(mark)) {
-    void *map = Get_Icon_Set_Map(iset);
+    void* map = Get_Icon_Set_Map(iset);
 
     for (int y = 0; y < Class->Height; y++) {
       for (int x = 0; x < Class->Width; x++) {
         CELL cell = Coord_Cell(Coord) + y * MAP_CELL_W + x;
         if (Map.In_Radar(cell)) {
-          CellClass *cellptr = &Map[cell];
+          CellClass* cellptr = &Map[cell];
           int number = y * Class->Width + x;
 
           /*
@@ -287,7 +287,7 @@ bool TemplateClass::Mark(MarkType mark) {
           *no real *	icon is associated with this logical position, then
           *don't do any action *	since none is required.
           */
-          char *mapptr = (char *)map;
+          char* mapptr = (char*)map;
           bool real = (mapptr[number] != -1);
 
           if (real) {
@@ -353,10 +353,10 @@ bool TemplateClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void *TemplateClass::operator new(size_t) throw() {
-  void *ptr = Templates.Allocate();
+void* TemplateClass::operator new(size_t) throw() {
+  void* ptr = Templates.Allocate();
   if (ptr) {
-    ((TemplateClass *)ptr)->IsActive = true;
+    ((TemplateClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -375,11 +375,11 @@ void *TemplateClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::operator delete(void *ptr) {
+void TemplateClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TemplateClass *)ptr)->IsActive = false;
+    ((TemplateClass*)ptr)->IsActive = false;
   }
-  Templates.Free((TemplateClass *)ptr);
+  Templates.Free((TemplateClass*)ptr);
 }
 
 /***********************************************************************************************

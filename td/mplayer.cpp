@@ -87,7 +87,7 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 
-static void Garble_Message(char *buf);
+static void Garble_Message(char* buf);
 
 int Choose_Internet_Game(void);
 int Get_Internet_Host_Or_Join(void);
@@ -178,12 +178,12 @@ GameType Select_MPlayer_Game(void) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS];
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   //
   // If neither IPX or winsock are active then do only the modem serial dialog
@@ -465,7 +465,7 @@ GameType Select_MPlayer_Game(void) {
               return (GAME_NORMAL);
             }
 
-            SerialSettingsType *settings;
+            SerialSettingsType* settings;
             settings = &SerialDefaults;
             Init_Null_Modem(settings);
             if (Server) {
@@ -518,12 +518,12 @@ GameType Select_MPlayer_Game(void) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_MultiPlayer_Settings(void) {
-  char *buffer;            // INI staging buffer pointer.
-  char *tbuffer;           // Accumulation buffer of trigger IDs.
+  char* buffer;            // INI staging buffer pointer.
+  char* tbuffer;           // Accumulation buffer of trigger IDs.
   int len;                 // Length of data in buffer.
-  char *tokenptr;          // ptr to token
-  PhoneEntryClass *phone;  // a phone book entry
-  char *entry;             // a phone book entry
+  char* tokenptr;          // ptr to token
+  PhoneEntryClass* phone;  // a phone book entry
+  char* entry;             // a phone book entry
   char buf[128];           // buffer for parsing INI entry
   int i;
   CELL cell;
@@ -534,7 +534,7 @@ void Read_MultiPlayer_Settings(void) {
   the HidPage may be needed for various uncompressions during the INI
   parsing.)
   ------------------------------------------------------------------------*/
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   /*------------------------------------------------------------------------
@@ -875,7 +875,7 @@ void Read_MultiPlayer_Settings(void) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Write_MultiPlayer_Settings(void) {
-  char *buffer;  // INI staging buffer pointer.
+  char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
   int i;
   char entrytext[4];
@@ -885,7 +885,7 @@ void Write_MultiPlayer_Settings(void) {
   Get a working pointer to the INI staging buffer. Make sure that the buffer
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   file.Set_Name("CONQUER.INI");
@@ -995,7 +995,7 @@ void Write_MultiPlayer_Settings(void) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_Scenario_Descriptions(void) {
-  char *buffer;  // INI staging buffer pointer.
+  char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
   int i;
   char fname[20];
@@ -1030,7 +1030,7 @@ void Read_Scenario_Descriptions(void) {
     Fetch working pointer to the INI staging buffer. Make sure that the
     buffer is cleared out before proceeding.
     .....................................................................*/
-    buffer = (char *)_ShapeBuffer;
+    buffer = (char*)_ShapeBuffer;
     memset(buffer, '\0', _ShapeBufferSize);
 
     /*.....................................................................
@@ -1108,7 +1108,7 @@ void Computer_Message(void) {
   int color;
   char txt[160];
   HousesType house;
-  HouseClass *ptr;
+  HouseClass* ptr;
 
   /*------------------------------------------------------------------------
   Find the computer house that the message will be from
@@ -1173,12 +1173,12 @@ void Computer_Message(void) {
  * HISTORY:                                                                *
  *   06/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Garble_Message(char *buf) {
+static void Garble_Message(char* buf) {
   char txt[80];
   char punct[20];   // for punctuation
-  char *p;          // working ptr
+  char* p;          // working ptr
   int numwords;     // # words in the phrase
-  char *words[40];  // ptrs to various words in the phrase
+  char* words[40];  // ptrs to various words in the phrase
   int i, j;
 
   /*------------------------------------------------------------------------
@@ -1307,7 +1307,7 @@ int Surrender_Dialog(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass okbtn(
       BUTTON_OK, TXT_OK,

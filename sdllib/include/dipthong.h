@@ -18,6 +18,6 @@
 #ifndef CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
 #define CNC_RED_ALERT_SDLLIB_DIPTHONG_H_
 
-char *Extract_String(void const *data, int string);
+char* Extract_String(void const* data, int string);
 
 #endif  // CNC_RED_ALERT_SDLLIB_DIPTHONG_H_

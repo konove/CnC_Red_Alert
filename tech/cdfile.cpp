@@ -58,7 +58,7 @@ std::string CDFileClass::raw_path_;
 int CDFileClass::current_cd_drive_ = 0;
 int CDFileClass::last_cd_drive_ = 0;
 
-CDFileClass::CDFileClass(char const *filename) : is_disabled_(false) {
+CDFileClass::CDFileClass(char const* filename) : is_disabled_(false) {
   CDFileClass::Set_Name(filename);
 }
 
@@ -200,7 +200,7 @@ int CDFileClass::Process_Path_Tokens(std::string_view paths) {
  *                                                                                             *
  * HISTORY: * 5/22/96 10:12AM ST : Created *
  *=============================================================================================*/
-void CDFileClass::Add_Search_Drive(const std::string &path) {
+void CDFileClass::Add_Search_Drive(const std::string& path) {
   search_paths_.push_back(path);
 }
 
@@ -261,7 +261,7 @@ void CDFileClass::Clear_Search_Drives() { search_paths_.clear(); }
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-char const *CDFileClass::Set_Name(char const *filename) {
+char const* CDFileClass::Set_Name(char const* filename) {
   // Try to find the file in the current directory first.
   // This preserves the optimization of checking the local filesystem before
   // iterating through the CD/Network search paths.
@@ -275,7 +275,7 @@ char const *CDFileClass::Set_Name(char const *filename) {
   }
 
   // Iterate through all registered search paths.
-  for (const auto &base_path : search_paths_) {
+  for (const auto& base_path : search_paths_) {
     // Construct the full path.
     // Note: Add_Search_Drive guarantees base_path ends with a path separator,
     // so we can safely concatenate directly.
@@ -320,7 +320,7 @@ char const *CDFileClass::Set_Name(char const *filename) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int CDFileClass::Open(char const *filename, int rights) {
+int CDFileClass::Open(char const* filename, int rights) {
   CDFileClass::Close();
 
   /*

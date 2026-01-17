@@ -121,12 +121,12 @@
 #include "sdllib/include/modemreg.h"
 #include "sdllib/include/wincomm.h"
 
-ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
+ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 #endif                                             // WIN32
 
-extern bool Is_Mission_126x126(char *file_name);
-extern bool Is_Mission_Counterstrike(char *file_name);
-extern bool Is_Mission_Aftermath(char *file_name);
+extern bool Is_Mission_126x126(char* file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
+extern bool Is_Mission_Aftermath(char* file_name);
 
 // #include "WolDebug.h"
 
@@ -138,7 +138,7 @@ extern bool Is_Mission_Aftermath(char *file_name);
 #define PACKET_CANCEL_TIMEOUT 900
 
 // extern char const *ForMisStr[];
-extern char const *EngMisStr[];
+extern char const* EngMisStr[];
 
 //
 // how much time (ticks) to go by before sending another packet
@@ -148,16 +148,16 @@ extern char const *EngMisStr[];
 #define PACKET_REDRAW_TIME 60
 
 static int Reconnect_Null_Modem(void);
-static int Com_Settings_Dialog(SerialSettingsType *settings);
+static int Com_Settings_Dialog(SerialSettingsType* settings);
 static int Phone_Dialog(void);
-static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
-                                      char *buf, int *index);
-static int Init_String_Compare(const void *p1, const void *p2);
-static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf);
-static int Phone_Compare(const void *p1, const void *p2);
-static int Edit_Phone_Dialog(PhoneEntryClass *phone);
-static bool Dial_Modem(SerialSettingsType *settings, bool reconnect);
-static bool Answer_Modem(SerialSettingsType *settings, bool reconnect);
+static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
+                                      char* buf, int* index);
+static int Init_String_Compare(const void* p1, const void* p2);
+static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf);
+static int Phone_Compare(const void* p1, const void* p2);
+static int Edit_Phone_Dialog(PhoneEntryClass* phone);
+static bool Dial_Modem(SerialSettingsType* settings, bool reconnect);
+static bool Answer_Modem(SerialSettingsType* settings, bool reconnect);
 static void Modem_Echo(char c);
 
 static SerialPacketType SendPacket;
@@ -166,10 +166,10 @@ char TheirName[MPLAYER_NAME_MAX];
 PlayerColorType TheirColor;
 HousesType TheirHouse;
 static std::string DialString;
-static SerialSettingsType *DialSettings;
+static SerialSettingsType* DialSettings;
 
-bool Force_Scenario_Available(const char *szName);
-bool bSpecialAftermathScenario(const char *szScenarioDescription);
+bool Force_Scenario_Available(const char* szName);
+bool bSpecialAftermathScenario(const char* szScenarioDescription);
 
 #define PCOLOR_BROWN PCOLOR_GREY
 
@@ -194,7 +194,7 @@ bool bSpecialAftermathScenario(const char *szScenarioDescription);
  *   04/29/1995 BRR : Created.                                             *
  *   8/2/96      ST : Win32 support added                                  *
  *=========================================================================*/
-int Init_Null_Modem(SerialSettingsType *settings) {
+int Init_Null_Modem(SerialSettingsType* settings) {
 #ifdef WIN32
   if (NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
                      settings->Baud, 0, 8, 1, settings->HardwareFlowControl)) {
@@ -328,12 +328,12 @@ int Test_Null_Modem(void) {
 
   int x, y, width, height;  // dialog dimensions
   char buffer[80 * 3];
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   ** Buttons
   */
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -401,7 +401,7 @@ int Test_Null_Modem(void) {
   /*
   ** Send hangup command
   */
-  SerialPort->Write_To_Serial_Port((unsigned char *)"ATH\r", strlen("ATH\r"));
+  SerialPort->Write_To_Serial_Port((unsigned char*)"ATH\r", strlen("ATH\r"));
   CountDownTimerClass time;
   time.Set(2 * 60);
   while (time.Time()) {
@@ -666,7 +666,7 @@ static int Reconnect_Null_Modem(void) {
   unsigned long starttime;
   unsigned long lastmsgtime;
   int packetlen;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   int x, y, width, height;  // dialog dimensions
   char buffer[80 * 3];
@@ -674,7 +674,7 @@ static int Reconnect_Null_Modem(void) {
   /*
   ** Buttons
   */
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -848,7 +848,7 @@ static int Reconnect_Null_Modem(void) {
  *=============================================================================================*/
 void Destroy_Null_Connection(int id, int error) {
   int i;
-  HouseClass *housep;
+  HouseClass* housep;
   char txt[80];
 
   if (Session.NumPlayers == 1) {
@@ -1020,16 +1020,16 @@ GameType Select_Serial_Dialog(void) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS];
 
-  SerialSettingsType *settings;
+  SerialSettingsType* settings;
   bool selectsettings = false;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   ** Buttons
   */
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   TextButtonClass dialbtn(BUTTON_DIAL, TXT_DIAL_MODEM, TPF_BUTTON, d_dial_x,
                           d_dial_y, d_dial_w, d_dial_h);
@@ -1388,7 +1388,7 @@ GameType Select_Serial_Dialog(void) {
  *                                                                                             *
  * HISTORY: * 12/16/96 2:29PM ST : Created *
  *=============================================================================================*/
-void Advanced_Modem_Settings(SerialSettingsType *settings) {
+void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1449,7 +1449,7 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
   char correction_text[16];
   char flowcontrol_text[16];
 
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   ** Initialise the button text
@@ -1499,7 +1499,7 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   commands = &okbutton;
   defaultbutton.Add_Tail(*commands);
@@ -1685,7 +1685,7 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Com_Settings_Dialog(SerialSettingsType *settings) {
+static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Dialog & button dimensions
   */
@@ -1854,7 +1854,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
 
 #ifndef WIN32  // No IRQ dialog in Win version
-  static char const *irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]",
+  static char const* irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]",
                                    "5", "CUSTOM - ??"};
 
   static int _irqidx[4] = {2, 1, 2, 1};
@@ -1862,14 +1862,14 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #endif  // WIN32
 
 #ifdef WIN32
-  static char const *baudname[5] = {
+  static char const* baudname[5] = {
       "14400", "19200", "28800", "38400", "57600",
   };
 
   static char modemnames[10][MODEM_NAME_MAX];
 
 #else   // WIN32
-  static char const *baudname[5] = {"9600", "14400", "19200", "28800", "38400"};
+  static char const* baudname[5] = {"9600", "14400", "19200", "28800", "38400"};
 #endif  // WIN32
   /*
   ** Dialog variables
@@ -1877,9 +1877,9 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  char *item;  // general-purpose string
-  char *temp;  // general-purpose string
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  char* item;  // general-purpose string
+  char* temp;  // general-purpose string
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   char portbuf[PORTBUF_MAX] = {0};          // buffer for port
   char baudbuf[BAUDBUF_MAX] = {0};          // buffer for baud
@@ -1904,7 +1904,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   /*
   ** Buttons
   */
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX, TPF_TEXT, d_port_x,
                      d_port_y, d_port_w, d_port_h, EditClass::ALPHANUMERIC);
@@ -2364,7 +2364,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #endif  // WIN32
 
       case (BUTTON_PORT | KN_BUTTON):
-        item = (char *)portlist.Current_Item();
+        item = (char*)portlist.Current_Item();
         if (port_index < 4) {
           temp = strchr(item, ' ');
           if (!temp) {
@@ -2471,7 +2471,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_PORTLIST | KN_BUTTON):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
-          item = (char *)portlist.Current_Item();
+          item = (char*)portlist.Current_Item();
 #ifndef PORTABLE
           if (port_index < 4) {
             temp = strchr(item, ' ');
@@ -2484,7 +2484,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #ifndef WIN32
             irq_index = _irqidx[port_index];
             irqlist.Set_Selected_Index(irq_index);
-            item = (char *)irqlist.Current_Item();
+            item = (char*)irqlist.Current_Item();
             temp = strchr(item, ' ');
             if (!temp) {
               port::SafeCopy(irqbuf, item, 2);
@@ -2530,7 +2530,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 
 #ifndef WIN32
       case (BUTTON_IRQ | KN_BUTTON):
-        item = (char *)irqlist.Current_Item();
+        item = (char*)irqlist.Current_Item();
         if (irq_index < 4) {
           temp = strchr(item, ' ');
           if (!temp) {
@@ -2559,7 +2559,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_IRQLIST | KN_BUTTON):
         if (irqlist.Current_Index() != irq_index) {
           irq_index = irqlist.Current_Index();
-          item = (char *)irqlist.Current_Item();
+          item = (char*)irqlist.Current_Item();
           if (irq_index < 4) {
             temp = strchr(item, ' ');
             if (!temp) {
@@ -2592,7 +2592,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         break;
 #endif  // WIN32
       case (BUTTON_BAUD | KN_BUTTON):
-        item = (char *)baudlist.Current_Item();
+        item = (char*)baudlist.Current_Item();
         port::SafeCopy(baudbuf, item);
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
@@ -2603,7 +2603,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_BAUDLIST | KN_BUTTON):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
-          item = (char *)baudlist.Current_Item();
+          item = (char*)baudlist.Current_Item();
           port::SafeCopy(baudbuf, item, BAUDBUF_MAX);
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
@@ -2626,7 +2626,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_INITSTRLIST | KN_BUTTON):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
-          item = (char *)initstrlist.Current_Item();
+          item = (char*)initstrlist.Current_Item();
           port::SafeCopy(initstrbuf, item);
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
@@ -2678,7 +2678,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         break;
 
       case (BUTTON_CWAITSTR | KN_BUTTON):
-        item = (char *)cwaitstrlist.Current_Item();
+        item = (char*)cwaitstrlist.Current_Item();
         if (cwaitstr_index < 3) {
         } else {
           temp = strchr(item, '-');
@@ -2695,7 +2695,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_CWAITSTRLIST | KN_BUTTON):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
-          item = (char *)cwaitstrlist.Current_Item();
+          item = (char*)cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
             port::SafeCopy(cwaitstrbuf, item);
             cwaitstr_edt.Clear_Focus();
@@ -2889,10 +2889,10 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
  * HISTORY:                                                                *
  *   06/08/1995 DRD : Created.                                             *
  *=========================================================================*/
-static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
-                                      char *buf, int *index) {
+static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
+                                      char* buf, int* index) {
   int i, curidx;
-  char *item;
+  char* item;
 
   curidx = *index;
 
@@ -2900,7 +2900,7 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
   Clear the list
   ........................................................................*/
   while (list->Count()) {
-    item = (char *)(list->Get_Item(0));
+    item = (char*)(list->Get_Item(0));
     list->Remove_Item(item);
     delete[] item;
   }
@@ -2908,8 +2908,8 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
   /*
   ** Now sort the init string list by name then number
   */
-  qsort((void *)(&Session.InitStrings[0]), Session.InitStrings.Count(),
-        sizeof(char *), Init_String_Compare);
+  qsort((void*)(&Session.InitStrings[0]), Session.InitStrings.Count(),
+        sizeof(char*), Init_String_Compare);
 
   /*........................................................................
   Build the list
@@ -2961,8 +2961,8 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
  * HISTORY:                                                                *
  *   06/08/1995 DRD : Created.                                             *
  *=========================================================================*/
-static int Init_String_Compare(const void *p1, const void *p2) {
-  return (strcmp(*((char **)p1), *((char **)p2)));
+static int Init_String_Compare(const void* p1, const void* p2) {
+  return (strcmp(*((char**)p1), *((char**)p2)));
 }
 
 /***********************************************************************************************
@@ -3176,14 +3176,14 @@ int Com_Scenario_Dialog(bool skirmish) {
   int packetlen;
   static bool first_time = true;
   bool gameoptions = Session.Type == GAME_SKIRMISH;
-  EventClass *event;                 // event ptr
+  EventClass* event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
 
   CCFileClass loadfile("SAVEGAME.NET");
   bool load_game = false;  // 1 = load a saved game
-  NodeNameType *who;       // node to add to Players
-  char *item;              // for filling in lists
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  NodeNameType* who;       // node to add to Players
+  char* item;              // for filling in lists
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
 
   Set_Logic_Page(SeenBuff);
@@ -3196,7 +3196,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
@@ -3432,10 +3432,10 @@ int Com_Scenario_Dialog(bool skirmish) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
         if (!((Is_Mission_Counterstrike(
-                   (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                   (char*)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Counterstrike_Installed()) ||
               (Is_Mission_Aftermath(
-                   (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                   (char*)(Session.Scenarios[i]->Get_Filename())) &&
                !Is_Aftermath_Installed())))
 #if defined(GERMAN) || defined(FRENCH)
           scenariolist.Add_Item(EngMisStr[j + 1]);
@@ -3451,10 +3451,10 @@ int Com_Scenario_Dialog(bool skirmish) {
       // it's available to us.
       if (!Session.Scenarios[i]->Get_Official() ||
           !((Is_Mission_Counterstrike(
-                 (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                 (char*)(Session.Scenarios[i]->Get_Filename())) &&
              !Is_Counterstrike_Installed()) ||
             (Is_Mission_Aftermath(
-                 (char *)(Session.Scenarios[i]->Get_Filename())) &&
+                 (char*)(Session.Scenarios[i]->Get_Filename())) &&
              !Is_Aftermath_Installed())))
         scenariolist.Add_Item(Session.Scenarios[i]->Description());
     }
@@ -4170,7 +4170,7 @@ oh_dear_its_a_label:
           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
       port::SafeCopy(
-          reinterpret_cast<char *>(SendPacket.ScenarioInfo.FileDigest),
+          reinterpret_cast<char*>(SendPacket.ScenarioInfo.FileDigest),
           Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
           sizeof(SendPacket.ScenarioInfo.FileDigest));
       SendPacket.ScenarioInfo.OfficialScenario =
@@ -4184,7 +4184,7 @@ oh_dear_its_a_label:
       // Keep the player list up to date
       //..................................................................
       if (playerlist.Count()) {
-        item = (char *)playerlist.Get_Item(0);
+        item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
         if (Session.House == HOUSE_GOOD) {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -4249,7 +4249,7 @@ oh_dear_its_a_label:
         break;
       }
 
-      event = (EventClass *)&ReceivePacket;
+      event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount;
@@ -4360,7 +4360,7 @@ oh_dear_its_a_label:
             // our names & colors.  Do this every time we receive an
             // options packet.
             //.........................................................
-            item = (char *)playerlist.Get_Item(0);
+            item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
             if (Session.House == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -4378,7 +4378,7 @@ oh_dear_its_a_label:
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.ColorIdx];
 
-            item = (char *)playerlist.Get_Item(1);
+            item = (char*)playerlist.Get_Item(1);
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
@@ -4705,7 +4705,7 @@ oh_dear_its_a_label:
   Clean up the list boxes
   ------------------------------------------------------------------------*/
   while (playerlist.Count() > 0) {
-    item = (char *)playerlist.Get_Item(0);
+    item = (char*)playerlist.Get_Item(0);
     delete[] item;
     playerlist.Remove_Item(item);
   }
@@ -4760,8 +4760,8 @@ oh_dear_its_a_label:
  *                                                                                             *
  * HISTORY: * 8/23/96 12:36PM ST : Created *
  *=============================================================================================*/
-bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
-                         char *digest, bool official) {
+bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
+                         char* digest, bool official) {
   // FILE *fp;
   // fp = fopen("findscen.txt","wt");
   // debugprint("looking for local scenario: description = %s, name=%s,
@@ -4813,7 +4813,7 @@ bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
           *success.
           */
           if (Is_Mission_Aftermath(
-                  (char *)Session.Scenarios[index]->Get_Filename())) {
+                  (char*)Session.Scenarios[index]->Get_Filename())) {
             // debugprint("a 1match!\n");
             port::SafeCopy(filename, Session.Scenarios[index]->Get_Filename(),
                            _MAX_FNAME + _MAX_EXT + 1);
@@ -5052,13 +5052,13 @@ int Com_Show_Scenario_Dialog(void) {
   unsigned long transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
-  EventClass *event;                 // event ptr
+  EventClass* event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
   bool load_game = false;            // 1 = load saved game
-  NodeNameType *who;                 // node to add to Players
-  char *item;                        // for filling in lists
-  char *p;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  NodeNameType* who;                 // node to add to Players
+  char* item;                        // for filling in lists
+  char* p;
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   Session.Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
   bool messages_have_focus = true;
@@ -5067,7 +5067,7 @@ int Com_Show_Scenario_Dialog(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX, TPF_TEXT, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
@@ -5412,7 +5412,7 @@ int Com_Show_Scenario_Dialog(void) {
             //	d_dialog_x + d_dialog_w - 16*RESFACTOR, d_scenario_y + d_txt6_h,
             // BLACK);
 
-            p = (char *)Text_String(TXT_SCENARIO_COLON);
+            p = (char*)Text_String(TXT_SCENARIO_COLON);
             if (Session.Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
               //%s",p, Session.Options.ScenarioDescription);
@@ -5563,7 +5563,7 @@ int Com_Show_Scenario_Dialog(void) {
                     Get_Mouse_Y() >= d_options_y &&
                     Get_Mouse_Y() <= d_options_y + d_options_h)) {
           Session.Messages.Add_Message(
-              nullptr, 0, (char *)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+              nullptr, 0, (char*)Text_String(TXT_ONLY_HOST_CAN_MODIFY),
               PCOLOR_BROWN, TPF_TEXT, 1200);
           Sound_Effect(VOC_SYS_ERROR);
           if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
@@ -5729,7 +5729,7 @@ int Com_Show_Scenario_Dialog(void) {
       // Keep the player list up to date
       //..................................................................
       if (playerlist.Count()) {
-        item = (char *)playerlist.Get_Item(0);
+        item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
         if (Session.House == HOUSE_GOOD) {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -5794,7 +5794,7 @@ int Com_Show_Scenario_Dialog(void) {
         break;
       }
 
-      event = (EventClass *)&ReceivePacket;
+      event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount;
@@ -5926,10 +5926,10 @@ int Com_Show_Scenario_Dialog(void) {
                            ReceivePacket.ScenarioInfo.ShortFileName);
 #ifdef WOLAPI_INTEGRATION
             port::SafeCopy(Session.ScenarioDigest,
-                           (char *)ReceivePacket.ScenarioInfo.FileDigest);
+                           (char*)ReceivePacket.ScenarioInfo.FileDigest);
 #else
             port::SafeCopy(Session.ScenarioDigest,
-                           (char *)ReceivePacket.ScenarioInfo.FileDigest);
+                           (char*)ReceivePacket.ScenarioInfo.FileDigest);
 #endif
             Session.ScenarioIsOfficial =
                 ReceivePacket.ScenarioInfo.OfficialScenario;
@@ -6020,9 +6020,9 @@ int Com_Show_Scenario_Dialog(void) {
             // greatest copy of our names & colors.  Do this every time
             // we receive an options packet.
             //.........................................................
-            item = (char *)gamelist.Get_Item(0);
+            item = (char*)gamelist.Get_Item(0);
             sprintf(item, Text_String(TXT_THATGUYS_GAME), TheirName);
-            item = (char *)playerlist.Get_Item(0);
+            item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
             if (Session.House == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
@@ -6041,7 +6041,7 @@ int Com_Show_Scenario_Dialog(void) {
                                  ? PCOLOR_REALLY_BLUE
                                  : Session.ColorIdx];
 
-            item = (char *)playerlist.Get_Item(1);
+            item = (char*)playerlist.Get_Item(1);
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
@@ -6123,7 +6123,7 @@ int Com_Show_Scenario_Dialog(void) {
                     ** We should have the scenario but the wrong disk is in.
                     ** Tell the host that I am ready to go anyway.
                     */
-                    memset((void *)&SendPacket, 0, sizeof(SendPacket));
+                    memset((void*)&SendPacket, 0, sizeof(SendPacket));
                     SendPacket.Command = SERIAL_READY_TO_GO;
                     NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
@@ -6168,7 +6168,7 @@ int Com_Show_Scenario_Dialog(void) {
                 ** We have the scenario. Tell the host that I am ready to go.
                 */
                 if (!ready_packet_was_sent) {
-                  memset((void *)&SendPacket, 0, sizeof(SendPacket));
+                  memset((void*)&SendPacket, 0, sizeof(SendPacket));
                   SendPacket.Command = SERIAL_READY_TO_GO;
                   NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
                   starttime = TickCount;
@@ -6199,7 +6199,7 @@ int Com_Show_Scenario_Dialog(void) {
               /*
               ** Make sure we respond to the host in a load game
               */
-              memset((void *)&SendPacket, 0, sizeof(SendPacket));
+              memset((void*)&SendPacket, 0, sizeof(SendPacket));
               SendPacket.Command = SERIAL_READY_TO_GO;
               NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
               starttime = TickCount;
@@ -6393,12 +6393,12 @@ int Com_Show_Scenario_Dialog(void) {
   //		optionlist.Remove_Item(item);
   //	}
   while (gamelist.Count() > 0) {
-    item = (char *)gamelist.Get_Item(0);
+    item = (char*)gamelist.Get_Item(0);
     delete[] item;
     gamelist.Remove_Item(item);
   }
   while (playerlist.Count() > 0) {
-    item = (char *)playerlist.Get_Item(0);
+    item = (char*)playerlist.Get_Item(0);
     delete[] item;
     playerlist.Remove_Item(item);
   }
@@ -6542,15 +6542,15 @@ static int Phone_Dialog(void) {
   int rc;
   int i;
   int tabs[] = {123 * RESFACTOR, 207 * RESFACTOR};  // tabs for list box
-  char *item;                // for removing items from list box
-  PhoneEntryClass *p_entry;  // for creating / editing phonebook entries
+  char* item;                // for removing items from list box
+  PhoneEntryClass* p_entry;  // for creating / editing phonebook entries
   bool changed = false;      // 1 = save changes to INI file
   bool firsttime = false;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   ListClass phonelist(BUTTON_PHONELIST, d_phonelist_x, d_phonelist_y,
                       d_phonelist_w, d_phonelist_h, TPF_TEXT,
@@ -6880,7 +6880,7 @@ static int Phone_Dialog(void) {
   Clear the list box
   ------------------------------------------------------------------------*/
   while (phonelist.Count()) {
-    item = (char *)phonelist.Get_Item(0);
+    item = (char*)phonelist.Get_Item(0);
     phonelist.Remove_Item(item);
     delete[] item;
   }
@@ -6913,9 +6913,9 @@ static int Phone_Dialog(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
+static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   int i;
-  char *item;
+  char* item;
   char phonename[21];
   char phonenum[15];
 
@@ -6923,7 +6923,7 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
   Clear the list
   ........................................................................*/
   while (list->Count()) {
-    item = (char *)(list->Get_Item(0));
+    item = (char*)(list->Get_Item(0));
     list->Remove_Item(item);
     delete[] item;
   }
@@ -6931,8 +6931,8 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
   /*
   ** Now sort the phone list by name then number
   */
-  qsort((void *)(&Session.PhoneBook[0]), Session.PhoneBook.Count(),
-        sizeof(class PhoneEntryClass *), Phone_Compare);
+  qsort((void*)(&Session.PhoneBook[0]), Session.PhoneBook.Count(),
+        sizeof(class PhoneEntryClass*), Phone_Compare);
 
   /*........................................................................
   Build the list
@@ -7008,12 +7008,12 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
  * HISTORY:                                                                *
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
-static int Phone_Compare(const void *p1, const void *p2) {
+static int Phone_Compare(const void* p1, const void* p2) {
   class PhoneEntryClass *pe1, *pe2;
   int result;
 
-  pe1 = *((class PhoneEntryClass **)p1);
-  pe2 = *((class PhoneEntryClass **)p2);
+  pe1 = *((class PhoneEntryClass**)p1);
+  pe2 = *((class PhoneEntryClass**)p2);
 
   result = strcmp(pe1->Name, pe2->Name);
 
@@ -7044,7 +7044,7 @@ static int Phone_Compare(const void *p1, const void *p2) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
+static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -7126,12 +7126,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
   SerialSettingsType settings;
   bool custom = false;
   bool firsttime = true;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass nameedit(BUTTON_NAME, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
                      TPF_TEXT, d_name_x, d_name_y, d_name_w, d_name_h,
@@ -7339,7 +7339,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
 
 } /* end of Edit_Phone_Dialog */
 
-static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
+static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   bool connected = false;
   DialStatusType dialstatus;
   int modemstatus;
@@ -7520,7 +7520,7 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
 
 } /* end of Dial_Modem */
 
-static bool Answer_Modem(SerialSettingsType *settings, bool reconnect) {
+static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   bool connected = false;
   DialStatusType dialstatus;
   int modemstatus;
@@ -7691,7 +7691,7 @@ static void Modem_Echo(char c) {
 
 } /* end of Modem_Echo */
 
-void Smart_Printf(char const *format, ...) {
+void Smart_Printf(char const* format, ...) {
   va_list arglist;
   char buf[501];
 
@@ -7715,7 +7715,7 @@ void Smart_Printf(char const *format, ...) {
   }
 }
 
-void Hex_Dump_Data(char *buffer, int length) {
+void Hex_Dump_Data(char* buffer, int length) {
   int i;
   int offset = 0;
   char buff[10];
@@ -7794,7 +7794,7 @@ void Hex_Dump_Data(char *buffer, int length) {
 
 } /* end of Hex_Dump_Data */
 
-void itoh(int i, char *s) {
+void itoh(int i, char* s) {
   int nibble, loop;
 
   //	*s++ = '0';
@@ -7818,7 +7818,7 @@ void itoh(int i, char *s) {
   *s = 0; /* null terminate it */
 }
 
-void Log_Start_Time(char *string) {
+void Log_Start_Time(char* string) {
   //	LogDump_Print = true;
 
   LogLevel = 0;
@@ -7827,7 +7827,7 @@ void Log_Start_Time(char *string) {
   Smart_Printf("start tick=%d, %s \n", LogLastTime, string);
 }
 
-void Log_End_Time(char *string) {
+void Log_End_Time(char* string) {
   int i;
   unsigned long currtime;
   unsigned long ticks;
@@ -7855,7 +7855,7 @@ void Log_End_Time(char *string) {
   LogDump_Print = false;
 }
 
-void Log_Time(char *string) {
+void Log_Time(char* string) {
   int i;
   unsigned long currtime;
   unsigned long ticks;
@@ -7883,7 +7883,7 @@ void Log_Time(char *string) {
   LogLastTime = currtime;
 }
 
-void Log_Start_Nest_Time(char *string) {
+void Log_Start_Nest_Time(char* string) {
   int i;
   unsigned long currtime;
   unsigned long ticks;
@@ -7917,7 +7917,7 @@ void Log_Start_Nest_Time(char *string) {
   LogLastTime = currtime;
 }
 
-void Log_End_Nest_Time(char *string) {
+void Log_End_Nest_Time(char* string) {
   int i;
   unsigned long currtime;
   unsigned long ticks;

@@ -133,18 +133,18 @@ char SessionClass::Descriptions[100][40];
 // These values are used purely for the Mono debug display.  They show the
 // names of the Global Channel packet types, and the event types.
 //---------------------------------------------------------------------------
-char *SessionClass::GlobalPacketNames[] = {
+char* SessionClass::GlobalPacketNames[] = {
     "Game?",       "Game!",    "Player?", "Player!", "Join?", "Join!", "Reject",
     "GameOptions", "Sign Off", "GO!",     "Message", "Ping",  "Load"};
 
-char *SessionClass::SerialPacketNames[] = {
+char* SessionClass::SerialPacketNames[] = {
     "CONNECT", "GAME_OPTIONS", "SIGN_OFF", "GO",           "MESSAGE",
     "TIMING",  "SCORE_SCREEN", "LOADGAME", "LAST_COMMAND",
 };
 
-char const *SessionClass::DialMethodCheck[DIAL_METHODS] = {"T", "P"};
+char const* SessionClass::DialMethodCheck[DIAL_METHODS] = {"T", "P"};
 
-char *SessionClass::CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {
+char* SessionClass::CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {
     "*70,", "70#,", "1170,", "CUSTOM -                "};
 
 /***************************************************************************
@@ -506,7 +506,7 @@ int SessionClass::Create_MPATH_Connections(void) {
 bool SessionClass::Am_I_Master(void) {
   int i;
   HousesType house;
-  HouseClass *hptr;
+  HouseClass* hptr;
 
   //------------------------------------------------------------------------
   // Check every house; if PlayerPtr points to the first human house, we're
@@ -550,7 +550,7 @@ bool SessionClass::Am_I_Master(void) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Save(Pipe &file) const {
+int SessionClass::Save(Pipe& file) const {
   file.Put(&CommProtocol, sizeof(CommProtocol));
   file.Put(&MaxAhead, sizeof(MaxAhead));
   file.Put(&FrameSendRate, sizeof(FrameSendRate));
@@ -591,7 +591,7 @@ int SessionClass::Save(Pipe &file) const {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Load(Straw &file) {
+int SessionClass::Load(Straw& file) {
   //	if(GameVersion != 0x0100616D){
   file.Get(&CommProtocol, sizeof(CommProtocol));
   file.Get(&MaxAhead, sizeof(MaxAhead));
@@ -638,7 +638,7 @@ int SessionClass::Load(Straw &file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Save(CCFileClass &file) {
+int SessionClass::Save(CCFileClass& file) {
   int i;
 
   file.Write(&Type, sizeof(Type));
@@ -686,10 +686,10 @@ int SessionClass::Save(CCFileClass &file) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Load(CCFileClass &file) {
+int SessionClass::Load(CCFileClass& file) {
   int count;
   int i;
-  NodeNameType *node;
+  NodeNameType* node;
 
   file.Read(&Type, sizeof(Type));
   file.Read(&CommProtocol, sizeof(CommProtocol));
@@ -735,9 +735,9 @@ int SessionClass::Load(CCFileClass &file) {
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
 void SessionClass::Read_MultiPlayer_Settings(void) {
-  char *tokenptr;          // ptr to token
-  PhoneEntryClass *phone;  // a phone book entry
-  char *entry;             // a phone book entry
+  char* tokenptr;          // ptr to token
+  PhoneEntryClass* phone;  // a phone book entry
+  char* entry;             // a phone book entry
   char buf[128];           // buffer for parsing INI entry
   int i;
   CELL cell;
@@ -1042,7 +1042,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
  *=========================================================================*/
 void SessionClass::Write_MultiPlayer_Settings(void) {
 #ifdef NEVER
-  char *buffer;  // INI staging buffer pointer.
+  char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
   int i;
   char entrytext[4];
@@ -1052,7 +1052,7 @@ void SessionClass::Write_MultiPlayer_Settings(void) {
   //	Get a working pointer to the INI staging buffer. Make sure that the
   // buffer starts cleared out of any data.
   //------------------------------------------------------------------------
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   file.Set_Name(CONFIG_FILE_NAME);
@@ -1217,7 +1217,7 @@ void SessionClass::Write_MultiPlayer_Settings(void) {
 // Multiplayer maps >24, with a numerical name, are Counterstrike.
 // Multiplayer maps with an alphabetical name, like SCMJGEA.INI, are Aftermath.
 
-bool Is_Mission_Counterstrike(char *file_name) {
+bool Is_Mission_Counterstrike(char* file_name) {
   int scenario_number = 0;
 
   if (isdigit(file_name[5])) {
@@ -1231,7 +1231,7 @@ bool Is_Mission_Counterstrike(char *file_name) {
   return (scenario_number > 24);
 }
 
-bool Is_Mission_Aftermath(char *file_name) {
+bool Is_Mission_Aftermath(char* file_name) {
   // Matches "scm" + 2 digits + non-digit, or "scm" + non-digit pattern
   static const std::regex aftermath_pattern(R"(^scm(\d\d\D|\D))",
                                             std::regex::icase);
@@ -1244,7 +1244,7 @@ bool Is_Mission_Aftermath(char *file_name) {
 ** question is one of those.  We'll know that by the file name: if it's
 ** K0 -> M9, it's 126x126.
 */
-bool Is_Mission_126x126(char *file_name)  //	This is no longer used. ajw
+bool Is_Mission_126x126(char* file_name)  //	This is no longer used. ajw
 {
   if (isdigit(file_name[5])) {
     return (false);
@@ -1287,11 +1287,11 @@ void SessionClass::Read_Scenario_Descriptions(void) {
     int count = ini.Entry_Count("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
-      char const *fname = ini.Get_Entry("Missions", index);
+      char const* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                     Is_Mission_Counterstrike((char *)fname)));
+                                     Is_Mission_Counterstrike((char*)fname)));
     }
   /*		//	ajw Copy file for viewing.
                   CCFileClass fileCopy( "msns_pkt.txt" );
@@ -1321,12 +1321,12 @@ void SessionClass::Read_Scenario_Descriptions(void) {
 
     int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
-      char const *fname = ini.Get_Entry("Missions", index);
+      char const* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                     Is_Mission_Counterstrike((char *)fname)));
+                                     Is_Mission_Counterstrike((char*)fname)));
     }
 
     found = Find_Next_File(state);
@@ -1348,12 +1348,11 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        char const *fname = ini.Get_Entry("Missions", index);
+        char const* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-        Scenarios.Add(
-            new MultiMission(fname, buffer, nullptr, true,
-                             Is_Mission_Counterstrike((char *)fname)));
+        Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
+                                       Is_Mission_Counterstrike((char*)fname)));
       }
       /*ajw Copy file for viewing.
                               CCFileClass fileCopy( "cs_pkt.txt" );
@@ -1376,12 +1375,11 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        char const *fname = ini.Get_Entry("Missions", index);
+        char const* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-        Scenarios.Add(
-            new MultiMission(fname, buffer, nullptr, true,
-                             Is_Mission_Counterstrike((char *)fname)));
+        Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
+                                       Is_Mission_Counterstrike((char*)fname)));
       }
     }
   }
@@ -1427,16 +1425,15 @@ void SessionClass::Read_Scenario_Descriptions(void) {
       ini.Load(file);
       int count = ini.Entry_Count("Missions");
       for (int index = 0; index < count; index++) {
-        char const *fname = ini.Get_Entry("Missions", index);
+        char const* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-        bool official = Is_Mission_126x126((char *)fname);
+        bool official = Is_Mission_126x126((char*)fname);
         if (!official) {
-          official = !Is_Mission_Aftermath((char *)fname);
+          official = !Is_Mission_Aftermath((char*)fname);
         }
-        Scenarios.Add(
-            new MultiMission(fname, buffer, NULL, official,
-                             Is_Mission_Counterstrike((char *)fname)));
+        Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
+                                       Is_Mission_Counterstrike((char*)fname)));
       }
 
     } while (_dos_findnext(&block) == 0);
@@ -1477,16 +1474,16 @@ void SessionClass::Read_Scenario_Descriptions(void) {
     ini.Load(file2);
     int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
-      char const *fname = ini.Get_Entry("Missions", index);
+      char const* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-      bool official = Is_Mission_126x126((char *)fname);
+      bool official = Is_Mission_126x126((char*)fname);
       if (!official) {
-        official = !Is_Mission_Aftermath((char *)fname);
+        official = !Is_Mission_Aftermath((char*)fname);
       }
 
       Scenarios.Add(new MultiMission(fname, buffer, NULL, official,
-                                     Is_Mission_Counterstrike((char *)fname)));
+                                     Is_Mission_Counterstrike((char*)fname)));
     }
   }
   //	}
@@ -1709,7 +1706,7 @@ void SessionClass::Trap_Object(void) {
 unsigned long SessionClass::Compute_Unique_ID(void) {
   time_t tm;
   uint32_t id;
-  char *path;
+  char* path;
   int i;
 
   //------------------------------------------------------------------------
@@ -1739,8 +1736,8 @@ unsigned long SessionClass::Compute_Unique_ID(void) {
 
 }  // end of Compute_Unique_ID
 
-MultiMission::MultiMission(char const *filename, char const *description,
-                           char const *digest, bool official, bool expansion) {
+MultiMission::MultiMission(char const* filename, char const* description,
+                           char const* digest, bool official, bool expansion) {
   Set_Filename(filename);
   Set_Description(description);
   Set_Digest(digest);
@@ -1750,7 +1747,7 @@ MultiMission::MultiMission(char const *filename, char const *description,
 
 void MultiMission::Draw_It(int, int x, int y, int width, int height,
                            bool selected, TextPrintType flags) const {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {35, 60, 80, 100};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
     if (selected) {
@@ -1772,19 +1769,19 @@ void MultiMission::Draw_It(int, int x, int y, int width, int height,
   }
 }
 
-void MultiMission::Set_Description(char const *description) {
+void MultiMission::Set_Description(char const* description) {
   if (description != nullptr) {
     port::SafeCopy(ScenarioDescription, description);
   }
 }
 
-void MultiMission::Set_Filename(char const *filename) {
+void MultiMission::Set_Filename(char const* filename) {
   if (filename != nullptr) {
     port::SafeCopy(Filename, filename);
   }
 }
 
-void MultiMission::Set_Digest(char const *digest) {
+void MultiMission::Set_Digest(char const* digest) {
   if (digest != nullptr) {
     port::SafeCopy(Digest, digest);
   } else {

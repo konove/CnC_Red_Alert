@@ -78,7 +78,7 @@ TFixedIHeapClass<WeaponTypeClass> Weapons;
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponTypeClass::WeaponTypeClass(char const *name)
+WeaponTypeClass::WeaponTypeClass(char const* name)
     : ID(Weapons.ID(this)),
       IniName(name),
       IsSupressed(false),
@@ -131,7 +131,7 @@ WeaponTypeClass::~WeaponTypeClass(void) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-void *WeaponTypeClass::operator new(size_t) throw() {
+void* WeaponTypeClass::operator new(size_t) throw() {
   return (Weapons.Alloc());
 }
 
@@ -152,8 +152,8 @@ void *WeaponTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-void WeaponTypeClass::operator delete(void *pointer) {
-  Weapons.Free((WeaponTypeClass *)pointer);
+void WeaponTypeClass::operator delete(void* pointer) {
+  Weapons.Free((WeaponTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -173,7 +173,7 @@ void WeaponTypeClass::operator delete(void *pointer) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponTypeClass *WeaponTypeClass::As_Pointer(WeaponType weapon) {
+WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
   if (weapon != WEAPON_NONE) {
     return (Weapons.Ptr(weapon));
     //		for (int index = 0; index < Weapons.Count(); index++) {
@@ -202,7 +202,7 @@ WeaponTypeClass *WeaponTypeClass::As_Pointer(WeaponType weapon) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool WeaponTypeClass::Read_INI(CCINIClass &ini) {
+bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
   if (ini.Is_Present(Name())) {
     IsSupressed = ini.Get_Bool(Name(), "Supress", IsSupressed);
     Burst = ini.Get_Int(Name(), "Burst", Burst);
@@ -255,7 +255,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponType Weapon_From_Name(char const *name) {
+WeaponType Weapon_From_Name(char const* name) {
   if (!name) return (WEAPON_NONE);
 
   for (int index = 0; index < Weapons.Count(); index++) {
@@ -282,7 +282,7 @@ WeaponType Weapon_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-ArmorType Armor_From_Name(char const *name) {
+ArmorType Armor_From_Name(char const* name) {
   if (!name) return (ARMOR_NONE);
 
   for (ArmorType index = ARMOR_FIRST; index < ARMOR_COUNT; index++) {

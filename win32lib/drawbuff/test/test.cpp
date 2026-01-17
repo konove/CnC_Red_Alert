@@ -54,15 +54,16 @@
 
 #define WIN32
 #define WIN32
+#include <ddraw.h>
+#include <file.h>
+#include <font.h>
+#include <iconcach.h>
+#include <tile.h>
 #include <windows.h>
 #include <windowsx.h>
-#include "..\gbuffer.h"
-#include <ddraw.h>
-#include <font.h>
-#include <tile.h>
-#include <file.h>
-#include <iconcach.h>
 #include <wwmem.h>
+
+#include "..\gbuffer.h"
 
 #define NAME "DRAWBUFF test"
 #define TITLE "DRAWBUFF library test"
@@ -115,11 +116,11 @@ int WindowList[][8] = {
 };
 char SpanBuff[500000];  // Dont know how big this should be so its *BIG*
 
-GraphicBufferClass *ScreenBuffer =
+GraphicBufferClass* ScreenBuffer =
     NULL;  // Global pointer to screen GraphicBufferClass
-GraphicBufferClass *BackBuffer = NULL;  // Global pointer to a back buffer
+GraphicBufferClass* BackBuffer = NULL;  // Global pointer to a back buffer
 
-void *IconPointer;  // Global pointer to our test icons
+void* IconPointer;  // Global pointer to our test icons
 
 PALETTEENTRY pe[256];                   // DD Palette entries
 unsigned char Palette[256 * 3];         // Place to load palette to
@@ -132,8 +133,8 @@ long FAR PASCAL _export WndProc(HWND, UINT, UINT, LONG);
 BOOL Set_Video_Mode(HWND hwnd, int w, int h, int bits_per_pixel);
 void Reset_Video_Mode(void);
 extern "C" void Wait_Vert_Blank(void);
-void Block_Mouse(GraphicBufferClass *ptr) {}
-void Unblock_Mouse(GraphicBufferClass *ptr) {}
+void Block_Mouse(GraphicBufferClass* ptr) {}
+void Unblock_Mouse(GraphicBufferClass* ptr) {}
 
 //
 // Externs
@@ -466,7 +467,7 @@ void Font_Test(void) {
  * HISTORY: * 9/25/95 3:03PM ST : Created *
  *=============================================================================================*/
 
-void Rect_Test(GraphicBufferClass *screen_buffer) {
+void Rect_Test(GraphicBufferClass* screen_buffer) {
   ScreenBuffer->Lock();
 
   screen_buffer->Draw_Rect(x1, y1, x2, y2, 255);
@@ -937,14 +938,14 @@ void Quad_Test(void) {
  * HISTORY: * 9/27/95 11:36AM ST : Created *
  *=============================================================================================*/
 void Copy_Test(void) {
-  BufferClass *buffer;
-  char *buffer_ptr;
+  BufferClass* buffer;
+  char* buffer_ptr;
 
   buffer = new BufferClass(640 * 400);
 
   ScreenBuffer->To_Buffer(buffer);
 
-  buffer_ptr = (char *)buffer->Get_Buffer();
+  buffer_ptr = (char*)buffer->Get_Buffer();
   memcpy(buffer_ptr, buffer_ptr + 4, 640 * 400 - 4);
 
   buffer->To_Page(*ScreenBuffer);

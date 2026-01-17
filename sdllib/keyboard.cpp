@@ -123,7 +123,7 @@ bool WWKeyboardClass::Is_Mouse_Key(int key) {
   return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
 
-bool WWKeyboardClass::Event_Handler(SDL_Event *event) {
+bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
   switch (event->type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {

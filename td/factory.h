@@ -53,19 +53,19 @@
 class FactoryClass : private StageClass {
  public:
   FactoryClass(void);
-  FactoryClass(NoInitClass const &x) : StageClass(x) {};
+  FactoryClass(NoInitClass const& x) : StageClass(x) {};
   ~FactoryClass(void);
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
 
   static void Init(void);
 
   /*
   **	File I/O.
   */
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
@@ -74,16 +74,16 @@ class FactoryClass : private StageClass {
   bool Has_Changed(void);
   bool Has_Completed(void);
   bool Is_Building(void) const { return (Fetch_Rate() != 0); };
-  bool Set(TechnoTypeClass const &object, HouseClass &house);
-  bool Set(int const &type, HouseClass &house);
+  bool Set(TechnoTypeClass const& object, HouseClass& house);
+  bool Set(int const& type, HouseClass& house);
   bool Start(void);
   bool Suspend(void);
   int Completion(void);
-  TechnoClass *Get_Object(void) const;
+  TechnoClass* Get_Object(void) const;
   int Get_Special_Item(void) const;
   void AI(void);
-  void Set(TechnoClass &object);
-  HouseClass *Get_House(void) { return (House); };
+  void Set(TechnoClass& object);
+  HouseClass* Get_House(void) { return (House); };
 
   /*
   **	Dee-buggin' support.
@@ -138,7 +138,7 @@ class FactoryClass : private StageClass {
   *the time production is *	started, it is always available when production
   *completes.
   */
-  TechnoClass *Object;
+  TechnoClass* Object;
 
   /*
   **	If the factory is not producing an object and is instead producing
@@ -151,7 +151,7 @@ class FactoryClass : private StageClass {
   ** The house pointer will point to whichever house it is being done
   ** for.
   */
-  HouseClass *House;
+  HouseClass* House;
 };
 
 #endif

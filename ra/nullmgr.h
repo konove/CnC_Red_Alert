@@ -67,10 +67,10 @@ class NullModemClass : public ConnManClass {
     MODEM_CMD_ERROR
   };
 
-  char *BuildBuf;
+  char* BuildBuf;
   int MaxLen;
 
-  char *EchoBuf;
+  char* EchoBuf;
   int EchoSize;
   int EchoCount;
 
@@ -87,7 +87,7 @@ class NullModemClass : public ConnManClass {
 
   static void (*OrigAbortModemFunc)(int);
   static KeyNumType Input;
-  static GadgetClass *Commands;  // button list
+  static GadgetClass* Commands;  // button list
 
   /*
   **	Constructor/destructor.
@@ -99,7 +99,7 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is the main initialization routine.
   */
-  int Init(int port, int irq, char *dev_name, int baud, char parity,
+  int Init(int port, int irq, char* dev_name, int baud, char parity,
            int wordlength, int stopbits, int flowcontrol);
   int Delete_Connection(void);
   virtual int Num_Connections(void);
@@ -114,17 +114,17 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is how the application sends & receives messages.
   */
-  int Send_Message(void *buf, int buflen, int ack_req = 1);
-  int Get_Message(void *buf, int *buflen);
+  int Send_Message(void* buf, int buflen, int ack_req = 1);
+  int Get_Message(void* buf, int* buflen);
 
   /*
   ** These are for compatibility
   */
-  virtual int Send_Private_Message(void *buf, int buflen, int ack_req = 1,
+  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
                                    int = CONNECTION_NONE) {
     return (Send_Message(buf, buflen, ack_req));
   }
-  virtual int Get_Private_Message(void *buf, int *buflen, int *) {
+  virtual int Get_Private_Message(void* buf, int* buflen, int*) {
     return (Get_Message(buf, buflen));
   }
 
@@ -142,9 +142,9 @@ class NullModemClass : public ConnManClass {
   int Num_Receive(void);
   virtual unsigned long Response_Time(void);
   virtual void Reset_Response_Time(void);
-  void *Oldest_Send(void);
+  void* Oldest_Send(void);
   virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char **names, int namestart, int namecount);
+                               char** names, int namestart, int namecount);
 #ifdef CHEAT_KEYS
   virtual void Mono_Debug_Print(int index, int refresh = 0);
 #endif
@@ -159,9 +159,9 @@ class NullModemClass : public ConnManClass {
     return (Num_Receive());
   }
 
-  DetectPortType Detect_Port(SerialSettingsType *settings);
-  int Detect_Modem(SerialSettingsType *settings, bool reconnect = 0);
-  DialStatusType Dial_Modem(const char *string, DialMethodType method,
+  DetectPortType Detect_Port(SerialSettingsType* settings);
+  int Detect_Modem(SerialSettingsType* settings, bool reconnect = 0);
+  DialStatusType Dial_Modem(const char* string, DialMethodType method,
                             bool reconnect = 0);
   DialStatusType Answer_Modem(bool reconnect = 0);
   bool Hangup_Modem(void);
@@ -175,9 +175,9 @@ class NullModemClass : public ConnManClass {
 
   int Change_IRQ_Priority(int irq);
   int Get_Modem_Status(void);
-  int Send_Modem_Command(const char *command, char terminator, char *buffer,
+  int Send_Modem_Command(const char* command, char terminator, char* buffer,
                          int buflen, int delay, int retries);
-  int Verify_And_Convert_To_Int(char *buffer);
+  int Verify_And_Convert_To_Int(char* buffer);
 
   /*
   **	Private Interface.
@@ -186,7 +186,7 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is a pointer to the NULL-Modem Connection object.
   */
-  NullModemConnClass *Connection;
+  NullModemConnClass* Connection;
   int NumConnections;  // # connection objects in use
 
   /*
@@ -203,7 +203,7 @@ class NullModemClass : public ConnManClass {
   **	RXSize is the allocated size of the RX buffer.
   **	RXCount is the # of characters we currently have in our buffer.
   */
-  char *RXBuf;
+  char* RXBuf;
   int RXSize;
   int RXCount;
 

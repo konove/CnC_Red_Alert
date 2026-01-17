@@ -108,7 +108,7 @@ void Debug_Key(unsigned input) {
             if (access(filename, F_OK) == -1) break;
           }
 
-          Write_PCX_File(filename, temp_page, (unsigned char *)CurrentPalette);
+          Write_PCX_File(filename, temp_page, (unsigned char*)CurrentPalette);
           // Map.Place_Random_Crate();
         }
         break;
@@ -123,7 +123,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_O: {
-        AircraftClass *air =
+        AircraftClass* air =
             new AircraftClass(AIRCRAFT_ORCA, PlayerPtr->Class->House);
         if (air) {
           air->Altitude = 0;
@@ -135,7 +135,7 @@ void Debug_Key(unsigned input) {
         Debug_Instant_Build ^= 1;
       } break;
       case KN_B: {
-        AircraftClass *air =
+        AircraftClass* air =
             new AircraftClass(AIRCRAFT_HELICOPTER, PlayerPtr->Class->House);
         if (air) {
           air->Altitude = 0;
@@ -144,7 +144,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_T: {
-        AircraftClass *air =
+        AircraftClass* air =
             new AircraftClass(AIRCRAFT_TRANSPORT, PlayerPtr->Class->House);
         if (air) {
           air->Altitude = 0;
@@ -220,7 +220,7 @@ void Debug_Key(unsigned input) {
 
       case KN_R:
         if (CurrentObject.Count()) {
-          ((TechnoClass *)CurrentObject[0])->IsCloakable = true;
+          ((TechnoClass*)CurrentObject[0])->IsCloakable = true;
         }
         break;
 
@@ -356,10 +356,10 @@ void Debug_Key(unsigned input) {
 #define MAX_RADIUS 10
         COORDINATE coord;
         int x, y;
-        COORDINATE const *ptr;
+        COORDINATE const* ptr;
         int input;
         int f1, f2;
-        TurnTrackType const *track;
+        TurnTrackType const* track;
 
 #define XCENTER 160
 #define YCENTER 100
@@ -431,7 +431,7 @@ void Debug_Key(unsigned input) {
         Map.Flag_To_Redraw(true);
 #endif
 #ifdef NEVER
-        FILE *fh;
+        FILE* fh;
         int index;
         COORDINATE coord;
 
@@ -457,7 +457,7 @@ void Debug_Key(unsigned input) {
         }
 #endif
 #ifdef NEVER
-        FILE *fh;
+        FILE* fh;
         int x, y, radius;
         int radsize[MAX_RADIUS + 2];
         int count;
@@ -547,8 +547,8 @@ void Debug_Key(unsigned input) {
       */
       case KN_F7:
         if (CurrentObject.Count() && CurrentObject[0]->Is_Techno()) {
-          TechnoTypeClass const &ttype =
-              (TechnoTypeClass const &)CurrentObject[0]->Class_Of();
+          TechnoTypeClass const& ttype =
+              (TechnoTypeClass const&)CurrentObject[0]->Class_Of();
           int sight = ((int)ttype.SightRange) << 8;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE)
@@ -628,13 +628,13 @@ void Debug_Key(unsigned input) {
 #define UPDATE_INTERVAL TIMER_SECOND
 void Self_Regulate(void) {
   static CountDownTimerClass DebugTimer(BT_SYSTEM);
-  static ObjectClass *_lastobject = 0;
+  static ObjectClass* _lastobject = 0;
 
   if (!DebugTimer.Time()) {
     DebugTimer.Set(UPDATE_INTERVAL);
 
     if (MonoClass::Is_Enabled()) {
-      MonoClass *mono = MonoClass::Get_Current();
+      MonoClass* mono = MonoClass::Get_Current();
       mono->Set_Default_Attribute(2);
 
       switch (MonoPage) {

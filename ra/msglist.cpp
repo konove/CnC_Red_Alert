@@ -176,7 +176,7 @@ MessageListClass::~MessageListClass() {
 void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
                             int edit_x, int edit_y, int overflow_on,
                             int over_start, int over_end, int width) {
-  TextLabelClass *txtlabel;
+  TextLabelClass* txtlabel;
   int i;
 
   Width = width;
@@ -186,7 +186,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   //------------------------------------------------------------------------
   txtlabel = MessageList;
   while (txtlabel) {
-    MessageList = (TextLabelClass *)txtlabel->Remove();
+    MessageList = (TextLabelClass*)txtlabel->Remove();
     delete txtlabel;
     txtlabel = MessageList;
   }
@@ -276,9 +276,9 @@ void MessageListClass::Reset(void) {
   //------------------------------------------------------------------------
   //	Remove every entry in the list
   //------------------------------------------------------------------------
-  TextLabelClass *txtlabel = MessageList;
+  TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
-    MessageList = (TextLabelClass *)txtlabel->Remove();
+    MessageList = (TextLabelClass*)txtlabel->Remove();
     delete txtlabel;
     txtlabel = MessageList;
   }
@@ -328,12 +328,12 @@ void MessageListClass::Reset(void) {
  *   05/05/1995 BRR : Created.                                             *
  *   10/16/1996 JLB : Audio feedback added.                                *
  *=========================================================================*/
-TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
-                                              char const *txt,
+TextLabelClass* MessageListClass::Add_Message(char const* name, int id,
+                                              char const* txt,
                                               PlayerColorType color,
                                               TextPrintType style,
                                               int timeout) {
-  TextLabelClass *txtlabel;
+  TextLabelClass* txtlabel;
   int i;
   int found;
   char message[MAX_MESSAGE_LENGTH + 30];
@@ -401,7 +401,7 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
     //.....................................................................
     //	Remove this message from the list; mark its buffer as being available.
     //.....................................................................
-    MessageList = (TextLabelClass *)txtlabel->Remove();
+    MessageList = (TextLabelClass*)txtlabel->Remove();
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
       if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
     }
@@ -487,8 +487,8 @@ TextLabelClass *MessageListClass::Add_Message(char const *name, int id,
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-char *MessageListClass::Get_Message(int id) {
-  TextLabelClass *gadg;
+char* MessageListClass::Get_Message(int id) {
+  TextLabelClass* gadg;
 
   //------------------------------------------------------------------------
   // Scan the message list, searching for the given ID
@@ -499,7 +499,7 @@ char *MessageListClass::Get_Message(int id) {
       if (gadg->UserData2 == id) {
         return (gadg->Text);
       }
-      gadg = (TextLabelClass *)gadg->Get_Next();
+      gadg = (TextLabelClass*)gadg->Get_Next();
     }
   }
 
@@ -526,8 +526,8 @@ char *MessageListClass::Get_Message(int id) {
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-TextLabelClass *MessageListClass::Get_Label(int id) {
-  TextLabelClass *gadg;
+TextLabelClass* MessageListClass::Get_Label(int id) {
+  TextLabelClass* gadg;
 
   //------------------------------------------------------------------------
   // Scan the message list, searching for the given ID
@@ -538,7 +538,7 @@ TextLabelClass *MessageListClass::Get_Label(int id) {
       if (gadg->UserData2 == id) {
         return (gadg);
       }
-      gadg = (TextLabelClass *)gadg->Get_Next();
+      gadg = (TextLabelClass*)gadg->Get_Next();
     }
   }
 
@@ -567,12 +567,12 @@ TextLabelClass *MessageListClass::Get_Label(int id) {
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
+int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
                                      int timeout) {
   int min_chars;
   int max_chars;
-  char *msg;
-  TextLabelClass *tlabel;
+  char* msg;
+  TextLabelClass* tlabel;
   int found;
 
   //------------------------------------------------------------------------
@@ -596,7 +596,7 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
         found = 1;
         break;
       }
-      tlabel = (TextLabelClass *)tlabel->Get_Next();
+      tlabel = (TextLabelClass*)tlabel->Get_Next();
     }
   }
 
@@ -619,7 +619,7 @@ int MessageListClass::Concat_Message(char const *name, int id, char const *txt,
     //---------------------------------------------------------------------
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
-    char *concat_test = new char[MaxChars + 1];
+    char* concat_test = new char[MaxChars + 1];
     Fancy_Text_Print(TXT_NONE, 0, 0, tlabel->Color, TBLACK, tlabel->Style);
     int name_width = String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg);
     int width;
@@ -735,11 +735,11 @@ bool MessageListClass::Has_Edit_Focus(void) {
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-TextLabelClass *MessageListClass::Add_Edit(PlayerColorType color,
-                                           TextPrintType style, char *to,
+TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
+                                           TextPrintType style, char* to,
                                            char cursor, int width) {
   int i;
-  TextLabelClass *txtlabel;
+  TextLabelClass* txtlabel;
 
   //------------------------------------------------------------------------
   //	Do nothing if we're already in "edit" mode
@@ -754,7 +754,7 @@ TextLabelClass *MessageListClass::Add_Edit(PlayerColorType color,
   //------------------------------------------------------------------------
   if (AdjustEdit && ((Num_Messages() + 1) > MaxMessages)) {
     txtlabel = MessageList;
-    MessageList = (TextLabelClass *)txtlabel->Remove();
+    MessageList = (TextLabelClass*)txtlabel->Remove();
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
       if (txtlabel->Text == MessageBuffers[i]) BufferAvail[i] = 1;
     }
@@ -860,7 +860,7 @@ void MessageListClass::Remove_Edit(void) {
  * HISTORY:                                                                *
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-char *MessageListClass::Get_Edit_Buf(void) {
+char* MessageListClass::Get_Edit_Buf(void) {
   return (EditBuf + EditInitPos);
 
 }  // end of Get_Edit_Buf
@@ -908,8 +908,8 @@ void MessageListClass::Set_Edit_Color(PlayerColorType color) {
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 int MessageListClass::Manage(void) {
-  TextLabelClass *txtlabel;
-  TextLabelClass *next;
+  TextLabelClass* txtlabel;
+  TextLabelClass* next;
   int changed = 0;
   int i;
 
@@ -925,8 +925,8 @@ int MessageListClass::Manage(void) {
       //..................................................................
       //	Save the next ptr in the list; remove this entry
       //..................................................................
-      next = (TextLabelClass *)txtlabel->Get_Next();
-      MessageList = (TextLabelClass *)txtlabel->Remove();
+      next = (TextLabelClass*)txtlabel->Get_Next();
+      MessageList = (TextLabelClass*)txtlabel->Remove();
       for (i = 0; i < MAX_NUM_MESSAGES; i++) {
         if (txtlabel->Text == MessageBuffers[i]) {
           BufferAvail[i] = 1;
@@ -936,7 +936,7 @@ int MessageListClass::Manage(void) {
       changed = 1;
       txtlabel = next;
     } else {
-      txtlabel = (TextLabelClass *)txtlabel->Get_Next();
+      txtlabel = (TextLabelClass*)txtlabel->Get_Next();
     }
   }
 
@@ -971,7 +971,7 @@ int MessageListClass::Manage(void) {
  * HISTORY:                                                                *
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Input(KeyNumType &input) {
+int MessageListClass::Input(KeyNumType& input) {
   KeyASCIIType ascii;
   int retcode = 0;
   int numchars;
@@ -1188,7 +1188,7 @@ void MessageListClass::Draw(void) {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 int MessageListClass::Num_Messages(void) {
-  GadgetClass *gadg;
+  GadgetClass* gadg;
   int num;
 
   num = 0;
@@ -1225,12 +1225,12 @@ int MessageListClass::Num_Messages(void) {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void MessageListClass::Set_Width(int width) {
-  GadgetClass *gadg;
+  GadgetClass* gadg;
 
   if (MessageList) {
     gadg = MessageList;
     while (gadg) {
-      ((TextLabelClass *)gadg)->PixWidth = width;
+      ((TextLabelClass*)gadg)->PixWidth = width;
       gadg = gadg->Get_Next();
     }
   }
@@ -1264,7 +1264,7 @@ void MessageListClass::Set_Width(int width) {
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Trim_Message(char *dest, char *src, int min_chars,
+int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
                                    int max_chars, int scandir) {
   int i;
   int len;
@@ -1353,7 +1353,7 @@ int MessageListClass::Trim_Message(char *dest, char *src, int min_chars,
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
 void MessageListClass::Compute_Y(void) {
-  GadgetClass *gadg;
+  GadgetClass* gadg;
   int y;
 
   //------------------------------------------------------------------------

@@ -61,7 +61,7 @@ class ScenarioClass {
   void Set_Scenario_Name(int scenario, ScenarioPlayerType player,
                          ScenarioDirType dir = SCEN_DIR_NONE,
                          ScenarioVarType var = SCEN_VAR_NONE);
-  void Set_Scenario_Name(char const *name);
+  void Set_Scenario_Name(char const* name);
 
   bool Set_Global_To(int global, bool value);
   void Do_BW_Fade(void);
@@ -331,21 +331,21 @@ class ScenarioClass {
                             // a draw offer extended.
 };
 
-void Disect_Scenario_Name(char const *name, int &scenario,
-                          ScenarioPlayerType &player, ScenarioDirType &dir,
-                          ScenarioVarType &var);
+void Disect_Scenario_Name(char const* name, int& scenario,
+                          ScenarioPlayerType& player, ScenarioDirType& dir,
+                          ScenarioVarType& var);
 void Post_Load_Game(int load_net);
 bool End_Game(void);
-bool Read_Scenario(char *root);
-bool Start_Scenario(char *root, bool briefing = true);
+bool Read_Scenario(char* root);
+bool Start_Scenario(char* root, bool briefing = true);
 HousesType Select_House(void);
 void Clear_Scenario(void);
-void Do_Briefing(char const *text);
+void Do_Briefing(char const* text);
 void Do_Lose(void);
 void Do_Win(void);
 void Do_Restart(void);
 void Fill_In_Data(void);
-bool Restate_Mission(char const *name, int button1, int button2);
-bool BGMessageBox(char const *text, int button1, int button2);
+bool Restate_Mission(char const* name, int button1, int button2);
+bool BGMessageBox(char const* text, int button1, int button2);
 
 #endif

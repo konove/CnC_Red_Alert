@@ -205,12 +205,12 @@
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
 template <>
-int TFixedIHeapClass<HouseClass::BuildChoiceClass>::Save(Pipe &) const {
+int TFixedIHeapClass<HouseClass::BuildChoiceClass>::Save(Pipe&) const {
   return (true);
 }
 
 template <>
-int TFixedIHeapClass<HouseClass::BuildChoiceClass>::Load(Straw &) {
+int TFixedIHeapClass<HouseClass::BuildChoiceClass>::Load(Straw&) {
   return (0);
 }
 
@@ -283,7 +283,7 @@ fixed HouseClass::Tiberium_Fraction(void) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-HouseClass *HouseClass::As_Pointer(HousesType house) {
+HouseClass* HouseClass::As_Pointer(HousesType house) {
   if (house != HOUSE_NONE) {
     for (int index = 0; index < Houses.Count(); index++) {
       if (Houses.Ptr(index)->Class->House == house) {
@@ -334,7 +334,7 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
   Difficulty = handicap;
 
   if (Session.Type != GAME_NORMAL) {
-    HouseTypeClass const *hptr = &HouseTypeClass::As_Reference(ActLike);
+    HouseTypeClass const* hptr = &HouseTypeClass::As_Reference(ActLike);
     FirepowerBias = hptr->FirepowerBias * Rule.Diff[handicap].FirepowerBias;
     GroundspeedBias = hptr->GroundspeedBias *
                       Rule.Diff[handicap].GroundspeedBias * Rule.GameSpeedBias;
@@ -365,7 +365,7 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
 #ifdef CHEAT_KEYS
 
 void HouseClass::Print_Zone_Stats(int x, int y, ZoneType zone,
-                                  MonoClass *mono) const {
+                                  MonoClass* mono) const {
   mono->Set_Cursor(x, y);
   mono->Printf("A:%-5d I:%-5d V:%-5d", ZoneInfo[zone].AirDefense,
                ZoneInfo[zone].InfantryDefense, ZoneInfo[zone].ArmorDefense);
@@ -386,7 +386,7 @@ void HouseClass::Print_Zone_Stats(int x, int y, ZoneType zone,
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Debug_Dump(MonoClass *mono) const {
+void HouseClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(0, 0);
   mono->Print(Text_String(TXT_DEBUG_HOUSE));
 
@@ -513,7 +513,7 @@ void HouseClass::Debug_Dump(MonoClass *mono) const {
     if (index >= 24) break;
   }
   if (Enemy != HOUSE_NONE) {
-    char const *name = "";
+    char const* name = "";
     name = HouseClass::As_Pointer(Enemy)->Name();
     mono->Set_Cursor(53, 15);
     mono->Printf("[%d]%21.21s", Enemy,
@@ -593,10 +593,10 @@ void HouseClass::Debug_Dump(MonoClass *mono) const {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-void *HouseClass::operator new(size_t) throw() {
-  void *ptr = Houses.Allocate();
+void* HouseClass::operator new(size_t) throw() {
+  void* ptr = Houses.Allocate();
   if (ptr) {
-    ((HouseClass *)ptr)->IsActive = true;
+    ((HouseClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -615,11 +615,11 @@ void *HouseClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::operator delete(void *ptr) {
+void HouseClass::operator delete(void* ptr) {
   if (ptr) {
-    ((HouseClass *)ptr)->IsActive = false;
+    ((HouseClass*)ptr)->IsActive = false;
   }
-  Houses.Free((HouseClass *)ptr);
+  Houses.Free((HouseClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -811,7 +811,7 @@ HouseClass::HouseClass(HousesType house)
   memset(VQuantity, '\0', sizeof(VQuantity));
   port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
   HouseTriggers[house].Clear();
-  memset((void *)&Regions[0], 0x00, sizeof(Regions));
+  memset((void*)&Regions[0], 0x00, sizeof(Regions));
   Make_Ally(house);
   Assign_Handicap(Scen.CDifficulty);
 
@@ -924,7 +924,7 @@ HouseStaticClass::HouseStaticClass(void)
  *Hack to allow Tanya to both sides in multiplay.                          *
  *   11/04/1996 JLB : Computer uses prerequisite record. *
  *=============================================================================================*/
-bool HouseClass::Can_Build(ObjectTypeClass const *type,
+bool HouseClass::Can_Build(ObjectTypeClass const* type,
                            HousesType house) const {
   CHECK_EQ(Houses.ID(this), ID);
   CHECK_NE(type, nullptr);
@@ -933,7 +933,7 @@ bool HouseClass::Can_Build(ObjectTypeClass const *type,
   **	An object with a prohibited tech level availability will never be
   *allowed, regardless *	of who requests it.
   */
-  if (((TechnoTypeClass const *)type)->Level == -1) return (false);
+  if (((TechnoTypeClass const*)type)->Level == -1) return (false);
 
   /*
   ** If this is a CounterStrike II-only unit, and we're playing a multiplayer
@@ -943,14 +943,13 @@ bool HouseClass::Can_Build(ObjectTypeClass const *type,
   if (!NewUnitsEnabled) {
     switch (type->What_Am_I()) {
       case RTTI_INFANTRYTYPE:
-        if (((InfantryTypeClass *)type)->ID >= INFANTRY_RA_COUNT)
-          return (false);
+        if (((InfantryTypeClass*)type)->ID >= INFANTRY_RA_COUNT) return (false);
         break;
       case RTTI_UNITTYPE:
-        if (((UnitTypeClass *)type)->ID >= UNIT_RA_COUNT) return (false);
+        if (((UnitTypeClass*)type)->ID >= UNIT_RA_COUNT) return (false);
         break;
       case RTTI_VESSELTYPE:
-        if (((VesselTypeClass *)type)->ID >= VESSEL_RA_COUNT) return (false);
+        if (((VesselTypeClass*)type)->ID >= VESSEL_RA_COUNT) return (false);
         break;
       default:
         break;
@@ -987,7 +986,7 @@ bool HouseClass::Can_Build(ObjectTypeClass const *type,
     flags = OldBScan;
   }
 
-  int pre = ((TechnoTypeClass const *)type)->Prerequisite;
+  int pre = ((TechnoTypeClass const*)type)->Prerequisite;
 
   /*
   **	Advanced power also serves as a prerequisite for normal power.
@@ -1014,7 +1013,7 @@ bool HouseClass::Can_Build(ObjectTypeClass const *type,
   **	See if the prerequisite requirements have been met.
   */
   return ((pre & flags) == pre &&
-          ((TechnoTypeClass const *)type)->Level <= level);
+          ((TechnoTypeClass const*)type)->Level <= level);
 }
 
 /***************************************************************************
@@ -1125,7 +1124,7 @@ void HouseClass::AI(void) {
     */
     int maxteams = Random_Pick(2, (int)(((Control.TechLevel - 1) / 3) + 1));
     for (int index = 0; index < maxteams; index++) {
-      TeamTypeClass const *ttype = Suggested_New_Team(true);
+      TeamTypeClass const* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
         ScenarioInit++;
         ttype->Create_One_Of();
@@ -1145,11 +1144,11 @@ void HouseClass::AI(void) {
   **	blow them up.
   */
   if (FlagHome != 0 && (Frame % TICKS_PER_SECOND) == 0) {
-    TechnoClass *techno = Map[FlagHome].Cell_Techno();
+    TechnoClass* techno = Map[FlagHome].Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
       if (techno->Is_Foot()) {
-        if (Target_Legal(((FootClass *)techno)->NavCom)) {
+        if (Target_Legal(((FootClass*)techno)->NavCom)) {
           moving = true;
         }
       }
@@ -1163,7 +1162,7 @@ void HouseClass::AI(void) {
       **	so blow him up.
       */
       if (techno->Is_Foot()) {
-        if (Target_Legal(((FootClass *)techno)->NavCom)) {
+        if (Target_Legal(((FootClass*)techno)->NavCom)) {
           moving = true;
         }
       }
@@ -1187,7 +1186,7 @@ void HouseClass::AI(void) {
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
   if (!IsAlerted && !TeamTime) {
-    TeamTypeClass const *ttype = Suggested_New_Team(false);
+    TeamTypeClass const* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
     }
@@ -1206,7 +1205,7 @@ void HouseClass::AI(void) {
     */
     if (Power_Fraction() < 1) {
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass &b = *Buildings.Ptr(index);
+        BuildingClass& b = *Buildings.Ptr(index);
 
         if (b.House == this && b.Health_Ratio() > Rule.ConditionYellow) {
           // BG: Only damage buildings that require power, to keep the
@@ -1258,7 +1257,7 @@ void HouseClass::AI(void) {
             Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay);
         Map.Flash_Power();
 
-        char const *text = nullptr;
+        char const* text = nullptr;
         if (BQuantity[STRUCT_AAGUN] > 0) {
           text = Text_String(TXT_POWER_AAGUN);
         }
@@ -1283,7 +1282,7 @@ void HouseClass::AI(void) {
   **	redrawn.
   */
   if (Target_Legal(FlagLocation)) {
-    UnitClass *unit = As_Unit(FlagLocation);
+    UnitClass* unit = As_Unit(FlagLocation);
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
@@ -1338,7 +1337,7 @@ void HouseClass::AI(void) {
               if (!iCount) {
                 //	Do the ping.
                 for (int index = 0; index < Vessels.Count(); index++) {
-                  VesselClass *sub = Vessels.Ptr(index);
+                  VesselClass* sub = Vessels.Ptr(index);
                   if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
                     sub->PulseCountDown = 15 * TICKS_PER_SECOND;
                     sub->Do_Uncloak();
@@ -1391,7 +1390,7 @@ void HouseClass::AI(void) {
       jammed = false;
     } else {
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass *building = Buildings.Ptr(index);
+        BuildingClass* building = Buildings.Ptr(index);
         if (building != nullptr && !building->IsInLimbo &&
             building->House == PlayerPtr) {
           if (*building == STRUCT_RADAR /* || *building == STRUCT_EYE */) {
@@ -1464,7 +1463,7 @@ void HouseClass::AI(void) {
     *construction *	lists. Update the buildable options accordingly.
     */
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *building = Buildings.Ptr(index);
+      BuildingClass* building = Buildings.Ptr(index);
       if (building && building->Strength > 0 &&
           building->Owner() == Class->House &&
           building->Mission != MISSION_DECONSTRUCTION &&
@@ -1511,7 +1510,7 @@ void HouseClass::Super_Weapon_Handler(void) {
   **	sidebar as necessary.
   */
   for (SpecialWeaponType special = SPC_FIRST; special < SPC_COUNT; special++) {
-    SuperClass *super = &SuperWeapon[special];
+    SuperClass* super = &SuperWeapon[special];
 
     if (super->Is_Present()) {
       /*
@@ -1572,7 +1571,7 @@ void HouseClass::Super_Weapon_Handler(void) {
         }
         IsRecalcNeeded = true;
         for (int index = 0; index < Buildings.Count(); index++) {
-          BuildingClass *bldg = Buildings.Ptr(index);
+          BuildingClass* bldg = Buildings.Ptr(index);
           if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this) {
             bldg->HasFired = true;
             bldg->Assign_Mission(MISSION_MISSILE);
@@ -1591,7 +1590,7 @@ void HouseClass::Super_Weapon_Handler(void) {
         (IsHuman || IQ >= Rule.IQSuperWeapons)) {
       bool canfire = false;
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass *bldg = Buildings.Ptr(index);
+        BuildingClass* bldg = Buildings.Ptr(index);
         if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this &&
             !bldg->IsInLimbo) {
           if (!bldg->HasFired) {
@@ -1635,9 +1634,9 @@ void HouseClass::Super_Weapon_Handler(void) {
           if (Map.IsTargettingMode == SPC_CHRONOSPHERE ||
               Map.IsTargettingMode == SPC_CHRONO2) {
             if (Map.IsTargettingMode == SPC_CHRONO2) {
-              TechnoClass *tech = (TechnoClass *)::As_Object(UnitToTeleport);
+              TechnoClass* tech = (TechnoClass*)::As_Object(UnitToTeleport);
               if (tech && tech->IsActive && tech->What_Am_I() == RTTI_UNIT &&
-                  *(UnitClass *)tech == UNIT_CHRONOTANK) {
+                  *(UnitClass*)tech == UNIT_CHRONOTANK) {
               } else {
                 Map.IsTargettingMode = SPC_NONE;
               }
@@ -1731,7 +1730,7 @@ void HouseClass::Super_Weapon_Handler(void) {
     bool present = false;
     bool powered = false;
     for (int q = 0; q < Buildings.Count() && !powered; q++) {
-      BuildingClass *bldg = Buildings.Ptr(q);
+      BuildingClass* bldg = Buildings.Ptr(q);
       if ((*bldg == STRUCT_SUB_PEN) &&
           (bldg->House->Class->House != Class->House) &&
           (bldg->SpiedBy & usspy)) {
@@ -2113,7 +2112,7 @@ void HouseClass::Silo_Redraw_Check(long oldtib, long oldcap) {
 
   if (oldratio != newratio) {
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *b = Buildings.Ptr(index);
+      BuildingClass* b = Buildings.Ptr(index);
       if (b && !b->IsInLimbo && b->House == this && *b == STRUCT_STORAGE) {
         b->Mark(MARK_CHANGE);
       }
@@ -2159,7 +2158,7 @@ bool HouseClass::Is_Ally(HousesType house) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Is_Ally(HouseClass const *house) const {
+bool HouseClass::Is_Ally(HouseClass const* house) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (house) {
@@ -2182,7 +2181,7 @@ bool HouseClass::Is_Ally(HouseClass const *house) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Is_Ally(ObjectClass const *object) const {
+bool HouseClass::Is_Ally(ObjectClass const* object) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (object) {
@@ -2225,7 +2224,7 @@ void HouseClass::Make_Ally(HousesType house) {
     }
 
     if (Session.Type != GAME_NORMAL && !ScenarioInit) {
-      HouseClass *hptr = HouseClass::As_Pointer(house);
+      HouseClass* hptr = HouseClass::As_Pointer(house);
 
       /*
       **	An alliance with another human player will cause the computer
@@ -2247,14 +2246,14 @@ void HouseClass::Make_Ally(HousesType house) {
       *cease fire begins.
       */
       for (int index = 0; index < Logic.Count(); index++) {
-        ObjectClass *object = Logic[index];
+        ObjectClass* object = Logic[index];
 
         if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
             object->Owner() == Class->House) {
-          TARGET target = ((TechnoClass *)object)->TarCom;
+          TARGET target = ((TechnoClass*)object)->TarCom;
           if (Target_Legal(target) && As_Techno(target) != nullptr) {
             if (Is_Ally(As_Techno(target))) {
-              ((TechnoClass *)object)->Assign_Target(TARGET_NONE);
+              ((TechnoClass*)object)->Assign_Target(TARGET_NONE);
             }
           }
         }
@@ -2266,9 +2265,9 @@ void HouseClass::Make_Ally(HousesType house) {
       */
       if (Rule.IsAllyReveal && house == PlayerPtr->Class->House) {
         for (int index = 0; index < Buildings.Count(); index++) {
-          BuildingClass const *b = Buildings.Ptr(index);
+          BuildingClass const* b = Buildings.Ptr(index);
 
-          if (b && !b->IsInLimbo && (HouseClass *)b->House == this) {
+          if (b && !b->IsInLimbo && (HouseClass*)b->House == this) {
             Map.Sight_From(Coord_Cell(b->Center_Coord()), b->Class->SightRange,
                            PlayerPtr, false);
           }
@@ -2322,7 +2321,7 @@ void HouseClass::Make_Enemy(HousesType house) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (house != HOUSE_NONE && Is_Ally(house)) {
-    HouseClass *enemy = HouseClass::As_Pointer(house);
+    HouseClass* enemy = HouseClass::As_Pointer(house);
     Allies &= ~(1L << house);
 
     if (ScenarioInit) {
@@ -2392,7 +2391,7 @@ void HouseClass::Make_Enemy(HousesType house) {
  * HISTORY: * 05/08/1995 JLB : Created. * 10/25/1995 JLB : Uses remap control
  *value.                                                *
  *=============================================================================================*/
-unsigned char const *HouseClass::Remap_Table(bool blushing,
+unsigned char const* HouseClass::Remap_Table(bool blushing,
                                              RemapType remap) const {
   CHECK_EQ(Houses.ID(this), ID);
 
@@ -2419,7 +2418,7 @@ unsigned char const *HouseClass::Remap_Table(bool blushing,
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass const *HouseClass::Suggested_New_Team(bool alertcheck) {
+TeamTypeClass const* HouseClass::Suggested_New_Team(bool alertcheck) {
   CHECK_EQ(Houses.ID(this), ID);
 
   return (TeamTypeClass::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
@@ -2450,8 +2449,8 @@ void HouseClass::Adjust_Threat(int region, int threat) {
       MAP_REGION_WIDTH - 1,  MAP_REGION_WIDTH,  MAP_REGION_WIDTH + 1};
   static int _thr[] = {2, 1, 2, 1, 0, 1, 2, 1, 2};
   int neg;
-  int *val = &_val[0];
-  int *thr = &_thr[0];
+  int* val = &_val[0];
+  int* thr = &_thr[0];
 
   if (threat < 0) {
     threat = -threat;
@@ -2489,8 +2488,8 @@ void HouseClass::Adjust_Threat(int region, int threat) {
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   CHECK_EQ(Houses.ID(this), ID);
   int result = true;
-  FactoryClass *fptr;
-  TechnoTypeClass const *tech = Fetch_Techno_Type(type, id);
+  FactoryClass* fptr;
+  TechnoTypeClass const* tech = Fetch_Techno_Type(type, id);
 
   fptr = Fetch_Factory(type);
 
@@ -2545,7 +2544,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
 ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  FactoryClass *fptr = Fetch_Factory(type);
+  FactoryClass* fptr = Fetch_Factory(type);
 
   /*
   **	If the house is already busy producing the requested object, then
@@ -2588,7 +2587,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
 ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  FactoryClass *fptr = Fetch_Factory(type);
+  FactoryClass* fptr = Fetch_Factory(type);
 
   /*
   **	If there is no factory to abandon, then return with a failure code.
@@ -2640,11 +2639,11 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   ** Loop through all of the building objects on the map
   ** and see which ones are available.
   */
-  BuildingClass *bestptr = nullptr;
+  BuildingClass* bestptr = nullptr;
   int best = -1;
 
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass *b = Buildings.Ptr(index);
+    BuildingClass* b = Buildings.Ptr(index);
 
     /*
     ** If the building is valid, not in limbo, not in the process of
@@ -2687,7 +2686,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
 bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  BuildingClass *launchsite = nullptr;
+  BuildingClass* launchsite = nullptr;
   switch (id) {
     case SPC_SONAR_PULSE:
       // Automatically discharge the sonar pulse and uncloak all subs.
@@ -2700,7 +2699,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         Sound_Effect(VOC_SONAR);
         IsRecalcNeeded = true;
         for (int index = 0; index < Vessels.Count(); index++) {
-          VesselClass *sub = Vessels.Ptr(index);
+          VesselClass* sub = Vessels.Ptr(index);
           if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
             sub->PulseCountDown = 15 * TICKS_PER_SECOND;
             sub->Do_Uncloak();
@@ -2712,7 +2711,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
     case SPC_NUCLEAR_BOMB:
       if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_Ready()) {
         if (SuperWeapon[SPC_NUCLEAR_BOMB].Is_One_Time()) {
-          BulletClass *bullet =
+          BulletClass* bullet =
               new BulletClass(BULLET_NUKE_DOWN, ::As_Target(cell), nullptr, 200,
                               WARHEAD_NUKE, MPH_VERY_FAST);
           if (bullet) {
@@ -2756,7 +2755,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_PARA_INFANTRY:
       if (SuperWeapon[SPC_PARA_INFANTRY].Is_Ready()) {
-        TeamTypeClass *ttype = TeamTypeClass::As_Pointer("@PINF");
+        TeamTypeClass* ttype = TeamTypeClass::As_Pointer("@PINF");
         if (ttype == nullptr) {
           ttype = new TeamTypeClass;
           if (ttype != nullptr) {
@@ -2825,7 +2824,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
         int x = Keyboard->MouseQX - Map.TacPixelX;
         int y = Keyboard->MouseQY - Map.TacPixelY;
-        TechnoClass *tech = Map[cell].Cell_Techno(x, y);
+        TechnoClass* tech = Map[cell].Cell_Techno(x, y);
         if (tech) {
           switch (tech->What_Am_I()) {
             case RTTI_UNIT:
@@ -2835,7 +2834,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               tech->IronCurtainCountDown =
                   Rule.IronCurtainDuration * TICKS_PER_MINUTE;
               if (tech->What_Am_I() == RTTI_UNIT &&
-                  *(UnitClass *)tech == UNIT_DEMOTRUCK) {
+                  *(UnitClass*)tech == UNIT_DEMOTRUCK) {
                 tech->IronCurtainCountDown =
                     Rule.IronCurtainDuration * TICKS_PER_SECOND;
               }
@@ -2859,18 +2858,18 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
         int x = Keyboard->MouseQX - Map.TacPixelX;
         int y = Keyboard->MouseQY - Map.TacPixelY;
-        TechnoClass *tech = Map[cell].Cell_Techno(x, y);
+        TechnoClass* tech = Map[cell].Cell_Techno(x, y);
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||
               tech->What_Am_I() == RTTI_INFANTRY ||
               (tech->What_Am_I() == RTTI_VESSEL &&
-               (*((VesselClass *)tech) != VESSEL_TRANSPORT &&
-                *((VesselClass *)tech) != VESSEL_CARRIER))) {
+               (*((VesselClass*)tech) != VESSEL_TRANSPORT &&
+                *((VesselClass*)tech) != VESSEL_CARRIER))) {
             if (tech->What_Am_I() != RTTI_UNIT ||
-                !((UnitClass *)tech)->IsDeploying) {
+                !((UnitClass*)tech)->IsDeploying) {
               bool porthim = true;
               if (tech->What_Am_I() == RTTI_UNIT &&
-                  ((UnitClass *)tech)->Class->Type == UNIT_CHRONOTANK) {
+                  ((UnitClass*)tech)->Class->Type == UNIT_CHRONOTANK) {
                 porthim = false;
               }
               if (porthim) {
@@ -2886,37 +2885,37 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       break;
 
     case SPC_CHRONO2: {
-      TechnoClass *tech = (TechnoClass *)::As_Object(UnitToTeleport);
+      TechnoClass* tech = (TechnoClass*)::As_Object(UnitToTeleport);
       if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
         /*
         ** Destroy any infantryman that gets teleported
         */
         if (tech->What_Am_I() == RTTI_INFANTRY) {
-          InfantryClass *inf = (InfantryClass *)tech;
+          InfantryClass* inf = (InfantryClass*)tech;
           inf->Mark(MARK_UP);
           inf->Coord = Cell_Coord(cell);
           inf->Mark(MARK_DOWN);
           int damage = inf->Strength;
           inf->Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
         } else if (tech->What_Am_I() == RTTI_UNIT &&
-                   *(UnitClass *)tech == UNIT_DEMOTRUCK) {
+                   *(UnitClass*)tech == UNIT_DEMOTRUCK) {
           tech->Assign_Target(tech->As_Target());
         } else {
           /*
           **	Warp the unit to the new location.
           */
-          DriveClass *drive = (DriveClass *)tech;
+          DriveClass* drive = (DriveClass*)tech;
           drive->MoebiusCell = Coord_Cell(drive->Coord);
           drive->Teleport_To(cell);
           drive->IsMoebius = true;
           if (tech->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass *)tech == UNIT_CHRONOTANK) {
+              *(UnitClass*)tech == UNIT_CHRONOTANK) {
             drive->IsMoebius = false;
           }
           drive->MoebiusCountDown = Rule.ChronoDuration * TICKS_PER_MINUTE;
           if (tech->What_Am_I() == RTTI_UNIT &&
-              *(UnitClass *)tech == UNIT_CHRONOTANK) {
+              *(UnitClass*)tech == UNIT_CHRONOTANK) {
             drive->MoebiusCountDown = ChronoTankDuration * TICKS_PER_MINUTE;
           }
           Scen.Do_BW_Fade();
@@ -2929,7 +2928,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       }
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
-           *(UnitClass *)tech != UNIT_CHRONOTANK)) {
+           *(UnitClass*)tech != UNIT_CHRONOTANK)) {
         SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
       }
       IsRecalcNeeded = true;
@@ -2949,7 +2948,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       // Don't allow a vortex if the teleportation was due to a chrono tank.
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
-           *(UnitClass *)tech != UNIT_CHRONOTANK))
+           *(UnitClass*)tech != UNIT_CHRONOTANK))
         if (!ChronalVortex.Is_Active() &&
             Percent_Chance(Rule.VortexChance * 100)) {
           int x = Random_Pick(0, Map.MapCellWidth - 1);
@@ -2992,8 +2991,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 bool HouseClass::Place_Object(RTTIType type, CELL cell) {
   CHECK_EQ(Houses.ID(this), ID);
 
-  TechnoClass *tech = nullptr;
-  FactoryClass *factory = Fetch_Factory(type);
+  TechnoClass* tech = nullptr;
+  FactoryClass* factory = Fetch_Factory(type);
 
   /*
   **	Only if there is a factory active for this type, can it be "placed".
@@ -3007,7 +3006,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
     tech = factory->Get_Object();
 
     if (cell == -1) {
-      TechnoClass *pending = factory->Get_Object();
+      TechnoClass* pending = factory->Get_Object();
       if (pending != nullptr) {
 #ifdef FIXIT_HELI_LANDING
         /*
@@ -3015,9 +3014,9 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
         *helicopters, it has the *	option of finding a nearby helipad if no
         *helipads are free.
         */
-        TechnoClass *builder = pending->Who_Can_Build_Me(false, false);
+        TechnoClass* builder = pending->Who_Can_Build_Me(false, false);
         if (builder == nullptr && pending->What_Am_I() == RTTI_AIRCRAFT &&
-            !((AircraftClass *)pending)->Class->IsFixedWing) {
+            !((AircraftClass*)pending)->Class->IsFixedWing) {
           builder = pending->Who_Can_Build_Me(true, false);
         }
 #else
@@ -3028,11 +3027,11 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           ** emerge from, in fact, they'll land next to a building if
           ** need be.
           */
-          if (!((AircraftClass *)pending)->Class->IsFixedWing) {
+          if (!((AircraftClass*)pending)->Class->IsFixedWing) {
             intheory = true;
           }
         }
-        TechnoClass *builder = pending->Who_Can_Build_Me(intheory, false);
+        TechnoClass* builder = pending->Who_Can_Build_Me(intheory, false);
 #endif
 
         if (builder != nullptr && builder->Exit_Object(pending)) {
@@ -3045,27 +3044,27 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           Abandon_Production(type);
           switch (pending->What_Am_I()) {
             case RTTI_UNIT:
-              JustBuiltUnit = ((UnitClass *)pending)->Class->Type;
+              JustBuiltUnit = ((UnitClass*)pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_VESSEL:
-              JustBuiltVessel = ((VesselClass *)pending)->Class->Type;
+              JustBuiltVessel = ((VesselClass*)pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_INFANTRY:
-              JustBuiltInfantry = ((InfantryClass *)pending)->Class->Type;
+              JustBuiltInfantry = ((InfantryClass*)pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_BUILDING:
-              JustBuiltStructure = ((BuildingClass *)pending)->Class->Type;
+              JustBuiltStructure = ((BuildingClass*)pending)->Class->Type;
               IsBuiltSomething = true;
               break;
 
             case RTTI_AIRCRAFT:
-              JustBuiltAircraft = ((AircraftClass *)pending)->Class->Type;
+              JustBuiltAircraft = ((AircraftClass*)pending)->Class->Type;
               IsBuiltSomething = true;
               break;
           }
@@ -3080,7 +3079,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
 
     } else {
       if (tech) {
-        TechnoClass *builder = tech->Who_Can_Build_Me(false, false);
+        TechnoClass* builder = tech->Who_Can_Build_Me(false, false);
         if (builder) {
           builder->Transmit_Message(RADIO_HELLO, tech);
           if (tech->Unlimbo(Cell_Coord(cell))) {
@@ -3135,7 +3134,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
  * HISTORY: * 05/04/1995 JLB : Created. * 05/30/1995 JLB : Uses the
  *Bib_And_Offset() function to determine bib size.                *
  *=============================================================================================*/
-bool HouseClass::Manual_Place(BuildingClass *builder, BuildingClass *object) {
+bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (this == PlayerPtr && !Map.PendingObject && builder && object) {
@@ -3287,7 +3286,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
 
   int bflag = 1L << btype;
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseClass *house = HouseClass::As_Pointer(index);
+    HouseClass* house = HouseClass::As_Pointer(index);
 
     if (house && !Is_Ally(house) && (house->ActiveBScan & bflag) != 0) {
       return (true);
@@ -3318,11 +3317,11 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-TechnoTypeClass const *HouseClass::Suggest_New_Object(RTTIType objecttype,
+TechnoTypeClass const* HouseClass::Suggest_New_Object(RTTIType objecttype,
                                                       bool kennel) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  TechnoTypeClass const *techno = nullptr;
+  TechnoTypeClass const* techno = nullptr;
 
   switch (objecttype) {
     case RTTI_AIRCRAFT:
@@ -3403,7 +3402,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
     /*
     **	Remove the flag from a unit
     */
-    UnitClass *object = As_Unit(target);
+    UnitClass* object = As_Unit(target);
     if (object) {
       rc = object->Flag_Remove();
       if (rc && FlagLocation == target) {
@@ -3526,7 +3525,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_Attach(UnitClass *object, bool set_home) {
+bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (object && !object->IsInLimbo) {
@@ -3563,8 +3562,8 @@ void HouseClass::MPlayer_Defeated(void) {
   char txt[80];
   int i, j;
   unsigned char id;
-  HouseClass *hptr;
-  HouseClass *hptr2;
+  HouseClass* hptr;
+  HouseClass* hptr2;
   int num_alive;
   int num_humans;
   int all_allies;
@@ -3734,7 +3733,7 @@ void HouseClass::MPlayer_Defeated(void) {
     // Tell the MPATH server who won
     //
     if (Session.Type == GAME_MPATH) {
-      FILE *fp;
+      FILE* fp;
 
       fp = fopen("winner.txt", "wt");
       if (fp) {
@@ -3777,7 +3776,7 @@ void HouseClass::MPlayer_Defeated(void) {
 void HouseClass::Tally_Score(void) {
   HousesType house;
   HousesType house2;
-  HouseClass *hptr;
+  HouseClass* hptr;
   int score_index;
   int i, j, k;
   int max_index;
@@ -3906,9 +3905,9 @@ void HouseClass::Blowup_All(void) {
 
   int i;
   int damage;
-  UnitClass *uptr;
-  InfantryClass *iptr;
-  BuildingClass *bptr;
+  UnitClass* uptr;
+  InfantryClass* iptr;
+  BuildingClass* bptr;
   int count;
   WarheadType warhead;
 
@@ -3947,7 +3946,7 @@ void HouseClass::Blowup_All(void) {
   */
   for (i = 0; i < ::Aircraft.Count(); i++) {
     if (::Aircraft.Ptr(i)->House == this && !::Aircraft.Ptr(i)->IsInLimbo) {
-      AircraftClass *aptr = ::Aircraft.Ptr(i);
+      AircraftClass* aptr = ::Aircraft.Ptr(i);
 
       damage = aptr->Strength;
       aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
@@ -3962,7 +3961,7 @@ void HouseClass::Blowup_All(void) {
   */
   for (i = 0; i < ::Vessels.Count(); i++) {
     if (::Vessels.Ptr(i)->House == this && !::Vessels.Ptr(i)->IsInLimbo) {
-      VesselClass *vptr = ::Vessels.Ptr(i);
+      VesselClass* vptr = ::Vessels.Ptr(i);
 
       damage = vptr->Strength;
       vptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
@@ -4171,10 +4170,10 @@ void HouseClass::Sell_Wall(CELL cell) {
     OverlayType overlay = Map[cell].Overlay;
 
     if (overlay != OVERLAY_NONE && Map[cell].Owner == Class->House) {
-      OverlayTypeClass const &optr = OverlayTypeClass::As_Reference(overlay);
+      OverlayTypeClass const& optr = OverlayTypeClass::As_Reference(overlay);
 
       if (optr.IsWall) {
-        BuildingTypeClass const *btype = nullptr;
+        BuildingTypeClass const* btype = nullptr;
         switch (overlay) {
           case OVERLAY_SANDBAG_WALL:
             btype = &BuildingTypeClass::As_Reference(STRUCT_SANDBAG_WALL);
@@ -4245,7 +4244,7 @@ void HouseClass::Sell_Wall(CELL cell) {
  *                                                                                             *
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
-BuildingTypeClass const *HouseClass::Suggest_New_Building(void) const {
+BuildingTypeClass const* HouseClass::Suggest_New_Building(void) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (BuildStructure != STRUCT_NONE) {
@@ -4274,7 +4273,7 @@ BuildingTypeClass const *HouseClass::Suggest_New_Building(void) const {
  * HISTORY: * 09/27/1995 JLB : Created. * 10/02/1995 JLB : Allows for zone
  *specifics.                                               *
  *=============================================================================================*/
-BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
+BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   /*
@@ -4286,7 +4285,7 @@ BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
     **	Search for a suitable launch site for this missile.
     */
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *b = Buildings.Ptr(index);
+      BuildingClass* b = Buildings.Ptr(index);
       if (b && !b->IsInLimbo && b->House == this && *b == type) {
         if (zone == ZONE_NONE || Which_Zone(b) == zone) {
           return (b);
@@ -4313,7 +4312,7 @@ BuildingClass *HouseClass::Find_Building(StructType type, ZoneType zone) const {
  *                                                                                             *
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE HouseClass::Find_Build_Location(BuildingClass *building) const {
+COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   int zonerating[ZONE_COUNT];
@@ -4453,9 +4452,9 @@ void HouseClass::Recalc_Center(void) {
     int count = 0;
 
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass const *b = Buildings.Ptr(index);
+      BuildingClass const* b = Buildings.Ptr(index);
 
-      if (b != nullptr && !b->IsInLimbo && (HouseClass *)b->House == this &&
+      if (b != nullptr && !b->IsInLimbo && (HouseClass*)b->House == this &&
           b->Strength > 0) {
         /*
         **	Give more "weight" to buildings that cost more. The presumption
@@ -4508,9 +4507,9 @@ void HouseClass::Recalc_Center(void) {
       int radius = 0;
 
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass const *b = Buildings.Ptr(index);
+        BuildingClass const* b = Buildings.Ptr(index);
 
-        if (b != nullptr && !b->IsInLimbo && (HouseClass *)b->House == this &&
+        if (b != nullptr && !b->IsInLimbo && (HouseClass*)b->House == this &&
             b->Strength > 0) {
           radius += Distance(Center, b->Center_Coord());
         }
@@ -4521,9 +4520,9 @@ void HouseClass::Recalc_Center(void) {
       **	Determine the relative strength of each base defense zone.
       */
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass const *b = Buildings.Ptr(index);
+        BuildingClass const* b = Buildings.Ptr(index);
 
-        if (b != nullptr && !b->IsInLimbo && (HouseClass *)b->House == this &&
+        if (b != nullptr && !b->IsInLimbo && (HouseClass*)b->House == this &&
             b->Strength > 0) {
           ZoneType z = Which_Zone(b);
 
@@ -4566,7 +4565,7 @@ int HouseClass::Expert_AI(void) {
   *try *	to find a new enemy.
   */
   if (Enemy != HOUSE_NONE) {
-    HouseClass *h = HouseClass::As_Pointer(Enemy);
+    HouseClass* h = HouseClass::As_Pointer(Enemy);
 
     if (h == nullptr || !h->IsActive || h->IsDefeated || Is_Ally(h) ||
         h->BScan == 0) {
@@ -4590,7 +4589,7 @@ int HouseClass::Expert_AI(void) {
     int enemycount = 0;
 
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      HouseClass *h = HouseClass::As_Pointer(house);
+      HouseClass* h = HouseClass::As_Pointer(house);
       if (h != nullptr && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
         /*
         **	Perform a special restriction check to ensure that no enemy is
@@ -5011,7 +5010,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
   bool forced = (CurBuildings == 0);
   int index;
   for (index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass *a = Aircraft.Ptr(index);
+    AircraftClass* a = Aircraft.Ptr(index);
 
     if (a != nullptr && !a->IsInLimbo && a->House == this && a->Strength > 0) {
       if (!shuffle && a->Is_Weapon_Equipped() &&
@@ -5021,7 +5020,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
     }
   }
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass *u = Units.Ptr(index);
+    UnitClass* u = Units.Ptr(index);
 
     if (u != nullptr && !u->IsInLimbo && u->House == this && u->Strength > 0) {
       if (!shuffle && u->Is_Weapon_Equipped() &&
@@ -5040,7 +5039,7 @@ bool HouseClass::AI_Attack(UrgencyType) {
     }
   }
   for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass *i = Infantry.Ptr(index);
+    InfantryClass* i = Infantry.Ptr(index);
 
     if (i != nullptr && !i->IsInLimbo && i->House == this && i->Strength > 0) {
       if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR) &&
@@ -5130,7 +5129,7 @@ bool HouseClass::AI_Build_Engineer(UrgencyType) const {
 bool HouseClass::AI_Lower_Power(UrgencyType) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  BuildingClass *b = Find_Building(STRUCT_POWER);
+  BuildingClass* b = Find_Building(STRUCT_POWER);
   if (b != nullptr) {
     b->Sell_Back(1);
     return (true);
@@ -5187,7 +5186,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
   */
   for (int i = 0; i < ARRAY_SIZE(_types); i++) {
     if (urgency >= _types[i].Urgency) {
-      BuildingClass *b = Find_Building(_types[i].Structure);
+      BuildingClass* b = Find_Building(_types[i].Structure);
       if (b != nullptr) {
         b->Sell_Back(1);
         return (true);
@@ -5238,7 +5237,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
                 //		{STRUCT_BARRACKS,URGENCY_HIGH},
                 //		{STRUCT_TENT,URGENCY_HIGH},
                 {STRUCT_CONST, URGENCY_CRITICAL}};
-  BuildingClass *b = nullptr;
+  BuildingClass* b = nullptr;
 
   /*
   **	Find a structure to sell and then sell it. Bail from further scanning
@@ -5302,7 +5301,7 @@ int HouseClass::AI_Base_Defense(void) {
   if (core >= average) {
     static StructType _stype[] = {STRUCT_GTOWER,  STRUCT_TURRET, STRUCT_ATOWER,
                                   STRUCT_OBELISK, STRUCT_TESLA,  STRUCT_SAM};
-    BuildingClass *b;
+    BuildingClass* b;
 
     for (int index = 0; index < sizeof(_stype) / sizeof(_stype[0]); index++) {
       b = Find_Building(_stype[index], ZONE_CORE);
@@ -5325,7 +5324,7 @@ int HouseClass::AI_Base_Defense(void) {
     */
     bool nothreat = true;
     for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-      HouseClass *house = HouseClass::As_Pointer(h);
+      HouseClass* house = HouseClass::As_Pointer(h);
 
       if (house && house->IsActive && house->IsHuman && !Is_Ally(house)) {
         if ((house->ActiveAScan &
@@ -5364,7 +5363,7 @@ int HouseClass::AI_Building(void) {
   if (BuildStructure != STRUCT_NONE) return (TICKS_PER_SECOND);
 
   if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
-    BaseNodeClass *node = Base.Next_Buildable();
+    BaseNodeClass* node = Base.Next_Buildable();
     if (node) {
       BuildStructure = node->Type;
     }
@@ -5376,7 +5375,7 @@ int HouseClass::AI_Building(void) {
     */
     int quant = 0;
     for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-      HouseClass const *hptr = HouseClass::As_Pointer(h);
+      HouseClass const* hptr = HouseClass::As_Pointer(h);
 
       if (hptr != nullptr && hptr->IsActive && hptr->IsHuman &&
           quant < hptr->CurBuildings) {
@@ -5389,12 +5388,12 @@ int HouseClass::AI_Building(void) {
     //		if (CurBuildings >= quant) return(TICKS_PER_SECOND);
 
     BuildChoice.Free_All();
-    BuildChoiceClass *choiceptr;
+    BuildChoiceClass* choiceptr;
     int money = Available_Money();
     bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort &&
                       UQuantity[UNIT_HARVESTER] > 0);
-    BuildingTypeClass const *b = nullptr;
-    HouseClass const *enemy = nullptr;
+    BuildingTypeClass const* b = nullptr;
+    HouseClass const* enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
       enemy = HouseClass::As_Pointer(Enemy);
     }
@@ -5566,7 +5565,7 @@ int HouseClass::AI_Building(void) {
       }
       if (!airthreat) {
         for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-          HouseClass *h = HouseClass::As_Pointer(house);
+          HouseClass* h = HouseClass::As_Pointer(house);
           if (h != nullptr && !Is_Ally(house) && h->AScan != 0) {
             airthreat = true;
             break;
@@ -5770,17 +5769,17 @@ int HouseClass::AI_Unit(void) {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < Teams.Count(); index++) {
-      TeamClass *tptr = Teams.Ptr(index);
+      TeamClass* tptr = Teams.Ptr(index);
       if (tptr != nullptr) {
-        TeamTypeClass const *team = tptr->Class;
+        TeamTypeClass const* team = tptr->Class;
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
               !tptr->JustAltered)) &&
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            TechnoTypeClass const *memtype = team->Members[subindex].Class;
+            TechnoTypeClass const* memtype = team->Members[subindex].Class;
             if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-              counter[((UnitTypeClass const *)memtype)->Type] = 1;
+              counter[((UnitTypeClass const*)memtype)->Type] = 1;
             }
           }
         }
@@ -5793,14 +5792,14 @@ int HouseClass::AI_Unit(void) {
     *team active *	of that type.
     */
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      TeamTypeClass const *team = TeamTypes.Ptr(index);
+      TeamTypeClass const* team = TeamTypes.Ptr(index);
       if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
           (!team->IsAutocreate || IsAlerted)) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          TechnoTypeClass const *memtype = team->Members[subindex].Class;
+          TechnoTypeClass const* memtype = team->Members[subindex].Class;
 
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
-            int subtype = ((UnitTypeClass const *)memtype)->Type;
+            int subtype = ((UnitTypeClass const*)memtype)->Type;
             counter[subtype] =
                 std::max(counter[subtype], team->Members[subindex].Quantity);
           }
@@ -5813,7 +5812,7 @@ int HouseClass::AI_Unit(void) {
     **	in play.
     */
     for (int uindex = 0; uindex < Units.Count(); uindex++) {
-      UnitClass *unit = Units.Ptr(uindex);
+      UnitClass* unit = Units.Ptr(uindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter[unit->Class->Type] > 0) {
         counter[unit->Class->Type]--;
@@ -5853,7 +5852,7 @@ int HouseClass::AI_Unit(void) {
     int counter[UNIT_COUNT];
     int total = 0;
     for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-      UnitTypeClass const *utype = &UnitTypeClass::As_Reference(index);
+      UnitTypeClass const* utype = &UnitTypeClass::As_Reference(index);
       if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER) {
         if (utype->PrimaryWeapon != nullptr) {
           counter[index] = 20;
@@ -5909,9 +5908,9 @@ int HouseClass::AI_Vessel(void) {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < Teams.Count(); index++) {
-      TeamClass *tptr = Teams.Ptr(index);
+      TeamClass* tptr = Teams.Ptr(index);
       if (tptr) {
-        TeamTypeClass const *team = tptr->Class;
+        TeamTypeClass const* team = tptr->Class;
 
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
@@ -5919,7 +5918,7 @@ int HouseClass::AI_Vessel(void) {
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
-              counter[((VesselTypeClass const *)(team->Members[subindex].Class))
+              counter[((VesselTypeClass const*)(team->Members[subindex].Class))
                           ->Type] = 1;
             }
           }
@@ -5933,14 +5932,14 @@ int HouseClass::AI_Vessel(void) {
     *team active *	of that type.
     */
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      TeamTypeClass const *team = TeamTypes.Ptr(index);
+      TeamTypeClass const* team = TeamTypes.Ptr(index);
       if (team) {
         if (team->House == Class->House && team->IsPrebuilt &&
             (!team->IsAutocreate || IsAlerted)) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() == RTTI_VESSELTYPE) {
               int subtype =
-                  ((VesselTypeClass const *)(team->Members[subindex].Class))
+                  ((VesselTypeClass const*)(team->Members[subindex].Class))
                       ->Type;
               counter[subtype] =
                   std::max(counter[subtype], team->Members[subindex].Quantity);
@@ -5955,7 +5954,7 @@ int HouseClass::AI_Vessel(void) {
     **	in play.
     */
     for (int vindex = 0; vindex < Vessels.Count(); vindex++) {
-      VesselClass *unit = Vessels.Ptr(vindex);
+      VesselClass* unit = Vessels.Ptr(vindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter[unit->Class->Type] > 0) {
         counter[unit->Class->Type]--;
@@ -6028,9 +6027,9 @@ int HouseClass::AI_Infantry(void) {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < Teams.Count(); index++) {
-      TeamClass *tptr = Teams.Ptr(index);
+      TeamClass* tptr = Teams.Ptr(index);
       if (tptr != nullptr) {
-        TeamTypeClass const *team = tptr->Class;
+        TeamTypeClass const* team = tptr->Class;
 
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
@@ -6039,8 +6038,8 @@ int HouseClass::AI_Infantry(void) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             if (team->Members[subindex].Class->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
-              counter[((InfantryTypeClass const *)(team->Members[subindex]
-                                                       .Class))
+              counter[((InfantryTypeClass const*)(team->Members[subindex]
+                                                      .Class))
                           ->Type] += team->Members[subindex].Quantity +
                                      (team->IsReinforcable ? 1 : 0);
             }
@@ -6055,7 +6054,7 @@ int HouseClass::AI_Infantry(void) {
     *team active *	of that type.
     */
     for (int index = 0; index < TeamTypes.Count(); index++) {
-      TeamTypeClass const *team = TeamTypes.Ptr(index);
+      TeamTypeClass const* team = TeamTypes.Ptr(index);
       if (team != nullptr) {
         if (team->House == Class->House && team->IsPrebuilt &&
             (!team->IsAutocreate || IsAlerted)) {
@@ -6063,7 +6062,7 @@ int HouseClass::AI_Infantry(void) {
             if (team->Members[subindex].Class->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
               int subtype =
-                  ((InfantryTypeClass const *)(team->Members[subindex].Class))
+                  ((InfantryTypeClass const*)(team->Members[subindex].Class))
                       ->Type;
               //									counter[subtype]
               //= 1;
@@ -6081,7 +6080,7 @@ int HouseClass::AI_Infantry(void) {
     **	in play.
     */
     for (int uindex = 0; uindex < Infantry.Count(); uindex++) {
-      InfantryClass *infantry = Infantry.Ptr(uindex);
+      InfantryClass* infantry = Infantry.Ptr(uindex);
       if (infantry != nullptr && infantry->Is_Recruitable(this) &&
           counter[infantry->Class->Type] > 0) {
         counter[infantry->Class->Type]--;
@@ -6122,7 +6121,7 @@ int HouseClass::AI_Infantry(void) {
   }
 
   if (IsBaseBuilding) {
-    HouseClass const *enemy = nullptr;
+    HouseClass const* enemy = nullptr;
     if (Enemy != HOUSE_NONE) {
       enemy = HouseClass::As_Pointer(Enemy);
     }
@@ -6291,37 +6290,37 @@ int HouseClass::AI_Aircraft(void) {
  *                                                                                             *
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Production_Begun(TechnoClass const *product) {
+void HouseClass::Production_Begun(TechnoClass const* product) {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (product != nullptr) {
     switch (product->What_Am_I()) {
       case RTTI_UNIT:
-        if (*((UnitClass *)product) == BuildUnit) {
+        if (*((UnitClass*)product) == BuildUnit) {
           BuildUnit = UNIT_NONE;
         }
         break;
 
       case RTTI_VESSEL:
-        if (*((VesselClass *)product) == BuildVessel) {
+        if (*((VesselClass*)product) == BuildVessel) {
           BuildVessel = VESSEL_NONE;
         }
         break;
 
       case RTTI_INFANTRY:
-        if (*((InfantryClass *)product) == BuildInfantry) {
+        if (*((InfantryClass*)product) == BuildInfantry) {
           BuildInfantry = INFANTRY_NONE;
         }
         break;
 
       case RTTI_BUILDING:
-        if (*((BuildingClass *)product) == BuildStructure) {
+        if (*((BuildingClass*)product) == BuildStructure) {
           BuildStructure = STRUCT_NONE;
         }
         break;
 
       case RTTI_AIRCRAFT:
-        if (*((AircraftClass *)product) == BuildAircraft) {
+        if (*((AircraftClass*)product) == BuildAircraft) {
           BuildAircraft = AIRCRAFT_NONE;
         }
         break;
@@ -6348,7 +6347,7 @@ void HouseClass::Production_Begun(TechnoClass const *product) {
  *                                                                                             *
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Tracking_Remove(TechnoClass const *techno) {
+void HouseClass::Tracking_Remove(TechnoClass const* techno) {
   CHECK_EQ(Houses.ID(this), ID);
 
   int type;
@@ -6356,18 +6355,18 @@ void HouseClass::Tracking_Remove(TechnoClass const *techno) {
   switch (techno->What_Am_I()) {
     case RTTI_BUILDING:
       CurBuildings--;
-      BQuantity[((BuildingTypeClass const &)techno->Class_Of()).Type]--;
+      BQuantity[((BuildingTypeClass const&)techno->Class_Of()).Type]--;
       break;
 
     case RTTI_AIRCRAFT:
       CurAircraft--;
-      AQuantity[((AircraftTypeClass const &)techno->Class_Of()).Type]--;
+      AQuantity[((AircraftTypeClass const&)techno->Class_Of()).Type]--;
       break;
 
     case RTTI_INFANTRY:
       CurInfantry--;
-      if (!((InfantryClass *)techno)->IsTechnician) {
-        type = ((InfantryTypeClass const &)techno->Class_Of()).Type;
+      if (!((InfantryClass*)techno)->IsTechnician) {
+        type = ((InfantryTypeClass const&)techno->Class_Of()).Type;
         if (type >= INFANTRY_RA_COUNT) type -= INFANTRY_RA_COUNT;
         IQuantity[type]--;
       }
@@ -6375,14 +6374,14 @@ void HouseClass::Tracking_Remove(TechnoClass const *techno) {
 
     case RTTI_UNIT:
       CurUnits--;
-      type = ((UnitTypeClass const &)techno->Class_Of()).Type;
+      type = ((UnitTypeClass const&)techno->Class_Of()).Type;
       if (type >= UNIT_RA_COUNT) type -= UNIT_RA_COUNT;
       UQuantity[type]--;
       break;
 
     case RTTI_VESSEL:
       CurVessels--;
-      type = ((VesselTypeClass const &)techno->Class_Of()).Type;
+      type = ((VesselTypeClass const&)techno->Class_Of()).Type;
       if (type >= VESSEL_RA_COUNT) type -= VESSEL_RA_COUNT;
       VQuantity[type]--;
       break;
@@ -6408,7 +6407,7 @@ void HouseClass::Tracking_Remove(TechnoClass const *techno) {
  *                                                                                             *
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Tracking_Add(TechnoClass const *techno) {
+void HouseClass::Tracking_Add(TechnoClass const* techno) {
   CHECK_EQ(Houses.ID(this), ID);
 
   StructType building;
@@ -6421,7 +6420,7 @@ void HouseClass::Tracking_Add(TechnoClass const *techno) {
   switch (techno->What_Am_I()) {
     case RTTI_BUILDING:
       CurBuildings++;
-      building = ((BuildingTypeClass const &)techno->Class_Of()).Type;
+      building = ((BuildingTypeClass const&)techno->Class_Of()).Type;
       BQuantity[building]++;
       BScan |= (1L << building);
       if (Session.Type == GAME_INTERNET) {
@@ -6431,7 +6430,7 @@ void HouseClass::Tracking_Add(TechnoClass const *techno) {
 
     case RTTI_AIRCRAFT:
       CurAircraft++;
-      aircraft = ((AircraftTypeClass const &)techno->Class_Of()).Type;
+      aircraft = ((AircraftTypeClass const&)techno->Class_Of()).Type;
       AQuantity[aircraft]++;
       AScan |= (1L << aircraft);
       if (Session.Type == GAME_INTERNET) {
@@ -6441,12 +6440,12 @@ void HouseClass::Tracking_Add(TechnoClass const *techno) {
 
     case RTTI_INFANTRY:
       CurInfantry++;
-      infantry = ((InfantryTypeClass const &)techno->Class_Of()).Type;
-      if (!((InfantryClass *)techno)->IsTechnician) {
+      infantry = ((InfantryTypeClass const&)techno->Class_Of()).Type;
+      if (!((InfantryClass*)techno)->IsTechnician) {
         quant = infantry;
         if (quant >= INFANTRY_RA_COUNT) quant -= INFANTRY_RA_COUNT;
         IQuantity[quant]++;
-        if (!((InfantryTypeClass const &)techno->Class_Of()).IsCivilian &&
+        if (!((InfantryTypeClass const&)techno->Class_Of()).IsCivilian &&
             Session.Type == GAME_INTERNET) {
           InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
         }
@@ -6456,7 +6455,7 @@ void HouseClass::Tracking_Add(TechnoClass const *techno) {
 
     case RTTI_UNIT:
       CurUnits++;
-      unit = ((UnitTypeClass const &)techno->Class_Of()).Type;
+      unit = ((UnitTypeClass const&)techno->Class_Of()).Type;
       quant = unit;
       if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;
       UQuantity[quant]++;
@@ -6468,7 +6467,7 @@ void HouseClass::Tracking_Add(TechnoClass const *techno) {
 
     case RTTI_VESSEL:
       CurVessels++;
-      vessel = ((VesselTypeClass const &)techno->Class_Of()).Type;
+      vessel = ((VesselTypeClass const&)techno->Class_Of()).Type;
       quant = vessel;
       if (quant >= VESSEL_RA_COUNT) quant -= VESSEL_RA_COUNT;
       VQuantity[quant]++;
@@ -6501,7 +6500,7 @@ void HouseClass::Tracking_Add(TechnoClass const *techno) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-int *HouseClass::Factory_Counter(RTTIType rtti) {
+int* HouseClass::Factory_Counter(RTTIType rtti) {
   switch (rtti) {
     case RTTI_UNITTYPE:
     case RTTI_UNIT:
@@ -6544,11 +6543,11 @@ int *HouseClass::Factory_Counter(RTTIType rtti) {
  *                                                                                             *
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Active_Remove(TechnoClass const *techno) {
+void HouseClass::Active_Remove(TechnoClass const* techno) {
   if (techno == nullptr) return;
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
-    int *fptr = Factory_Counter(((BuildingClass *)techno)->Class->ToBuild);
+    int* fptr = Factory_Counter(((BuildingClass*)techno)->Class->ToBuild);
     if (fptr != nullptr) {
       *fptr = *fptr - 1;
     }
@@ -6570,11 +6569,11 @@ void HouseClass::Active_Remove(TechnoClass const *techno) {
  *                                                                                             *
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Active_Add(TechnoClass const *techno) {
+void HouseClass::Active_Add(TechnoClass const* techno) {
   if (techno == nullptr) return;
 
   if (techno->What_Am_I() == RTTI_BUILDING) {
-    int *fptr = Factory_Counter(((BuildingClass *)techno)->Class->ToBuild);
+    int* fptr = Factory_Counter(((BuildingClass*)techno)->Class->ToBuild);
     if (fptr != nullptr) {
       *fptr = *fptr + 1;
     }
@@ -6629,7 +6628,7 @@ ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
  *                                                                                             *
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
-ZoneType HouseClass::Which_Zone(ObjectClass const *object) const {
+ZoneType HouseClass::Which_Zone(ObjectClass const* object) const {
   CHECK_EQ(Houses.ID(this), ID);
 
   if (!object) return (ZONE_NONE);
@@ -6680,7 +6679,7 @@ void HouseClass::Recalc_Attributes(void) {
   **	old existing values.
   */
   for (int index = 0; index < Houses.Count(); index++) {
-    HouseClass *house = Houses.Ptr(index);
+    HouseClass* house = Houses.Ptr(index);
 
     if (house != nullptr) {
       house->BScan = 0;
@@ -6701,7 +6700,7 @@ void HouseClass::Recalc_Attributes(void) {
   *appropriate scan *	bits will be set for the owner house.
   */
   for (int index = 0; index < Units.Count(); index++) {
-    UnitClass const *unit = Units.Ptr(index);
+    UnitClass const* unit = Units.Ptr(index);
     unit->House->UScan |= (1L << unit->Class->Type);
     if (unit->IsLocked &&
         (Session.Type != GAME_NORMAL || !unit->House->IsHuman ||
@@ -6712,7 +6711,7 @@ void HouseClass::Recalc_Attributes(void) {
     }
   }
   for (int index = 0; index < Infantry.Count(); index++) {
-    InfantryClass const *infantry = Infantry.Ptr(index);
+    InfantryClass const* infantry = Infantry.Ptr(index);
     infantry->House->IScan |= (1L << infantry->Class->Type);
     if (infantry->IsLocked &&
         (Session.Type != GAME_NORMAL || !infantry->House->IsHuman ||
@@ -6724,7 +6723,7 @@ void HouseClass::Recalc_Attributes(void) {
     }
   }
   for (int index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass const *aircraft = Aircraft.Ptr(index);
+    AircraftClass const* aircraft = Aircraft.Ptr(index);
     aircraft->House->AScan |= (1L << aircraft->Class->Type);
     if (aircraft->IsLocked &&
         (Session.Type != GAME_NORMAL || !aircraft->House->IsHuman ||
@@ -6736,7 +6735,7 @@ void HouseClass::Recalc_Attributes(void) {
     }
   }
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass const *building = Buildings.Ptr(index);
+    BuildingClass const* building = Buildings.Ptr(index);
     if (building->Class->Type < 32) {
       building->House->BScan |= (1L << building->Class->Type);
       if (building->IsLocked &&
@@ -6750,7 +6749,7 @@ void HouseClass::Recalc_Attributes(void) {
     }
   }
   for (int index = 0; index < Vessels.Count(); index++) {
-    VesselClass const *vessel = Vessels.Ptr(index);
+    VesselClass const* vessel = Vessels.Ptr(index);
     vessel->House->VScan |= (1L << vessel->Class->Type);
     if (vessel->IsLocked &&
         (Session.Type != GAME_NORMAL || !vessel->House->IsHuman ||
@@ -6820,7 +6819,7 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
  * HISTORY: * 10/02/1995 JLB : Created. * 11/04/1996 JLB : Simplified to use
  *helper functions                                       *
  *=============================================================================================*/
-CELL HouseClass::Where_To_Go(FootClass const *object) const {
+CELL HouseClass::Where_To_Go(FootClass const* object) const {
   CHECK_EQ(Houses.ID(this), ID);
   CHECK_NE(object, nullptr);
 
@@ -6858,11 +6857,11 @@ CELL HouseClass::Where_To_Go(FootClass const *object) const {
 TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  UnitClass *best = nullptr;
+  UnitClass* best = nullptr;
   int value = 0;
 
   for (int index = 0; index < Units.Count(); index++) {
-    UnitClass *unit = Units.Ptr(index);
+    UnitClass* unit = Units.Ptr(index);
 
     if (unit && !unit->IsInLimbo && !Is_Ally(unit) &&
         unit->House->Which_Zone(unit) == ZONE_NONE) {
@@ -6921,7 +6920,7 @@ int HouseClass::Get_Quantity(AircraftType aircraft) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-FactoryClass *HouseClass::Fetch_Factory(RTTIType rtti) const {
+FactoryClass* HouseClass::Fetch_Factory(RTTIType rtti) const {
   int factory_index = -1;
 
   switch (rtti) {
@@ -6984,8 +6983,8 @@ FactoryClass *HouseClass::Fetch_Factory(RTTIType rtti) const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
-  int *factory_index = nullptr;
+void HouseClass::Set_Factory(RTTIType rtti, FactoryClass* factory) {
+  int* factory_index = nullptr;
 
   CHECK_NE(rtti, RTTI_NONE);
 
@@ -7047,7 +7046,7 @@ void HouseClass::Set_Factory(RTTIType rtti, FactoryClass *factory) {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Factory_Count(RTTIType rtti) const {
-  int const *ptr = ((HouseClass *)this)->Factory_Counter(rtti);
+  int const* ptr = ((HouseClass*)this)->Factory_Counter(rtti);
   if (ptr != nullptr) {
     return (*ptr);
   }
@@ -7089,9 +7088,9 @@ int HouseClass::Get_Quantity(StructType building) {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
  *=============================================================================================*/
-void HouseClass::Read_INI(CCINIClass &ini) {
-  HouseClass *p;      // Pointer to current player data.
-  char const *hname;  //	Pointer to house name.
+void HouseClass::Read_INI(CCINIClass& ini) {
+  HouseClass* p;      // Pointer to current player data.
+  char const* hname;  //	Pointer to house name.
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     hname = HouseTypeClass::As_Reference(index).IniName;
@@ -7142,7 +7141,7 @@ void HouseClass::Read_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Write_INI(CCINIClass &ini) {
+void HouseClass::Write_INI(CCINIClass& ini) {
   /*
   **	The identity house control object. Only if the house value differs from
   *the *	identity, will the data be written out.
@@ -7150,10 +7149,10 @@ void HouseClass::Write_INI(CCINIClass &ini) {
   HouseStaticClass control;
 
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
-    HouseClass *p = As_Pointer(i);
+    HouseClass* p = As_Pointer(i);
 
     if (p != nullptr) {
-      char const *name = p->Class->IniName;
+      char const* name = p->Class->IniName;
 
       ini.Clear(name);
       if (i >= HOUSE_MULTI1) continue;
@@ -7228,9 +7227,9 @@ bool HouseClass::Is_No_YakMig(void) const {
   **	Adjust the quantity down one if there is an aircraft in production. This
   *will *	allow production to resume after being held.
   */
-  FactoryClass const *factory = Fetch_Factory(RTTI_AIRCRAFT);
+  FactoryClass const* factory = Fetch_Factory(RTTI_AIRCRAFT);
   if (factory != nullptr && factory->Get_Object() != nullptr) {
-    AircraftClass const *air = (AircraftClass const *)factory->Get_Object();
+    AircraftClass const* air = (AircraftClass const*)factory->Get_Object();
     if (*air == AIRCRAFT_MIG || *air == AIRCRAFT_YAK) {
       quantity -= 1;
     }
@@ -7285,7 +7284,7 @@ bool HouseClass::Is_Hack_Prevented(RTTIType rtti, int value) const {
 bool HouseClass::Fire_Sale(void) {
   if (CurBuildings > 0) {
     for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass *b = Buildings.Ptr(index);
+      BuildingClass* b = Buildings.Ptr(index);
 
       if (b != nullptr && !b->IsInLimbo && b->House == this &&
           b->Strength > 0) {
@@ -7317,7 +7316,7 @@ void HouseClass::Do_All_To_Hunt(void) const {
   int index;
 
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass *unit = Units.Ptr(index);
+    UnitClass* unit = Units.Ptr(index);
 
     if (unit->House == this && unit->IsDown && !unit->IsInLimbo) {
       if (unit->Team) unit->Team->Remove(unit);
@@ -7326,7 +7325,7 @@ void HouseClass::Do_All_To_Hunt(void) const {
   }
 
   for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass *infantry = Infantry.Ptr(index);
+    InfantryClass* infantry = Infantry.Ptr(index);
 
     if (infantry->House == this && infantry->IsDown && !infantry->IsInLimbo) {
       if (infantry->Team) infantry->Team->Remove(infantry);
@@ -7335,7 +7334,7 @@ void HouseClass::Do_All_To_Hunt(void) const {
   }
 
   for (index = 0; index < Vessels.Count(); index++) {
-    VesselClass *vessel = Vessels.Ptr(index);
+    VesselClass* vessel = Vessels.Ptr(index);
 
     if (vessel->House == this && vessel->IsDown && !vessel->IsInLimbo) {
       if (vessel->Team) vessel->Team->Remove(vessel);
@@ -7344,7 +7343,7 @@ void HouseClass::Do_All_To_Hunt(void) const {
   }
 
   for (index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass *aircraft = Aircraft.Ptr(index);
+    AircraftClass* aircraft = Aircraft.Ptr(index);
 
     if (aircraft->House == this && aircraft->IsDown && !aircraft->IsInLimbo) {
       if (aircraft->Team) aircraft->Team->Remove(aircraft);
@@ -7421,7 +7420,7 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   int housecount = 0;
   int allycount = 0;
   for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
-    HouseClass *hptr = HouseClass::As_Pointer(house2);
+    HouseClass* hptr = HouseClass::As_Pointer(house2);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated) {
       housecount++;
       if (Is_Ally(hptr)) {
@@ -7464,7 +7463,7 @@ void HouseClass::Computer_Paranoid(void) {
   *human controlled houses.
   */
   for (HousesType house = HOUSE_MULTI1; house < HOUSE_COUNT; house++) {
-    HouseClass *hptr = HouseClass::As_Pointer(house);
+    HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated &&
         !hptr->IsHuman) {
       hptr->IsParanoid = true;
@@ -7474,7 +7473,7 @@ void HouseClass::Computer_Paranoid(void) {
       *friends with *	any other computer players.
       */
       for (HousesType house2 = HOUSE_MULTI1; house2 < HOUSE_COUNT; house2++) {
-        HouseClass *hptr2 = HouseClass::As_Pointer(house2);
+        HouseClass* hptr2 = HouseClass::As_Pointer(house2);
         if (hptr2 != nullptr && hptr2->IsActive && !hptr2->IsDefeated) {
           if (hptr2->IsHuman) {
             hptr->Make_Enemy(house2);
@@ -7543,9 +7542,9 @@ void HouseClass::Update_Spied_Power_Plants(void) {
   int count = CurrentObject.Count();
   if (count) {
     for (int index = 0; index < count; index++) {
-      ObjectClass const *tech = CurrentObject[index];
+      ObjectClass const* tech = CurrentObject[index];
       if (tech && tech->What_Am_I() == RTTI_BUILDING) {
-        BuildingClass *bldg = (BuildingClass *)tech;
+        BuildingClass* bldg = (BuildingClass*)tech;
         if (!bldg->IsOwnedByPlayer && *bldg == STRUCT_POWER ||
             *bldg == STRUCT_ADVANCED_POWER) {
           if (bldg->SpiedBy & (1 << (PlayerPtr->Class->House))) {
@@ -7578,20 +7577,20 @@ void HouseClass::Update_Spied_Power_Plants(void) {
  * HISTORY: * 11/01/1996 JLB : Created. * 11/04/1996 JLB : Not so strict on zone
  *requirement.                                       *
  *=============================================================================================*/
-CELL HouseClass::Find_Cell_In_Zone(TechnoClass const *techno,
+CELL HouseClass::Find_Cell_In_Zone(TechnoClass const* techno,
                                    ZoneType zone) const {
   if (techno == nullptr) return (0);
 
   int bestval = -1;
   int bestcell = 0;
-  TechnoTypeClass const *ttype = techno->Techno_Type_Class();
+  TechnoTypeClass const* ttype = techno->Techno_Type_Class();
 
   /*
   **	Pick a random location within the zone specified.
   */
   CELL trycell = Random_Cell_In_Zone(zone);
 
-  short const *list = nullptr;
+  short const* list = nullptr;
   if (techno->What_Am_I() == RTTI_BUILDING) {
     list = techno->Occupy_List(true);
   }

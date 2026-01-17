@@ -47,19 +47,19 @@
 //   file.Open(READ);  // Searches C:\GameData, then CD drive
 class CDFileClass : public BufferIOFileClass {
  public:
-  explicit CDFileClass(char const *filename);
+  explicit CDFileClass(char const* filename);
   CDFileClass();
   ~CDFileClass() override {}
 
-  char const *Set_Name(char const *filename) override;
-  int Open(char const *filename, int rights = READ) override;
+  char const* Set_Name(char const* filename) override;
+  int Open(char const* filename, int rights = READ) override;
   int Open(int rights = READ) override;
 
   void Searching(const bool on) { is_disabled_ = !on; }
 
   static bool Is_There_Search_Drives() { return !search_paths_.empty(); }
 
-  static void Add_Search_Drive(const std::string &path);
+  static void Add_Search_Drive(const std::string& path);
 
   // Appends new paths to the persistent search list and immediately scans them.
   //
@@ -117,9 +117,9 @@ class CDFileClass : public BufferIOFileClass {
 };
 
 #ifdef WIN32
-int harderr_handler(unsigned, unsigned, unsigned *);
+int harderr_handler(unsigned, unsigned, unsigned*);
 #else
-int harderr_handler(unsigned, unsigned, unsigned __far *);
+int harderr_handler(unsigned, unsigned, unsigned __far*);
 #endif
 
 int Get_CD_Drive(void);

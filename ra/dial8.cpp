@@ -158,7 +158,7 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-int Dial8Class::Action(unsigned flags, KeyNumType &key) {
+int Dial8Class::Action(unsigned flags, KeyNumType& key) {
   static int is_sel = 0;
 
   /*
@@ -237,7 +237,7 @@ int Dial8Class::Action(unsigned flags, KeyNumType &key) {
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
 int Dial8Class::Draw_Me(int forced) {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Redraw if parent indicates a redraw is needed
@@ -255,7 +255,7 @@ int Dial8Class::Draw_Me(int forced) {
     **	Draw background & decorations.
     */
     Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
-    for (const auto &point : FacePoint) {
+    for (const auto& point : FacePoint) {
       Draw_Box(point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
     }
 

@@ -517,7 +517,7 @@ static OverlayTypeClass const SteelCrate(
  *                                                                                             *
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const *ininame,
+OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const* ininame,
                                    int fullname, LandType ground,
                                    int damagelevels, int damagepoints,
                                    bool isradarvisible, bool iswooden,
@@ -557,7 +557,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, char const *ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *OverlayTypeClass::operator new(size_t) throw() {
+void* OverlayTypeClass::operator new(size_t) throw() {
   return (OverlayTypes.Alloc());
 }
 
@@ -577,8 +577,8 @@ void *OverlayTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void OverlayTypeClass::operator delete(void *pointer) {
-  OverlayTypes.Free((OverlayTypeClass *)pointer);
+void OverlayTypeClass::operator delete(void* pointer) {
+  OverlayTypes.Free((OverlayTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -663,7 +663,7 @@ void OverlayTypeClass::One_Time(void) {}
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayType OverlayTypeClass::From_Name(char const *name) {
+OverlayType OverlayTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
       if (stricmp(As_Reference(index).IniName, name) == 0) {
@@ -691,7 +691,7 @@ OverlayType OverlayTypeClass::From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-short const *OverlayTypeClass::Occupy_List(bool) const {
+short const* OverlayTypeClass::Occupy_List(bool) const {
   static short _simple[] = {0, REFRESH_EOL};
 
   return (_simple);
@@ -710,9 +710,9 @@ short const *OverlayTypeClass::Occupy_List(bool) const {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-unsigned char *OverlayTypeClass::Radar_Icon(int data) const {
-  unsigned char *icon =
-      (unsigned char *)Get_Radar_Data();        // Get pointer to radar icons
+unsigned char* OverlayTypeClass::Radar_Icon(int data) const {
+  unsigned char* icon =
+      (unsigned char*)Get_Radar_Data();         // Get pointer to radar icons
   if (icon != nullptr) icon += (data * 9) + 2;  // move icon ptr to correct icon
   return (icon);                                // Return the correct icon
 }
@@ -771,7 +771,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void OverlayTypeClass::Prep_For_Add(void) {
   for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
-    OverlayTypeClass const &overlay = As_Reference(index);
+    OverlayTypeClass const& overlay = As_Reference(index);
     if (overlay.Get_Image_Data() != NULL && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_GOLD1 ||
          index == OVERLAY_GEMS1)) {
@@ -820,7 +820,7 @@ bool OverlayTypeClass::Create_And_Place(CELL cell, HousesType) const {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *OverlayTypeClass::Create_One_Of(HouseClass *) const {
+ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass*) const {
   return (new OverlayClass(Type, -1));
 }
 
@@ -870,7 +870,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
 void OverlayTypeClass::Init(TheaterType theater) {
   if (theater != LastTheater) {
     for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
-      OverlayTypeClass &overlay = As_Reference(index);
+      OverlayTypeClass& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.
 
       if (overlay.IsTheater) {
@@ -886,7 +886,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
 
       IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
                                            // theater specific shape
-      if (overlay.RadarIcon != nullptr) delete[] (char *)overlay.RadarIcon;
+      if (overlay.RadarIcon != nullptr) delete[] (char*)overlay.RadarIcon;
       overlay.RadarIcon = Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
       IsTheaterShape = false;
     }
@@ -909,7 +909,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-OverlayTypeClass &OverlayTypeClass::As_Reference(OverlayType type) {
+OverlayTypeClass& OverlayTypeClass::As_Reference(OverlayType type) {
   return (*OverlayTypes.Ptr(type));
 }
 

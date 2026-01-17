@@ -102,7 +102,7 @@
 **	These are the text names for the various actions. If the action name
 *ends with "..." then *	this means that additional data is probably required.
 */
-static const char *ActionText[TACTION_COUNT] = {
+static const char* ActionText[TACTION_COUNT] = {
     "-No Action-",
     "Winner is...",
     "Loser is...",
@@ -203,7 +203,7 @@ ActionChoiceClass ActionChoices[TACTION_COUNT] = {{TACTION_NONE},
  *=============================================================================================*/
 void ActionChoiceClass::Draw_It(int, int x, int y, int width, int height,
                                 bool selected, TextPrintType flags) const {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
     if (selected) {
@@ -269,7 +269,7 @@ void TActionClass::Detach(TARGET target) {
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Build_INI_Entry(std::string &buffer) const {
+void TActionClass::Build_INI_Entry(std::string& buffer) const {
   buffer += std::format("{},{},{},{}", std::to_underlying(Action),
                         TeamTypes.Logical_ID(Team),
                         TriggerTypes.Logical_ID(Trigger), Data.Value);
@@ -304,7 +304,7 @@ void TActionClass::Read_INI(void) {
     case 0:
       Action = TActionType(atoi(strtok(nullptr, ",")));
 
-      char const *ptr = strtok(nullptr, ",");
+      char const* ptr = strtok(nullptr, ",");
       Team = TeamTypeClass::From_Name(ptr);
       assert(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
 
@@ -383,13 +383,13 @@ void TActionClass::Decode_Pointers(void) {}
  * HISTORY: * 02/22/1996 JLB : Created. * 04/10/1996 JLB : Added the ID
  *parameter.                                                  *
  *=============================================================================================*/
-bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
+bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
                               CELL cell) {
   /*
   **	Otherwise, take an appropriate action.
   */
-  HouseClass *hptr = HouseClass::As_Pointer(house);
-  TriggerClass *trig = nullptr;
+  HouseClass* hptr = HouseClass::As_Pointer(house);
+  TriggerClass* trig = nullptr;
   if (id != -1) {
     trig = Triggers.Raw_Ptr(id);
   }
@@ -410,7 +410,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     **	Display a text message overlayed onto the tactical map.
     */
     case TACTION_TEXT_TRIGGER: {
-      char const *message =
+      char const* message =
           TutorialTextOffsets[Data.Value] == 0xFFFF
               ? nullptr
               : TutorialTextData + TutorialTextOffsets[Data.Value];
@@ -426,7 +426,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     */
     case TACTION_LAUNCH_NUKES: {
       for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass *bldg = Buildings.Ptr(index);
+        BuildingClass* bldg = Buildings.Ptr(index);
         if (*bldg == STRUCT_MSLO) {
           bldg->Assign_Mission(MISSION_MISSILE);
         }
@@ -678,7 +678,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     */
     case TACTION_BEGIN_PRODUCTION:
       if (Data.House != HOUSE_NONE) {
-        HouseClass *specified_house = HouseClass::As_Pointer(Data.House);
+        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
         specified_house->Begin_Production();
       }
       break;
@@ -689,7 +689,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     */
     case TACTION_FIRE_SALE:
       if (Data.House != HOUSE_NONE) {
-        HouseClass *specified_house = HouseClass::As_Pointer(Data.House);
+        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
         specified_house->State = STATE_ENDGAME;
       }
       break;
@@ -699,7 +699,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
     */
     case TACTION_AUTOCREATE:
       if (Data.House != HOUSE_NONE) {
-        HouseClass *specified_house = HouseClass::As_Pointer(Data.House);
+        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
         specified_house->IsAlerted = true;
       }
       break;
@@ -762,7 +762,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
       */
       if (trig) {
         for (int u_index = 0; u_index < Units.Count(); u_index++) {
-          UnitClass *unit = Units.Ptr(u_index);
+          UnitClass* unit = Units.Ptr(u_index);
 
           if (unit && unit->Trigger == trig) {
             unit->Trigger = nullptr;
@@ -772,7 +772,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
         }
 
         for (int i_index = 0; i_index < Infantry.Count(); i_index++) {
-          InfantryClass *infantry = Infantry.Ptr(i_index);
+          InfantryClass* infantry = Infantry.Ptr(i_index);
 
           if (infantry && infantry->Trigger == trig) {
             infantry->Trigger = nullptr;
@@ -782,7 +782,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
         }
 
         for (int a_index = 0; a_index < Aircraft.Count(); a_index++) {
-          AircraftClass *aircraft = Aircraft.Ptr(a_index);
+          AircraftClass* aircraft = Aircraft.Ptr(a_index);
 
           if (aircraft && aircraft->Trigger == trig) {
             aircraft->Trigger = nullptr;
@@ -792,7 +792,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
         }
 
         for (int b_index = 0; b_index < Buildings.Count(); b_index++) {
-          BuildingClass *building = Buildings.Ptr(b_index);
+          BuildingClass* building = Buildings.Ptr(b_index);
 
           if (building && building->Trigger == trig) {
             building->Trigger = nullptr;
@@ -824,7 +824,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass *object, int id,
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TActionType Action_From_Name(char const *name) {
+TActionType Action_From_Name(char const* name) {
   if (name == nullptr) {
     return (TACTION_NONE);
   }
@@ -849,7 +849,7 @@ TActionType Action_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-char const *Name_From_Action(TActionType action) {
+char const* Name_From_Action(TActionType action) {
   return (ActionText[action]);
 }
 

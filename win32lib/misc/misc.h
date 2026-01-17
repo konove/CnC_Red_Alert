@@ -41,9 +41,9 @@
 #ifndef _WIN32  // Denzil 6/2/98 Watcom 11.0 complains without this check
 #define _WIN32
 #endif  // _WIN32
+#include <ddraw.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <ddraw.h>
 
 extern LPDIRECTDRAWSURFACE PaletteSurface;
 
@@ -61,7 +61,7 @@ void Wait_Blit(void);
 unsigned Get_Video_Hardware_Capabilities(void);
 
 extern "C" void Wait_Vert_Blank(void);
-extern "C" void Set_DD_Palette(void *palette);
+extern "C" void Set_DD_Palette(void* palette);
 
 /*
 ** Pointer to function to call if we detect a focus loss
@@ -141,7 +141,7 @@ extern BOOL OverlappedVideoBlits;  // Can video driver blit overlapped regions?
  */
 /*=========================================================================*/
 VOID __cdecl Prog_End(VOID);
-VOID __cdecl Exit(INT errorval, const BYTE *message, ...);
+VOID __cdecl Exit(INT errorval, const BYTE* message, ...);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: DELAY.CPP
@@ -155,18 +155,18 @@ void Vsync(void);
  */
 /*=========================================================================*/
 
-BYTE __cdecl Find_Argv(BYTE const *str);
+BYTE __cdecl Find_Argv(BYTE const* str);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: LIB.CPP
  */
 /*=========================================================================*/
-char *Find_Argv(char const *str);
-void Mono_Mem_Dump(void const *databuf, int bytes, int y);
+char* Find_Argv(char const* str);
+void Mono_Mem_Dump(void const* databuf, int bytes, int y);
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int *h, unsigned int *s, unsigned int *v);
+                        unsigned int* h, unsigned int* s, unsigned int* v);
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int *r, unsigned int *g, unsigned int *b);
+                        unsigned int* r, unsigned int* g, unsigned int* b);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: VERSION.CPP
@@ -238,14 +238,14 @@ int __cdecl Desired_Facing256(int x1, int y1, int x2, int y2);
 /*=========================================================================*/
 #endif
 
-void *__cdecl Build_Fading_Table(void const *palette, void const *dest,
+void* __cdecl Build_Fading_Table(void const* palette, void const* dest,
                                  long int color, long int frac);
 /*=========================================================================*/
 /* The following prototype is for the file: CRC.ASM
  */
 /*=========================================================================*/
 
-long __cdecl Calculate_CRC(void *buffer, long length);
+long __cdecl Calculate_CRC(void* buffer, long length);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: DETPROC.ASM
@@ -257,9 +257,9 @@ extern WORD __cdecl Operating_System(void);
 extern unsigned long random(unsigned long mod);
 // extern void  randomize ( void ) ;
 
-extern int __cdecl Clip_Rect(int *x, int *y, int *dw, int *dh, int width,
+extern int __cdecl Clip_Rect(int* x, int* y, int* dw, int* dh, int width,
                              int height);
-extern int __cdecl Confine_Rect(int *x, int *y, int dw, int dh, int width,
+extern int __cdecl Confine_Rect(int* x, int* y, int dw, int dh, int width,
                                 int height);
 
 /*=========================================================================*/

@@ -53,14 +53,14 @@ class UnitTrackerClass {
   void Clear_Unit_Total(void);
 
   int Get_Unit_Total(int unit_type);
-  long *Get_All_Totals(void);
+  long* Get_All_Totals(void);
   int Get_Unit_Count(void) { return (UnitCount); };
 
   void To_Network_Format(void);
   void To_PC_Format(void);
 
  private:
-  long *UnitTotals;
+  long* UnitTotals;
   int UnitCount;
   int InNetworkFormat;
 };

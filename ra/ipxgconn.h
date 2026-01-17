@@ -143,11 +143,11 @@ class IPXGlobalConnClass : public IPXConnClass {
   //.....................................................................
   // Send/Receive routines.
   //.....................................................................
-  virtual int Send_Packet(void *buf, int buflen, IPXAddressClass *address,
+  virtual int Send_Packet(void* buf, int buflen, IPXAddressClass* address,
                           int ack_req);
-  virtual int Receive_Packet(void *buf, int buflen, IPXAddressClass *address);
-  virtual int Get_Packet(void *buf, int *buflen, IPXAddressClass *address,
-                         unsigned short *product_id);
+  virtual int Receive_Packet(void* buf, int buflen, IPXAddressClass* address);
+  virtual int Get_Packet(void* buf, int* buflen, IPXAddressClass* address,
+                         unsigned short* product_id);
 
   //.....................................................................
   // This is for telling the connection it can cross a bridge.
@@ -178,7 +178,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   // used in SequencedConnClass.  This special version sends to the address
   // stored in the extra buffer within the Queue.
   //.....................................................................
-  virtual int Send(char *buf, int buflen, void *extrabuf, int extralen);
+  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen);
 
   //.....................................................................
   // This routine is overloaded from SequencedConnClass, because the

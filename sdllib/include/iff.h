@@ -75,7 +75,7 @@ typedef struct {
 } CompHeaderType;
 #pragma pack(pop)
 
-size_t Uncompress_Data(void *src, void *dst);
+size_t Uncompress_Data(void* src, void* dst);
 
 /*========================= Assembly Functions ============================*/
 
@@ -83,7 +83,7 @@ size_t Uncompress_Data(void *src, void *dst);
 extern "C" {
 #endif
 
-extern unsigned long LCW_Uncompress(void *source, void *dest,
+extern unsigned long LCW_Uncompress(void* source, void* dest,
                                     unsigned long length);
 
 #ifdef __cplusplus

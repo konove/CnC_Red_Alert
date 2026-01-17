@@ -73,7 +73,7 @@
 /*
 ********************************** Globals **********************************
 */
-char const *TeamTypeClass::TMissions[TMISSION_COUNT] = {
+char const* TeamTypeClass::TMissions[TMISSION_COUNT] = {
     "Attack Base",
     "Attack Units",
     "Attack Civil.",
@@ -92,7 +92,7 @@ char const *TeamTypeClass::TMissions[TMISSION_COUNT] = {
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *TeamTypeClass::VTable;
+void* TeamTypeClass::VTable;
 
 /***********************************************************************************************
  * TeamTypeClass::Validate -- validates teamtype pointer
@@ -172,12 +172,12 @@ TeamTypeClass::TeamTypeClass(void) {
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void TeamTypeClass::Init(void) {
-  TeamTypeClass *ptr;
+  TeamTypeClass* ptr;
 
   TeamTypes.Free_All();
 
   ptr = new TeamTypeClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractTypeClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractTypeClass) - 4))[0];
   delete ptr;
 }
 
@@ -203,9 +203,9 @@ void TeamTypeClass::Init(void) {
  *   12/07/1994 BR : Created.                                              *
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
-void TeamTypeClass::Read_INI(char *buffer) {
-  TeamTypeClass *team;  // Working team pointer.
-  char *tbuffer;        // Accumulation buffer of team names.
+void TeamTypeClass::Read_INI(char* buffer) {
+  TeamTypeClass* team;  // Working team pointer.
+  char* tbuffer;        // Accumulation buffer of team names.
   int len;              // Length of data in buffer.
   char buf[500];        // INI entry buffer
 
@@ -279,13 +279,13 @@ void TeamTypeClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(char *name, char *entry) {
+void TeamTypeClass::Fill_In(char* name, char* entry) {
   Validate();
   int num_classes;
-  char *p1;                      // parsing pointer
-  char *p2;                      // parsing pointer
+  char* p1;                      // parsing pointer
+  char* p2;                      // parsing pointer
   int i;                         // loop counter
-  TechnoTypeClass const *otype;  // ptr to type of object
+  TechnoTypeClass const* otype;  // ptr to type of object
   InfantryType i_id;             // infantry ID
   UnitType u_id;                 // unit ID
   AircraftType a_id;             // aircraft ID
@@ -407,7 +407,7 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
     MissionList[i] = mission;
   }
 
-  char *ptr = strtok(nullptr, ",");
+  char* ptr = strtok(nullptr, ",");
   if (ptr) {
     IsReinforcable = atoi(ptr);
   }
@@ -438,12 +438,12 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Write_INI(char *buffer, bool refresh) {
+void TeamTypeClass::Write_INI(char* buffer, bool refresh) {
   int index;
   int i;
   char buf[500];
-  TeamTypeClass *team;
-  char const *hname;
+  TeamTypeClass* team;
+  char const* hname;
 
   /*------------------------------------------------------------------------
   First, clear out all existing teamtypes in the old-style format.
@@ -537,15 +537,15 @@ void TeamTypeClass::Write_INI(char *buffer, bool refresh) {
  *   12/07/1994 BR : Created.                                              *
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
-void TeamTypeClass::Read_Old_INI(char *buffer) {
-  TeamTypeClass *team;  // Working team pointer.
-  char *tbuffer;        // Accumulation buffer of team names.
+void TeamTypeClass::Read_Old_INI(char* buffer) {
+  TeamTypeClass* team;  // Working team pointer.
+  char* tbuffer;        // Accumulation buffer of team names.
   int len;              // Length of data in buffer.
   char buf[256];        // INI entry buffer
-  char *p1;             // parsing pointer
-  char *p2;             // parsing pointer
+  char* p1;             // parsing pointer
+  char* p2;             // parsing pointer
   int index;
-  TechnoTypeClass const *otype;  // ptr to type of object
+  TechnoTypeClass const* otype;  // ptr to type of object
   InfantryType i_id;             // infantry ID
   UnitType u_id;                 // unit ID
   AircraftType a_id;             // infantry ID
@@ -706,7 +706,7 @@ void TeamTypeClass::Read_Old_INI(char *buffer) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass *TeamTypeClass::As_Pointer(char *name) {
+TeamTypeClass* TeamTypeClass::As_Pointer(char* name) {
   int i;
 
   if (name == nullptr) {
@@ -740,7 +740,7 @@ TeamTypeClass *TeamTypeClass::As_Pointer(char *name) {
 void TeamTypeClass::Remove(void) {
   Validate();
   int i;
-  TriggerClass *trigger;
+  TriggerClass* trigger;
 
   /*
   **	Remove all trigger references to this team.
@@ -773,7 +773,7 @@ void TeamTypeClass::Remove(void) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamMissionType TeamTypeClass::Mission_From_Name(char const *name) {
+TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
   int order;
 
   if (name) {
@@ -802,7 +802,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const *name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-char const *TeamTypeClass::Name_From_Mission(TeamMissionType order) {
+char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
     return ("None");
   } else {
@@ -825,10 +825,10 @@ char const *TeamTypeClass::Name_From_Mission(TeamMissionType order) {
  * HISTORY:                                                                *
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
-void *TeamTypeClass::operator new(size_t) throw() {
-  void *ptr = TeamTypes.Allocate();
+void* TeamTypeClass::operator new(size_t) throw() {
+  void* ptr = TeamTypes.Allocate();
   if (ptr) {
-    ((TeamTypeClass *)ptr)->IsActive = true;
+    ((TeamTypeClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -848,14 +848,14 @@ void *TeamTypeClass::operator new(size_t) throw() {
  * HISTORY:                                                                *
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::operator delete(void *ptr) {
+void TeamTypeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TeamTypeClass *)ptr)->IsActive = false;
+    ((TeamTypeClass*)ptr)->IsActive = false;
   }
-  TeamTypes.Free((TeamTypeClass *)ptr);
+  TeamTypes.Free((TeamTypeClass*)ptr);
 }
 
-TeamClass *TeamTypeClass::Create_One_Of(void) const {
+TeamClass* TeamTypeClass::Create_One_Of(void) const {
   if (ScenarioInit || TeamClass::Number[TeamTypes.ID(this)] < MaxAllowed) {
     return (new TeamClass(this, HouseClass::As_Pointer(House)));
   }
@@ -869,7 +869,7 @@ TARGET TeamTypeClass::As_Target(void) const {
 
 void TeamTypeClass::Destroy_All_Of(void) const {
   for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass *team = Teams.Ptr(index);
+    TeamClass* team = Teams.Ptr(index);
 
     if (team->Class == this) {
       delete team;
@@ -903,14 +903,14 @@ void TeamTypeClass::Destroy_All_Of(void) const {
  * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
  *even if no members in field.                        *
  *=============================================================================================*/
-TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house,
+TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house,
                                                        long utypes, long itypes,
                                                        bool alerted) {
-  TeamTypeClass const *best = nullptr;
+  TeamTypeClass const* best = nullptr;
   int bestvalue = 0;
 
   for (int index = 0; index < TeamTypes.Count(); index++) {
-    TeamTypeClass const *ttype = TeamTypes.Ptr(index);
+    TeamTypeClass const* ttype = TeamTypes.Ptr(index);
 
     if (ttype && ttype->House == house->Class->House &&
         TeamClass::Number[index] <
@@ -923,11 +923,11 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house,
       for (int ctype = 0; ctype < ttype->ClassCount; ctype++) {
         switch (ttype->Class[ctype]->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            ineeded |= (1 << ((InfantryTypeClass *)ttype->Class[ctype])->Type);
+            ineeded |= (1 << ((InfantryTypeClass*)ttype->Class[ctype])->Type);
             break;
 
           case RTTI_UNITTYPE:
-            uneeded |= (1 << ((UnitTypeClass *)ttype->Class[ctype])->Type);
+            uneeded |= (1 << ((UnitTypeClass*)ttype->Class[ctype])->Type);
             break;
         }
       }

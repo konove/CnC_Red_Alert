@@ -61,8 +61,8 @@ class ScreenClass {
   Set_Default_Mouse(MouseShapeType mouse);
   Force_Mouse_Shape(MouseShapeType mouse);
 
-  unsigned char *GamePalette;
-  unsigned char *BlackPalette;
+  unsigned char* GamePalette;
+  unsigned char* BlackPalette;
 };
 
 #endif

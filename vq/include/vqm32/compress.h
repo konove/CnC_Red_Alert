@@ -44,12 +44,12 @@
 extern "C" {
 #endif
 
-unsigned long cdecl LCW_Compress(char const *source, char *dest,
+unsigned long cdecl LCW_Compress(char const* source, char* dest,
                                  unsigned long length);
-unsigned long cdecl LCW_Uncompress(char const *source, char *dest,
+unsigned long cdecl LCW_Uncompress(char const* source, char* dest,
                                    unsigned long length);
-long AudioZap(void *source, void *dest, long size);
-long cdecl AudioUnzap(void *source, void *dest, long);
+long AudioZap(void* source, void* dest, long size);
+long cdecl AudioUnzap(void* source, void* dest, long);
 
 #ifdef __cplusplus
 }

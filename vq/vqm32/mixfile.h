@@ -81,7 +81,7 @@ typedef struct _MIXSubBlock {
  * Entries - Array of 'Count' MIXSubBlock structure entries.
  */
 typedef struct _MIXHandle {
-  char *Name;
+  char* Name;
   long Size;
   long FH;
   long Count;
@@ -92,9 +92,9 @@ typedef struct _MIXHandle {
  * PROTOTYPES
  *-------------------------------------------------------------------------*/
 
-MIXHandle *OpenMix(char *name);
-void CloseMix(MIXHandle *mix);
-long OpenMixEntry(MIXHandle *mix, char *name);
+MIXHandle* OpenMix(char* name);
+void CloseMix(MIXHandle* mix);
+long OpenMixEntry(MIXHandle* mix, char* name);
 
 /* Restore original alignment */
 #ifdef __WATCOMC__

@@ -61,7 +61,7 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
  public:
   IPXInterfaceClass(void);
   // virtual ~IPXInterfaceClass(void){Close();};
-  bool Get_Network_Card_Address(int card_number, SOCKADDR_IPX *addr);
+  bool Get_Network_Card_Address(int card_number, SOCKADDR_IPX* addr);
 #ifndef PORTABLE
   virtual long Message_Handler(HWND window, UINT message, UINT wParam,
                                LONG lParam);

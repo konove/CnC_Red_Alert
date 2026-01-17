@@ -110,53 +110,53 @@ typedef struct {
 */
 
 extern "C" {
-extern VOID *MaskPage;
-extern VOID *BackGroundPage;
+extern VOID* MaskPage;
+extern VOID* BackGroundPage;
 extern LONG _ShapeBufferSize;
-extern BYTE *_ShapeBuffer;
+extern BYTE* _ShapeBuffer;
 }
 
-VOID cdecl Init_Priority_System(GraphicBufferClass *mask,
-                                GraphicBufferClass *back);
+VOID cdecl Init_Priority_System(GraphicBufferClass* mask,
+                                GraphicBufferClass* back);
 
 /*
 -------------------------------- drawshp.asm --------------------------------
 */
 
 extern "C" {
-WORD Draw_Shape(GraphicViewPortClass *gvp, VOID const *shape, LONG x, LONG y,
+WORD Draw_Shape(GraphicViewPortClass* gvp, VOID const* shape, LONG x, LONG y,
                 LONG flags, ...);
 }
 
 /*
 ---------------------------------- shape.c ----------------------------------
 */
-short cdecl Get_Shape_Data(VOID const *shape, WORD data);
-int cdecl Extract_Shape_Count(VOID const *buffer);
-void *cdecl Extract_Shape(VOID const *buffer, int shape);
-int cdecl Restore_Shape_Height(VOID *shape);
-int cdecl Set_Shape_Height(VOID const *shape, WORD newheight);
+short cdecl Get_Shape_Data(VOID const* shape, WORD data);
+int cdecl Extract_Shape_Count(VOID const* buffer);
+void* cdecl Extract_Shape(VOID const* buffer, int shape);
+int cdecl Restore_Shape_Height(VOID* shape);
+int cdecl Set_Shape_Height(VOID const* shape, WORD newheight);
 
 extern "C" {
-int Get_Shape_Width(VOID const *shape);
-int Get_Shape_Height(VOID const *shape);
-int Get_Shape_Original_Height(VOID const *shape);
-int Get_Shape_Uncomp_Size(VOID const *shape);
+int Get_Shape_Width(VOID const* shape);
+int Get_Shape_Height(VOID const* shape);
+int Get_Shape_Original_Height(VOID const* shape);
+int Get_Shape_Uncomp_Size(VOID const* shape);
 }
 
 /*
 ------------------------------- setshape.asm --------------------------------
 */
 extern "C" {
-VOID Set_Shape_Buffer(void const *buffer, int size);
+VOID Set_Shape_Buffer(void const* buffer, int size);
 }
 /*
 ------------------------------- shapeinf.asm --------------------------------
 */
-WORD cdecl Get_Shape_Flags(VOID const *shape);
-int cdecl Get_Shape_Size(VOID const *shape);
-int cdecl Get_Shape_Scaled_Width(VOID const *shape, WORD scale);
-int cdecl Get_Shape_Scaled_Height(VOID const *shape, WORD scale);
+WORD cdecl Get_Shape_Flags(VOID const* shape);
+int cdecl Get_Shape_Size(VOID const* shape);
+int cdecl Get_Shape_Scaled_Width(VOID const* shape, WORD scale);
+int cdecl Get_Shape_Scaled_Height(VOID const* shape, WORD scale);
 
 #endif  // SHAPE_H
 

@@ -85,7 +85,7 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *BulletClass::VTable;
+void* BulletClass::VTable;
 
 /***********************************************************************************************
  * BulletClass::Validate -- validates bullet pointer
@@ -159,10 +159,10 @@ BulletClass::BulletClass(void) : Class(nullptr) {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void *BulletClass::operator new(size_t) throw() {
-  void *ptr = Bullets.Allocate();
+void* BulletClass::operator new(size_t) throw() {
+  void* ptr = Bullets.Allocate();
   if (ptr) {
-    ((BulletClass *)ptr)->IsActive = true;
+    ((BulletClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -181,11 +181,11 @@ void *BulletClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::operator delete(void *ptr) {
+void BulletClass::operator delete(void* ptr) {
   if (ptr) {
-    ((BulletClass *)ptr)->IsActive = false;
+    ((BulletClass*)ptr)->IsActive = false;
   }
-  Bullets.Free((BulletClass *)ptr);
+  Bullets.Free((BulletClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -238,7 +238,7 @@ BulletClass::BulletClass(BulletType id)
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-short const *BulletClass::Occupy_List(void) const {
+short const* BulletClass::Occupy_List(void) const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:
@@ -251,7 +251,7 @@ short const *BulletClass::Occupy_List(void) const {
     default:
       if (Altitude) {
         static CELL _list[10];
-        const short *ptr = Coord_Spillage_List(Coord, 5);
+        const short* ptr = Coord_Spillage_List(Coord, 5);
         int index = 0;
         CELL cell1 = Coord_Cell(Coord);
 
@@ -399,7 +399,7 @@ void BulletClass::AI(void) {
       Mark();
       //			IsLocked = true;
       if (!Class->IsHigh) {
-        CellClass *cellptr = &Map[Coord_Cell(coord)];
+        CellClass* cellptr = &Map[Coord_Cell(coord)];
         if (cellptr->Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
           forced = true;
@@ -458,7 +458,7 @@ void BulletClass::AI(void) {
           *missile *	damage affects the aircraft target.
           */
           if (Distance(TarCom) < 0x0080) {
-            AircraftClass *object = As_Aircraft(TarCom);
+            AircraftClass* object = As_Aircraft(TarCom);
 
             int str = Strength;
             if (object) object->Take_Damage(str, 0, Class->Warhead, Payback);
@@ -514,7 +514,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
-  void const *shapeptr = Class->Get_Image_Data();
+  void const* shapeptr = Class->Get_Image_Data();
   if (!shapeptr) return;
 
   /*
@@ -575,12 +575,12 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
 void BulletClass::Init(void) {
-  BulletClass *ptr;
+  BulletClass* ptr;
 
   Bullets.Free_All();
 
   ptr = new BulletClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -606,7 +606,7 @@ void BulletClass::Init(void) {
  *=============================================================================================*/
 void BulletClass::Detach(TARGET target, bool all) {
   Validate();
-  ObjectClass *obj = As_Object(target);
+  ObjectClass* obj = As_Object(target);
 
   if (obj == Payback) {
     Payback = nullptr;

@@ -217,7 +217,7 @@ int LoadOptionsClass::Process(void) {
   /*
   **	Buttons
   */
-  ControlClass *commands = nullptr;  // the button list
+  ControlClass* commands = nullptr;  // the button list
 
   switch (Style) {
     case LOAD:
@@ -364,13 +364,13 @@ int LoadOptionsClass::Process(void) {
     **	action button according to the style of this dialog box.
     */
     if (input == KN_RETURN || input == (BUTTON_EDIT | KN_BUTTON)) {
-      ToggleClass *toggle = nullptr;
+      ToggleClass* toggle = nullptr;
       switch (Style) {
         case SAVE:
           input = (KeyNumType)(BUTTON_SAVE | KN_BUTTON);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
-          toggle = (ToggleClass *)commands->Extract_Gadget(BUTTON_SAVE);
+          toggle = (ToggleClass*)commands->Extract_Gadget(BUTTON_SAVE);
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
@@ -382,7 +382,7 @@ int LoadOptionsClass::Process(void) {
           input = (KeyNumType)(BUTTON_LOAD | KN_BUTTON);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = (ToggleClass *)commands->Extract_Gadget(BUTTON_LOAD);
+          toggle = (ToggleClass*)commands->Extract_Gadget(BUTTON_LOAD);
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -393,7 +393,7 @@ int LoadOptionsClass::Process(void) {
           input = (KeyNumType)(BUTTON_DELETE | KN_BUTTON);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = (ToggleClass *)commands->Extract_Gadget(BUTTON_DELETE);
+          toggle = (ToggleClass*)commands->Extract_Gadget(BUTTON_DELETE);
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -519,8 +519,8 @@ int LoadOptionsClass::Process(void) {
           if (listbtn.Count() == 0) {
             process = false;
           } else {
-            ToggleClass *toggle =
-                (ToggleClass *)commands->Extract_Gadget(BUTTON_DELETE);
+            ToggleClass* toggle =
+                (ToggleClass*)commands->Extract_Gadget(BUTTON_DELETE);
             if (toggle != nullptr) {
               //							toggle->IsOn
               //= false;
@@ -557,7 +557,7 @@ int LoadOptionsClass::Process(void) {
             **	Strip any leading parenthesis off of the description.
             */
             if (game_descr[0] == '(') {
-              char *ptr = strchr(game_descr, ')');
+              char* ptr = strchr(game_descr, ')');
               if (ptr != nullptr) {
                 memmove(game_descr, ptr + 1, strlen(ptr + 1) + 1);
                 strtrim(game_descr);
@@ -606,7 +606,7 @@ int LoadOptionsClass::Process(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void LoadOptionsClass::Clear_List(ListClass *list) {
+void LoadOptionsClass::Clear_List(ListClass* list) {
   /*
   ** For every item in the list, free its buffer & remove it from the list.
   */
@@ -636,8 +636,8 @@ void LoadOptionsClass::Clear_List(ListClass *list) {
  * HISTORY: * 02/14/1995 BR : Created. * 06/25/1995 JLB : Shows which saved
  *games are "(old)".                                     *
  *=============================================================================================*/
-void LoadOptionsClass::Fill_List(ListClass *list) {
-  FileEntryClass *fdata;  // for adding entries to 'Files'
+void LoadOptionsClass::Fill_List(ListClass* list) {
+  FileEntryClass* fdata;  // for adding entries to 'Files'
   char descr[DESCRIP_MAX + 32];
   unsigned scenario;  // scenario #
   HousesType house;   // house
@@ -742,7 +742,7 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
   if (Files.Count() > 0) {
-    qsort(&Files[0], Files.Count(), sizeof(FileEntryClass *), Compare);
+    qsort(&Files[0], Files.Count(), sizeof(FileEntryClass*), Compare);
   }
 
   /*
@@ -764,7 +764,7 @@ void LoadOptionsClass::Fill_List(ListClass *list) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int LoadOptionsClass::Num_From_Ext(const char *fname) {
+int LoadOptionsClass::Num_From_Ext(const char* fname) {
   auto ext = std::filesystem::path(fname).extension().string();
 
   int num = 0;
@@ -786,11 +786,11 @@ int LoadOptionsClass::Num_From_Ext(const char *fname) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int LoadOptionsClass::Compare(const void *p1, const void *p2) {
+int LoadOptionsClass::Compare(const void* p1, const void* p2) {
   class FileEntryClass *fe1, *fe2;
 
-  fe1 = *((class FileEntryClass **)p1);
-  fe2 = *((class FileEntryClass **)p2);
+  fe1 = *((class FileEntryClass**)p1);
+  fe2 = *((class FileEntryClass**)p2);
 
   if (fe1->DateTime > fe2->DateTime) return (-1);
   if (fe1->DateTime < fe2->DateTime) return (1);

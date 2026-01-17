@@ -131,12 +131,12 @@ void GameOptionsClass::Process(void) {
   /*
   **	Variables.
   */
-  TextButtonClass *buttons = nullptr;
+  TextButtonClass* buttons = nullptr;
   int selection;
   bool pressed;
   int curbutton = 6;
   int y;
-  TextButtonClass *buttonsel[sizeof(_constants) / sizeof(_constants[0])];
+  TextButtonClass* buttonsel[sizeof(_constants) / sizeof(_constants[0])];
 
   Set_Logic_Page(SeenBuff);
 
@@ -167,7 +167,7 @@ void GameOptionsClass::Process(void) {
       y = OptionY + ButtonResumeY;
     }
 
-    TextButtonClass *g = new TextButtonClass(_constants[index].ID, text,
+    TextButtonClass* g = new TextButtonClass(_constants[index].ID, text,
                                              TPF_6PT_GRAD | TPF_NOSHADOW, 0, y);
 
     if (g->Width > maxwidth) {
@@ -188,7 +188,7 @@ void GameOptionsClass::Process(void) {
   **	Force all button lengths to match the maximum length of the widest
   *button.
   */
-  GadgetClass *g = buttons;
+  GadgetClass* g = buttons;
   while (g) {
     g->Width = std::max(maxwidth, 90 * resfactor);
     g->X = OptionX + (OptionWidth - g->Width) / 2;

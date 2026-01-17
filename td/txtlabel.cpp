@@ -60,7 +60,7 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 
-TextLabelClass::TextLabelClass(char *txt, int x, int y, int color,
+TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
                                TextPrintType style)
     : GadgetClass(x, y, 1, 1, 0, 0) {
   Text = txt;

@@ -55,17 +55,17 @@
 */
 class WeaponTypeClass {
  public:
-  WeaponTypeClass(char const *name);
-  WeaponTypeClass(NoInitClass const &) {}
+  WeaponTypeClass(char const* name);
+  WeaponTypeClass(NoInitClass const&) {}
   ~WeaponTypeClass(void);
 
-  void *operator new(size_t) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  void operator delete(void *pointer);
+  void* operator new(size_t) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  void operator delete(void* pointer);
 
-  char const *Name(void) const { return (IniName); }
-  bool Read_INI(CCINIClass &ini);
-  static WeaponTypeClass *As_Pointer(WeaponType weapon);
+  char const* Name(void) const { return (IniName); }
+  bool Read_INI(CCINIClass& ini);
+  static WeaponTypeClass* As_Pointer(WeaponType weapon);
   void Code_Pointers(void) {}
   void Decode_Pointers(void) {}
   ThreatType Allowed_Threats(void) const;
@@ -80,7 +80,7 @@ class WeaponTypeClass {
   /*
   **	This is the identifying name of this weapon.
   */
-  char const *IniName;
+  char const* IniName;
 
   /*
   **	Increase the weapon speed if the target is flying.
@@ -122,7 +122,7 @@ class WeaponTypeClass {
   *specified here. *	If this object does not fire anything, then this value
   *will be BULLET_NONE.
   */
-  BulletTypeClass const *Bullet;
+  BulletTypeClass const* Bullet;
 
   /*
   **	This is the damage (explosive load) to be assigned to the projectile
@@ -139,7 +139,7 @@ class WeaponTypeClass {
   /*
   **	Warhead to attach to the projectile.
   */
-  WarheadTypeClass const *WarheadPtr;
+  WarheadTypeClass const* WarheadPtr;
 
   /*
   **	Objects that fire (which can be buildings as well) will fire at a
@@ -168,7 +168,7 @@ class WeaponTypeClass {
   AnimType Anim;
 };
 
-WeaponType Weapon_From_Name(char const *name);
-ArmorType Armor_From_Name(char const *name);
+WeaponType Weapon_From_Name(char const* name);
+ArmorType Armor_From_Name(char const* name);
 
 #endif

@@ -61,12 +61,12 @@ class SmudgeClass : public ObjectClass {
   /*-------------------------------------------------------------------
   **	Constructors and destructors.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const &x) : ObjectClass(x), Class(Class) {};
+  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
   SmudgeClass(void) : Class(nullptr) {};
   operator SmudgeType(void) const { return Class->Type; };
   virtual ~SmudgeClass(void) {
@@ -79,15 +79,15 @@ class SmudgeClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char *);
-  static void Write_INI(char *);
-  static char const *INI_Name(void) { return "SMUDGE"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char*);
+  static void Write_INI(char*);
+  static char const* INI_Name(void) { return "SMUDGE"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
   virtual bool Mark(MarkType);
   virtual void Draw_It(int, int, WindowNumberType) {};
 
@@ -104,12 +104,12 @@ class SmudgeClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  SmudgeTypeClass const *const Class;
+  SmudgeTypeClass const* const Class;
 
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

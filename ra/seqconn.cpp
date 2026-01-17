@@ -163,22 +163,22 @@ void SequencedConnClass::Init(void) { Queue->Init(); } /* end of Init */
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int SequencedConnClass::Send_Packet(void *buf, int buflen, int ack_req) {
+int SequencedConnClass::Send_Packet(void* buf, int buflen, int ack_req) {
   /*........................................................................
   Set the magic # for the packet
   ........................................................................*/
-  ((CommHeaderType *)PacketBuf)->MagicNumber = MagicNum;
+  ((CommHeaderType*)PacketBuf)->MagicNumber = MagicNum;
 
   /*........................................................................
   Set the packet Code: DATA_ACK if it requires an ACK, NOACK if it doesn't
   Set the packet ID to the appropriate counter value.
   ........................................................................*/
   if (ack_req) {
-    ((CommHeaderType *)PacketBuf)->Code = PACKET_DATA_ACK;
-    ((CommHeaderType *)PacketBuf)->PacketID = NumSendAck;
+    ((CommHeaderType*)PacketBuf)->Code = PACKET_DATA_ACK;
+    ((CommHeaderType*)PacketBuf)->PacketID = NumSendAck;
   } else {
-    ((CommHeaderType *)PacketBuf)->Code = PACKET_DATA_NOACK;
-    ((CommHeaderType *)PacketBuf)->PacketID = NumSendNoAck;
+    ((CommHeaderType*)PacketBuf)->Code = PACKET_DATA_NOACK;
+    ((CommHeaderType*)PacketBuf)->PacketID = NumSendNoAck;
   }
 
   /*........................................................................
@@ -223,18 +223,18 @@ int SequencedConnClass::Send_Packet(void *buf, int buflen, int ack_req) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int SequencedConnClass::Receive_Packet(void *buf, int buflen) {
-  CommHeaderType *packet;       // ptr to this packet
-  SendQueueType *send_entry;    // ptr to send entry header
-  ReceiveQueueType *rec_entry;  // ptr to receive entry header
-  CommHeaderType *entry_data;   // ptr to queue entry data
+int SequencedConnClass::Receive_Packet(void* buf, int buflen) {
+  CommHeaderType* packet;       // ptr to this packet
+  SendQueueType* send_entry;    // ptr to send entry header
+  ReceiveQueueType* rec_entry;  // ptr to receive entry header
+  CommHeaderType* entry_data;   // ptr to queue entry data
   int save_packet = 1;          // 0 = this is a resend, or
                                 //  out-of-order packet
 
   /*
   --------------------------- Check the magic # ----------------------------
   */
-  packet = (CommHeaderType *)buf;
+  packet = (CommHeaderType*)buf;
   if (packet->MagicNumber != MagicNum) return (false);
 
   /*------------------------------------------------------------------------
@@ -267,7 +267,7 @@ int SequencedConnClass::Receive_Packet(void *buf, int buflen) {
           ...............................................................*/
           rec_entry = Queue->Next_Receive();
           if (rec_entry) {
-            entry_data = (CommHeaderType *)rec_entry->Buffer;
+            entry_data = (CommHeaderType*)rec_entry->Buffer;
             if (entry_data->PacketID == packet->PacketID &&
                 entry_data->Code == PACKET_DATA_ACK) {
               rec_entry->IsACK = 0;
@@ -312,7 +312,7 @@ int SequencedConnClass::Receive_Packet(void *buf, int buflen) {
       ............... If ptr is valid, get ptr to its data ...............
       */
       if (send_entry != NULL) {
-        entry_data = (CommHeaderType *)send_entry->Buffer;
+        entry_data = (CommHeaderType*)send_entry->Buffer;
 
         /*
         .............. If ACK is for this entry, mark it ................
@@ -355,8 +355,8 @@ int SequencedConnClass::Receive_Packet(void *buf, int buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int SequencedConnClass::Get_Packet(void *buf, int *buflen) {
-  ReceiveQueueType *rec_entry;  // ptr to receive entry header
+int SequencedConnClass::Get_Packet(void* buf, int* buflen) {
+  ReceiveQueueType* rec_entry;  // ptr to receive entry header
   int packetlen;                // size of received packet
 
   /*
@@ -407,8 +407,8 @@ int SequencedConnClass::Get_Packet(void *buf, int *buflen) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int SequencedConnClass::Service_Send_Queue(void) {
-  SendQueueType *send_entry;   // ptr to send queue entry
-  CommHeaderType *packet_hdr;  // packet header
+  SendQueueType* send_entry;   // ptr to send queue entry
+  CommHeaderType* packet_hdr;  // packet header
   unsigned long curtime;       // current time
 
   /*------------------------------------------------------------------------
@@ -428,7 +428,7 @@ int SequencedConnClass::Service_Send_Queue(void) {
     /*
     .................. Update this queue's response time ..................
     */
-    packet_hdr = (CommHeaderType *)send_entry->Buffer;
+    packet_hdr = (CommHeaderType*)send_entry->Buffer;
     if (packet_hdr->Code == PACKET_DATA_ACK) {
       Queue->Add_Delay(Time() - send_entry->FirstTime);
     }
@@ -466,12 +466,12 @@ int SequencedConnClass::Service_Send_Queue(void) {
         require an ACK, mark it as ACK'd; then, the next time through,
         it will just be removed from the queue.
         ...............................................................*/
-        packet_hdr = (CommHeaderType *)send_entry->Buffer;
+        packet_hdr = (CommHeaderType*)send_entry->Buffer;
         if (packet_hdr->Code == PACKET_DATA_NOACK) send_entry->IsACK = 1;
       }
 
 #ifdef DEBUG_SEQ
-      packet_hdr = (CommHeaderType *)send_entry->Buffer;
+      packet_hdr = (CommHeaderType*)send_entry->Buffer;
       if (packet_hdr->Code == PACKET_DATA_NOACK) {
         printf("Sending PACKET_DATA_NOACK (%d)\n", packet_hdr->PacketID);
       } else {
@@ -517,8 +517,8 @@ int SequencedConnClass::Service_Send_Queue(void) {
  *=========================================================================*/
 int SequencedConnClass::Service_Receive_Queue(void) {
   CommHeaderType ackpacket;     // ACK packet to send
-  ReceiveQueueType *rec_entry;  // ptr to receive entry header
-  CommHeaderType *packet_hdr;   // packet header
+  ReceiveQueueType* rec_entry;  // ptr to receive entry header
+  CommHeaderType* packet_hdr;   // packet header
 
   /*------------------------------------------------------------------------
   Get a pointer to the next received entry
@@ -529,7 +529,7 @@ int SequencedConnClass::Service_Receive_Queue(void) {
   /*------------------------------------------------------------------------
   If this packet doesn't require an ACK, mark it as ACK'd.
   ------------------------------------------------------------------------*/
-  packet_hdr = (CommHeaderType *)(rec_entry->Buffer);
+  packet_hdr = (CommHeaderType*)(rec_entry->Buffer);
   if (packet_hdr->Code == PACKET_DATA_NOACK) rec_entry->IsACK = 1;
 
   /*------------------------------------------------------------------------
@@ -546,7 +546,7 @@ int SequencedConnClass::Service_Receive_Queue(void) {
     ackpacket.Code = PACKET_ACK;
     ackpacket.PacketID = packet_hdr->PacketID;
 
-    Send((char *)&ackpacket, sizeof(CommHeaderType));
+    Send((char*)&ackpacket, sizeof(CommHeaderType));
 
     rec_entry->IsACK = 1;
   }

@@ -82,7 +82,7 @@
  *   06/03/1994 JLB : Converted to general purpose spillage functionality. *
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
-short const *Coord_Spillage_List(COORDINATE coord, int maxsize) {
+short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static short const _MoveSpillage[(int)FACING_COUNT + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
@@ -265,7 +265,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
   _AX = CosTable[dir];
   asm imul word ptr distance asm shl ax, 1 asm rcl dx, 1 asm mov al,
       ah asm mov ah, dl _DX = _AX;
-  *((int *)&start) += _DX;
+  *((int*)&start) += _DX;
   //	asm add [word ptr start],ax
 
   /*
@@ -276,7 +276,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
       ah asm mov ah,
       dl asm neg ax  // Subtraction needed because of inverted sine table.
           _DX = _AX;
-  *(((int *)&start) + 1) += _DX;
+  *(((int*)&start) + 1) += _DX;
   //	asm add [word ptr start+2],ax
 
   return (start);
@@ -313,7 +313,7 @@ unsigned Cardinal_To_Fixed(unsigned base, unsigned cardinal) {
   long temp = 0;
 
   if (base) {
-    *(unsigned *)(((char *)&temp) + 1) = cardinal;  // Shift up by 8 bits.
+    *(unsigned*)(((char*)&temp) + 1) = cardinal;  // Shift up by 8 bits.
     _DX = FP_SEG(temp);
     _AX = FP_OFF(temp);
     asm div word ptr base return (_AX);
@@ -346,10 +346,10 @@ unsigned Fixed_To_Cardinal(unsigned base, unsigned fixed) {
   _AX = base;
   asm mul word ptr fixed _CX = _AX;
   temp = ((unsigned long)MK_FP(_DX, _CX)) + 0x80;
-  if (*((char *)&temp + 3)) {
+  if (*((char*)&temp + 3)) {
     return (0xFFFF);
   }
-  return (*(unsigned *)(((char *)&temp) + 1));
+  return (*(unsigned*)(((char*)&temp) + 1));
 }
 #endif
 
@@ -422,7 +422,7 @@ int calcy(signed short v, short distance) {
   return -((v * distance) >> 7);
 }
 
-void Move_Point(short &x, short &y, DirType dir, unsigned short distance) {
+void Move_Point(short& x, short& y, DirType dir, unsigned short distance) {
   static signed char const CosTable[256] = {
       0,    3,    6,    9,    12,   15,   18,   21,   24,   27,   30,
       33,   36,   39,   42,   45,   48,   51,   54,   57,   59,   62,

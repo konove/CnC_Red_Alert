@@ -67,15 +67,15 @@
 
 #ifndef DEMO
 
-VQAHandle *Open_Movie(char *name);
-VQAHandle *Open_Movie(char *name) {
+VQAHandle* Open_Movie(char* name);
+VQAHandle* Open_Movie(char* name) {
   if (!Debug_Quiet && Get_Digi_Handle() != -1) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
     AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
   }
 
-  VQAHandle *vqa = VQA_Alloc();
+  VQAHandle* vqa = VQA_Alloc();
   if (vqa) {
     VQA_Init(vqa, MixFileHandler);
 
@@ -121,7 +121,7 @@ void Choose_Side(void) {
                                            0x0,  0x0,  0x1C, 0x0};
 #endif
 
-  void *anim;
+  void* anim;
   VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
   void const *staticaud, *oldfont;
   void const *speechg, *speechn, *speech;
@@ -137,11 +137,11 @@ void Choose_Side(void) {
 #endif
 
   TextPrintBuffer = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
 #ifndef LORES
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void *)nullptr);
+  PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
 #endif
   int frame = 0, endframe = 255, lettersdone = 0;
 

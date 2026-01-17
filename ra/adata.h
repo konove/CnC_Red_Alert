@@ -3,6 +3,6 @@
 
 #include "ra/defines.h"
 
-char const *Anim_Name(AnimType anim);
+char const* Anim_Name(AnimType anim);
 
 #endif  // CNC_RED_ALERT_RA_ADATA_H

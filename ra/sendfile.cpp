@@ -74,18 +74,18 @@
 #include "tech/ftimer.h"
 #include "tech/rawfile.h"
 
-bool Receive_Remote_File(char *file_name, unsigned int file_length,
+bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          int gametype);
 
-extern bool Is_Mission_Counterstrike(char *file_name);
-extern bool Is_Mission_Aftermath(char *file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
+extern bool Is_Mission_Aftermath(char* file_name);
 
 #define RESPONSE_TIMEOUT 60 * 60
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolapiOb.h"
 
-extern WolapiObject *pWolapi;
+extern WolapiObject* pWolapi;
 #endif
 
 /***********************************************************************************************
@@ -103,7 +103,7 @@ extern WolapiObject *pWolapi;
  *                                                                                             *
  * HISTORY: * 8/22/96 3:06PM ST : Created *
  *=============================================================================================*/
-bool Get_Scenario_File_From_Host(char *return_name, size_t dest_size,
+bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
                                  int gametype) {
   // WWDebugString ("RA95 - In Get_Scenario_From_Host\n");
 
@@ -145,7 +145,7 @@ bool Get_Scenario_File_From_Host(char *return_name, size_t dest_size,
     do {
       NullModem.Service();
 
-      if (NullModem.Get_Message(&receive_packet, (int *)&packet_len) > 0) {
+      if (NullModem.Get_Message(&receive_packet, (int*)&packet_len) > 0) {
         if (receive_packet.Command == SERIAL_FILE_INFO) {
           strncpy(return_name, receive_packet.ScenarioInfo.ShortFileName,
                   dest_size);
@@ -221,7 +221,7 @@ bool Get_Scenario_File_From_Host(char *return_name, size_t dest_size,
  *                                                                                             *
  * HISTORY: * 8/22/96 3:07PM ST : Created *
  *=============================================================================================*/
-bool Receive_Remote_File(char *file_name, unsigned int file_length,
+bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
   unsigned short product_id;
@@ -253,7 +253,7 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
   int width;
   int height;
 
-  char *info_string = (char *)Text_String(TXT_RECEIVING_SCENARIO);
+  char* info_string = (char*)Text_String(TXT_RECEIVING_SCENARIO);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -297,7 +297,7 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
   KeyNumType input;
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
   bool return_code;
   int update_time = 0;
 
@@ -400,7 +400,7 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
     if (!gametype) {
       NullModem.Service();
 
-      if (NullModem.Get_Message((void *)&receive_packet, (int *)&packet_len) >
+      if (NullModem.Get_Message((void*)&receive_packet, (int*)&packet_len) >
           0) {
         if (receive_packet.Command == NET_FILE_CHUNK) {
           if (receive_packet.BlockNumber == last_received_block + 1) {
@@ -510,7 +510,7 @@ bool Receive_Remote_File(char *file_name, unsigned int file_length,
  *                                                                                             *
  * HISTORY: * 8/22/96 3:09PM ST : Created *
  *=============================================================================================*/
-bool Send_Remote_File(char *file_name, int gametype) {
+bool Send_Remote_File(char* file_name, int gametype) {
   // WWDebugString ("RA95 - In Send_Remote_File\n");
 
   /*
@@ -541,7 +541,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
   int width;
   int height;
 
-  char *info_string = (char *)Text_String(TXT_SENDING_SCENARIO);
+  char* info_string = (char*)Text_String(TXT_SENDING_SCENARIO);
 
   CDTimerClass<SystemTimerClass>
       response_timer;  // timeout timer for waiting for responses
@@ -588,7 +588,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
   KeyNumType input;
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
   bool return_code;
   int update_time = 0;
 
@@ -597,7 +597,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
   int max_chunk_size;
   int total_blocks;
 
-  void *read_ptr;
+  void* read_ptr;
 
   RemoteFileTransferType send_packet;
   SerialPacketType file_info;
@@ -743,8 +743,7 @@ bool Send_Remote_File(char *file_name, int gametype) {
 
           if (send_file.Read(read_ptr, send_packet.BlockLength) ==
               send_packet.BlockLength) {
-            NullModem.Send_Message((void *)&send_packet, sizeof(send_packet),
-                                   1);
+            NullModem.Send_Message((void*)&send_packet, sizeof(send_packet), 1);
           }
 
           block_number++;

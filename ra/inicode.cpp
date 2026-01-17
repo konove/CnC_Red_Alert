@@ -40,13 +40,13 @@
 
 #ifdef TOFIX
 
-void Get_Scenario_Digest(char *digest, char *buffer) {
+void Get_Scenario_Digest(char* digest, char* buffer) {
   char buf[128];  // Working string staging buffer.
   char stage[sizeof(BigInt) * 2];
 
-  char *stage_ptr = &stage[0];
+  char* stage_ptr = &stage[0];
   int len = strlen(buffer) + 2;
-  char *tbuffer = buffer + len;
+  char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString("DIGEST", NULL, NULL, tbuffer,
                             sizeof(_staging_buffer) - len, buffer);
@@ -59,7 +59,7 @@ void Get_Scenario_Digest(char *digest, char *buffer) {
   }
 
   len = strlen(stage);
-  char *dbuffer = &stage[0];
+  char* dbuffer = &stage[0];
   tbuffer = &stage[0];
   for (int index = 0; index < len / 2; index++) {
     int c;
@@ -83,7 +83,7 @@ void Get_Scenario_Digest(char *digest, char *buffer) {
   **	Decode and decrypt the number.
   */
   BigInt hash = 0;
-  hash.DERDecode((unsigned char *)stage);
+  hash.DERDecode((unsigned char*)stage);
 
   BigInt d;
   d = d.Decode_ASCII(KEY_D);
@@ -100,9 +100,9 @@ void Get_Scenario_Digest(char *digest, char *buffer) {
   }
 }
 
-bool Read_Scenario_INI_Write_INB(char *root, bool fresh) {
-  char *buffer;                       // Scenario.ini staging buffer pointer.
-  char *binbuf;                       // Scenario.inb staging buffer pointer.
+bool Read_Scenario_INI_Write_INB(char* root, bool fresh) {
+  char* buffer;                       // Scenario.ini staging buffer pointer.
+  char* binbuf;                       // Scenario.inb staging buffer pointer.
   char fname[_MAX_FNAME + _MAX_EXT];  // full INI filename
   char buf[256];                      // Working string staging buffer.
   char scenarioname[40];
@@ -115,7 +115,7 @@ bool Read_Scenario_INI_Write_INB(char *root, bool fresh) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = (char *)_staging_buffer;
+  buffer = (char*)_staging_buffer;
   memset(buffer, '\0', sizeof(_staging_buffer));
 
   /*
@@ -160,9 +160,9 @@ bool Read_Scenario_INI_Write_INB(char *root, bool fresh) {
 
   unsigned long crc = Ini_Binary_Version();
 
-  file.Write((char *)&crc, sizeof(crc));
+  file.Write((char*)&crc, sizeof(crc));
 
-  binbuf = (char *)Alloc(sizeof(_staging_buffer), MEM_NORMAL);
+  binbuf = (char*)Alloc(sizeof(_staging_buffer), MEM_NORMAL);
 
   if (binbuf) {
     Write_Bin_Init(binbuf, sizeof(_staging_buffer));
@@ -334,7 +334,7 @@ bool Read_Scenario_INI_Write_INB(char *root, bool fresh) {
   /*
   **	Read in any briefing text.
   */
-  char *stage = &Scen.BriefingText[0];
+  char* stage = &Scen.BriefingText[0];
   *stage = '\0';
   int index = 1;
 

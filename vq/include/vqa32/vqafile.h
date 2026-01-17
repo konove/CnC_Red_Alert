@@ -166,15 +166,18 @@ typedef struct _VQAHeader {
 #define ID_CBF0 MAKE_ID('C', 'B', 'F', '0') /* Full codebook. */
 #define ID_CBFZ MAKE_ID('C', 'B', 'F', 'Z') /* Full codebook (compressed). */
 #define ID_CBP0 MAKE_ID('C', 'B', 'P', '0') /* Partial codebook. */
-#define ID_CBPZ MAKE_ID('C', 'B', 'P', 'Z') /* Partial codebook (compressed). \
+#define ID_CBPZ                                                               \
+  MAKE_ID('C', 'B', 'P', 'Z')               /* Partial codebook (compressed). \
                                              */
 #define ID_VPT0 MAKE_ID('V', 'P', 'T', '0') /* Vector pointers. */
-#define ID_VPTZ MAKE_ID('V', 'P', 'T', 'Z') /* Vector pointers (compressed). \
+#define ID_VPTZ                                                              \
+  MAKE_ID('V', 'P', 'T', 'Z')               /* Vector pointers (compressed). \
                                              */
 #define ID_VPTK MAKE_ID('V', 'P', 'T', 'K') /* Vector pointers (Delta Key). */
 #define ID_VPTD MAKE_ID('V', 'P', 'T', 'D') /* Vector pointers (Delta). */
 #define ID_VPTR MAKE_ID('V', 'P', 'T', 'R') /* Pointers RSD compressed. */
-#define ID_VPRZ MAKE_ID('V', 'P', 'R', 'Z') /* Pointers RSD, lcw compressed. \
+#define ID_VPRZ                                                              \
+  MAKE_ID('V', 'P', 'R', 'Z')               /* Pointers RSD, lcw compressed. \
                                              */
 #define ID_CPL0 MAKE_ID('C', 'P', 'L', '0') /* Color palette. */
 #define ID_CPLZ MAKE_ID('C', 'P', 'L', 'Z') /* Color palette (compressed). */

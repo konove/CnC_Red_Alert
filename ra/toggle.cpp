@@ -129,7 +129,7 @@ void ToggleClass::Turn_Off(void) {
  * HISTORY: * 01/14/1995 JLB : Created. * 02/02/1995 JLB : Left press doesn't
  *get passed to other buttons now                       *
  *=============================================================================================*/
-int ToggleClass::Action(unsigned flags, KeyNumType &key) {
+int ToggleClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **	If there are no action flag bits set, then this must be a forced call. A
   *forced call *	must never actually function like a real call, but

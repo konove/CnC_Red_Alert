@@ -159,7 +159,7 @@ These routines report the location & length of the real-mode routine, as
 it's stored in protected-mode memory.
 ---------------------------------------------------------------------------*/
 extern "C" {
-void *__cdecl Get_RM_IPX_Address(void);
+void* __cdecl Get_RM_IPX_Address(void);
 long __cdecl Get_RM_IPX_Size(void);
 }
 
@@ -192,26 +192,26 @@ class IPXManagerClass : public ConnManClass {
   These routines control creation of the "Connections" (data queues) for
   each remote system.
   .....................................................................*/
-  int Create_Connection(int id, char *name, IPXAddressClass *address);
+  int Create_Connection(int id, char* name, IPXAddressClass* address);
   int Delete_Connection(int id);
   virtual int Num_Connections(void);
   virtual int Connection_ID(int index);
-  char *Connection_Name(int id);
-  IPXAddressClass *Connection_Address(int id);
+  char* Connection_Name(int id);
+  IPXAddressClass* Connection_Address(int id);
   virtual int Connection_Index(int id);
-  void Set_Connection_Parms(int index, int id, char *name);
+  void Set_Connection_Parms(int index, int id, char* name);
 
   /*.....................................................................
   This is how the application sends & receives messages.
   .....................................................................*/
-  int Send_Global_Message(void *buf, int buflen, int ack_req = 0,
-                          IPXAddressClass *address = nullptr);
-  int Get_Global_Message(void *buf, int *buflen, IPXAddressClass *address,
-                         unsigned short *product_id);
+  int Send_Global_Message(void* buf, int buflen, int ack_req = 0,
+                          IPXAddressClass* address = nullptr);
+  int Get_Global_Message(void* buf, int* buflen, IPXAddressClass* address,
+                         unsigned short* product_id);
 
-  virtual int Send_Private_Message(void *buf, int buflen, int ack_req = 1,
+  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
                                    int conn_id = CONNECTION_NONE);
-  virtual int Get_Private_Message(void *buf, int *buflen, int *conn_id);
+  virtual int Get_Private_Message(void* buf, int* buflen, int* conn_id);
 
   /*.....................................................................
   The main polling routine; should be called as often as possible.
@@ -251,13 +251,13 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   This routine returns a pointer to the oldest non-ACK'd buffer I've sent.
   .....................................................................*/
-  void *Oldest_Send(void);
+  void* Oldest_Send(void);
 
   /*.....................................................................
   Debug routines
   .....................................................................*/
   virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char **names, int namestart, int namecount);
+                               char** names, int namestart, int namecount);
   virtual void Mono_Debug_Print(int index, int refresh = 0);
 
   /*
@@ -300,9 +300,9 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Array of connection queues
   .....................................................................*/
-  IPXConnClass *Connection[CONNECT_MAX];  // array of connection object ptrs
+  IPXConnClass* Connection[CONNECT_MAX];  // array of connection object ptrs
   int NumConnections;                     // # connection objects in use
-  IPXGlobalConnClass *GlobalChannel;      // the Global Channel
+  IPXGlobalConnClass* GlobalChannel;      // the Global Channel
 
   /*.....................................................................
   Current queue for polling for received packets
@@ -326,11 +326,11 @@ class IPXManagerClass : public ConnManClass {
     short Marker1;                  // the byte ID marker
     ECBType ListenECB;              // the Listening ECB
     short NumBufs;                  // # of buffers we're giving to the handler
-    char *BufferFlags;              // array of buffer-avail flags
+    char* BufferFlags;              // array of buffer-avail flags
     short PacketSize;               // size of packet including IPX header
-    IPXHeaderType *FirstPacketBuf;  // ptr to 1st packet buffer
+    IPXHeaderType* FirstPacketBuf;  // ptr to 1st packet buffer
     short CurIndex;                 // handler's current packet index
-    IPXHeaderType *CurPacketBuf;    // handler's current packet buf
+    IPXHeaderType* CurPacketBuf;    // handler's current packet buf
     short FuncOffset;               // contains offset of code
     char Semaphore;                 // prevents re-entrancy
     short ReEntrantCount;           // times we've been called re-entrantly
@@ -359,7 +359,7 @@ class IPXManagerClass : public ConnManClass {
   unsigned short Selector;         // selector of DOS allocation pointer
   unsigned short Segment;          // real-mode segment of DOS allocation
   int RealMemSize;                 // size of real mode memory allocated
-  RealModeDataType *RealModeData;  // assembly routine & its data
+  RealModeDataType* RealModeData;  // assembly routine & its data
 
   /*.....................................................................
   This is a real-mode pointer to the address of the real-mode assembly
@@ -371,33 +371,33 @@ class IPXManagerClass : public ConnManClass {
   Event Control Block for listening; contained within the real-mode
   assembly routine's data area
   .....................................................................*/
-  ECBType *ListenECB;  // ECB for listening
+  ECBType* ListenECB;  // ECB for listening
 
   /*.....................................................................
   ptr to the 1st header & data buffers in the packet buffer array
   .....................................................................*/
-  IPXHeaderType *FirstHeaderBuf;  // array of packet headers & buffers
-  char *FirstDataBuf;             // 1st data buffer area
+  IPXHeaderType* FirstHeaderBuf;  // array of packet headers & buffers
+  char* FirstDataBuf;             // 1st data buffer area
 
   /*.....................................................................
   Current packet index & ptrs for parsing packets
   .....................................................................*/
   int CurIndex;                 // Current packet index, for reading
-  IPXHeaderType *CurHeaderBuf;  // Current packet ptr, for reading
-  char *CurDataBuf;             // Current actual data ptr
+  IPXHeaderType* CurHeaderBuf;  // Current packet ptr, for reading
+  char* CurDataBuf;             // Current actual data ptr
 
   /*.....................................................................
   ECB, header, & buffer for sending
   .....................................................................*/
-  ECBType *SendECB;           // ECB for sending
-  IPXHeaderType *SendHeader;  // Header for sending
-  char *SendBuf;              // buffer for sending
+  ECBType* SendECB;           // ECB for sending
+  IPXHeaderType* SendHeader;  // Header for sending
+  char* SendBuf;              // buffer for sending
 
   /*.....................................................................
   Flags indicating whether a buffer contains data or not (1 = full)
   The IPXManager must clear this flag; the real-mode routine will set it.
   .....................................................................*/
-  char *BufferFlags;  // array of rx-buffer-avail flags
+  char* BufferFlags;  // array of rx-buffer-avail flags
 
   /*.....................................................................
   Various Statistics

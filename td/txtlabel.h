@@ -51,7 +51,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Constructor/Destructor
   */
-  TextLabelClass(char *txt, int x, int y, int color, TextPrintType style);
+  TextLabelClass(char* txt, int x, int y, int color, TextPrintType style);
 
   /*
   ** Overloaded draw routine
@@ -61,14 +61,14 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Sets the displayed text of the label
   */
-  virtual void Set_Text(char *txt) { Text = txt; };
+  virtual void Set_Text(char* txt) { Text = txt; };
 
   /*
   ** General-purpose data field
   */
   unsigned long UserData;
   TextPrintType Style;
-  char *Text;
+  char* Text;
   int Color;
   int PixWidth;
   char Segments;

@@ -111,7 +111,7 @@ extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Modem_Dump;
 extern bool Debug_Print_Events;
 
-extern void const *LightningShapes;
+extern void const* LightningShapes;
 
 extern int NewINIFormat;
 
@@ -122,17 +122,17 @@ extern bool SecretUnitsEnabled;
 extern int MTankDistance;
 extern int CarrierLaunchDelay;
 
-extern char const *NameOverride[25];
+extern char const* NameOverride[25];
 extern int NameIDOverride[25];
 
 extern bool GameInFocus;
-extern unsigned char *InterpolatedPalettes[100];
+extern unsigned char* InterpolatedPalettes[100];
 extern bool PalettesRead;
 extern unsigned PaletteCounter;
 extern int AllDone;
 extern bool InMovie;
-extern WinTimerClass *WindowsTimer;
-extern WWMouseClass *WWMouse;
+extern WinTimerClass* WindowsTimer;
+extern WWMouseClass* WWMouse;
 extern GraphicBufferClass HiddenPage;
 #define SeenPage SeenBuff
 extern GraphicBufferClass VisiblePage;
@@ -145,22 +145,22 @@ extern GraphicBufferClass ModeXBuff;
 **	Dynamic global variables (these change or are initialized at run time).
 */
 extern MissionControlClass MissionControl[MISSION_COUNT];
-extern char const *TutorialTextData;
+extern char const* TutorialTextData;
 extern uint16_t TutorialTextOffsets[225];
-extern Buffer *TheaterBuffer;
+extern Buffer* TheaterBuffer;
 extern GetCDClass CDList;
 extern CCINIClass RuleINI;
 extern CCINIClass AftermathINI;
-extern Benchmark *Benches;
+extern Benchmark* Benches;
 extern int MapTriggerID;
 extern int LogicTriggerID;
 extern PKey FastKey;
 extern PKey SlowKey;
 extern RulesClass Rule;
-extern KeyboardClass *Keyboard;
+extern KeyboardClass* Keyboard;
 extern RandomStraw CryptRandom;
 extern RandomClass NonCriticalRandomNumber;
-extern CarryoverClass *Carryover;
+extern CarryoverClass* Carryover;
 extern ScenarioClass Scen;
 extern RemapControlType ColorRemaps[PCOLOR_COUNT];
 extern RemapControlType MetalScheme;
@@ -176,7 +176,7 @@ extern bool PlayerLoses;
 extern bool PlayerRestarts;
 extern std::uint64_t Frame;
 extern VoxType SpeechRecord[2];
-extern void *SpeechBuffer[2];
+extern void* SpeechBuffer[2];
 extern int PreserveVQAScreen;
 extern bool BreakoutAllowed;
 extern bool Brokeout;
@@ -191,12 +191,12 @@ extern MouseClass Map;
 #endif
 extern ScoreClass Score;
 extern MonoClass MonoArray[DMONO_COUNT];
-extern MFCD *TheaterData;
-extern MFCD *MoviesMix;
-extern MFCD *GeneralMix;
-extern MFCD *ScoreMix;
-extern MFCD *MainMix;
-extern MFCD *ConquerMix;
+extern MFCD* TheaterData;
+extern MFCD* MoviesMix;
+extern MFCD* GeneralMix;
+extern MFCD* ScoreMix;
+extern MFCD* MainMix;
+extern MFCD* ConquerMix;
 extern ThemeClass Theme;
 extern SpecialClass Special;
 
@@ -234,7 +234,7 @@ extern TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
 extern TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
 extern TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 
-extern FixedIHeapClass *HeapPointers[RTTI_COUNT];
+extern FixedIHeapClass* HeapPointers[RTTI_COUNT];
 
 extern TFixedIHeapClass<WeaponTypeClass> Weapons;
 extern TFixedIHeapClass<WarheadTypeClass> Warheads;
@@ -246,10 +246,10 @@ extern QueueClass<EventClass, (MAX_EVENTS * 64)> DoList;
 extern QueueClass<EventClass, (MAX_EVENTS * 64)> MirrorList;
 #endif
 
-extern DynamicVectorClass<ObjectClass *> CurrentObject;
-extern DynamicVectorClass<TriggerClass *> LogicTriggers;
-extern DynamicVectorClass<TriggerClass *> MapTriggers;
-extern DynamicVectorClass<TriggerClass *> HouseTriggers[HOUSE_COUNT];
+extern DynamicVectorClass<ObjectClass*> CurrentObject;
+extern DynamicVectorClass<TriggerClass*> LogicTriggers;
+extern DynamicVectorClass<TriggerClass*> MapTriggers;
+extern DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
 
 extern BaseClass Base;
 
@@ -279,19 +279,19 @@ extern fixed
 /*
 **	Loaded data file pointers.
 */
-extern void const *Metal12FontPtr;
-extern void const *MapFontPtr;
-extern void const *VCRFontPtr;
-extern void const *TypeFontPtr;
-extern void const *Font3Ptr;
-extern void const *Font6Ptr;
-extern void const *EditorFont;
-extern void const *Font8Ptr;
-extern void const *FontLEDPtr;
-extern void const *ScoreFontPtr;
-extern void const *GradFont6Ptr;
-extern char const *SystemStrings;
-extern char const *DebugStrings;
+extern void const* Metal12FontPtr;
+extern void const* MapFontPtr;
+extern void const* VCRFontPtr;
+extern void const* TypeFontPtr;
+extern void const* Font3Ptr;
+extern void const* Font6Ptr;
+extern void const* EditorFont;
+extern void const* Font8Ptr;
+extern void const* FontLEDPtr;
+extern void const* ScoreFontPtr;
+extern void const* GradFont6Ptr;
+extern char const* SystemStrings;
+extern char const* DebugStrings;
 
 /*
 **	Miscellaneous globals.
@@ -309,7 +309,7 @@ extern long SidebarRedraws;
 extern DMonoType MonoPage;
 extern bool SpecialFlag;
 extern int ScenarioInit;
-extern HouseClass *PlayerPtr;
+extern HouseClass* PlayerPtr;
 extern PaletteClass CCPalette;
 extern PaletteClass BlackPalette;
 extern PaletteClass WhitePalette;
@@ -337,11 +337,11 @@ extern NullModemClass NullModem;
 extern IPXManagerClass Ipx;
 
 #if (TEN)
-extern TenConnManClass *Ten;
+extern TenConnManClass* Ten;
 #endif
 
 #if (MPATH)
-extern MPlayerManClass *MPath;
+extern MPlayerManClass* MPath;
 #endif
 
 #if (TIMING_FIX)
@@ -376,14 +376,14 @@ extern bool IsTheaterShape;
 extern void Reset_Theater_Shapes(void);
 extern TheaterType LastTheater;
 
-void Coordinate_Remap(GraphicViewPortClass *inbuffer, int x, int y, int width,
-                      int height, unsigned char *remap_table);
+void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
+                      int height, unsigned char* remap_table);
 void Do_Vortex(int x, int y, int frame);
 
 extern bool ReadyToQuit;          // Are we about to exit cleanly
 extern bool InDebugger;           // Are we being run from a debugger
 void Memory_Error_Handler(void);  // Memory error handler function
-void WWDebugString(char const *string);
+void WWDebugString(char const* string);
 
 /*************************************************************
 ** Internet specific externs
@@ -400,13 +400,13 @@ extern HWND WChatHWND;  // Handle to Wchat window.
 #endif
 extern bool GameStatisticsPacketSent;
 extern bool ConnectionLost;
-extern void *PacketLater;
+extern void* PacketLater;
 extern bool SpawnedFromWChat;
 extern int ShowCommand;
 void Register_Game_Start_Time(void);
 void Register_Game_End_Time(void);
 void Send_Statistics_Packet(void);
-void Check_From_WChat(char *wchat_name);
+void Check_From_WChat(char* wchat_name);
 bool Do_The_Internet_Menu_Thang(void);
 bool Server_Remote_Connect(void);
 bool Client_Remote_Connect(void);
@@ -415,26 +415,26 @@ extern int UnitBuildPenalty;
 /*
 ** From SENDFILE.CPP - externs for scenario file transfers
 */
-bool Receive_Remote_File(char *file_name, unsigned int file_length,
+bool Receive_Remote_File(char* file_name, unsigned int file_length,
                          unsigned int crc, int gametype);
-bool Send_Remote_File(char *file_name, int gametype);
-bool Get_Scenario_File_From_Host(char *return_name, size_t dest_size,
+bool Send_Remote_File(char* file_name, int gametype);
+bool Get_Scenario_File_From_Host(char* return_name, size_t dest_size,
                                  int gametype);
 
-bool Find_Local_Scenario(char *description, char *filename, unsigned int length,
-                         char *digest, bool official);
+bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
+                         char* digest, bool official);
 
 #ifdef MPEGMOVIE  // Denzil 6/15/98
 
 #ifdef MCIMPEG
 
 #include "ra/mcimovie.h"
-extern MCIMovie *MciMovie;
+extern MCIMovie* MciMovie;
 
 #endif
 
 #include "ra/mpgset.h"
-extern MPGSettings *MpgSettings;
+extern MPGSettings* MpgSettings;
 
 #endif
 

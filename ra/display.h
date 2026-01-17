@@ -104,7 +104,7 @@ class DisplayClass : public MapClass {
   */
   CELL ZoneCell;
   short ZoneOffset;
-  short const *CursorSize;
+  short const* CursorSize;
   bool ProximityCheck;  // Is proximity check ok?
 
   /*
@@ -113,8 +113,8 @@ class DisplayClass : public MapClass {
   **	flag is updated as the cursor moves and it reflects the legality of
   **	placing the building at the desired location.
   */
-  ObjectClass *PendingObjectPtr;
-  ObjectTypeClass const *PendingObject;
+  ObjectClass* PendingObjectPtr;
+  ObjectTypeClass const* PendingObject;
   HousesType PendingHouse;
 
   static unsigned char FadingBrighten[256];
@@ -127,17 +127,17 @@ class DisplayClass : public MapClass {
   static unsigned char TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
   static unsigned char WhiteTranslucentTable[(1 + 1) * 256];
   static unsigned char MouseTranslucentTable[(4 + 1) * 256];
-  static void const *TransIconset;
+  static void const* TransIconset;
   static unsigned char UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
   static unsigned char UnitShadowAir[(USHADOW_COL_COUNT + 1) * 256];
   static unsigned char SpecialGhost[2 * 256];
 
   //-------------------------------------------------------------------------
   DisplayClass(void);
-  DisplayClass(NoInitClass const &x) : MapClass(x) {};
+  DisplayClass(NoInitClass const& x) : MapClass(x) {};
 
-  virtual void Read_INI(CCINIClass &ini);
-  void Write_INI(CCINIClass &ini);
+  virtual void Read_INI(CCINIClass& ini);
+  void Write_INI(CCINIClass& ini);
 
   /*
   ** Initialization
@@ -150,7 +150,7 @@ class DisplayClass : public MapClass {
   /*
   **	General display/map/interface support functionality.
   */
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
 
   /*
@@ -161,24 +161,24 @@ class DisplayClass : public MapClass {
   void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
   void Encroach_Shadow(void);
   void Center_Map(COORDINATE center = 0L);
-  virtual bool Map_Cell(CELL cell, HouseClass *house);
+  virtual bool Map_Cell(CELL cell, HouseClass* house);
   virtual CELL Click_Cell_Calc(int x, int y) const;
   virtual void Help_Text(int, int = -1, int = -1, int = YELLOW, bool = false) {
   };
   virtual MouseType Get_Mouse_Shape(void) const = 0;
-  virtual bool Scroll_Map(DirType facing, int &distance, bool really);
-  virtual void Refresh_Cells(CELL cell, short const *list);
+  virtual bool Scroll_Map(DirType facing, int& distance, bool really);
+  virtual void Refresh_Cells(CELL cell, short const* list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);
 
   /*
   **	Pending object placement control.
   */
-  virtual void Put_Place_Back(TechnoClass *) {};  // Affects 'pending' system.
+  virtual void Put_Place_Back(TechnoClass*) {};  // Affects 'pending' system.
   void Cursor_Mark(CELL pos, bool on);
-  void Set_Cursor_Shape(short const *list);
+  void Set_Cursor_Shape(short const* list);
   CELL Set_Cursor_Pos(CELL pos = -1);
-  void Get_Occupy_Dimensions(int &w, int &h, short const *list) const;
+  void Get_Occupy_Dimensions(int& w, int& h, short const* list) const;
 
   /*
   **	Tactical map only functionality.
@@ -187,21 +187,21 @@ class DisplayClass : public MapClass {
   void Refresh_Band(void);
   void Select_These(COORDINATE coord1, COORDINATE coord2);
   COORDINATE Pixel_To_Coord(int x, int y) const;
-  bool Coord_To_Pixel(COORDINATE coord, int &x, int &y) const;
-  bool Push_Onto_TacMap(COORDINATE &source, COORDINATE &dest);
-  void Remove(ObjectClass const *object, LayerType layer);
-  void Submit(ObjectClass const *object, LayerType layer);
+  bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
+  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest);
+  void Remove(ObjectClass const* object, LayerType layer);
+  void Submit(ObjectClass const* object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1, CELL cell = -1,
                        SpeedType loco = SPEED_FOOT, bool zonecheck = true,
                        MZoneType mzone = MZONE_NORMAL) const;
   bool In_View(CELL cell) const;
-  bool Passes_Proximity_Check(ObjectTypeClass const *object, HousesType house,
-                              short const *list, CELL trycell) const;
-  ObjectClass *Cell_Object(CELL cell, int x = 0, int y = 0) const;
-  ObjectClass *Next_Object(ObjectClass *object) const;
-  ObjectClass *Prev_Object(ObjectClass *object) const;
+  bool Passes_Proximity_Check(ObjectTypeClass const* object, HousesType house,
+                              short const* list, CELL trycell) const;
+  ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0) const;
+  ObjectClass* Next_Object(ObjectClass* object) const;
+  ObjectClass* Prev_Object(ObjectClass* object) const;
   int Cell_Shadow(CELL cell) const;
-  short const *Text_Overlap_List(char const *text, int x, int y) const;
+  short const* Text_Overlap_List(char const* text, int x, int y) const;
   bool Is_Spot_Free(COORDINATE coord) const;
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
   void Sell_Mode_Control(int control);
@@ -224,10 +224,10 @@ class DisplayClass : public MapClass {
  protected:
   virtual void Mouse_Right_Press(void);
   virtual void Mouse_Left_Press(int x, int y);
-  virtual void Mouse_Left_Up(CELL cell, bool shadow, ObjectClass *object,
+  virtual void Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
                              ActionType action, bool wsmall = false);
   virtual void Mouse_Left_Held(int x, int y);
-  virtual void Mouse_Left_Release(CELL cell, int x, int y, ObjectClass *object,
+  virtual void Mouse_Left_Release(CELL cell, int x, int y, ObjectClass* object,
                                   ActionType action, bool wsmall = false);
 
  public:
@@ -298,7 +298,7 @@ class DisplayClass : public MapClass {
                       true) {};
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType &key);
+    virtual int Action(unsigned flags, KeyNumType& key);
   };
   friend class TacticalClass;
 
@@ -325,7 +325,7 @@ class DisplayClass : public MapClass {
   int BandX, BandY;
   int NewX, NewY;
 
-  static void const *ShadowShapes;
+  static void const* ShadowShapes;
   static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
   void Redraw_Icons(void);

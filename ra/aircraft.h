@@ -74,12 +74,12 @@ class AircraftClass : public FootClass, public FlyClass {
   CCPtr<AircraftTypeClass> Class;
 
   //-----------------------------------------------------------------------------
-  static void *operator new(size_t) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *);
+  static void* operator new(size_t) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void*);
   operator AircraftType(void) const { return Class->Type; };
   AircraftClass(AircraftType classid, HousesType house);
-  AircraftClass(NoInitClass const &x)
+  AircraftClass(NoInitClass const& x)
       : FootClass(x), FlyClass(x), Class(x), SecondaryFacing(x), SightTimer(x) {
         };
   virtual ~AircraftClass(void);
@@ -113,10 +113,10 @@ class AircraftClass : public FootClass, public FlyClass {
   int Shape_Number(void) const;
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
-  virtual ActionType What_Action(ObjectClass const *target) const;
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ActionType What_Action(ObjectClass const* target) const;
   virtual ActionType What_Action(CELL cell) const;
-  virtual DirType Desired_Load_Dir(ObjectClass *passenger, CELL &moveto) const;
+  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
   virtual int Pip_Count(void) const;
   TARGET Good_Fire_Location(TARGET target) const;
   bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
@@ -149,15 +149,15 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   virtual void Look(bool incremental = false);
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
-  virtual int Exit_Object(TechnoClass *);
-  virtual short const *Overlap_List(bool redraw = false) const;
+  virtual int Exit_Object(TechnoClass*);
+  virtual short const* Overlap_List(bool redraw = false) const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual void Set_Speed(int speed);
 
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell);
   virtual void Player_Assign_Mission(MissionType mission,
                                      TARGET target = TARGET_NONE,
@@ -169,9 +169,9 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Combat related.
   */
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source, bool forced = false);
-  virtual BulletClass *Fire_At(TARGET target, int which);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source, bool forced = false);
+  virtual BulletClass* Fire_At(TARGET target, int which);
 
   /*
   **	AI.
@@ -183,9 +183,9 @@ class AircraftClass : public FootClass, public FlyClass {
   int Paradrop_Cargo(void);
   virtual void AI(void);
   virtual void Enter_Idle_Mode(bool initial = false);
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual void Scatter(COORDINATE threat, bool forced = false,
                        bool nokidding = false);
 
@@ -193,16 +193,16 @@ class AircraftClass : public FootClass, public FlyClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "AIRCRAFT"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static char const* INI_Name(void) { return "AIRCRAFT"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 
  public:
   /*

@@ -70,7 +70,7 @@
 // Creates a list item string with an integer index stored at the beginning.
 // The returned buffer layout is: [int index][null-terminated string]
 // Caller takes ownership and must delete[] the returned pointer.
-static char *CreateIndexedListItem(int index, const std::string &str) {
+static char* CreateIndexedListItem(int index, const std::string& str) {
   const auto data = new char[sizeof(int) + str.size() + 1];
   std::memcpy(data, &index, sizeof(int));
   std::memcpy(data + sizeof(int), str.c_str(), str.size() + 1);
@@ -88,7 +88,7 @@ bool Expansion_Present(void) {
 class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             void const *up, void const *down)
+             void const* up, void const* down)
       : ListClass(id, x, y, w, h, flags, up, down) {};
 
  protected:
@@ -127,10 +127,10 @@ bool Expansion_Dialog(void) {
   int option_x = (320 * factor - option_width) / 2;
   int option_y = (200 * factor - option_height) / 2;
 
-  GadgetClass *buttons = nullptr;
+  GadgetClass* buttons = nullptr;
 
-  void const *up_button;
-  void const *down_button;
+  void const* up_button;
+  void const* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -157,7 +157,7 @@ bool Expansion_Dialog(void) {
   /*
   **	Add in all the expansion scenarios.
   */
-  char *sbuffer = (char *)_ShapeBuffer;
+  char* sbuffer = (char*)_ShapeBuffer;
   for (int index = 20; index < 60; index++) {
     char buffer[128];
     CCFileClass file;
@@ -244,7 +244,7 @@ bool Expansion_Dialog(void) {
         }
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int *)list.Current_Item();
+        Scenario = *(int*)list.Current_Item();
         process = false;
         okval = true;
         break;
@@ -254,7 +254,7 @@ bool Expansion_Dialog(void) {
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int *)list.Current_Item();
+        Scenario = *(int*)list.Current_Item();
         process = false;
         okval = false;
         break;
@@ -268,7 +268,7 @@ bool Expansion_Dialog(void) {
   **	Free up the allocations for the text lines in the list box.
   */
   for (int index = 0; index < list.Count(); index++) {
-    delete[] (char *)list.Get_Item(index);
+    delete[] (char*)list.Get_Item(index);
   }
 
   return (okval);
@@ -295,10 +295,10 @@ bool Bonus_Dialog(void) {
   int option_x = (320 * factor - option_width) / 2;
   int option_y = (200 * factor - option_height) / 2;
 
-  GadgetClass *buttons = nullptr;
+  GadgetClass* buttons = nullptr;
 
-  void const *up_button;
-  void const *down_button;
+  void const* up_button;
+  void const* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -404,7 +404,7 @@ bool Bonus_Dialog(void) {
         }
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int *)list.Current_Item();
+        Scenario = *(int*)list.Current_Item();
         process = false;
         okval = true;
         break;
@@ -414,7 +414,7 @@ bool Bonus_Dialog(void) {
         ScenPlayer = SCEN_PLAYER_GDI;
         ScenDir = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = *(int *)list.Current_Item();
+        Scenario = *(int*)list.Current_Item();
         process = false;
         okval = false;
         break;
@@ -428,7 +428,7 @@ bool Bonus_Dialog(void) {
   **	Free up the allocations for the text lines in the list box.
   */
   for (int index = 0; index < list.Count(); index++) {
-    delete[] (char *)list.Get_Item(index);
+    delete[] (char*)list.Get_Item(index);
   }
 
   return (okval);

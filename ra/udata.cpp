@@ -815,7 +815,7 @@ static UnitTypeClass const UnitPhase(
  * HISTORY: * 06/20/1994 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass::UnitTypeClass(
-    UnitType type, int name, char const *ininame, AnimType exp, RemapType remap,
+    UnitType type, int name, char const* ininame, AnimType exp, RemapType remap,
     int verticaloffset, int primaryoffset, int primarylateral,
     int secondaryoffset, int secondarylateral, bool is_goodie, bool is_nominal,
     bool is_crusher, bool is_harvest, bool is_stealthy, bool is_insignificant,
@@ -866,7 +866,7 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void *UnitTypeClass::operator new(size_t) throw() {
+void* UnitTypeClass::operator new(size_t) throw() {
   return (UnitTypes.Alloc());
 }
 
@@ -886,8 +886,8 @@ void *UnitTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::operator delete(void *pointer) {
-  UnitTypes.Free((UnitTypeClass *)pointer);
+void UnitTypeClass::operator delete(void* pointer) {
+  UnitTypes.Free((UnitTypeClass*)pointer);
 }
 
 /***********************************************************************************************
@@ -952,7 +952,7 @@ void UnitTypeClass::Init_Heap(void) {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-UnitType UnitTypeClass::From_Name(char const *name) {
+UnitType UnitTypeClass::From_Name(char const* name) {
   if (name != nullptr) {
     for (UnitType classid = UNIT_FIRST; classid < UNIT_COUNT; classid++) {
       if (stricmp(As_Reference(classid).IniName, name) == 0) {
@@ -986,7 +986,7 @@ UnitType UnitTypeClass::From_Name(char const *name) {
 void UnitTypeClass::Display(int x, int y, WindowNumberType window,
                             HousesType) const {
   int shape = 0;
-  void const *ptr = Get_Cameo_Data();
+  void const* ptr = Get_Cameo_Data();
   if (ptr == NULL) {
     ptr = Get_Image_Data();
     shape = Rotation / 6;
@@ -1036,10 +1036,10 @@ void UnitTypeClass::Prep_For_Add(void) {
  *=============================================================================================*/
 void UnitTypeClass::One_Time(void) {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
-    UnitTypeClass &uclass = As_Reference(index);
+    UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
 
-    void const *ptr;  // Shape pointer and set pointer.
+    void const* ptr;  // Shape pointer and set pointer.
 
     int largest = 0;
     //		if (uclass.Level != -1) {
@@ -1054,12 +1054,12 @@ void UnitTypeClass::One_Time(void) {
 #ifndef NDEBUG
     RawFileClass datafile(fullname.c_str());
     if (datafile.Is_Available()) {
-      ((void const *&)uclass.CameoData) = Load_Alloc_Data(datafile);
+      ((void const*&)uclass.CameoData) = Load_Alloc_Data(datafile);
     } else {
-      ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+      ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
     }
 #else
-    ((void const *&)uclass.CameoData) = MFCD::Retrieve(fullname);
+    ((void const*&)uclass.CameoData) = MFCD::Retrieve(fullname);
 #endif
     //		}
 
@@ -1090,7 +1090,7 @@ void UnitTypeClass::One_Time(void) {
       largest = std::max(largest, (int)Get_Build_Frame_Height(ptr));
     }
 
-    ((int &)uclass.MaxSize) = std::max(largest, 8);
+    ((int&)uclass.MaxSize) = std::max(largest, 8);
   }
 
   /*
@@ -1128,7 +1128,7 @@ void UnitTypeClass::One_Time(void) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  UnitClass *unit = new UnitClass(Type, house);
+  UnitClass* unit = new UnitClass(Type, house);
   if (unit != nullptr) {
     return (unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX)));
   }
@@ -1151,7 +1151,7 @@ bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  *                                                                                             *
  * HISTORY: * 06/07/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *UnitTypeClass::Create_One_Of(HouseClass *house) const {
+ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
   return (new UnitClass(Type, house->Class->House));
 }
 
@@ -1171,7 +1171,7 @@ ObjectClass *UnitTypeClass::Create_One_Of(HouseClass *house) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-UnitTypeClass &UnitTypeClass::As_Reference(UnitType type) {
+UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
   return (*UnitTypes.Ptr(type));
 }
 
@@ -1192,7 +1192,7 @@ UnitTypeClass &UnitTypeClass::As_Reference(UnitType type) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::Dimensions(int &width, int &height) const {
+void UnitTypeClass::Dimensions(int& width, int& height) const {
   width = MaxSize - (MaxSize / 4);
   width = std::min(width, 48);
   height = MaxSize - (MaxSize / 4);
@@ -1244,7 +1244,7 @@ int UnitTypeClass::Max_Pips(void) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::Turret_Adjust(DirType dir, int &x, int &y) const {
+void UnitTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
   static struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N
@@ -1289,7 +1289,7 @@ void UnitTypeClass::Turret_Adjust(DirType dir, int &x, int &y) const {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool UnitTypeClass::Read_INI(CCINIClass &ini) {
+bool UnitTypeClass::Read_INI(CCINIClass& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     IsNoFireWhileMoving =
         ini.Get_Bool(IniName, "NoMovingFire", IsNoFireWhileMoving);

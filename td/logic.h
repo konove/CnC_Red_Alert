@@ -52,7 +52,7 @@ class LogicClass : public LayerClass {
  public:
   void AI(void);
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const;
+  void Debug_Dump(MonoClass* mono) const;
 #endif
 };
 #endif

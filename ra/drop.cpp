@@ -45,9 +45,9 @@
 #include "ra/keyframe.h"
 #include "sdllib/include/font.h"
 
-DropListClass::DropListClass(int id, char *text, int max_len,
+DropListClass::DropListClass(int id, char* text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
-                             void const *up, void const *down)
+                             void const* up, void const* down)
     : EditClass(id, text, max_len, flags, x, y, w, 9 * RESFACTOR, ALPHANUMERIC),
       IsDropped(false),
       ListHeight(h),
@@ -67,36 +67,36 @@ void DropListClass::Zap(void) {
   EditClass::Zap();
 }
 
-DropListClass &DropListClass::Add(LinkClass &object) {
+DropListClass& DropListClass::Add(LinkClass& object) {
   DropButton.Add(object);
-  return ((DropListClass &)EditClass::Add(object));
+  return ((DropListClass&)EditClass::Add(object));
 }
 
-DropListClass &DropListClass::Add_Tail(LinkClass &object) {
+DropListClass& DropListClass::Add_Tail(LinkClass& object) {
   DropButton.Add_Tail(object);
-  return ((DropListClass &)EditClass::Add_Tail(object));
+  return ((DropListClass&)EditClass::Add_Tail(object));
 }
 
-DropListClass &DropListClass::Add_Head(LinkClass &object) {
+DropListClass& DropListClass::Add_Head(LinkClass& object) {
   DropButton.Add_Head(object);
-  return ((DropListClass &)EditClass::Add_Head(object));
+  return ((DropListClass&)EditClass::Add_Head(object));
 }
 
-DropListClass *DropListClass::Remove(void) {
+DropListClass* DropListClass::Remove(void) {
   if (IsDropped) {
     Collapse();
   }
   DropButton.Remove();
-  return ((DropListClass *)EditClass::Remove());
+  return ((DropListClass*)EditClass::Remove());
 }
 
-int DropListClass::Add_Item(char const *text) {
+int DropListClass::Add_Item(char const* text) {
   port::SafeCopy(String, text, MaxLength);
   Flag_To_Redraw();
   return (List.Add_Item(text));
 }
 
-char const *DropListClass::Current_Item(void) { return (List.Current_Item()); }
+char const* DropListClass::Current_Item(void) { return (List.Current_Item()); }
 
 int DropListClass::Current_Index(void) { return (List.Current_Index()); }
 
@@ -111,8 +111,8 @@ void DropListClass::Set_Selected_Index(int index) {
 
 void DropListClass::Clear_Focus(void) { Collapse(); }
 
-void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType &key,
-                                 ControlClass &whom) {
+void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
+                                 ControlClass& whom) {
   if (&whom == &DropButton) {
     if (flags & LEFTRELEASE) {
       if (IsDropped) {
@@ -150,7 +150,7 @@ void DropListClass::Collapse(void) {
   }
 }
 
-DropListClass &DropListClass::operator=(DropListClass const &list) {
+DropListClass& DropListClass::operator=(DropListClass const& list) {
   if (this == &list) return (*this);
   EditClass::operator=(list);
   List = list.List;
@@ -162,7 +162,7 @@ DropListClass &DropListClass::operator=(DropListClass const &list) {
   return (*this);
 }
 
-DropListClass::DropListClass(DropListClass const &list)
+DropListClass::DropListClass(DropListClass const& list)
     : EditClass(list),
       IsDropped(list.IsDropped),
       ListHeight(list.ListHeight),
@@ -178,7 +178,7 @@ void DropListClass::Set_Position(int x, int y) {
   DropButton.Set_Position(x + Width, y);
 }
 
-void DropListClass::Set_Selected_Index(char const *text) {
+void DropListClass::Set_Selected_Index(char const* text) {
   if (text) {
     for (int index = 0; index < Count(); index++) {
       if (stricmp(text, List.Get_Item(index)) == 0) {

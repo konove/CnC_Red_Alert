@@ -91,7 +91,7 @@ TeamMissionClass TeamMissions[TMISSION_COUNT] = {
     {TMISSION_PATROL},
 };
 
-int atoh(char *str);
+int atoh(char* str);
 
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
 /***********************************************************************************************
@@ -111,7 +111,7 @@ int atoh(char *str);
  *=============================================================================================*/
 void TeamTypeClass::Draw_It(int, int x, int y, int width, int height,
                             bool selected, TextPrintType flags) const {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {35, 60, 80, 100};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
     if (selected) {
@@ -137,7 +137,7 @@ void TeamTypeClass::Draw_It(int, int x, int y, int width, int height,
 /*
 ********************************** Globals **********************************
 */
-char const *TeamTypeClass::TMissions[TMISSION_COUNT] = {
+char const* TeamTypeClass::TMissions[TMISSION_COUNT] = {
     "Attack...",
     "Attack Waypoint...",
     "Change Formation to...",
@@ -222,7 +222,7 @@ void TeamTypeClass::Init(void) { TeamTypes.Free_All(); }
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass *TeamTypeClass::As_Pointer(char const *name) {
+TeamTypeClass* TeamTypeClass::As_Pointer(char const* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
       if (!stricmp(name, TeamTypes.Ptr(index)->IniName)) {
@@ -248,7 +248,7 @@ TeamTypeClass *TeamTypeClass::As_Pointer(char const *name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamMissionType TeamTypeClass::Mission_From_Name(char const *name) {
+TeamMissionType TeamTypeClass::Mission_From_Name(char const* name) {
   if (name) {
     for (TeamMissionType order = TMISSION_FIRST; order < TMISSION_COUNT;
          order++) {
@@ -276,7 +276,7 @@ TeamMissionType TeamTypeClass::Mission_From_Name(char const *name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-char const *TeamTypeClass::Name_From_Mission(TeamMissionType order) {
+char const* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   assert((unsigned)order < TMISSION_COUNT);
 
   return (TMissions[order]);
@@ -297,10 +297,10 @@ char const *TeamTypeClass::Name_From_Mission(TeamMissionType order) {
  * HISTORY:                                                                *
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
-void *TeamTypeClass::operator new(size_t) {
-  void *ptr = TeamTypes.Allocate();
+void* TeamTypeClass::operator new(size_t) {
+  void* ptr = TeamTypes.Allocate();
   if (ptr) {
-    ((TeamTypeClass *)ptr)->IsActive = true;
+    ((TeamTypeClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -320,11 +320,11 @@ void *TeamTypeClass::operator new(size_t) {
  * HISTORY:                                                                *
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::operator delete(void *ptr) {
+void TeamTypeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((TeamTypeClass *)ptr)->IsActive = false;
+    ((TeamTypeClass*)ptr)->IsActive = false;
   }
-  TeamTypes.Free((TeamTypeClass *)ptr);
+  TeamTypes.Free((TeamTypeClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -341,7 +341,7 @@ void TeamTypeClass::operator delete(void *ptr) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass *TeamTypeClass::Create_One_Of(void) const {
+TeamClass* TeamTypeClass::Create_One_Of(void) const {
   if (ScenarioInit || Number < MaxAllowed) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return (new TeamClass(this, HouseClass::As_Pointer(House)));
@@ -365,7 +365,7 @@ TeamClass *TeamTypeClass::Create_One_Of(void) const {
  *=============================================================================================*/
 void TeamTypeClass::Destroy_All_Of(void) const {
   for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass *team = Teams.Ptr(index);
+    TeamClass* team = Teams.Ptr(index);
 
     if (team->Class == this) {
       delete team;
@@ -405,7 +405,7 @@ void TeamTypeClass::Destroy_All_Of(void) const {
  * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
  *even if no members in field.                        *
  *=============================================================================================*/
-TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
+TeamTypeClass const* TeamTypeClass::Suggested_New_Team(HouseClass* house, long,
                                                        long, long, long,
                                                        bool alerted)
 // TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
@@ -414,11 +414,11 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
   //	TeamTypeClass const * best = nullptr;
   //	int bestvalue = 0;
 
-  TeamTypeClass const *choices[20];
+  TeamTypeClass const* choices[20];
   int choicecount = 0;
 
   for (int index = 0; index < TeamTypes.Count(); index++) {
-    TeamTypeClass const *ttype = TeamTypes.Ptr(index);
+    TeamTypeClass const* ttype = TeamTypes.Ptr(index);
 
     assert(ttype != nullptr);
 
@@ -446,22 +446,22 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
         switch (ttype->Members[ctype].Class->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
             ineeded |=
-                (1 << ((InfantryTypeClass *)ttype->Members[ctype].Class)->Type);
+                (1 << ((InfantryTypeClass*)ttype->Members[ctype].Class)->Type);
             break;
 
           case RTTI_UNITTYPE:
             uneeded |=
-                (1 << ((UnitTypeClass *)ttype->Members[ctype].Class)->Type);
+                (1 << ((UnitTypeClass*)ttype->Members[ctype].Class)->Type);
             break;
 
           case RTTI_VESSELTYPE:
             vneeded |=
-                (1 << ((VesselTypeClass *)ttype->Members[ctype].Class)->Type);
+                (1 << ((VesselTypeClass*)ttype->Members[ctype].Class)->Type);
             break;
 
           case RTTI_AIRCRAFTTYPE:
             aneeded |=
-                (1 << ((AircraftTypeClass *)ttype->Members[ctype].Class)->Type);
+                (1 << ((AircraftTypeClass*)ttype->Members[ctype].Class)->Type);
             break;
         }
       }
@@ -509,7 +509,7 @@ TeamTypeClass const *TeamTypeClass::Suggested_New_Team(HouseClass *house, long,
  *                                                                                             *
  * HISTORY: * 01/26/1996 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass *TeamTypeClass::From_Name(char const *name) {
+TeamTypeClass* TeamTypeClass::From_Name(char const* name) {
   if (name) {
     for (int index = 0; index < TeamTypes.Count(); index++) {
       if (stricmp(name, TeamTypes.Ptr(index)->IniName) == 0) {
@@ -611,7 +611,7 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
  *=============================================================================================*/
 void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
                                bool selected, TextPrintType flags) {
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static int _tabs[] = {13, 40};
   if ((flags & 0x0F) == TPF_6PT_GRAD || (flags & 0x0F) == TPF_EFNT) {
     if (selected) {
@@ -714,8 +714,8 @@ bool TeamTypeClass::Edit(void) {
   /*
   **	Dialog variables:
   */
-  ControlClass *commands = 0;
-  RemapControlType *scheme = GadgetClass::Get_Color_Scheme();
+  ControlClass* commands = 0;
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   **	Team name edit field.
@@ -937,7 +937,7 @@ bool TeamTypeClass::Edit(void) {
   mlist.Set_Selected_Index(0);
   mlist.Add_Tail(*commands);
 
-  TListClass<TeamMissionClass *> missionlist2(
+  TListClass<TeamMissionClass*> missionlist2(
       BUTTON_MISSION2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
       TPF_EFNT | TPF_NOSHADOW, MFCD::Retrieve("EBTN-UP.SHP"),
       MFCD::Retrieve("EBTN-DN.SHP"));
@@ -1161,7 +1161,7 @@ bool TeamTypeClass::Edit(void) {
       */
       case BUTTON_INSERT | KN_BUTTON:
         if (missionlist2.Count() < MAX_TEAM_MISSIONS) {
-          TeamMissionClass *tm = new TeamMissionClass;
+          TeamMissionClass* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1211,7 +1211,7 @@ bool TeamTypeClass::Edit(void) {
       */
       case BUTTON_ADD | KN_BUTTON:
         if (missionlist2.Count() < MAX_TEAM_MISSIONS) {
-          TeamMissionClass *tm = new TeamMissionClass;
+          TeamMissionClass* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1263,7 +1263,7 @@ bool TeamTypeClass::Edit(void) {
       */
       case BUTTON_REPLACE | KN_BUTTON:
         if (missionlist2.Count()) {
-          TeamMissionClass *tm = missionlist2.Current_Item();
+          TeamMissionClass* tm = missionlist2.Current_Item();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1312,7 +1312,7 @@ bool TeamTypeClass::Edit(void) {
       */
       case BUTTON_DELETE | KN_BUTTON:
         if (missionlist2.Count()) {
-          TeamMissionClass *tm = missionlist2.Current_Item();
+          TeamMissionClass* tm = missionlist2.Current_Item();
           missionlist2.Remove_Index(missionlist2.Current_Index());
           delete tm;
         }
@@ -1426,7 +1426,7 @@ bool TeamTypeClass::Edit(void) {
   return (!cancel);
 }
 
-int atoh(char *str) {
+int atoh(char* str) {
   int retval = 0;
   while (*str) {
     retval *= 16;
@@ -1466,7 +1466,7 @@ int atoh(char *str) {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const *TeamTypeClass::Member_Description(void) const {
+char const* TeamTypeClass::Member_Description(void) const {
   static char buffer[128];
 
   buffer[0] = '\0';
@@ -1510,7 +1510,7 @@ char const *TeamTypeClass::Member_Description(void) const {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const *TeamTypeClass::Description(void) const {
+char const* TeamTypeClass::Description(void) const {
   static char _buffer[128];
   char extra = ' ';
   char loc[3];
@@ -1551,7 +1551,7 @@ char const *TeamTypeClass::Description(void) const {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const *TeamMissionClass::Description(int index) const {
+char const* TeamMissionClass::Description(int index) const {
   static char buffer[64];
 
   sprintf(buffer, "%d\t%s", index, TeamTypeClass::Name_From_Mission(Mission));
@@ -1636,8 +1636,8 @@ void TeamTypeClass::Detach(TARGET target, bool) {
  *   12/07/1994 BR : Created.                                              *
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
-void TeamTypeClass::Read_INI(CCINIClass &ini) {
-  TeamTypeClass *team;  // Working team pointer.
+void TeamTypeClass::Read_INI(CCINIClass& ini) {
+  TeamTypeClass* team;  // Working team pointer.
   char buf[500];        // INI entry buffer
 
   int len = ini.Entry_Count(INI_Name());
@@ -1648,9 +1648,9 @@ void TeamTypeClass::Read_INI(CCINIClass &ini) {
   for (int index = 0; index < len; index++) {
     team = new TeamTypeClass();
     if (team != nullptr) {
-      char const *entry = ini.Get_Entry(INI_Name(), index);
+      char const* entry = ini.Get_Entry(INI_Name(), index);
       ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
-      team->Fill_In((char *)entry, buf);
+      team->Fill_In((char*)entry, buf);
     }
   }
 }
@@ -1680,7 +1680,7 @@ void TeamTypeClass::Read_INI(CCINIClass &ini) {
  * HISTORY: * 11/28/1994 BR : Created. * 11/29/1995 JLB : Revamped to use new
  *team class.                                          *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(char *name, char *entry) {
+void TeamTypeClass::Fill_In(char* name, char* entry) {
   assert(TeamTypes.ID(this) == ID);
 
   /*
@@ -1733,9 +1733,9 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
   */
   ClassCount = atoi(strtok(nullptr, ","));
   for (int index = 0; index < ClassCount; index++) {
-    char *p1 = strtok(nullptr, ",:");
-    char *p2 = strtok(nullptr, ",:");
-    TechnoTypeClass const *otype = nullptr;
+    char* p1 = strtok(nullptr, ",:");
+    char* p2 = strtok(nullptr, ",:");
+    TechnoTypeClass const* otype = nullptr;
 
     /*
     **	See if this is an infantry name
@@ -1815,7 +1815,7 @@ void TeamTypeClass::Fill_In(char *name, char *entry) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Write_INI(CCINIClass &ini) {
+void TeamTypeClass::Write_INI(CCINIClass& ini) {
   ini.Clear("TeamTypes");
   ini.Clear(INI_Name());
 
@@ -1824,7 +1824,7 @@ void TeamTypeClass::Write_INI(CCINIClass &ini) {
   */
   for (int index = 0; index < TeamTypes.Count(); index++) {
     //	for (int index = TeamTypes.Count()-1; index >= 0; index--) {
-    TeamTypeClass *team = TeamTypes.Ptr(index);
+    TeamTypeClass* team = TeamTypes.Ptr(index);
     char buf[256];
 
     buf[0] = 0;
@@ -1849,7 +1849,7 @@ void TeamTypeClass::Write_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Build_INI_Entry(char *buf) {
+void TeamTypeClass::Build_INI_Entry(char* buf) {
   int code = 0;
   code |= IsRoundAbout ? 0x0001 : 0;
   code |= IsSuicide ? 0x0002 : 0;

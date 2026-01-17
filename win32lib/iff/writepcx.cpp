@@ -36,8 +36,9 @@
  *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 #include <wwlib32.h>
-#include "filepcx.h"
 #include <wwmem.h>
+
+#include "filepcx.h"
 static void Write_Pcx_ScanLine(int file_handle, int scansize, char* ptr);
 
 /***************************************************************************

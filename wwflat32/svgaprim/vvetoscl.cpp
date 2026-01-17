@@ -31,8 +31,8 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  */
-#include <mcgaprim.h>
 #include <gbuffer.h>
+#include <mcgaprim.h>
 #include <vbuffer.h>
 
 int Vesa_Scale_To_Linear(void* scr, void* dst, int src_x, int src_y, int dst_x,

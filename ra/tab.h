@@ -50,10 +50,10 @@
 class TabClass : public SidebarClass {
  public:
   TabClass(void);
-  TabClass(NoInitClass const &x)
+  TabClass(NoInitClass const& x)
       : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {};
 
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
   static void Draw_Credits_Tab(void);
   static void Hilite_Tab(int tab);
@@ -80,7 +80,7 @@ class TabClass : public SidebarClass {
 
   CDTimerClass<FrameTimerClass> MoneyFlashTimer;
 
-  static void const *TabShape;
+  static void const* TabShape;
 };
 
 #endif

@@ -32,7 +32,7 @@ LoadBmp::~LoadBmp() {
 //
 //  Load a specified bitmap for later display on a window
 //
-bit8 LoadBmp::init(char *filename, HWND hwnd) {
+bit8 LoadBmp::init(char* filename, HWND hwnd) {
   int i;
   char string[128];
   HANDLE hBitmapFile;
@@ -40,7 +40,7 @@ bit8 LoadBmp::init(char *filename, HWND hwnd) {
   BITMAPFILEHEADER bitmapHeader;
   BITMAPINFOHEADER bitmapInfoHeader;
   LPLOGPALETTE lpLogPalette;
-  char *palData;
+  char* palData;
   HGLOBAL hmem2;
   LPVOID lpvBits;
   PAINTSTRUCT ps;
@@ -98,7 +98,7 @@ bit8 LoadBmp::init(char *filename, HWND hwnd) {
   lpLogPalette->palVersion = 0x300;
   lpLogPalette->palNumEntries = 256;
 
-  palData = (char *)lpHeaderMem->bmiColors;
+  palData = (char*)lpHeaderMem->bmiColors;
 
   for (i = 0; i < 256; i++) {
     lpLogPalette->palPalEntry[i].peRed = *palData++;

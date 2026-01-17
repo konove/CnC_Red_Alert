@@ -38,5 +38,5 @@
 
 #include "ra/_wsproto.h"
 
-WinsockInterfaceClass *PacketTransport =
+WinsockInterfaceClass* PacketTransport =
     nullptr;  // The object for interfacing with Winsock

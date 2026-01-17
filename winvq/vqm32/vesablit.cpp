@@ -77,9 +77,9 @@
  *
  ****************************************************************************/
 
-void VESA_Blit_640x480(DisplayInfo *disp, unsigned char *buf, long x1, long y1,
+void VESA_Blit_640x480(DisplayInfo* disp, unsigned char* buf, long x1, long y1,
                        long width, long height) {
-  VESAModeInfo *vminfo;
+  VESAModeInfo* vminfo;
   long bank;
   long last_bank;
   long bank_offset;
@@ -90,7 +90,7 @@ void VESA_Blit_640x480(DisplayInfo *disp, unsigned char *buf, long x1, long y1,
   long i;
 
   /* Initialize values */
-  vminfo = (VESAModeInfo *)disp->Extended;
+  vminfo = (VESAModeInfo*)disp->Extended;
   scrn_offset = ((disp->XRes * y1) + x1);
   grains_per_win = ((long)vminfo->WinSize / (long)vminfo->WinGranularity);
   bank_offset = scrn_offset % 65536L;
@@ -109,7 +109,7 @@ void VESA_Blit_640x480(DisplayInfo *disp, unsigned char *buf, long x1, long y1,
 
     /* Copy a full scanline */
     if ((bank_offset + width) < 65536L) {
-      Copy_Row((char *)buf, (char *)bank_offset, width);
+      Copy_Row((char*)buf, (char*)bank_offset, width);
       buf += width;
       scrn_offset += disp->XRes;
       bank_offset += disp->XRes;
@@ -119,13 +119,13 @@ void VESA_Blit_640x480(DisplayInfo *disp, unsigned char *buf, long x1, long y1,
     else {
       part1 = (65536L - bank_offset);
       part2 = (width - part1);
-      Copy_Row((char *)buf, (char *)bank_offset, part1);
+      Copy_Row((char*)buf, (char*)bank_offset, part1);
 
       buf += part1;
       bank += grains_per_win;
       last_bank += grains_per_win;
       SetVESAWindow(bank);
-      Copy_Row((char *)buf, (char *)0, part2);
+      Copy_Row((char*)buf, (char*)0, part2);
 
       buf += part2;
       scrn_offset += disp->XRes;

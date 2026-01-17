@@ -40,9 +40,10 @@
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
-#include "misc.h"
 #include <gbuffer.h>
 #include <palette.h>
+
+#include "misc.h"
 
 LPDIRECTDRAW DirectDrawObject = NULL;  // Pointer to the direct draw object
 LPDIRECTDRAW2 DirectDraw2Interface =
@@ -143,8 +144,8 @@ void Process_DD_Result(HRESULT result, int display_ok_msg) {
                  "Note", MB_ICONEXCLAMATION | MB_OK);
       break;
     case DDERR_CURRENTLYNOTAVAIL:
-      MessageBox(MainWindow, "Support is currently not available.	", "Note",
-                 MB_ICONEXCLAMATION | MB_OK);
+      MessageBox(MainWindow, "Support is currently not available.	",
+                 "Note", MB_ICONEXCLAMATION | MB_OK);
       break;
     case DDERR_DIRECTDRAWALREADYCREATED:
       MessageBox(MainWindow,
@@ -382,8 +383,9 @@ void Process_DD_Result(HRESULT result, int display_ok_msg) {
                  "Note", MB_ICONEXCLAMATION | MB_OK);
       break;
     case DDERR_NOPALETTEATTACHED:
-      MessageBox(MainWindow, "No palette object attached to this surface.	",
-                 "Note", MB_ICONEXCLAMATION | MB_OK);
+      MessageBox(MainWindow,
+                 "No palette object attached to this surface.	", "Note",
+                 MB_ICONEXCLAMATION | MB_OK);
       break;
     case DDERR_NOPALETTEHW:
       MessageBox(MainWindow,
@@ -740,7 +742,7 @@ BOOL Set_Video_Mode(HWND hwnd, int w, int h, int bits_per_pixel) {
   ** Find out if DirectX 2 extensions are available
   */
   result = DirectDrawObject->QueryInterface(IID_IDirectDraw2,
-                                            (LPVOID *)&DirectDraw2Interface);
+                                            (LPVOID*)&DirectDraw2Interface);
   SystemToVideoBlits = FALSE;
   VideoToSystemBlits = FALSE;
   SystemToSystemBlits = FALSE;
@@ -750,8 +752,8 @@ BOOL Set_Video_Mode(HWND hwnd, int w, int h, int bits_per_pixel) {
     DDCAPS capabilities;
     DDCAPS emulated_capabilities;
 
-    memset((char *)&capabilities, 0, sizeof(capabilities));
-    memset((char *)&emulated_capabilities, 0, sizeof(emulated_capabilities));
+    memset((char*)&capabilities, 0, sizeof(capabilities));
+    memset((char*)&emulated_capabilities, 0, sizeof(emulated_capabilities));
     capabilities.dwSize = sizeof(capabilities);
     emulated_capabilities.dwSize = sizeof(emulated_capabilities);
 
@@ -939,7 +941,7 @@ void Wait_Vert_Blank(void) {
  *                                                                                             *
  * HISTORY: * 10/11/95 3:33PM ST : Created *
  *=============================================================================================*/
-void Set_DD_Palette(void *palette) {
+void Set_DD_Palette(void* palette) {
   /*
   ** Trap null ptr
   */
@@ -947,12 +949,12 @@ void Set_DD_Palette(void *palette) {
 
   int j;
   int k;
-  char *palette_get;
+  char* palette_get;
 
   if (DirectDrawObject && PaletteSurface) {
     k = 0;
 
-    palette_get = (char *)palette;
+    palette_get = (char*)palette;
 
     for (j = 0; j < 768; j += 3) {
       PaletteEntries[k].peRed = (unsigned char)((*palette_get++) << 2);

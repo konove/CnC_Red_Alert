@@ -20,9 +20,10 @@
 #define PROCESS_HEADER
 
 #include <windows.h>
-#include "wstypes.h"
-#include "wdebug.h"
+
 #include "configfile.h"
+#include "wdebug.h"
+#include "wstypes.h"
 
 class Process {
  public:
@@ -35,8 +36,8 @@ class Process {
   HANDLE hThread;
 };
 
-bit8 Read_Process_Info(ConfigFile &config, OUT Process &info);
-bit8 Create_Process(Process &process);
-bit8 Wait_Process(Process &process);
+bit8 Read_Process_Info(ConfigFile& config, OUT Process& info);
+bit8 Create_Process(Process& process);
+bit8 Wait_Process(Process& process);
 
 #endif

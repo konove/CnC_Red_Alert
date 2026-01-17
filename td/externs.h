@@ -106,7 +106,7 @@ extern bool Debug_Smart_Print;
 extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Instant_Build;
 
-extern void const *WarFactoryOverlay;
+extern void const* WarFactoryOverlay;
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
@@ -137,7 +137,7 @@ extern bool PlayerRestarts;
 extern StructType SabotagedType;
 extern bool TempleIoned;
 extern long Frame;
-extern void *SpeechBuffer;
+extern void* SpeechBuffer;
 extern int PreserveVQAScreen;
 extern bool BreakoutAllowed;
 extern bool Brokeout;
@@ -154,11 +154,11 @@ extern MouseClass Map;
 #endif
 extern ScoreClass Score;
 extern MonoClass MonoArray[MonoClass::MAX_MONO_PAGES];
-extern MixFileClass *ScoreMix;
-extern MixFileClass *TheaterData;
-extern MixFileClass *LowTheaterData;
-extern MixFileClass *MoviesMix;
-extern MixFileClass *GeneralMix;
+extern MixFileClass* ScoreMix;
+extern MixFileClass* TheaterData;
+extern MixFileClass* LowTheaterData;
+extern MixFileClass* MoviesMix;
+extern MixFileClass* GeneralMix;
 extern ThemeClass Theme;
 
 /*
@@ -183,9 +183,9 @@ extern TFixedIHeapClass<HouseClass> Houses;
 extern QueueClass<EventClass, MAX_EVENTS> OutList;
 extern QueueClass<EventClass, (MAX_EVENTS * 8)> DoList;
 
-extern DynamicVectorClass<ObjectClass *> CurrentObject;
-extern DynamicVectorClass<TriggerClass *> CellTriggers;
-extern DynamicVectorClass<TriggerClass *> HouseTriggers[HOUSE_COUNT];
+extern DynamicVectorClass<ObjectClass*> CurrentObject;
+extern DynamicVectorClass<TriggerClass*> CellTriggers;
+extern DynamicVectorClass<TriggerClass*> HouseTriggers[HOUSE_COUNT];
 
 extern CELL Waypoint[WAYPT_COUNT];
 
@@ -194,17 +194,17 @@ extern BaseClass Base;
 /*
 **	Loaded data file pointers.
 */
-extern void const *Green12FontPtr;
-extern void const *Green12GradFontPtr;
-extern void const *MapFontPtr;
-extern void const *VCRFontPtr;
-extern void const *Font3Ptr;
-extern void const *Font6Ptr;
-extern void const *Font8Ptr;
-extern void const *FontLEDPtr;
-extern void const *ScoreFontPtr;
-extern void const *GradFont6Ptr;
-extern char const *SystemStrings;
+extern void const* Green12FontPtr;
+extern void const* Green12GradFontPtr;
+extern void const* MapFontPtr;
+extern void const* VCRFontPtr;
+extern void const* Font3Ptr;
+extern void const* Font6Ptr;
+extern void const* Font8Ptr;
+extern void const* FontLEDPtr;
+extern void const* ScoreFontPtr;
+extern void const* GradFont6Ptr;
+extern char const* SystemStrings;
 
 /*
 **	Miscellaneous globals.
@@ -213,16 +213,16 @@ extern HousesType Whom;
 extern _VQAConfig AnimControl;
 extern long SpareTicks;
 extern int MonoPage;
-extern unsigned char *OriginalPalette;
+extern unsigned char* OriginalPalette;
 extern int EndCountDown;
 extern bool GameActive;
 extern bool SpecialFlag;
 extern int ScenarioInit;
 extern long TutorFlags[2];
-extern HouseClass *PlayerPtr;
-extern unsigned char *BlackPalette;
-extern unsigned char *WhitePalette;
-extern unsigned char *GamePalette;
+extern HouseClass* PlayerPtr;
+extern unsigned char* BlackPalette;
+extern unsigned char* WhitePalette;
+extern unsigned char* GamePalette;
 extern unsigned Scenario;
 extern ScenarioPlayerType ScenPlayer;
 extern ScenarioDirType ScenDir;
@@ -255,13 +255,13 @@ extern GetCDClass CDList;
 */
 extern bool ModemService;
 extern NullModemClass NullModem;
-extern DynamicVectorClass<PhoneEntryClass *> PhoneBook;
+extern DynamicVectorClass<PhoneEntryClass*> PhoneBook;
 extern int CurPhoneIdx;
-extern DynamicVectorClass<char *> InitStrings;
+extern DynamicVectorClass<char*> InitStrings;
 extern SerialSettingsType SerialDefaults;
 extern ModemGameType ModemGameToPlay;
-extern char *DialMethodCheck[DIAL_METHODS];
-extern char *CallWaitStrings[CALL_WAIT_STRINGS_NUM];
+extern char* DialMethodCheck[DIAL_METHODS];
+extern char* CallWaitStrings[CALL_WAIT_STRINGS_NUM];
 
 /*
 ** Network/Modem globals
@@ -272,7 +272,7 @@ extern char MPlayerName[MPLAYER_NAME_MAX];
 extern int MPlayerGColors[];
 extern int MPlayerTColors[];
 extern char MPlayerDescriptions[100][40];
-extern DynamicVectorClass<char *> MPlayerScenarios;
+extern DynamicVectorClass<char*> MPlayerScenarios;
 extern DynamicVectorClass<int> MPlayerFilenum;
 extern int MPlayerMax;
 extern int MPlayerPrefColor;
@@ -308,18 +308,18 @@ extern int MPlayerCurGame;
 extern int TheirProcessTime[MAX_PLAYERS - 1];
 extern int DesiredFrameRate;
 
-extern char *GlobalPacketNames[];
-extern char *SerialPacketNames[];
+extern char* GlobalPacketNames[];
+extern char* SerialPacketNames[];
 
 typedef struct {
   union {
-    AircraftClass *Aircraft;
-    AnimClass *Anim;
-    BuildingClass *Building;
-    BulletClass *Bullet;
-    InfantryClass *Infantry;
-    UnitClass *Unit;
-    void *All;
+    AircraftClass* Aircraft;
+    AnimClass* Anim;
+    BuildingClass* Building;
+    BulletClass* Bullet;
+    InfantryClass* Infantry;
+    UnitClass* Unit;
+    void* All;
   } Ptr;
 } TrapObjectType;
 
@@ -327,8 +327,8 @@ extern long TrapFrame;
 extern RTTIType TrapObjType;
 extern TrapObjectType TrapObject;
 extern COORDINATE TrapCoord;
-extern void *TrapThis;
-extern CellClass *TrapCell;
+extern void* TrapThis;
+extern CellClass* TrapCell;
 extern int TrapCheckHeap;
 
 /*
@@ -346,13 +346,13 @@ extern GlobalPacketType GPacket;
 extern int GPacketlen;
 extern IPXAddressClass GAddress;
 extern unsigned short GProductID;
-extern char *MetaPacket;
+extern char* MetaPacket;
 extern int MetaSize;
-extern DynamicVectorClass<NodeNameType *> Games;
-extern DynamicVectorClass<NodeNameType *> Players;
+extern DynamicVectorClass<NodeNameType*> Games;
+extern DynamicVectorClass<NodeNameType*> Players;
 
 extern int Seed;
-extern long *RandSeedPtr;
+extern long* RandSeedPtr;
 extern int CustomSeed;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
@@ -381,7 +381,7 @@ extern int ProcessFrames;
 extern SpecialDialogType SpecialDialog;
 // extern bool						IsFindPath;
 
-extern char *DebugFname;  // for stoopid debugging purposes
+extern char* DebugFname;  // for stoopid debugging purposes
 extern int DebugLine;     // for stoopid debugging purposes
 extern int RequiredCD;
 extern int MouseInstalled;
@@ -389,7 +389,7 @@ extern int AreThingiesEnabled;
 
 extern WWKeyboardClass Kbd;
 extern int In_Debugger;
-extern WWMouseClass *WWMouse;
+extern WWMouseClass* WWMouse;
 extern HANDLE hInstance;
 extern int AllDone;
 extern "C" bool MMXAvailable;
@@ -398,10 +398,10 @@ void Memory_Error_Handler(void);
 extern bool GameStatisticsPacketSent;
 extern bool ConnectionLost;
 extern bool InMainLoop;  // True if in game state rather than menu state
-void CCDebugString(char const *string);
-extern void *PacketLater;
-void Load_Title_Screen(char const *name, GraphicViewPortClass *video_page,
-                       unsigned char *palette);
+void CCDebugString(char const* string);
+extern void* PacketLater;
+void Load_Title_Screen(char const* name, GraphicViewPortClass* video_page,
+                       unsigned char* palette);
 
 extern "C" {
 extern bool IsTheaterShape;

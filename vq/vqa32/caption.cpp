@@ -39,13 +39,14 @@
  *
  ****************************************************************************/
 
-#include <mem.h>
-#include <malloc.h>
-#include <vqm32\font.h>
-#include <vqm32\text.h>
-#include <vqm32\graphics.h>
-#include <vqm32\captoken.h>
 #include "caption.h"
+
+#include <malloc.h>
+#include <mem.h>
+#include <vqm32\captoken.h>
+#include <vqm32\font.h>
+#include <vqm32\graphics.h>
+#include <vqm32\text.h>
 
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
@@ -54,8 +55,8 @@
 #define NUM_NODES 3
 
 /* Function prototypes. */
-static CaptionNode *AddCaptionNode(CaptionList *list, CaptionText *captext);
-static void RemCaptionNode(CaptionList *list, CaptionNode *node);
+static CaptionNode* AddCaptionNode(CaptionList* list, CaptionText* captext);
+static void RemCaptionNode(CaptionList* list, CaptionNode* node);
 
 /****************************************************************************
  *
@@ -82,43 +83,43 @@ static void RemCaptionNode(CaptionList *list, CaptionNode *node);
  *
  ****************************************************************************/
 
-CaptionInfo *OpenCaptions(void *captions, void *font) {
-  CaptionInfo *cap = NULL;
-  CaptionNode *node;
-  FontInfo *fi;
+CaptionInfo* OpenCaptions(void* captions, void* font) {
+  CaptionInfo* cap = NULL;
+  CaptionNode* node;
+  FontInfo* fi;
   long i;
 
   /* Allocate memory for the captioning system. */
-  cap = (CaptionInfo *)malloc(sizeof(CaptionInfo) +
-                              (sizeof(CaptionNode) * NUM_NODES));
+  cap = (CaptionInfo*)malloc(sizeof(CaptionInfo) +
+                             (sizeof(CaptionNode) * NUM_NODES));
 
   if (cap != NULL) {
     memset(cap, 0, (sizeof(CaptionInfo) + (sizeof(CaptionNode) * NUM_NODES)));
     cap->Buffer = captions;
-    cap->Next = (CaptionText *)captions;
+    cap->Next = (CaptionText*)captions;
 
     /* Initialize font */
-    fi = (FontInfo *)((char *)font + ((Font *)font)->InfoBlk);
+    fi = (FontInfo*)((char*)font + ((Font*)font)->InfoBlk);
     cap->Font = font;
     cap->FontHeight = fi->MaxHeight;
     cap->FontWidth = fi->MaxWidth;
 
     /* Initialize list header. */
-    cap->List.Head = (CaptionNode *)&cap->List.Tail;
+    cap->List.Head = (CaptionNode*)&cap->List.Tail;
     cap->List.Tail = NULL;
-    cap->List.TailPred = (CaptionNode *)&cap->List.Head;
+    cap->List.TailPred = (CaptionNode*)&cap->List.Head;
 
     /* Link nodes. */
-    node = (CaptionNode *)((char *)cap + sizeof(CaptionInfo));
+    node = (CaptionNode*)((char*)cap + sizeof(CaptionInfo));
 
     for (i = 0; i < NUM_NODES; i++) {
       node->Succ = cap->List.Head;
       cap->List.Head = node;
-      node->Pred = (CaptionNode *)&cap->List.Head;
+      node->Pred = (CaptionNode*)&cap->List.Head;
       node->Succ->Pred = node;
 
       /* Next node. */
-      node = (CaptionNode *)((char *)node + sizeof(CaptionNode));
+      node = (CaptionNode*)((char*)node + sizeof(CaptionNode));
     }
   }
 
@@ -149,7 +150,7 @@ CaptionInfo *OpenCaptions(void *captions, void *font) {
  *
  ****************************************************************************/
 
-void CloseCaptions(CaptionInfo *cap) { free(cap); }
+void CloseCaptions(CaptionInfo* cap) { free(cap); }
 
 /****************************************************************************
  *
@@ -173,15 +174,15 @@ void CloseCaptions(CaptionInfo *cap) { free(cap); }
  *
  ****************************************************************************/
 
-void DoCaptions(CaptionInfo *cap, unsigned long frame) {
-  CaptionText *captext;
-  CaptionNode *node;
-  void const *oldfont;
+void DoCaptions(CaptionInfo* cap, unsigned long frame) {
+  CaptionText* captext;
+  CaptionNode* node;
+  void const* oldfont;
   long width;
   long i;
 
   /* Initialize variables. */
-  oldfont = Set_Font((char *)cap->Font);
+  oldfont = Set_Font((char*)cap->Font);
 
   /*-------------------------------------------------------------------------
    * Process the captions that are on the active queue.
@@ -283,7 +284,7 @@ void DoCaptions(CaptionInfo *cap, unsigned long frame) {
     }
 
     /* Next */
-    cap->Next = (CaptionText *)(((char *)captext) + captext->Size);
+    cap->Next = (CaptionText*)(((char*)captext) + captext->Size);
     captext = cap->Next;
   }
 
@@ -312,8 +313,8 @@ void DoCaptions(CaptionInfo *cap, unsigned long frame) {
  *
  ****************************************************************************/
 
-static CaptionNode *AddCaptionNode(CaptionList *list, CaptionText *captext) {
-  CaptionNode *node = NULL;
+static CaptionNode* AddCaptionNode(CaptionList* list, CaptionText* captext) {
+  CaptionNode* node = NULL;
 
   /* If this list is not full. */
   node = list->TailPred;
@@ -332,7 +333,7 @@ static CaptionNode *AddCaptionNode(CaptionList *list, CaptionText *captext) {
     /* Add the node to the head. */
     node->Succ = list->Head;
     list->Head = node;
-    node->Pred = (CaptionNode *)&list->Head;
+    node->Pred = (CaptionNode*)&list->Head;
     node->Succ->Pred = node;
   }
 
@@ -362,7 +363,7 @@ static CaptionNode *AddCaptionNode(CaptionList *list, CaptionText *captext) {
  *
  ****************************************************************************/
 
-static void RemCaptionNode(CaptionList *list, CaptionNode *node) {
+static void RemCaptionNode(CaptionList* list, CaptionNode* node) {
   /* If the nodes successor is null then we are at the tail. */
   if (node->Succ != NULL) {
     /* Mark the node as unused. */
@@ -371,7 +372,7 @@ static void RemCaptionNode(CaptionList *list, CaptionNode *node) {
     /* Relink the node to the tail. */
     node->Succ->Pred = node->Pred;
     node->Pred->Succ = node->Succ;
-    node->Succ = (CaptionNode *)&list->Tail;
+    node->Succ = (CaptionNode*)&list->Tail;
     node->Pred = list->TailPred;
     list->TailPred->Succ = node;
     list->TailPred = node;

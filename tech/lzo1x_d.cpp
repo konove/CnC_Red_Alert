@@ -60,13 +60,13 @@
 // decompress a block of data.
 ************************************************************************/
 
-int lzo1x_decompress(const lzo_byte *in, lzo_uint in_len, lzo_byte *out,
-                     lzo_uint *out_len, lzo_voidp) {
-  lzo_byte *op;
-  const lzo_byte *ip;
+int lzo1x_decompress(const lzo_byte* in, lzo_uint in_len, lzo_byte* out,
+                     lzo_uint* out_len, lzo_voidp) {
+  lzo_byte* op;
+  const lzo_byte* ip;
   lzo_uint t;
-  const lzo_byte *m_pos;
-  const lzo_byte *const ip_end = in + in_len;
+  const lzo_byte* m_pos;
+  const lzo_byte* const ip_end = in + in_len;
 
   *out_len = 0;
 

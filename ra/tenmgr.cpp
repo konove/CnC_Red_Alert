@@ -76,12 +76,11 @@ const int kMaxPlayers = 8;
 // Functions
 //
 static void terminateApp(void);
-static void debugMessage(int msgLevel, char *msg);
-static void doAlert(int, int, char *);
-static void doPregameHook(char *joinType, char *, char *, char *, char *,
-                          char *);
-void doIncomingPacket(int addr, void *buf, size_t size);
-void doPlayerEntered(int pid, int isYou, char *, char *, char *, long, char *);
+static void debugMessage(int msgLevel, char* msg);
+static void doAlert(int, int, char*);
+static void doPregameHook(char* joinType, char*, char*, char*, char*, char*);
+void doIncomingPacket(int addr, void* buf, size_t size);
+void doPlayerEntered(int pid, int isYou, char*, char*, char*, long, char*);
 
 //**************************************************************************
 // Globals
@@ -248,10 +247,10 @@ int TenConnManClass::Service(void) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Send_Private_Message(void *buf, int buflen, int reliable,
+int TenConnManClass::Send_Private_Message(void* buf, int buflen, int reliable,
                                           int conn_id) {
   int doBroadcast = conn_id == -1;
-  unsigned char *ucbuf = (unsigned char *)buf;
+  unsigned char* ucbuf = (unsigned char*)buf;
 
   //
   // Ensure the global channel flag isn't set on this outgoing packet
@@ -302,7 +301,7 @@ int TenConnManClass::Send_Private_Message(void *buf, int buflen, int reliable,
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
+int TenConnManClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
   int addr;
   int addrlen;
   int i;
@@ -345,10 +344,10 @@ int TenConnManClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Send_Global_Message(void *buf, int buflen, int reliable,
+int TenConnManClass::Send_Global_Message(void* buf, int buflen, int reliable,
                                          int address) {
   int doBroadcast = address == -1;
-  unsigned char *ucbuf = (unsigned char *)buf;
+  unsigned char* ucbuf = (unsigned char*)buf;
 
   //
   // Ensure the global channel flag isn't set on this outgoing packet
@@ -407,7 +406,7 @@ int TenConnManClass::Send_Global_Message(void *buf, int buflen, int reliable,
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Get_Global_Message(void *buf, int *buflen, int *address) {
+int TenConnManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
   int addrlen;
 
   if (GlobalQueue->Num_Receive() > 0) {
@@ -519,7 +518,7 @@ int TenConnManClass::Connection_Index(int id) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Create_Connection(int id, char *name, int address) {
+int TenConnManClass::Create_Connection(int id, char* name, int address) {
   Connections[NumConnections] = address;
   ID[NumConnections] = id;
   strcpy(Names[NumConnections], name);
@@ -583,7 +582,7 @@ int TenConnManClass::Delete_Connection(int id) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-char *TenConnManClass::Connection_Name(int id) {
+char* TenConnManClass::Connection_Name(int id) {
   int i;
 
   for (i = 0; i < NumConnections; i++) {
@@ -866,7 +865,7 @@ void TenConnManClass::Set_Timing(unsigned long /*retrydelta*/,
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
 void TenConnManClass::Configure_Debug(int /*index*/, int /*type_offset*/,
-                                      int /*type_size*/, char ** /*names*/,
+                                      int /*type_size*/, char** /*names*/,
                                       int /*namestart*/, int /*namecount*/) {
   //
   // (This function intentionally left blank.)
@@ -943,7 +942,7 @@ static void terminateApp(void) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void debugMessage(int /*msgLevel*/, char *msg) {
+static void debugMessage(int /*msgLevel*/, char* msg) {
   static int recurse = 0;
 
   if (recurse) {
@@ -956,7 +955,7 @@ static void debugMessage(int /*msgLevel*/, char *msg) {
     Mono_Printf("%s\n", msg);
   } else {
     // printf("%s\n",msg);
-    FILE *fp;
+    FILE* fp;
     fp = fopen("tendebug.log", "at");
     if (fp) {
       fprintf(fp, "%s\n", msg);
@@ -990,7 +989,7 @@ static void debugMessage(int /*msgLevel*/, char *msg) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void doAlert(int, int, char *msg) {
+static void doAlert(int, int, char* msg) {
   static int recurse = 0;
 
   if (recurse) {
@@ -1003,7 +1002,7 @@ static void doAlert(int, int, char *msg) {
     Mono_Printf("%s\n", msg);
   } else {
     // printf("%s\n",msg);
-    FILE *fp;
+    FILE* fp;
     fp = fopen("tenalert.log", "at");
     if (fp) {
       fprintf(fp, "%s\n", msg);
@@ -1037,8 +1036,7 @@ static void doAlert(int, int, char *msg) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void doPregameHook(char *joinType, char *, char *, char *, char *,
-                          char *) {
+static void doPregameHook(char* joinType, char*, char*, char*, char*, char*) {
   char typeToken[16];
 
   sscanf(joinType, "%s", typeToken);
@@ -1070,14 +1068,14 @@ static void doPregameHook(char *joinType, char *, char *, char *, char *,
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-void doIncomingPacket(int addr, void *buf, size_t size) {
+void doIncomingPacket(int addr, void* buf, size_t size) {
   int rc;
-  unsigned char *byte;
+  unsigned char* byte;
 
   //
   // Check to see if this packet belongs to the Global Channel or not
   //
-  byte = (unsigned char *)buf;
+  byte = (unsigned char*)buf;
 
   //
   // If the global channel flag is set in this packet, queue it onto the
@@ -1118,9 +1116,9 @@ void doIncomingPacket(int addr, void *buf, size_t size) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-void doPlayerEntered(int pid, int isYou, char * /*options*/,
-                     char * /*termOptions*/, char * /*address*/,
-                     long /*uniqueId*/, char * /*joinType*/) {
+void doPlayerEntered(int pid, int isYou, char* /*options*/,
+                     char* /*termOptions*/, char* /*address*/,
+                     long /*uniqueId*/, char* /*joinType*/) {
   if (isYou) {
     Session.TenPlayerID = pid;
   }

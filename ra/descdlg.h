@@ -60,7 +60,7 @@ class DescriptionClass {
 
  public:
   DescriptionClass(void) {};
-  void Process(char *string);
+  void Process(char* string);
 };
 
 #endif

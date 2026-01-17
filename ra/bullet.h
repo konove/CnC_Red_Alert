@@ -68,7 +68,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	Records who sent this "present" so that an appropriate "thank you" can
   **	be returned.
   */
-  TechnoClass *Payback;
+  TechnoClass* Payback;
 
   /*
   **	This is the facing that the projectile is travelling.
@@ -79,12 +79,12 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
-  BulletClass(BulletType id, TARGET target, TechnoClass *Payback, int strength,
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
+  BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
               WarheadType warhead, int speed);
-  BulletClass(NoInitClass const &x)
+  BulletClass(NoInitClass const& x)
       : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {
         };
   virtual ~BulletClass(void);
@@ -95,27 +95,27 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   */
   static void Init(void);
 
-  bool Is_Forced_To_Explode(COORDINATE &coord) const;
+  bool Is_Forced_To_Explode(COORDINATE& coord) const;
   void Bullet_Explodes(bool forced);
   int Shape_Number(void) const;
   virtual LayerType In_Which_Layer(void) const;
   virtual COORDINATE Sort_Y(void) const;
   virtual void Assign_Target(TARGET target) { TarCom = target; };
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
   virtual void Detach(TARGET target, bool all);
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual bool Mark(MarkType mark = MARK_CHANGE);
   virtual void AI(void);
-  virtual short const *Occupy_List(bool = false) const;
-  virtual short const *Overlap_List(void) const { return Occupy_List(false); };
+  virtual short const* Occupy_List(bool = false) const;
+  virtual short const* Overlap_List(void) const { return Occupy_List(false); };
   virtual COORDINATE Target_Coord(void) const;
 
   /*
   **	File I/O.
   */
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 

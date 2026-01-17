@@ -78,8 +78,8 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-RAMFileClass::RAMFileClass(void *buffer, int len)
-    : Buffer((char *)buffer),
+RAMFileClass::RAMFileClass(void* buffer, int len)
+    : Buffer((char*)buffer),
       MaxLength(len),
       Length(len),
       Offset(0),
@@ -210,7 +210,7 @@ int RAMFileClass::Is_Open(void) const { return (IsOpen); }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Open(char const *, int access) { return (Open(access)); }
+int RAMFileClass::Open(char const*, int access) { return (Open(access)); }
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens the RAM based file. *
@@ -274,7 +274,7 @@ int RAMFileClass::Open(int access) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Read(void *buffer, long size) {
+long RAMFileClass::Read(void* buffer, long size) {
   if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return (0);
   }
@@ -390,7 +390,7 @@ long RAMFileClass::Size(void) { return (Length); }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Write(void const *buffer, long size) {
+long RAMFileClass::Write(void const* buffer, long size) {
   if (Buffer == nullptr || buffer == nullptr || size == 0) {
     return (0);
   }

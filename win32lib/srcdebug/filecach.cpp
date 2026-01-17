@@ -70,8 +70,8 @@
  *   04/18/1994 SKB : Created.                                             *
  *=========================================================================*/
 VOID Unfragment_File_Cache(VOID) {
-  FileDataType *filedata;
-  FileDataType *parent;
+  FileDataType* filedata;
+  FileDataType* parent;
   UWORD idx;
 
   // Let the memory system clean up the file heap.
@@ -122,8 +122,8 @@ VOID Unfragment_File_Cache(VOID) {
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-BOOL Make_File_Resident(BYTE const *filename) {
-  FileDataType *filedata;  // Pointer to the current FileData.
+BOOL Make_File_Resident(BYTE const* filename) {
+  FileDataType* filedata;  // Pointer to the current FileData.
   FileDataType hold;       // Hold buffer for record (DO NOT ACCESS DIRECTLY)
   WORD fileindex;
   WORD oldflag;
@@ -167,7 +167,7 @@ BOOL Make_File_Resident(BYTE const *filename) {
 WORD Flush_Unused_File_Cache(WORD flush_keeps) {
   WORD index;
   WORD freed = 0;
-  FileDataType *filedata = NULL;
+  FileDataType* filedata = NULL;
   FileDataType hold;  // Hold buffer for record (DO NOT ACCESS DIRECTLY)
 
   // Loop throuph the file table looking for files that could be freed.
@@ -200,10 +200,10 @@ WORD Flush_Unused_File_Cache(WORD flush_keeps) {
  * HISTORY:                                                                *
  *   07/22/1992  CY : Created.                                             *
  *=========================================================================*/
-BOOL cdecl Free_Resident_File(BYTE const *file) {
+BOOL cdecl Free_Resident_File(BYTE const* file) {
   WORD fileindex;
   BOOL oldflag;            // Previous file flag.
-  FileDataType *filedata;  // Pointer to the current FileData.
+  FileDataType* filedata;  // Pointer to the current FileData.
   FileDataType hold;       // Hold buffer for record (DO NOT ACCESS DIRECTLY)
 
   //	if the file is not in the table, we can't free it

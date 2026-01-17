@@ -50,7 +50,7 @@
 */
 #include "ra/connect.h"
 #ifdef PORTABLE
-typedef void *HANDLE;
+typedef void* HANDLE;
 #elif defined(WIN32)
 #include <windows.h>
 #else
@@ -97,7 +97,7 @@ class NullModemConnClass : public ConnectionClass {
 #ifdef WIN32
   void Init(HANDLE port_handle);
 #else   // WIN32
-  void Init(PORT *port);
+  void Init(PORT* port);
 #endif  // WIN32
 
   /*.....................................................................
@@ -111,7 +111,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This routine computes a CRC value for the given buffer.
   .....................................................................*/
-  static int Compute_CRC(char *buf, int buflen);
+  static int Compute_CRC(char* buf, int buflen);
 
   /*.....................................................................
   This routine returns the number of bytes extra added the packet
@@ -126,7 +126,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.
   .....................................................................*/
-  virtual int Send(char *buf, int buflen, void *extrabuf, int extralen);
+  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen);
 #ifdef WIN32
   /*
   ** This is the winsoze port handle
@@ -136,7 +136,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This is the PORT value used by the GreenLeaf calls.
   .....................................................................*/
-  PORT *Port;
+  PORT* Port;
 #endif  // WIN32
 
   /*.....................................................................
@@ -148,7 +148,7 @@ class NullModemConnClass : public ConnectionClass {
   - 4-byte CRC value (at the end of the buffer)
   This is the actual packet that gets sent across the serial line.
   .....................................................................*/
-  char *SendBuf;
+  char* SendBuf;
 };
 
 #endif

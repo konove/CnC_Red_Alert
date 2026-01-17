@@ -49,28 +49,29 @@ app.
 
 \*****************************************************************************/
 
-#include <filesystem>
-#include "dialog.h"
-#include "patch.h"
-#include "findpatch.h"
-#include "process.h"
-
-#include "wdebug.h"
-#include "monod.h"
-#include "filed.h"
-#include "configfile.h"
 #include <windows.h>
+
+#include <filesystem>
+
+#include "configfile.h"
+#include "dialog.h"
+#include "filed.h"
+#include "findpatch.h"
+#include "monod.h"
+#include "patch.h"
+#include "process.h"
+#include "wdebug.h"
 
 #define UPDATE_RETVAL \
   123456789  // if a program returns this it means it wants to check for patches
 
-void CreatePrimaryWin(char *prefix);
-void myChdir(char *path);
+void CreatePrimaryWin(char* prefix);
+void myChdir(char* path);
 
 //
 // Called by WinMain
 //
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   char patchFile[MAX_PATH];
   bit8 ok;
   int skuIndex = 0;
@@ -93,8 +94,8 @@ int main(int argc, char *argv[]) {
   //   .lcf (Launcher ConFig).  This is the name of our config file.
   char configName[MAX_PATH + 3];
   strcpy(configName, argv[0]);
-  char *extension = configName;
-  char *tempptr;
+  char* extension = configName;
+  char* tempptr;
   while ((tempptr = strchr(extension + 1, '.'))) extension = tempptr;
   if (*extension == '.') *extension = 0;
   strcat(configName, ".lcf");
@@ -102,7 +103,7 @@ int main(int argc, char *argv[]) {
   DBGMSG("Config Name: " << configName);
 
   ConfigFile config;
-  FILE *in = fopen(configName, "r");
+  FILE* in = fopen(configName, "r");
   if (in == NULL) {
     MessageBox(NULL, "You must run the game from its install directory.",
                "Launcher config file missing", MB_OK);
@@ -158,7 +159,7 @@ int main(int argc, char *argv[]) {
 //
 // Create a primary window
 //
-void CreatePrimaryWin(char *prefix) {
+void CreatePrimaryWin(char* prefix) {
   HWND hwnd;
   WNDCLASS wc;
   char name[256];
@@ -197,7 +198,7 @@ void CreatePrimaryWin(char *prefix) {
 }
 
 // Change to the directory containing the given file path
-void myChdir(const char *path) {
+void myChdir(const char* path) {
   namespace fs = std::filesystem;
 
   try {
@@ -206,7 +207,7 @@ void myChdir(const char *path) {
     if (!dir_path.empty()) {
       fs::current_path(dir_path);
     }
-  } catch (const fs::filesystem_error &err) {
+  } catch (const fs::filesystem_error& err) {
     std::cerr << "Failed to change directory: " << err.what() << '\n';
   }
 }

@@ -163,8 +163,8 @@ static int _build_tech[11] = {
 // #define TXT_HACKHACK Text_String(TXT_ACCOMPLISHED)
 #endif
 
-bool Is_Mission_Counterstrike(char *file_name);
-bool Is_Mission_Aftermath(char *file_name);
+bool Is_Mission_Counterstrike(char* file_name);
+bool Is_Mission_Aftermath(char* file_name);
 
 /***********************************************************************************************
  * ScenarioClass::ScenarioClass -- Constructor for the scenario control object.
@@ -323,7 +323,7 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
       *elapsed time event associated, it *	will be reset at this time.
       */
       for (int index = 0; index < Triggers.Count(); index++) {
-        TriggerClass *tp = Triggers.Ptr(index);
+        TriggerClass* tp = Triggers.Ptr(index);
         if ((tp->Class->Event1.Event == TEVENT_GLOBAL_SET ||
              tp->Class->Event1.Event == TEVENT_GLOBAL_CLEAR) &&
             tp->Class->Event1.Data.Value == global) {
@@ -359,7 +359,7 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool Start_Scenario(char *name, bool briefing) {
+bool Start_Scenario(char* name, bool briefing) {
   // BG	Theme.Queue_Song(THEME_QUIET);
   Theme.Stop();
   IsTanyaDead = SaveTanya;
@@ -465,7 +465,7 @@ bool Start_Scenario(char *name, bool briefing) {
  * HISTORY: * 07/22/1991     : Created. * 02/03/1992 JLB : Uses house
  *identification.                                               *
  *=============================================================================================*/
-bool Read_Scenario(char *name) {
+bool Read_Scenario(char* name) {
   BStart(BENCH_SCENARIO);
   Clear_Scenario();
   ScenarioInit++;
@@ -590,7 +590,7 @@ void Fill_In_Data(void) {
   **	Distribute the trigger pointers to the appropriate working lists.
   */
   for (int index = 0; index < TriggerTypes.Count(); index++) {
-    TriggerTypeClass *tp = TriggerTypes.Ptr(index);
+    TriggerTypeClass* tp = TriggerTypes.Ptr(index);
 
     assert(tp != nullptr);
 
@@ -633,10 +633,10 @@ void Fill_In_Data(void) {
   *carry over *	objects at this time.
   */
   if (Scen.IsToInherit) {
-    CarryoverClass *cptr = Carryover;
+    CarryoverClass* cptr = Carryover;
     while (cptr != nullptr) {
       cptr->Create();
-      cptr = (CarryoverClass *)cptr->Get_Next();
+      cptr = (CarryoverClass*)cptr->Get_Next();
     }
   }
 
@@ -645,7 +645,7 @@ void Fill_In_Data(void) {
   *number *	of triggers that have this action must be recorded.
   */
   for (int index = 0; index < TriggerTypes.Count(); index++) {
-    TriggerTypeClass *tp = TriggerTypes.Ptr(index);
+    TriggerTypeClass* tp = TriggerTypes.Ptr(index);
     if (tp->Action1.Action == TACTION_ALLOWWIN ||
         (tp->ActionControl != MULTI_ONLY &&
          tp->Action2.Action == TACTION_ALLOWWIN)) {
@@ -658,7 +658,7 @@ void Fill_In_Data(void) {
   */
   if (Scen.IsMoneyTiberium) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-      HouseClass *hptr = HouseClass::As_Pointer(house);
+      HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr) {
         int tomove = hptr->Capacity - hptr->Tiberium;
         hptr->Credits -= tomove;
@@ -977,7 +977,7 @@ void Do_Win(void) {
     **	list to be maintained.
     */
     while (Carryover) {
-      CarryoverClass *cptr = (CarryoverClass *)Carryover->Get_Next();
+      CarryoverClass* cptr = (CarryoverClass*)Carryover->Get_Next();
       Carryover->Remove();
       delete Carryover;
       Carryover = cptr;
@@ -989,10 +989,10 @@ void Do_Win(void) {
     */
     for (int building_index = 0; building_index < Buildings.Count();
          building_index++) {
-      BuildingClass *building = Buildings.Ptr(building_index);
+      BuildingClass* building = Buildings.Ptr(building_index);
 
       if (building && !building->IsInLimbo && building->Strength > 0) {
-        CarryoverClass *cptr = new CarryoverClass(building);
+        CarryoverClass* cptr = new CarryoverClass(building);
 
         if (cptr) {
           if (Carryover) {
@@ -1004,10 +1004,10 @@ void Do_Win(void) {
       }
     }
     for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
-      UnitClass *unit = Units.Ptr(unit_index);
+      UnitClass* unit = Units.Ptr(unit_index);
 
       if (unit && !unit->IsInLimbo && unit->Strength > 0) {
-        CarryoverClass *cptr = new CarryoverClass(unit);
+        CarryoverClass* cptr = new CarryoverClass(unit);
 
         if (cptr) {
           if (Carryover) {
@@ -1020,10 +1020,10 @@ void Do_Win(void) {
     }
     for (int infantry_index = 0; infantry_index < Infantry.Count();
          infantry_index++) {
-      InfantryClass *infantry = Infantry.Ptr(infantry_index);
+      InfantryClass* infantry = Infantry.Ptr(infantry_index);
 
       if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
-        CarryoverClass *cptr = new CarryoverClass(infantry);
+        CarryoverClass* cptr = new CarryoverClass(infantry);
 
         if (cptr) {
           if (Carryover) {
@@ -1035,10 +1035,10 @@ void Do_Win(void) {
       }
     }
     for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
-      VesselClass *vessel = Vessels.Ptr(vessel_index);
+      VesselClass* vessel = Vessels.Ptr(vessel_index);
 
       if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
-        CarryoverClass *cptr = new CarryoverClass(vessel);
+        CarryoverClass* cptr = new CarryoverClass(vessel);
 
         if (cptr) {
           if (Carryover) {
@@ -1298,7 +1298,7 @@ void Do_Restart(void) {
  * HISTORY: * 06/23/1995 JLB : Created. * 08/06/1995 JLB : Uses preloaded
  *briefing text.                                            *
  *=============================================================================================*/
-bool Restate_Mission(char const *name, int button1, int button2) {
+bool Restate_Mission(char const* name, int button1, int button2) {
   if (name) {
     bool brief = true;
     char buffer[25];
@@ -1332,7 +1332,7 @@ bool Restate_Mission(char const *name, int button1, int button2) {
 #define BUTTON_2 2
 #define BUTTON_3 3
 #define BUTTON_FLAG 0x8000
-bool BGMessageBox(char const *msg, int btn1, int btn2) {
+bool BGMessageBox(char const* msg, int btn1, int btn2) {
 #define BUFFSIZE 511
   char buffer[BUFFSIZE];
   bool retval = false;
@@ -1341,24 +1341,24 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[3];
+  TextButtonClass* buttons[3];
   bool display = true;  // display level
   int realval[5];
   int morebutton = 3;  // which button says "more": 2 or 3?
 
-  const char *b1txt = Text_String(btn1);
-  const char *b2txt = Text_String(btn2);
+  const char* b1txt = Text_String(btn1);
+  const char* b2txt = Text_String(btn2);
 #ifdef FRENCH
-  const char *b3txt = "SUITE";
+  const char* b3txt = "SUITE";
 #else
 #ifdef GERMAN
-  const char *b3txt = "MEHR";
+  const char* b3txt = "MEHR";
 #else
-  const char *b3txt = "MORE";
+  const char* b3txt = "MORE";
 #endif
 #endif
 
-  const void *briefsnd = MFCD::Retrieve("BRIEFING.AUD");
+  const void* briefsnd = MFCD::Retrieve("BRIEFING.AUD");
 
   GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_TYPE]);
 
@@ -1371,7 +1371,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
 
 #if defined(WIN32) && !defined(PORTABLE)
   GraphicBufferClass seen_buff_save(VisiblePage.Get_Width(),
-                                    VisiblePage.Get_Height(), (void *)nullptr);
+                                    VisiblePage.Get_Height(), (void*)nullptr);
 #endif
 
   /*
@@ -1490,7 +1490,7 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
                           y + height - (bheight + 5));
   button3.X = x + ((width - button3.Width) >> 1);
 
-  TextButtonClass *buttonlist = nullptr;
+  TextButtonClass* buttonlist = nullptr;
   curbutton = 0;
 
   /*
@@ -1523,14 +1523,14 @@ bool BGMessageBox(char const *msg, int btn1, int btn2) {
 
   PaletteClass temp;
 #if RESFACTOR == 2
-  char *filename = "SOVPAPER.PCX";
+  char* filename = "SOVPAPER.PCX";
   if (PlayerPtr->Class->House != HOUSE_USSR &&
       PlayerPtr->Class->House != HOUSE_UKRAINE) {
     filename = "ALIPAPER.PCX";
   }
   Load_Title_Screen(filename, &HidPage, temp);
 #else
-  char *filename = "SOVPAPER.CPS";
+  char* filename = "SOVPAPER.CPS";
   if (PlayerPtr->Class->House != HOUSE_USSR &&
       PlayerPtr->Class->House != HOUSE_UKRAINE) {
     filename = "ALIPAPER.CPS";
@@ -1938,7 +1938,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   }
 }
 
-void ScenarioClass::Set_Scenario_Name(char const *name) {
+void ScenarioClass::Set_Scenario_Name(char const* name) {
   if (name != nullptr) {
     port::SafeCopy(ScenarioName, name);
     ScenarioName[ARRAY_SIZE(ScenarioName) - 1] = '\0';
@@ -1985,7 +1985,7 @@ void ScenarioClass::Set_Scenario_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
-bool Read_Scenario_INI(char *fname, bool) {
+bool Read_Scenario_INI(char* fname, bool) {
   //	char fname[_MAX_FNAME+_MAX_EXT];			// full INI
   // filename
 
@@ -2137,7 +2137,7 @@ bool Read_Scenario_INI(char *fname, bool) {
   **	Reset the rules values to their initial settings.
   */
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
-    if (NameOverride[index] != nullptr) free((void *)NameOverride[index]);
+    if (NameOverride[index] != nullptr) free((void*)NameOverride[index]);
     NameOverride[index] = nullptr;
     NameIDOverride[index] = 0;
   }
@@ -2218,7 +2218,7 @@ bool Read_Scenario_INI(char *fname, bool) {
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
-  const char *const BASIC = "Basic";
+  const char* const BASIC = "Basic";
   ini.Get_String(BASIC, "Name", "<none>", Scen.Description,
                  sizeof(Scen.Description));
   Scen.IntroMovie = ini.Get_VQType(BASIC, "Intro", Scen.IntroMovie);
@@ -2441,7 +2441,7 @@ bool Read_Scenario_INI(char *fname, bool) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_INI(char * /*fname*/) {
+void Write_Scenario_INI(char* /*fname*/) {
 #ifdef CHEAT_KEYS
   //	CCFileClass file(fname);
 
@@ -2457,7 +2457,7 @@ void Write_Scenario_INI(char * /*fname*/) {
     ini.Load(CCFileClass(fname), true);
   }
 
-  static char const *const BASIC = "Basic";
+  static char const* const BASIC = "Basic";
   ini.Clear(BASIC);
   ini.Put_String(BASIC, "Name", Scen.Description);
   ini.Put_VQType(BASIC, "Intro", Scen.IntroMovie);
@@ -2533,7 +2533,7 @@ void Assign_Houses(void) {
   int color_used[8];
   int i, j;
   HousesType house;
-  HouseClass *housep;
+  HouseClass* housep;
   int lowest_color;
   int index;
   HousesType pref_house;
@@ -2692,7 +2692,7 @@ static void Remove_AI_Players(void) {
   int i;
   int aicount = 0;
   HousesType house;
-  HouseClass *housep;
+  HouseClass* housep;
 
   for (i = 0; i < MAX_PLAYERS; i++) {
     house = (HousesType)(i + (int)HOUSE_MULTI1);
@@ -2764,7 +2764,7 @@ static void Create_Units(bool official) {
 
   int u_limit = 0;   // last allowable index of units for this BuildLevel
   int i_limit = 0;   // last allowable index of infantry for this BuildLevel
-  TechnoClass *obj;  // newly-created object
+  TechnoClass* obj;  // newly-created object
   int i, j, k;       // loop counters
   int scaleval;      // value to scale # units or infantry
 
@@ -2898,7 +2898,7 @@ static void Create_Units(bool official) {
     /*
     **	Get a pointer to this house; if there is none, go to the next house
     */
-    HouseClass *hptr = HouseClass::As_Pointer(house);
+    HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr == nullptr) {
       continue;
     }
@@ -2989,7 +2989,7 @@ static void Create_Units(bool official) {
         hptr->FlagHome = 0;
         hptr->FlagLocation = 0;
         if (Special.IsCaptureTheFlag) {
-          hptr->Flag_Attach((UnitClass *)obj, true);
+          hptr->Flag_Attach((UnitClass*)obj, true);
         }
       }
     } else {
@@ -3124,13 +3124,13 @@ static void Create_Units(bool official) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-int Scan_Place_Object(ObjectClass *obj, CELL cell) {
+int Scan_Place_Object(ObjectClass* obj, CELL cell) {
   int dist;             // for object placement
   FacingType rot;       // for object placement
   FacingType fcounter;  // for object placement
   int tryval;
   CELL newcell;
-  TechnoClass *techno;
+  TechnoClass* techno;
   int skipit;
 
   /*
@@ -3368,9 +3368,9 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   return (XY_Cell(x, y));
 }
 
-void Disect_Scenario_Name(char const *name, int &scenario,
-                          ScenarioPlayerType &player, ScenarioDirType &dir,
-                          ScenarioVarType &var) {
+void Disect_Scenario_Name(char const* name, int& scenario,
+                          ScenarioPlayerType& player, ScenarioDirType& dir,
+                          ScenarioVarType& var) {
   if (name == nullptr) return;
 
   /*

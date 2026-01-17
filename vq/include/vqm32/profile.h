@@ -39,12 +39,12 @@
  ****************************************************************************/
 
 /* Prototypes */
-long GetINIInt(char const *section, char const *entry, long deflt, char *fname);
+long GetINIInt(char const* section, char const* entry, long deflt, char* fname);
 
-long GetINIString(char const *section, char const *entry, char const *def,
-                  char *retbuffer, long retlen, char *fname);
+long GetINIString(char const* section, char const* entry, char const* def,
+                  char* retbuffer, long retlen, char* fname);
 
-long Get_Frame_Pathname(char *inifile, long anim_frame, char *ext,
-                        char *outbuf);
+long Get_Frame_Pathname(char* inifile, long anim_frame, char* ext,
+                        char* outbuf);
 
 #endif /* VQMPROFILE_H */

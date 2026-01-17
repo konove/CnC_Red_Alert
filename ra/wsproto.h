@@ -48,7 +48,7 @@
 #include <winsock.h>
 #else
 typedef int SOCKET;
-typedef void *HANDLE;
+typedef void* HANDLE;
 #define WM_USER 0x400
 #endif
 
@@ -102,17 +102,17 @@ class WinsockInterfaceClass {
   void Close(void);
 
   virtual void Close_Socket(void);
-  virtual int Read(void *buffer, int &buffer_len, void *address,
-                   int &address_len);
-  virtual void WriteTo(void *buffer, int buffer_len, void *address);
-  virtual void Broadcast(void *buffer, int buffer_len);
+  virtual int Read(void* buffer, int& buffer_len, void* address,
+                   int& address_len);
+  virtual void WriteTo(void* buffer, int buffer_len, void* address);
+  virtual void Broadcast(void* buffer, int buffer_len);
   virtual void Discard_In_Buffers(void);
   virtual void Discard_Out_Buffers(void);
   virtual bool Start_Listening(void);
   virtual void Stop_Listening(void);
   virtual void Clear_Socket_Error(SOCKET socket);
   virtual bool Set_Socket_Options(void);
-  virtual void Set_Broadcast_Address(void *) {};
+  virtual void Set_Broadcast_Address(void*) {};
 
   virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_NONE); };
 
@@ -157,8 +157,8 @@ class WinsockInterfaceClass {
   /*
   ** Array of buffers to temporarily store incoming and outgoing packets.
   */
-  DynamicVectorClass<WinsockBufferType *> InBuffers;
-  DynamicVectorClass<WinsockBufferType *> OutBuffers;
+  DynamicVectorClass<WinsockBufferType*> InBuffers;
+  DynamicVectorClass<WinsockBufferType*> OutBuffers;
 
   /*
   ** Is Winsock present and initialised?

@@ -96,9 +96,9 @@
 //   }
 // };
 
-VocType Voc_From_Name(char const *name);
-char const *Speech_Name(VoxType speech);
-char const *Voc_Name(VocType voc);
+VocType Voc_From_Name(char const* name);
+char const* Speech_Name(VoxType speech);
+char const* Voc_Name(VocType voc);
 int Sound_Effect(VocType voc, fixed volume = 1, int variation = 1,
                  signed short panvalue = 0, HousesType house = HOUSE_NONE);
 void Speak(VoxType voice);

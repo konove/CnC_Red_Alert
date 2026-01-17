@@ -69,7 +69,7 @@
  *
  ****************************************************************************/
 
-void DPMI_Lock(void const *ptr, long const size) {
+void DPMI_Lock(void const* ptr, long const size) {
   union REGS regs;
   struct SREGS sregs;
 
@@ -111,7 +111,7 @@ void DPMI_Lock(void const *ptr, long const size) {
  *
  ****************************************************************************/
 
-void DPMI_Unlock(void const *ptr, long const size) {
+void DPMI_Unlock(void const* ptr, long const size) {
   union REGS regs;
   struct SREGS sregs;
 

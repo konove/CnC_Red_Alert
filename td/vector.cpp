@@ -77,7 +77,7 @@
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(unsigned size, T const *array) {
+VectorClass<T>::VectorClass(unsigned size, T const* array) {
   Vector = nullptr;
   VectorMax = size;
   IsAllocated = false;
@@ -88,7 +88,7 @@ VectorClass<T>::VectorClass(unsigned size, T const *array) {
   */
   if (size) {
     if (array) {
-      Vector = new ((void *)array) T[size];
+      Vector = new ((void*)array) T[size];
     } else {
       Vector = new T[size];
       IsAllocated = true;
@@ -130,7 +130,7 @@ VectorClass<T>::~VectorClass(void) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::VectorClass(VectorClass<T> const &vector) {
+VectorClass<T>::VectorClass(VectorClass<T> const& vector) {
   VectorMax = 0;
   IsAllocated = false;
   Vector = nullptr;
@@ -152,7 +152,7 @@ VectorClass<T>::VectorClass(VectorClass<T> const &vector) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
+VectorClass<T>& VectorClass<T>::operator=(VectorClass<T> const& vector) {
   if (this == &vector) {
     return *this;
   }
@@ -190,7 +190,7 @@ VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> const &vector) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::operator==(VectorClass<T> const &vector) const {
+int VectorClass<T>::operator==(VectorClass<T> const& vector) const {
   if (VectorMax == vector.Length()) {
     for (int index = 0; index < VectorMax; index++) {
       if (Vector[index] != vector[index]) {
@@ -223,7 +223,7 @@ int VectorClass<T>::operator==(VectorClass<T> const &vector) const {
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-inline int VectorClass<T>::ID(T const *ptr) {
+inline int VectorClass<T>::ID(T const* ptr) {
   return static_cast<int>(ptr - &(*this)[0]);
 }
 
@@ -246,7 +246,7 @@ inline int VectorClass<T>::ID(T const *ptr) {
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::ID(T const &object) {
+int VectorClass<T>::ID(T const& object) {
   for (int index = 0; index < VectorMax; index++) {
     if ((*this)[index] == object) {
       return (index);
@@ -302,17 +302,17 @@ void VectorClass<T>::Clear(void) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int VectorClass<T>::Resize(unsigned newsize, T const *array) {
+int VectorClass<T>::Resize(unsigned newsize, T const* array) {
   if (newsize) {
     /*
     **	Allocate a new vector of the size specified. The default constructor
     **	will be called for every object in this vector.
     */
-    T *newptr;
+    T* newptr;
     if (!array) {
       newptr = new T[newsize];
     } else {
-      newptr = new ((void *)array) T[newsize];
+      newptr = new ((void*)array) T[newsize];
     }
     if (!newptr) {
       return (false);
@@ -361,19 +361,19 @@ int VectorClass<T>::Resize(unsigned newsize, T const *array) {
   return (true);
 }
 
-template class VectorClass<NodeNameTag *>;
-template class VectorClass<PhoneEntryClass *>;
-template class VectorClass<ObjectClass *>;
-template class VectorClass<TriggerClass *>;
-template class VectorClass<FileEntryClass *>;
+template class VectorClass<NodeNameTag*>;
+template class VectorClass<PhoneEntryClass*>;
+template class VectorClass<ObjectClass*>;
+template class VectorClass<TriggerClass*>;
+template class VectorClass<FileEntryClass*>;
 template class VectorClass<BaseNodeClass>;
 template class VectorClass<CellClass>;
 template class VectorClass<char>;
 template class VectorClass<int>;
-template class VectorClass<char *>;
-template class VectorClass<unsigned char *>;
-template class VectorClass<char const *>;
-template class VectorClass<void *>;
+template class VectorClass<char*>;
+template class VectorClass<unsigned char*>;
+template class VectorClass<char const*>;
+template class VectorClass<void*>;
 template class VectorClass<unsigned char>;
 
 /***********************************************************************************************
@@ -399,7 +399,7 @@ template class VectorClass<unsigned char>;
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-DynamicVectorClass<T>::DynamicVectorClass(unsigned size, T const *array)
+DynamicVectorClass<T>::DynamicVectorClass(unsigned size, T const* array)
     : VectorClass<T>(size, array) {
   GrowthStep = 10;
   ActiveCount = 0;
@@ -426,7 +426,7 @@ DynamicVectorClass<T>::DynamicVectorClass(unsigned size, T const *array)
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
+int DynamicVectorClass<T>::Resize(unsigned newsize, T const* array) {
   if (VectorClass<T>::Resize(newsize, array)) {
     if (this->Length() < ActiveCount) {
       ActiveCount = this->Length();
@@ -455,7 +455,7 @@ int DynamicVectorClass<T>::Resize(unsigned newsize, T const *array) {
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::ID(T const &ptr) {
+int DynamicVectorClass<T>::ID(T const& ptr) {
   for (size_t index = 0; index < Count(); index++) {
     if ((*this)[index] == ptr) return (index);
   }
@@ -480,7 +480,7 @@ int DynamicVectorClass<T>::ID(T const &ptr) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Add(T const &object) {
+int DynamicVectorClass<T>::Add(T const& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -512,7 +512,7 @@ int DynamicVectorClass<T>::Add(T const &object) {
 }
 
 template <class T>
-int DynamicVectorClass<T>::Add_Head(T const &object) {
+int DynamicVectorClass<T>::Add_Head(T const& object) {
   if (ActiveCount >= this->Length()) {
     if ((this->IsAllocated || !this->VectorMax) && GrowthStep > 0) {
       if (!Resize(this->Length() + GrowthStep)) {
@@ -572,7 +572,7 @@ int DynamicVectorClass<T>::Add_Head(T const &object) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-int DynamicVectorClass<T>::Delete(T const &object) {
+int DynamicVectorClass<T>::Delete(T const& object) {
   int index = ID(object);
   if (index != -1) {
     return (Delete(index));
@@ -583,7 +583,7 @@ int DynamicVectorClass<T>::Delete(T const &object) {
 
 // workaround for DynamicVectorClass<int>, nobody call this please
 template <>
-int DynamicVectorClass<int>::Delete(int const & /*object*/) {
+int DynamicVectorClass<int>::Delete(int const& /*object*/) {
   return false;
 }
 //
@@ -625,15 +625,15 @@ int DynamicVectorClass<T>::Delete(int index) {
   return (false);
 }
 
-template class DynamicVectorClass<NodeNameTag *>;
-template class DynamicVectorClass<PhoneEntryClass *>;
-template class DynamicVectorClass<ObjectClass *>;
-template class DynamicVectorClass<TriggerClass *>;
-template class DynamicVectorClass<FileEntryClass *>;
+template class DynamicVectorClass<NodeNameTag*>;
+template class DynamicVectorClass<PhoneEntryClass*>;
+template class DynamicVectorClass<ObjectClass*>;
+template class DynamicVectorClass<TriggerClass*>;
+template class DynamicVectorClass<FileEntryClass*>;
 template class DynamicVectorClass<BaseNodeClass>;
 template class DynamicVectorClass<char>;
 template class DynamicVectorClass<int>;
-template class DynamicVectorClass<char *>;
-template class DynamicVectorClass<unsigned char *>;
-template class DynamicVectorClass<char const *>;
-template class DynamicVectorClass<void *>;
+template class DynamicVectorClass<char*>;
+template class DynamicVectorClass<unsigned char*>;
+template class DynamicVectorClass<char const*>;
+template class DynamicVectorClass<void*>;

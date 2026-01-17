@@ -134,7 +134,7 @@ typedef enum {
 // This is here tempararaly until library is put together.
 // extern WORD __cdecl ( __cdecl IO_Error)(FileErrorType error, BYTE const
 // *filename);
-extern short (*Open_Error)(FileErrorType, BYTE const *);
+extern short (*Open_Error)(FileErrorType, BYTE const*);
 
 /*=========================================================================*/
 /* File IO system structures
@@ -143,9 +143,9 @@ extern short (*Open_Error)(FileErrorType, BYTE const *);
 
 // lint -strong(AJX,FileDataType)
 typedef struct {
-  char *Name;               // File name (include sub-directory but not volume).
+  char* Name;               // File name (include sub-directory but not volume).
   long Size;                // File size (0=indeterminate).
-  void *Ptr;                // Resident file pointer.
+  void* Ptr;                // Resident file pointer.
   long Start;               // Starting offset in DOS handle file.
   unsigned char Disk;       // Disk number location.
   unsigned char OpenCount;  // Count of open locks on resident file.
@@ -178,24 +178,24 @@ extern BOOL UseCD;
 /*=========================================================================*/
 
 void __cdecl WWDOS_Shutdown(void);
-FileInitErrorType __cdecl WWDOS_Init(unsigned long cachesize, char *filedata,
-                                     char *cdpath);
+FileInitErrorType __cdecl WWDOS_Init(unsigned long cachesize, char* filedata,
+                                     char* cdpath);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FILE.CPP
  */
 /*=========================================================================*/
 
-int __cdecl Open_File(char const *file_name, int mode);
+int __cdecl Open_File(char const* file_name, int mode);
 void __cdecl Close_File(int handle);
-long __cdecl Read_File(int handle, void *buf, unsigned long bytes);
-int __cdecl Load_File(const char *file_name, void *load_addr);
-long __cdecl Write_File(int handle, void const *buf, unsigned long bytes);
+long __cdecl Read_File(int handle, void* buf, unsigned long bytes);
+int __cdecl Load_File(const char* file_name, void* load_addr);
+long __cdecl Write_File(int handle, void const* buf, unsigned long bytes);
 unsigned long __cdecl Seek_File(int handle, long offset, int starting);
-int __cdecl File_Exists(char const *file_name);
+int __cdecl File_Exists(char const* file_name);
 unsigned long __cdecl File_Size(int handle);
-BOOL __cdecl Is_Handle_Valid(int handle, FileErrorType error, char const *name);
-int __cdecl Open_File_With_Recovery(char const *file_name, unsigned int mode);
+BOOL __cdecl Is_Handle_Valid(int handle, FileErrorType error, char const* name);
+int __cdecl Open_File_With_Recovery(char const* file_name, unsigned int mode);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FILECACH.CPP
@@ -203,17 +203,17 @@ int __cdecl Open_File_With_Recovery(char const *file_name, unsigned int mode);
 /*=========================================================================*/
 
 void Unfragment_File_Cache(void);
-BOOL __cdecl Make_File_Resident(char const *filename);
+BOOL __cdecl Make_File_Resident(char const* filename);
 int __cdecl Flush_Unused_File_Cache(int flush_keeps);
-BOOL __cdecl Free_Resident_File(char const *file);
+BOOL __cdecl Free_Resident_File(char const* file);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FILECHNG.CPP
  */
 /*=========================================================================*/
 
-int __cdecl Create_File(char const *file_name);
-int __cdecl Delete_File(char const *file_name);
+int __cdecl Create_File(char const* file_name);
+int __cdecl Delete_File(char const* file_name);
 BOOL __cdecl Change_File_Size(int handle, unsigned long new_size);
 
 /*=========================================================================*/
@@ -223,10 +223,10 @@ BOOL __cdecl Change_File_Size(int handle, unsigned long new_size);
 
 int __cdecl Get_DOS_Handle(int fh);
 int __cdecl Free_Handles(void);
-int __cdecl Find_Disk_Number(char const *file_name);
-int __cdecl Set_File_Flags(char const *filename, int flags);
-int __cdecl Clear_File_Flags(char const *filename, int flags);
-int __cdecl Get_File_Flags(char const *filename);
+int __cdecl Find_Disk_Number(char const* file_name);
+int __cdecl Set_File_Flags(char const* filename, int flags);
+int __cdecl Clear_File_Flags(char const* filename, int flags);
+int __cdecl Get_File_Flags(char const* filename);
 BOOL __cdecl Multi_Drive_Search(BOOL on);
 
 /*=========================================================================*/
@@ -234,8 +234,8 @@ BOOL __cdecl Multi_Drive_Search(BOOL on);
  */
 /*=========================================================================*/
 
-int __cdecl Find_File(char const *file_name);
-int __cdecl Find_File_Index(char const *filename);
+int __cdecl Find_File(char const* file_name);
+int __cdecl Find_File_Index(char const* filename);
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FFIRST.ASM
@@ -248,9 +248,9 @@ int __cdecl Find_File_Index(char const *filename);
 extern "C" {
 #endif
 
-extern int __cdecl Find_First(unsigned char *fname, unsigned int mode,
-                              struct find_t *ffblk);
-extern int __cdecl Find_Next(struct find_t *ffblk);
+extern int __cdecl Find_First(unsigned char* fname, unsigned int mode,
+                              struct find_t* ffblk);
+extern int __cdecl Find_Next(struct find_t* ffblk);
 
 #ifdef __cplusplus
 }

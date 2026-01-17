@@ -99,7 +99,7 @@ extern GraphicBufferClass HidPage;
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int error, int canretry, char const *filename) {
+void RawFileClass::Error(int error, int canretry, char const* filename) {
 #ifndef PORTABLE
   char message[256];  // Staging buffer for error message string.
 
@@ -204,10 +204,10 @@ void RawFileClass::Error(int error, int canretry, char const *filename) {
     *you should replace this *	virtual function with one of your own, that is
     *more aware of the environment *	in which is exists.
     */
-    void *background;             // Pointer to background saving buffer.
-    GraphicBufferClass *oldpage;  // Copy of old logic page.
+    void* background;             // Pointer to background saving buffer.
+    GraphicBufferClass* oldpage;  // Copy of old logic page.
     int oldwindow;                // Copy of old window number.
-    void const *oldfont;          // Copy of old font pointer.
+    void const* oldfont;          // Copy of old font pointer.
     int oldspacing;               // Old font X spacing.
 
     /*
@@ -313,7 +313,7 @@ void RawFileClass::Error(int error, int canretry, char const *filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(char const *filename)
+RawFileClass::RawFileClass(char const* filename)
     :
 #ifdef PORTABLE
       Handle(nullptr),
@@ -326,7 +326,7 @@ RawFileClass::RawFileClass(char const *filename)
 
 RawFileClass::~RawFileClass(void) {
   if (Allocated && Filename) {
-    free((char *)Filename);
+    free((char*)Filename);
   }
   Allocated = false;
   Filename = nullptr;
@@ -351,9 +351,9 @@ RawFileClass::~RawFileClass(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-char const *RawFileClass::Set_Name(char const *filename) {
+char const* RawFileClass::Set_Name(char const* filename) {
   if (Filename && Allocated) {
-    free((char *)Filename);
+    free((char*)Filename);
     Filename = nullptr;
     Allocated = false;
   }
@@ -389,7 +389,7 @@ char const *RawFileClass::Set_Name(char const *filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(char const *filename, int rights) {
+int RawFileClass::Open(char const* filename, int rights) {
   Set_Name(filename);
   return (Open(rights));
 }
@@ -512,7 +512,7 @@ int RawFileClass::Open(int rights) {
  *=============================================================================================*/
 int RawFileClass::Is_Available(int forced) {
 #ifdef PORTABLE
-  void *file;
+  void* file;
 #else
   int file;  // Working file handle.
 #endif
@@ -547,14 +547,14 @@ int RawFileClass::Is_Available(int forced) {
     file = IO_Open_File(Filename, READ);
     if (!file) {
       // retry with lowercase name for case-sensitive fs
-      char *lower_name = strlwr(strdup(Filename));
+      char* lower_name = strlwr(strdup(Filename));
       file = IO_Open_File(lower_name, READ);
 
       if (file) {
         // if successful, replace the filename with the working one
-        if (Allocated) free((char *)Filename);
+        if (Allocated) free((char*)Filename);
 
-        ((char *&)Filename) = lower_name;
+        ((char*&)Filename) = lower_name;
       } else
         free(lower_name);
     }
@@ -708,7 +708,7 @@ void RawFileClass::Close(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Read(void *buffer, long size) {
+long RawFileClass::Read(void* buffer, long size) {
   long bytesread =
       0;  // Running count of the number of bytes read into the buffer.
   int opened = false;  // Was the file opened by this routine?
@@ -809,7 +809,7 @@ long RawFileClass::Read(void *buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(void const *buffer, long size) {
+long RawFileClass::Write(void const* buffer, long size) {
   long bytesread = 0;
   int opened = false;  // Was the file manually opened?
   int writeresult;
@@ -864,7 +864,7 @@ long RawFileClass::Write(void const *buffer, long size) {
         **	A successful write occurred. Update pointers and byte counter as
         *appropriate.
         */
-        buffer = Add_Long_To_Pointer((void *)buffer, actual);
+        buffer = Add_Long_To_Pointer((void*)buffer, actual);
         bytesread += actual;
         size -= actual;
 

@@ -75,7 +75,7 @@ class FactoryClass;
 class HouseStaticClass {
  public:
   HouseStaticClass(void);
-  HouseStaticClass(NoInitClass const &) {};
+  HouseStaticClass(NoInitClass const&) {};
 
   /*
   **	This value indicates the degree of smartness to assign to this house.
@@ -443,30 +443,30 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  UnitTrackerClass *AircraftTotals;
-  UnitTrackerClass *InfantryTotals;
-  UnitTrackerClass *UnitTotals;
-  UnitTrackerClass *BuildingTotals;
-  UnitTrackerClass *VesselTotals;
+  UnitTrackerClass* AircraftTotals;
+  UnitTrackerClass* InfantryTotals;
+  UnitTrackerClass* UnitTotals;
+  UnitTrackerClass* BuildingTotals;
+  UnitTrackerClass* VesselTotals;
 
   /*
   ** Total number of units destroyed by this house
   */
-  UnitTrackerClass *DestroyedAircraft;
-  UnitTrackerClass *DestroyedInfantry;
-  UnitTrackerClass *DestroyedUnits;
-  UnitTrackerClass *DestroyedBuildings;
-  UnitTrackerClass *DestroyedVessels;
+  UnitTrackerClass* DestroyedAircraft;
+  UnitTrackerClass* DestroyedInfantry;
+  UnitTrackerClass* DestroyedUnits;
+  UnitTrackerClass* DestroyedBuildings;
+  UnitTrackerClass* DestroyedVessels;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  UnitTrackerClass *CapturedBuildings;
+  UnitTrackerClass* CapturedBuildings;
 
   /*
   ** Total number of crates found by this house
   */
-  UnitTrackerClass *TotalCrates;
+  UnitTrackerClass* TotalCrates;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value
@@ -626,11 +626,11 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   HouseClass(HousesType house);
-  HouseClass(NoInitClass const &x)
+  HouseClass(NoInitClass const& x)
       : Class(x),
         Control(x),
         AlertTime(x),
@@ -655,73 +655,73 @@ class HouseClass {
   bool Is_Allowed_To_Ally(HousesType house) const;
   void Do_All_To_Hunt(void) const;
   void Super_Weapon_Handler(void);
-  int *Factory_Counter(RTTIType rtti);
+  int* Factory_Counter(RTTIType rtti);
   int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
   TARGET Find_Juicy_Target(COORDINATE coord) const;
-  void Print_Zone_Stats(int x, int y, ZoneType zone, MonoClass *mono) const;
-  CELL Where_To_Go(FootClass const *object) const;
+  void Print_Zone_Stats(int x, int y, ZoneType zone, MonoClass* mono) const;
+  CELL Where_To_Go(FootClass const* object) const;
   CELL Zone_Cell(ZoneType zone) const;
   ZoneType Which_Zone(COORDINATE coord) const;
-  ZoneType Which_Zone(ObjectClass const *object) const;
+  ZoneType Which_Zone(ObjectClass const* object) const;
   ZoneType Which_Zone(CELL cell) const;
-  CELL Find_Cell_In_Zone(TechnoClass const *techno, ZoneType zone) const;
+  CELL Find_Cell_In_Zone(TechnoClass const* techno, ZoneType zone) const;
   ProdFailType Begin_Production(RTTIType type, int id);
   ProdFailType Suspend_Production(RTTIType type);
   ProdFailType Abandon_Production(RTTIType type);
   bool Place_Object(RTTIType type, CELL cell);
-  bool Manual_Place(BuildingClass *builder, BuildingClass *object);
+  bool Manual_Place(BuildingClass* builder, BuildingClass* object);
   void Special_Weapon_AI(SpecialWeaponType id);
   bool Place_Special_Blast(SpecialWeaponType id, CELL cell);
   bool Flag_Attach(CELL cell, bool set_home = false);
-  bool Flag_Attach(UnitClass *object, bool set_home = false);
+  bool Flag_Attach(UnitClass* object, bool set_home = false);
   bool Flag_Remove(TARGET target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
-  COORDINATE Find_Build_Location(BuildingClass *building) const;
-  BuildingClass *Find_Building(StructType type,
+  COORDINATE Find_Build_Location(BuildingClass* building) const;
+  BuildingClass* Find_Building(StructType type,
                                ZoneType zone = ZONE_NONE) const;
-  char const *Name(void) const { return (Class->Name()); }
+  char const* Name(void) const { return (Class->Name()); }
 
   bool Fire_Sale(void);
   bool Is_Hack_Prevented(RTTIType rtti, int value) const;
   bool Is_No_YakMig(void) const;
   int Expert_AI(void);
-  void Production_Begun(TechnoClass const *rtti);
+  void Production_Begun(TechnoClass const* rtti);
   void Sell_Wall(CELL cell);
   bool Flag_To_Die(void);
   bool Flag_To_Win(void);
   bool Flag_To_Lose(void);
   void Make_Ally(HousesType house);
-  void Make_Ally(ObjectClass *object) {
+  void Make_Ally(ObjectClass* object) {
     if (object) Make_Ally(object->Owner());
   };
   void Make_Enemy(HousesType house);
-  void Make_Enemy(ObjectClass *object) {
+  void Make_Enemy(ObjectClass* object) {
     if (object) Make_Enemy(object->Owner());
   };
   bool Is_Ally(HousesType house) const;
-  bool Is_Ally(HouseClass const *house) const;
-  bool Is_Ally(ObjectClass const *object) const;
+  bool Is_Ally(HouseClass const* house) const;
+  bool Is_Ally(ObjectClass const* object) const;
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const;
+  void Debug_Dump(MonoClass* mono) const;
 #endif
   void AI(void);
   bool Can_Build(RTTIType rtti, int type, HousesType house) const;
 
   // Factory controls.
-  FactoryClass *Fetch_Factory(RTTIType rtti) const;
-  void Set_Factory(RTTIType rtti, FactoryClass *factory);
+  FactoryClass* Fetch_Factory(RTTIType rtti) const;
+  void Set_Factory(RTTIType rtti, FactoryClass* factory);
 
-  bool Can_Build(ObjectTypeClass const *type, HousesType house) const;
+  bool Can_Build(ObjectTypeClass const* type, HousesType house) const;
 
   int Get_Quantity(AircraftType aircraft);
   int Get_Quantity(StructType building);
-  unsigned char const *Remap_Table(bool blushing = false,
+  unsigned char const* Remap_Table(bool blushing = false,
                                    RemapType remap = REMAP_NORMAL) const;
 
-  TechnoTypeClass const *Suggest_New_Object(RTTIType objectype,
+  TechnoTypeClass const* Suggest_New_Object(RTTIType objectype,
                                             bool kennel = false) const;
-  BuildingTypeClass const *Suggest_New_Building(void) const;
+  BuildingTypeClass const* Suggest_New_Building(void) const;
   void Recalc_Center(void);
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
@@ -737,12 +737,12 @@ class HouseClass {
   fixed Power_Fraction(void) const;
   fixed Tiberium_Fraction(void) const;
   void Begin_Production(void) { IsStarted = true; };
-  TeamTypeClass const *Suggested_New_Team(bool alertcheck = false);
+  TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
-  void Tracking_Remove(TechnoClass const *techno);
-  void Tracking_Add(TechnoClass const *techno);
-  void Active_Remove(TechnoClass const *techno);
-  void Active_Add(TechnoClass const *techno);
+  void Tracking_Remove(TechnoClass const* techno);
+  void Tracking_Add(TechnoClass const* techno);
+  void Active_Remove(TechnoClass const* techno);
+  void Active_Add(TechnoClass const* techno);
 
   UrgencyType Check_Attack(void) const;
   UrgencyType Check_Build_Power(void) const;
@@ -772,18 +772,18 @@ class HouseClass {
 
   static void Init(void);
   static void One_Time(void);
-  static HouseClass *As_Pointer(HousesType house);
+  static HouseClass* As_Pointer(HousesType house);
   static void Recalc_Attributes(void);
 
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  static void Read_Flag_INI(char *buffer);
-  static void Write_Flag_INI(char *buffer);
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  static void Read_Flag_INI(char* buffer);
+  static void Write_Flag_INI(char* buffer);
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
@@ -873,14 +873,14 @@ class HouseClass {
   **	the house AI processing. Higher priority build requests take precidence.
   */
   struct BuildChoiceClass {
-    static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+    static void* operator new(size_t, void* ptr) throw() { return (ptr); };
     UrgencyType Urgency;   // The urgency of the build request.
     StructType Structure;  // The type of building to produce.
 
     BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {};
-    BuildChoiceClass(NoInitClass const &) {};
-    int Save(Pipe &) const { return (true); };
-    int Load(Straw &) { return (true); };
+    BuildChoiceClass(NoInitClass const&) {};
+    int Save(Pipe&) const { return (true); };
+    int Load(Straw&) { return (true); };
     void Code_Pointers(void) {};
     void Decode_Pointers(void) {};
   };

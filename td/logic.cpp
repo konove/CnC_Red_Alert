@@ -82,7 +82,7 @@ static unsigned AverageFramesPerSecond;
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void LogicClass::Debug_Dump(MonoClass *mono) const {
+void LogicClass::Debug_Dump(MonoClass* mono) const {
 #define RECORDCOUNT 40
 #define RECORDHEIGHT 21
   static struct {
@@ -222,7 +222,7 @@ void LogicClass::AI(void) {
   **	AI for all sentient objects is processed.
   */
   for (index = 0; index < Count(); index++) {
-    ObjectClass *obj = (*this)[index];
+    ObjectClass* obj = (*this)[index];
 
     obj->AI();
 
@@ -243,7 +243,7 @@ void LogicClass::AI(void) {
   *appropriate scan *	bits will be set for the owner house.
   */
   for (index = 0; index < Units.Count(); index++) {
-    UnitClass const *unit = Units.Ptr(index);
+    UnitClass const* unit = Units.Ptr(index);
     if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
                            unit->IsDiscoveredByPlayer)) {
       unit->House->NewUScan |= (1L << unit->Class->Type);
@@ -252,7 +252,7 @@ void LogicClass::AI(void) {
     }
   }
   for (index = 0; index < Infantry.Count(); index++) {
-    InfantryClass const *infantry = Infantry.Ptr(index);
+    InfantryClass const* infantry = Infantry.Ptr(index);
     if (infantry->IsLocked &&
         (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
@@ -262,7 +262,7 @@ void LogicClass::AI(void) {
     }
   }
   for (index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass const *aircraft = Aircraft.Ptr(index);
+    AircraftClass const* aircraft = Aircraft.Ptr(index);
     if (aircraft->IsLocked &&
         (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
@@ -272,7 +272,7 @@ void LogicClass::AI(void) {
     }
   }
   for (index = 0; index < Buildings.Count(); index++) {
-    BuildingClass const *building = Buildings.Ptr(index);
+    BuildingClass const* building = Buildings.Ptr(index);
     if (building->IsLocked &&
         (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {
@@ -304,7 +304,7 @@ void LogicClass::AI(void) {
   **	House processing is performed.
   */
   for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-    HouseClass *hptr = HouseClass::As_Pointer(house);
+    HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr && hptr->IsActive) {
       hptr->AI();
     }

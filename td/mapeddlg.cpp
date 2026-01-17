@@ -270,7 +270,7 @@ int MapEditClass::Save_Scenario(void) {
   ScenarioDirType dir = ScenDir;
   ScenarioVarType var = ScenVar;
   int rc;
-  FILE *fp;
+  FILE* fp;
   char fname[13];
 
   /*
@@ -374,9 +374,9 @@ int MapEditClass::Save_Scenario(void) {
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Pick_Scenario(char const *caption, int *scen_nump,
-                                ScenarioPlayerType *playerp,
-                                ScenarioDirType *dirp, ScenarioVarType *varp,
+int MapEditClass::Pick_Scenario(char const* caption, int* scen_nump,
+                                ScenarioPlayerType* playerp,
+                                ScenarioDirType* dirp, ScenarioVarType* varp,
                                 int multi) {
   /*........................................................................
   Dialog & button dimensions
@@ -504,7 +504,7 @@ int MapEditClass::Pick_Scenario(char const *caption, int *scen_nump,
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
 
   EditClass editbtn(BUTTON_SCENARIO, scen_buf, 5,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_SCEN_X,
@@ -948,11 +948,11 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   unsigned index;         // for drawing map symbology
   CELL cell;              // for drawing map symbology
   int color;              // for drawing map symbology
-  ObjectClass *occupier;  // cell's occupier
+  ObjectClass* occupier;  // cell's occupier
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;
+  ControlClass* commands = NULL;
 
   TextButtonClass okbtn(
       BUTTON_OK, TXT_OK,
@@ -1703,12 +1703,12 @@ int MapEditClass::Scenario_Dialog(void) {
   ....................... Theater-changing variables .......................
   */
   unsigned char theater_mask;  // template/terrain mask
-  TerrainClass *terrain;       // cell's terrain pointer
+  TerrainClass* terrain;       // cell's terrain pointer
   CELL i;                      // loop counter
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
   ListClass theaterbtn(
       LIST_THEATER, D_THEATER_X, D_THEATER_Y, D_THEATER_W, D_THEATER_H,
       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -2350,7 +2350,7 @@ int MapEditClass::Select_Trigger(void) {
   ........................................................................*/
   RedrawType display;                       // requested redraw level
   bool process;                             // loop while true
-  char *trigtext[TRIGGER_MAX + 1];          // text for defined triggers
+  char* trigtext[TRIGGER_MAX + 1];          // text for defined triggers
   KeyNumType input;                         // user input
   bool edit_trig = false;                   // true = user wants to edit
   bool new_trig = false;                    // true = user wants to new
@@ -2362,7 +2362,7 @@ int MapEditClass::Select_Trigger(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
 
   ListClass triggerlist(TRIGGER_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -2777,8 +2777,8 @@ int MapEditClass::Edit_Trigger(void) {
   char namebuf[5];                          // name of this trigger
   char databuf[10];                         // for credit/time-based triggers
   HousesType house;                         // house for this trigger
-  const char *eventnames[EVENT_COUNT + 1];  // names of events
-  const char *actionnames[TriggerClass::ACTION_COUNT + 1];  // names of actions
+  const char* eventnames[EVENT_COUNT + 1];  // names of events
+  const char* actionnames[TriggerClass::ACTION_COUNT + 1];  // names of actions
   TriggerClass::PersistantType persistant;  // trigger's persistence level
 
   /*........................................................................
@@ -2792,7 +2792,7 @@ int MapEditClass::Edit_Trigger(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
 
   ListClass eventlist(EVENT_LIST, D_EVENT_X, D_EVENT_Y, D_EVENT_W, D_EVENT_H,
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -3310,22 +3310,22 @@ int MapEditClass::Import_Triggers(void) {
   KeyNumType input;    // user input
   bool cancel = false;
   static int tabs[] = {70, 220, 370, 420};  // list box tab stops
-  DynamicVectorClass<char *> trignames;     // list of INI trigger names
-  char *inibuf;                             // working INI buffer
+  DynamicVectorClass<char*> trignames;      // list of INI trigger names
+  char* inibuf;                             // working INI buffer
   CCFileClass file;                         // file for reading the INI file
   char buf[128];                            // for reading an INI entry
-  char *tbuffer;          // Accumulation buffer of trigger IDs.
+  char* tbuffer;          // Accumulation buffer of trigger IDs.
   int len;                // Length of data in buffer.
-  TriggerClass *trigger;  // Working trigger pointer.
-  char *item;             // for adding to list box
-  char *eventptr;
-  char *actionptr;
-  char *houseptr;
+  TriggerClass* trigger;  // Working trigger pointer.
+  char* item;             // for adding to list box
+  char* eventptr;
+  char* actionptr;
+  char* houseptr;
   int i;
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
 
   CheckListClass triggerlist(
       TRIGGER_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
@@ -3547,7 +3547,7 @@ int MapEditClass::Import_Triggers(void) {
   ........................................................................*/
   trignames.Clear();
   while (triggerlist.Count()) {
-    item = (char *)triggerlist.Get_Item(0);
+    item = (char*)triggerlist.Get_Item(0);
     triggerlist.Remove_Item(item);
     delete[] item;
   }
@@ -3647,23 +3647,23 @@ int MapEditClass::Import_Teams(void) {
   bool process;        // loop while true
   KeyNumType input;    // user input
   bool cancel = false;
-  static int tabs[] = {120, 180};        // list box tab stops
-  DynamicVectorClass<char *> teamnames;  // list of INI team names
-  char *inibuf;                          // working INI buffer
-  CCFileClass file;                      // file for reading the INI file
-  char buf[128];                         // for reading an INI entry
-  char *tbuffer;                         // Accumulation buffer of team IDs.
-  int len;                               // Length of data in buffer.
-  TeamTypeClass *team;                   // Working team pointer.
-  char *item;                            // for adding to list box
-  char *houseptr;
-  char *classptr;
+  static int tabs[] = {120, 180};       // list box tab stops
+  DynamicVectorClass<char*> teamnames;  // list of INI team names
+  char* inibuf;                         // working INI buffer
+  CCFileClass file;                     // file for reading the INI file
+  char buf[128];                        // for reading an INI entry
+  char* tbuffer;                        // Accumulation buffer of team IDs.
+  int len;                              // Length of data in buffer.
+  TeamTypeClass* team;                  // Working team pointer.
+  char* item;                           // for adding to list box
+  char* houseptr;
+  char* classptr;
   int numclasses;
   int i;
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass *commands = NULL;  // the button list
+  ControlClass* commands = NULL;  // the button list
 
   CheckListClass teamlist(TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -3884,7 +3884,7 @@ int MapEditClass::Import_Teams(void) {
   ........................................................................*/
   teamnames.Clear();
   while (teamlist.Count()) {
-    item = (char *)teamlist.Get_Item(0);
+    item = (char*)teamlist.Get_Item(0);
     teamlist.Remove_Item(item);
     delete[] item;
   }

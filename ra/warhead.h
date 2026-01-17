@@ -53,18 +53,18 @@
 */
 class WarheadTypeClass {
  public:
-  WarheadTypeClass(char const *name);
-  WarheadTypeClass(NoInitClass const &) {}
+  WarheadTypeClass(char const* name);
+  WarheadTypeClass(NoInitClass const&) {}
 
-  void *operator new(size_t) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  void operator delete(void *pointer);
+  void* operator new(size_t) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  void operator delete(void* pointer);
 
   void Code_Pointers(void) {}
   void Decode_Pointers(void) {}
-  char const *Name(void) const { return (IniName); }
-  bool Read_INI(CCINIClass &ini);
-  static WarheadTypeClass *As_Pointer(WarheadType weapon);
+  char const* Name(void) const { return (IniName); }
+  bool Read_INI(CCINIClass& ini);
+  static WarheadTypeClass* As_Pointer(WarheadType weapon);
 
   /*
   **	This is the ID number of the weapon type. It is the weapon
@@ -76,7 +76,7 @@ class WarheadTypeClass {
   /*
   **	This is the identifying name of this warhead type.
   */
-  char const *IniName;
+  char const* IniName;
 
   /*
   **	This value control how damage from this warhead type will reduce

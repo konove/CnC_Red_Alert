@@ -46,20 +46,22 @@
  *   Window_Print -- Displays and wraps text into a window.                *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "windows.h"
+
+#include <dipthong.h>
+#include <font.h>
+#include <keyboard.h>
+#include <wwstd.h>
+
 #include <cctype>
+#include <cstdarg>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cstdio>
-#include <cstdarg>
-#include <wwstd.h>
-#include "windows.h"
-#include <keyboard.h>
-#include <font.h>
-#include <dipthong.h>
 
 PRIVATE void Scroll_Window(void);
 PRIVATE void Flush_Line(void);
-PRIVATE void In_Char(char *str);
+PRIVATE void In_Char(char* str);
 PRIVATE char Fetch_Char(void);
 
 PRIVATE int ScrollCounter =
@@ -68,8 +70,8 @@ PRIVATE char Line[84];  // Staging line buffer.
 PRIVATE int Pos;        // Char Position of next free character.
 PRIVATE int PPos;       // Pixel position of next free character.
 PRIVATE int WPos;       // Char position in window.
-PRIVATE char *MainSource;
-PRIVATE char *AltSource;
+PRIVATE char* MainSource;
+PRIVATE char* AltSource;
 PRIVATE char Char[2];
 PRIVATE char Stack;
 PRIVATE char WordWrapFlag = FALSE;  // flag for a word wrap.
@@ -92,10 +94,10 @@ unsigned int WinW = 40;
 unsigned int Window = 0;
 
 int MoreOn = TRUE;
-char *TXT_MoreText = "--More--";
-void (*Window_More_Ptr)(BYTE const *, int, int, int) = Standard_More_Prompt;
+char* TXT_MoreText = "--More--";
+void (*Window_More_Ptr)(BYTE const*, int, int, int) = Standard_More_Prompt;
 
-extern GraphicBufferClass *LogicPage;
+extern GraphicBufferClass* LogicPage;
 /***************************************************************************
  * STANDARD_MORE_PROMPT -- Default more prompt code for Window_Print       *
  *                                                                         *
@@ -120,7 +122,7 @@ extern GraphicBufferClass *LogicPage;
  * HISTORY:                                                                *
  *   07/29/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Standard_More_Prompt(char const *prompt, int space, int fcolor,
+void Standard_More_Prompt(char const* prompt, int space, int fcolor,
                           int bcolor) {
   int x, y, moresize;
 
@@ -173,9 +175,9 @@ void Standard_More_Prompt(char const *prompt, int space, int fcolor,
  * HISTORY:                                                                *
  *   07/29/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Set_More_Prompt(char const *prompt, int space, int fcolor, int bcolor) {
+void Set_More_Prompt(char const* prompt, int space, int fcolor, int bcolor) {
   if (prompt) {
-    TXT_MoreText = (char *)prompt;
+    TXT_MoreText = (char*)prompt;
     MoreSpace = space;
     MoreFColor = fcolor;
     MoreBColor = bcolor;
@@ -242,7 +244,7 @@ void Set_More_Off(void) { MoreOn = FALSE; }
  *=========================================================================*/
 int Change_Window(int windnum) {
   int oldwindow;
-  int *data;
+  int* data;
 
   oldwindow = Window;
   Window = windnum;
@@ -405,7 +407,7 @@ void Window_Print(char const string[], ...) {
   Pos = PPos = 0;
   Line[0] = '\0';
   Char[0] = Char[1] = 0;
-  MainSource = (char *)&string[0];
+  MainSource = (char*)&string[0];
   AltSource = NULL;
   old_c = WinC;
   old_b = WinB;
@@ -427,7 +429,7 @@ void Window_Print(char const string[], ...) {
       if (c == '%') {
         switch (tolower(Char[0])) {
           case 's':
-            AltSource = va_arg(arg, char *);
+            AltSource = va_arg(arg, char*);
             if (AltSource) {
               Stack = Char[1];
               Char[0] = Char[1] = '\0';
@@ -861,7 +863,7 @@ PRIVATE void Flush_Line(void) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-PRIVATE void In_Char(char *str) {
+PRIVATE void In_Char(char* str) {
   char c;     // Character to return.
   char next;  // Following character (if any).
 

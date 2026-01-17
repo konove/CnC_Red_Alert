@@ -90,7 +90,7 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Error(int, int, char const *) {}
+void RawFileClass::Error(int, int, char const*) {}
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Simple constructor for a file object. *
@@ -109,7 +109,7 @@ void RawFileClass::Error(int, int, char const *) {}
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-RawFileClass::RawFileClass(char const *filename)
+RawFileClass::RawFileClass(char const* filename)
     : Rights(0),
       BiasStart(0),
       BiasLength(-1),
@@ -138,10 +138,10 @@ RawFileClass::RawFileClass(char const *filename)
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-char const *RawFileClass::Set_Name(char const *filename) {
+char const* RawFileClass::Set_Name(char const* filename) {
   if (Filename != nullptr && Allocated) {
-    free((char *)Filename);
-    ((char *&)Filename) = nullptr;
+    free((char*)Filename);
+    ((char*&)Filename) = nullptr;
     Allocated = false;
   }
 
@@ -149,7 +149,7 @@ char const *RawFileClass::Set_Name(char const *filename) {
 
   Bias(0);
 
-  ((char *&)Filename) = strdup(filename);
+  ((char*&)Filename) = strdup(filename);
   if (Filename == nullptr) {
     Error(ENOMEM, false, filename);
   }
@@ -178,7 +178,7 @@ char const *RawFileClass::Set_Name(char const *filename) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Open(char const *filename, int rights) {
+int RawFileClass::Open(char const* filename, int rights) {
   Set_Name(filename);
   return (Open(rights));
 }
@@ -301,15 +301,15 @@ int RawFileClass::Is_Available(int forced) {
     Handle = IO_Open_File(Filename, READ);
     if (!Handle) {
       // retry with lowercase name for case-sensitive fs
-      char *lower_name = strlwr(strdup(Filename));
+      char* lower_name = strlwr(strdup(Filename));
       Handle = IO_Open_File(lower_name, READ);
 
       if (Handle) {
         // if successful, replace the filename with the working one
         if (Allocated) {
-          free((char *)Filename);
+          free((char*)Filename);
         }
-        ((char *&)Filename) = lower_name;
+        ((char*&)Filename) = lower_name;
         Allocated = true;
       } else {
         free(lower_name);
@@ -385,7 +385,7 @@ void RawFileClass::Close(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Read(void *buffer, long size) {
+long RawFileClass::Read(void* buffer, long size) {
   long bytesread =
       0;  // Running count of the number of bytes read into the buffer.
   int opened = false;  // Was the file opened by this routine?
@@ -446,7 +446,7 @@ long RawFileClass::Read(void *buffer, long size) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Write(void const *buffer, long size) {
+long RawFileClass::Write(void const* buffer, long size) {
   long bytesread = 0;
   int opened = false;  // Was the file manually opened?
 

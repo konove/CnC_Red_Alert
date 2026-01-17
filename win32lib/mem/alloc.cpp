@@ -40,11 +40,12 @@
  *   Total_Ram_Free -- Total amount of free RAM.                           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <malloc.h>
-#include <cstring>
-#include <cstdlib>
-#include <dos.h>
 #include <bios.h>
+#include <dos.h>
+#include <malloc.h>
+
+#include <cstdlib>
+#include <cstring>
 
 #ifndef WWMEM_H
 #include "wwmem.h"
@@ -71,7 +72,7 @@ static unsigned long TotalRam = 0L;
 static unsigned long Memory_Calls = 0L;
 
 void (*Memory_Error)(void) = NULL;
-extern void (*Memory_Error_Exit)(char *string) = NULL;
+extern void (*Memory_Error_Exit)(char* string) = NULL;
 
 // #define MEM_CHECK
 
@@ -94,7 +95,7 @@ extern void __cdecl Int3(void);
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
 #include "mono.h"
-void DPMI_Lock(VOID const *, long const) {}
+void DPMI_Lock(VOID const*, long const) {}
 
 /***************************************************************************
  * DPMI_UNLOCK -- Handles unlocking a locked block of DPMI                 *
@@ -108,7 +109,7 @@ void DPMI_Lock(VOID const *, long const) {}
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-void DPMI_Unlock(void const *, long const) {}
+void DPMI_Unlock(void const*, long const) {}
 
 /***************************************************************************
  * Alloc -- Allocates system RAM.                                          *
@@ -139,10 +140,10 @@ void DPMI_Unlock(void const *, long const) {}
  *   03/09/1995 JLB : Fixed                                                *
  *   09/28/1995 ST  : Simplified for win95 *
  *=========================================================================*/
-void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
+void* Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
 #ifdef WIN32
 
-  void *mem_ptr;
+  void* mem_ptr;
 
 #ifdef MEM_CHECK
   bytes_to_alloc += 32;
@@ -159,13 +160,13 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   }
 
 #ifdef MEM_CHECK
-  mem_ptr = (void *)((char *)mem_ptr + 16);
-  unsigned long *magic_ptr = (unsigned long *)(((char *)mem_ptr) - 16);
+  mem_ptr = (void*)((char*)mem_ptr + 16);
+  unsigned long* magic_ptr = (unsigned long*)(((char*)mem_ptr) - 16);
   *magic_ptr++ = (unsigned long)mem_ptr;
   *magic_ptr++ = (unsigned long)mem_ptr;
   *magic_ptr++ = (unsigned long)mem_ptr;
   *magic_ptr = bytes_to_alloc - 32;
-  magic_ptr = (unsigned long *)(((char *)mem_ptr) + bytes_to_alloc - 32);
+  magic_ptr = (unsigned long*)(((char*)mem_ptr) + bytes_to_alloc - 32);
   *magic_ptr++ = (unsigned long)mem_ptr;
   *magic_ptr++ = (unsigned long)mem_ptr;
   *magic_ptr++ = (unsigned long)mem_ptr;
@@ -179,10 +180,10 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
 
   union REGS regs;
   struct SREGS sregs;
-  unsigned char *retval = NULL;  // Pointer to allocated block.
+  unsigned char* retval = NULL;  // Pointer to allocated block.
   unsigned long original_size;   // Original allocation size.
   unsigned long bytesfree;       // Number of free bytes.
-  long *longptr = NULL;          // Pointer used to store selector
+  long* longptr = NULL;          // Pointer used to store selector
 
   /*
   ** Save the original allocated space size so that we can clear the
@@ -209,7 +210,7 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   // Real mode memory is a last resort because some types of applications
   // require real mode memory.
   if (!(flags & MEM_REAL)) {
-    retval = (unsigned char *)malloc(bytes_to_alloc);
+    retval = (unsigned char*)malloc(bytes_to_alloc);
   }
 
   // Try to allocate the memory out of the real mode memory using DPMI
@@ -230,9 +231,9 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
       if (regs.x.cflag)
         retval = NULL;
       else {
-        longptr = (long *)(((regs.x.eax & 0xFFFF) << 4) + 1);
+        longptr = (long*)(((regs.x.eax & 0xFFFF) << 4) + 1);
         *longptr++ = regs.x.edx & 0xFFFF;
-        retval = (unsigned char *)longptr;
+        retval = (unsigned char*)longptr;
       }
     }
   }
@@ -246,9 +247,9 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   // If the memory needs to be DPMI locked then we should store the
   // original size in the header before we store the flags.
   if (flags & MEM_LOCK) {
-    longptr = (long *)retval;
+    longptr = (long*)retval;
     *longptr++ = original_size;
-    retval = (unsigned char *)longptr;
+    retval = (unsigned char*)longptr;
   }
 
   // Now that we know the alloc was sucessful (and for an extra byte
@@ -264,7 +265,7 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
   /* Clear the space if they wanted it clear */
 
   if (flags & MEM_CLEAR) {
-    unsigned char *ptr;  // Working memory block pointer.
+    unsigned char* ptr;  // Working memory block pointer.
 
     ptr = retval;
     memset(ptr, '\0', original_size);
@@ -301,11 +302,11 @@ void *Alloc(unsigned long bytes_to_alloc, MemoryFlagType flags) {
  ***************************************************************************/
 #ifdef WIN32
 
-void Free(void const *pointer) {
+void Free(void const* pointer) {
   if (pointer) {
 #ifdef MEM_CHECK
 
-    unsigned long *magic_ptr = (unsigned long *)(((char *)pointer) - 16);
+    unsigned long* magic_ptr = (unsigned long*)(((char*)pointer) - 16);
 
     if (*magic_ptr++ != (unsigned long)pointer ||
         *magic_ptr++ != (unsigned long)pointer ||
@@ -313,7 +314,7 @@ void Free(void const *pointer) {
       Int3();
     }
 
-    magic_ptr = (unsigned long *)(((char *)pointer) + *magic_ptr);
+    magic_ptr = (unsigned long*)(((char*)pointer) + *magic_ptr);
 
     if (*magic_ptr++ != (unsigned long)pointer ||
         *magic_ptr++ != (unsigned long)pointer ||
@@ -322,16 +323,16 @@ void Free(void const *pointer) {
       Int3();
     }
 
-    pointer = (void *)(((char *)pointer) - 16);
+    pointer = (void*)(((char*)pointer) - 16);
 #endif  // MEM_CHECK
 
-    free((void *)pointer);
+    free((void*)pointer);
     Memory_Calls--;
   }
 
 #else
 
-void Free(void const *pointer) {
+void Free(void const* pointer) {
   union REGS regs;
   struct SREGS sregs;
 
@@ -339,28 +340,28 @@ void Free(void const *pointer) {
     /*
     ** Get a pointer to the flags that we stored off.
     */
-    char *byteptr = ((char *)pointer) - 1;
+    char* byteptr = ((char*)pointer) - 1;
 
     /*
     ** Check to see if this was locked me and if it was unlock it.
     */
     if (*byteptr & MEM_LOCK) {
-      long *longptr = ((long *)byteptr) - 1;
+      long* longptr = ((long*)byteptr) - 1;
       DPMI_Unlock(pointer, *longptr);
-      pointer = (void *)longptr;
+      pointer = (void*)longptr;
     } else
-      pointer = (void *)byteptr;
+      pointer = (void*)byteptr;
 
     // If the pointer is a real mode pointer than it will point to the
     // first megabyte of system memory.  If it does than we need to
     // use DPMI to free it.
     if (*byteptr & MEM_REAL) {
       regs.x.eax = 0x101;
-      regs.x.edx = *(((long *)pointer) - 1);
+      regs.x.edx = *(((long*)pointer) - 1);
       segread(&sregs);
       int386x(0x31, &regs, &regs, &sregs);
     } else {
-      free((void *)pointer);
+      free((void*)pointer);
     }
     Memory_Calls--;
   }
@@ -385,13 +386,13 @@ void Free(void const *pointer) {
  * HISTORY:                                                                *
  *   02/01/1992 JLB : Commented.                                           *
  *=========================================================================*/
-void *Resize_Alloc(void *original_ptr, unsigned long new_size_in_bytes) {
-  unsigned long *temp;
+void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes) {
+  unsigned long* temp;
 
-  temp = (unsigned long *)original_ptr;
+  temp = (unsigned long*)original_ptr;
 
   /* ReAlloc the space */
-  temp = (unsigned long *)realloc(temp, new_size_in_bytes);
+  temp = (unsigned long*)realloc(temp, new_size_in_bytes);
   if (temp == NULL) {
     if (Memory_Error != NULL) Memory_Error();
     return NULL;

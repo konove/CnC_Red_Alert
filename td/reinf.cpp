@@ -77,7 +77,7 @@
  *failure condition.                                    * 06/19/1995 JLB :
  *Announces reinforcements.                                                *
  *=============================================================================================*/
-bool Do_Reinforcements(TeamTypeClass *teamtype) {
+bool Do_Reinforcements(TeamTypeClass* teamtype) {
   /*
   **	preform some preliminary checks for validity.
   */
@@ -88,7 +88,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
   **	under this team control. If there are no missions for this team
   **	then don't actually create the team -- it won't serve a purpose.
   */
-  TeamClass *team = nullptr;
+  TeamClass* team = nullptr;
   if (teamtype->MissionCount) {
     team = new TeamClass(teamtype, HouseClass::As_Pointer(teamtype->House));
     if (!team) return (false);
@@ -113,7 +113,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
         airtransport = true;
       } else {
         watertransport =
-            (((UnitTypeClass const *)teamtype->Class[index])->Type ==
+            (((UnitTypeClass const*)teamtype->Class[index])->Type ==
              UNIT_HOVER);
       }
     } else {
@@ -137,7 +137,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
       *shipping source.
       */
       if (teamtype->Class[0]->What_Am_I() == RTTI_UNITTYPE &&
-          ((UnitTypeClass const *)teamtype->Class[0])->Type == UNIT_GUNBOAT) {
+          ((UnitTypeClass const*)teamtype->Class[0])->Type == UNIT_GUNBOAT) {
         source = SOURCE_SHIPPING;
       } else {
         source = HouseClass::As_Pointer(teamtype->House)->Edge;
@@ -158,14 +158,14 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
   **	Now that the official source for the reinforcement has been determined,
   *the *	objects themselves must be created.
   */
-  TechnoClass *transport = nullptr;
-  TechnoClass *object = nullptr;
+  TechnoClass* transport = nullptr;
+  TechnoClass* object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
-    TechnoTypeClass const *tclass = teamtype->Class[index];
+    TechnoTypeClass const* tclass = teamtype->Class[index];
 
     for (int sub = 0; sub < teamtype->DesiredNum[index]; sub++) {
       ScenarioInit++;
-      FootClass *temp = (FootClass *)tclass->Create_One_Of(
+      FootClass* temp = (FootClass*)tclass->Create_One_Of(
           HouseClass::As_Pointer(teamtype->House));
       ScenarioInit--;
 
@@ -176,7 +176,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
         *becomes part of the team.
         */
         if (team && (temp->What_Am_I() != RTTI_UNIT ||
-                     *((UnitClass *)temp) != UNIT_HOVER)) {
+                     *((UnitClass*)temp) != UNIT_HOVER)) {
           ScenarioInit++;
           team->Add(temp);
           ScenarioInit--;
@@ -207,7 +207,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
           **	never be allowed to control them.
           */
           if (temp->What_Am_I() == RTTI_AIRCRAFT &&
-              *((AircraftClass *)temp) == AIRCRAFT_A10) {
+              *((AircraftClass*)temp) == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
 
@@ -243,11 +243,11 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
       *occur when the *	transport unloads.
       */
       if (transport->What_Am_I() == RTTI_AIRCRAFT &&
-          *((AircraftClass *)transport) == AIRCRAFT_CARGO) {
+          *((AircraftClass*)transport) == AIRCRAFT_CARGO) {
         okvoice = false;
       }
 
-      transport->Attach((FootClass *)object);
+      transport->Attach((FootClass*)object);
     }
     object = transport;
   }
@@ -285,7 +285,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
       if (airtransport) ScenarioInit--;
       CELL newcell = cell;
 
-      FootClass *o = (FootClass *)object->Next;
+      FootClass* o = (FootClass*)object->Next;
       object->Next = nullptr;
       bool ok = true;
       while (newcell > 0 && object) {
@@ -335,7 +335,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
 
         object = o;
         if (object) {
-          o = (FootClass *)object->Next;
+          o = (FootClass*)object->Next;
           object->Next = nullptr;
         }
       }
@@ -346,8 +346,8 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
       */
       if (o) {
         while (o) {
-          FootClass *old = o;
-          o = (FootClass *)o->Next;
+          FootClass* old = o;
+          o = (FootClass*)o->Next;
           old->Next = nullptr;
 
           delete old;
@@ -359,9 +359,9 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
     **	Bring out the aircraft as separate "groups" of one.
     */
     case SOURCE_AIR: {
-      AircraftClass *thisone = (AircraftClass *)object;
+      AircraftClass* thisone = (AircraftClass*)object;
       while (thisone) {
-        AircraftClass *next = (AircraftClass *)thisone->Next;
+        AircraftClass* next = (AircraftClass*)thisone->Next;
 
         /*
         **	Find a suitable map entry location. Cargo planes will try to
@@ -374,7 +374,7 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
             HouseClass::As_Pointer(teamtype->House)->Edge, teamtype->House);
         ScenarioInit--;
         if (*thisone == AIRCRAFT_CARGO) {
-          BuildingClass const *building =
+          BuildingClass const* building =
               thisone->Find_Docking_Bay(STRUCT_AIRSTRIP, false);
           if (building) {
             newcell = XY_Cell(Map.MapCellX + Map.MapCellWidth,
@@ -481,12 +481,12 @@ bool Do_Reinforcements(TeamTypeClass *teamtype) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool Create_Special_Reinforcement(HouseClass *house,
-                                  TechnoTypeClass const *type,
-                                  TechnoTypeClass const *another,
+bool Create_Special_Reinforcement(HouseClass* house,
+                                  TechnoTypeClass const* type,
+                                  TechnoTypeClass const* another,
                                   TeamMissionType mission, int argument) {
   if (house && type) {
-    TeamTypeClass *team = new TeamTypeClass();
+    TeamTypeClass* team = new TeamTypeClass();
 
     if (team) {
       /*
@@ -553,7 +553,7 @@ bool Create_Special_Reinforcement(HouseClass *house,
       team->MissionCount = 1;
       if (mission == TMISSION_NONE) {
         if (another && (another->What_Am_I() != RTTI_UNITTYPE ||
-                        ((UnitTypeClass const *)another)->Type != UNIT_HOVER)) {
+                        ((UnitTypeClass const*)another)->Type != UNIT_HOVER)) {
           team->MissionList[0].Mission = TMISSION_UNLOAD;
           team->MissionList[0].Argument = WAYPT_REINF;
         }
@@ -604,14 +604,14 @@ bool Create_Special_Reinforcement(HouseClass *house,
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
-int Create_Air_Reinforcement(HouseClass *house, AircraftType air, int number,
+int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, TARGET tarcom,
                              TARGET navcom) {
   /*
   ** Get a pointer to the class of the object that we are going to create.
   */
-  TechnoTypeClass const *type =
-      (TechnoTypeClass *)&AircraftTypeClass::As_Reference(air);
+  TechnoTypeClass const* type =
+      (TechnoTypeClass*)&AircraftTypeClass::As_Reference(air);
 
   /*
   ** Loop through the number of objects we are supposed to create and
@@ -624,7 +624,7 @@ int Create_Air_Reinforcement(HouseClass *house, AircraftType air, int number,
     ** a real problem.
     */
     ScenarioInit++;
-    TechnoClass *obj = (TechnoClass *)type->Create_One_Of(house);
+    TechnoClass* obj = (TechnoClass*)type->Create_One_Of(house);
     ScenarioInit--;
     if (!obj) return (sub);
 

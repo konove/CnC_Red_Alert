@@ -40,8 +40,8 @@ enum {
 
 /* define compression structure */
 typedef struct _tagCOMPRESS_INFO {
-  char *lpSource;
-  char *lpDest;
+  char* lpSource;
+  char* lpDest;
   unsigned long dwCompSize;
   unsigned long dwUnCompSize;
   unsigned long dwSampleIndex;
@@ -74,9 +74,9 @@ typedef struct _tagCOMPRESS_HEADER {
 
 /* Prototypes */
 extern "C" {
-void sosCODECInitStream(_SOS_COMPRESS_INFO *);
-unsigned long sosCODECCompressData(_SOS_COMPRESS_INFO *, unsigned long);
-unsigned long sosCODECDecompressData(_SOS_COMPRESS_INFO *, unsigned long);
+void sosCODECInitStream(_SOS_COMPRESS_INFO*);
+unsigned long sosCODECCompressData(_SOS_COMPRESS_INFO*, unsigned long);
+unsigned long sosCODECDecompressData(_SOS_COMPRESS_INFO*, unsigned long);
 }
 
 #endif

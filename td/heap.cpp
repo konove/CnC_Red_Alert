@@ -139,7 +139,7 @@ FixedHeapClass::~FixedHeapClass(void) { FixedHeapClass::Clear(); }
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Set_Heap(int count, void *buffer) {
+int FixedHeapClass::Set_Heap(int count, void* buffer) {
   /*
   **	Clear out the old heap data.
   */
@@ -191,7 +191,7 @@ int FixedHeapClass::Set_Heap(int count, void *buffer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void *FixedHeapClass::Allocate(void) {
+void* FixedHeapClass::Allocate(void) {
   if (ActiveCount < TotalCount) {
     int index = base::first_false(FreeFlag);
 
@@ -219,7 +219,7 @@ void *FixedHeapClass::Allocate(void) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Free(void *pointer) {
+int FixedHeapClass::Free(void* pointer) {
   if (pointer && ActiveCount) {
     int index = ID(pointer);
 
@@ -252,9 +252,9 @@ int FixedHeapClass::Free(void *pointer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::ID(void const *pointer) {
+int FixedHeapClass::ID(void const* pointer) {
   if (pointer && Size) {
-    return ((int)(((char *)pointer - (char *)Buffer) / Size));
+    return ((int)(((char*)pointer - (char*)Buffer) / Size));
   }
   return (-1);
 }
@@ -279,7 +279,7 @@ void FixedHeapClass::Clear(void) {
   **	Free the old buffer (if present).
   */
   if (Buffer && IsAllocated) {
-    delete[] (char *)Buffer;
+    delete[] (char*)Buffer;
   }
   Buffer = nullptr;
   IsAllocated = false;
@@ -334,7 +334,7 @@ void FixedIHeapClass::Clear(void) {
   ActivePointers.Clear();
 }
 
-int FixedIHeapClass::Set_Heap(int count, void *buffer) {
+int FixedIHeapClass::Set_Heap(int count, void* buffer) {
   Clear();
   if (FixedHeapClass::Set_Heap(count, buffer)) {
     ActivePointers.Resize(count);
@@ -343,8 +343,8 @@ int FixedIHeapClass::Set_Heap(int count, void *buffer) {
   return (false);
 }
 
-void *FixedIHeapClass::Allocate(void) {
-  void *ptr = FixedHeapClass::Allocate();
+void* FixedIHeapClass::Allocate(void) {
+  void* ptr = FixedHeapClass::Allocate();
   if (ptr) {
     ActivePointers.Add(ptr);
     memset(ptr, 0, Size);
@@ -368,7 +368,7 @@ void *FixedIHeapClass::Allocate(void) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Free(void *pointer) {
+int FixedIHeapClass::Free(void* pointer) {
   if (FixedHeapClass::Free(pointer)) {
     ActivePointers.Delete(pointer);
   }
@@ -387,7 +387,7 @@ int FixedIHeapClass::Free(void *pointer) {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Save(FileClass &file) {
+int TFixedIHeapClass<T>::Save(FileClass& file) {
   int i;    // loop counter
   int idx;  // object index
 
@@ -434,10 +434,10 @@ int TFixedIHeapClass<T>::Save(FileClass &file) {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-int TFixedIHeapClass<T>::Load(FileClass &file) {
+int TFixedIHeapClass<T>::Load(FileClass& file) {
   int i;    // loop counter
   int idx;  // object index
-  T *ptr;   // object pointer
+  T* ptr;   // object pointer
   int a_count;
 
   /*
@@ -468,7 +468,7 @@ int TFixedIHeapClass<T>::Load(FileClass &file) {
     /*
     ** Get a pointer to the object, activate that object
     */
-    ptr = (T *)(*this)[idx];
+    ptr = (T*)(*this)[idx];
     FreeFlag[idx] = true;
     ActiveCount++;
     ActivePointers.Add(ptr);

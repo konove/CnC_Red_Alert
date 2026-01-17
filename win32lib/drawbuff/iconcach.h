@@ -71,7 +71,7 @@ class IconCacheClass {
   ~IconCacheClass(void);  // class destructor
 
   void Restore(void);             // restore the surface
-  BOOL Cache_It(void *icon_ptr);  // Cache the icon to video memory
+  BOOL Cache_It(void* icon_ptr);  // Cache the icon to video memory
   void Uncache_It(
       void);  // Restore the video memory and flag the icon as uncached
   void Draw_It(LPDIRECTDRAWSURFACE dest_surface, int x_pixel, int y_pixel,
@@ -84,11 +84,11 @@ class IconCacheClass {
 
  private:
   LPDIRECTDRAWSURFACE
-      CacheSurface;   // Ptr to direct draw surface where icon resides
+  CacheSurface;       // Ptr to direct draw surface where icon resides
   BOOL IsCached;      // Flag to say whether an icon is cached
   BOOL SurfaceLost;   // Flag to indicate that our icons surface has been lost
   int DrawFrequency;  // Number of times icon has been drawn
-  void *IconSource;   // Ptr to original icon data in system memory
+  void* IconSource;   // Ptr to original icon data in system memory
 };
 
 /*
@@ -97,7 +97,7 @@ class IconCacheClass {
 */
 
 typedef struct tIconSetType {
-  IControl_Type *IconSetPtr;  // Ptr to icon set data
+  IControl_Type* IconSetPtr;  // Ptr to icon set data
   int IconListOffset;         // Offset into icon index table for this icon set
 } IconSetType;
 
@@ -105,17 +105,17 @@ extern IconCacheClass CachedIcons[MAX_CACHED_ICONS];
 
 extern void Invalidate_Cached_Icons(void);
 extern void Restore_Cached_Icons(void);
-extern void Register_Icon_Set(void *icon_data, BOOL pre_cache);
+extern void Register_Icon_Set(void* icon_data, BOOL pre_cache);
 
 //
 // Prototypes for assembly language procedures in STMPCACH.ASM
 //
 extern "C" void Clear_Icon_Pointers(void);
-extern "C" void Cache_Copy_Icon(void const *icon_ptr, void *, int);
-extern "C" int Is_Icon_Cached(void const *icon_data, int icon);
-extern "C" int Get_Icon_Index(void *icon_ptr);
+extern "C" void Cache_Copy_Icon(void const* icon_ptr, void*, int);
+extern "C" int Is_Icon_Cached(void const* icon_data, int icon);
+extern "C" int Get_Icon_Index(void* icon_ptr);
 extern "C" int Get_Free_Index(void);
-extern "C" BOOL Cache_New_Icon(int icon_index, void *icon_ptr);
+extern "C" BOOL Cache_New_Icon(int icon_index, void* icon_ptr);
 extern "C" int Get_Free_Cache_Slot(void);
 
 extern int CachedIconsDrawn;

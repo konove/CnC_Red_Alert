@@ -39,16 +39,17 @@
  *   Get_Original_Video_Mode -- Gets the original video mode value         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <dos.h>
-#include "iostream.h"
 #include "video.h"
+
+#include <dos.h>
+
 #include "descmgmt.h"
-#include "mcgaprim.h"
 #include "gbuffer.h"
+#include "iostream.h"
+#include "mcgaprim.h"
+#include "playcd.h"
 #include "vbuffer.h"
 #include "wwmem.h"
-
-#include "playcd.h"
 
 extern "C" int MInstalled;
 extern "C" void Hide_Mouse(void);

@@ -57,11 +57,11 @@
 */
 
 typedef struct tIconSetType {
-  IControl_Type *IconSetPtr;  // Ptr to icon set data
+  IControl_Type* IconSetPtr;  // Ptr to icon set data
   int IconListOffset;         // Offset into icon index table for this icon set
 } IconSetType;
 
 extern void Restore_Cached_Icons(void);
-extern void Register_Icon_Set(const void *icon_data, bool pre_cache);
+extern void Register_Icon_Set(const void* icon_data, bool pre_cache);
 
 #endif  // ICONCACH_H

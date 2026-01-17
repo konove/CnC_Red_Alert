@@ -68,26 +68,26 @@
  *                                                                                             *
  * HISTORY: * 05/10/1996 JLB : Created. *
  *=============================================================================================*/
-CarryoverClass::CarryoverClass(TechnoClass *techno)
+CarryoverClass::CarryoverClass(TechnoClass* techno)
     : RTTI(RTTI_NONE), Cell(0), Strength(0), House(HOUSE_NONE) {
   if (techno) {
     RTTI = techno->What_Am_I();
 
     switch (RTTI) {
       case RTTI_UNIT:
-        Type.Unit = ((UnitClass *)techno)->Class->Type;
+        Type.Unit = ((UnitClass*)techno)->Class->Type;
         break;
 
       case RTTI_BUILDING:
-        Type.Building = ((BuildingClass *)techno)->Class->Type;
+        Type.Building = ((BuildingClass*)techno)->Class->Type;
         break;
 
       case RTTI_INFANTRY:
-        Type.Infantry = ((InfantryClass *)techno)->Class->Type;
+        Type.Infantry = ((InfantryClass*)techno)->Class->Type;
         break;
 
       case RTTI_VESSEL:
-        Type.Vessel = ((VesselClass *)techno)->Class->Type;
+        Type.Vessel = ((VesselClass*)techno)->Class->Type;
         break;
 
       default:
@@ -117,7 +117,7 @@ CarryoverClass::CarryoverClass(TechnoClass *techno)
  * HISTORY: * 05/10/1996 JLB : Created. *
  *=============================================================================================*/
 bool CarryoverClass::Create(void) const {
-  TechnoClass *techno = nullptr;
+  TechnoClass* techno = nullptr;
 
   switch (RTTI) {
     case RTTI_UNIT:

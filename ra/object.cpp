@@ -158,9 +158,9 @@
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
 */
-void const *ObjectTypeClass::SelectShapes = nullptr;
+void const* ObjectTypeClass::SelectShapes = nullptr;
 
-void const *ObjectTypeClass::PipShapes = nullptr;
+void const* ObjectTypeClass::PipShapes = nullptr;
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -208,7 +208,7 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const *ObjectClass::Get_Image_Data(void) const {
+void const* ObjectClass::Get_Image_Data(void) const {
   return (Class_Of().Get_Image_Data());
 }
 
@@ -227,7 +227,7 @@ void const *ObjectClass::Get_Image_Data(void) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-char const *ObjectClass::Name(void) const { return (Class_Of().Name()); }
+char const* ObjectClass::Name(void) const { return (Class_Of().Name()); }
 
 /***********************************************************************************************
  * ObjectClass::Exit_Coord -- Return with the exit coordinate for this object. *
@@ -323,7 +323,7 @@ void ObjectClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(ObjectClass const *) const {
+ActionType ObjectClass::What_Action(ObjectClass const*) const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -658,7 +658,7 @@ COORDINATE ObjectClass::Fire_Coord(int) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Record_The_Kill(TechnoClass *) {
+void ObjectClass::Record_The_Kill(TechnoClass*) {
   assert(this != nullptr);
   assert(IsActive);
 }
@@ -705,7 +705,7 @@ void ObjectClass::Do_Shimmer(void) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Exit_Object(TechnoClass *) {
+int ObjectClass::Exit_Object(TechnoClass*) {
   assert(this != nullptr);
   assert(IsActive);
   return (0);
@@ -777,7 +777,7 @@ void ObjectClass::Look(bool) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Active_Click_With(ActionType, ObjectClass *) {
+void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {
   assert(this != nullptr);
   assert(IsActive);
 }
@@ -1119,7 +1119,7 @@ bool ObjectClass::Select(void) {
   }
 
   if (!Debug_Map && Can_Player_Move() && Is_Techno() &&
-      ((TechnoClass *)this)->IsALoaner) {
+      ((TechnoClass*)this)->IsALoaner) {
     return (false);
   }
 
@@ -1143,8 +1143,8 @@ bool ObjectClass::Select(void) {
   *that *	the entire selection list is cleared.
   */
   if (CurrentObject.Count() > 0) {
-    HouseClass *tryhptr = HouseClass::As_Pointer(Owner());
-    HouseClass *oldhptr = HouseClass::As_Pointer(CurrentObject[0]->Owner());
+    HouseClass* tryhptr = HouseClass::As_Pointer(Owner());
+    HouseClass* oldhptr = HouseClass::As_Pointer(CurrentObject[0]->Owner());
     //		if (Owner() != CurrentObject[0]->Owner() ||
     // CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
     if (oldhptr->IsPlayerControl != tryhptr->IsPlayerControl ||
@@ -1152,7 +1152,7 @@ bool ObjectClass::Select(void) {
       Unselect_All();
     }
   }
-  if (((TechnoTypeClass const &)Class_Of()).IsLeader) {
+  if (((TechnoTypeClass const&)Class_Of()).IsLeader) {
     CurrentObject.Add_Head(this);
   } else {
     CurrentObject.Add(this);
@@ -1232,7 +1232,7 @@ bool ObjectClass::Render(bool forced)  // const
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Debug_Dump(MonoClass *mono) const {
+void ObjectClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(1, 1);
   mono->Printf("%-18.18s", Text_String(Full_Name()));
   if (Next != nullptr) {
@@ -1474,9 +1474,8 @@ void ObjectClass::Detach_All(bool all) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType ObjectClass::Receive_Message(RadioClass *,
-                                              RadioMessageType message,
-                                              long &) {
+RadioMessageType ObjectClass::Receive_Message(RadioClass*,
+                                              RadioMessageType message, long&) {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1528,8 +1527,8 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass *,
  *processing for attacked or destroyed.                      * 01/01/1995 JLB :
  *Reduces damage greatly depending on range.                               *
  *=============================================================================================*/
-ResultType ObjectClass::Take_Damage(int &damage, int distance,
-                                    WarheadType warhead, TechnoClass *source,
+ResultType ObjectClass::Take_Damage(int& damage, int distance,
+                                    WarheadType warhead, TechnoClass* source,
                                     bool forced) {
   assert(this != nullptr);
   assert(IsActive);
@@ -1554,7 +1553,7 @@ ResultType ObjectClass::Take_Damage(int &damage, int distance,
       *victim and no *	damage to others.
       */
       if (source && source->What_Am_I() == RTTI_INFANTRY &&
-          ((InfantryClass *)source)->Class->IsDog) {
+          ((InfantryClass*)source)->Class->IsDog) {
         if (source->TarCom == As_Target()) {
           damage = Strength;
         } else {
@@ -1616,8 +1615,8 @@ ResultType ObjectClass::Take_Damage(int &damage, int distance,
         Record_The_Kill(source);
         result = RESULT_DESTROYED;
         if (this->Is_Techno()) {
-          if (this == ::As_Object(((TechnoClass *)this)->House->UnitToTeleport))
-            ((TechnoClass *)this)->House->UnitToTeleport = 0;
+          if (this == ::As_Object(((TechnoClass*)this)->House->UnitToTeleport))
+            ((TechnoClass*)this)->House->UnitToTeleport = 0;
         }
         Detach_All();
         break;
@@ -1718,9 +1717,9 @@ bool ObjectClass::Mark(MarkType mark) {
     int threat = 0;
     HousesType house = HOUSE_NONE;
     CELL cell = 0;
-    TechnoClass *tech;
+    TechnoClass* tech;
     if (Is_Techno()) {
-      tech = (TechnoClass *)this;
+      tech = (TechnoClass*)this;
       threat = tech->Risk();
       house = tech->Owner();
       cell = Coord_Cell(Coord);
@@ -1790,7 +1789,7 @@ void ObjectClass::Init(void) { CurrentObject.Clear(); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Revealed(HouseClass *house) {
+bool ObjectClass::Revealed(HouseClass* house) {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1820,7 +1819,7 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
   Height = FLIGHT_LEVEL;
   IsFalling = true;
   if (Unlimbo(coord, DIR_S)) {
-    AnimClass *anim = nullptr;
+    AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
       anim = new AnimClass(ANIM_PARA_BOMB,
@@ -1855,9 +1854,9 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Attach_Trigger(TriggerClass *trigger) {
+bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
   if (Trigger.Is_Valid()) {
-    TriggerClass *tptr = Trigger;
+    TriggerClass* tptr = Trigger;
     tptr->AttachCount--;
     Trigger = nullptr;
   }
@@ -1871,13 +1870,13 @@ bool ObjectClass::Attach_Trigger(TriggerClass *trigger) {
 }
 
 // These can't be made inline (for various reasons).
-short const *ObjectClass::Occupy_List(bool placement) const {
+short const* ObjectClass::Occupy_List(bool placement) const {
   return (Class_Of().Occupy_List(placement));
 };
-short const *ObjectClass::Overlap_List(bool) const {
+short const* ObjectClass::Overlap_List(bool) const {
   return (Class_Of().Overlap_List());
 };
-BuildingClass *ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
+BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return (Class_Of().Who_Can_Build_Me(intheory, legal, Owner()));
 };
 fixed ObjectClass::Health_Ratio(void) const {
@@ -1910,7 +1909,7 @@ ObjectTypeClass::ObjectTypeClass(RTTIType rtti, int id, bool is_sentient,
                                  bool is_stealthy, bool is_selectable,
                                  bool is_legal_target, bool is_insignificant,
                                  bool is_immune, bool is_footprint, int name,
-                                 char const *ini)
+                                 char const* ini)
     : AbstractTypeClass(rtti, id, name, ini),
       IsCrushable(false),
       IsStealthy(is_stealthy),
@@ -1982,7 +1981,7 @@ int ObjectTypeClass::Max_Pips(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectTypeClass::Dimensions(int &width, int &height) const {
+void ObjectTypeClass::Dimensions(int& width, int& height) const {
   width = 10;
   height = 10;
 }
@@ -2040,7 +2039,7 @@ int ObjectTypeClass::Time_To_Build(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
+void const* ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
@@ -2059,7 +2058,7 @@ void const *ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const *ObjectTypeClass::Occupy_List(bool) const {
+short const* ObjectTypeClass::Occupy_List(bool) const {
   static short const _list[] = {0, REFRESH_EOL};
   return (_list);
 }
@@ -2082,7 +2081,7 @@ short const *ObjectTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const *ObjectTypeClass::Overlap_List(void) const {
+short const* ObjectTypeClass::Overlap_List(void) const {
   static short const _list[] = {REFRESH_EOL};
   return (_list);
 }
@@ -2144,12 +2143,12 @@ void ObjectTypeClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
+BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                  HousesType house) const {
-  BuildingClass *anybuilding = nullptr;
+  BuildingClass* anybuilding = nullptr;
 
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass *building = Buildings.Ptr(index);
+    BuildingClass* building = Buildings.Ptr(index);
     assert(building != nullptr);
 
     if (!building->IsInLimbo && building->House->Class->House == house &&
@@ -2162,7 +2161,7 @@ BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
       // BG: Hack so only kennels can build dogs, and no other, and barracks can
       //     only build humans and no other.
       if (What_Am_I() == RTTI_INFANTRYTYPE) {
-        InfantryTypeClass *me = (InfantryTypeClass *)this;
+        InfantryTypeClass* me = (InfantryTypeClass*)this;
         if (me->IsDog) {
           if (*building == STRUCT_KENNEL) {
             if (building->IsLeader) return (building);
@@ -2180,7 +2179,7 @@ BuildingClass *ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         **	fixed wing craft only.
         */
         if (What_Am_I() == RTTI_AIRCRAFTTYPE) {
-          AircraftTypeClass *air = (AircraftTypeClass *)this;
+          AircraftTypeClass* air = (AircraftTypeClass*)this;
           if ((*building == STRUCT_HELIPAD && !air->IsFixedWing) ||
               (*building == STRUCT_AIRSTRIP && air->IsFixedWing)) {
             if (building->IsLeader) return (building);

@@ -51,7 +51,7 @@
 class HelpClass : public TabClass {
  public:
   HelpClass(void);
-  HelpClass(NoInitClass const &x) : TabClass(x) {};
+  HelpClass(NoInitClass const& x) : TabClass(x) {};
 
   /*
   ** Initialization
@@ -59,14 +59,14 @@ class HelpClass : public TabClass {
   virtual void Init_Clear(void);  // Clears all to known state
 
   virtual void Draw_It(bool complete = false);
-  virtual void AI(KeyNumType &input, int x, int y);
-  virtual bool Scroll_Map(DirType facing, int &distance, bool really);
+  virtual void AI(KeyNumType& input, int x, int y);
+  virtual bool Scroll_Map(DirType facing, int& distance, bool really);
   virtual void Set_Tactical_Position(COORDINATE coord);
 
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false, int cost = 0);
   void Set_Cost(int cost);
-  short const *Overlap_List(void) const;
+  short const* Overlap_List(void) const;
 
   /*
   **	File I/O.
@@ -75,7 +75,7 @@ class HelpClass : public TabClass {
   virtual void Decode_Pointers(void);
 
  private:
-  static char const *HelpText;
+  static char const* HelpText;
   int HelpX;
   int HelpY;
   int HelpWidth;

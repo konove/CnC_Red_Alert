@@ -175,7 +175,7 @@
  *                                                                                             *
  * HISTORY: * 06/24/1996 JLB : Created. *
  *=============================================================================================*/
-static bool _Counts_As_Civ_Evac(ObjectClass const *candidate) {
+static bool _Counts_As_Civ_Evac(ObjectClass const* candidate) {
   /*
   **	If the candidate pointer is missing, then return with failure code.
   */
@@ -189,7 +189,7 @@ static bool _Counts_As_Civ_Evac(ObjectClass const *candidate) {
   /*
   **	Working infantry object pointer.
   */
-  InfantryClass const *inf = (InfantryClass const *)candidate;
+  InfantryClass const* inf = (InfantryClass const*)candidate;
 
   /*
   **	Certain infantry types will always be considered a civilian evacuation
@@ -228,10 +228,10 @@ static bool _Counts_As_Civ_Evac(ObjectClass const *candidate) {
 // Allocates a new aircraft object from the free object pool.
 // Marks the allocated object as active by setting its IsActive flag to true.
 // Returns nullptr if no free objects are available in the pool.
-void *AircraftClass::operator new(size_t) throw() {
-  void *ptr = Aircraft.Allocate();
+void* AircraftClass::operator new(size_t) throw() {
+  void* ptr = Aircraft.Allocate();
   if (ptr) {
-    ((AircraftClass *)ptr)->IsActive = true;
+    ((AircraftClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -250,11 +250,11 @@ void *AircraftClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::operator delete(void *ptr) {
+void AircraftClass::operator delete(void* ptr) {
   if (ptr) {
-    ((AircraftClass *)ptr)->IsActive = false;
+    ((AircraftClass*)ptr)->IsActive = false;
   }
-  Aircraft.Free((AircraftClass *)ptr);
+  Aircraft.Free((AircraftClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -459,7 +459,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Verify the legality of the unit class.
   */
-  void const *shapefile = Get_Image_Data();
+  void const* shapefile = Get_Image_Data();
   if (!shapefile) return;
 
   int shapenum = Shape_Number();
@@ -594,15 +594,15 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Read_INI(CCINIClass &ini) {
-  AircraftClass *air;    // Working unit pointer.
+void AircraftClass::Read_INI(CCINIClass& ini) {
+  AircraftClass* air;    // Working unit pointer.
   HousesType inhouse;    // Unit house.
   AircraftType classid;  // Unit class.
   char buf[128];
 
   int counter = ini.Entry_Count(INI_Name());
   for (int index = 0; index < counter; index++) {
-    char const *entry = ini.Get_Entry(INI_Name(), index);
+    char const* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf) - 1);
     inhouse = HouseTypeClass::From_Name(strtok(buf, ","));
@@ -619,7 +619,7 @@ void AircraftClass::Read_INI(CCINIClass &ini) {
           /*
           **	Read the raw data.
           */
-          char *token = strtok(nullptr, ",");
+          char* token = strtok(nullptr, ",");
           if (token) {
             strength = atoi(token);
           } else {
@@ -1012,7 +1012,7 @@ void AircraftClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const *AircraftClass::Overlap_List(bool redraw) const {
+short const* AircraftClass::Overlap_List(bool redraw) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1152,7 +1152,7 @@ int AircraftClass::Mission_Unload(void) {
           Status = UNLOAD_PASSENGERS;
         } else {
           if (!Is_LZ_Clear(NavCom)) {
-            FootClass *foot = Attached_Object();
+            FootClass* foot = Attached_Object();
             if (foot != nullptr && foot->Team &&
                 foot->Team->Class->Origin != -1) {
               Assign_Destination(
@@ -1218,7 +1218,7 @@ int AircraftClass::Mission_Unload(void) {
       case UNLOAD_PASSENGERS:
         if (!IsTethered) {
           if (Is_Something_Attached()) {
-            FootClass *unit = (FootClass *)Detach_Object();
+            FootClass* unit = (FootClass*)Detach_Object();
 
             /*
             **	First thing is to lift the transport off of the map so that the
@@ -1308,7 +1308,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
   *aircraft. This presumes that *	the two objects know what they are
   *doing.
   */
-  ObjectClass *object = Map[cell].Cell_Object();
+  ObjectClass* object = Map[cell].Cell_Object();
   if (object) {
     if (object == this) return (true);
 
@@ -1440,7 +1440,7 @@ int AircraftClass::Mission_Retreat(void) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Exit_Object(TechnoClass *unit) {
+int AircraftClass::Exit_Object(TechnoClass* unit) {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1493,7 +1493,7 @@ int AircraftClass::Exit_Object(TechnoClass *unit) {
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
 int AircraftClass::Paradrop_Cargo(void) {
-  FootClass *passenger = Detach_Object();
+  FootClass* passenger = Detach_Object();
   if (passenger) {
     if (!passenger->Paradrop(Center_Coord())) {
       Attach(passenger);
@@ -1538,7 +1538,7 @@ int AircraftClass::Paradrop_Cargo(void) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-BulletClass *AircraftClass::Fire_At(TARGET target, int which) {
+BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1564,7 +1564,7 @@ BulletClass *AircraftClass::Fire_At(TARGET target, int which) {
     return nullptr;
   }
 
-  BulletClass *bullet = FootClass::Fire_At(target, which);
+  BulletClass* bullet = FootClass::Fire_At(target, which);
 
   if (bullet) {
     /*
@@ -1601,8 +1601,8 @@ BulletClass *AircraftClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 05/26/1995 JLB : Created. *
  *=============================================================================================*/
-ResultType AircraftClass::Take_Damage(int &damage, int distance,
-                                      WarheadType warhead, TechnoClass *source,
+ResultType AircraftClass::Take_Damage(int& damage, int distance,
+                                      WarheadType warhead, TechnoClass* source,
                                       bool forced) {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
@@ -1636,7 +1636,7 @@ ResultType AircraftClass::Take_Damage(int &damage, int distance,
       */
       if (Class->IsCrew && Percent_Chance(90) &&
           Map[Center_Coord()].Is_Clear_To_Move(SPEED_FOOT, true, false)) {
-        InfantryClass *infantry =
+        InfantryClass* infantry =
             new InfantryClass(INFANTRY_E1, House->Class->House);
         if (infantry != nullptr) {
           if (!infantry->Paradrop(Center_Coord())) {
@@ -1714,18 +1714,18 @@ int AircraftClass::Mission_Move(void) {
             /*
             **	Normal aircraft try to find a good landing spot to rest.
             */
-            BuildingClass *building = Find_Docking_Bay(Class->Building, false);
+            BuildingClass* building = Find_Docking_Bay(Class->Building, false);
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
               if (building) dist = Distance(building);
               for (int index = 0; index < Vessels.Count(); index++) {
-                VesselClass *ship = Vessels.Ptr(index);
+                VesselClass* ship = Vessels.Ptr(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House &&
                     ship->How_Many() < ship->Class->Max_Passengers()) {
                   if (Distance(ship) < dist || !building) {
-                    building = (BuildingClass *)ship;
+                    building = (BuildingClass*)ship;
                     dist = Distance(ship);
                   }
                   //				break;
@@ -1934,7 +1934,7 @@ void AircraftClass::Enter_Idle_Mode(bool) {
           /*
           **	Normal aircraft try to find a good landing spot to rest.
           */
-          BuildingClass *building = Find_Docking_Bay(Class->Building, false);
+          BuildingClass* building = Find_Docking_Bay(Class->Building, false);
           Assign_Destination(TARGET_NONE);
           if (building != nullptr &&
               Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
@@ -2024,17 +2024,17 @@ void AircraftClass::Enter_Idle_Mode(bool) {
             /*
             **	Normal aircraft try to find a good landing spot to rest.
             */
-            BuildingClass *building = Find_Docking_Bay(Class->Building, false);
+            BuildingClass* building = Find_Docking_Bay(Class->Building, false);
             if (!Class->IsFixedWing) {
               int dist = 0x7FFFFFFF;
               if (building) dist = Distance(building);
               for (int index = 0; index < Vessels.Count(); index++) {
-                VesselClass *ship = Vessels.Ptr(index);
+                VesselClass* ship = Vessels.Ptr(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House && ship->How_Many() < ship->Class->Max_Passengers() /* && !ship->In_Radio_Contact()*/) {
                   if (Distance(ship) < dist || !building) {
-                    building = (BuildingClass *)ship;
+                    building = (BuildingClass*)ship;
                     dist = Distance(ship);
                   }
                   //				break;
@@ -2137,7 +2137,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Debug_Dump(MonoClass *mono) const {
+void AircraftClass::Debug_Dump(MonoClass* mono) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2168,7 +2168,7 @@ void AircraftClass::Debug_Dump(MonoClass *mono) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Active_Click_With(ActionType action, ObjectClass *object) {
+void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2270,7 +2270,7 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType AircraftClass::What_Action(ObjectClass const *target) const {
+ActionType AircraftClass::What_Action(ObjectClass const* target) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2286,16 +2286,16 @@ ActionType AircraftClass::What_Action(ObjectClass const *target) const {
 
   if (House->IsPlayerControl && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_BUILDING &&
-      ((AircraftClass *)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass *)target) ==
+      ((AircraftClass*)this)
+              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)target) ==
           RADIO_ROGER) {
     action = ACTION_ENTER;
   }
   if (!Class->IsFixedWing && House->IsPlayerControl && House->Is_Ally(target) &&
       target->What_Am_I() == RTTI_VESSEL &&
-      *(VesselClass *)target == VESSEL_CARRIER &&
-      ((AircraftClass *)this)
-              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass *)target) ==
+      *(VesselClass*)target == VESSEL_CARRIER &&
+      ((AircraftClass*)this)
+              ->Transmit_Message(RADIO_CAN_LOAD, (TechnoClass*)target) ==
           RADIO_ROGER) {
     action = ACTION_ENTER;
   }
@@ -2313,7 +2313,7 @@ ActionType AircraftClass::What_Action(ObjectClass const *target) const {
   */
   if (House->IsPlayerControl && action == ACTION_SELECT &&
       target->What_Am_I() == RTTI_BUILDING) {
-    BuildingClass *building = (BuildingClass *)target;
+    BuildingClass* building = (BuildingClass*)target;
     if (building->Class->Type == STRUCT_REPAIR &&
         !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
       action = ACTION_ENTER;
@@ -2700,9 +2700,9 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType AircraftClass::Receive_Message(RadioClass *from,
+RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
-                                                long &param) {
+                                                long& param) {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2876,8 +2876,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass *from,
  * HISTORY: * 06/12/1995 JLB : Created. * 07/30/1995 JLB : Revamped to scan all
  *adjacent cells.                                     *
  *=============================================================================================*/
-DirType AircraftClass::Desired_Load_Dir(ObjectClass *object,
-                                        CELL &moveto) const {
+DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
+                                        CELL& moveto) const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3048,16 +3048,16 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType) const {
 
   if (!Map.In_Radar(cell)) return (MOVE_NO);
 
-  CellClass *cellptr = &Map[cell];
+  CellClass* cellptr = &Map[cell];
 
-  ObjectClass const *occupier = cellptr->Cell_Occupier();
+  ObjectClass const* occupier = cellptr->Cell_Occupier();
 
   if (occupier == nullptr || !occupier->Is_Techno() ||
-      ((TechnoClass *)occupier)->House->Is_Ally(House) ||
-      (((TechnoClass *)occupier)->Cloak != CLOAKED &&
+      ((TechnoClass*)occupier)->House->Is_Ally(House) ||
+      (((TechnoClass*)occupier)->Cloak != CLOAKED &&
        (ScenarioInit == 0 &&
         (occupier->What_Am_I() != RTTI_BUILDING ||
-         !((BuildingClass *)occupier)->Class->IsInvisible)))) {
+         !((BuildingClass*)occupier)->Class->IsInvisible)))) {
     if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) return (MOVE_NO);
   }
 
@@ -3103,7 +3103,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     */
     COORDINATE altcoord = 0;
     if (Is_Target_Object(target) && As_Object(target)->Is_Foot()) {
-      TARGET alttarg = ((FootClass *)As_Object(target))->NavCom;
+      TARGET alttarg = ((FootClass*)As_Object(target))->NavCom;
       if (Target_Legal(alttarg)) {
         altcoord = As_Coord(alttarg);
       }
@@ -3184,7 +3184,7 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   */
   TARGET astarget = ::As_Target(cell);
   for (int index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass *air = Aircraft.Ptr(index);
+    AircraftClass* air = Aircraft.Ptr(index);
     if (air && (strict || air != this) && !air->IsInLimbo) {
       if (Coord_Cell(air->Coord) == cell || air->NavCom == astarget) {
         return (false);
@@ -3309,7 +3309,7 @@ int AircraftClass::Mission_Enter(void) {
         }
         Status = STACK;
       } else {
-        TechnoClass *tech = As_Techno(NavCom);
+        TechnoClass* tech = As_Techno(NavCom);
         if (tech && Transmit_Message(RADIO_CAN_LOAD, tech) == RADIO_ROGER) {
           Transmit_Message(RADIO_HELLO, tech);
           Transmit_Message(RADIO_DOCKING);
@@ -3328,7 +3328,7 @@ int AircraftClass::Mission_Enter(void) {
         int distance;
         TARGET togo;
 
-        BuildingClass const *building = As_Building(NavCom);
+        BuildingClass const* building = As_Building(NavCom);
         if (building) {
           togo = ::As_Target(building->Check_Point(CHECK_STACK));
         } else {
@@ -3350,7 +3350,7 @@ int AircraftClass::Mission_Enter(void) {
         TARGET togo;
 
         Set_Speed(200);
-        BuildingClass const *building = As_Building(NavCom);
+        BuildingClass const* building = As_Building(NavCom);
         if (building) {
           togo = ::As_Target(building->Check_Point(CHECK_DOWNWIND));
         } else {
@@ -3372,7 +3372,7 @@ int AircraftClass::Mission_Enter(void) {
         TARGET togo;
 
         Set_Speed(140);
-        BuildingClass const *building = As_Building(NavCom);
+        BuildingClass const* building = As_Building(NavCom);
         if (building) {
           togo = ::As_Target(building->Check_Point(CHECK_CROSSWIND));
         } else {
@@ -3494,7 +3494,7 @@ TARGET AircraftClass::Good_LZ(void) const {
   CELL bestcell = 0;
   int bestdist = -1;
   for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass *building = Buildings.Ptr(index);
+    BuildingClass* building = Buildings.Ptr(index);
 
     if (building && !building->IsInLimbo && building->House == House) {
       int dist = Distance(building);
@@ -3702,8 +3702,8 @@ int AircraftClass::Mission_Guard(void) {
     if (!In_Radio_Contact() ||
         (Height == 0 &&
          (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
-          *((BuildingClass *)Contact_With_Whom()) != STRUCT_REPAIR))) {
-      BuildingClass *building = Find_Docking_Bay(STRUCT_REPAIR, true);
+          *((BuildingClass*)Contact_With_Whom()) != STRUCT_REPAIR))) {
+      BuildingClass* building = Find_Docking_Bay(STRUCT_REPAIR, true);
       if (building != nullptr) {
         Assign_Destination(building->As_Target());
         Assign_Target(TARGET_NONE);
@@ -3720,17 +3720,17 @@ int AircraftClass::Mission_Guard(void) {
   */
   if (Ammo == 0 && Is_Weapon_Equipped()) {
     if (!In_Radio_Contact()) {
-      BuildingClass *building = Find_Docking_Bay(STRUCT_HELIPAD, false);
+      BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
       if (!Class->IsFixedWing) {
         int dist = 0x7FFFFFFF;
         if (building) dist = Distance(building);
         for (int index = 0; index < Vessels.Count(); index++) {
-          VesselClass *ship = Vessels.Ptr(index);
+          VesselClass* ship = Vessels.Ptr(index);
           if (ship != nullptr && *ship == VESSEL_CARRIER && !ship->IsInLimbo &&
               ship->IsActive && ship->House == House &&
               ship->How_Many() < ship->Class->Max_Passengers()) {
             if (Distance(ship) < dist || !building) {
-              building = (BuildingClass *)ship;
+              building = (BuildingClass*)ship;
               dist = Distance(ship);
             }
             //				break;
@@ -4128,7 +4128,7 @@ bool AircraftClass::Edge_Of_World_AI(void) {
       *fulfilled.
       */
       while (Is_Something_Attached()) {
-        FootClass *obj = Detach_Object();
+        FootClass* obj = Detach_Object();
 
         /*
         **	Flag the owning house that civ evacuation has occurred.

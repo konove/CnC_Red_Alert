@@ -659,7 +659,7 @@ typedef enum ScenarioPlayerEnum {
   SCEN_PLAYER_FIRST = 0,
 } ScenarioPlayerType;
 
-inline ScenarioPlayerType operator++(ScenarioPlayerType &, int);
+inline ScenarioPlayerType operator++(ScenarioPlayerType&, int);
 
 /**********************************************************************
 ** These are the directional parameters for a scenario.
@@ -672,7 +672,7 @@ typedef enum ScenarioDirEnum {
   SCEN_DIR_FIRST = 0,
 } ScenarioDirType;
 
-inline ScenarioDirType operator++(ScenarioDirType &, int);
+inline ScenarioDirType operator++(ScenarioDirType&, int);
 
 /**********************************************************************
 ** These are the random variations of a scenario.
@@ -1460,7 +1460,7 @@ typedef enum DoType {
   DO_FIRST = 0
 } DoType;
 
-inline DoType operator++(DoType &, int);
+inline DoType operator++(DoType&, int);
 
 /*
 **	This structure is associated with each maneuver type. It tells whether
@@ -1868,7 +1868,7 @@ typedef enum BSizeType {
   BSIZE_COUNT
 } BSizeType;
 
-inline BSizeType operator++(BSizeType &, int);
+inline BSizeType operator++(BSizeType&, int);
 
 /**********************************************************************
 ** When objects are manipulated on the map that are marked as being
@@ -1933,11 +1933,11 @@ inline FacingType operator-(FacingType f1, int f2) {
   return (FacingType)(((int)f1 - (int)f2) & 0x07);
 }
 
-inline FacingType operator+=(FacingType &f1, FacingType f2) {
+inline FacingType operator+=(FacingType& f1, FacingType f2) {
   f1 = (FacingType)(((int)f1 + (int)f2) & 0x07);
   return (f1);
 }
-inline FacingType operator+=(FacingType &f1, int f2) {
+inline FacingType operator+=(FacingType& f1, int f2) {
   f1 = (FacingType)(((int)f1 + (int)f2) & 0x07);
   return (f1);
 }
@@ -2293,8 +2293,8 @@ typedef struct {
   CELL Start;              // Starting cell number.
   int Cost;                // Accumulated terrain cost.
   int Length;              // Command string length.
-  FacingType *Command;     // Pointer to command string.
-  unsigned long *Overlap;  // Pointer to overlap list
+  FacingType* Command;     // Pointer to command string.
+  unsigned long* Overlap;  // Pointer to overlap list
   CELL LastOverlap;        // stores position of last overlap
   CELL LastFixup;          // stores position of last overlap
 } PathType;
@@ -2652,6 +2652,6 @@ typedef enum OptionControlType {
 
 #define TOTAL_CRATE_TYPES 15
 
-#define size_of(typ, id) sizeof(((typ *)0)->id)
+#define size_of(typ, id) sizeof(((typ*)0)->id)
 
 #endif

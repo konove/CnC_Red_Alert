@@ -103,7 +103,7 @@
 #include "td/vector.h"
 #include "tech/crc.h"
 
-ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
+ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
 //
 // how much time (ticks) to go by before thinking other system
@@ -120,16 +120,16 @@ ModemRegistryEntryClass *ModemRegistry = nullptr;  // Ptr to modem registry data
 #define PACKET_REDRAW_TIME 60
 
 static int Reconnect_Null_Modem(void);
-static int Com_Settings_Dialog(SerialSettingsType *settings);
+static int Com_Settings_Dialog(SerialSettingsType* settings);
 static int Phone_Dialog(void);
-static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
-                                      char *buf, int *index);
-static int Init_String_Compare(const void *p1, const void *p2);
-static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf);
-static int Phone_Compare(const void *p1, const void *p2);
-static int Edit_Phone_Dialog(PhoneEntryClass *phone);
-static bool Dial_Modem(SerialSettingsType *settings, bool reconnect);
-static bool Answer_Modem(SerialSettingsType *settings, bool reconnect);
+static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
+                                      char* buf, int* index);
+static int Init_String_Compare(const void* p1, const void* p2);
+static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf);
+static int Phone_Compare(const void* p1, const void* p2);
+static int Edit_Phone_Dialog(PhoneEntryClass* phone);
+static bool Dial_Modem(SerialSettingsType* settings, bool reconnect);
+static bool Answer_Modem(SerialSettingsType* settings, bool reconnect);
 static void Modem_Echo(char c);
 
 static SerialPacketType SendPacket;
@@ -139,7 +139,7 @@ unsigned char TheirColor;
 HousesType TheirHouse;
 unsigned char TheirID;
 static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::PHONE_MAX_NUM - 1];
-static SerialSettingsType *DialSettings;
+static SerialSettingsType* DialSettings;
 
 #define SHOW_MONO 0
 
@@ -161,7 +161,7 @@ static SerialSettingsType *DialSettings;
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Init_Null_Modem(SerialSettingsType *settings) {
+int Init_Null_Modem(SerialSettingsType* settings) {
   if (NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
                      settings->Baud, 0, 8, 1, settings->HardwareFlowControl)) {
     return (true);
@@ -282,7 +282,7 @@ int Test_Null_Modem(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -349,7 +349,7 @@ int Test_Null_Modem(void) {
   /*
   ** Send hangup command
   */
-  SerialPort->Write_To_Serial_Port((unsigned char *)"ATH\r", strlen("ATH\r"));
+  SerialPort->Write_To_Serial_Port((unsigned char*)"ATH\r", strlen("ATH\r"));
   CountDownTimerClass time;
   time.Set(2 * 60);
   while (time.Time()) {
@@ -637,7 +637,7 @@ static int Reconnect_Null_Modem(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -808,7 +808,7 @@ static int Reconnect_Null_Modem(void) {
 void Destroy_Null_Connection(int id, int error) {
   int i, j, idx;
   HousesType house;
-  HouseClass *housep;
+  HouseClass* housep;
   char txt[80];
 
   if (MPlayerCount == 1) {
@@ -986,15 +986,15 @@ GameType Select_Serial_Dialog(void) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS];
 
-  SerialSettingsType *settings;
+  SerialSettingsType* settings;
   bool selectsettings = false;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   TextButtonClass dialbtn(
       BUTTON_DIAL, TXT_DIAL_MODEM,
@@ -1400,7 +1400,7 @@ GameType Select_Serial_Dialog(void) {
  *                                                                                             *
  * HISTORY: * 12/16/96 2:29PM ST : Created *
  *=============================================================================================*/
-void Advanced_Modem_Settings(SerialSettingsType *settings) {
+void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1504,7 +1504,7 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   commands = &okbutton;
   defaultbutton.Add_Tail(*commands);
@@ -1691,7 +1691,7 @@ void Advanced_Modem_Settings(SerialSettingsType *settings) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Com_Settings_Dialog(SerialSettingsType *settings) {
+static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /* ###Change collision detected! C:\PROJECTS\CODE\NULLDLG.CPP... */
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
@@ -1876,13 +1876,13 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
     REDRAW_ALL = REDRAW_BACKGROUND
   } RedrawType;
 
-  static char *portname[4] = {"COM1 - 3F8", "COM2 - 2F8", "COM3 - 3E8",
+  static char* portname[4] = {"COM1 - 3F8", "COM2 - 2F8", "COM3 - 3E8",
                               "COM4 - 2E8"};
 
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
 
 #ifdef EDIT_IRQ
-  static char *irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]", "5",
+  static char* irqname[5] = {"2 / 9", "3 - [COM2 & 4]", "4 - [COM1 & 3]", "5",
                              "CUSTOM - ??"};
 
   static int _irqidx[4] = {2, 1, 2, 1};
@@ -1890,11 +1890,11 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 
   static char modemnames[10][MODEM_NAME_MAX];
 
-  static char *baudname[5] = {
+  static char* baudname[5] = {
       "14400", "19200", "28800", "38400", "57600",
   };
 
-  static char *init_types[2] = {
+  static char* init_types[2] = {
       "Normal",
       "Full",
   };
@@ -1905,8 +1905,8 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   KeyNumType input;
-  char *item;  // general-purpose string
-  char *temp;  // general-purpose string
+  char* item;  // general-purpose string
+  char* temp;  // general-purpose string
 
   char portbuf[PORTBUF_MAX] = {0};  // buffer for port
 #ifdef EDIT_IRQ
@@ -1935,8 +1935,8 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   DetectPortType dpstatus;
   char init_text[32];
 
-  void const *up_button;
-  void const *down_button;
+  void const* up_button;
+  void const* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -1949,7 +1949,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass port_edt(BUTTON_PORT, portbuf, PORTBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_port_x,
@@ -2464,7 +2464,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         break;
 
       case (BUTTON_PORT | KN_BUTTON):
-        item = (char *)portlist.Current_Item();
+        item = (char*)portlist.Current_Item();
         if (port_index < 4) {
           temp = strchr(item, ' ');
           if (!temp) {
@@ -2566,7 +2566,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_PORTLIST | KN_BUTTON):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
-          item = (char *)portlist.Current_Item();
+          item = (char*)portlist.Current_Item();
           if (port_index < 4) {
             temp = strchr(item, ' ');
             if (!temp) {
@@ -2583,7 +2583,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #ifdef EDIT_IRQ
             irq_index = _irqidx[port_index];
             irqlist.Set_Selected_Index(irq_index);
-            item = (char *)irqlist.Current_Item();
+            item = (char*)irqlist.Current_Item();
             temp = strchr(item, ' ');
             if (!temp) {
               strncpy(irqbuf, item, 2);
@@ -2630,7 +2630,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 
 #ifdef EDIT_IRQ
       case (BUTTON_IRQ | KN_BUTTON):
-        item = (char *)irqlist.Current_Item();
+        item = (char*)irqlist.Current_Item();
         if (irq_index < 4) {
           temp = strchr(item, ' ');
           if (!temp) {
@@ -2659,7 +2659,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_IRQLIST | KN_BUTTON):
         if (irqlist.Current_Index() != irq_index) {
           irq_index = irqlist.Current_Index();
-          item = (char *)irqlist.Current_Item();
+          item = (char*)irqlist.Current_Item();
           if (irq_index < 4) {
             temp = strchr(item, ' ');
             if (!temp) {
@@ -2695,7 +2695,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
 #endif  // EDIT_IRQ
 
       case (BUTTON_BAUD | KN_BUTTON):
-        item = (char *)baudlist.Current_Item();
+        item = (char*)baudlist.Current_Item();
         strncpy(baudbuf, item, BAUDBUF_MAX);
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
@@ -2706,7 +2706,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_BAUDLIST | KN_BUTTON):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
-          item = (char *)baudlist.Current_Item();
+          item = (char*)baudlist.Current_Item();
           strncpy(baudbuf, item, BAUDBUF_MAX);
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
@@ -2729,7 +2729,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_INITSTRLIST | KN_BUTTON):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
-          item = (char *)initstrlist.Current_Item();
+          item = (char*)initstrlist.Current_Item();
           strncpy(initstrbuf, item, INITSTRBUF_MAX);
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
@@ -2781,7 +2781,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
         break;
 
       case (BUTTON_CWAITSTR | KN_BUTTON):
-        item = (char *)cwaitstrlist.Current_Item();
+        item = (char*)cwaitstrlist.Current_Item();
         if (cwaitstr_index < 3) {
         } else {
           temp = strchr(item, '-');
@@ -2798,7 +2798,7 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
       case (BUTTON_CWAITSTRLIST | KN_BUTTON):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
-          item = (char *)cwaitstrlist.Current_Item();
+          item = (char*)cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
             strncpy(cwaitstrbuf, item, CWAITSTRBUF_MAX);
             cwaitstr_edt.Clear_Focus();
@@ -2983,10 +2983,10 @@ static int Com_Settings_Dialog(SerialSettingsType *settings) {
  * HISTORY:                                                                *
  *   06/08/1995 DRD : Created.                                             *
  *=========================================================================*/
-static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
-                                      char *buf, int *index) {
+static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
+                                      char* buf, int* index) {
   int i, curidx;
-  char *item;
+  char* item;
 
   curidx = *index;
 
@@ -2994,7 +2994,7 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
   Clear the list
   ........................................................................*/
   while (list->Count()) {
-    item = (char *)(list->Get_Item(0));
+    item = (char*)(list->Get_Item(0));
     list->Remove_Item(item);
     delete[] item;
   }
@@ -3002,7 +3002,7 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
   /*
   ** Now sort the init string list by name then number
   */
-  qsort((void *)(&InitStrings[0]), InitStrings.Count(), sizeof(char *),
+  qsort((void*)(&InitStrings[0]), InitStrings.Count(), sizeof(char*),
         Init_String_Compare);
 
   /*........................................................................
@@ -3057,8 +3057,8 @@ static void Build_Init_String_Listbox(ListClass *list, EditClass *edit,
  * HISTORY:                                                                *
  *   06/08/1995 DRD : Created.                                             *
  *=========================================================================*/
-static int Init_String_Compare(const void *p1, const void *p2) {
-  return (strcmp(*((char **)p1), *((char **)p2)));
+static int Init_String_Compare(const void* p1, const void* p2) {
+  return (strcmp(*((char**)p1), *((char**)p2)));
 }
 
 /***********************************************************************************************
@@ -3290,7 +3290,7 @@ int Com_Scenario_Dialog(void) {
   static int first_time = 1;
   bool oppscorescreen = false;
   bool gameoptions = false;
-  EventClass *event;                 // event ptr
+  EventClass* event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
 
   int message_length;
@@ -3300,8 +3300,8 @@ int Com_Scenario_Dialog(void) {
   bool ready_to_go = false;
   CountDownTimerClass ready_time;
 
-  void const *up_button;
-  void const *down_button;
+  void const* up_button;
+  void const* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -3314,7 +3314,7 @@ int Com_Scenario_Dialog(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -4061,7 +4061,7 @@ int Com_Scenario_Dialog(void) {
         ...............................................................*/
         else if (i == 3) {
           long actual_message_size;
-          char *the_string;
+          char* the_string;
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -4100,10 +4100,10 @@ int Com_Scenario_Dialog(void) {
             }
 
             *(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
-            *((unsigned short *)(SendPacket.Message + COMPAT_MESSAGE_LENGTH -
-                                 4)) = magic_number;
-            *((unsigned short *)(SendPacket.Message + COMPAT_MESSAGE_LENGTH -
-                                 2)) = crc;
+            *((unsigned short*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH -
+                                4)) = magic_number;
+            *((unsigned short*)(SendPacket.Message + COMPAT_MESSAGE_LENGTH -
+                                2)) = crc;
 
             /*..................................................................
             Send the message
@@ -4243,7 +4243,7 @@ int Com_Scenario_Dialog(void) {
         break;
       }
 
-      event = (EventClass *)&ReceivePacket;
+      event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount.Time() - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Time();
@@ -4339,10 +4339,10 @@ int Com_Scenario_Dialog(void) {
             oppscorescreen = false;
             sprintf(txt, Text_String(TXT_FROM), ReceivePacket.Name,
                     ReceivePacket.Message);
-            magic_number = *((unsigned short *)(ReceivePacket.Message +
-                                                COMPAT_MESSAGE_LENGTH - 4));
-            crc = *((unsigned short *)(ReceivePacket.Message +
-                                       COMPAT_MESSAGE_LENGTH - 2));
+            magic_number = *((unsigned short*)(ReceivePacket.Message +
+                                               COMPAT_MESSAGE_LENGTH - 4));
+            crc = *((unsigned short*)(ReceivePacket.Message +
+                                      COMPAT_MESSAGE_LENGTH - 2));
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4701,7 +4701,7 @@ int Com_Show_Scenario_Dialog(void) {
   unsigned long transmittime = 0;
   int packetlen;
   bool oppscorescreen = false;
-  EventClass *event;                 // event ptr
+  EventClass* event;                 // event ptr
   unsigned long msg_timeout = 1200;  // init to 20 seconds
 
   int message_length;
@@ -4713,7 +4713,7 @@ int Com_Show_Scenario_Dialog(void) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass name_edt(BUTTON_NAME, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -5245,7 +5245,7 @@ int Com_Show_Scenario_Dialog(void) {
               ...............................................................*/
               if (i == 3) {
                 long actual_message_size;
-                char *the_string;
+                char* the_string;
 
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -5289,11 +5289,11 @@ int Com_Show_Scenario_Dialog(void) {
                   }
 
                   *(SendPacket.Message + COMPAT_MESSAGE_LENGTH - 5) = 0;
-                  *((unsigned short *)(SendPacket.Message +
-                                       COMPAT_MESSAGE_LENGTH - 4)) =
+                  *((unsigned short*)(SendPacket.Message +
+                                      COMPAT_MESSAGE_LENGTH - 4)) =
                       magic_number;
-                  *((unsigned short *)(SendPacket.Message +
-                                       COMPAT_MESSAGE_LENGTH - 2)) = crc;
+                  *((unsigned short*)(SendPacket.Message +
+                                      COMPAT_MESSAGE_LENGTH - 2)) = crc;
 
                   /*..................................................................
                   Send the message
@@ -5398,7 +5398,7 @@ int Com_Show_Scenario_Dialog(void) {
         break;
       }
 
-      event = (EventClass *)&ReceivePacket;
+      event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount.Time() - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Time();
@@ -5563,10 +5563,10 @@ int Com_Show_Scenario_Dialog(void) {
             oppscorescreen = false;
             sprintf(txt, Text_String(TXT_FROM), ReceivePacket.Name,
                     ReceivePacket.Message);
-            magic_number = *((unsigned short *)(ReceivePacket.Message +
-                                                COMPAT_MESSAGE_LENGTH - 4));
-            crc = *((unsigned short *)(ReceivePacket.Message +
-                                       COMPAT_MESSAGE_LENGTH - 2));
+            magic_number = *((unsigned short*)(ReceivePacket.Message +
+                                               COMPAT_MESSAGE_LENGTH - 4));
+            crc = *((unsigned short*)(ReceivePacket.Message +
+                                      COMPAT_MESSAGE_LENGTH - 2));
             Messages.Add_Message(
                 txt, MPlayerTColors[MPlayerID_To_ColorIndex(ReceivePacket.ID)],
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -5823,18 +5823,18 @@ static int Phone_Dialog(void) {
   int rc;
   int i;
   int tabs[] = {123 * factor, 207 * factor};  // tabs for list box
-  char *item;                // for removing items from list box
-  PhoneEntryClass *p_entry;  // for creating / editing phonebook entries
+  char* item;                // for removing items from list box
+  PhoneEntryClass* p_entry;  // for creating / editing phonebook entries
   int changed = 0;           // 1 = save changes to INI file
   int firsttime = 0;
 
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
-  void const *up_button;
-  void const *down_button;
+  void const* up_button;
+  void const* down_button;
 
   if (InMainLoop) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
@@ -6196,7 +6196,7 @@ static int Phone_Dialog(void) {
   Clear the list box
   ------------------------------------------------------------------------*/
   while (phonelist.Count()) {
-    item = (char *)phonelist.Get_Item(0);
+    item = (char*)phonelist.Get_Item(0);
     phonelist.Remove_Item(item);
     delete[] item;
   }
@@ -6229,9 +6229,9 @@ static int Phone_Dialog(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
+static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   int i;
-  char *item;
+  char* item;
   char phonename[21];
   char phonenum[15];
 
@@ -6239,7 +6239,7 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
   Clear the list
   ........................................................................*/
   while (list->Count()) {
-    item = (char *)(list->Get_Item(0));
+    item = (char*)(list->Get_Item(0));
     list->Remove_Item(item);
     delete[] item;
   }
@@ -6247,8 +6247,8 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
   /*
   ** Now sort the phone list by name then number
   */
-  qsort((void *)(&PhoneBook[0]), PhoneBook.Count(),
-        sizeof(class PhoneEntryClass *), Phone_Compare);
+  qsort((void*)(&PhoneBook[0]), PhoneBook.Count(),
+        sizeof(class PhoneEntryClass*), Phone_Compare);
 
   /*........................................................................
   Build the list
@@ -6326,12 +6326,12 @@ static void Build_Phone_Listbox(ListClass *list, EditClass *edit, char *buf) {
  * HISTORY:                                                                *
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
-static int Phone_Compare(const void *p1, const void *p2) {
+static int Phone_Compare(const void* p1, const void* p2) {
   class PhoneEntryClass *pe1, *pe2;
   int result;
 
-  pe1 = *((class PhoneEntryClass **)p1);
-  pe2 = *((class PhoneEntryClass **)p2);
+  pe1 = *((class PhoneEntryClass**)p1);
+  pe2 = *((class PhoneEntryClass**)p2);
 
   result = strcmp(pe1->Name, pe2->Name);
 
@@ -6362,7 +6362,7 @@ static int Phone_Compare(const void *p1, const void *p2) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
+static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
@@ -6463,7 +6463,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands;  // button list
+  GadgetClass* commands;  // button list
 
   EditClass nameedit(BUTTON_NAME, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -6690,7 +6690,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass *phone) {
 
 } /* end of Edit_Phone_Dialog */
 
-static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
+static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   bool connected = false;
   DialStatusType dialstatus;
   int modemstatus;
@@ -6861,7 +6861,7 @@ static bool Dial_Modem(SerialSettingsType *settings, bool reconnect) {
 
 } /* end of Dial_Modem */
 
-static bool Answer_Modem(SerialSettingsType *settings, bool reconnect) {
+static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   bool connected = false;
   DialStatusType dialstatus;
   int modemstatus;
@@ -7033,7 +7033,7 @@ static void Modem_Echo(char c) {
 
 } /* end of Modem_Echo */
 
-void Smart_Printf(char *format, ...) {
+void Smart_Printf(char* format, ...) {
   va_list arglist;
   char buf[501];
 
@@ -7056,7 +7056,7 @@ void Smart_Printf(char *format, ...) {
   }
 }
 
-void Hex_Dump_Data(char *buffer, int length) {
+void Hex_Dump_Data(char* buffer, int length) {
   int i;
   int offset = 0;
   char buff[10];
@@ -7135,7 +7135,7 @@ void Hex_Dump_Data(char *buffer, int length) {
 
 } /* end of Hex_Dump_Data */
 
-void itoh(int i, char *s) {
+void itoh(int i, char* s) {
   int nibble, loop;
 
   //	*s++ = '0';
@@ -7182,7 +7182,7 @@ int Com_Fake_Scenario_Dialog(void) {
   int packetlen;
   bool oppscorescreen = false;
   bool gameoptions = false;
-  EventClass *event;                    // event ptr
+  EventClass* event;                    // event ptr
   unsigned long msg_timeout = 60 * 60;  // init to 60 seconds
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
@@ -7197,7 +7197,7 @@ int Com_Fake_Scenario_Dialog(void) {
   /*........................................................................
   Dialog variables
   ........................................................................*/
-  TextButtonClass *buttons = 0;
+  TextButtonClass* buttons = 0;
 
   KeyNumType input;
 
@@ -7206,7 +7206,7 @@ int Com_Fake_Scenario_Dialog(void) {
   int height = 0;
   char text_buffer[80 * 3];
 
-  const char *current_status_string = Text_String(TXT_WINSOCK_CONNECTING);
+  const char* current_status_string = Text_String(TXT_WINSOCK_CONNECTING);
   port::SafeCopy(text_buffer, current_status_string);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -7388,7 +7388,7 @@ int Com_Fake_Scenario_Dialog(void) {
         break;
       }
 
-      event = (EventClass *)&ReceivePacket;
+      event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount.Time() - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Time();
@@ -7666,7 +7666,7 @@ int Com_Show_Fake_Scenario_Dialog(void) {
   int packetlen;
   bool oppscorescreen = false;
   bool gameoptions = false;
-  EventClass *event;                    // event ptr
+  EventClass* event;                    // event ptr
   unsigned long msg_timeout = 60 * 60;  // init to 60 seconds
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
@@ -7681,7 +7681,7 @@ int Com_Show_Fake_Scenario_Dialog(void) {
   /*........................................................................
   Dialog variables
   ........................................................................*/
-  TextButtonClass *buttons = 0;
+  TextButtonClass* buttons = 0;
 
   KeyNumType input;
 
@@ -7690,7 +7690,7 @@ int Com_Show_Fake_Scenario_Dialog(void) {
   int height = 0;
   char text_buffer[80 * 3];
 
-  const char *current_status_string = Text_String(TXT_WINSOCK_CONNECTING);
+  const char* current_status_string = Text_String(TXT_WINSOCK_CONNECTING);
   port::SafeCopy(text_buffer, current_status_string);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, TBLACK, TBLACK, TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -7848,7 +7848,7 @@ int Com_Show_Fake_Scenario_Dialog(void) {
         break;
       }
 
-      event = (EventClass *)&ReceivePacket;
+      event = (EventClass*)&ReceivePacket;
       if (event->Type <= EventClass::FRAMEINFO) {
         if ((TickCount.Time() - lastredrawtime) > PACKET_REDRAW_TIME) {
           lastredrawtime = TickCount.Time();

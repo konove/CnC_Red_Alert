@@ -118,7 +118,7 @@ class SidebarClass : public PowerClass {
   };
 
   SidebarClass(void);
-  SidebarClass(NoInitClass const &x) : PowerClass(x) {}
+  SidebarClass(NoInitClass const& x) : PowerClass(x) {}
 
   /*
   ** Initialization
@@ -128,14 +128,14 @@ class SidebarClass : public PowerClass {
   virtual void Init_IO(void);                      // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
 
-  virtual void AI(KeyNumType &input, int x, int y);
+  virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete);
-  virtual void Refresh_Cells(CELL cell, short const *list);
+  virtual void Refresh_Cells(CELL cell, short const* list);
 
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);
   bool Add(RTTIType type, int ID);
-  bool Sidebar_Click(KeyNumType &input, int x, int y);
+  bool Sidebar_Click(KeyNumType& input, int x, int y);
   void Recalc(void);
   bool Factory_Link(int factory, RTTIType type, int id);
 
@@ -154,12 +154,12 @@ class SidebarClass : public PowerClass {
      public:
       SelectClass(void);
 
-      void Set_Owner(StripClass &strip, int index);
-      StripClass *Strip;
+      void Set_Owner(StripClass& strip, int index);
+      StripClass* Strip;
       int Index;
 
      protected:
-      virtual int Action(unsigned flags, KeyNumType &key);
+      virtual int Action(unsigned flags, KeyNumType& key);
     };
 
    public:
@@ -170,12 +170,12 @@ class SidebarClass : public PowerClass {
     int ButtonSpacingOffset;
 
     StripClass(void) {}
-    StripClass(InitClass const &);
+    StripClass(InitClass const&);
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
     bool Scroll(bool up);
-    bool AI(KeyNumType &input, int x, int y);
+    bool AI(KeyNumType& input, int x, int y);
     void Draw_It(bool complete);
     void One_Time(int id);
     void Init_Clear(void);
@@ -186,13 +186,13 @@ class SidebarClass : public PowerClass {
     void Deactivate(void);
     void Flag_To_Redraw(void);
     bool Factory_Link(int factory, RTTIType type, int id);
-    void const *Get_Special_Cameo(int type);
+    void const* Get_Special_Cameo(int type);
 
     /*
     **	File I/O.
     */
-    bool Load(FileClass &file);
-    bool Save(FileClass &file);
+    bool Load(FileClass& file);
+    bool Save(FileClass& file);
     void Code_Pointers(void);
     void Decode_Pointers(void);
 
@@ -328,19 +328,19 @@ class SidebarClass : public PowerClass {
     **	Pointer to the shape data for small versions of the logos. These are
     *used as *	placeholder pieces on the side bar.
     */
-    static void const *LogoShapes;
+    static void const* LogoShapes;
 
     /*
     **	This points to the animation sequence of frames used to mark the passage
     *of time *	as an object is undergoing construction.
     */
-    static void const *ClockShapes;
+    static void const* ClockShapes;
 
     /*
     ** This points to the animation sequence which deals with special
     ** shapes which handle non-production based icons.
     */
-    static void const *SpecialShapes[3];
+    static void const* SpecialShapes[3];
 
     /*
     **	This is the last theater that the special palette remap table was loaded
@@ -379,7 +379,7 @@ class SidebarClass : public PowerClass {
     SBGadgetClass(void) : GadgetClass(0, 0, 0, 0, LEFTUP) {};
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType &key);
+    virtual int Action(unsigned flags, KeyNumType& key);
   };
 
   /*
@@ -400,8 +400,8 @@ class SidebarClass : public PowerClass {
   /*
   **	Pointer to the shape data for the sidebar
   */
-  static void const *SidebarShape1;
-  static void const *SidebarShape2;
+  static void const* SidebarShape1;
+  static void const* SidebarShape2;
 
  private:
   bool Activate_Repair(int control);

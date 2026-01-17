@@ -110,7 +110,7 @@ BlowfishEngine::~BlowfishEngine(void) {
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Submit_Key(void const *key, int length) {
+void BlowfishEngine::Submit_Key(void const* key, int length) {
   assert(length <= MAX_KEY_LENGTH);
 
   /*
@@ -136,8 +136,8 @@ void BlowfishEngine::Submit_Key(void const *key, int length) {
   **	into a long by using endian independent means.
   */
   int j = 0;
-  unsigned char const *key_ptr = (unsigned char const *)key;
-  unsigned long *p_ptr = &P_Encrypt[0];
+  unsigned char const* key_ptr = (unsigned char const*)key;
+  unsigned long* p_ptr = &P_Encrypt[0];
   for (int index = 0; index < ROUNDS + 2; index++) {
     unsigned long data = 0;
 
@@ -158,8 +158,8 @@ void BlowfishEngine::Submit_Key(void const *key, int length) {
   */
   unsigned long left = 0x00000000L;
   unsigned long right = 0x00000000L;
-  unsigned long *p_en = &P_Encrypt[0];           // Encryption table.
-  unsigned long *p_de = &P_Decrypt[ROUNDS + 1];  // Decryption table.
+  unsigned long* p_en = &P_Encrypt[0];           // Encryption table.
+  unsigned long* p_de = &P_Decrypt[ROUNDS + 1];  // Decryption table.
   for (int p_index = 0; p_index < ROUNDS + 2; p_index += 2) {
     Sub_Key_Encrypt(left, right);
 
@@ -210,12 +210,12 @@ void BlowfishEngine::Submit_Key(void const *key, int length) {
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowfishEngine::Encrypt(void const *plaintext, int length,
-                            void *cyphertext) {
+int BlowfishEngine::Encrypt(void const* plaintext, int length,
+                            void* cyphertext) {
   if (plaintext == nullptr || length == 0) {
     return (0);
   }
-  if (cyphertext == nullptr) cyphertext = (void *)plaintext;
+  if (cyphertext == nullptr) cyphertext = (void*)plaintext;
 
   if (IsKeyed) {
     /*
@@ -228,8 +228,8 @@ int BlowfishEngine::Encrypt(void const *plaintext, int length,
     */
     for (int index = 0; index < blocks; index++) {
       Process_Block(plaintext, cyphertext, P_Encrypt);
-      plaintext = ((char *)plaintext) + BYTES_PER_BLOCK;
-      cyphertext = ((char *)cyphertext) + BYTES_PER_BLOCK;
+      plaintext = ((char*)plaintext) + BYTES_PER_BLOCK;
+      cyphertext = ((char*)cyphertext) + BYTES_PER_BLOCK;
     }
     int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -276,12 +276,12 @@ int BlowfishEngine::Encrypt(void const *plaintext, int length,
  *                                                                                             *
  * HISTORY: * 04/14/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowfishEngine::Decrypt(void const *cyphertext, int length,
-                            void *plaintext) {
+int BlowfishEngine::Decrypt(void const* cyphertext, int length,
+                            void* plaintext) {
   if (cyphertext == nullptr || length == 0) {
     return (0);
   }
-  if (plaintext == nullptr) plaintext = (void *)cyphertext;
+  if (plaintext == nullptr) plaintext = (void*)cyphertext;
 
   if (IsKeyed) {
     /*
@@ -294,8 +294,8 @@ int BlowfishEngine::Decrypt(void const *cyphertext, int length,
     */
     for (int index = 0; index < blocks; index++) {
       Process_Block(cyphertext, plaintext, P_Decrypt);
-      cyphertext = ((char *)cyphertext) + BYTES_PER_BLOCK;
-      plaintext = ((char *)plaintext) + BYTES_PER_BLOCK;
+      cyphertext = ((char*)cyphertext) + BYTES_PER_BLOCK;
+      plaintext = ((char*)plaintext) + BYTES_PER_BLOCK;
     }
     int encrypted = blocks * BYTES_PER_BLOCK;
 
@@ -345,8 +345,8 @@ int BlowfishEngine::Decrypt(void const *cyphertext, int length,
  *                                                                                             *
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Process_Block(void const *plaintext, void *cyphertext,
-                                   unsigned long const *ptable) {
+void BlowfishEngine::Process_Block(void const* plaintext, void* cyphertext,
+                                   unsigned long const* ptable) {
   /*
   **	Input the left and right halves of the source block such that
   **	the byte order is constant regardless of the endian
@@ -354,7 +354,7 @@ void BlowfishEngine::Process_Block(void const *plaintext, void *cyphertext,
   **	biased toward "big endian" architecture and some optimizations
   **	could be done for big endian processors in that case.
   */
-  unsigned char const *source = (unsigned char const *)plaintext;
+  unsigned char const* source = (unsigned char const*)plaintext;
   Int left;
   left.Char.C0 = *source++;
   left.Char.C1 = *source++;
@@ -399,7 +399,7 @@ void BlowfishEngine::Process_Block(void const *plaintext, void *cyphertext,
   **	superfluous exchange that occurs as a side effect of the
   **	encryption rounds.
   */
-  unsigned char *out = (unsigned char *)cyphertext;
+  unsigned char* out = (unsigned char*)cyphertext;
   *out++ = right.Char.C0;
   *out++ = right.Char.C1;
   *out++ = right.Char.C2;
@@ -432,8 +432,8 @@ void BlowfishEngine::Process_Block(void const *plaintext, void *cyphertext,
  *                                                                                             *
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
-void BlowfishEngine::Sub_Key_Encrypt(unsigned long &left,
-                                     unsigned long &right) {
+void BlowfishEngine::Sub_Key_Encrypt(unsigned long& left,
+                                     unsigned long& right) {
   Int l;
   l.Long = left;
 

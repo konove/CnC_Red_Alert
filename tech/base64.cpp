@@ -47,13 +47,13 @@
 *necessary to accomplish this. *	The pad character lets the decoder know
 *of this condition and it will compensate *	accordingly.
 */
-static char const *const _pad = "=";
+static char const* const _pad = "=";
 
 /*
 **	This encoder translation table will convert a 6 bit number into an ASCII
 *character.
 */
-static char const *const _encoder =
+static char const* const _encoder =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*
@@ -132,7 +132,7 @@ typedef union {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64_Encode(void const *source, int slen, void *dest, int dlen) {
+int Base64_Encode(void const* source, int slen, void* dest, int dlen) {
   /*
   **	Check the parameters for legality.
   */
@@ -146,8 +146,8 @@ int Base64_Encode(void const *source, int slen, void *dest, int dlen) {
   **	during the decode process).
   */
   int total = 0;
-  unsigned char const *sptr = (unsigned char const *)source;
-  unsigned char *dptr = (unsigned char *)dest;
+  unsigned char const* sptr = (unsigned char const*)source;
+  unsigned char* dptr = (unsigned char*)dest;
   while (slen > 0 && dlen >= PacketChars) {
     /*
     **	Fetch 24 bits of source data.
@@ -232,7 +232,7 @@ int Base64_Encode(void const *source, int slen, void *dest, int dlen) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64_Decode(void const *source, int slen, void *dest, int dlen) {
+int Base64_Decode(void const* source, int slen, void* dest, int dlen) {
   /*
   **	Check the parameters for legality.
   */
@@ -241,8 +241,8 @@ int Base64_Decode(void const *source, int slen, void *dest, int dlen) {
   }
 
   int total = 0;
-  unsigned char const *sptr = (unsigned char const *)source;
-  unsigned char *dptr = (unsigned char *)dest;
+  unsigned char const* sptr = (unsigned char const*)source;
+  unsigned char* dptr = (unsigned char*)dest;
   while (slen > 0 && dlen > 0) {
     PacketType packet;
     packet.Raw = 0;

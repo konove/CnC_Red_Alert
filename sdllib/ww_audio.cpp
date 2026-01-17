@@ -50,12 +50,12 @@ static int ScoreVolume = 255;
 
 static SDL_AudioDeviceID AudioDevice;
 static SDL_AudioSpec ObtainedSpec;
-static uint8_t *MixBuffer;  // temp buffer for mixing
+static uint8_t* MixBuffer;  // temp buffer for mixing
 static AudioCallback ExtraCallback = nullptr;
 
 struct ChannelState {
-  const void *sample = nullptr;
-  SDL_AudioStream *stream = nullptr;
+  const void* sample = nullptr;
+  SDL_AudioStream* stream = nullptr;
   bool playing = false;
   int priority = 0;
   int16_t volume = 32767;
@@ -69,7 +69,7 @@ struct ChannelState {
 
   uint32_t offset = 0;
   uint32_t length = 0;
-  uint8_t *in_ptr = nullptr;
+  uint8_t* in_ptr = nullptr;
 
   int file_handle = -1;  // if this is a file stream
 
@@ -84,8 +84,8 @@ static int Calculate_Volume(int vol) {
   return vol * (32767) / (255 * 255);
 }
 
-static uint8_t *DecodeADPCMBlock(ChannelState &chan, int block_size,
-                                 uint8_t *in_ptr) {
+static uint8_t* DecodeADPCMBlock(ChannelState& chan, int block_size,
+                                 uint8_t* in_ptr) {
   auto clamp = [](int v, int min, int max) {
     return v < min ? min : (v > max ? max : v);
   };
@@ -118,8 +118,8 @@ static uint8_t *DecodeADPCMBlock(ChannelState &chan, int block_size,
   return in_ptr;
 }
 
-static uint8_t *DecodeWestwoodBlock(ChannelState &chan, int block_size,
-                                    uint8_t *in_ptr) {
+static uint8_t* DecodeWestwoodBlock(ChannelState& chan, int block_size,
+                                    uint8_t* in_ptr) {
   int prev_sample = 0x80;  // Previous sample (starting value).
 
   auto in_end = in_ptr + block_size;
@@ -218,7 +218,7 @@ static uint8_t *DecodeWestwoodBlock(ChannelState &chan, int block_size,
   return in_ptr;
 }
 
-static bool RefillStream(ChannelState &chan) {
+static bool RefillStream(ChannelState& chan) {
   uint32_t max_update =
       ObtainedSpec.samples;  // assume the target rate is not lower
 
@@ -228,8 +228,8 @@ static bool RefillStream(ChannelState &chan) {
   // read blocks until we have enough samples
   while (samples_to_gen > 0) {
     // read a block
-    uint16_t block_in_size = *(uint16_t *)chan.in_ptr;
-    uint16_t block_out_size = *(uint16_t *)(chan.in_ptr + 2);
+    uint16_t block_in_size = *(uint16_t*)chan.in_ptr;
+    uint16_t block_out_size = *(uint16_t*)(chan.in_ptr + 2);
     chan.in_ptr += 8;  // there's also a 0000DEAF magic value
 
     if (block_in_size == block_out_size)  // raw block
@@ -253,7 +253,7 @@ static bool RefillStream(ChannelState &chan) {
   return true;
 }
 
-static void ResetStream(ChannelState &chan, AUDHeaderType *header) {
+static void ResetStream(ChannelState& chan, AUDHeaderType* header) {
   int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
@@ -269,14 +269,14 @@ static void ResetStream(ChannelState &chan, AUDHeaderType *header) {
     SDL_AudioStreamClear(chan.stream);
 }
 
-static void SDL_Audio_Callback(void * /*userdata*/, Uint8 *stream, int len) {
+static void SDL_Audio_Callback(void* /*userdata*/, Uint8* stream, int len) {
   memset(stream, 0, len);
-  auto stream16 = (int16_t *)stream;
+  auto stream16 = (int16_t*)stream;
 
   // let VQA do its thing
   if (ExtraCallback) ExtraCallback(stream, len);
 
-  for (auto &chan : Channels) {
+  for (auto& chan : Channels) {
     if (!chan.playing) continue;
 
     // put more data into stream if needed
@@ -308,13 +308,13 @@ static void SDL_Audio_Callback(void * /*userdata*/, Uint8 *stream, int len) {
     int stream_len = SDL_AudioStreamGet(chan.stream, MixBuffer, len);
 
     // mix into buffer
-    auto mix16 = (int16_t *)MixBuffer;
+    auto mix16 = (int16_t*)MixBuffer;
     for (int s = 0; s < stream_len / sizeof(int16_t); s++)
       stream16[s] += (mix16[s] * chan.volume) >> 15;
   }
 }
 
-int File_Stream_Sample_Vol(char const *filename, int volume,
+int File_Stream_Sample_Vol(char const* filename, int volume,
                            bool /*real_time_start*/) {
   int id = Get_Free_Sample_Handle(0xFF);
 
@@ -344,7 +344,7 @@ int File_Stream_Sample_Vol(char const *filename, int volume,
 
   // setup channel
   SDL_LockAudioDevice(AudioDevice);
-  auto &chan = Channels[id];
+  auto& chan = Channels[id];
 
   chan.sample = nullptr;
   chan.playing = true;
@@ -379,7 +379,7 @@ int File_Stream_Sample_Vol(char const *filename, int volume,
 
 void Sound_Callback(void) {
   // update file stream
-  for (auto &chan : Channels) {
+  for (auto& chan : Channels) {
     if (chan.file_handle == -1) continue;
 
     if (!chan.playing) {
@@ -410,7 +410,7 @@ void Sound_Callback(void) {
       // read block
       auto in_size = block_header[0];
 
-      uint8_t *buf = new uint8_t[in_size];
+      uint8_t* buf = new uint8_t[in_size];
 
       Read_File(chan.file_handle, buf, in_size);
 
@@ -424,7 +424,7 @@ void Sound_Callback(void) {
   }
 }
 
-bool Audio_Init(void * /*window*/, int /*bits_per_sample*/, bool stereo,
+bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
                 int rate, int /*reverse_channels*/) {
   SDL_AudioSpec desired;
   desired.freq = rate;
@@ -459,7 +459,7 @@ void Sound_End(void) {
 
   delete[] MixBuffer;
 
-  for (auto &chan : Channels) {
+  for (auto& chan : Channels) {
     SDL_FreeAudioStream(chan.stream);
   }
 }
@@ -484,7 +484,7 @@ bool Sample_Status(int handle) {
   return Channels[handle].playing;
 }
 
-bool Is_Sample_Playing(void const *sample) {
+bool Is_Sample_Playing(void const* sample) {
   for (int i = 0; i < MAX_SFX; i++) {
     if (Channels[i].sample == sample && Sample_Status(i)) return true;
   }
@@ -492,24 +492,24 @@ bool Is_Sample_Playing(void const *sample) {
   return false;
 }
 
-void Stop_Sample_Playing(void const *sample) {
+void Stop_Sample_Playing(void const* sample) {
   for (int i = 0; i < MAX_SFX; i++) {
     if (Channels[i].sample == sample) Stop_Sample(i);
   }
 }
 
-int Play_Sample(void const *sample, int priority, int volume,
+int Play_Sample(void const* sample, int priority, int volume,
                 signed short panloc) {
   return Play_Sample_Handle(sample, priority, volume, panloc,
                             Get_Free_Sample_Handle(priority));
 }
 
-int Play_Sample_Handle(void const *sample, int priority, int volume,
+int Play_Sample_Handle(void const* sample, int priority, int volume,
                        signed short /*panloc*/, int id) {
   if (id == -1 || !sample) return -1;
 
   // play it
-  auto header = (AUDHeaderType *)sample;
+  auto header = (AUDHeaderType*)sample;
   int channels = header->Flags & AUD_FLAG_STEREO ? 2 : 1;
   int bits = header->Flags & AUD_FLAG_16BIT ? 16 : 8;
 
@@ -527,7 +527,7 @@ int Play_Sample_Handle(void const *sample, int priority, int volume,
 
   // setup channel
   SDL_LockAudioDevice(AudioDevice);
-  auto &chan = Channels[id];
+  auto& chan = Channels[id];
 
   chan.sample = sample;
   chan.playing = true;
@@ -544,7 +544,7 @@ int Play_Sample_Handle(void const *sample, int priority, int volume,
 
   chan.offset = 0;
   chan.length = header->UncompSize / channels / (bits / 8);
-  chan.in_ptr = (uint8_t *)sample + sizeof(AUDHeaderType);
+  chan.in_ptr = (uint8_t*)sample + sizeof(AUDHeaderType);
 
   chan.compression = (SCompressType)header->Compression;
 
@@ -562,7 +562,7 @@ int Set_Score_Vol(int volume) {
   int old = ScoreVolume;
   ScoreVolume = volume;
 
-  for (auto &chan : Channels) {
+  for (auto& chan : Channels) {
     if (chan.playing && !chan.in_ptr)  // score is a file stream
     {
       if (ScoreVolume) {
@@ -628,15 +628,15 @@ void Stop_Primary_Sound_Buffer(void) {
 
 uint32_t Get_Audio_Device() { return AudioDevice; }
 
-void *Get_Audio_Spec() { return &ObtainedSpec; }
+void* Get_Audio_Spec() { return &ObtainedSpec; }
 
-AudioCallback *Get_Audio_Callback_Ptr() { return &ExtraCallback; }
+AudioCallback* Get_Audio_Callback_Ptr() { return &ExtraCallback; }
 
 // TD
 // used for nod ending
-static long Sample_Read(int fh, void *buffer, size_t size) {
+static long Sample_Read(int fh, void* buffer, size_t size) {
   AUDHeaderType RawHeader;
-  void *outbuffer;         // Pointer to start of raw data.
+  void* outbuffer;         // Pointer to start of raw data.
   long actual_bytes_read;  // Actual bytes read in, including header
 
   if (!buffer || fh == kInvalidHandle || size <= sizeof(RawHeader)) return 0;
@@ -650,8 +650,8 @@ static long Sample_Read(int fh, void *buffer, size_t size) {
   return actual_bytes_read;
 }
 
-void *Load_Sample(char const *filename) {
-  void *buffer = nullptr;
+void* Load_Sample(char const* filename) {
+  void* buffer = nullptr;
   long size;
   int fh;
 
@@ -669,7 +669,7 @@ void *Load_Sample(char const *filename) {
   return buffer;
 }
 
-void Free_Sample(void const *sample) {
+void Free_Sample(void const* sample) {
   if (sample) {
     Stop_Sample_Playing(sample);
     Free(sample);

@@ -38,7 +38,7 @@
 #ifndef __FIELD_H
 #define __FIELD_H
 
-#define FIELD_HEADER_SIZE (sizeof(FieldClass) - (sizeof(void *) * 2))
+#define FIELD_HEADER_SIZE (sizeof(FieldClass) - (sizeof(void*) * 2))
 
 #define TYPE_CHAR 1
 #define TYPE_UNSIGNED_CHAR 2
@@ -57,14 +57,14 @@ class FieldClass {
   // of fields.
   //
   FieldClass(void) {};
-  FieldClass(char const *id, char data);
-  FieldClass(char const *id, unsigned char data);
-  FieldClass(char const *id, short data);
-  FieldClass(char const *id, unsigned short data);
-  FieldClass(char const *id, long data);
-  FieldClass(char const *id, unsigned long data);
-  FieldClass(char const *id, char const *data);
-  FieldClass(char const *id, void *data, int length);
+  FieldClass(char const* id, char data);
+  FieldClass(char const* id, unsigned char data);
+  FieldClass(char const* id, short data);
+  FieldClass(char const* id, unsigned short data);
+  FieldClass(char const* id, long data);
+  FieldClass(char const* id, unsigned long data);
+  FieldClass(char const* id, char const* data);
+  FieldClass(char const* id, void* data, int length);
 
   void Host_To_Net(void);
   void Net_To_Host(void);
@@ -73,8 +73,8 @@ class FieldClass {
   char ID[4];               // id value of this field
   unsigned short DataType;  // id of the data type we are using
   unsigned short Size;      // size of the data portion of this field
-  void *Data;               // pointer to the data portion of this field
-  FieldClass *Next;         // pointer to the next field in the field list
+  void* Data;               // pointer to the data portion of this field
+  FieldClass* Next;         // pointer to the next field in the field list
 };
 
 #endif

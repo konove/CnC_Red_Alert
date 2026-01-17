@@ -96,10 +96,10 @@ void OverlayClass::Init(void) { Overlays.Free_All(); }
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void *OverlayClass::operator new(size_t) throw() {
-  void *ptr = Overlays.Allocate();
+void* OverlayClass::operator new(size_t) throw() {
+  void* ptr = Overlays.Allocate();
   if (ptr) {
-    ((OverlayClass *)ptr)->IsActive = true;
+    ((OverlayClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -118,11 +118,11 @@ void *OverlayClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::operator delete(void *ptr) {
+void OverlayClass::operator delete(void* ptr) {
   if (ptr) {
-    ((OverlayClass *)ptr)->IsActive = false;
+    ((OverlayClass*)ptr)->IsActive = false;
   }
-  Overlays.Free((OverlayClass *)ptr);
+  Overlays.Free((OverlayClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -175,7 +175,7 @@ bool OverlayClass::Mark(MarkType mark) {
   if (ObjectClass::Mark(mark)) {
     if (mark == MARK_DOWN) {
       CELL cell = Coord_Cell(Coord);
-      CellClass *cellptr = &Map[cell];
+      CellClass* cellptr = &Map[cell];
 
       /*
       **	Walls have special logic when they are marked down.
@@ -265,7 +265,7 @@ bool OverlayClass::Mark(MarkType mark) {
  *   09/01/1994 JLB : Created. * 07/24/1995 JLB : Specifically forbid manual
  *crates in multiplayer scenarios.              *
  *=============================================================================================*/
-void OverlayClass::Read_INI(CCINIClass &ini) {
+void OverlayClass::Read_INI(CCINIClass& ini) {
   if (NewINIFormat > 1) {
     int len = ini.Get_UUBlock("OverlayPack", _staging_buffer,
                               sizeof(_staging_buffer));
@@ -295,7 +295,7 @@ void OverlayClass::Read_INI(CCINIClass &ini) {
                 HousesType owner = HOUSE_NONE;
                 int distance = 0x7FFFFFFF;
                 for (int index = 0; index < Buildings.Count(); index++) {
-                  BuildingClass *building = Buildings.Ptr(index);
+                  BuildingClass* building = Buildings.Ptr(index);
                   int newdist =
                       ::Distance(building->Center_Coord(), Cell_Coord(cell));
                   if (newdist < distance) {
@@ -315,7 +315,7 @@ void OverlayClass::Read_INI(CCINIClass &ini) {
   if (NewINIFormat < 2 || ini.Is_Present("Overlay")) {
     int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
-      char const *entry = ini.Get_Entry(INI_Name(), index);
+      char const* entry = ini.Get_Entry(INI_Name(), index);
       CELL cell = atoi(entry);
       OverlayType classid =
           ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
@@ -338,7 +338,7 @@ void OverlayClass::Read_INI(CCINIClass &ini) {
             HousesType owner = HOUSE_NONE;
             int distance = 0x7FFFFFFF;
             for (int index = 0; index < Buildings.Count(); index++) {
-              BuildingClass *building = Buildings.Ptr(index);
+              BuildingClass* building = Buildings.Ptr(index);
               int newdist =
                   ::Distance(building->Center_Coord(), Cell_Coord(cell));
               if (newdist < distance) {
@@ -354,7 +354,7 @@ void OverlayClass::Read_INI(CCINIClass &ini) {
   }
 }
 
-void OverlayClass::Write_INI(CCINIClass &ini) {
+void OverlayClass::Write_INI(CCINIClass& ini) {
   /*
   **	First, clear out all existing unit data from the ini file.
   */
@@ -367,7 +367,7 @@ void OverlayClass::Write_INI(CCINIClass &ini) {
   comppipe.Put_To(&bpipe);
 
   int total = 0;
-  CellClass *cellptr = &Map[(CELL)0];
+  CellClass* cellptr = &Map[(CELL)0];
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
     total += comppipe.Put(&cellptr->Overlay, sizeof(cellptr->Overlay));
     cellptr++;

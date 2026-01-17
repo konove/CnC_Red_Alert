@@ -65,20 +65,20 @@ class RadioClass : public MissionClass {
   **	the receiving radio is also tuned to the object that contains this
   **	radio set.
   */
-  RadioClass *Radio;
+  RadioClass* Radio;
 
   /*
   **	This is a text representation of all the possible radio messages. This
   **	text is used for monochrome debug printing.
   */
-  static char const *Messages[RADIO_COUNT];
+  static char const* Messages[RADIO_COUNT];
 
  public:
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
   RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {};
-  RadioClass(NoInitClass const &x) : MissionClass(x) {};
+  RadioClass(NoInitClass const& x) : MissionClass(x) {};
   virtual ~RadioClass(void) { Radio = nullptr; };
 
   /*---------------------------------------------------------------------
@@ -86,19 +86,19 @@ class RadioClass : public MissionClass {
   */
   bool In_Radio_Contact(void) const { return (Radio != nullptr); };
   void Radio_Off(void) { Radio = nullptr; };
-  TechnoClass *Contact_With_Whom(void) const { return (TechnoClass *)Radio; };
+  TechnoClass* Contact_With_Whom(void) const { return (TechnoClass*)Radio; };
 
   // Inherited from base class(es).
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
-                                            long &param = LParam,
-                                            RadioClass *to = nullptr);
+                                            long& param = LParam,
+                                            RadioClass* to = nullptr);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
-                                            RadioClass *to);
+                                            RadioClass* to);
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   virtual bool Limbo(void);
 

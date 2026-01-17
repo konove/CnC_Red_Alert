@@ -73,7 +73,7 @@ bool ConfirmationClass::Process(int text) {
  * INPUT:   	char *string - display in edit box. * OUTPUT:  	none * WARNINGS:
  *none * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
-bool ConfirmationClass::Process(char const *string) {
+bool ConfirmationClass::Process(char const* string) {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   enum { NUM_OF_BUTTONS = 2 };
@@ -86,7 +86,7 @@ bool ConfirmationClass::Process(char const *string) {
   int selection;
   bool pressed;
   int curbutton;
-  TextButtonClass *buttons[NUM_OF_BUTTONS];
+  TextButtonClass* buttons[NUM_OF_BUTTONS];
 
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.

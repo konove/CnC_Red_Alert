@@ -120,7 +120,7 @@
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
 
-void const *RadarClass::RadarAnim = nullptr;
+void const* RadarClass::RadarAnim = nullptr;
 
 static bool FullRedraw = false;
 
@@ -453,7 +453,7 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        GraphicViewPortClass *oldpage = Set_Logic_Page(HidPage);
+        GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
         //				if (LogicPage->Lock()) {
         CC_Draw_Shape(RadarAnim, RADAR_ACTIVATED_FRAME, RadX, RadY + 1,
                       WINDOW_MAIN, SHAPE_NORMAL);
@@ -520,18 +520,18 @@ void RadarClass::Draw_It(bool forced) {
  *   04/12/1995 PWG : Created.                                             *
  *=========================================================================*/
 void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
-  TerrainClass *list[4];
+  TerrainClass* list[4];
   int listidx = 0;
   int lp, lp2;
 
-  ObjectClass *obj = Map[cell].Cell_Occupier();
+  ObjectClass* obj = Map[cell].Cell_Occupier();
 
   /*
   ** If the cell is occupied by a terrain type, add it to the sortable
   ** list.
   */
   if (obj && obj->What_Am_I() == RTTI_TERRAIN)
-    list[listidx++] = (TerrainClass *)obj;
+    list[listidx++] = (TerrainClass*)obj;
 
   /*
   ** Now loop through all the occupiers and add them to the list if they
@@ -540,7 +540,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   for (lp = 0; lp < 3; lp++) {
     obj = Map[cell].Overlappers[lp];
     if (obj && obj->IsActive && obj->What_Am_I() == RTTI_TERRAIN)
-      list[listidx++] = (TerrainClass *)obj;
+      list[listidx++] = (TerrainClass*)obj;
   }
 
   /*
@@ -564,7 +564,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   for (lp = 0; lp < listidx - 1; lp++) {
     for (lp2 = lp + 1; lp2 < listidx; lp2++) {
       if (list[lp]->Sort_Y() > list[lp2]->Sort_Y()) {
-        TerrainClass *terrain = list[lp];
+        TerrainClass* terrain = list[lp];
         list[lp] = list[lp2];
         list[lp2] = terrain;
       }
@@ -575,12 +575,12 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
   ** loop through the list and take care of rendering the correct icon.
   */
   for (lp = 0; lp < listidx; lp++) {
-    unsigned char *icon = list[lp]->Radar_Icon(cell);
+    unsigned char* icon = list[lp]->Radar_Icon(cell);
     if (!icon) continue;
 
     Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
     _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                     (char *)&FadingBrighten[0]);
+                     (char*)&FadingBrighten[0]);
   }
 }
 
@@ -605,13 +605,13 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) {
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
-  ObjectClass *obj;
+  ObjectClass* obj;
   int xoff, yoff;
 
-  obj = (ObjectClass *)Map[cell].Cell_Occupier();
+  obj = (ObjectClass*)Map[cell].Cell_Occupier();
   while (obj) {
-    if (obj->Is_Techno() && (((TechnoClass *)obj)->Cloak != CLOAKED ||
-                             ((TechnoClass *)obj)->House->Is_Ally(PlayerPtr))) {
+    if (obj->Is_Techno() && (((TechnoClass*)obj)->Cloak != CLOAKED ||
+                             ((TechnoClass*)obj)->House->Is_Ally(PlayerPtr))) {
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY: {
           // int divisor = 255 / ZoomFactor;
@@ -629,14 +629,14 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           }
           LogicPage->Put_Pixel(
               x + xoff, y + yoff,
-              ((InfantryClass *)obj)->House->Class->BrightColor);
+              ((InfantryClass*)obj)->House->Class->BrightColor);
         } break;
 
         case RTTI_UNIT:
         case RTTI_AIRCRAFT:
           // PWG: Slowdown?
           // if (LogicPage->Lock()){
-          Fat_Put_Pixel(x, y, ((UnitClass *)obj)->House->Class->BrightColor,
+          Fat_Put_Pixel(x, y, ((UnitClass*)obj)->House->Class->BrightColor,
                         size, *LogicPage);
           // LogicPage->Unlock();
           //}
@@ -662,18 +662,18 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
 void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
   OverlayType overlay = (*this)[cell].Overlay;
   if (overlay != OVERLAY_NONE) {
-    OverlayTypeClass const *otype = &OverlayTypeClass::As_Reference(overlay);
+    OverlayTypeClass const* otype = &OverlayTypeClass::As_Reference(overlay);
 
     if (otype->IsRadarVisible) {
-      unsigned char *icon = otype->Radar_Icon((*this)[cell].OverlayData);
+      unsigned char* icon = otype->Radar_Icon((*this)[cell].OverlayData);
       if (!icon) return;
       Buffer_To_Page(0, 0, 3, 3, icon, _IconStage);
       if (otype->IsTiberium) {
         _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                         (char *)&FadingGreen[0]);
+                         (char*)&FadingGreen[0]);
       } else {
         _IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
-                         (char *)&FadingBrighten[0]);
+                         (char*)&FadingBrighten[0]);
       }
     }
   }
@@ -805,7 +805,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   y = Cell_Y(cell) - RadarY;
 
   if (LogicPage->Lock()) {
-    CellClass *cellptr = &(*this)[cell];
+    CellClass* cellptr = &(*this)[cell];
     x = RadX + RadOffX + BaseX + (x * ZoomFactor);
     y = RadY + RadOffY + BaseY + (y * ZoomFactor);
 
@@ -830,7 +830,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     */
     if (color == TBLACK) {
       if (ZoomFactor > 1) {
-        void const *ptr;
+        void const* ptr;
         int32_t offset;
         int icon;
 
@@ -847,15 +847,15 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         /*
         **	Convert the logical icon number into the actual icon number.
         */
-        Mem_Copy(Add_Long_To_Pointer((void *)ptr, 28), &offset, sizeof(offset));
-        Mem_Copy(Add_Long_To_Pointer((void *)ptr, offset + icon), &icon,
+        Mem_Copy(Add_Long_To_Pointer((void*)ptr, 28), &offset, sizeof(offset));
+        Mem_Copy(Add_Long_To_Pointer((void*)ptr, offset + icon), &icon,
                  sizeof(char));
         icon &= 0x00FF;
 
-        Mem_Copy(Add_Long_To_Pointer((void *)ptr, 12), &offset, sizeof(offset));
-        ptr = Add_Long_To_Pointer((void *)ptr, offset + icon * (24 * 24));
+        Mem_Copy(Add_Long_To_Pointer((void*)ptr, 12), &offset, sizeof(offset));
+        ptr = Add_Long_To_Pointer((void*)ptr, offset + icon * (24 * 24));
 
-        unsigned char *data = (unsigned char *)ptr;
+        unsigned char* data = (unsigned char*)ptr;
         Buffer_To_Page(0, 0, 24, 24, data, _TileStage);
         _TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                          true);
@@ -929,7 +929,7 @@ void RadarClass::Radar_Pixel(CELL cell) {
  * HISTORY: * 05/30/1995 PWG : Created. * 07/16/1995 JLB : Recognizes when
  *sidebar is closed now.                                   *
  *=============================================================================================*/
-int RadarClass::Click_In_Radar(int &ptr_x, int &ptr_y, bool change) {
+int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) {
   int x = ptr_x;
   int y = ptr_y;
 
@@ -1003,7 +1003,7 @@ CELL RadarClass::Click_Cell_Calc(int x, int y) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Map_Cell(CELL cell, HouseClass *house) {
+bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
   if (DisplayClass::Map_Cell(cell, house)) {
     Radar_Pixel(cell);
     return (true);
@@ -1100,7 +1100,7 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, int value,
  *                                                                                             *
  * HISTORY: * 05/22/1991 JLB : Created. * 11/17/1995 PWG : Created. *
  *=============================================================================================*/
-void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int &x, int &y) {
+void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) {
   x = (cellx - RadarX) * ZoomFactor;
   y = (celly - RadarY) * ZoomFactor;
 }
@@ -1125,7 +1125,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int &x, int &y) {
 void RadarClass::Radar_Cursor(int forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;
-  GraphicViewPortClass *oldpage;
+  GraphicViewPortClass* oldpage;
   int x1, y1, x2, y2;
   /*
   ** figure out these function calls as we will need to call them multiple
@@ -1268,7 +1268,7 @@ void RadarClass::Radar_Anim(void) {
 
   if (!Map.IsSidebarActive) return;
 
-  GraphicViewPortClass *oldpage = Set_Logic_Page(HidPage);
+  GraphicViewPortClass* oldpage = Set_Logic_Page(HidPage);
   GraphicViewPortClass draw_window(
       LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
       RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
@@ -1303,7 +1303,7 @@ void RadarClass::Radar_Anim(void) {
  *with click or drag.                                   * 12/31/1994 JLB : Uses
  *mouse coordinate parameters.                                        *
  *=============================================================================================*/
-void RadarClass::AI(KeyNumType &input, int x, int y) {
+void RadarClass::AI(KeyNumType& input, int x, int y) {
   /*
   ** Check to see if we need to animate the radar cursor
   */
@@ -1367,12 +1367,12 @@ void RadarClass::AI(KeyNumType &input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
+int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   CELL cell;                      // cell num click happened over
   int x, y;                       // Sub cell pixel coordinates.
   int cellx, celly;               // Sub cell pixel coordinates.
   bool shadow;                    // is the cell in shadow or not
-  ObjectClass *object = nullptr;  // what object is in the cell
+  ObjectClass* object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
@@ -1557,7 +1557,7 @@ int RadarClass::TacticalClass::Action(unsigned flags, KeyNumType &key) {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, short const *list) {
+void RadarClass::Refresh_Cells(CELL cell, short const* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Flag_To_Redraw(false);
@@ -1833,7 +1833,7 @@ void RadarClass::Player_Names(bool on) {
 void RadarClass::Draw_Names(void) {
   int c_idx;
   HousesType house;
-  HouseClass *ptr;
+  HouseClass* ptr;
   int y;
   char txt[40];
   unsigned char id;

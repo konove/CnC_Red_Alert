@@ -41,9 +41,9 @@ typedef struct {
   int32_t Map;  // Icon map offset (if present).
 } IControl_Type;
 
-inline void *Get_Icon_Set_Map(const void *iconset) {
+inline void* Get_Icon_Set_Map(const void* iconset) {
   if (iconset != nullptr) {
-    return (char *)iconset + ((IControl_Type *)iconset)->Map;
+    return (char*)iconset + ((IControl_Type*)iconset)->Map;
   }
   return nullptr;
 }

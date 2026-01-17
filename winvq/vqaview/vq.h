@@ -102,7 +102,7 @@ void Set_Movie_Frame_Rate(void);
 // PUBLIC DATA
 //==========================================================================
 
-extern unsigned char *Movie_Scratch_Buffer;
+extern unsigned char* Movie_Scratch_Buffer;
 
 //==========================================================================
 // CLASSES
@@ -114,16 +114,16 @@ class VQAClass {
   char vqa_filename[_MAX_PATH];
   char PaletteFilename[_MAX_PATH];
   VQAConfig vqa_config;
-  VQAHandle *vqa_handle;
+  VQAHandle* vqa_handle;
   short media_source;
   int file_handle;
   unsigned char palette[SIZE_OF_PALETTE * 3];
   int current_frame;
   int total_frames;
   BOOL vqa_is_open;
-  unsigned char *InterpolatedPalettes[50];  // Max 50 palette changes in a vq
+  unsigned char* InterpolatedPalettes[50];  // Max 50 palette changes in a vq
   BOOL PalettesRead;
-  RawFileClass *PaletteFile;
+  RawFileClass* PaletteFile;
   unsigned NumPalettes;
 
   /*=========================================================================*/
@@ -133,10 +133,10 @@ class VQAClass {
   int VQAClass::Play_Generic_VQA(int last_frame_to_play);
 
  public:
-  VQAClass(char *filename, char *buffer, short media_src,
-           long (*callback)(unsigned char *, long));
+  VQAClass(char* filename, char* buffer, short media_src,
+           long (*callback)(unsigned char*, long));
   ~VQAClass(void);
-  BOOL VQAClass::Update_Palette(unsigned char *newpalette);
+  BOOL VQAClass::Update_Palette(unsigned char* newpalette);
   BOOL Open_And_Load_Buffers(void);
   void Seek_To_Frame(unsigned long frame);
   int Play_VQA(int last_frame_to_play);

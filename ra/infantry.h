@@ -123,11 +123,11 @@ class InfantryClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(NoInitClass const &x) : FootClass(x), Class(x), Comment(x) {};
+  InfantryClass(NoInitClass const& x) : FootClass(x), Class(x), Comment(x) {};
   virtual ~InfantryClass(void);
   operator InfantryType(void) const { return Class->Type; };
 
@@ -142,9 +142,9 @@ class InfantryClass : public FootClass {
   **	Query functions.
   */
   virtual bool Is_Ready_To_Random_Animate(void) const;
-  void const *Get_Image_Data(void) const;
+  void const* Get_Image_Data(void) const;
   int Shape_Number(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const;
   virtual int Full_Name(void) const;
 
   /*
@@ -159,7 +159,7 @@ class InfantryClass : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual short const *Overlap_List(bool redraw = false) const;
+  virtual short const* Overlap_List(bool redraw = false) const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
 
   /*
@@ -168,7 +168,7 @@ class InfantryClass : public FootClass {
   virtual void Response_Select(void);
   virtual void Response_Move(void);
   virtual void Response_Attack(void);
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell) {
     FootClass::Active_Click_With(action, cell);
   }
@@ -176,11 +176,11 @@ class InfantryClass : public FootClass {
   /*
   **	Combat related.
   */
-  virtual ActionType What_Action(ObjectClass const *object) const;
+  virtual ActionType What_Action(ObjectClass const* object) const;
   virtual ActionType What_Action(CELL cell) const;
-  virtual BulletClass *Fire_At(TARGET target, int which);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr,
+  virtual BulletClass* Fire_At(TARGET target, int which);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr,
                                  bool forced = false);
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
   virtual void Assign_Target(TARGET);
@@ -198,7 +198,7 @@ class InfantryClass : public FootClass {
   **	occupation flags and driver instructions.
   */
   virtual bool Stop_Driver(void);
-  virtual bool Start_Driver(COORDINATE &coord);
+  virtual bool Start_Driver(COORDINATE& coord);
 
   /*
   **	AI.
@@ -216,17 +216,17 @@ class InfantryClass : public FootClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "INFANTRY"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  static char const* INI_Name(void) { return "INFANTRY"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 
   /*
   **	Movement and animation.

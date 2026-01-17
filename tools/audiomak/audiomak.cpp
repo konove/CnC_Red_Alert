@@ -35,13 +35,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstdio>
-#include <cstdlib>
+#include <conio.h>
 #include <dir.h>
 #include <dos.h>
-#include <cstring>
+
 #include <cctype>
-#include <conio.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #define FALSE 0
 #define TRUE 1
@@ -49,9 +50,9 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-char *SourceFile = 0;
+char* SourceFile = 0;
 int SourceWild = FALSE;
-char *DestFile = 0;
+char* DestFile = 0;
 int DestDir = FALSE;
 int DoSpecial = TRUE;  // Compression starts "on".
 long MagicNumber = 0xDEAF;
@@ -130,20 +131,20 @@ typedef struct {
   char order;       // The order of the predictor.
 } SonarcFrameType;
 
-int main(int argc, char **argv);
-void Process(char const *src, char const *name, char const *dest);
-void Convert(char const *src, char const *dst);
-int Is_WAV(FILE *src);
-void Convert_WAV(FILE *src, FILE *dst);
-int Is_VOC(FILE *src);
-void Convert_VOC(FILE *src, FILE *dst);
-long Compress_Frame(void *source, void *dest, long size);
+int main(int argc, char** argv);
+void Process(char const* src, char const* name, char const* dest);
+void Convert(char const* src, char const* dst);
+int Is_WAV(FILE* src);
+void Convert_WAV(FILE* src, FILE* dst);
+int Is_VOC(FILE* src);
+void Convert_VOC(FILE* src, FILE* dst);
+long Compress_Frame(void* source, void* dest, long size);
 
 extern "C" {
-short Decompress_Frame(void *source, void *dest, short size);
+short Decompress_Frame(void* source, void* dest, short size);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   /*
   **	Process the command line parameters.
   */
@@ -151,7 +152,7 @@ int main(int argc, char **argv) {
     if (argc < 2) throw 1;
 
     for (int index = 1; index < argc; index++) {
-      char *string = argv[index];
+      char* string = argv[index];
 
       switch (string[0]) {
         case '-':
@@ -372,7 +373,7 @@ void Stat_Dump(void) {
   }
 }
 
-void Process(char const *src, char const *name, char const *dest) {
+void Process(char const* src, char const* name, char const* dest) {
   char sourcename[MAXPATH];
 
   /*
@@ -401,9 +402,9 @@ void Process(char const *src, char const *name, char const *dest) {
   Convert(sourcename, Path);
 }
 
-void Convert(char const *src, char const *dst) {
-  FILE *srcfile = 0;
-  FILE *dstfile = 0;
+void Convert(char const* src, char const* dst) {
+  FILE* srcfile = 0;
+  FILE* dstfile = 0;
 
   srcfile = fopen(src, "rb");
   if (!srcfile) {
@@ -439,7 +440,7 @@ void Convert(char const *src, char const *dst) {
   fclose(srcfile);
 }
 
-int Is_WAV(FILE *src) {
+int Is_WAV(FILE* src) {
   long size;
   RIFFHeaderType header;
 
@@ -460,7 +461,7 @@ int Is_WAV(FILE *src) {
   return (FALSE);
 }
 
-void Convert_WAV(FILE *src, FILE *dst) {
+void Convert_WAV(FILE* src, FILE* dst) {
   RIFFBlockType block;
   RIFFfmtType fmt;
   RawHeaderType raw;
@@ -553,7 +554,7 @@ void Convert_WAV(FILE *src, FILE *dst) {
         **	Special process to convert audio data into deltas.
         */
         if (DoSpecial && !nodo) {
-          void *sptr = &StageBuffer[0];
+          void* sptr = &StageBuffer[0];
           long a = actual;
 
           /*
@@ -577,10 +578,10 @@ void Convert_WAV(FILE *src, FILE *dst) {
               Decompress_Frame(AltBuffer, sptr, (short)tocomp);
             }
             raw.Size += fwrite(sptr, 1, (size_t)tocomp, dst);
-            (char *)sptr += (unsigned)tocomp;
+            (char*)sptr += (unsigned)tocomp;
 #else
 
-            (char *)sptr += (unsigned)tocomp;
+            (char*)sptr += (unsigned)tocomp;
             raw.Size += fwrite(&comped, 1, sizeof(short), dst);
             raw.Size += fwrite(&tocomp, 1, sizeof(short), dst);
             raw.Size += fwrite(&MagicNumber, 1, sizeof(MagicNumber), dst);
@@ -613,7 +614,7 @@ void Convert_WAV(FILE *src, FILE *dst) {
   fwrite(&raw, 1, sizeof(raw), dst);
 }
 
-int Is_VOC(FILE *src) {
+int Is_VOC(FILE* src) {
   long size;
   VocHeaderType voc;
 
@@ -631,7 +632,7 @@ int Is_VOC(FILE *src) {
   return (TRUE);
 }
 
-void Convert_VOC(FILE *src, FILE *dst) {
+void Convert_VOC(FILE* src, FILE* dst) {
   //	long				size = 0;
   VocHeaderType voc;
   RawHeaderType raw;
@@ -733,7 +734,7 @@ void Convert_VOC(FILE *src, FILE *dst) {
             **	Special process to convert audio data into deltas.
             */
             if (DoSpecial) {
-              void *sptr = &StageBuffer[0];
+              void* sptr = &StageBuffer[0];
               long a = actual;
 
               /*
@@ -752,7 +753,7 @@ void Convert_VOC(FILE *src, FILE *dst) {
                 a -= tocomp;
                 Log_Compressed(comped);
 
-                (char *)sptr += (unsigned)tocomp;
+                (char*)sptr += (unsigned)tocomp;
                 raw.Size += fwrite(&comped, 1, sizeof(short), dst);
                 raw.Size += fwrite(&tocomp, 1, sizeof(short), dst);
                 raw.Size += fwrite(&MagicNumber, 1, sizeof(MagicNumber), dst);
@@ -870,16 +871,16 @@ signed int _4bitdecode[16] = {-16, -13, -10, -8, -6, -4, -2, -1,
                               1,   2,   4,   6,  8,  10, 13, 16};
 #endif
 
-long Compress_Frame(void *source, void *dest, long size) {
-  unsigned char *s = (unsigned char *)source;
-  unsigned char *d = (unsigned char *)dest;
+long Compress_Frame(void* source, void* dest, long size) {
+  unsigned char* s = (unsigned char*)source;
+  unsigned char* d = (unsigned char*)dest;
   int delta;
   unsigned int previous = 0x80;
   long outcount = 0;
-  unsigned char *s4;  // Scratch pointer into source data.
+  unsigned char* s4;  // Scratch pointer into source data.
   unsigned int p4;    // Scratch "previous" sample value.
   long max4;
-  unsigned char *lastraw = 0;  // Pointer to last raw sequence code.
+  unsigned char* lastraw = 0;  // Pointer to last raw sequence code.
   long osize = size;           // Copy of original compression data length.
 
   /*
@@ -908,7 +909,7 @@ long Compress_Frame(void *source, void *dest, long size) {
     max4--;
   }
 #endif
-  s = (unsigned char *)source;
+  s = (unsigned char*)source;
 
   while (size > 0 && outcount < osize) {
     /*
@@ -1149,10 +1150,10 @@ long Compress_Frame(void *source, void *dest, long size) {
 }
 
 #if (FALSE)
-long Decompress_Frame(void *source, void *dest, long size) {
+long Decompress_Frame(void* source, void* dest, long size) {
   unsigned int previous = 0x0080;
-  signed char *s = (signed char *)source;
-  unsigned char *d = (unsigned char *)dest;
+  signed char* s = (signed char*)source;
+  unsigned char* d = (unsigned char*)dest;
   long incount = 0;
 
   /*

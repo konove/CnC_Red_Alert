@@ -63,16 +63,16 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Base64Pipe::Put(void const *source, int slen) {
+int Base64Pipe::Put(void const* source, int slen) {
   if (source == nullptr || slen < 1) {
     return (Pipe::Put(source, slen));
   }
 
   int total = 0;
 
-  char *from;
+  char* from;
   int fromsize;
-  char *to;
+  char* to;
   int tosize;
 
   if (Control == ENCODE) {
@@ -92,7 +92,7 @@ int Base64Pipe::Put(void const *source, int slen) {
     memmove(&from[Counter], source, len);
     Counter += len;
     slen -= len;
-    source = ((char *)source) + len;
+    source = ((char*)source) + len;
 
     if (Counter == fromsize) {
       int outcount;
@@ -113,7 +113,7 @@ int Base64Pipe::Put(void const *source, int slen) {
     } else {
       outcount = Base64_Decode(source, fromsize, to, tosize);
     }
-    source = ((char *)source) + fromsize;
+    source = ((char*)source) + fromsize;
     total += Pipe::Put(to, outcount);
     slen -= fromsize;
   }

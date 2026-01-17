@@ -191,7 +191,7 @@
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamTypeClass::Load(FileClass &file) {
+bool TeamTypeClass::Load(FileClass& file) {
   return (Read_Object(this, sizeof(AbstractTypeClass), sizeof(*this), file,
                       VTable));
 }
@@ -207,7 +207,7 @@ bool TeamTypeClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamTypeClass::Save(FileClass &file) {
+bool TeamTypeClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -232,7 +232,7 @@ void TeamTypeClass::Code_Pointers(void) {
   -------------------------- Code the Class array --------------------------
   */
   for (int i = 0; i < ClassCount; i++) {
-    Class[i] = (TechnoTypeClass *)TechnoType_To_Target(Class[i]);
+    Class[i] = (TechnoTypeClass*)TechnoType_To_Target(Class[i]);
   }
 }
 
@@ -256,7 +256,7 @@ void TeamTypeClass::Decode_Pointers(void) {
   */
   for (int i = 0; i < ClassCount; i++) {
     Class[i] = Target_To_TechnoType((TARGET)(uintptr_t)Class[i]);
-    Check_Ptr((void *)Class[i], __FILE__, __LINE__);
+    Check_Ptr((void*)Class[i], __FILE__, __LINE__);
   }
 }
 
@@ -271,7 +271,7 @@ void TeamTypeClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Load(FileClass &file) {
+bool TeamClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -287,7 +287,7 @@ bool TeamClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Save(FileClass &file) {
+bool TeamClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -308,20 +308,20 @@ bool TeamClass::Save(FileClass &file) {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void TeamClass::Code_Pointers(void) {
-  TeamTypeClass const *cls;
+  TeamTypeClass const* cls;
 
   /*
   -------------------- Code Class & House for this team --------------------
   */
   cls = Class;
-  ((TeamTypeClass *&)Class) = (TeamTypeClass *)cls->As_Target();
-  ((HouseClass *&)House) = (HouseClass *)House->Class->House;
+  ((TeamTypeClass*&)Class) = (TeamTypeClass*)cls->As_Target();
+  ((HouseClass*&)House) = (HouseClass*)House->Class->House;
 
   /*
   --------------------------- Code the 'Member' ----------------------------
   */
   if (Member) {
-    Member = (FootClass *)Member->As_Target();
+    Member = (FootClass*)Member->As_Target();
   }
 }
 
@@ -343,10 +343,10 @@ void TeamClass::Decode_Pointers(void) {
   /*
   ------------------- Decode Class & House for this team -------------------
   */
-  ((TeamTypeClass *&)Class) = As_TeamType((TARGET)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
-  ((HouseClass *&)House) = HouseClass::As_Pointer((HousesType)(uintptr_t)House);
-  Check_Ptr((void *)House, __FILE__, __LINE__);
+  ((TeamTypeClass*&)Class) = As_TeamType((TARGET)(uintptr_t)Class);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
+  ((HouseClass*&)House) = HouseClass::As_Pointer((HousesType)(uintptr_t)House);
+  Check_Ptr((void*)House, __FILE__, __LINE__);
 
   /*
   -------------------------- Decode the 'Member' ---------------------------
@@ -370,7 +370,7 @@ void TeamClass::Decode_Pointers(void) {
         break;
     }
 
-    Check_Ptr((void *)Member, __FILE__, __LINE__);
+    Check_Ptr((void*)Member, __FILE__, __LINE__);
   }
 }
 
@@ -385,7 +385,7 @@ void TeamClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TriggerClass::Load(FileClass &file) {
+bool TriggerClass::Load(FileClass& file) {
   int rc = Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr);
 
   /*
@@ -411,7 +411,7 @@ bool TriggerClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TriggerClass::Save(FileClass &file) {
+bool TriggerClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -433,7 +433,7 @@ bool TriggerClass::Save(FileClass &file) {
  *=============================================================================================*/
 void TriggerClass::Code_Pointers(void) {
   if (Team) {
-    Team = (TeamTypeClass *)Team->As_Target();
+    Team = (TeamTypeClass*)Team->As_Target();
   }
 }
 
@@ -454,7 +454,7 @@ void TriggerClass::Code_Pointers(void) {
 void TriggerClass::Decode_Pointers(void) {
   if (Team) {
     Team = As_TeamType((TARGET)(uintptr_t)Team);
-    Check_Ptr((void *)Team, __FILE__, __LINE__);
+    Check_Ptr((void*)Team, __FILE__, __LINE__);
   }
 }
 
@@ -469,7 +469,7 @@ void TriggerClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Load(FileClass &file) {
+bool AircraftClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -485,7 +485,7 @@ bool AircraftClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Save(FileClass &file) {
+bool AircraftClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -509,7 +509,7 @@ void AircraftClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((AircraftTypeClass *&)Class) = (AircraftTypeClass *)Class->Type;
+  ((AircraftTypeClass*&)Class) = (AircraftTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -536,9 +536,9 @@ void AircraftClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((AircraftTypeClass const *&)Class) =
+  ((AircraftTypeClass const*&)Class) =
       &AircraftTypeClass::As_Reference((AircraftType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -558,7 +558,7 @@ void AircraftClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AnimClass::Load(FileClass &file) {
+bool AnimClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -574,7 +574,7 @@ bool AnimClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool AnimClass::Save(FileClass &file) {
+bool AnimClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -598,13 +598,13 @@ void AnimClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((AnimTypeClass *&)Class) = (AnimTypeClass *)Class->Type;
+  ((AnimTypeClass*&)Class) = (AnimTypeClass*)Class->Type;
 
   /*
   ----------------------------- Code 'Object' ------------------------------
   */
   if (Object) {
-    Object = (ObjectClass *)Object->As_Target();
+    Object = (ObjectClass*)Object->As_Target();
   }
 
   /*
@@ -632,16 +632,16 @@ void AnimClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((AnimTypeClass const *&)Class) =
+  ((AnimTypeClass const*&)Class) =
       &AnimTypeClass::As_Reference((AnimType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Decode 'Object' -----------------------------
   */
   if (Object) {
     Object = As_Object((TARGET)(uintptr_t)Object);
-    Check_Ptr((void *)Object, __FILE__, __LINE__);
+    Check_Ptr((void*)Object, __FILE__, __LINE__);
   }
 
   /*
@@ -662,7 +662,7 @@ void AnimClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Load(FileClass &file) {
+bool BuildingClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -678,7 +678,7 @@ bool BuildingClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Save(FileClass &file) {
+bool BuildingClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -702,7 +702,7 @@ void BuildingClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((BuildingTypeClass const *&)Class) = (BuildingTypeClass *)Class->Type;
+  ((BuildingTypeClass const*&)Class) = (BuildingTypeClass*)Class->Type;
 
   /*------------------------------------------------------------------------
   Code the Factory value; there's not target conversion routine for factories,
@@ -710,7 +710,7 @@ void BuildingClass::Code_Pointers(void) {
   it's converted back
   ------------------------------------------------------------------------*/
   if (Factory) {
-    Factory = (FactoryClass *)(Factories.ID(Factory) + 1);
+    Factory = (FactoryClass*)(Factories.ID(Factory) + 1);
   }
 
   /*
@@ -737,16 +737,16 @@ void BuildingClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((BuildingTypeClass const *&)Class) =
+  ((BuildingTypeClass const*&)Class) =
       &BuildingTypeClass::As_Reference((StructType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*------------------------------------------------------------------------
   Decode the Factory value, subtracting off the '1' we added when coding it
   ------------------------------------------------------------------------*/
   if (Factory) {
     Factory = Factories.Raw_Ptr((intptr_t)Factory - 1);
-    Check_Ptr((void *)Factory, __FILE__, __LINE__);
+    Check_Ptr((void*)Factory, __FILE__, __LINE__);
   }
 
   /*
@@ -766,7 +766,7 @@ void BuildingClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Load(FileClass &file) {
+bool BulletClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -782,7 +782,7 @@ bool BulletClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Save(FileClass &file) {
+bool BulletClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -806,12 +806,12 @@ void BulletClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((BulletTypeClass *&)Class) = (BulletTypeClass *)Class->Type;
+  ((BulletTypeClass*&)Class) = (BulletTypeClass*)Class->Type;
 
   /*
   ----------------------------- Code 'Payback' -----------------------------
   */
-  if (Payback) Payback = (TechnoClass *)Payback->As_Target();
+  if (Payback) Payback = (TechnoClass*)Payback->As_Target();
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -839,16 +839,16 @@ void BulletClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((BulletTypeClass const *&)Class) =
+  ((BulletTypeClass const*&)Class) =
       &BulletTypeClass::As_Reference((BulletType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Decode 'Payback' ----------------------------
   */
   if (Payback) {
     Payback = As_Techno((TARGET)(uintptr_t)Payback);
-    Check_Ptr((void *)Payback, __FILE__, __LINE__);
+    Check_Ptr((void*)Payback, __FILE__, __LINE__);
   }
 
   /*
@@ -870,7 +870,7 @@ void BulletClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Load(FileClass &file) {
+bool InfantryClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -886,7 +886,7 @@ bool InfantryClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Save(FileClass &file) {
+bool InfantryClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -910,7 +910,7 @@ void InfantryClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((InfantryTypeClass *&)Class) = (InfantryTypeClass *)Class->Type;
+  ((InfantryTypeClass*&)Class) = (InfantryTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -936,9 +936,9 @@ void InfantryClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((InfantryTypeClass const *&)Class) =
+  ((InfantryTypeClass const*&)Class) =
       &InfantryTypeClass::As_Reference((InfantryType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -957,7 +957,7 @@ void InfantryClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool OverlayClass::Load(FileClass &file) {
+bool OverlayClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -973,7 +973,7 @@ bool OverlayClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool OverlayClass::Save(FileClass &file) {
+bool OverlayClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -997,7 +997,7 @@ void OverlayClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((OverlayTypeClass *&)Class) = (OverlayTypeClass *)Class->Type;
+  ((OverlayTypeClass*&)Class) = (OverlayTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1023,9 +1023,9 @@ void OverlayClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((OverlayTypeClass const *&)Class) =
+  ((OverlayTypeClass const*&)Class) =
       &OverlayTypeClass::As_Reference((OverlayType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1044,7 +1044,7 @@ void OverlayClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeClass::Load(FileClass &file) {
+bool SmudgeClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -1060,7 +1060,7 @@ bool SmudgeClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeClass::Save(FileClass &file) {
+bool SmudgeClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1084,7 +1084,7 @@ void SmudgeClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((SmudgeTypeClass const *&)Class) = (SmudgeTypeClass *)Class->Type;
+  ((SmudgeTypeClass const*&)Class) = (SmudgeTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1110,9 +1110,9 @@ void SmudgeClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((SmudgeTypeClass const *&)Class) =
+  ((SmudgeTypeClass const*&)Class) =
       &SmudgeTypeClass::As_Reference((SmudgeType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1131,7 +1131,7 @@ void SmudgeClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateClass::Load(FileClass &file) {
+bool TemplateClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -1147,7 +1147,7 @@ bool TemplateClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateClass::Save(FileClass &file) {
+bool TemplateClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1171,7 +1171,7 @@ void TemplateClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((TemplateTypeClass *&)Class) = (TemplateTypeClass *)Class->Type;
+  ((TemplateTypeClass*&)Class) = (TemplateTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1197,9 +1197,9 @@ void TemplateClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((TemplateTypeClass const *&)Class) =
+  ((TemplateTypeClass const*&)Class) =
       &TemplateTypeClass::As_Reference((TemplateType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1218,7 +1218,7 @@ void TemplateClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainClass::Load(FileClass &file) {
+bool TerrainClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -1234,7 +1234,7 @@ bool TerrainClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainClass::Save(FileClass &file) {
+bool TerrainClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1258,7 +1258,7 @@ void TerrainClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((TerrainTypeClass *&)Class) = (TerrainTypeClass *)Class->Type;
+  ((TerrainTypeClass*&)Class) = (TerrainTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1285,9 +1285,9 @@ void TerrainClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((TerrainTypeClass const *&)Class) =
+  ((TerrainTypeClass const*&)Class) =
       &TerrainTypeClass::As_Reference((TerrainType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1307,7 +1307,7 @@ void TerrainClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Load(FileClass &file) {
+bool UnitClass::Load(FileClass& file) {
   return (
       Read_Object(this, sizeof(AbstractClass), sizeof(*this), file, VTable));
 }
@@ -1323,7 +1323,7 @@ bool UnitClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Save(FileClass &file) {
+bool UnitClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1372,7 +1372,7 @@ void UnitClass::Decode_Pointers(void) { TarComClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Load(FileClass &file) {
+bool FactoryClass::Load(FileClass& file) {
   return (Read_Object(this, sizeof(StageClass), sizeof(*this), file, nullptr));
 }
 
@@ -1387,7 +1387,7 @@ bool FactoryClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Save(FileClass &file) {
+bool FactoryClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1409,10 +1409,10 @@ bool FactoryClass::Save(FileClass &file) {
  *=============================================================================================*/
 void FactoryClass::Code_Pointers(void) {
   if (Object) {
-    Object = (TechnoClass *)Object->As_Target();
+    Object = (TechnoClass*)Object->As_Target();
   }
 
-  ((HouseClass *&)House) = (HouseClass *)House->Class->House;
+  ((HouseClass*&)House) = (HouseClass*)House->Class->House;
 
   StageClass::Code_Pointers();
 }
@@ -1434,11 +1434,11 @@ void FactoryClass::Code_Pointers(void) {
 void FactoryClass::Decode_Pointers(void) {
   if (Object) {
     Object = As_Techno((TARGET)(uintptr_t)Object);
-    Check_Ptr((void *)Object, __FILE__, __LINE__);
+    Check_Ptr((void*)Object, __FILE__, __LINE__);
   }
 
-  ((HouseClass *&)House) = HouseClass::As_Pointer((HousesType)(uintptr_t)House);
-  Check_Ptr((void *)House, __FILE__, __LINE__);
+  ((HouseClass*&)House) = HouseClass::As_Pointer((HousesType)(uintptr_t)House);
+  Check_Ptr((void*)House, __FILE__, __LINE__);
 
   StageClass::Decode_Pointers();
 }
@@ -1454,10 +1454,10 @@ void FactoryClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool LayerClass::Load(FileClass &file) {
+bool LayerClass::Load(FileClass& file) {
   int count;
   int i;
-  ObjectClass *ptr;
+  ObjectClass* ptr;
 
   /*
   ---------------------- Read # elements in the layer ----------------------
@@ -1475,7 +1475,7 @@ bool LayerClass::Load(FileClass &file) {
   ----------------------- Read in all array elements -----------------------
   */
   for (i = 0; i < count; i++) {
-    if (file.Read(&ptr, sizeof(ObjectClass *)) != sizeof(ObjectClass *)) {
+    if (file.Read(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
       return (false);
     }
     Add(ptr);
@@ -1495,10 +1495,10 @@ bool LayerClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool LayerClass::Save(FileClass &file) {
+bool LayerClass::Save(FileClass& file) {
   int count;
   int i;
-  ObjectClass *ptr;
+  ObjectClass* ptr;
 
   /*
   ------------------------- Save # array elements --------------------------
@@ -1511,7 +1511,7 @@ bool LayerClass::Save(FileClass &file) {
   */
   for (i = 0; i < count; i++) {
     ptr = (*this)[i];
-    if (file.Write(&ptr, sizeof(ObjectClass *)) != sizeof(ObjectClass *))
+    if (file.Write(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*))
       return (false);
   }
 
@@ -1535,11 +1535,11 @@ bool LayerClass::Save(FileClass &file) {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void LayerClass::Code_Pointers(void) {
-  ObjectClass *obj;
+  ObjectClass* obj;
 
   for (int i = 0; i < Count(); i++) {
     obj = (*this)[i];
-    (*this)[i] = (ObjectClass *)(obj->As_Target());
+    (*this)[i] = (ObjectClass*)(obj->As_Target());
   }
 }
 
@@ -1562,7 +1562,7 @@ void LayerClass::Decode_Pointers(void) {
 
   for (int i = 0; i < Count(); i++) {
     target = (TARGET)(uintptr_t)(*this)[i];
-    (*this)[i] = (ObjectClass *)As_Object(target);
+    (*this)[i] = (ObjectClass*)As_Object(target);
     Check_Ptr((*this)[i], __FILE__, __LINE__);
   }
 }
@@ -1578,7 +1578,7 @@ void LayerClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Load(FileClass &file) {
+bool HouseClass::Load(FileClass& file) {
   return (Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr));
 }
 
@@ -1593,7 +1593,7 @@ bool HouseClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Save(FileClass &file) {
+bool HouseClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1617,7 +1617,7 @@ void HouseClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((HouseTypeClass const *&)Class) = (HouseTypeClass const *)Class->House;
+  ((HouseTypeClass const*&)Class) = (HouseTypeClass const*)Class->House;
 }
 
 /***********************************************************************************************
@@ -1638,9 +1638,9 @@ void HouseClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((HouseTypeClass const *&)Class) =
+  ((HouseTypeClass const*&)Class) =
       &HouseTypeClass::As_Reference((HousesType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 }
 
 /***********************************************************************************************
@@ -1654,7 +1654,7 @@ void HouseClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool ScoreClass::Load(FileClass &file) {
+bool ScoreClass::Load(FileClass& file) {
   return (Read_Object(this, sizeof(*this), sizeof(*this), file, nullptr));
 }
 
@@ -1669,7 +1669,7 @@ bool ScoreClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool ScoreClass::Save(FileClass &file) {
+bool ScoreClass::Save(FileClass& file) {
   return (Write_Object(this, sizeof(*this), file));
 }
 
@@ -1855,7 +1855,7 @@ void DriveClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
-  ((UnitTypeClass *&)Class) = (UnitTypeClass *)Class->Type;
+  ((UnitTypeClass*&)Class) = (UnitTypeClass*)Class->Type;
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1881,9 +1881,9 @@ void DriveClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
-  ((UnitTypeClass const *&)Class) =
+  ((UnitTypeClass const*&)Class) =
       &UnitTypeClass::As_Reference((UnitType)(uintptr_t)Class);
-  Check_Ptr((void *)Class, __FILE__, __LINE__);
+  Check_Ptr((void*)Class, __FILE__, __LINE__);
 
   /*
   ---------------------------- Chain to parent -----------------------------
@@ -1908,10 +1908,10 @@ void DriveClass::Decode_Pointers(void) {
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
 void FootClass::Code_Pointers(void) {
-  if (Team) Team = (TeamClass *)Team->As_Target();
+  if (Team) Team = (TeamClass*)Team->As_Target();
 
   if (Member) {
-    Member = (FootClass *)Member->As_Target();
+    Member = (FootClass*)Member->As_Target();
   }
 
   TechnoClass::Code_Pointers();
@@ -1934,12 +1934,12 @@ void FootClass::Code_Pointers(void) {
 void FootClass::Decode_Pointers(void) {
   if (Team) {
     Team = As_Team((TARGET)(uintptr_t)Team);
-    Check_Ptr((void *)Team, __FILE__, __LINE__);
+    Check_Ptr((void*)Team, __FILE__, __LINE__);
   }
 
   if (Member) {
-    Member = (FootClass *)As_Techno((TARGET)(uintptr_t)Member);
-    Check_Ptr((void *)Member, __FILE__, __LINE__);
+    Member = (FootClass*)As_Techno((TARGET)(uintptr_t)Member);
+    Check_Ptr((void*)Member, __FILE__, __LINE__);
   }
 
   TechnoClass::Decode_Pointers();
@@ -1966,7 +1966,7 @@ void RadioClass::Code_Pointers(void) {
   ------------------------------ Code 'Radio' ------------------------------
   */
   if (Radio) {
-    Radio = (RadioClass *)Radio->As_Target();
+    Radio = (RadioClass*)Radio->As_Target();
   }
 
   MissionClass::Code_Pointers();
@@ -1992,7 +1992,7 @@ void RadioClass::Decode_Pointers(void) {
   */
   if (Radio) {
     Radio = As_Techno((TARGET)(uintptr_t)Radio);
-    Check_Ptr((void *)Radio, __FILE__, __LINE__);
+    Check_Ptr((void*)Radio, __FILE__, __LINE__);
   }
 
   MissionClass::Decode_Pointers();
@@ -2018,7 +2018,7 @@ void TechnoClass::Code_Pointers(void) {
   /*
   ------------------------------ Code 'House' ------------------------------
   */
-  ((HouseClass *&)House) = (HouseClass *)(House->Class->House);
+  ((HouseClass*&)House) = (HouseClass*)(House->Class->House);
 
   FlasherClass::Code_Pointers();
   StageClass::Code_Pointers();
@@ -2046,8 +2046,8 @@ void TechnoClass::Decode_Pointers(void) {
   /*
   ----------------------------- Decode 'House' -----------------------------
   */
-  ((HouseClass *&)House) = HouseClass::As_Pointer((HousesType)(uintptr_t)House);
-  Check_Ptr((void *)House, __FILE__, __LINE__);
+  ((HouseClass*&)House) = HouseClass::As_Pointer((HousesType)(uintptr_t)House);
+  Check_Ptr((void*)House, __FILE__, __LINE__);
 
   FlasherClass::Decode_Pointers();
   StageClass::Decode_Pointers();
@@ -2112,7 +2112,7 @@ void CargoClass::Code_Pointers(void) {
   ---------------------------- Code 'CargoHold' ----------------------------
   */
   if (CargoHold) {
-    CargoHold = (FootClass *)CargoHold->As_Target();
+    CargoHold = (FootClass*)CargoHold->As_Target();
   }
 }
 
@@ -2135,8 +2135,8 @@ void CargoClass::Decode_Pointers(void) {
   --------------------------- Decode 'CargoHold' ---------------------------
   */
   if (CargoHold) {
-    CargoHold = (FootClass *)As_Techno((TARGET)(uintptr_t)CargoHold);
-    Check_Ptr((void *)CargoHold, __FILE__, __LINE__);
+    CargoHold = (FootClass*)As_Techno((TARGET)(uintptr_t)CargoHold);
+    Check_Ptr((void*)CargoHold, __FILE__, __LINE__);
   }
 }
 
@@ -2192,11 +2192,11 @@ void MissionClass::Decode_Pointers(void) { ObjectClass::Decode_Pointers(); }
  *=============================================================================================*/
 void ObjectClass::Code_Pointers(void) {
   if (Next) {
-    Next = (ObjectClass *)Next->As_Target();
+    Next = (ObjectClass*)Next->As_Target();
   }
 
   if (Trigger) {
-    Trigger = (TriggerClass *)Trigger->As_Target();
+    Trigger = (TriggerClass*)Trigger->As_Target();
   }
 }
 
@@ -2217,11 +2217,11 @@ void ObjectClass::Code_Pointers(void) {
 void ObjectClass::Decode_Pointers(void) {
   if (Next) {
     Next = As_Object((TARGET)(uintptr_t)Next);
-    Check_Ptr((void *)Next, __FILE__, __LINE__);
+    Check_Ptr((void*)Next, __FILE__, __LINE__);
   }
 
   if (Trigger) {
     Trigger = As_Trigger((TARGET)(uintptr_t)Trigger);
-    Check_Ptr((void *)Trigger, __FILE__, __LINE__);
+    Check_Ptr((void*)Trigger, __FILE__, __LINE__);
   }
 }

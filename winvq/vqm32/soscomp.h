@@ -42,8 +42,8 @@ enum {
 
 /* define compression structure */
 struct SosCompressInfo {
-  std::uint8_t *source;
-  std::uint8_t *dest;
+  std::uint8_t* source;
+  std::uint8_t* dest;
 
   std::uint32_t comp_size;
   std::uint32_t uncomp_size;
@@ -85,10 +85,9 @@ typedef struct _tagCOMPRESS_HEADER {
 extern "C" {
 #endif
 
-void __cdecl VQA_sosCODECInitStream(SosCompressInfo *);
-unsigned long __cdecl VQA_sosCODECCompressData(SosCompressInfo *,
-                                               unsigned long);
-bool __cdecl DecompressVqaSosData(SosCompressInfo *, unsigned long);
+void __cdecl VQA_sosCODECInitStream(SosCompressInfo*);
+unsigned long __cdecl VQA_sosCODECCompressData(SosCompressInfo*, unsigned long);
+bool __cdecl DecompressVqaSosData(SosCompressInfo*, unsigned long);
 
 #ifdef __cplusplus
 }

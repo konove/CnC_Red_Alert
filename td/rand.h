@@ -7,7 +7,7 @@ int Sim_IRandom(int minval, int maxval);
 int Sim_Random(void);
 
 template <class T>
-inline T Random_Picky(T a, T b, const char *sfile, int line) {
+inline T Random_Picky(T a, T b, const char* sfile, int line) {
   sfile = sfile;
   line = line;
   return (T)IRandom((int)a, (int)b);  //, sfile, line);

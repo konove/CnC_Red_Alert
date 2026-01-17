@@ -146,7 +146,7 @@ bool WWKeyboardClass::Is_Mouse_Key(unsigned short key) {
  *style keyboard system.                                  *
  *=============================================================================================*/
 unsigned short WWKeyboardClass::Check(void) const {
-  ((WWKeyboardClass *)this)->Fill_Buffer_From_System();
+  ((WWKeyboardClass*)this)->Fill_Buffer_From_System();
   if (Is_Buffer_Empty()) return (false);
   return (Peek_Element());
 }

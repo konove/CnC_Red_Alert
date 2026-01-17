@@ -49,7 +49,7 @@
 /* The following prototypes are for the file: DDRAW.CPP
  */
 /*=========================================================================*/
-bool Set_Video_Mode(void *hwnd, int w, int h, int bits_per_pixel);
+bool Set_Video_Mode(void* hwnd, int w, int h, int bits_per_pixel);
 void Wait_Blit(void);
 
 /*
@@ -93,9 +93,9 @@ void Shake_Screen(int shakes);
 inline void Wait_Vert_Blank() { Video_End_Frame(); }
 
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int *h, unsigned int *s, unsigned int *v);
+                        unsigned int* h, unsigned int* s, unsigned int* v);
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int *r, unsigned int *g, unsigned int *b);
+                        unsigned int* r, unsigned int* g, unsigned int* b);
 
 /*========================= Assembly Routines ==============================*/
 
@@ -103,11 +103,11 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
 extern "C" {
 #endif
 
-void *Build_Fading_Table(void const *palette, void *dest, long int color,
+void* Build_Fading_Table(void const* palette, void* dest, long int color,
                          long int frac);
 
-extern int Clip_Rect(int *x, int *y, int *dw, int *dh, int width, int height);
-extern int Confine_Rect(int *x, int *y, int dw, int dh, int width, int height);
+extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);
+extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);
 
 #ifdef __cplusplus
 }

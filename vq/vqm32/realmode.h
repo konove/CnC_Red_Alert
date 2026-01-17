@@ -55,7 +55,7 @@ typedef unsigned long REALPTR;
 #define RP_SET(rp, off, seg) (rp = ((unsigned long)(seg) << 16) + (off))
 #define RP_INCR(rp, incr) (rp += ((unsigned long)(incr)) & 0xFFFF)
 
-#define MK_PTR(off, seg) (void *)((((unsigned long)seg & 0xFFFF) << 4) + off)
+#define MK_PTR(off, seg) (void*)((((unsigned long)seg & 0xFFFF) << 4) + off)
 
 /* RMInfo: Real-mode interrupt call structure.
  *

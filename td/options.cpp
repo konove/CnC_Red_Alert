@@ -430,7 +430,7 @@ int OptionsClass::Get_Tint(void) const { return (Tint); }
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Adjust_Palette(void *oldpal, void *newpal,
+void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint,
                                   unsigned char contrast) const {
@@ -445,11 +445,11 @@ void OptionsClass::Adjust_Palette(void *oldpal, void *newpal,
   */
   for (index = 0; index < 256; index++) {
     if (/*index == LTGREEN ||*/ index == 255) {
-      memcpy(&((char *)newpal)[index * 3], &((char *)oldpal)[index * 3], 3);
+      memcpy(&((char*)newpal)[index * 3], &((char*)oldpal)[index * 3], 3);
     } else {
-      r = ((char *)oldpal)[(index * 3) + 0];
-      g = ((char *)oldpal)[(index * 3) + 1];
-      b = ((char *)oldpal)[(index * 3) + 2];
+      r = ((char*)oldpal)[(index * 3) + 0];
+      g = ((char*)oldpal)[(index * 3) + 1];
+      b = ((char*)oldpal)[(index * 3) + 2];
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
@@ -471,9 +471,9 @@ void OptionsClass::Adjust_Palette(void *oldpal, void *newpal,
       temp = Bound(temp, 0, 0xFF);
       h = temp;
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
-      ((char *)newpal)[(index * 3) + 0] = r;
-      ((char *)newpal)[(index * 3) + 1] = g;
-      ((char *)newpal)[(index * 3) + 2] = b;
+      ((char*)newpal)[(index * 3) + 0] = r;
+      ((char*)newpal)[(index * 3) + 1] = g;
+      ((char*)newpal)[(index * 3) + 2] = b;
     }
   }
 }
@@ -490,7 +490,7 @@ void OptionsClass::Adjust_Palette(void *oldpal, void *newpal,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Load_Settings(void) {
-  char *buffer;  // INI staging buffer pointer.
+  char* buffer;  // INI staging buffer pointer.
 
   /*
   **	Fetch working pointer to the INI staging buffer. Make sure that the
@@ -498,7 +498,7 @@ void OptionsClass::Load_Settings(void) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   /*
@@ -671,14 +671,14 @@ void OptionsClass::Load_Settings(void) {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Save_Settings(void) {
-  char *buffer;  // INI staging buffer pointer.
+  char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
 
   /*
   **	Get a working pointer to the INI staging buffer. Make sure that the
   *buffer *	starts cleared out of any data.
   */
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   file.Set_Name("CONQUER.INI");

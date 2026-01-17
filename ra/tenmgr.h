@@ -51,13 +51,13 @@ class TenConnManClass : public ConnManClass {
   //
   // Sending & receiving data
   //
-  virtual int Send_Private_Message(void *buf, int buflen, int ack_req = 1,
+  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
                                    int conn_id = CONNECTION_NONE);
-  virtual int Get_Private_Message(void *buf, int *buflen, int *conn_id);
+  virtual int Get_Private_Message(void* buf, int* buflen, int* conn_id);
 
-  int Send_Global_Message(void *buf, int buflen, int ack_req = 0,
+  int Send_Global_Message(void* buf, int buflen, int ack_req = 0,
                           int address = 0);
-  int Get_Global_Message(void *buf, int *buflen, int *address = nullptr);
+  int Get_Global_Message(void* buf, int* buflen, int* address = nullptr);
 
   //
   // Connection management
@@ -66,9 +66,9 @@ class TenConnManClass : public ConnManClass {
   virtual int Connection_ID(int index);
   virtual int Connection_Index(int id);
 
-  int Create_Connection(int id, char *name, int address);
+  int Create_Connection(int id, char* name, int address);
   int Delete_Connection(int id);
-  char *Connection_Name(int id);
+  char* Connection_Name(int id);
   int Connection_Address(int id);
 
   //
@@ -93,11 +93,11 @@ class TenConnManClass : public ConnManClass {
   // Debugging
   //
   virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char **names, int namestart, int namecount);
+                               char** names, int namestart, int namecount);
   virtual void Mono_Debug_Print(int index, int refresh);
 
-  CommBufferClass *GlobalQueue;
-  CommBufferClass *PrivateQueue;
+  CommBufferClass* GlobalQueue;
+  CommBufferClass* PrivateQueue;
 
   //
   // This flag will be set if I'm the game host.

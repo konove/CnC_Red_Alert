@@ -108,13 +108,13 @@ class TriggerTypeClass : public AbstractTypeClass {
   MultiStyleType ActionControl;
 
   TriggerTypeClass(void);
-  TriggerTypeClass(NoInitClass const &x)
+  TriggerTypeClass(NoInitClass const& x)
       : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {};
   ~TriggerTypeClass() override = default;
 
-  static void *operator new(size_t);
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t);
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
 
   /*
   **	Initialization: clears all trigger types in preparation for new scenario
@@ -124,21 +124,21 @@ class TriggerTypeClass : public AbstractTypeClass {
   /*
   **	File I/O routines
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  void Fill_In(char *name, char *entry);
-  void Build_INI_Entry(std::string &buffer) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  void Fill_In(char* name, char* entry);
+  void Build_INI_Entry(std::string& buffer) const;
 
-  static char const *INI_Name(void) { return "Trigs"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static char const* INI_Name(void) { return "Trigs"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
   /*
   **	Processing routines
   */
-  TriggerClass *Create_One_Of(void) const;
+  TriggerClass* Create_One_Of(void) const;
   void Destroy_All_Of(void) const;
 
   /*
@@ -147,11 +147,11 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Detach(TARGET target, bool all = true);
   AttachType Attaches_To(void) const;
   TARGET As_Target(void) const;
-  static TriggerTypeClass *From_Name(char const *name);
+  static TriggerTypeClass* From_Name(char const* name);
   bool Edit(void);
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-  char const *Description(void) const;
-  operator const char *(void) const { return (Description()); };
+  char const* Description(void) const;
+  operator const char*(void) const { return (Description()); };
 #endif
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;

@@ -58,7 +58,7 @@ int MGenGetQueueCtr(int qNo) {
   return regs.x.eax;
 }
 
-RTQ_NODE *MGenMoveTo(int qFrom, int qTo) {
+RTQ_NODE* MGenMoveTo(int qFrom, int qTo) {
   REGISTERS regs;
 
   regs.x.eax = MGENVXD_MOVENODE_ORD << 16 | MGENVXD_DEVICE_ID;
@@ -66,27 +66,27 @@ RTQ_NODE *MGenMoveTo(int qFrom, int qTo) {
   regs.x.ecx = qTo;
   int386(CHUNNEL_INT, &regs, &regs);
 
-  return (RTQ_NODE *)regs.x.eax;
+  return (RTQ_NODE*)regs.x.eax;
 }
 
-RTQ_NODE *MGenGetNode(int q) {
+RTQ_NODE* MGenGetNode(int q) {
   REGISTERS regs;
 
   regs.x.eax = MGENVXD_GETNODE_ORD << 16 | MGENVXD_DEVICE_ID;
   regs.x.ebx = q;
   int386(CHUNNEL_INT, &regs, &regs);
 
-  return (RTQ_NODE *)regs.x.eax;
+  return (RTQ_NODE*)regs.x.eax;
 }
 
-RTQ_NODE *MGenGetMasterNode(unsigned *size) {
+RTQ_NODE* MGenGetMasterNode(unsigned* size) {
   REGISTERS regs;
 
   regs.x.eax = MGENVXD_MASTERNODE_ORD << 16 | MGENVXD_DEVICE_ID;
   int386(CHUNNEL_INT, &regs, &regs);
   *size = regs.x.ecx;
 
-  return (RTQ_NODE *)regs.x.eax;
+  return (RTQ_NODE*)regs.x.eax;
 }
 
 int MGenFlushNodes(int qFrom, int qTo) {

@@ -27,7 +27,7 @@ Process::Process() {
 }
 
 // Create a process
-bit8 Create_Process(Process &process) {
+bit8 Create_Process(Process& process) {
   int retval;
   STARTUPINFO si;
   PROCESS_INFORMATION piProcess;
@@ -47,7 +47,7 @@ bit8 Create_Process(Process &process) {
   return (TRUE);
 }
 
-bit8 Wait_Process(Process &process) {
+bit8 Wait_Process(Process& process) {
   DWORD retval;
   retval = WaitForSingleObject(process.hProcess, INFINITE);
   if (retval == WAIT_OBJECT_0)  // process exited
@@ -59,7 +59,7 @@ bit8 Wait_Process(Process &process) {
 //
 // Get the process to run from the config object
 //
-bit8 Read_Process_Info(ConfigFile &config, OUT Process &info) {
+bit8 Read_Process_Info(ConfigFile& config, OUT Process& info) {
   Wstring procinfo;
   if (config.getString("RUN", procinfo) == FALSE) {
     DBGMSG("Couldn't read the RUN line");

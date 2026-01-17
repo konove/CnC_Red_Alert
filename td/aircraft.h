@@ -61,15 +61,15 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	This is a pointer to the class control structure for the aircraft.
   */
-  AircraftTypeClass const *const Class;
+  AircraftTypeClass const* const Class;
 
   //-----------------------------------------------------------------------------
-  void *operator new(size_t) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  void operator delete(void *);
+  void* operator new(size_t) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  void operator delete(void*);
   operator AircraftType(void) const { return Class->Type; };
   AircraftClass(void) : Class(nullptr) {};
-  AircraftClass(NoInitClass const &x)
+  AircraftClass(NoInitClass const& x)
       : FootClass(x),
         FlyClass(x),
         Class(Class),
@@ -106,10 +106,10 @@ class AircraftClass : public FootClass, public FlyClass {
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
   virtual LayerType In_Which_Layer(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
-  virtual ActionType What_Action(ObjectClass *target) const;
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ActionType What_Action(ObjectClass* target) const;
   virtual ActionType What_Action(CELL cell) const;
-  virtual DirType Desired_Load_Dir(ObjectClass *passenger, CELL &moveto) const;
+  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
   virtual int Pip_Count(void) const;
   TARGET Good_Fire_Location(TARGET target) const;
   bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
@@ -140,16 +140,16 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual int Exit_Object(TechnoClass *);
+  virtual int Exit_Object(TechnoClass*);
   virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual short const *Overlap_List(void) const;
+  virtual short const* Overlap_List(void) const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual void Set_Speed(int speed);
 
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell);
   virtual void Player_Assign_Mission(MissionType mission,
                                      TARGET target = TARGET_NONE,
@@ -163,9 +163,9 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   //		virtual bool Target_Something_Nearby(ThreatType
   // threat=THREAT_NORMAL);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source);
-  virtual BulletClass *Fire_At(TARGET target, int which);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source);
+  virtual BulletClass* Fire_At(TARGET target, int which);
   virtual TARGET As_Target(void) const;
 
   /*
@@ -173,26 +173,26 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   virtual void AI(void);
   virtual void Enter_Idle_Mode(bool initial = false);
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual void Scatter(COORDINATE threat, bool forced = false);
 
 /*
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static char const *INI_Name(void) { return "AIRCRAFT"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static char const* INI_Name(void) { return "AIRCRAFT"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -275,7 +275,7 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

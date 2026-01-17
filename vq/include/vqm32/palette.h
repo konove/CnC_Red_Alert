@@ -44,16 +44,16 @@
 extern "C" {
 #endif
 
-void cdecl SetPalette(unsigned char *palette, long numbytes,
+void cdecl SetPalette(unsigned char* palette, long numbytes,
                       unsigned long slowpal);
-void cdecl ReadPalette(void *palette);
+void cdecl ReadPalette(void* palette);
 void cdecl SetDAC(long color, long red, long green, long blue);
-void cdecl TranslatePalette(void *pal24, void *pal15, long numbytes);
+void cdecl TranslatePalette(void* pal24, void* pal15, long numbytes);
 
 #ifdef __cplusplus
 }
 #endif
 
-void SortPalette(unsigned char *pal, long numcolors);
+void SortPalette(unsigned char* pal, long numcolors);
 
 #endif /* VQMPALETTE_H */

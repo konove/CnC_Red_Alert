@@ -49,29 +49,29 @@
 */
 class LinkClass {
  public:
-  LinkClass(NoInitClass const &) {};
+  LinkClass(NoInitClass const&) {};
   LinkClass(void) : Next(nullptr), Prev(nullptr) {};
   virtual ~LinkClass(void);
 
-  virtual LinkClass *Get_Next(void) const;
-  virtual LinkClass *Get_Prev(void) const;
-  virtual LinkClass &Add(LinkClass &object);
-  virtual LinkClass &Add_Tail(LinkClass &object);
-  virtual LinkClass &Add_Head(LinkClass &object);
-  virtual LinkClass &Head_Of_List(void);
-  virtual LinkClass &Tail_Of_List(void);
+  virtual LinkClass* Get_Next(void) const;
+  virtual LinkClass* Get_Prev(void) const;
+  virtual LinkClass& Add(LinkClass& object);
+  virtual LinkClass& Add_Tail(LinkClass& object);
+  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual LinkClass& Head_Of_List(void);
+  virtual LinkClass& Tail_Of_List(void);
   virtual void Zap(void);
-  virtual LinkClass *Remove(void);
+  virtual LinkClass* Remove(void);
 
-  LinkClass &operator=(LinkClass const &link);  // Assignment operator.
-  LinkClass(LinkClass const &link);             // Copy constructor.
+  LinkClass& operator=(LinkClass const& link);  // Assignment operator.
+  LinkClass(LinkClass const& link);             // Copy constructor.
 
  private:
   /*
   **	Pointers to previous and next link objects in chain.
   */
-  LinkClass *Next;
-  LinkClass *Prev;
+  LinkClass* Next;
+  LinkClass* Prev;
 };
 
 #endif

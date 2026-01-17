@@ -175,11 +175,11 @@ extern "C" char CPUType;
 bool GameTimerInUse = false;
 TimerClass GameTimer;
 long GameEndTime;
-void *PacketLater = nullptr;
+void* PacketLater = nullptr;
 
 #ifdef WOLAPI_INTEGRATION
 #include "WolapiOb.h"
-extern WolapiObject *pWolapi;
+extern WolapiObject* pWolapi;
 
 extern bool bReconnectDialogCancelled;
 #endif
@@ -209,10 +209,10 @@ void Send_Statistics_Packet(void) {
 #endif
 
   PacketClass stats;
-  HouseClass *player;
+  HouseClass* player;
   static int packet_size;
   int index;
-  void *packet;
+  void* packet;
 
   static char field_player_handle[5] = {"NAM?"};
   static char field_player_team[5] = {"SID?"};
@@ -237,7 +237,7 @@ void Send_Statistics_Packet(void) {
   static char field_player_crates_found[5] = {"CRA?"};
   static char field_player_harvested[5] = {"HRV?"};
 
-  static char const *houses[] = {
+  static char const* houses[] = {
       "SPA", "GRE", "USS", "ENG", "ITA", "GER", "FRA", "TKY", "GUD", "BAD",
       "CIV", "JP ", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08"};
 
@@ -351,7 +351,7 @@ void Send_Statistics_Packet(void) {
 #else   //(1)
     char fname[128];
     char namebuffer[40];
-    char *abuffer = (char *)_ShapeBuffer;
+    char* abuffer = (char*)_ShapeBuffer;
     memset(abuffer, '\0', _ShapeBufferSize);
     sprintf(fname, "%s.INI", Scen.ScenarioName);
     CCFileClass fileo;
@@ -382,10 +382,10 @@ void Send_Statistics_Packet(void) {
       **
       **	Game was a draw
       */
-      HouseClass *player1 = nullptr;
-      HouseClass *player2 = nullptr;
+      HouseClass* player1 = nullptr;
+      HouseClass* player2 = nullptr;
       for (int h = 0; h < Session.Players.Count(); h++) {
-        HouseClass *ptr =
+        HouseClass* ptr =
             HouseClass::As_Pointer((HousesType)(h + HOUSE_MULTI1));
         if (ptr->IsHuman) {
           if (player1) {
@@ -415,20 +415,20 @@ void Send_Statistics_Packet(void) {
           {
             //						debugprint( "gethostname
             // got me %s\n", szHostName );
-            struct hostent *pHostent = gethostbyname(szHostName);
+            struct hostent* pHostent = gethostbyname(szHostName);
             if (pHostent)  //	else forget about trying
             {
               int i = 0;
-              int *piAddress = (int *)pHostent->h_addr_list[i];
+              int* piAddress = (int*)pHostent->h_addr_list[i];
               while (piAddress) {
                 //	There is a non-null value for this h_addr_list entry.
                 char szAsciiIP[30];
-                strcpy(szAsciiIP, inet_ntoa(*((struct in_addr *)piAddress)));
+                strcpy(szAsciiIP, inet_ntoa(*((struct in_addr*)piAddress)));
                 //	We have an address in the right form.
                 //	Now, is it an address in a private network? If so we
                 // should ignore it.
-                unsigned char q1 = ((char *)piAddress)[0];  //	First digit.
-                unsigned char q2 = ((char *)piAddress)[1];  //	Second digit.
+                unsigned char q1 = ((char*)piAddress)[0];  //	First digit.
+                unsigned char q2 = ((char*)piAddress)[1];  //	Second digit.
                 //								debugprint(
                 //"ip: %s\n", szAsciiIP );
                 if (q1 == 10 || (q1 == 172 && (q2 >= 16 && q2 <= 31)) ||
@@ -439,7 +439,7 @@ void Send_Statistics_Packet(void) {
                   strcpy(szIPAddress, szAsciiIP);
                   break;
                 }
-                piAddress = (int *)pHostent->h_addr_list[++i];
+                piAddress = (int*)pHostent->h_addr_list[++i];
               }
             }
             //						else
@@ -450,10 +450,10 @@ void Send_Statistics_Packet(void) {
           //						debugprint( "gethostname
           // failed with %i, error %i\n", iRes, WSAGetLastError() );
         }
-        stats.Add_Field(FIELD_PLAYER1_IP, (char *)szIPAddress);
+        stats.Add_Field(FIELD_PLAYER1_IP, (char*)szIPAddress);
         Session.Players[1]->Address.Get_Address(net, node);
         sprintf(szIPAddress, "%i.%i.%i.%i", node[0], node[1], node[2], node[3]);
-        stats.Add_Field(FIELD_PLAYER2_IP, (char *)szIPAddress);
+        stats.Add_Field(FIELD_PLAYER2_IP, (char*)szIPAddress);
 #endif
         // Stalemate games.
         if (Scen.bLocalProposesDraw && Scen.bOtherProposesDraw) {
@@ -473,7 +473,7 @@ void Send_Statistics_Packet(void) {
                 char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
                                        // 4/5"
                 pWolapi->DisconnectPingResultsString(szPingResult);
-                stats.Add_Field(FIELD_DISCONNECT_PINGS, (char *)szPingResult);
+                stats.Add_Field(FIELD_DISCONNECT_PINGS, (char*)szPingResult);
               }
               //						else
               //							debugprint(
@@ -595,7 +595,7 @@ void Send_Statistics_Packet(void) {
     */
     char version[128];
     sprintf(version, "V%s", VerNum.Version_Name());
-    stats.Add_Field(FIELD_GAME_VERSION, (char *)version);
+    stats.Add_Field(FIELD_GAME_VERSION, (char*)version);
 
 #ifndef PORTABLE
     char path_to_exe[280];
@@ -611,7 +611,7 @@ void Send_Statistics_Packet(void) {
       if (GetFileTime(handle, NULL, NULL, &write_time)) {
         write_time.dwLowDateTime = htonl(write_time.dwLowDateTime);
         write_time.dwHighDateTime = htonl(write_time.dwHighDateTime);
-        stats.Add_Field(FIELD_GAME_BUILD_DATE, (void *)&write_time,
+        stats.Add_Field(FIELD_GAME_BUILD_DATE, (void*)&write_time,
                         sizeof(write_time));
       }
     }
@@ -642,12 +642,12 @@ void Send_Statistics_Packet(void) {
       */
       field_player_handle[3] = '1' + (char)house;
 #ifdef WOLAPI_INTEGRATION
-      stats.Add_Field(field_player_handle, (char *)player->InitialName);
+      stats.Add_Field(field_player_handle, (char*)player->InitialName);
 // debugprint( "Stats: Player %i name %s\n", house, (char*) player->InitialName
 // ); debugprint( "Stats: Player %i ending name %s\n", house, (char*)
 // player->IniName );
 #else
-      stats.Add_Field(field_player_handle, (char *)player->IniName);
+      stats.Add_Field(field_player_handle, (char*)player->IniName);
 #endif
 
 #ifdef WOLAPI_INTEGRATION
@@ -693,19 +693,19 @@ void Send_Statistics_Packet(void) {
       player->VesselTotals->To_Network_Format();
 
       stats.Add_Field(field_player_infantry_bought,
-                      (void *)player->InfantryTotals->Get_All_Totals(),
+                      (void*)player->InfantryTotals->Get_All_Totals(),
                       player->InfantryTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_units_bought,
-                      (void *)player->UnitTotals->Get_All_Totals(),
+                      (void*)player->UnitTotals->Get_All_Totals(),
                       player->UnitTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_planes_bought,
-                      (void *)player->AircraftTotals->Get_All_Totals(),
+                      (void*)player->AircraftTotals->Get_All_Totals(),
                       player->AircraftTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_buildings_bought,
-                      (void *)player->BuildingTotals->Get_All_Totals(),
+                      (void*)player->BuildingTotals->Get_All_Totals(),
                       player->BuildingTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_vessels_bought,
-                      (void *)player->VesselTotals->Get_All_Totals(),
+                      (void*)player->VesselTotals->Get_All_Totals(),
                       player->VesselTotals->Get_Unit_Count() * 4);
 
       player->InfantryTotals->To_PC_Format();
@@ -727,21 +727,21 @@ void Send_Statistics_Packet(void) {
       ** Number of units remaining to player
       */
       for (index = 0; index < Units.Count(); index++) {
-        UnitClass const *unit = Units.Ptr(index);
+        UnitClass const* unit = Units.Ptr(index);
         if (player == unit->House) {
           player->UnitTotals->Increment_Unit_Total(unit->Class->Type);
         }
       }
 
       for (index = 0; index < Infantry.Count(); index++) {
-        InfantryClass const *infantry = Infantry.Ptr(index);
+        InfantryClass const* infantry = Infantry.Ptr(index);
         if (player == infantry->House && !infantry->Class->IsCivilian) {
           player->InfantryTotals->Increment_Unit_Total(infantry->Class->Type);
         }
       }
 
       for (index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass const *aircraft = Aircraft.Ptr(index);
+        AircraftClass const* aircraft = Aircraft.Ptr(index);
         if (player == aircraft->House) {  // &&	aircraft->Class->Type !=
                                           // AIRCRAFT_CARGO){
           player->AircraftTotals->Increment_Unit_Total(aircraft->Class->Type);
@@ -749,14 +749,14 @@ void Send_Statistics_Packet(void) {
       }
 
       for (index = 0; index < Buildings.Count(); index++) {
-        BuildingClass const *building = Buildings.Ptr(index);
+        BuildingClass const* building = Buildings.Ptr(index);
         if (player == building->House) {
           player->BuildingTotals->Increment_Unit_Total(building->Class->Type);
         }
       }
 
       for (index = 0; index < Vessels.Count(); index++) {
-        VesselClass const *vessel = Vessels.Ptr(index);
+        VesselClass const* vessel = Vessels.Ptr(index);
         if (player == vessel->House) {
           player->VesselTotals->Increment_Unit_Total(vessel->Class->Type);
         }
@@ -774,19 +774,19 @@ void Send_Statistics_Packet(void) {
       field_player_buildings_left[3] = '1' + (char)house;
       field_player_vessels_left[3] = '1' + (char)house;
       stats.Add_Field(field_player_infantry_left,
-                      (void *)player->InfantryTotals->Get_All_Totals(),
+                      (void*)player->InfantryTotals->Get_All_Totals(),
                       player->InfantryTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_units_left,
-                      (void *)player->UnitTotals->Get_All_Totals(),
+                      (void*)player->UnitTotals->Get_All_Totals(),
                       player->UnitTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_planes_left,
-                      (void *)player->AircraftTotals->Get_All_Totals(),
+                      (void*)player->AircraftTotals->Get_All_Totals(),
                       player->AircraftTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_buildings_left,
-                      (void *)player->BuildingTotals->Get_All_Totals(),
+                      (void*)player->BuildingTotals->Get_All_Totals(),
                       player->BuildingTotals->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_vessels_left,
-                      (void *)player->VesselTotals->Get_All_Totals(),
+                      (void*)player->VesselTotals->Get_All_Totals(),
                       player->VesselTotals->Get_Unit_Count() * 4);
 
       /*
@@ -806,19 +806,19 @@ void Send_Statistics_Packet(void) {
       field_player_vessels_killed[3] = '1' + (char)house;
 
       stats.Add_Field(field_player_infantry_killed,
-                      (void *)player->DestroyedInfantry->Get_All_Totals(),
+                      (void*)player->DestroyedInfantry->Get_All_Totals(),
                       player->DestroyedInfantry->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_units_killed,
-                      (void *)player->DestroyedUnits->Get_All_Totals(),
+                      (void*)player->DestroyedUnits->Get_All_Totals(),
                       player->DestroyedUnits->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_planes_killed,
-                      (void *)player->DestroyedAircraft->Get_All_Totals(),
+                      (void*)player->DestroyedAircraft->Get_All_Totals(),
                       player->DestroyedAircraft->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_buildings_killed,
-                      (void *)player->DestroyedBuildings->Get_All_Totals(),
+                      (void*)player->DestroyedBuildings->Get_All_Totals(),
                       player->DestroyedBuildings->Get_Unit_Count() * 4);
       stats.Add_Field(field_player_vessels_killed,
-                      (void *)player->DestroyedVessels->Get_All_Totals(),
+                      (void*)player->DestroyedVessels->Get_All_Totals(),
                       player->DestroyedVessels->Get_Unit_Count() * 4);
 
       /*
@@ -827,7 +827,7 @@ void Send_Statistics_Packet(void) {
       field_player_buildings_captured[3] = '1' + (char)house;
       player->CapturedBuildings->To_Network_Format();
       stats.Add_Field(field_player_buildings_captured,
-                      (void *)player->CapturedBuildings->Get_All_Totals(),
+                      (void*)player->CapturedBuildings->Get_All_Totals(),
                       player->CapturedBuildings->Get_Unit_Count() * 4);
 
       /*
@@ -836,7 +836,7 @@ void Send_Statistics_Packet(void) {
       field_player_crates_found[3] = '1' + (char)house;
       player->TotalCrates->To_Network_Format();
       stats.Add_Field(field_player_crates_found,
-                      (void *)player->TotalCrates->Get_All_Totals(),
+                      (void*)player->TotalCrates->Get_All_Totals(),
                       player->TotalCrates->Get_Unit_Count() * 4);
 
       /*
@@ -877,7 +877,7 @@ void Send_Statistics_Packet(void) {
   /*
   ** Send it.....
   */
-  const char *szGameResServer;
+  const char* szGameResServer;
   int iPort;
   if (pWolapi->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     szGameResServer = pWolapi->szGameResServerHost2;
@@ -889,7 +889,7 @@ void Send_Statistics_Packet(void) {
 
   if (*szGameResServer) {
     if (pWolapi->pNetUtil->RequestGameresSend(szGameResServer, iPort,
-                                              (unsigned char *)packet,
+                                              (unsigned char*)packet,
                                               packet_size) != S_OK)
       // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
       // szGameResServer, iPort );
@@ -907,7 +907,7 @@ void Send_Statistics_Packet(void) {
   /*
   ** Tidy up
   */
-  delete[] static_cast<char *>(packet);
+  delete[] static_cast<char*>(packet);
 
   GameStatisticsPacketSent = true;
 #endif  // INTERNET_OFF

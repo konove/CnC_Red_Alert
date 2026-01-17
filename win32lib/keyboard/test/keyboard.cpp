@@ -114,7 +114,7 @@ WWKeyboardClass::WWKeyboardClass(void) {
  *=============================================================================================*/
 int WWKeyboardClass::Buff_Get(void) {
   while (!Check()) {
-  }                              // wait for key in buffer
+  }  // wait for key in buffer
   int temp = Buffer[Head];       // get key out of the buffer
   int newhead = Head;            // save off head for manipulation
   if (Is_Mouse_Key(temp)) {      // if key is a mouse then
@@ -169,7 +169,7 @@ int WWKeyboardClass::Get(void) {
   int temp, bits;  // store temp holding spot for key
 
   while (!Check()) {
-  }                   // wait for key in buffer
+  }  // wait for key in buffer
   temp = Buff_Get();  // get key from the buffer
 
   bits = temp & 0xFF00;  // save of keyboard bits
@@ -261,8 +261,8 @@ WWKeyboardClass::Put_Key_Message(UINT vk_key, BOOL release, BOOL dbl) {
   return (Put(vk_key | bits));
 }
 
-VOID WWKeyboardClass::Split(int &key, int &shift, int &ctrl, int &alt, int &rls,
-                            int &dbl) {
+VOID WWKeyboardClass::Split(int& key, int& shift, int& ctrl, int& alt, int& rls,
+                            int& dbl) {
   shift = (key & WWKEY_SHIFT_BIT) != 0;
   ctrl = (key & WWKEY_CTRL_BIT) != 0;
   alt = (key & WWKEY_ALT_BIT) != 0;
@@ -388,7 +388,7 @@ int WWKeyboardClass::Get_Mouse_Y(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-void WWKeyboardClass::Get_Mouse_XY(int &x, int &y) {
+void WWKeyboardClass::Get_Mouse_XY(int& x, int& y) {
   POINT pt;
 
   GetCursorPos(&pt);

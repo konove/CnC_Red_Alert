@@ -86,19 +86,19 @@ typedef enum {
 /* The following prototypes are for the file: SOUNDIO.CPP
  */
 /*=========================================================================*/
-int File_Stream_Sample_Vol(char const *filename, int volume,
+int File_Stream_Sample_Vol(char const* filename, int volume,
                            bool real_time_start = false);
 void Sound_Callback(void);
-bool Audio_Init(void *window, int bits_per_sample, bool stereo, int rate,
+bool Audio_Init(void* window, int bits_per_sample, bool stereo, int rate,
                 int reverse_channels);
 void Sound_End(void);
 void Stop_Sample(int handle);
 bool Sample_Status(int handle);
-bool Is_Sample_Playing(void const *sample);
-void Stop_Sample_Playing(void const *sample);
-int Play_Sample(void const *sample, int priority = 0xFF, int volume = 0xFF,
+bool Is_Sample_Playing(void const* sample);
+void Stop_Sample_Playing(void const* sample);
+int Play_Sample(void const* sample, int priority = 0xFF, int volume = 0xFF,
                 signed short panloc = 0x0);
-int Play_Sample_Handle(void const *sample, int priority, int volume,
+int Play_Sample_Handle(void const* sample, int priority, int volume,
                        signed short panloc, int id);
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
@@ -108,14 +108,14 @@ bool Start_Primary_Sound_Buffer(bool forced);
 void Stop_Primary_Sound_Buffer(void);
 
 #ifdef TD
-void *Load_Sample(char const *filename);
-void Free_Sample(void const *sample);
+void* Load_Sample(char const* filename);
+void Free_Sample(void const* sample);
 #endif
 
-typedef void (*AudioCallback)(uint8_t *stream, int len);
+typedef void (*AudioCallback)(uint8_t* stream, int len);
 uint32_t Get_Audio_Device();
-void *Get_Audio_Spec();
-AudioCallback *
+void* Get_Audio_Spec();
+AudioCallback*
 Get_Audio_Callback_Ptr();  // returns a ptr to a function ptr as we're passing
                            // this the wrong way around
 

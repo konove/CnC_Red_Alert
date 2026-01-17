@@ -56,7 +56,7 @@ DWORD Instance_Class::id_inst;       // instance identifier set by DdeInitialize
 BOOL Instance_Class::process_pokes;  // controls response to pokes
 char Instance_Class::ascii_name[32];  // name of server
 
-BOOL(CALLBACK *Instance_Class::callback)(
+BOOL(CALLBACK* Instance_Class::callback)(
     LPBYTE pointer,  // pointer to received data
     long length      // length of received data or advisory flag
     ) = NULL;
@@ -185,7 +185,7 @@ BOOL Instance_Class::Enable_Callback(BOOL flag)  // enable or disable callback
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL Instance_Class::Register_Server(BOOL(CALLBACK *callback_fnc)(LPBYTE,
+BOOL Instance_Class::Register_Server(BOOL(CALLBACK* callback_fnc)(LPBYTE,
                                                                   long)) {
   if (DdeNameService(id_inst, local_name, 0L, DNS_REGISTER) != 0L) {
     callback = callback_fnc;
@@ -429,7 +429,7 @@ HDDEDATA CALLBACK Instance_Class::dde_callback(
         } else if (uFmt == CF_TEXT) {  // make sure it's CF_TEXT
 
           BOOL processed;
-          BYTE FAR *pdata;
+          BYTE FAR* pdata;
           DWORD dw_length;
 
           if ((pdata = DdeAccessData(hdata, &dw_length)) == NULL) {

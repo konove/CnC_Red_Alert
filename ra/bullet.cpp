@@ -114,7 +114,7 @@
  *   12/23/1994 JLB : Fixed scatter algorithm for non-homing projectiles. *
  *   12/31/1994 JLB : Removed range parameter (not needed). *
  *=============================================================================================*/
-BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass *payback,
+BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
     : ObjectClass(RTTI_BULLET, Bullets.ID(this)),
       Class(BulletTypes.Ptr((int)id)),
@@ -155,8 +155,8 @@ BulletClass::~BulletClass(void) {
     *location possible to *	the bullet.
     */
     if (Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
-        ((InfantryClass *)Payback)->Class->IsDog) {
-      InfantryClass *dog = (InfantryClass *)Payback;
+        ((InfantryClass*)Payback)->Class->IsDog) {
+      InfantryClass* dog = (InfantryClass*)Payback;
       if (dog) {
         bool unlimbo = false;
         COORDINATE newcoord = Coord;
@@ -223,10 +223,10 @@ BulletClass::~BulletClass(void) {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void *BulletClass::operator new(size_t) throw() {
-  void *ptr = Bullets.Allocate();
+void* BulletClass::operator new(size_t) throw() {
+  void* ptr = Bullets.Allocate();
   if (ptr) {
-    ((BulletClass *)ptr)->IsActive = true;
+    ((BulletClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -245,11 +245,11 @@ void *BulletClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::operator delete(void *ptr) {
+void BulletClass::operator delete(void* ptr) {
   if (ptr) {
-    ((BulletClass *)ptr)->IsActive = false;
+    ((BulletClass*)ptr)->IsActive = false;
   }
-  Bullets.Free((BulletClass *)ptr);
+  Bullets.Free((BulletClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -269,7 +269,7 @@ void BulletClass::operator delete(void *ptr) {
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-short const *BulletClass::Occupy_List(bool) const {
+short const* BulletClass::Occupy_List(bool) const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
@@ -306,7 +306,7 @@ short const *BulletClass::Occupy_List(bool) const {
   */
   if (Height > 0) {
     static short _list[25];
-    const short *ptr = Coord_Spillage_List(Coord, 5);
+    const short* ptr = Coord_Spillage_List(Coord, 5);
     int index = 0;
     CELL cell1 = Coord_Cell(Coord);
 
@@ -453,7 +453,7 @@ void BulletClass::AI(void) {
       */
       if (Payback != nullptr && Class->Type == BULLET_NUKE_UP &&
           Payback->House->Control.TechLevel <= 10) {
-        BulletClass *bullet = new BulletClass(
+        BulletClass* bullet = new BulletClass(
             BULLET_NUKE_DOWN, ::As_Target(Payback->House->NukeDest), Payback,
             200, WARHEAD_NUKE, MPH_VERY_FAST);
         if (bullet) {
@@ -585,7 +585,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	If there is no shape loaded for this object, then
   **	it obviously can't be rendered -- just bail.
   */
-  void const *shapeptr = Get_Image_Data();
+  void const* shapeptr = Get_Image_Data();
   if (shapeptr == nullptr) return;
 
   /*
@@ -673,14 +673,14 @@ void BulletClass::Detach(TARGET target, bool all) {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
-  ObjectClass *obj = As_Object(target);
+  ObjectClass* obj = As_Object(target);
   if (Payback != nullptr && obj == Payback) {
     /*
     ** If we're being called as a result of the dog that fired us being put
     ** in limbo, then don't detach.  If for any other reason, detach.
     */
     if (Payback->What_Am_I() != RTTI_INFANTRY ||
-        !((InfantryClass *)Payback)->Class->IsDog) {
+        !((InfantryClass*)Payback)->Class->IsDog) {
       Payback = nullptr;
     }
   }
@@ -830,7 +830,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       //			Height = Pixel_To_Lepton(24);
       Riser = 0;
       if (Class->IsParachuted) {
-        AnimClass *anim = new AnimClass(ANIM_PARA_BOMB, Target_Coord());
+        AnimClass* anim = new AnimClass(ANIM_PARA_BOMB, Target_Coord());
         //				AnimClass * anim = new
         // AnimClass(ANIM_PARACHUTE, Target_Coord());
         if (anim) {
@@ -933,9 +933,9 @@ LayerType BulletClass::In_Which_Layer(void) const {
  *                                                                                             *
  * HISTORY: * 10/10/1996 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Is_Forced_To_Explode(COORDINATE &coord) const {
+bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   coord = Coord;
-  CellClass const *cellptr = &Map[coord];
+  CellClass const* cellptr = &Map[coord];
 
   /*
   **	Check for impact on a wall or other high obstacle.
@@ -1014,7 +1014,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	flight logic.
   */
   if ((Payback != nullptr && Payback->What_Am_I() == RTTI_INFANTRY &&
-       ((InfantryClass *)Payback)->Class->IsDog) ||
+       ((InfantryClass*)Payback)->Class->IsDog) ||
       (!forced && !Class->IsArcing && Class->ROT == 0 && Fuse_Target())) {
     Coord = Fuse_Target();
   }
@@ -1033,7 +1033,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
     **	damage affects the aircraft target.
     */
     if (Distance(TarCom) < 0x0080) {
-      AircraftClass *object = As_Aircraft(TarCom);
+      AircraftClass* object = As_Aircraft(TarCom);
 
       int str = Strength;
       if (object) object->Take_Damage(str, 0, Warhead, Payback);
@@ -1052,7 +1052,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	Fetch the land type that the explosion will be upon. Special case for
   **	flying aircraft targets, their land type will be LAND_NONE.
   */
-  CellClass const *cellptr = &Map[Coord];
+  CellClass const* cellptr = &Map[Coord];
   LandType land = cellptr->Land_Type();
   if (Is_Target_Aircraft(TarCom) &&
       As_Aircraft(TarCom)->In_Which_Layer() == LAYER_TOP) {
@@ -1073,7 +1073,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   }
 
   if (anim != ANIM_NONE) {
-    AnimClass *aptr = new AnimClass(anim, Coord);
+    AnimClass* aptr = new AnimClass(anim, Coord);
     /*
     ** Special case trap: if they're making the nuclear explosion,
     ** and no anim is available, force the nuclear damage anyway

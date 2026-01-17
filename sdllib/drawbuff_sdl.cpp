@@ -10,10 +10,10 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/ww_win.h"
 
-extern SDL_Renderer *SDLRenderer;
+extern SDL_Renderer* SDLRenderer;
 
 extern Uint32 ForceRenderEventID;
-static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void *) {
+static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void*) {
   // something has been draw and not displayed for 33ms
   // go tell the main thread it should probably display that
   SDL_Event ev;
@@ -27,8 +27,8 @@ bool GraphicBufferClass::Lock(void) {
   if (!PaletteSurface) return true;
 
   if (!LockCount) {
-    SDL_LockSurface((SDL_Surface *)PaletteSurface);
-    Offset = (uint8_t *)((SDL_Surface *)PaletteSurface)->pixels;
+    SDL_LockSurface((SDL_Surface*)PaletteSurface);
+    Offset = (uint8_t*)((SDL_Surface*)PaletteSurface)->pixels;
   }
 
   LockCount++;
@@ -41,7 +41,7 @@ bool GraphicBufferClass::Unlock(void) {
   LockCount--;
 
   if (!LockCount) {
-    SDL_UnlockSurface((SDL_Surface *)PaletteSurface);
+    SDL_UnlockSurface((SDL_Surface*)PaletteSurface);
     Offset = nullptr;
     Update_Window_Surface(false);
   }
@@ -50,7 +50,7 @@ bool GraphicBufferClass::Unlock(void) {
 }
 
 void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
-  auto window_tex = (SDL_Texture *)WindowTexture;
+  auto window_tex = (SDL_Texture*)WindowTexture;
 
   if (!end_frame) {
     if (!RedrawTimer)
@@ -64,9 +64,9 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   }
 
   // blit from paletted surface
-  SDL_Surface *tmp_surf;
+  SDL_Surface* tmp_surf;
   SDL_LockTextureToSurface(window_tex, nullptr, &tmp_surf);
-  SDL_BlitSurface((SDL_Surface *)PaletteSurface, nullptr, tmp_surf, nullptr);
+  SDL_BlitSurface((SDL_Surface*)PaletteSurface, nullptr, tmp_surf, nullptr);
   SDL_UnlockTexture(window_tex);
 
   // copy to screen
@@ -78,8 +78,8 @@ void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
   SDL_Event_Loop();
 }
 
-void GraphicBufferClass::Update_Palette(uint8_t *palette) {
-  auto sdl_pal = ((SDL_Surface *)PaletteSurface)->format->palette;
+void GraphicBufferClass::Update_Palette(uint8_t* palette) {
+  auto sdl_pal = ((SDL_Surface*)PaletteSurface)->format->palette;
 
   bool changed = false;
 
@@ -105,8 +105,8 @@ void GraphicBufferClass::Update_Palette(uint8_t *palette) {
   Update_Window_Surface(false);
 }
 
-const void *GraphicBufferClass::Get_Palette() const {
-  return ((SDL_Surface *)PaletteSurface)->format->palette;
+const void* GraphicBufferClass::Get_Palette() const {
+  return ((SDL_Surface*)PaletteSurface)->format->palette;
 }
 
 void GraphicBufferClass::Init_Display_Surface() {

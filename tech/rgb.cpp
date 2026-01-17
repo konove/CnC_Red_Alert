@@ -21,7 +21,7 @@
 
 #include "hsv.h"
 
-void RGBClass::Adjust(const int ratio, RGBClass const &target) {
+void RGBClass::Adjust(const int ratio, RGBClass const& target) {
   // FIX: The original code used (ratio & 0xFF), which caused the fade
   // to wrap around to 0 if the value exceeded 255 (e.g., 256 became 0).
   //
@@ -45,7 +45,7 @@ void RGBClass::Adjust(const int ratio, RGBClass const &target) {
                                          static_cast<float>(target.blue_), t));
 }
 
-int RGBClass::Difference(RGBClass const &other) const {
+int RGBClass::Difference(RGBClass const& other) const {
   auto diff_sq = [](const int a, const int b) {
     const int d = a - b;
     return d * d;

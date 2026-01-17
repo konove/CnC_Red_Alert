@@ -5,7 +5,7 @@
 
 #include "absl/log/log.h"
 
-[[nodiscard]] size_t Uncompress_Data(void *src, void *dst) {
+[[nodiscard]] size_t Uncompress_Data(void* src, void* dst) {
   if (src == nullptr || dst == nullptr) {
     return 0;
   }
@@ -22,9 +22,9 @@
   const auto method = static_cast<CompressionType>(header.Method);
 
   // Advance past header and skip data.
-  auto *payload_src =
-      static_cast<std::byte *>(src) + sizeof(CompHeaderType) + skip;
-  auto *payload_dst = static_cast<std::byte *>(dst);
+  auto* payload_src =
+      static_cast<std::byte*>(src) + sizeof(CompHeaderType) + skip;
+  auto* payload_dst = static_cast<std::byte*>(dst);
 
   switch (method) {
     case HORIZONTAL:
@@ -44,7 +44,7 @@
   return uncompressed_size;
 }
 
-extern "C" int LCW_Comp(const void * /*source*/, void * /*dest*/,
+extern "C" int LCW_Comp(const void* /*source*/, void* /*dest*/,
                         int /*length*/) {
   DLOG(INFO) << "LCW compression not implemented";
   return 0;

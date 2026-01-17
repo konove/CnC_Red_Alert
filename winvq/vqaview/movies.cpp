@@ -50,32 +50,32 @@
 // PRIVATE FUNCTIONS
 //==========================================================================
 
-void VQA_Test(char *filename);
+void VQA_Test(char* filename);
 void Create_Palette_Interpolation_Table(void);
-void Interpolate_2X_Scale(GraphicBufferClass *source, GraphicBufferClass *dest);
+void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicBufferClass* dest);
 
 //==========================================================================
 // PRIVATE GLOBALS
 //==========================================================================
 
 extern "C" {
-extern unsigned char *InterpolationPalette;
+extern unsigned char* InterpolationPalette;
 extern unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE]
                                                 [SIZE_OF_PALETTE];
 extern void __cdecl Asm_Create_Palette_Interpolation_Table(void);
-extern void __cdecl Asm_Interpolate(unsigned char *src_ptr,
-                                    unsigned char *dest_ptr, int lines,
+extern void __cdecl Asm_Interpolate(unsigned char* src_ptr,
+                                    unsigned char* dest_ptr, int lines,
                                     int src_width, int dest_width);
 }
 unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
-unsigned char *InterpolationPalette;
+unsigned char* InterpolationPalette;
 
-VQAClass *TestVqa;
+VQAClass* TestVqa;
 
 #if (!DRAW_TO_VIDEO)
-GraphicBufferClass *Draw_Page = NULL;
-GraphicBufferClass *Back_Page = NULL;
-GraphicBufferClass *Hid_Page = NULL;
+GraphicBufferClass* Draw_Page = NULL;
+GraphicBufferClass* Back_Page = NULL;
+GraphicBufferClass* Hid_Page = NULL;
 #endif
 
 /***************************************************************************
@@ -167,7 +167,7 @@ void Choose_Movie(WindowHandle window_handle) {
   static OPENFILENAME open_file_dlg;
   static char path_filename[_MAX_PATH * 500];
   static char filename[_MAX_FNAME + _MAX_EXT];
-  static char *filters[] = {"VQA files (*.VQA)", "*.vqa", "All Files", "*.*",
+  static char* filters[] = {"VQA files (*.VQA)", "*.vqa", "All Files", "*.*",
                             ""};
 
   filename[0] = 0;
@@ -233,12 +233,12 @@ void Choose_Movie(WindowHandle window_handle) {
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-void VQA_Test(char *filename) {
-  char *temp_ptr;
+void VQA_Test(char* filename) {
+  char* temp_ptr;
   int i;
-  char *draw_surface_ptr;
-  GraphicBufferClass *draw_buffer_ptr;
-  long (*callback_function_ptr)(unsigned char *, long);
+  char* draw_surface_ptr;
+  GraphicBufferClass* draw_buffer_ptr;
+  long (*callback_function_ptr)(unsigned char*, long);
 
   //
   // Handle windows messages so that any repaint occurs before we start
@@ -261,7 +261,7 @@ void VQA_Test(char *filename) {
   // Get the draw buffer.
   //
   draw_buffer_ptr->Lock();
-  draw_surface_ptr = (char *)draw_buffer_ptr->Get_Offset();
+  draw_surface_ptr = (char*)draw_buffer_ptr->Get_Offset();
   draw_buffer_ptr->Unlock();
 
   //
@@ -315,7 +315,7 @@ void VQA_Test(char *filename) {
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-long Draw_To_Video_Callback(unsigned char *buffer, long frame_number) {
+long Draw_To_Video_Callback(unsigned char* buffer, long frame_number) {
   return (0);
 }
 
@@ -331,7 +331,7 @@ long Draw_To_Video_Callback(unsigned char *buffer, long frame_number) {
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-long Draw_To_Buffer_Callback(unsigned char *buffer, long frame_number) {
+long Draw_To_Buffer_Callback(unsigned char* buffer, long frame_number) {
   //
   // Frame was skipped, bail.
   //
@@ -404,9 +404,9 @@ void Create_Palette_Interpolation_Table(void) {
   int i;
   int j;
   int p;
-  unsigned char *first_palette_ptr;
-  unsigned char *second_palette_ptr;
-  unsigned char *match_pal_ptr;
+  unsigned char* first_palette_ptr;
+  unsigned char* second_palette_ptr;
+  unsigned char* match_pal_ptr;
   int first_r;
   int first_g;
   int first_b;
@@ -426,7 +426,7 @@ void Create_Palette_Interpolation_Table(void) {
   //
   // Create an interpolation table for the current palette.
   //
-  first_palette_ptr = (unsigned char *)CurrentPalette;
+  first_palette_ptr = (unsigned char*)CurrentPalette;
   for (i = 0; i < SIZE_OF_PALETTE; i++) {
     //
     // Get the first palette entry's RGB.
@@ -438,7 +438,7 @@ void Create_Palette_Interpolation_Table(void) {
     first_b = *first_palette_ptr;
     first_palette_ptr++;
 
-    second_palette_ptr = (unsigned char *)CurrentPalette;
+    second_palette_ptr = (unsigned char*)CurrentPalette;
     for (j = 0; j < SIZE_OF_PALETTE; j++) {
       //
       // Get the second palette entry's RGB.
@@ -464,7 +464,7 @@ void Create_Palette_Interpolation_Table(void) {
       index_of_closest_color = 0;
       //			closest_distance = (256 * 256) * 3;
       closest_distance = 500000;
-      match_pal_ptr = (unsigned char *)CurrentPalette;
+      match_pal_ptr = (unsigned char*)CurrentPalette;
       for (p = 0; p < SIZE_OF_PALETTE; p++) {
         diff_r = (((int)(*match_pal_ptr)) - dest_r);
         match_pal_ptr++;
@@ -501,12 +501,12 @@ void Create_Palette_Interpolation_Table(void) {
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass *source,
-                          GraphicBufferClass *dest) {
-  unsigned char *src_ptr;
-  unsigned char *dest_ptr;
-  unsigned char *last_dest_ptr;
-  unsigned char *end_of_source;
+void Interpolate_2X_Scale(GraphicBufferClass* source,
+                          GraphicBufferClass* dest) {
+  unsigned char* src_ptr;
+  unsigned char* dest_ptr;
+  unsigned char* last_dest_ptr;
+  unsigned char* end_of_source;
   int src_width;
   int dest_width;
   //	int	width_counter;
@@ -533,8 +533,8 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
   //
   // Get pointers to the source and destination buffers.
   //
-  src_ptr = (unsigned char *)source->Get_Offset();
-  dest_ptr = (unsigned char *)dest->Get_Offset();
+  src_ptr = (unsigned char*)source->Get_Offset();
+  dest_ptr = (unsigned char*)dest->Get_Offset();
   end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
 
   //
@@ -567,11 +567,11 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass *source,
-                          GraphicBufferClass *dest) {
-  unsigned char *src_ptr;
-  unsigned char *dest_ptr;
-  unsigned char *end_of_source;
+void Interpolate_2X_Scale(GraphicBufferClass* source,
+                          GraphicBufferClass* dest) {
+  unsigned char* src_ptr;
+  unsigned char* dest_ptr;
+  unsigned char* end_of_source;
   int src_width;
   int dest_width;
   int width_counter;
@@ -579,8 +579,8 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
   //
   // Get pointers to the source and destination buffers.
   //
-  src_ptr = (unsigned char *)source->Get_Offset();
-  dest_ptr = (unsigned char *)dest->Get_Offset();
+  src_ptr = (unsigned char*)source->Get_Offset();
+  dest_ptr = (unsigned char*)dest->Get_Offset();
   end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
 
   //
@@ -640,12 +640,12 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass *source,
-                          GraphicBufferClass *dest) {
-  unsigned char *src_ptr;
-  unsigned char *dest_ptr;
-  unsigned char *dest2_ptr;
-  unsigned char *end_of_source;
+void Interpolate_2X_Scale(GraphicBufferClass* source,
+                          GraphicBufferClass* dest) {
+  unsigned char* src_ptr;
+  unsigned char* dest_ptr;
+  unsigned char* dest2_ptr;
+  unsigned char* end_of_source;
   int src_width;
   int dest_width;
   int width_counter;
@@ -653,8 +653,8 @@ void Interpolate_2X_Scale(GraphicBufferClass *source,
   //
   // Get pointers to the source and destination buffers.
   //
-  src_ptr = (unsigned char *)source->Get_Offset();
-  dest_ptr = (unsigned char *)dest->Get_Offset();
+  src_ptr = (unsigned char*)source->Get_Offset();
+  dest_ptr = (unsigned char*)dest->Get_Offset();
   end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
 
   //

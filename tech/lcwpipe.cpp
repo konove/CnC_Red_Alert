@@ -116,7 +116,7 @@ LCWPipe::~LCWPipe(void) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LCWPipe::Put(void const *source, int slen) {
+int LCWPipe::Put(void const* source, int slen) {
   if (source == nullptr || slen < 1) {
     return (Pipe::Put(source, slen));
   }
@@ -140,7 +140,7 @@ int LCWPipe::Put(void const *source, int slen) {
                       ? slen
                       : (sizeof(BlockHeader) - Counter);
         memmove(&Buffer[Counter], source, len);
-        source = ((char *)source) + len;
+        source = ((char*)source) + len;
         slen -= len;
         Counter += len;
 
@@ -165,7 +165,7 @@ int LCWPipe::Put(void const *source, int slen) {
 
         memmove(&Buffer[Counter], source, len);
         slen -= len;
-        source = ((char *)source) + len;
+        source = ((char*)source) + len;
         Counter += len;
 
         /*
@@ -190,7 +190,7 @@ int LCWPipe::Put(void const *source, int slen) {
       int tocopy =
           (slen < (BlockSize - Counter)) ? slen : (BlockSize - Counter);
       memmove(&Buffer[Counter], source, tocopy);
-      source = ((char *)source) + tocopy;
+      source = ((char*)source) + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
@@ -212,7 +212,7 @@ int LCWPipe::Put(void const *source, int slen) {
     while (slen >= BlockSize) {
       int len = LCW_Comp(source, Buffer2, BlockSize);
 
-      source = ((char *)source) + BlockSize;
+      source = ((char*)source) + BlockSize;
       slen -= BlockSize;
 
       BlockHeader.CompCount = (unsigned short)len;

@@ -72,7 +72,7 @@
 ** List of Ego Class instances
 **  There will be one instance for each line of text.
 */
-DynamicVectorClass<EgoClass *> EgoList;
+DynamicVectorClass<EgoClass*> EgoList;
 
 /*
 ** Number of slideshow pictures
@@ -119,12 +119,12 @@ char SlidePals[NUM_SLIDES][256 * 3];
 /*
 ** Array of graphic buffers containing the slides
 */
-GraphicBufferClass *SlideBuffers[NUM_SLIDES];
+GraphicBufferClass* SlideBuffers[NUM_SLIDES];
 
 /*
 ** Original copy of slide (pref in video mem) that we use to undraw the text
 */
-GraphicBufferClass *BackgroundPage;
+GraphicBufferClass* BackgroundPage;
 
 /*
 **  This palette contains both the font palette entries and the slide
@@ -135,7 +135,7 @@ PaletteClass ComboPalette;
 /*
 ** Ptr to the combo palette.
 */
-unsigned char *ComboPalPtr;
+unsigned char* ComboPalPtr;
 
 /*
 ** Lookup table. If an entry is non-zero then it should be faded in/out when the
@@ -185,7 +185,7 @@ extern void Vsync(void);
  *                                                                                             *
  * HISTORY: * 9/9/96 11:53PM ST : Created *
  *=============================================================================================*/
-EgoClass::EgoClass(int x, int y, char *text, TextPrintType flags) {
+EgoClass::EgoClass(int x, int y, char* text, TextPrintType flags) {
   XPos = x;
   YPos = y;
   Flags = flags;
@@ -262,7 +262,7 @@ void EgoClass::Render(void) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Wipe(GraphicBufferClass *background) {
+void EgoClass::Wipe(GraphicBufferClass* background) {
   int width = String_Pixel_Width(Text);
   int x = XPos;
 
@@ -291,7 +291,7 @@ void EgoClass::Wipe(GraphicBufferClass *background) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:59PM ST : Created *
  *=============================================================================================*/
-void Set_Pal(char *palette) {
+void Set_Pal(char* palette) {
   // #ifndef WIN32
   // Vsync();
   // unsigned char *rgbptr = (unsigned char *) palette;
@@ -303,7 +303,7 @@ void Set_Pal(char *palette) {
   // }
   // #else	//WIN32
 
-  Set_Palette((void *)palette);
+  Set_Palette((void*)palette);
   // #endif
 }
 
@@ -370,7 +370,7 @@ void Slide_Show(int slide, int frame) {
     // PaletteLUT);
     CCPalette.Partial_Adjust(std::min((255 / FADE_DELAY) * (frame - 10), 255),
                              ComboPalette, PaletteLUT);
-    Set_Pal((char *)&CCPalette);
+    Set_Pal((char*)&CCPalette);
     if (frame != 9 + FADE_DELAY) {
       memcpy(CCPalette, save_palette, sizeof(save_palette));
     } else {
@@ -387,14 +387,14 @@ void Slide_Show(int slide, int frame) {
     CCPalette.Partial_Adjust(
         std::min((255 / FADE_DELAY) * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
-      Set_Pal((char *)&CCPalette);
+      Set_Pal((char*)&CCPalette);
       memcpy(CCPalette, save_palette, sizeof(save_palette));
     } else {
       /*
       ** If this is the last fade down frame then zero the picture palette
       *entries.
       */
-      unsigned char *ccpalptr = (unsigned char *)CCPalette;
+      unsigned char* ccpalptr = (unsigned char*)CCPalette;
       for (int index = 0; index < 256; index++) {
         if (PaletteLUT[index]) {
           ccpalptr[index * 3] = 0;
@@ -402,7 +402,7 @@ void Slide_Show(int slide, int frame) {
           ccpalptr[index * 3 + 2] = 0;
         }
       }
-      Set_Pal((char *)&CCPalette);
+      Set_Pal((char*)&CCPalette);
     }
   }
 }
@@ -451,7 +451,7 @@ void Show_Who_Was_Responsible(void) {
   */
   CCFileClass creditsfile("credits.txt");
   if (!creditsfile.Is_Available()) return;
-  char *credits = new char[creditsfile.Size() + 1];
+  char* credits = new char[creditsfile.Size() + 1];
   creditsfile.Read(credits, creditsfile.Size());
 
   /*
@@ -467,13 +467,13 @@ void Show_Who_Was_Responsible(void) {
   int length = creditsfile.Size();
   int line = 0;
   int column = 0;
-  char *cptr = credits;
+  char* cptr = credits;
   char ch, lastchar, oldchar;
   char *strstart, *strparse;
   bool gotendstr;
   int startcolumn, endcolumn, x;
   int y = SeenBuff.Get_Height() + 2;
-  EgoClass *ego;
+  EgoClass* ego;
   TextPrintType flags;
 
   /*
@@ -671,7 +671,7 @@ void Show_Who_Was_Responsible(void) {
   /*
   ** Copy the font palette entries into the combo palette.
   */
-  ComboPalPtr = (unsigned char *)&ComboPalette;
+  ComboPalPtr = (unsigned char*)&ComboPalette;
   memcpy(ComboPalette, CCPalette, sizeof(ComboPalette));
 
   for (int index = 0; index < 256; index++) {
@@ -703,12 +703,12 @@ void Show_Who_Was_Responsible(void) {
     SlideBuffers[index]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
                               nullptr, 0, (GBC_Enum)0);
     Load_Title_Screen(&SlideNames[index][0], SlideBuffers[index],
-                      (unsigned char *)&SlidePals[index][0]);
+                      (unsigned char*)&SlidePals[index][0]);
 #else   // WIN32
     SlideBuffers[index] = new GraphicBufferClass(
-        SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+        SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
     Load_Picture(&LoresSlideNames[index][0], *SlideBuffers[index],
-                 *SlideBuffers[index], (unsigned char *)&SlidePals[index][0],
+                 *SlideBuffers[index], (unsigned char*)&SlidePals[index][0],
                  BM_DEFAULT);
 #endif  // WIN32
   }
@@ -724,7 +724,7 @@ void Show_Who_Was_Responsible(void) {
                        (GBC_Enum)(GBC_VIDEOMEM));
 #else   // WIN32
   BackgroundPage = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void *)nullptr);
+      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
 #endif  // WIN32
 
   SeenBuff.Blit(*BackgroundPage);
@@ -864,7 +864,7 @@ void Show_Who_Was_Responsible(void) {
     if (frame && 3 == 3) {
       for (i = slide_number + 1; i < NUM_SLIDES; i++) {
         if (!SlideBuffers[i]->Get_IsDirectDraw()) {
-          Force_VM_Page_In((void *)SlideBuffers[i]->Get_Offset(),
+          Force_VM_Page_In((void*)SlideBuffers[i]->Get_Offset(),
                            SeenBuff.Get_Width() * SeenBuff.Get_Height());
         }
       }

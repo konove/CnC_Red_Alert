@@ -74,7 +74,7 @@
  * HISTORY: * 10/17/1994 JLB : Created. * 07/17/1996 JLB : Uses correct default
  *values.                                             *
  *=============================================================================================*/
-BulletTypeClass::BulletTypeClass(char const *name)
+BulletTypeClass::BulletTypeClass(char const* name)
     : ObjectTypeClass(RTTI_BULLETTYPE, BulletTypes.ID(this), true, true, false,
                       false, true, true, false, TXT_NONE, name),
       IsHigh(false),
@@ -116,7 +116,7 @@ BulletTypeClass::BulletTypeClass(char const *name)
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void *BulletTypeClass::operator new(size_t) throw() {
+void* BulletTypeClass::operator new(size_t) throw() {
   return (BulletTypes.Alloc());
 }
 
@@ -136,8 +136,8 @@ void *BulletTypeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void BulletTypeClass::operator delete(void *ptr) {
-  BulletTypes.Free((BulletTypeClass *)ptr);
+void BulletTypeClass::operator delete(void* ptr) {
+  BulletTypes.Free((BulletTypeClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -201,7 +201,7 @@ void BulletTypeClass::One_Time(void) {
   **	Load the bullet shapes.
   */
   for (BulletType index = BULLET_FIRST; index < BULLET_COUNT; index++) {
-    BulletTypeClass &bullet = As_Reference(index);
+    BulletTypeClass& bullet = As_Reference(index);
 
     if (!bullet.IsInvisible) {
       auto fullname = std::filesystem::path(bullet.GraphicName)
@@ -209,7 +209,7 @@ void BulletTypeClass::One_Time(void) {
                           .string();
 
 #ifdef NDEBUG
-      const_cast<BulletTypeClass &>(bullet).SetBorrowedImage(
+      const_cast<BulletTypeClass&>(bullet).SetBorrowedImage(
           MFCD::RetrieveData(fullname));
 #else
       RawFileClass file(fullname.c_str());
@@ -240,7 +240,7 @@ void BulletTypeClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-BulletTypeClass &BulletTypeClass::As_Reference(BulletType type) {
+BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
   return (*BulletTypes.Ptr(type));
 }
 
@@ -260,7 +260,7 @@ BulletTypeClass &BulletTypeClass::As_Reference(BulletType type) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool BulletTypeClass::Read_INI(CCINIClass &ini) {
+bool BulletTypeClass::Read_INI(CCINIClass& ini) {
   if (ini.Is_Present(Name())) {
     Arming = ini.Get_Int(Name(), "Arm", Arming);
     ROT = ini.Get_Int(Name(), "ROT", ROT);

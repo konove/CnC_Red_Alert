@@ -3,12 +3,12 @@
 
 class BitmapClass {
  public:
-  BitmapClass(int w, int h, unsigned char *data)
+  BitmapClass(int w, int h, unsigned char* data)
       : Width(w), Height(h), Data(data) {};
 
   int Width;
   int Height;
-  unsigned char *Data;
+  unsigned char* Data;
 };
 
 class TPoint2D {

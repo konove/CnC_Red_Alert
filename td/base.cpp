@@ -79,7 +79,7 @@
 #include "td/vector.h"
 #include "tech/wwfile.h"
 
-int BaseNodeClass::operator==(BaseNodeClass const &node) {
+int BaseNodeClass::operator==(BaseNodeClass const& node) {
   return (Type == node.Type && Coord == node.Coord);
 }
 
@@ -94,7 +94,7 @@ int BaseNodeClass::operator==(BaseNodeClass const &node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator!=(BaseNodeClass const &node) {
+int BaseNodeClass::operator!=(BaseNodeClass const& node) {
   return (Type != node.Type || Coord != node.Coord);
 }
 
@@ -109,7 +109,7 @@ int BaseNodeClass::operator!=(BaseNodeClass const &node) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-int BaseNodeClass::operator>(BaseNodeClass const &) { return (true); }
+int BaseNodeClass::operator>(BaseNodeClass const&) { return (true); }
 
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *
@@ -126,7 +126,7 @@ int BaseNodeClass::operator>(BaseNodeClass const &) { return (true); }
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-void BaseClass::Read_INI(char *buffer) {
+void BaseClass::Read_INI(char* buffer) {
   char buf[128];
   char uname[10];
   BaseNodeClass node;  // node to add to list
@@ -190,7 +190,7 @@ void BaseClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-void BaseClass::Write_INI(char *buffer) {
+void BaseClass::Write_INI(char* buffer) {
   char buf[128];
   char uname[10];
 
@@ -230,7 +230,7 @@ void BaseClass::Write_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Load(FileClass &file) {
+bool BaseClass::Load(FileClass& file) {
   int num_struct;
   int i;
   BaseNodeClass node;
@@ -281,7 +281,7 @@ bool BaseClass::Load(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Save(FileClass &file) {
+bool BaseClass::Save(FileClass& file) {
   int num_struct;
   int i;
   BaseNodeClass node;
@@ -350,9 +350,9 @@ bool BaseClass::Is_Built(int index) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-BuildingClass *BaseClass::Get_Building(int index) {
-  BuildingClass *bldg;
-  ObjectClass *obj[4];
+BuildingClass* BaseClass::Get_Building(int index) {
+  BuildingClass* bldg;
+  ObjectClass* obj[4];
 
   /*
   ** Check the location on the map where this building should be; if it's
@@ -369,8 +369,8 @@ BuildingClass *BaseClass::Get_Building(int index) {
   for (int i = 0; i < 4; i++) {
     if (obj[i] && obj[i]->Coord == Nodes[index].Coord &&
         obj[i]->What_Am_I() == RTTI_BUILDING &&
-        ((BuildingClass *)obj[i])->Class->Type == Nodes[index].Type) {
-      bldg = (BuildingClass *)obj[i];
+        ((BuildingClass*)obj[i])->Class->Type == Nodes[index].Type) {
+      bldg = (BuildingClass*)obj[i];
       break;
     }
   }
@@ -389,7 +389,7 @@ BuildingClass *BaseClass::Get_Building(int index) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool BaseClass::Is_Node(BuildingClass *obj) {
+bool BaseClass::Is_Node(BuildingClass* obj) {
   if (Get_Node(obj) != nullptr) {
     return (true);
   } else {
@@ -409,7 +409,7 @@ bool BaseClass::Is_Node(BuildingClass *obj) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-BaseNodeClass *BaseClass::Get_Node(BuildingClass *obj) {
+BaseNodeClass* BaseClass::Get_Node(BuildingClass* obj) {
   for (int i = 0; i < Nodes.Count(); i++) {
     if (obj->Class->Type == Nodes[i].Type && obj->Coord == Nodes[i].Coord) {
       return (&Nodes[i]);
@@ -434,7 +434,7 @@ BaseNodeClass *BaseClass::Get_Node(BuildingClass *obj) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-BaseNodeClass *BaseClass::Next_Buildable(StructType type) {
+BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
   /*
   ** Loop through all node entries, returning a pointer to the first
   ** un-built one that matches the requested type.

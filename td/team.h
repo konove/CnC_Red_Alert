@@ -65,12 +65,12 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  TeamTypeClass const *const Class;
+  TeamTypeClass const* const Class;
 
   /*
   **	This specifies the owner of this team.
   */
-  HouseClass *const House;
+  HouseClass* const House;
 
   /*
   **	This flag forces the team into active state regardless of whether it
@@ -178,8 +178,8 @@ class TeamClass : public AbstractClass {
     Member = nullptr;
     IsAltered = true;
   };
-  TeamClass(TeamTypeClass const *team, HouseClass *owner);
-  TeamClass(NoInitClass const &x)
+  TeamClass(TeamTypeClass const* team, HouseClass* owner);
+  TeamClass(NoInitClass const& x)
       : AbstractClass(x),
         Class(Class),
         House(House),
@@ -187,9 +187,9 @@ class TeamClass : public AbstractClass {
         TimeOut(x) {};
   virtual ~TeamClass(void);
   virtual RTTIType What_Am_I(void) const { return RTTI_TEAM; };
-  static void operator delete(void *ptr);
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void Init(void);
   static void Suspend_Teams(int priority);
 
@@ -198,8 +198,8 @@ class TeamClass : public AbstractClass {
   /*
   **	File I/O.
   */
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
@@ -207,11 +207,11 @@ class TeamClass : public AbstractClass {
     IsForcedActive = true;
     IsUnderStrength = false;
   };
-  bool Remove(FootClass *, int typeindex = -1);
+  bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
   void AI(void);
-  void Took_Damage(FootClass *obj, ResultType result, TechnoClass *source);
-  bool Add(FootClass *, int typeindex = -1);
+  void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
+  bool Add(FootClass*, int typeindex = -1);
   void Assign_Mission_Target(TARGET new_target);
 
   /*
@@ -241,17 +241,17 @@ class TeamClass : public AbstractClass {
   bool Coordinate_Regroup(void);
   void Coordinate_Attack(void);
   void Coordinate_Move(void);
-  void Coordinate_Conscript(FootClass *unit);
+  void Coordinate_Conscript(FootClass* unit);
   //		void Control(FootClass *, bool initial=false);
-  void Calc_Center(CELL &center, CELL &obj_center) const;
+  void Calc_Center(CELL& center, CELL& obj_center) const;
   int Recruit(int typeindex);
-  bool Is_A_Member(void const *who) const;
+  bool Is_A_Member(void const* who) const;
   bool Lagging_Units(void);
 
   /*
   **	Points to the first member in the list of members for this team.
   */
-  FootClass *Member;
+  FootClass* Member;
 
   unsigned char Quantity[TeamTypeClass::MAX_TEAM_CLASSCOUNT];
 
@@ -266,7 +266,7 @@ class TeamClass : public AbstractClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

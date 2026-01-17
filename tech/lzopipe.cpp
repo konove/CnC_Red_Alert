@@ -116,7 +116,7 @@ LZOPipe::~LZOPipe(void) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZOPipe::Put(void const *source, int slen) {
+int LZOPipe::Put(void const* source, int slen) {
   if (source == nullptr || slen < 1) {
     return (Pipe::Put(source, slen));
   }
@@ -140,7 +140,7 @@ int LZOPipe::Put(void const *source, int slen) {
                       ? slen
                       : (sizeof(BlockHeader) - Counter);
         memmove(&Buffer[Counter], source, len);
-        source = ((char *)source) + len;
+        source = ((char*)source) + len;
         slen -= len;
         Counter += len;
 
@@ -165,7 +165,7 @@ int LZOPipe::Put(void const *source, int slen) {
 
         memmove(&Buffer[Counter], source, len);
         slen -= len;
-        source = ((char *)source) + len;
+        source = ((char*)source) + len;
         Counter += len;
 
         /*
@@ -174,8 +174,8 @@ int LZOPipe::Put(void const *source, int slen) {
         */
         if (Counter == BlockHeader.CompCount) {
           unsigned int length = sizeof(Buffer2);
-          lzo1x_decompress((unsigned char *)Buffer, BlockHeader.CompCount,
-                           (unsigned char *)Buffer2, &length, nullptr);
+          lzo1x_decompress((unsigned char*)Buffer, BlockHeader.CompCount,
+                           (unsigned char*)Buffer2, &length, nullptr);
           total += Pipe::Put(Buffer2, BlockHeader.UncompCount);
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
@@ -192,15 +192,15 @@ int LZOPipe::Put(void const *source, int slen) {
       int tocopy =
           (slen < (BlockSize - Counter)) ? slen : (BlockSize - Counter);
       memmove(&Buffer[Counter], source, tocopy);
-      source = ((char *)source) + tocopy;
+      source = ((char*)source) + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
       if (Counter == BlockSize) {
         unsigned int len = sizeof(Buffer2);
-        char *dictionary = new char[16 * 1024 * sizeof(void *)];
-        lzo1x_1_compress((unsigned char *)Buffer, BlockSize,
-                         (unsigned char *)Buffer2, &len, dictionary);
+        char* dictionary = new char[16 * 1024 * sizeof(void*)];
+        lzo1x_1_compress((unsigned char*)Buffer, BlockSize,
+                         (unsigned char*)Buffer2, &len, dictionary);
         delete[] dictionary;
         BlockHeader.CompCount = (unsigned short)len;
         BlockHeader.UncompCount = (unsigned short)BlockSize;
@@ -216,11 +216,11 @@ int LZOPipe::Put(void const *source, int slen) {
     */
     while (slen >= BlockSize) {
       unsigned int len = sizeof(Buffer2);
-      char *dictionary = new char[16 * 1024 * sizeof(void *)];
-      lzo1x_1_compress((unsigned char *)source, BlockSize,
-                       (unsigned char *)Buffer2, &len, dictionary);
+      char* dictionary = new char[16 * 1024 * sizeof(void*)];
+      lzo1x_1_compress((unsigned char*)source, BlockSize,
+                       (unsigned char*)Buffer2, &len, dictionary);
       delete[] dictionary;
-      source = ((char *)source) + BlockSize;
+      source = ((char*)source) + BlockSize;
       slen -= BlockSize;
 
       BlockHeader.CompCount = (unsigned short)len;
@@ -301,9 +301,9 @@ int LZOPipe::Flush(void) {
       *occurrence. Just *	compress the partial block and output normally.
       */
       unsigned int len = sizeof(Buffer2);
-      char *dictionary = new char[16 * 1024 * sizeof(void *)];
-      lzo1x_1_compress((unsigned char *)Buffer, Counter,
-                       (unsigned char *)Buffer2, &len, dictionary);
+      char* dictionary = new char[16 * 1024 * sizeof(void*)];
+      lzo1x_1_compress((unsigned char*)Buffer, Counter, (unsigned char*)Buffer2,
+                       &len, dictionary);
       delete[] dictionary;
       BlockHeader.CompCount = (unsigned short)len;
       BlockHeader.UncompCount = (unsigned short)Counter;

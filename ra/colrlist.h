@@ -62,20 +62,20 @@ class ColorListClass : public ListClass {
   } SelectStyleType;
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 void const *up, void const *down);
+                 void const* up, void const* down);
   virtual ~ColorListClass(void);
 
-  virtual int Add_Item(char const *text, RemapControlType *color = nullptr);
-  virtual int Add_Item(int text, RemapControlType *color = nullptr);
-  virtual void Remove_Item(char const *text);
+  virtual int Add_Item(char const* text, RemapControlType* color = nullptr);
+  virtual int Add_Item(int text, RemapControlType* color = nullptr);
+  virtual void Remove_Item(char const* text);
 
   virtual void Set_Selected_Style(SelectStyleType style,
-                                  RemapControlType *color = nullptr);
+                                  RemapControlType* color = nullptr);
 
   /*
   **	This is the list of colors for each item.
   */
-  DynamicVectorClass<RemapControlType *> Colors;
+  DynamicVectorClass<RemapControlType*> Colors;
 
  protected:
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
@@ -84,7 +84,7 @@ class ColorListClass : public ListClass {
   **	This tells how to draw the selected item.
   */
   SelectStyleType Style;
-  RemapControlType *SelectColor;
+  RemapControlType* SelectColor;
 };
 
 #endif

@@ -103,7 +103,7 @@
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                     void const *up, void const *down)
+                     void const* up, void const* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
@@ -154,7 +154,7 @@ ListClass::~ListClass(void) { Remove_Scroll_Bar(); }
  * INPUT:      text  -- Pointer to the string to add to the list box. * OUTPUT:
  *none * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Add_Item(char const *text) {
+int ListClass::Add_Item(char const* text) {
   if (text) {
     List.Add(text);
     Flag_To_Redraw();
@@ -205,7 +205,7 @@ int ListClass::Add_Item(int text) {
  *pointer that    * was used to add the string to the list. * HISTORY: *
  *   01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Remove_Item(char const *text) {
+void ListClass::Remove_Item(char const* text) {
   if (text) {
     List.Delete(text);
 
@@ -255,7 +255,7 @@ void ListClass::Remove_Item(char const *text) {
  *                                                                         *
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
-int ListClass::Action(unsigned flags, KeyNumType &key) {
+int ListClass::Action(unsigned flags, KeyNumType& key) {
   if (flags & LEFTRELEASE) {
     key = KN_NONE;
     flags &= (~LEFTRELEASE);
@@ -406,7 +406,7 @@ void ListClass::Step(int up) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const *ListClass::Get_Item(int index) const {
+char const* ListClass::Get_Item(int index) const {
   if (List.Count() == 0) return (nullptr);
 
   index = std::min<int>(index, List.Count() - 1);
@@ -426,7 +426,7 @@ char const *ListClass::Get_Item(int index) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const *ListClass::Current_Item(void) { return (List[SelectedIndex]); }
+char const* ListClass::Current_Item(void) { return (List[SelectedIndex]); }
 
 /***********************************************************************************************
  * ListClass::Current_Index -- Fetches the current selected index. *
@@ -464,7 +464,7 @@ int ListClass::Current_Index(void) { return (SelectedIndex); }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Peer_To_Peer(unsigned flags, KeyNumType &, ControlClass &whom) {
+void ListClass::Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) {
   if (flags & LEFTRELEASE) {
     if (&whom == &UpGadget) {
       Step(true);
@@ -622,7 +622,7 @@ int ListClass::Remove_Scroll_Bar(void) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Set_Tabs(int const *tabs) { Tabs = tabs; }
+void ListClass::Set_Tabs(int const* tabs) { Tabs = tabs; }
 
 /***********************************************************************************************
  * ListClass::Draw_Entry -- Draws a list box text line as indicated. *
@@ -685,7 +685,7 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &ListClass::Add(LinkClass &list) {
+LinkClass& ListClass::Add(LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -713,7 +713,7 @@ LinkClass &ListClass::Add(LinkClass &list) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &ListClass::Add_Head(LinkClass &list) {
+LinkClass& ListClass::Add_Head(LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -747,7 +747,7 @@ LinkClass &ListClass::Add_Head(LinkClass &list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &ListClass::Add_Tail(LinkClass &list) {
+LinkClass& ListClass::Add_Tail(LinkClass& list) {
   /*
   **	Add myself to the list.
   */
@@ -781,7 +781,7 @@ LinkClass &ListClass::Add_Tail(LinkClass &list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass *ListClass::Remove(void) {
+GadgetClass* ListClass::Remove(void) {
   /*
   **	Remove the scroll bar if it's active
   */

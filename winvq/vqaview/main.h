@@ -47,4 +47,4 @@
 // PUBLIC DATA
 //==========================================================================
 
-extern GraphicBufferClass *Screen_Buffer;
+extern GraphicBufferClass* Screen_Buffer;

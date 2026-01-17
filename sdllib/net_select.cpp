@@ -13,7 +13,7 @@
 struct SocketInfo {
   int socket;
   SocketCallback callback;
-  void *data;
+  void* data;
   bool check_write;
 };
 
@@ -21,10 +21,10 @@ static std::forward_list<SocketInfo> Sockets;
 
 static std::forward_list<SocketInfo>::iterator Find_Socket(int socket) {
   return std::find_if(Sockets.begin(), Sockets.end(),
-                      [socket](SocketInfo &s) { return s.socket == socket; });
+                      [socket](SocketInfo& s) { return s.socket == socket; });
 }
 
-bool Socket_Register_Select(int socket, SocketCallback callback, void *data) {
+bool Socket_Register_Select(int socket, SocketCallback callback, void* data) {
   if (!callback) return false;
 
   if (Find_Socket(socket) != Sockets.end()) return false;
@@ -41,7 +41,7 @@ bool Socket_Register_Select(int socket, SocketCallback callback, void *data) {
 }
 
 void Socket_Unregister_Select(int socket) {
-  Sockets.remove_if([socket](SocketInfo &s) { return s.socket == socket; });
+  Sockets.remove_if([socket](SocketInfo& s) { return s.socket == socket; });
 }
 
 void Socket_Check_Write(int socket, bool check) {
@@ -58,7 +58,7 @@ void Socket_Select() {
   FD_ZERO(&write_set);
   FD_ZERO(&err_set);
 
-  for (auto &sock : Sockets) {
+  for (auto& sock : Sockets) {
     FD_SET(sock.socket, &read_set);
     if (sock.check_write) FD_SET(sock.socket, &write_set);
     FD_SET(sock.socket, &err_set);
@@ -72,7 +72,7 @@ void Socket_Select() {
   int ready = select(max_fd + 1, &read_set, &write_set, &err_set, &timeout);
 
   if (ready) {
-    for (auto &sock : Sockets) {
+    for (auto& sock : Sockets) {
       if (FD_ISSET(sock.socket, &read_set))
         sock.callback(sock.socket, SOCKEV_READ, sock.data);
       if (FD_ISSET(sock.socket, &write_set))

@@ -32,11 +32,11 @@
 //   - else  = File is ignored, possibly a resource file for one of the other
 //   types
 //
-int Find_Patch(OUT char *filename, int maxlen, ConfigFile &config) {
+int Find_Patch(OUT char* filename, int maxlen, ConfigFile& config) {
   WIN32_FIND_DATA findData;
   char string[128];
   HANDLE hFile;
-  char *extensions[] = {"web", "exe", "exn", "rtp", nullptr};
+  char* extensions[] = {"web", "exe", "exn", "rtp", nullptr};
   int i;
   int skuIndex = 0;
   Wstring key;
@@ -77,7 +77,7 @@ int Find_Patch(OUT char *filename, int maxlen, ConfigFile &config) {
 //
 // Returns FALSE if not in the config file or invalid for some reason.
 //
-bit8 Get_App_Dir(OUT char *filename, int maxlen, ConfigFile &config,
+bit8 Get_App_Dir(OUT char* filename, int maxlen, ConfigFile& config,
                  int index) {
   char string[128];
   Wstring key;
@@ -113,7 +113,7 @@ bit8 Get_App_Dir(OUT char *filename, int maxlen, ConfigFile &config,
   DWORD type;
   DWORD length = MAX_PATH;
   regRetval = RegQueryValueEx(regKey, "InstallPath", NULL, &type,
-                              (uint8 *)gamePath, &length);
+                              (uint8*)gamePath, &length);
   DBGMSG("GAME PATH = " << gamePath);
   if ((regRetval != ERROR_SUCCESS) || (type != REG_SZ)) {
     DBGMSG("Reg failure");
@@ -123,8 +123,8 @@ bit8 Get_App_Dir(OUT char *filename, int maxlen, ConfigFile &config,
   // Find the last '\\' in a string and put a 0 after it
   //  If you only put a directory in the InstallPath key instead of a full
   //  path to a file, you better end the directory with a trailing '\\'!!!
-  char *cptr = gamePath;
-  char *tempPtr;
+  char* cptr = gamePath;
+  char* tempPtr;
   while ((tempPtr = strchr(cptr, '\\')) != nullptr) cptr = tempPtr + 1;
   if (cptr) *cptr = 0;
 
@@ -137,7 +137,7 @@ bit8 Get_App_Dir(OUT char *filename, int maxlen, ConfigFile &config,
 //
 // Delete any patch files
 //
-void Delete_Patches(ConfigFile &config) {
+void Delete_Patches(ConfigFile& config) {
   char dir[MAX_PATH];
   int i = 1;
   WIN32_FIND_DATA findData;

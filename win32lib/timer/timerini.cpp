@@ -36,10 +36,11 @@
  *   Remove_Timer_System -- Removes the timer system.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
 #include <mmsystem.h>
-#include "timer.H"
 #include <profile.h>
+#include <wwstd.h>
+
+#include "timer.H"
 
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// Defines
@@ -49,13 +50,13 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// timera.asm
-///functions//////////////////////////////
+/// functions//////////////////////////////
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern BOOL Install_Timer_Interrupt(VOID *bin_ptr, UINT rm_size, UINT freq,
+extern BOOL Install_Timer_Interrupt(VOID* bin_ptr, UINT rm_size, UINT freq,
                                     BOOL partial);
 extern BOOL Remove_Timer_Interrupt(VOID);
 

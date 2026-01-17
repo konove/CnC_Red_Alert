@@ -112,7 +112,7 @@
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-AnimType Anim_From_Name(char const *name) {
+AnimType Anim_From_Name(char const* name) {
 #ifdef VIC
   if (name == nullptr) return (ANIM_NONE);
 
@@ -145,10 +145,10 @@ AnimType Anim_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
-void Shorten_Attached_Anims(ObjectClass *obj) {
+void Shorten_Attached_Anims(ObjectClass* obj) {
   if (obj != nullptr) {
     for (int index = 0; index < Anims.Count(); index++) {
-      AnimClass &anim = *Anims.Ptr(index);
+      AnimClass& anim = *Anims.Ptr(index);
 
       if (As_Object(anim.xObject) == obj) {
         anim.Loops = 0;
@@ -277,11 +277,11 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
 
     IsTheaterShape = Class->IsTheater;
 
-    void const *shapefile = Get_Image_Data();
+    void const* shapefile = Get_Image_Data();
     if (shapefile != nullptr) {
-      void const *transtable = nullptr;
+      void const* transtable = nullptr;
       int shapenum = Class->Start + Fetch_Stage();
-      void const *remap = nullptr;
+      void const* remap = nullptr;
 
       /*
       **	If the translucent table hasn't been determined yet, then check
@@ -355,7 +355,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const *AnimClass::Overlap_List(void) const {
+short const* AnimClass::Overlap_List(void) const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -418,7 +418,7 @@ short const *AnimClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const *AnimClass::Occupy_List(bool) const {
+short const* AnimClass::Occupy_List(bool) const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -461,10 +461,10 @@ void AnimClass::Init(void) { Anims.Free_All(); }
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void *AnimClass::operator new(size_t) throw() {
-  void *ptr = Anims.Allocate();
+void* AnimClass::operator new(size_t) throw() {
+  void* ptr = Anims.Allocate();
   if (ptr != nullptr) {
-    ((AnimClass *)ptr)->IsActive = true;
+    ((AnimClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -484,11 +484,11 @@ void *AnimClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::operator delete(void *ptr) {
+void AnimClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
-    ((AnimClass *)ptr)->IsActive = false;
+    ((AnimClass*)ptr)->IsActive = false;
   }
-  Anims.Free((AnimClass *)ptr);
+  Anims.Free((AnimClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -528,11 +528,11 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
 #ifdef VIC
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    ((int &)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+    ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    ((int &)Class->LoopEnd) = Class->Stages;
+    ((int&)Class->LoopEnd) = Class->Stages;
   }
   if (Class->IsNormalized) {
     Set_Rate(Options.Normalize_Delay(Class->Delay));
@@ -595,7 +595,7 @@ AnimClass::~AnimClass(void) {
     **	an animation.
     */
     if (Target_Legal(xObject) && As_Object(xObject) != nullptr) {
-      ObjectClass *to = As_Object(xObject);
+      ObjectClass* to = As_Object(xObject);
 
       /*
       **	Remove the object from the appropriate display list.
@@ -696,11 +696,11 @@ void AnimClass::AI(void) {
 
   if (Class->Stages == -1) {
     IsTheaterShape = Class->IsTheater;
-    ((int &)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+    ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
     IsTheaterShape = false;
   }
   if (Class->LoopEnd == -1) {
-    ((int &)Class->LoopEnd) = Class->Stages;
+    ((int&)Class->LoopEnd) = Class->Stages;
   }
 
   if (Delay) {
@@ -711,11 +711,11 @@ void AnimClass::AI(void) {
   } else {
     if (Class->Stages == -1) {
       IsTheaterShape = Class->IsTheater;
-      ((int &)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
+      ((int&)Class->Stages) = Get_Build_Frame_Count(Class->Get_Image_Data());
       IsTheaterShape = false;
     }
     if (Class->LoopEnd == -1) {
-      ((int &)Class->LoopEnd) = Class->Stages;
+      ((int&)Class->LoopEnd) = Class->Stages;
     }
 
     /*
@@ -785,16 +785,16 @@ void AnimClass::AI(void) {
           */
           if (Class->ChainTo != ANIM_NONE) {
             Class =
-                (AnimTypeClass *)&AnimTypeClass::As_Reference(Class->ChainTo);
+                (AnimTypeClass*)&AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->Stages == -1) {
               IsTheaterShape = Class->IsTheater;
-              ((int &)Class->Stages) =
+              ((int&)Class->Stages) =
                   Get_Build_Frame_Count(Class->Get_Image_Data());
               IsTheaterShape = false;
             }
             if (Class->LoopEnd == -1) {
-              ((int &)Class->LoopEnd) = Class->Stages;
+              ((int&)Class->LoopEnd) = Class->Stages;
             }
 
             IsToDelete = false;
@@ -833,7 +833,7 @@ void AnimClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Attach_To(ObjectClass *obj) {
+void AnimClass::Attach_To(ObjectClass* obj) {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -944,7 +944,7 @@ void AnimClass::Middle(void) {
   assert(IsActive);
 
   CELL cell = Coord_Cell(Center_Coord());
-  CellClass *cellptr = &Map[cell];
+  CellClass* cellptr = &Map[cell];
 
   if (Class->Type == ANIM_ATOM_BLAST) {
     Do_Atom_Damage(OwnerHouse, cell);
@@ -976,7 +976,7 @@ void AnimClass::Middle(void) {
     new SmudgeClass(SMUDGE_CRATER1, Center_Coord());
   }
 
-  AnimClass *newanim;
+  AnimClass* newanim;
 
   /*
   **	If this animation spawns side effects during its lifetime, then
@@ -1078,23 +1078,23 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   **	order to properly enact retribution and record the kill for
   **	score purposes.
   */
-  BuildingClass *building = nullptr;
-  TechnoClass *backup = nullptr;
+  BuildingClass* building = nullptr;
+  TechnoClass* backup = nullptr;
   if (ownerhouse != HOUSE_NONE) {
     for (int index = 0; index < Logic.Count(); index++) {
-      ObjectClass *obj = Logic[index];
+      ObjectClass* obj = Logic[index];
 
       if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
-        backup = (TechnoClass *)obj;
+        backup = (TechnoClass*)obj;
         if (obj->What_Am_I() == RTTI_BUILDING &&
-            *((BuildingClass *)obj) == STRUCT_MSLO) {
-          building = (BuildingClass *)obj;
+            *((BuildingClass*)obj) == STRUCT_MSLO) {
+          building = (BuildingClass*)obj;
           break;
         }
       }
     }
 
-    if (building == nullptr) building = (BuildingClass *)backup;
+    if (building == nullptr) building = (BuildingClass*)backup;
   }
 
   int radius;

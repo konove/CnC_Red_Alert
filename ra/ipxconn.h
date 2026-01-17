@@ -71,7 +71,7 @@ class IPXConnClass : public ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
-               IPXAddressClass *address, int id, char *name, int extralen = 0);
+               IPXAddressClass* address, int id, char* name, int extralen = 0);
   virtual ~IPXConnClass() {};
 
   /*.....................................................................
@@ -85,10 +85,10 @@ class IPXConnClass : public ConnectionClass {
   all of them.
   .....................................................................*/
   static void Configure(unsigned short socket, int conn_num,
-                        ECBType *listen_ecb, ECBType *send_ecb,
-                        IPXHeaderType *listen_header,
-                        IPXHeaderType *send_header, char *listen_buf,
-                        char *send_buf, long handler_rm_ptr, int maxpacketlen);
+                        ECBType* listen_ecb, ECBType* send_ecb,
+                        IPXHeaderType* listen_header,
+                        IPXHeaderType* send_header, char* listen_buf,
+                        char* send_buf, long handler_rm_ptr, int maxpacketlen);
 
   /*.....................................................................
   These routines tell IPX to start listening for packets, and to stop
@@ -125,7 +125,7 @@ class IPXConnClass : public ConnectionClass {
   This is the overloaded Send routine declared in ConnectionClass, and
   used in SequencedConnClass.
   .....................................................................*/
-  virtual int Send(char *buf, int buflen, void *extrabuf, int extralen);
+  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen);
 
   /*.....................................................................
   These are the routines that access IPX.  Open_Socket & Close_Socket are
@@ -135,9 +135,9 @@ class IPXConnClass : public ConnectionClass {
   .....................................................................*/
   static int Open_Socket(unsigned short socket);
   static void Close_Socket(unsigned short socket);
-  static int Send_To(char *buf, int buflen, IPXAddressClass *address,
+  static int Send_To(char* buf, int buflen, IPXAddressClass* address,
                      NetNodeType immed);
-  static int Broadcast(char *buf, int buflen);
+  static int Broadcast(char* buf, int buflen);
 
   /*.....................................................................
   The socket ID for this connection
@@ -160,17 +160,17 @@ class IPXConnClass : public ConnectionClass {
   Variables for Listening (created by the IPXManagerClass, and passed
   in via Init).  All IPX connections share these buffers.
   .....................................................................*/
-  static ECBType *ListenECB;
-  static IPXHeaderType *ListenHeader;
-  static char *ListenBuf;
+  static ECBType* ListenECB;
+  static IPXHeaderType* ListenHeader;
+  static char* ListenBuf;
 
   /*.....................................................................
   Variables for Sending (created by the IPXManagerClass, and passed
   in via Init).  All IPX connections share these buffers.
   .....................................................................*/
-  static ECBType *SendECB;
-  static IPXHeaderType *SendHeader;
-  static char *SendBuf;
+  static ECBType* SendECB;
+  static IPXHeaderType* SendHeader;
+  static char* SendBuf;
 
   /*.....................................................................
   This is a REAL-MODE pointer to the event-service-routine for IPX.

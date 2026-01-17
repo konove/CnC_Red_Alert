@@ -63,8 +63,8 @@
  **
  *=========================================================================*/
 
-VOID cdecl Init_Priority_System(GraphicBufferClass *mask,
-                                GraphicBufferClass *back) {
+VOID cdecl Init_Priority_System(GraphicBufferClass* mask,
+                                GraphicBufferClass* back) {
   MaskPage = mask->Get_Buffer();
   BackGroundPage = back->Get_Buffer();
 }

@@ -68,28 +68,28 @@
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-            void const *up, void const *down);
+            void const* up, void const* down);
   virtual ~ListClass(void);
 
   //		static ListClass * Create_One_Of(int id, int x, int y, int w,
   // int h, TextPrintType flags, void const * up, void const * down);
-  virtual int Add_Item(char const *text);
+  virtual int Add_Item(char const* text);
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar(void);
   virtual void Bump(int up);
   virtual int Count(void) { return List.Count(); };
   virtual int Current_Index(void);
-  virtual char const *Current_Item(void);
+  virtual char const* Current_Item(void);
   virtual int Draw_Me(int forced);
-  virtual char const *Get_Item(int index) const;
+  virtual char const* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
 
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType &key,
-                            ControlClass &whom);
-  virtual void Remove_Item(char const *text);
+  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                            ControlClass& whom);
+  virtual void Remove_Item(char const* text);
   virtual int Remove_Scroll_Bar(void);
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Tabs(int const *tabs);
+  virtual void Set_Tabs(int const* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
 
@@ -97,13 +97,13 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  virtual LinkClass &Add(LinkClass &object);
-  virtual LinkClass &Add_Tail(LinkClass &object);
-  virtual LinkClass &Add_Head(LinkClass &object);
-  virtual GadgetClass *Remove(void);
+  virtual LinkClass& Add(LinkClass& object);
+  virtual LinkClass& Add_Tail(LinkClass& object);
+  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual GadgetClass* Remove(void);
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
 
   /*
@@ -117,14 +117,14 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  int const *Tabs;
+  int const* Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager. The
   *pointers *	are stored in EMS. The text that is pointed to may also be in
   *EMS.
   */
-  DynamicVectorClass<char const *> List;
+  DynamicVectorClass<char const*> List;
   // EMSListOf<char const *> List;
 
   /*

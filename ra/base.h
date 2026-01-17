@@ -56,9 +56,9 @@ class BaseNodeClass {
  public:
   BaseNodeClass(void) {};
   BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {};
-  int operator==(BaseNodeClass const &node);
-  int operator!=(BaseNodeClass const &node);
-  int operator>(BaseNodeClass const &node);
+  int operator==(BaseNodeClass const& node);
+  int operator!=(BaseNodeClass const& node);
+  int operator>(BaseNodeClass const& node);
 
   StructType Type;
   CELL Cell;
@@ -87,11 +87,11 @@ class BaseClass {
   /*
   ** The standard suite of load/save support routines
   */
-  void Read_INI(CCINIClass &ini);
-  void Write_INI(CCINIClass &ini);
-  static char const *INI_Name() { return "Base"; }
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  void Read_INI(CCINIClass& ini);
+  void Write_INI(CCINIClass& ini);
+  static char const* INI_Name() { return "Base"; }
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
   virtual void Code_Pointers() {}
   virtual void Decode_Pointers() {}
 
@@ -103,24 +103,24 @@ class BaseClass {
   /*
   ** Returns a pointer to the object for the given node
   */
-  BuildingClass *Get_Building(int index) const;
+  BuildingClass* Get_Building(int index) const;
 
   /*
   ** Tells if the given building ptr is a node in this base's list.
   */
-  bool Is_Node(BuildingClass const *obj);
+  bool Is_Node(BuildingClass const* obj);
 
   /*
   ** Returns a pointer to the requested node.
   */
-  BaseNodeClass *Get_Node(BuildingClass const *obj);
-  BaseNodeClass *Get_Node(int index) { return (&Nodes[index]); }
-  BaseNodeClass *Get_Node(CELL cell);
+  BaseNodeClass* Get_Node(BuildingClass const* obj);
+  BaseNodeClass* Get_Node(int index) { return (&Nodes[index]); }
+  BaseNodeClass* Get_Node(CELL cell);
 
   /*
   ** Returns a pointer to the next "hole" in the Nodes list.
   */
-  BaseNodeClass *Next_Buildable(StructType type = STRUCT_NONE);
+  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE);
 
   /*
   ** This is the list of "nodes" that define the base.  Portions of this

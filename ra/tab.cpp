@@ -64,7 +64,7 @@
 #include "tech/fixed.h"
 #include "tech/rawfile.h"
 
-void const *TabClass::TabShape = nullptr;
+void const* TabClass::TabShape = nullptr;
 
 /***********************************************************************************************
  * TabClass::TabClass -- Default construct for the tab button class. *
@@ -236,7 +236,7 @@ void TabClass::Hilite_Tab(int tab) {
  *handle mouse shape properly.                                    * 08/25/1995
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
-void TabClass::AI(KeyNumType &input, int x, int y) {
+void TabClass::AI(KeyNumType& input, int x, int y) {
   if (y >= 0 && y < (TAB_HEIGHT * RESFACTOR) &&
       x < (SeenBuff.Get_Width() - 1) && x > 0) {
     bool ok = false;

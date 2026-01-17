@@ -58,11 +58,11 @@
  * BoundH  - Bounding height of text.
  */
 typedef struct _CaptionNode {
-  struct _CaptionNode *Succ;
-  struct _CaptionNode *Pred;
+  struct _CaptionNode* Succ;
+  struct _CaptionNode* Pred;
   unsigned short Flags;
-  CaptionText *Captext;
-  char *Char;
+  CaptionText* Captext;
+  char* Char;
   unsigned short CurX;
   unsigned short CurY;
   unsigned short BoundW;
@@ -80,9 +80,9 @@ typedef struct _CaptionNode {
  * TailPred - Pointer to the last node in the list.
  */
 typedef struct _CaptionList {
-  CaptionNode *Head;
-  CaptionNode *Tail;
-  CaptionNode *TailPred;
+  CaptionNode* Head;
+  CaptionNode* Tail;
+  CaptionNode* TailPred;
 } CaptionList;
 
 /* CaptionInfo:
@@ -97,20 +97,20 @@ typedef struct _CaptionList {
  * Buffer - Caption chunk buffer.
  */
 typedef struct _CaptionInfo {
-  CaptionText *Next;
+  CaptionText* Next;
   CaptionList List;
-  void *Font;
+  void* Font;
   char FontHeight;
   char FontWidth;
-  void *Buffer;
+  void* Buffer;
 } CaptionInfo;
 
 /*---------------------------------------------------------------------------
  * FUNCTION PROTOTYPES
  *-------------------------------------------------------------------------*/
 
-CaptionInfo *OpenCaptions(void *captions, void *font);
-void CloseCaptions(CaptionInfo *cap);
-void DoCaptions(CaptionInfo *cap, unsigned long frame);
+CaptionInfo* OpenCaptions(void* captions, void* font);
+void CloseCaptions(CaptionInfo* cap);
+void DoCaptions(CaptionInfo* cap, unsigned long frame);
 
 #endif /* VQACAPTION_H */

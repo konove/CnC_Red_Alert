@@ -115,7 +115,7 @@ void TeamTypeClass::Code_Pointers(void) {
   **	Code the Class array
   */
   for (int i = 0; i < ClassCount; i++) {
-    Members[i].Class = (TechnoTypeClass *)Members[i].Class->As_Target();
+    Members[i].Class = (TechnoTypeClass*)Members[i].Class->As_Target();
     assert(Members[i].Class != nullptr);
   }
 }
@@ -165,7 +165,7 @@ void TeamClass::Code_Pointers(void) {
   **	Code the 'Member'
   */
   if (Member) {
-    Member = (FootClass *)Member->As_Target();
+    Member = (FootClass*)Member->As_Target();
   }
 }
 
@@ -188,7 +188,7 @@ void TeamClass::Decode_Pointers(void) {
   **	Decode the 'Member'
   */
   if (Member) {
-    Member = (FootClass *)As_Techno((TARGET)Member);
+    Member = (FootClass*)As_Techno((TARGET)Member);
     assert(Member != nullptr);
   }
 }
@@ -254,7 +254,7 @@ void BulletClass::Code_Pointers(void) {
   **	Code 'Payback'
   */
   if (Payback) {
-    Payback = (TechnoClass *)Payback->As_Target();
+    Payback = (TechnoClass*)Payback->As_Target();
   }
 
   /*
@@ -310,10 +310,10 @@ void BulletClass::Decode_Pointers(void) {
  *=============================================================================================*/
 void FactoryClass::Code_Pointers(void) {
   if (Object) {
-    Object = (TechnoClass *)Object->As_Target();
+    Object = (TechnoClass*)Object->As_Target();
   }
 
-  ((HouseClass *&)House) = (HouseClass *)House->Class->House;
+  ((HouseClass*&)House) = (HouseClass*)House->Class->House;
 }
 
 /***********************************************************************************************
@@ -336,7 +336,7 @@ void FactoryClass::Decode_Pointers(void) {
     assert(Object != nullptr);
   }
 
-  ((HouseClass *&)House) = HouseClass::As_Pointer((HousesType)(intptr_t)House);
+  ((HouseClass*&)House) = HouseClass::As_Pointer((HousesType)(intptr_t)House);
   assert(House != nullptr);
 }
 
@@ -351,7 +351,7 @@ void FactoryClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool LayerClass::Load(Straw &file) {
+bool LayerClass::Load(Straw& file) {
   /*
   **	Read # elements in the layer
   */
@@ -369,8 +369,8 @@ bool LayerClass::Load(Straw &file) {
   **	Read in all array elements
   */
   for (int index = 0; index < count; index++) {
-    ObjectClass *ptr;
-    if (file.Get(&ptr, sizeof(ObjectClass *)) != sizeof(ObjectClass *)) {
+    ObjectClass* ptr;
+    if (file.Get(&ptr, sizeof(ObjectClass*)) != sizeof(ObjectClass*)) {
       return (false);
     }
     Add(ptr);
@@ -390,7 +390,7 @@ bool LayerClass::Load(Straw &file) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool LayerClass::Save(Pipe &file) const {
+bool LayerClass::Save(Pipe& file) const {
   /*
   **	Save # array elements
   */
@@ -401,8 +401,8 @@ bool LayerClass::Save(Pipe &file) const {
   **	Save all elements
   */
   for (int index = 0; index < count; index++) {
-    ObjectClass *ptr = (*this)[index];
-    file.Put(&ptr, sizeof(ObjectClass *));
+    ObjectClass* ptr = (*this)[index];
+    file.Put(&ptr, sizeof(ObjectClass*));
   }
 
   return (true);
@@ -426,9 +426,9 @@ bool LayerClass::Save(Pipe &file) const {
  *=============================================================================================*/
 void LayerClass::Code_Pointers(void) {
   for (int index = 0; index < Count(); index++) {
-    ObjectClass *obj = (*this)[index];
+    ObjectClass* obj = (*this)[index];
     assert(obj != nullptr);
-    (*this)[index] = (ObjectClass *)(obj->As_Target());
+    (*this)[index] = (ObjectClass*)(obj->As_Target());
   }
 }
 
@@ -449,7 +449,7 @@ void LayerClass::Code_Pointers(void) {
 void LayerClass::Decode_Pointers(void) {
   for (int index = 0; index < Count(); index++) {
     TARGET target = (TARGET)(intptr_t)(*this)[index];
-    (*this)[index] = (ObjectClass *)As_Object(target);
+    (*this)[index] = (ObjectClass*)As_Object(target);
     assert((*this)[index] != nullptr);
   }
 }
@@ -540,9 +540,9 @@ void ScoreClass::Decode_Pointers(void) { RealTime.Start(); }
  *=============================================================================================*/
 void FootClass::Code_Pointers(void) {
   if (Member != nullptr && Member->IsActive) {
-    Member = (FootClass *)Member->As_Target();
+    Member = (FootClass*)Member->As_Target();
   } else {
-    Member = (FootClass *)TARGET_NONE;
+    Member = (FootClass*)TARGET_NONE;
   }
 
   TechnoClass::Code_Pointers();
@@ -564,7 +564,7 @@ void FootClass::Code_Pointers(void) {
  *=============================================================================================*/
 void FootClass::Decode_Pointers(void) {
   if ((TARGET)(intptr_t)Member != TARGET_NONE) {
-    Member = (FootClass *)As_Techno((TARGET)(intptr_t)Member);
+    Member = (FootClass*)As_Techno((TARGET)(intptr_t)Member);
     assert(Member != nullptr);
   }
 
@@ -592,7 +592,7 @@ void RadioClass::Code_Pointers(void) {
   **	Code 'Radio'
   */
   if (Radio) {
-    Radio = (RadioClass *)Radio->As_Target();
+    Radio = (RadioClass*)Radio->As_Target();
   }
 
   MissionClass::Code_Pointers();
@@ -685,7 +685,7 @@ void CargoClass::Code_Pointers(void) {
   **	Code 'CargoHold'
   */
   if (CargoHold) {
-    CargoHold = (FootClass *)CargoHold->As_Target();
+    CargoHold = (FootClass*)CargoHold->As_Target();
   }
 }
 
@@ -708,7 +708,7 @@ void CargoClass::Decode_Pointers(void) {
   **	Decode 'CargoHold'
   */
   if (CargoHold) {
-    CargoHold = (FootClass *)As_Techno((TARGET)(intptr_t)CargoHold);
+    CargoHold = (FootClass*)As_Techno((TARGET)(intptr_t)CargoHold);
     assert(CargoHold != nullptr);
   }
 }
@@ -731,7 +731,7 @@ void CargoClass::Decode_Pointers(void) {
  *=============================================================================================*/
 void ObjectClass::Code_Pointers(void) {
   if (Next) {
-    Next = (ObjectClass *)Next->As_Target();
+    Next = (ObjectClass*)Next->As_Target();
   }
 }
 

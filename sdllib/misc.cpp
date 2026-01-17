@@ -17,7 +17,7 @@ long RandNumb;
 void (*Misc_Focus_Loss_Function)(void);
 void (*Misc_Focus_Restore_Function)(void);
 
-bool Set_Video_Mode(void * /*hwnd*/, int /*w*/, int /*h*/,
+bool Set_Video_Mode(void* /*hwnd*/, int /*w*/, int /*h*/,
                     int /*bits_per_pixel*/) {
   printf("%s\n", __func__);
   return true;
@@ -33,7 +33,7 @@ void Delay(int duration) {
   while (WindowsTimer->Get_System_Tick_Count() < target) Video_End_Frame();
 }
 
-void *Build_Fading_Table(void const *palette, void *dest, long int color,
+void* Build_Fading_Table(void const* palette, void* dest, long int color,
                          long int frac) {
   unsigned matchvalue;
   uint8_t targetred;
@@ -51,14 +51,14 @@ void *Build_Fading_Table(void const *palette, void *dest, long int color,
   if (frac > 255) frac = 255;
 
   // Record the target gun values.
-  auto pal8 = (uint8_t *)palette;
+  auto pal8 = (uint8_t*)palette;
   targetred = pal8[color * 3 + 0];
   targetgreen = pal8[color * 3 + 0];
   targetblue = pal8[color * 3 + 0];
 
   // Main loop
 
-  auto dptr = (uint8_t *)dest;
+  auto dptr = (uint8_t*)dest;
 
   // Transparent black never gets remapped.
   *dptr++ = 0;
@@ -119,7 +119,7 @@ void *Build_Fading_Table(void const *palette, void *dest, long int color,
   return dest;
 }
 
-int Confine_Rect(int *x, int *y, int dw, int dh, int width, int height) {
+int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
   int ret = 0;
 
   if (*x < 0) {
@@ -176,7 +176,7 @@ int IRandom(int minval, int maxval) {
 
 uint8_t Random() {
   // mmm
-  auto r = (uint8_t *)&RandNumb;
+  auto r = (uint8_t*)&RandNumb;
 
   uint8_t tmp = r[0] >> 1;
   int c = tmp & 1;
@@ -209,7 +209,7 @@ static unsigned Divide_With_Round(unsigned num, unsigned den) {
 #define RGB_BASE 63  // Not 64, this is really the max value.
 
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int *h, unsigned int *s, unsigned int *v) {
+                        unsigned int* h, unsigned int* s, unsigned int* v) {
   unsigned int m, r1, g1, b1, tmp;
 
   // Convert RGB base to HSV base.
@@ -273,7 +273,7 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
 }
 
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int *r, unsigned int *g, unsigned int *b) {
+                        unsigned int* r, unsigned int* g, unsigned int* b) {
   unsigned int i;  // Integer part.
   unsigned int f;  // Fractional or remainder part.  f/HSV_BASE gives fraction.
   unsigned int tmp;        // Tempary variable to help with calculations.

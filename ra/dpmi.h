@@ -88,8 +88,8 @@ class DOSSegmentClass {
   **	These routines will move the data to/from regular memory and the
   *segment/descriptor *	memory.
   */
-  void Copy_To(void *source, int dest, int size);
-  void Copy_From(void *dest, int source, int size);
+  void Copy_To(void* source, int dest, int size);
+  void Copy_From(void* dest, int source, int size);
   void Copy_Word_To(short data, int dest);
   void Copy_Byte_To(char data, int dest);
   void Copy_DWord_To(long data, int dest);
@@ -103,9 +103,9 @@ class DOSSegmentClass {
   *memory in protected mode or when dealing *	with hard memory areas such as
   *the screen.
   */
-  static void Copy(DOSSegmentClass &src, int soffset, DOSSegmentClass &dest,
+  static void Copy(DOSSegmentClass& src, int soffset, DOSSegmentClass& dest,
                    int doffset, int size);
-  static void Swap(DOSSegmentClass &src, int soffset, DOSSegmentClass &dest,
+  static void Swap(DOSSegmentClass& src, int soffset, DOSSegmentClass& dest,
                    int doffset, int size);
 };
 
@@ -114,15 +114,15 @@ inline DOSSegmentClass::DOSSegmentClass(void) { Selector = 0xB0000; }
 inline DOSSegmentClass::~DOSSegmentClass(void) {}
 
 inline void DOSSegmentClass::Copy_Word_To(short data, int dest) {
-  *(short *)(Selector + dest) = data;
+  *(short*)(Selector + dest) = data;
 }
 
 inline void DOSSegmentClass::Copy_Byte_To(char data, int dest) {
-  *(char *)(Selector + dest) = data;
+  *(char*)(Selector + dest) = data;
 }
 
 inline void DOSSegmentClass::Copy_DWord_To(long data, int dest) {
-  *(long *)(Selector + dest) = data;
+  *(long*)(Selector + dest) = data;
 }
 
 inline void DOSSegmentClass::Assign(unsigned short segment, long) {
@@ -133,31 +133,31 @@ inline DOSSegmentClass::DOSSegmentClass(unsigned short segment, long) {
   Assign(segment);
 }
 
-inline void DOSSegmentClass::Copy_To(void *source, int dest, int size) {
-  memmove((void *)(Selector + dest), source, (unsigned)size);
+inline void DOSSegmentClass::Copy_To(void* source, int dest, int size) {
+  memmove((void*)(Selector + dest), source, (unsigned)size);
 }
 
-inline void DOSSegmentClass::Copy_From(void *dest, int source, int size) {
-  memmove(dest, (void *)(Selector + source), (unsigned)size);
+inline void DOSSegmentClass::Copy_From(void* dest, int source, int size) {
+  memmove(dest, (void*)(Selector + source), (unsigned)size);
 }
 
-inline void DOSSegmentClass::Copy(DOSSegmentClass &src, int soffset,
-                                  DOSSegmentClass &dest, int doffset,
+inline void DOSSegmentClass::Copy(DOSSegmentClass& src, int soffset,
+                                  DOSSegmentClass& dest, int doffset,
                                   int size) {
-  memmove((void *)(dest.Selector + doffset), (void *)(src.Selector + soffset),
+  memmove((void*)(dest.Selector + doffset), (void*)(src.Selector + soffset),
           (unsigned)size);
 }
 
 inline short DOSSegmentClass::Copy_Word_From(int source) {
-  return *(short *)(Selector + source);
+  return *(short*)(Selector + source);
 }
 
 inline char DOSSegmentClass::Copy_Byte_From(int source) {
-  return *(char *)(Selector + source);
+  return *(char*)(Selector + source);
 }
 
 inline long DOSSegmentClass::Copy_DWord_From(int source) {
-  return *(long *)(Selector + source);
+  return *(long*)(Selector + source);
 }
 
 inline unsigned int DOSSegmentClass::Get_Selector(void) { return Selector; }

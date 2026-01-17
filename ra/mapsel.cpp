@@ -72,14 +72,14 @@
 #include "tech/ftimer.h"
 #include "tech/rgb.h"
 
-void Cycle_Call_Back_Delay(int time, PaletteClass &pal);
+void Cycle_Call_Back_Delay(int time, PaletteClass& pal);
 extern int ControlQ;
 
 int Mouse_Over_Spot(int house, int scenario);
-void Set_Mouse(MouseType shape, int &start, int &count, int &delay, int &xspot,
-               int &yspot);
+void Set_Mouse(MouseType shape, int& start, int& count, int& delay, int& xspot,
+               int& yspot);
 // VG for ant mission progression
-const char *antmission[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
+const char* antmission[] = {nullptr, "SCA01EA.INI", "SCA02EA.INI",
                             "SCA03EA.INI", "SCA04EA.INI"};
 
 struct point {
@@ -135,7 +135,7 @@ extern int CopyType;
 #ifndef WIN32
 extern short StreamLowImpact;
 #endif
-char const *Map_Selection(void) {
+char const* Map_Selection(void) {
   static char scenarioname[_MAX_FNAME + _MAX_EXT];
 
   if (AntsEnabled) {
@@ -163,25 +163,25 @@ char const *Map_Selection(void) {
   int xspot = 0;
   int yspot = 0;
 
-  void const *appear1 = MFCD::Retrieve("MAPWIPE2.AUD");
-  void const *bleep11 = MFCD::Retrieve("BLEEP11.AUD");
-  void const *country4 = MFCD::Retrieve("MAPWIPE5.AUD");
-  void const *toney7 = MFCD::Retrieve("TONEY7.AUD");
-  void const *bleep17 = MFCD::Retrieve("BLEEP17.AUD");
+  void const* appear1 = MFCD::Retrieve("MAPWIPE2.AUD");
+  void const* bleep11 = MFCD::Retrieve("BLEEP11.AUD");
+  void const* country4 = MFCD::Retrieve("MAPWIPE5.AUD");
+  void const* toney7 = MFCD::Retrieve("TONEY7.AUD");
+  void const* bleep17 = MFCD::Retrieve("BLEEP17.AUD");
 
-  void const *scold1 = MFCD::Retrieve("TONEY4.AUD");
-  void const *country1 = MFCD::Retrieve("TONEY10.AUD");
+  void const* scold1 = MFCD::Retrieve("TONEY4.AUD");
+  void const* country1 = MFCD::Retrieve("TONEY10.AUD");
 
 #if RESFACTOR == 2
-  GraphicBufferClass *pseudoseenbuff =
-      new GraphicBufferClass(320, 200, (void *)nullptr);
+  GraphicBufferClass* pseudoseenbuff =
+      new GraphicBufferClass(320, 200, (void*)nullptr);
 #endif
 
   //	fixed oldvolume = Options.ScoreVolume;
   //	Options.Set_Score_Volume(fixed(4, 10));
   Theme.Queue_Song(THEME_MAP);
 
-  void *anim = Open_Animation(
+  void* anim = Open_Animation(
       _filename, nullptr, 0L,
       (WSAOpenType)(WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE), mappalette);
 
@@ -370,7 +370,7 @@ int Mouse_Over_Spot(int house, int scenario) {
   }
   return (retval);
 }
-void Cycle_Call_Back_Delay(int time, PaletteClass &pal) {
+void Cycle_Call_Back_Delay(int time, PaletteClass& pal) {
   static CDTimerClass<SystemTimerClass> _ftimer;
   static bool _up = false;
   static int val = 255;
@@ -410,8 +410,8 @@ void Cycle_Call_Back_Delay(int time, PaletteClass &pal) {
   }
 }
 
-void Set_Mouse(MouseType shape, int &start, int &count, int &delay, int &xspot,
-               int &yspot) {
+void Set_Mouse(MouseType shape, int& start, int& count, int& delay, int& xspot,
+               int& yspot) {
   switch (shape) {
     case MOUSE_NORMAL:
       start = 0;

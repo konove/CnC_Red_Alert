@@ -83,7 +83,7 @@ extern unsigned long Get_Game_Time(void);
  * GLOBAL DATA
  *-------------------------------------------------------------------------*/
 
-static VQAHandleP *VQAP = nullptr;
+static VQAHandleP* VQAP = nullptr;
 static long AudioFlags = 0;
 static long TimerIntCount = 0;
 static uint16_t VQATimer = 0;
@@ -91,14 +91,14 @@ static long TimerMethod;
 static long VQATickCount = 0;
 
 static long TickOffset = 0;
-char *HMIDevName = "<none>";
+char* HMIDevName = "<none>";
 
 extern int VQAMovieDone;
 static bool VQAAudioPaused = false;
-static SDL_AudioStream *SDLStream = nullptr;
+static SDL_AudioStream* SDLStream = nullptr;
 static unsigned StreamConvScale = 1 << 15;
 
-static void VQA_Audio_Callback(uint8_t *stream, int len) {
+static void VQA_Audio_Callback(uint8_t* stream, int len) {
   // called from SDL audio callback
   if (!VQAP) return;
   auto audio = &VQAP->VQABuf->Audio;
@@ -175,8 +175,8 @@ static void VQA_Audio_Callback(uint8_t *stream, int len) {
  *
  ****************************************************************************/
 
-long VQA_StartTimerInt(VQAHandleP *vqap, long /*init*/) {
-  VQAAudio *audio;
+long VQA_StartTimerInt(VQAHandleP* vqap, long /*init*/) {
+  VQAAudio* audio;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -224,7 +224,7 @@ long VQA_StartTimerInt(VQAHandleP *vqap, long /*init*/) {
  *
  ****************************************************************************/
 
-void VQA_StopTimerInt(VQAHandleP * /*vqap*/) {
+void VQA_StopTimerInt(VQAHandleP* /*vqap*/) {
   /* Decrement the timer interrupt usage count. */
   if (TimerIntCount) {
     TimerIntCount--;
@@ -266,10 +266,10 @@ void VQA_StopTimerInt(VQAHandleP * /*vqap*/) {
 
 static int OpenCount = 0;
 
-long VQA_OpenAudio(VQAHandleP *vqap, void * /*window*/) {
-  VQAData *vqabuf;
-  VQAAudio *audio;
-  VQAConfig *config;
+long VQA_OpenAudio(VQAHandleP* vqap, void* /*window*/) {
+  VQAData* vqabuf;
+  VQAAudio* audio;
+  VQAConfig* config;
 
   /* Dereference data memebers for quicker access. */
   config = &vqap->Config;
@@ -290,7 +290,7 @@ long VQA_OpenAudio(VQAHandleP *vqap, void * /*window*/) {
   // setup audio stream
   if (SDLStream) SDL_FreeAudioStream(SDLStream);
 
-  auto spec = (SDL_AudioSpec *)config->AudioSpec;
+  auto spec = (SDL_AudioSpec*)config->AudioSpec;
 
   SDLStream = SDL_NewAudioStream(
       audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8, audio->Channels,
@@ -336,9 +336,9 @@ long VQA_OpenAudio(VQAHandleP *vqap, void * /*window*/) {
  *
  ****************************************************************************/
 
-void VQA_CloseAudio(VQAHandleP *vqap) {
-  VQAAudio *audio;
-  VQAConfig *config;
+void VQA_CloseAudio(VQAHandleP* vqap) {
+  VQAAudio* audio;
+  VQAConfig* config;
 
   /* Dereference for quick access. */
   audio = &vqap->VQABuf->Audio;
@@ -393,9 +393,9 @@ void VQA_CloseAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-long VQA_StartAudio(VQAHandleP *vqap) {
-  VQAConfig *config;
-  VQAAudio *audio;
+long VQA_StartAudio(VQAHandleP* vqap) {
+  VQAConfig* config;
+  VQAAudio* audio;
 
   /* Save buffers for the callback routine */
   VQAP = vqap;
@@ -442,8 +442,8 @@ long VQA_StartAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-void VQA_StopAudio(VQAHandleP *vqap) {
-  VQAAudio *audio;
+void VQA_StopAudio(VQAHandleP* vqap) {
+  VQAAudio* audio;
 
   /* Dereference commonly used data members for quicker access. */
   audio = &vqap->VQABuf->Audio;
@@ -487,9 +487,9 @@ void VQA_StopAudio(VQAHandleP *vqap) {
  *
  ****************************************************************************/
 
-long CopyAudio(VQAHandleP *vqap) {
-  VQAAudio *audio;
-  VQAConfig *config;
+long CopyAudio(VQAHandleP* vqap) {
+  VQAAudio* audio;
+  VQAConfig* config;
   long startblock;
   long endblock;
   long len1, len2;
@@ -623,7 +623,7 @@ void VQA_ResumeAudio(void) {
  *
  ****************************************************************************/
 
-void VQA_SetTimer(VQAHandleP *vqap, long time, long method) {
+void VQA_SetTimer(VQAHandleP* vqap, long time, long method) {
   unsigned long curtime;
 
   /* If the client does not have a preferencee then pick a method
@@ -719,9 +719,9 @@ void VQA_SetTimer(VQAHandleP *vqap, long time, long method) {
  *     Time - Time in VQA_TIMETICKS
  *
  ****************************************************************************/
-int64_t VQA_GetTime(VQAHandleP *vqap) {
-  VQAAudio *audio;
-  VQAConfig *config;
+int64_t VQA_GetTime(VQAHandleP* vqap) {
+  VQAAudio* audio;
+  VQAConfig* config;
   unsigned long totalbytes;
   unsigned long samples;
   uint32_t play_cursor;  // Position that direct sound is reading from

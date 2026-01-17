@@ -48,9 +48,9 @@ void Window_Show_Mouse(void);
 /* The following prototypes are for the file: WINDOWS.CPP
  */
 /*=========================================================================*/
-void Standard_More_Prompt(char const *prompt, int space, int fcolor,
+void Standard_More_Prompt(char const* prompt, int space, int fcolor,
                           int bcolor);
-void Set_More_Prompt(char const *prompt, int space, int fcolor, int bcolor);
+void Set_More_Prompt(char const* prompt, int space, int fcolor, int bcolor);
 void Set_More_On(void);
 void Set_More_Off(void);
 int Change_Window(int windnum);
@@ -90,8 +90,8 @@ extern unsigned int WinW;
 extern unsigned int Window;
 
 extern int MoreOn;
-extern char *TXT_MoreText;
+extern char* TXT_MoreText;
 
-extern void (*Window_More_Ptr)(char const *, int, int, int);
+extern void (*Window_More_Ptr)(char const*, int, int, int);
 
 #endif  // WINDOWS_H

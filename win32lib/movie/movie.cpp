@@ -33,10 +33,12 @@
  ****************************************************************************/
 
 #include "movie.h"
-#include <mmstream.h>
-#include <streams.h>
+
 #include <amstream.h>
 #include <ddstream.h>
+#include <mmstream.h>
+#include <streams.h>
+
 #include <cstdio>
 
 // We declare these variables global because RA doesn't like the DirectXMedia

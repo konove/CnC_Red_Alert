@@ -95,8 +95,8 @@ class ChronalVortexClass {
   /*
   ** Functions to load and save the vortex.
   */
-  void Load(Straw &file);
-  void Save(Pipe &file);
+  void Load(Straw& file);
+  void Save(Pipe& file);
 
   /*
   ** Returns true of vortex is currently active.
@@ -107,7 +107,7 @@ class ChronalVortexClass {
   ** Makes the vortex attack the specified target. Target must be in range of
   *the vortex.
   */
-  void Set_Target(ObjectClass *target);
+  void Set_Target(ObjectClass* target);
 
   /*
   ** Disables the vortex.
@@ -141,10 +141,10 @@ class ChronalVortexClass {
   /*
   ** Members for setting up the lookup tables.
   */
-  void Build_Fading_Table(PaletteClass const &palette, void *dest, int color,
+  void Build_Fading_Table(PaletteClass const& palette, void* dest, int color,
                           int frac);
-  void Coordinate_Remap(GraphicViewPortClass *inbuffer, int x, int y, int width,
-                        int height, unsigned char *remap_table);
+  void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
+                        int height, unsigned char* remap_table);
 
   /*
   ** Misc internal functions
@@ -272,7 +272,7 @@ class ChronalVortexClass {
   ** Offscreen buffer to render vortex into. This is needed so we can handle
   *clipping.
   */
-  GraphicBufferClass *RenderBuffer;
+  GraphicBufferClass* RenderBuffer;
 };
 
 #endif

@@ -46,7 +46,7 @@
 #define ShapeBufferSize _ShapeBufferSize
 extern "C" {
 extern long ShapeBufferSize;
-extern char *ShapeBuffer;
+extern char* ShapeBuffer;
 }
 
 /*=========================================================================*/
@@ -55,7 +55,7 @@ extern char *ShapeBuffer;
 /*		later.
  */
 /*=========================================================================*/
-#define HIDBUFF ((void *)(0xA0000))
+#define HIDBUFF ((void*)(0xA0000))
 // #define Size_Of_Region(a, b) a*b
 
 /*=========================================================================*/
@@ -79,7 +79,7 @@ extern char *ShapeBuffer;
 #define ERROR_WINDOW 1
 #define ErrorWindow 1
 
-extern unsigned char *Palette;
+extern unsigned char* Palette;
 extern unsigned char MDisabled;  // Is mouse disabled?
 
 /*

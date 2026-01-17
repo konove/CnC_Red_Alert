@@ -58,14 +58,14 @@ class TarComClass : public TurretClass {
   TarComClass(void) {};
   TarComClass(UnitType classid, HousesType house)
       : TurretClass(classid, house) {};
-  TarComClass(NoInitClass const &x) : TurretClass(x) {}
+  TarComClass(NoInitClass const& x) : TurretClass(x) {}
   virtual ~TarComClass(void);
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   virtual void AI(void);
   //		virtual bool Target_Something_Nearby(ThreatType

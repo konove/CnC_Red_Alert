@@ -137,7 +137,7 @@ void NullModemConnClass::Init(HANDLE port_handle) {
   PortHandle = port_handle;
 }
 #else   // WIN32
-void NullModemConnClass::Init(PORT *port) {
+void NullModemConnClass::Init(PORT* port) {
   ConnectionClass::Init();
   Port = port;
 } /* end of Init */
@@ -165,9 +165,9 @@ void NullModemConnClass::Init(PORT *port) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(char *buf, int buflen, void *, int) {
-  int *ibuf;
-  SerialHeaderType *header;
+int NullModemConnClass::Send(char* buf, int buflen, void*, int) {
+  int* ibuf;
+  SerialHeaderType* header;
   unsigned long sendlen;
 
   /*------------------------------------------------------------------------
@@ -186,7 +186,7 @@ int NullModemConnClass::Send(char *buf, int buflen, void *, int) {
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
-  header = (SerialHeaderType *)SendBuf;
+  header = (SerialHeaderType*)SendBuf;
   header->MagicNumber = PACKET_SERIAL_START;
   header->Length = (short)buflen;
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
@@ -194,7 +194,7 @@ int NullModemConnClass::Send(char *buf, int buflen, void *, int) {
   sendlen = sizeof(SerialHeaderType);
   memcpy(SendBuf + sendlen, buf, buflen);
   sendlen += buflen;
-  ibuf = (int *)(SendBuf + sendlen);
+  ibuf = (int*)(SendBuf + sendlen);
   *ibuf = Compute_CRC(buf, buflen);
   sendlen += sizeof(int);
 
@@ -205,7 +205,7 @@ int NullModemConnClass::Send(char *buf, int buflen, void *, int) {
   Send the data
   ------------------------------------------------------------------------*/
 #ifdef WIN32
-  SerialPort->Write_To_Serial_Port((unsigned char *)SendBuf, (int)sendlen);
+  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
   return (true);
 
 #else   // WIN32
@@ -239,7 +239,7 @@ int NullModemConnClass::Send(char *buf, int buflen, void *, int) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(char *buf, int buflen) {
+int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
   unsigned int sum, hibit;
 
   sum = 0;

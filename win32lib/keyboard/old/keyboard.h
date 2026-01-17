@@ -84,7 +84,7 @@ class WWKeyboardClass {
   /* Define public routines which can be used on keys in general.
    */
   /*===================================================================*/
-  VOID Split(int &key, int &shift, int &ctrl, int &alt, int &rls, int &dbl);
+  VOID Split(int& key, int& shift, int& ctrl, int& alt, int& rls, int& dbl);
   BOOL Is_Mouse_Key(int key);
 
   /*===================================================================*/
@@ -666,7 +666,7 @@ enum {
   KN_BUTTON = WWKEY_BTN_BIT,
 };
 
-extern WWKeyboardClass *_Kbd;
+extern WWKeyboardClass* _Kbd;
 
 /*
 ** The following routines provide some compatability with the old westwood

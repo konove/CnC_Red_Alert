@@ -60,8 +60,8 @@
 /*
 **	Points to the shape to use for the "desired" power level indicator.
 */
-void const *PowerClass::PowerShape;
-void const *PowerClass::PowerBarShape;
+void const* PowerClass::PowerShape;
+void const* PowerClass::PowerBarShape;
 
 PowerClass::PowerButtonClass PowerClass::PowerButton;
 
@@ -174,7 +174,7 @@ void PowerClass::Draw_It(bool complete) {
       if (Map.IsSidebarActive) {
         IsToRedraw = false;
         ShapeFlags_Type flags = SHAPE_NORMAL;
-        void const *remap = nullptr;
+        void const* remap = nullptr;
 
         if (FlashTimer > 1 && ((FlashTimer % 3) & 0x01) != 0) {
           flags = flags | SHAPE_FADING;
@@ -280,7 +280,7 @@ void PowerClass::Draw_It(bool complete) {
  * HISTORY: * 12/20/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-void PowerClass::AI(KeyNumType &input, int x, int y) {
+void PowerClass::AI(KeyNumType& input, int x, int y) {
   if (Map.IsSidebarActive /*IsActive*/) {
     int olddrain = DrainHeight;
     int oldpower = PowerHeight;
@@ -381,7 +381,7 @@ void PowerClass::AI(KeyNumType &input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Refresh_Cells(CELL cell, short const *list) {
+void PowerClass::Refresh_Cells(CELL cell, short const* list) {
   if (*list == REFRESH_SIDEBAR) {
     IsToRedraw = true;
     Flag_To_Redraw(false);
@@ -447,7 +447,7 @@ int PowerClass::Power_Height(int value) {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType &key) {
+int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   if (!Map.IsSidebarActive) {
     return (false);
   }

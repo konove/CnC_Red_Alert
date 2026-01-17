@@ -84,15 +84,15 @@
  *                                                                                             *
  * HISTORY: * 05/11/1995 JLB : Created. *
  *=============================================================================================*/
-void *Small_Icon(void const *iconptr, int iconnum) {
+void* Small_Icon(void const* iconptr, int iconnum) {
   static unsigned char _icon[9];
-  IControl_Type const *iptr = (IControl_Type const *)iconptr;
-  unsigned char *data;
+  IControl_Type const* iptr = (IControl_Type const*)iconptr;
+  unsigned char* data;
 
   if (iconptr) {
-    iconnum = ((char *)((char *)iptr + iptr->Map))[iconnum];
-    data = &((unsigned char *)((unsigned char *)iptr +
-                               iptr->Icons))[iconnum * (24 * 24)];
+    iconnum = ((char*)((char*)iptr + iptr->Map))[iconnum];
+    data = &((unsigned char*)((unsigned char*)iptr +
+                              iptr->Icons))[iconnum * (24 * 24)];
 
     for (int index = 0; index < 9; index++) {
       int _offsets[9] = {4 + 4 * 24,  12 + 4 * 24,  20 + 4 * 24,
@@ -151,7 +151,7 @@ void Set_Window(int window, int x, int y, int w, int h) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void Fatal(char const *message, ...) {
+void Fatal(char const* message, ...) {
   va_list va;
 
   va_start(va, message);
@@ -162,7 +162,7 @@ void Fatal(char const *message, ...) {
 }
 
 #ifdef NEVER
-void File_Fatal(char const *message) {
+void File_Fatal(char const* message) {
   Prog_End();
   perror(message);
   exit(EXIT_FAILURE);
@@ -193,11 +193,11 @@ void File_Fatal(char const *message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
-                     BuffType &dest_buff, void *reserved_data) {
+long Load_Uncompress(FileClass& file, BuffType& uncomp_buff,
+                     BuffType& dest_buff, void* reserved_data) {
   unsigned short size;
-  void *sptr = uncomp_buff.Get_Buffer();
-  void *dptr = dest_buff.Get_Buffer();
+  void* sptr = uncomp_buff.Get_Buffer();
+  void* dptr = dest_buff.Get_Buffer();
   int opened = false;
   CompHeaderType header;
 
@@ -270,8 +270,8 @@ long Load_Uncompress(FileClass &file, BuffType &uncomp_buff,
   return ((long)size);
 }
 
-int Load_Picture(char const *filename, BufferClass &scratchbuf,
-                 BufferClass &destbuf, unsigned char *palette,
+int Load_Picture(char const* filename, BufferClass& scratchbuf,
+                 BufferClass& destbuf, unsigned char* palette,
                  PicturePlaneType) {
   CCFileClass fc(filename);
   return (Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000);
@@ -294,14 +294,14 @@ int Load_Picture(char const *filename, BufferClass &scratchbuf,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void *Load_Alloc_Data(FileClass &file) {
-  void *ptr = nullptr;
+void* Load_Alloc_Data(FileClass& file) {
+  void* ptr = nullptr;
   long size = file.Size();
 
   ptr = new char[size + 1];
   if (ptr) {
     file.Read(ptr, size);
-    ((char *)ptr)[size] = 0;  // workaround scanning past the end of text files
+    ((char*)ptr)[size] = 0;  // workaround scanning past the end of text files
   }
   return (ptr);
 }
@@ -349,9 +349,9 @@ long Translucent_Table_Size(int count) { return (256L + (256L * count)); }
  *                                                                                             *
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
-void *Build_Translucent_Table(void const *palette, TLucentType const *control,
-                              int count, void *buffer) {
-  unsigned char const *table;  // Remap table pointer.
+void* Build_Translucent_Table(void const* palette, TLucentType const* control,
+                              int count, void* buffer) {
+  unsigned char const* table;  // Remap table pointer.
   int index;                   // Working color index.
 
   if (count && control && palette) {
@@ -361,16 +361,16 @@ void *Build_Translucent_Table(void const *palette, TLucentType const *control,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = (unsigned char *)Add_Long_To_Pointer((void *)buffer, 256);
+      table = (unsigned char*)Add_Long_To_Pointer((void*)buffer, 256);
 
       /*
       **	Build the individual remap tables for each translucent color.
       */
       for (index = 0; index < count; index++) {
-        ((unsigned char *)buffer)[control[index].SourceColor] = index;
-        Build_Fading_Table(palette, (void *)table, control[index].DestColor,
+        ((unsigned char*)buffer)[control[index].SourceColor] = index;
+        Build_Fading_Table(palette, (void*)table, control[index].DestColor,
                            control[index].Fading);
-        table = (unsigned char *)Add_Long_To_Pointer((void *)table, 256);
+        table = (unsigned char*)Add_Long_To_Pointer((void*)table, 256);
       }
     }
   }
@@ -406,10 +406,10 @@ void *Build_Translucent_Table(void const *palette, TLucentType const *control,
  *                                                                                             *
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
-void *Conquer_Build_Translucent_Table(void const *palette,
-                                      TLucentType const *control, int count,
-                                      void *buffer) {
-  unsigned char const *table;  // Remap table pointer.
+void* Conquer_Build_Translucent_Table(void const* palette,
+                                      TLucentType const* control, int count,
+                                      void* buffer) {
+  unsigned char const* table;  // Remap table pointer.
   int index;                   // Working color index.
 
   if (count && control && palette) {
@@ -419,17 +419,17 @@ void *Conquer_Build_Translucent_Table(void const *palette,
 
     if (buffer) {
       memset(buffer, -1, 256);
-      table = (unsigned char *)Add_Long_To_Pointer((void *)buffer, 256);
+      table = (unsigned char*)Add_Long_To_Pointer((void*)buffer, 256);
 
       /*
       **	Build the individual remap tables for each translucent color.
       */
       for (index = 0; index < count; index++) {
-        ((unsigned char *)buffer)[control[index].SourceColor] = index;
-        Conquer_Build_Fading_Table(palette, (void *)table,
+        ((unsigned char*)buffer)[control[index].SourceColor] = index;
+        Conquer_Build_Fading_Table(palette, (void*)table,
                                    control[index].DestColor,
                                    control[index].Fading);
-        table = (unsigned char *)Add_Long_To_Pointer((void *)table, 256);
+        table = (unsigned char*)Add_Long_To_Pointer((void*)table, 256);
       }
     }
   }

@@ -36,7 +36,7 @@
 
 #include "wwstd.h"
 
-PRIVATE BYTE *version =
+PRIVATE BYTE* version =
     "Westwood Studios - 32 Bit Library Version " __DATE__ "\r\n";
 
 /***************************************************************************
@@ -54,4 +54,4 @@ PRIVATE BYTE *version =
  * HISTORY:                                                                *
  *   07/26/1991 JLB : Created.                                             *
  *=========================================================================*/
-BYTE *cdecl Version(VOID) { return (version); }
+BYTE* cdecl Version(VOID) { return (version); }

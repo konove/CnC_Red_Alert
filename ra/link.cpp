@@ -66,12 +66,12 @@
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::LinkClass(LinkClass const &link) : Next(nullptr), Prev(nullptr) {
+LinkClass::LinkClass(LinkClass const& link) : Next(nullptr), Prev(nullptr) {
   /*
   **	Add this object to the same list that the copy object
   **	resides in.
   */
-  Add((LinkClass &)link);
+  Add((LinkClass&)link);
 }
 
 /***********************************************************************************************
@@ -135,11 +135,11 @@ void LinkClass::Zap(void) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &LinkClass::operator=(LinkClass const &link) {
+LinkClass& LinkClass::operator=(LinkClass const& link) {
   if (&link == this) return (*this);
 
   Remove();
-  Add((LinkClass &)link);
+  Add((LinkClass&)link);
 
   return (*this);
 }
@@ -159,7 +159,7 @@ LinkClass &LinkClass::operator=(LinkClass const &link) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass *LinkClass::Get_Next(void) const { return (Next); }
+LinkClass* LinkClass::Get_Next(void) const { return (Next); }
 
 /***********************************************************************************************
  * LinkClass::Get_Prev -- Fetches previous object in linked list. *
@@ -177,7 +177,7 @@ LinkClass *LinkClass::Get_Next(void) const { return (Next); }
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass *LinkClass::Get_Prev(void) const { return (Prev); }
+LinkClass* LinkClass::Get_Prev(void) const { return (Prev); }
 
 /***********************************************************************************************
  * LinkClass::Head_Of_List -- Finds the head of the list. *
@@ -193,8 +193,8 @@ LinkClass *LinkClass::Get_Prev(void) const { return (Prev); }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &LinkClass::Head_Of_List(void) {
-  LinkClass *link = this;
+LinkClass& LinkClass::Head_Of_List(void) {
+  LinkClass* link = this;
   while (link->Prev) {
     link = link->Prev;
     if (link == this) break;  // Safety check
@@ -216,8 +216,8 @@ LinkClass &LinkClass::Head_Of_List(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &LinkClass::Tail_Of_List(void) {
-  LinkClass *link = this;
+LinkClass& LinkClass::Tail_Of_List(void) {
+  LinkClass* link = this;
   while (link->Next) {
     link = link->Next;
     if (link == this) break;  // Safety check
@@ -241,8 +241,8 @@ LinkClass &LinkClass::Tail_Of_List(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &LinkClass::Add(LinkClass &list) {
-  LinkClass *ptr;
+LinkClass& LinkClass::Add(LinkClass& list) {
+  LinkClass* ptr;
 
   /*
   **	Save ptr to next gadget.
@@ -278,8 +278,8 @@ LinkClass &LinkClass::Add(LinkClass &list) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &LinkClass::Add_Head(LinkClass &list) {
-  LinkClass *ptr;
+LinkClass& LinkClass::Add_Head(LinkClass& list) {
+  LinkClass* ptr;
 
   /*
   **	Get head of given list.
@@ -308,8 +308,8 @@ LinkClass &LinkClass::Add_Head(LinkClass &list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass &LinkClass::Add_Tail(LinkClass &list) {
-  LinkClass *ptr;
+LinkClass& LinkClass::Add_Tail(LinkClass& list) {
+  LinkClass* ptr;
 
   /*
   **	Get head of given list.
@@ -342,9 +342,9 @@ LinkClass &LinkClass::Add_Tail(LinkClass &list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass *LinkClass::Remove(void) {
-  LinkClass *head = &Head_Of_List();
-  LinkClass *tail = &Tail_Of_List();
+LinkClass* LinkClass::Remove(void) {
+  LinkClass* head = &Head_Of_List();
+  LinkClass* tail = &Tail_Of_List();
 
   if (Prev) {
     Prev->Next = Next;

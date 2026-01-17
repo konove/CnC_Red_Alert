@@ -54,8 +54,9 @@ will you be ready to leave grasshopper.
 #define WDEBUG_HEADER
 
 #include <iostream.h>
-#include "sem4.h"
+
 #include "odevice.h"
+#include "sem4.h"
 #include "streamer.h"
 
 // This is needed because the streams return a pointer.  Every time you
@@ -135,13 +136,17 @@ extern Sem4 DebugLibSemaphore;
 
 #define DBG(X)
 #define DBGSTREAM(X) \
-  {}
+  {                  \
+  }
 #define PVAR(v) \
-  {}
+  {             \
+  }
 #define DBGMSG(X) \
-  {}
+  {               \
+  }
 #define VERBOSE(X) \
-  {}
+  {                \
+  }
 
 #else  // DEBUG _is_ defined
 
@@ -192,21 +197,21 @@ class MsgManager {
   MsgManager();
 
  public:
-  static int setAllStreams(OutputDevice *device);
-  static int setDebugStream(OutputDevice *device);
-  static int setInfoStream(OutputDevice *device);
-  static int setWarnStream(OutputDevice *device);
-  static int setErrorStream(OutputDevice *device);
+  static int setAllStreams(OutputDevice* device);
+  static int setDebugStream(OutputDevice* device);
+  static int setInfoStream(OutputDevice* device);
+  static int setWarnStream(OutputDevice* device);
+  static int setErrorStream(OutputDevice* device);
 
   static void enableDebug(int flag);
   static void enableInfo(int flag);
   static void enableWarn(int flag);
   static void enableError(int flag);
 
-  static ostream *debugStream(void);
-  static ostream *infoStream(void);
-  static ostream *warnStream(void);
-  static ostream *errorStream(void);
+  static ostream* debugStream(void);
+  static ostream* infoStream(void);
+  static ostream* warnStream(void);
+  static ostream* errorStream(void);
 };
 
 #endif

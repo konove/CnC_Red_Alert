@@ -43,8 +43,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <dos.h>
+
 #include <cstdio>
 #include <cstring>
+
 #include "misc.h"
 
 // PRIVATE unsigned Divide_With_Round(unsigned num, unsigned den);
@@ -92,7 +94,7 @@ static unsigned Divide_With_Round(unsigned num, unsigned den) {
  *Created.                                             *
  *=========================================================================*/
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int *h, unsigned int *s, unsigned int *v) {
+                        unsigned int* h, unsigned int* s, unsigned int* v) {
   unsigned int m, r1, g1, b1, tmp;
 
   // Convert RGB base to HSV base.
@@ -168,7 +170,7 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
  *   02/11/1992  SB : Created.                                             *
  *=========================================================================*/
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int *r, unsigned int *g, unsigned int *b) {
+                        unsigned int* r, unsigned int* g, unsigned int* b) {
   unsigned int i;  // Integer part.
   unsigned int f;  // Fractional or remainder part.  f/HSV_BASE gives fraction.
   unsigned int tmp;        // Tempary variable to help with calculations.

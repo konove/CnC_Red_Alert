@@ -59,7 +59,7 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
+static int64_t VQADOSHandler(VQAHandle* vqa, int64_t action, void* buffer,
                              int64_t nbytes);
 
 /****************************************************************************
@@ -83,8 +83,8 @@ static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
  *
  ****************************************************************************/
 
-void VQA_InitAsDOS(VQAHandle *vqa) {
-  ((VQAHandleP *)vqa)->IOHandler = VQADOSHandler;
+void VQA_InitAsDOS(VQAHandle* vqa) {
+  ((VQAHandleP*)vqa)->IOHandler = VQADOSHandler;
 }
 
 /****************************************************************************
@@ -111,7 +111,7 @@ void VQA_InitAsDOS(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
+static int64_t VQADOSHandler(VQAHandle* vqa, int64_t action, void* buffer,
                              int64_t nbytes) {
   long fh;
   int64_t error;
@@ -153,7 +153,7 @@ static int64_t VQADOSHandler(VQAHandle *vqa, int64_t action, void *buffer,
 
     /* VQACMD_OPEN asks that you open the file for access. */
     case VQACMD_OPEN:
-      error = open(static_cast<const char *>(buffer), O_RDONLY);
+      error = open(static_cast<const char*>(buffer), O_RDONLY);
 
       if (error != -1) {
         vqa->VQAio = error;

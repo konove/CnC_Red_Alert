@@ -53,8 +53,8 @@ void cdecl Mono_Put_Char(long character, long attrib);
 void cdecl Mono_Draw_Rect(long x, long y, long w, long h, long attrib,
                           long thick);
 
-void cdecl Mono_Text_Print(void const *text, long x, long y, long attrib);
-void cdecl Mono_Print(void const *text);
+void cdecl Mono_Text_Print(void const* text, long x, long y, long attrib);
+void cdecl Mono_Print(void const* text);
 short cdecl Mono_View_Page(long page);
 short cdecl Mono_X(void);
 short cdecl Mono_Y(void);

@@ -109,18 +109,18 @@ class MonoClass {
   static void Enable(void) { Enabled = 1; };
   static void Disable(void) { Enabled = 0; };
   static int Is_Enabled(void) { return Enabled; };
-  static MonoClass *Get_Current(void) { return PageUsage[0]; };
+  static MonoClass* Get_Current(void) { return PageUsage[0]; };
 
   void Draw_Box(int x, int y, int w, int h, char attrib = DEFAULT_ATTRIBUTE,
                 BoxStyleType thick = SINGLE);
   void Set_Default_Attribute(char attrib) { Attrib = attrib; };
   void Clear(void);
   void Set_Cursor(int x, int y);
-  void Print(char const *text);
+  void Print(char const* text);
   void Print(int text);
-  void Printf(char const *text, ...);
+  void Printf(char const* text, ...);
   void Printf(int text, ...);
-  void Text_Print(char const *text, int x, int y,
+  void Text_Print(char const* text, int x, int y,
                   char attrib = DEFAULT_ATTRIBUTE);
   void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
   void View(void);
@@ -131,13 +131,13 @@ class MonoClass {
   **	Handles deep copies for the mono class objects. This performs what is
   *essentially *	a screen copy.
   */
-  MonoClass &operator=(MonoClass const &);
+  MonoClass& operator=(MonoClass const&);
 
   /*
   **	This merely makes a duplicate of the mono object into a newly created
   *mono *	object.
   */
-  MonoClass(MonoClass const &);
+  MonoClass(MonoClass const&);
 
  private:
   char X;       // Cursor X position.
@@ -152,15 +152,15 @@ class MonoClass {
     return (SIZE_OF_PAGE * Page) + sizeof(CellType) * (x + (y * COLUMNS));
   };
   void Scroll(int lines);
-  void Store_Cell(CellType &cell, int x, int y) {
-    *(CellType *)((long)MonoSegment + Offset(x, y)) = cell;
+  void Store_Cell(CellType& cell, int x, int y) {
+    *(CellType*)((long)MonoSegment + Offset(x, y)) = cell;
   };
 
   /*
   **	This is the segment/selector of the monochrome screen.
   */
   //		static DOSSegmentClass MonoSegment;
-  static void *MonoSegment;
+  static void* MonoSegment;
 
   /*
   ** This the the arrays of characters used for drawing boxes.
@@ -173,7 +173,7 @@ class MonoClass {
   *visible, *	they can be shuffled around between the actual locations. The
   *first entry *	in this table is the one that is visible.
   */
-  static MonoClass *PageUsage[MAX_MONO_PAGES];
+  static MonoClass* PageUsage[MAX_MONO_PAGES];
 
   /*
   **	If this is true, then monochrome output is allowed. It defaults to false
@@ -185,11 +185,11 @@ class MonoClass {
 // extern int cdecl Mono_Printf(int string, ...);
 
 void Mono_Set_Cursor(int x, int y);
-int Mono_Printf(char const *string, ...);
+int Mono_Printf(char const* string, ...);
 void Mono_Clear_Screen(void);
-void Mono_Text_Print(void const *text, int x, int y, int attrib);
+void Mono_Text_Print(void const* text, int x, int y, int attrib);
 void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);
-void Mono_Print(void const *text);
+void Mono_Print(void const* text);
 int Mono_X(void);
 int Mono_Y(void);
 

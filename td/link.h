@@ -51,31 +51,31 @@ class LinkClass {
   LinkClass(void);
   virtual ~LinkClass(void);
 
-  virtual LinkClass *Get_Next(void) const;
-  virtual LinkClass *Get_Prev(void) const;
-  virtual LinkClass &Add(LinkClass &object);
-  virtual LinkClass &Add_Tail(LinkClass &object);
-  virtual LinkClass &Add_Head(LinkClass &object);
-  virtual LinkClass const &Head_Of_List(void) const;
-  virtual LinkClass &Head_Of_List(void) {
-    return (LinkClass &)(((LinkClass const *)this)->Head_Of_List());
+  virtual LinkClass* Get_Next(void) const;
+  virtual LinkClass* Get_Prev(void) const;
+  virtual LinkClass& Add(LinkClass& object);
+  virtual LinkClass& Add_Tail(LinkClass& object);
+  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual LinkClass const& Head_Of_List(void) const;
+  virtual LinkClass& Head_Of_List(void) {
+    return (LinkClass&)(((LinkClass const*)this)->Head_Of_List());
   };
-  virtual LinkClass const &Tail_Of_List(void) const;
-  virtual LinkClass &Tail_Of_List(void) {
-    return (LinkClass &)(((LinkClass const *)this)->Tail_Of_List());
+  virtual LinkClass const& Tail_Of_List(void) const;
+  virtual LinkClass& Tail_Of_List(void) {
+    return (LinkClass&)(((LinkClass const*)this)->Tail_Of_List());
   };
   virtual void Zap(void);
-  virtual LinkClass *Remove(void);
+  virtual LinkClass* Remove(void);
 
-  LinkClass &operator=(LinkClass &link);  // Assignment operator.
-  LinkClass(LinkClass &link);             // Copy constructor.
+  LinkClass& operator=(LinkClass& link);  // Assignment operator.
+  LinkClass(LinkClass& link);             // Copy constructor.
 
  private:
   /*
   **	Pointers to previous and next link objects in chain.
   */
-  LinkClass *Next;
-  LinkClass *Prev;
+  LinkClass* Next;
+  LinkClass* Prev;
 };
 
 #endif

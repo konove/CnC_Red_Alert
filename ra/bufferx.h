@@ -59,11 +59,11 @@ class Transmuter {
   *use, these functions should be overloaded to *	do something more
   *useful.
   */
-  virtual void Attach(Transmuter *transmuter) { Output = transmuter; }
+  virtual void Attach(Transmuter* transmuter) { Output = transmuter; }
   virtual void Flush(void) {
     if (Output) Output->Flush();
   }
-  virtual void Put(const void *input, unsigned length) {
+  virtual void Put(const void* input, unsigned length) {
     if (Output) Output->Put(input, length);
   }
 
@@ -71,38 +71,38 @@ class Transmuter {
   /*
   **	Pointer to the output transmuter.
   */
-  Transmuter *Output;
+  Transmuter* Output;
 };
 
 class FileTransmuter {
  public:
-  FileTransmuter(FileClass *file = nullptr) : OutputFile(file) {}
+  FileTransmuter(FileClass* file = nullptr) : OutputFile(file) {}
 
-  virtual void Attach(FileClass *file) { OutputFile = file; }
+  virtual void Attach(FileClass* file) { OutputFile = file; }
   virtual void Flush(void) {}
-  virtual void Put(const void *input, unsigned length) {
+  virtual void Put(const void* input, unsigned length) {
     if (OutputFile) OutputFile->Write(input, length);
   }
 
  protected:
-  FileClass *OutputFile;
+  FileClass* OutputFile;
 };
 
 class BufferTransmuter {
  public:
-  BufferTransmuter(void *buffer = nullptr) : BufferPtr(buffer) {}
+  BufferTransmuter(void* buffer = nullptr) : BufferPtr(buffer) {}
 
-  virtual void Attach(void *buffer) { BufferPtr = buffer; }
+  virtual void Attach(void* buffer) { BufferPtr = buffer; }
   virtual void Flush(void) {}
-  virtual void Put(const void *input, unsigned length) {
+  virtual void Put(const void* input, unsigned length) {
     if (BufferPtr) {
       memcpy(BufferPtr, input, length);
-      ((char *&)BufferPtr) += length;
+      ((char*&)BufferPtr) += length;
     }
   }
 
  protected:
-  void *BufferPtr;
+  void* BufferPtr;
 };
 
 #endif

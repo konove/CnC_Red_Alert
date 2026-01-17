@@ -90,9 +90,9 @@
 int Read_Game_Options(void);
 #endif
 
-extern bool Is_Mission_126x126(char *file_name);
-extern bool Is_Mission_Aftermath(char *file_name);
-extern bool Is_Mission_Counterstrike(char *file_name);
+extern bool Is_Mission_126x126(char* file_name);
+extern bool Is_Mission_Aftermath(char* file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
 
 /***************************************************************************
 ** Internet specific globals
@@ -137,10 +137,10 @@ int ShowCommand;
  * HISTORY: * 6/9/96 1:44PM ST : Created *
  *=============================================================================================*/
 #ifndef WOLAPI_INTEGRATION
-void Check_From_WChat(char *wchat_name) {
+void Check_From_WChat(char* wchat_name) {
   char default_string[] = {"Error"};
   char key_string[256];
-  char *ini_file;
+  char* ini_file;
   RawFileClass wchat_file;
 
   /*
@@ -251,8 +251,8 @@ void Check_From_WChat(char *wchat_name) {
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
 #ifndef WOLAPI_INTEGRATION
-int Read_Game_Options(char *name) {
-  char *buffer = nullptr;
+int Read_Game_Options(char* name) {
+  char* buffer = nullptr;
 
   char filename[256] = {"INVALID.123"};
 
@@ -448,11 +448,11 @@ int Read_Game_Options(char *name) {
  * HISTORY: * 1/12/96 2:11PM ST : Created *
  *=============================================================================================*/
 #ifdef _WIN32
-extern HKEY Get_Registry_Sub_Key(HKEY base_key, char *search_key, BOOL close);
+extern HKEY Get_Registry_Sub_Key(HKEY base_key, char* search_key, BOOL close);
 #endif
 
-void Just_Path(char *path, char *destpath, size_t dest_size) {
-  char *terminator = nullptr;  // He'll be back.
+void Just_Path(char* path, char* destpath, size_t dest_size) {
+  char* terminator = nullptr;  // He'll be back.
 
   port::SafeCopy(destpath, path, dest_size);
   terminator = strrchr(destpath, '\\');
@@ -475,7 +475,7 @@ void Just_Path(char *path, char *destpath, size_t dest_size) {
  *                                                                                             *
  * HISTORY: * 1/12/96 2:13PM ST : Created *
  *=============================================================================================*/
-bool Is_User_WChat_Registered(char * /*buffer*/, int /*buffer_len*/) {
+bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB
   HKEY key;
   char user_handle[256];
@@ -491,9 +491,9 @@ bool Is_User_WChat_Registered(char * /*buffer*/, int /*buffer_len*/) {
   if (key) {
     key = Get_Registry_Sub_Key(key, "Nick1", true);
     if (key) {
-      if (RegQueryValue(key, "Nick", user_handle, (long *)&user_handle_size) ==
+      if (RegQueryValue(key, "Nick", user_handle, (long*)&user_handle_size) ==
           ERROR_SUCCESS) {
-        if (RegQueryValue(key, "Pass", user_pword, (long *)&user_pword_size) ==
+        if (RegQueryValue(key, "Pass", user_pword, (long*)&user_pword_size) ==
             ERROR_SUCCESS) {
           /*
           ** If the first char of the users name is non-numberic and there is a
@@ -525,7 +525,7 @@ bool Is_User_WChat_Registered(char * /*buffer*/, int /*buffer_len*/) {
   key = Get_Registry_Sub_Key(key, "InetReg", true);
   if (!key) return (false);
 
-  if (RegQueryValueEx(key, "UserName", NULL, NULL, (unsigned char *)user_handle,
+  if (RegQueryValueEx(key, "UserName", NULL, NULL, (unsigned char*)user_handle,
                       &user_handle_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
     return (false);
@@ -647,8 +647,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
   // key = Get_Registry_Sub_Key (key, "Nick", true);
   // if (!key) return (false);
 
-  if (RegQueryValueEx(key, "InstallPath", NULL, NULL,
-                      (unsigned char *)wchat_loc,
+  if (RegQueryValueEx(key, "InstallPath", NULL, NULL, (unsigned char*)wchat_loc,
                       &wchat_loc_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
     return (false);
@@ -658,7 +657,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
 
   PROCESS_INFORMATION process_info;
   STARTUPINFO start_info;
-  memset((void *)&start_info, 0, sizeof(start_info));
+  memset((void*)&start_info, 0, sizeof(start_info));
   start_info.cb = sizeof(start_info);
   char justpath[256];
   Just_Path(wchat_loc, justpath, sizeof(justpath));
@@ -735,7 +734,7 @@ bool Spawn_Registration_App(void) {
   if (!key) return (false);
 
   if (RegQueryValueEx(key, "InstallPath", NULL, NULL,
-                      (unsigned char *)inetreg_loc,
+                      (unsigned char*)inetreg_loc,
                       &inetreg_loc_size) != ERROR_SUCCESS) {
     RegCloseKey(key);
     return (false);
@@ -746,7 +745,7 @@ bool Spawn_Registration_App(void) {
   PROCESS_INFORMATION process_info;
   STARTUPINFO start_info;
   char justpath[256];
-  memset((void *)&start_info, 0, sizeof(start_info));
+  memset((void*)&start_info, 0, sizeof(start_info));
   start_info.cb = sizeof(start_info);
   Just_Path(inetreg_loc, justpath, sizeof(justpath));
 
@@ -807,7 +806,7 @@ bool Do_The_Internet_Menu_Thang(void) {
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), TBLACK,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String((char *)TXT_HACKHACK, SeenBuff.Get_Height(), width,
+  Format_Window_String((char*)TXT_HACKHACK, SeenBuff.Get_Height(), width,
                        height);
 
   /*

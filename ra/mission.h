@@ -75,14 +75,14 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(RTTIType rtti, int id);
-  MissionClass(NoInitClass const &x) : ObjectClass(x), Timer(x) {};
+  MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {};
   virtual ~MissionClass(void) {};
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
 */
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const;
+  void Debug_Dump(MonoClass* mono) const;
 #endif
 
   void Shorten_Mission_Timer(void) { Timer = 0; }
@@ -116,8 +116,8 @@ class MissionClass : public ObjectClass {
   virtual void Set_Mission(MissionType mission);
   static bool Is_Recruitable_Mission(MissionType mission);
 
-  static char const *Mission_Name(MissionType order);
-  static MissionType Mission_From_Name(char const *name);
+  static char const* Mission_Name(MissionType order);
+  static MissionType Mission_From_Name(char const* name);
   virtual void Override_Mission(MissionType mission, TARGET, TARGET);
   virtual bool Restore_Mission(void);
 
@@ -140,7 +140,7 @@ class MissionControlClass {
  public:
   MissionControlClass(void);
 
-  bool Read_INI(CCINIClass &ini);
+  bool Read_INI(CCINIClass& ini);
   int Normal_Delay(void) const { return (TICKS_PER_MINUTE * Rate); }
   int AA_Delay(void) const { return (TICKS_PER_MINUTE * AARate); }
 
@@ -149,7 +149,7 @@ class MissionControlClass {
   */
   MissionType Mission;
 
-  char const *Name(void) const;
+  char const* Name(void) const;
 
   /*
   **	If the object should not be considered a threat when it

@@ -148,7 +148,7 @@
  * HISTORY:                                                                *
  *   12/28/1994 BR : Created.                                              *
  *=========================================================================*/
-bool Save_Game(int id, char *descr) {
+bool Save_Game(int id, char* descr) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
   int i;
@@ -449,7 +449,7 @@ bool Load_Game(int id) {
 
   // add triggers
   for (int i = 0; i < Triggers.Count(); i++) {
-    TriggerClass *trig = Triggers.Ptr(i);
+    TriggerClass* trig = Triggers.Ptr(i);
     if (trig->House != HOUSE_NONE) HouseTriggers[trig->House].Add(trig);
   }
 
@@ -526,15 +526,15 @@ bool Load_Game(int id) {
  * HISTORY:                                                                *
  *   12/29/1994 BR : Created.                                              *
  *=========================================================================*/
-bool Save_Misc_Values(FileClass &file) {
+bool Save_Misc_Values(FileClass& file) {
   int i;
   int count;         // # ptrs in 'CurrentObject'
-  ObjectClass *ptr;  // for saving 'CurrentObject' ptrs
+  ObjectClass* ptr;  // for saving 'CurrentObject' ptrs
 
   /*
   **	Player's House.
   */
-  if (file.Write(&PlayerPtr, sizeof(void *)) != sizeof(void *)) {
+  if (file.Write(&PlayerPtr, sizeof(void*)) != sizeof(void*)) {
     return (false);
   }
 
@@ -577,7 +577,7 @@ bool Save_Misc_Values(FileClass &file) {
   */
   for (i = 0; i < count; i++) {
     ptr = CurrentObject[i];
-    if (file.Write(&ptr, sizeof(void *)) != sizeof(void *)) {
+    if (file.Write(&ptr, sizeof(void*)) != sizeof(void*)) {
       return (false);
     }
   }
@@ -616,15 +616,15 @@ bool Save_Misc_Values(FileClass &file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool Load_Misc_Values(FileClass &file) {
+bool Load_Misc_Values(FileClass& file) {
   int i;
   int count;         // # ptrs in 'CurrentObject'
-  ObjectClass *ptr;  // for loading 'CurrentObject' ptrs
+  ObjectClass* ptr;  // for loading 'CurrentObject' ptrs
 
   /*
   **	Player's House.
   */
-  if (file.Read(&PlayerPtr, sizeof(void *)) != sizeof(void *)) {
+  if (file.Read(&PlayerPtr, sizeof(void*)) != sizeof(void*)) {
     return (false);
   }
 
@@ -665,7 +665,7 @@ bool Load_Misc_Values(FileClass &file) {
   **	Load the pointers.
   */
   for (i = 0; i < count; i++) {
-    if (file.Read(&ptr, sizeof(void *)) != sizeof(void *)) {
+    if (file.Read(&ptr, sizeof(void*)) != sizeof(void*)) {
       return (false);
     }
     CurrentObject.Add(ptr);  // add to the list
@@ -753,13 +753,13 @@ void Code_All_Pointers(void) {
   /*
   **	PlayerPtr.
   */
-  PlayerPtr = (HouseClass *)(PlayerPtr->Class->House);
+  PlayerPtr = (HouseClass*)(PlayerPtr->Class->House);
 
   /*
   **	Currently-selected objects.
   */
   for (i = 0; i < CurrentObject.Count(); i++) {
-    CurrentObject[i] = (ObjectClass *)CurrentObject[i]->As_Target();
+    CurrentObject[i] = (ObjectClass*)CurrentObject[i]->As_Target();
   }
 
   /*
@@ -868,7 +868,7 @@ void Decode_All_Pointers(void) {
   */
   if (Map.PendingObjectPtr) {
     Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    Check_Ptr((void *)Map.PendingObject, __FILE__, __LINE__);
+    Check_Ptr((void*)Map.PendingObject, __FILE__, __LINE__);
     Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
   } else {
     Map.PendingObject = nullptr;
@@ -920,8 +920,8 @@ void Decode_All_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 BR : Created. *
  *=============================================================================================*/
-bool Read_Object(void *ptr, int base_size, int class_size, FileClass &file,
-                 void *vtable) {
+bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
+                 void* vtable) {
   int size;  // object size in bytes
 
   /*
@@ -949,7 +949,7 @@ bool Read_Object(void *ptr, int base_size, int class_size, FileClass &file,
   **	Fill in VTable.
   */
   if (vtable) {
-    ((void **)(((char *)ptr) + base_size - 4))[0] = vtable;
+    ((void**)(((char*)ptr) + base_size - 4))[0] = vtable;
   }
 
   return (true);
@@ -975,7 +975,7 @@ bool Read_Object(void *ptr, int base_size, int class_size, FileClass &file,
  *                                                                                             *
  * HISTORY: * 01/10/1995 BR : Created. *
  *=============================================================================================*/
-bool Write_Object(void *ptr, int class_size, FileClass &file) {
+bool Write_Object(void* ptr, int class_size, FileClass& file) {
   /*
   **	Save size of this chunk.
   */
@@ -1011,7 +1011,7 @@ bool Write_Object(void *ptr, int class_size, FileClass &file) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep) {
+bool Get_Savefile_Info(int id, char* buf, unsigned* scenp, HousesType* housep) {
   RawFileClass file;
   char name[_MAX_FNAME + _MAX_EXT];
   unsigned long version;
@@ -1084,27 +1084,27 @@ bool Get_Savefile_Info(int id, char *buf, unsigned *scenp, HousesType *housep) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-TARGET TechnoType_To_Target(TechnoTypeClass const *ptr) {
+TARGET TechnoType_To_Target(TechnoTypeClass const* ptr) {
   TARGET target;
 
   switch (ptr->What_Am_I()) {
     case RTTI_INFANTRYTYPE:
       target =
-          Build_Target(KIND_INFANTRY, ((InfantryTypeClass const *)ptr)->Type);
+          Build_Target(KIND_INFANTRY, ((InfantryTypeClass const*)ptr)->Type);
       break;
 
     case RTTI_UNITTYPE:
-      target = Build_Target(KIND_UNIT, ((UnitTypeClass const *)ptr)->Type);
+      target = Build_Target(KIND_UNIT, ((UnitTypeClass const*)ptr)->Type);
       break;
 
     case RTTI_AIRCRAFTTYPE:
       target =
-          Build_Target(KIND_AIRCRAFT, ((AircraftTypeClass const *)ptr)->Type);
+          Build_Target(KIND_AIRCRAFT, ((AircraftTypeClass const*)ptr)->Type);
       break;
 
     case RTTI_BUILDINGTYPE:
       target =
-          Build_Target(KIND_BUILDING, ((BuildingTypeClass const *)ptr)->Type);
+          Build_Target(KIND_BUILDING, ((BuildingTypeClass const*)ptr)->Type);
       break;
 
     default:
@@ -1132,7 +1132,7 @@ TARGET TechnoType_To_Target(TechnoTypeClass const *ptr) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-TechnoTypeClass const *Target_To_TechnoType(TARGET target) {
+TechnoTypeClass const* Target_To_TechnoType(TARGET target) {
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
       return (
@@ -1167,8 +1167,8 @@ TechnoTypeClass const *Target_To_TechnoType(TARGET target) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-void *Get_VTable(void *ptr, int base_size) {
-  return (((void **)(((char *)ptr) + base_size - 4))[0]);
+void* Get_VTable(void* ptr, int base_size) {
+  return (((void**)(((char*)ptr) + base_size - 4))[0]);
 }
 
 /***************************************************************************
@@ -1188,8 +1188,8 @@ void *Get_VTable(void *ptr, int base_size) {
  * HISTORY:                                                                *
  *   01/12/1995 BR : Created.                                              *
  *=========================================================================*/
-void Set_VTable(void *ptr, int base_size, void *vtable) {
-  ((void **)(((char *)ptr) + base_size - 4))[0] = vtable;
+void Set_VTable(void* ptr, int base_size, void* vtable) {
+  ((void**)(((char*)ptr) + base_size - 4))[0] = vtable;
 }
 
 #if 0

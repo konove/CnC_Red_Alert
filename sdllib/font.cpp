@@ -7,9 +7,9 @@ int FontXSpacing;
 int FontYSpacing;
 char FontWidth;
 char FontHeight;
-char *FontWidthBlockPtr;
+char* FontWidthBlockPtr;
 
-void const *FontPtr;
+void const* FontPtr;
 
 // most of this table is because Buffer_Print doesn't do a shift...
 uint8_t ColorXlat[]{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -59,11 +59,11 @@ uint8_t ColorXlat[]{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
 
                     0x0F};
 
-void *Set_Font(void const *fontptr) {
-  void *oldfont;
-  char const *blockptr;
+void* Set_Font(void const* fontptr) {
+  void* oldfont;
+  char const* blockptr;
 
-  oldfont = (void *)FontPtr;
+  oldfont = (void*)FontPtr;
 
   if (fontptr) {
     FontPtr = fontptr;
@@ -73,9 +73,9 @@ void *Set_Font(void const *fontptr) {
     */
 
     FontWidthBlockPtr =
-        (char *)fontptr + *(unsigned short *)((char *)fontptr + FONTWIDTHBLOCK);
+        (char*)fontptr + *(unsigned short*)((char*)fontptr + FONTWIDTHBLOCK);
     blockptr =
-        (char *)fontptr + *(unsigned short *)((char *)fontptr + FONTINFOBLOCK);
+        (char*)fontptr + *(unsigned short*)((char*)fontptr + FONTINFOBLOCK);
     FontHeight = *(blockptr + FONTINFOMAXHEIGHT);
     FontWidth = *(blockptr + FONTINFOMAXWIDTH);
   }
@@ -88,7 +88,7 @@ int Char_Pixel_Width(char chr) {
          FontXSpacing;
 }
 
-unsigned int String_Pixel_Width(char const *string) {
+unsigned int String_Pixel_Width(char const* string) {
   int width;        // Working accumulator of string width.
   int largest = 0;  // Largest recorded width of the string.
 
@@ -108,8 +108,8 @@ unsigned int String_Pixel_Width(char const *string) {
   return largest;
 }
 
-void Set_Font_Palette_Range(void const *palette, int start_idx, int end_idx) {
-  auto palette8 = (uint8_t *)palette;
+void Set_Font_Palette_Range(void const* palette, int start_idx, int end_idx) {
+  auto palette8 = (uint8_t*)palette;
 
   start_idx &= 0xF;
   end_idx &= 0xF;
@@ -129,4 +129,4 @@ void Set_Font_Palette_Range(void const *palette, int start_idx, int end_idx) {
   } while (--num_cols);
 }
 
-extern "C" void *Get_Font_Palette_Ptr() { return ColorXlat; }
+extern "C" void* Get_Font_Palette_Ptr() { return ColorXlat; }

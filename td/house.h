@@ -67,7 +67,7 @@ class HouseClass {
   **	Pointer to the HouseTypeClass that this house is "owned" by.
   **	All constant data for a house type is stored in that class.
   */
-  HouseTypeClass const *const Class;
+  HouseTypeClass const* const Class;
 
   /*
   **	This is the house type that this house object should act like. This
@@ -290,28 +290,28 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  UnitTrackerClass *AircraftTotals;
-  UnitTrackerClass *InfantryTotals;
-  UnitTrackerClass *UnitTotals;
-  UnitTrackerClass *BuildingTotals;
+  UnitTrackerClass* AircraftTotals;
+  UnitTrackerClass* InfantryTotals;
+  UnitTrackerClass* UnitTotals;
+  UnitTrackerClass* BuildingTotals;
 
   /*
   ** Total number of units destroyed by this house
   */
-  UnitTrackerClass *DestroyedAircraft;
-  UnitTrackerClass *DestroyedInfantry;
-  UnitTrackerClass *DestroyedUnits;
-  UnitTrackerClass *DestroyedBuildings;
+  UnitTrackerClass* DestroyedAircraft;
+  UnitTrackerClass* DestroyedInfantry;
+  UnitTrackerClass* DestroyedUnits;
+  UnitTrackerClass* DestroyedBuildings;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  UnitTrackerClass *CapturedBuildings;
+  UnitTrackerClass* CapturedBuildings;
 
   /*
   ** Total number of crates found by this house
   */
-  UnitTrackerClass *TotalCrates;
+  UnitTrackerClass* TotalCrates;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value
@@ -364,7 +364,7 @@ class HouseClass {
   ** in the HousesTypeClass isn't used.  This variable is set to the remap
   ** table for the color the player wants to play.
   */
-  unsigned char const *RemapTable;
+  unsigned char const* RemapTable;
   PlayerColorType RemapColor;
   char Name[MPLAYER_NAME_MAX];
 
@@ -386,12 +386,12 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   HouseClass(void) : Class(nullptr) {};
   HouseClass(HousesType house);
-  HouseClass(NoInitClass const &x)
+  HouseClass(NoInitClass const& x)
       : Class(Class),
         FreeHarvester(x),
         IonCannon(x),
@@ -416,11 +416,11 @@ class HouseClass {
   ProdFailType Suspend_Production(RTTIType type);
   ProdFailType Abandon_Production(RTTIType type);
   bool Place_Object(RTTIType type, CELL cell);
-  bool Manual_Place(BuildingClass *builder, BuildingClass *object);
+  bool Manual_Place(BuildingClass* builder, BuildingClass* object);
   void Special_Weapon_AI(SpecialWeaponType id);
   bool Place_Special_Blast(SpecialWeaponType id, CELL cell);
   bool Flag_Attach(CELL cell, bool set_home = false);
-  bool Flag_Attach(UnitClass *object, bool set_home = false);
+  bool Flag_Attach(UnitClass* object, bool set_home = false);
   bool Flag_Remove(TARGET target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
 
@@ -429,29 +429,29 @@ class HouseClass {
   bool Flag_To_Win(void);
   bool Flag_To_Lose(void);
   void Make_Ally(HousesType house);
-  void Make_Ally(ObjectClass *object) {
+  void Make_Ally(ObjectClass* object) {
     if (object) Make_Ally(object->Owner());
   };
   void Make_Enemy(HousesType house);
-  void Make_Enemy(ObjectClass *object) {
+  void Make_Enemy(ObjectClass* object) {
     if (object) Make_Enemy(object->Owner());
   };
   bool Is_Ally(HousesType house) const;
-  bool Is_Ally(HouseClass const *house) const;
-  bool Is_Ally(ObjectClass const *object) const;
+  bool Is_Ally(HouseClass const* house) const;
+  bool Is_Ally(ObjectClass const* object) const;
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const;
+  void Debug_Dump(MonoClass* mono) const;
 #endif
   void AI(void);
   bool Can_Build(StructType structure, HousesType house) const;
   bool Can_Build(InfantryType infantry, HousesType house) const;
   bool Can_Build(UnitType unit, HousesType) const;
   bool Can_Build(AircraftType aircraft, HousesType house) const;
-  bool Can_Build(TechnoTypeClass const *type, HousesType house) const;
-  unsigned char const *Remap_Table(bool blushing = false,
+  bool Can_Build(TechnoTypeClass const* type, HousesType house) const;
+  unsigned char const* Remap_Table(bool blushing = false,
                                    bool unit = false) const;
 
-  TechnoTypeClass const *Suggest_New_Object(RTTIType objectype) const;
+  TechnoTypeClass const* Suggest_New_Object(RTTIType objectype) const;
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
   long Available_Money(void) const;
@@ -466,22 +466,22 @@ class HouseClass {
     return (!Tiberium) ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
   };
   void Begin_Production(void) { IsStarted = true; };
-  TeamTypeClass const *Suggested_New_Team(bool alertcheck = false);
+  TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
 
   static void Init(void);
   static void One_Time(void);
-  static HouseClass *As_Pointer(HousesType house);
+  static HouseClass* As_Pointer(HousesType house);
 
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static void Read_Flag_INI(char *buffer);
-  static void Write_Flag_INI(char *buffer);
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static void Read_Flag_INI(char* buffer);
+  static void Write_Flag_INI(char* buffer);
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   void Code_Pointers(void);
   void Decode_Pointers(void);
 

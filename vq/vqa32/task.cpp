@@ -57,13 +57,15 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
-#include <malloc.h>
-#include <dos.h>
-#include <mem.h>
 #include <conio.h>
+#include <dos.h>
+#include <malloc.h>
+#include <mem.h>
 #include <sys\timeb.h>
 #include <vqm32\all.h>
+
+#include <cstdio>
+
 #include "vqaplayp.h"
 
 /*---------------------------------------------------------------------------
@@ -105,14 +107,14 @@ extern int cdecl Get_Key(void);
  *
  ****************************************************************************/
 
-VQAHandle *VQA_Alloc(void) {
-  VQAHandleP *vqa;
+VQAHandle* VQA_Alloc(void) {
+  VQAHandleP* vqa;
 
-  if ((vqa = (VQAHandleP *)malloc(sizeof(VQAHandleP))) != NULL) {
+  if ((vqa = (VQAHandleP*)malloc(sizeof(VQAHandleP))) != NULL) {
     memset(vqa, 0, sizeof(VQAHandleP));
   }
 
-  return ((VQAHandle *)vqa);
+  return ((VQAHandle*)vqa);
 }
 
 /****************************************************************************
@@ -137,7 +139,7 @@ VQAHandle *VQA_Alloc(void) {
  *
  ****************************************************************************/
 
-void VQA_Free(VQAHandle *vqa) {
+void VQA_Free(VQAHandle* vqa) {
   if (vqa) free(vqa);
 }
 
@@ -164,9 +166,9 @@ void VQA_Free(VQAHandle *vqa) {
  *
  ****************************************************************************/
 
-void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
-                                                void *buffer, long nbytes)) {
-  ((VQAHandleP *)vqa)->IOHandler = iohandler;
+void VQA_Init(VQAHandle* vqa, long (*iohandler)(VQAHandle* vqa, long action,
+                                                void* buffer, long nbytes)) {
+  ((VQAHandleP*)vqa)->IOHandler = iohandler;
 }
 
 /****************************************************************************
@@ -195,28 +197,28 @@ void VQA_Init(VQAHandle *vqa, long (*iohandler)(VQAHandle *vqa, long action,
  *
  ****************************************************************************/
 
-long VQA_Play(VQAHandle *vqa, long mode) {
-  VQAData *vqabuf;
-  VQAConfig *config;
-  VQADrawer *drawer;
+long VQA_Play(VQAHandle* vqa, long mode) {
+  VQAData* vqabuf;
+  VQAConfig* config;
+  VQADrawer* drawer;
   long rc;
   long i;
   long key;
 
   /* Dereference commonly used data members for quick access. */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  vqabuf = ((VQAHandleP*)vqa)->VQABuf;
   drawer = &vqabuf->Drawer;
-  config = &((VQAHandleP *)vqa)->Config;
+  config = &((VQAHandleP*)vqa)->Config;
 
   /* One time player priming. */
   if (!(vqabuf->Flags & VQADATF_PRIMED)) {
     /* Init the Drawer's configuration */
-    VQA_Configure_Drawer((VQAHandleP *)vqa);
+    VQA_Configure_Drawer((VQAHandleP*)vqa);
 
 /* If audio enabled & loaded, start playing */
 #if (VQAAUDIO_ON)
     if ((config->OptionFlags & VQAOPTF_AUDIO) && vqabuf->Audio.IsLoaded[0]) {
-      VQA_StartAudio((VQAHandleP *)vqa);
+      VQA_StartAudio((VQAHandleP*)vqa);
     }
 #endif
 
@@ -224,13 +226,13 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     i = ((vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS) /
          config->DrawRate);
 
-    VQA_SetTimer((VQAHandleP *)vqa, i, config->TimerMethod);
-    vqabuf->StartTime = VQA_GetTime((VQAHandleP *)vqa);
+    VQA_SetTimer((VQAHandleP*)vqa, i, config->TimerMethod);
+    vqabuf->StartTime = VQA_GetTime((VQAHandleP*)vqa);
 
 /* Set up the Mono screen */
 #if (VQAMONO_ON)
     if (config->OptionFlags & VQAOPTF_MONO) {
-      VQA_InitMono((VQAHandleP *)vqa);
+      VQA_InitMono((VQAHandleP*)vqa);
     }
 #endif
 
@@ -243,12 +245,12 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     case VQAMODE_PAUSE:
       if ((vqabuf->Flags & VQADATF_PAUSED) == 0) {
         vqabuf->Flags |= VQADATF_PAUSED;
-        vqabuf->EndTime = VQA_GetTime((VQAHandleP *)vqa);
+        vqabuf->EndTime = VQA_GetTime((VQAHandleP*)vqa);
 
 /* Stop the audio while the movie is paused. */
 #if (VQAAUDIO_ON)
         if (vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) {
-          VQA_StopAudio((VQAHandleP *)vqa);
+          VQA_StopAudio((VQAHandleP*)vqa);
         }
 #endif
       }
@@ -267,11 +269,11 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 /* Start the audio if it was previously on. */
 #if (VQAAUDIO_ON)
         if (config->OptionFlags & VQAOPTF_AUDIO) {
-          VQA_StartAudio((VQAHandleP *)vqa);
+          VQA_StartAudio((VQAHandleP*)vqa);
         }
 #endif
 
-        VQA_SetTimer((VQAHandleP *)vqa, vqabuf->EndTime, config->TimerMethod);
+        VQA_SetTimer((VQAHandleP*)vqa, vqabuf->EndTime, config->TimerMethod);
       }
 
       /* Load, Draw, Load, Draw, Load, Draw ... */
@@ -308,7 +310,7 @@ long VQA_Play(VQAHandle *vqa, long mode) {
 /* Update Mono output */
 #if (VQAMONO_ON)
         if (config->OptionFlags & VQAOPTF_MONO) {
-          VQA_UpdateMono((VQAHandleP *)vqa);
+          VQA_UpdateMono((VQAHandleP*)vqa);
         }
 #endif
 
@@ -326,12 +328,12 @@ long VQA_Play(VQAHandle *vqa, long mode) {
     /* Record the end time; must be done before stopping audio, since we're
      * getting the elapsed time from the audio DMA position.
      */
-    vqabuf->EndTime = VQA_GetTime((VQAHandleP *)vqa);
+    vqabuf->EndTime = VQA_GetTime((VQAHandleP*)vqa);
 
 /* Stop audio, if it's playing. */
 #if (VQAAUDIO_ON)
     if (vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) {
-      VQA_StopAudio((VQAHandleP *)vqa);
+      VQA_StopAudio((VQAHandleP*)vqa);
     }
 #endif
 
@@ -364,16 +366,16 @@ long VQA_Play(VQAHandle *vqa, long mode) {
  *
  ****************************************************************************/
 
-void VQA_GetInfo(VQAHandle *vqa, VQAInfo *info) {
-  VQAHeader *header;
+void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
+  VQAHeader* header;
 
   /* Dereference header structure. */
-  header = &((VQAHandleP *)vqa)->Header;
+  header = &((VQAHandleP*)vqa)->Header;
 
   info->NumFrames = header->Frames;
   info->ImageHeight = header->ImageHeight;
   info->ImageWidth = header->ImageWidth;
-  info->ImageBuf = ((VQAHandleP *)vqa)->VQABuf->Drawer.ImageBuf;
+  info->ImageBuf = ((VQAHandleP*)vqa)->VQABuf->Drawer.ImageBuf;
 }
 
 /****************************************************************************
@@ -398,11 +400,11 @@ void VQA_GetInfo(VQAHandle *vqa, VQAInfo *info) {
  *
  ****************************************************************************/
 
-void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats) {
-  VQAData *vqabuf;
+void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
+  VQAData* vqabuf;
 
   /* Dereference VQAData structure from VQAHandle */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  vqabuf = ((VQAHandleP*)vqa)->VQABuf;
 
   stats->MemUsed = vqabuf->MemUsed;
   stats->StartTime = vqabuf->StartTime;
@@ -440,7 +442,7 @@ void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats) {
  *
  ****************************************************************************/
 
-char *VQA_Version(void) { return (VQA_VERSION); }
+char* VQA_Version(void) { return (VQA_VERSION); }
 
 /****************************************************************************
  *
@@ -463,7 +465,7 @@ char *VQA_Version(void) { return (VQA_VERSION); }
  *
  ****************************************************************************/
 
-char *VQA_IDString(void) { return (VQA_IDSTRING); }
+char* VQA_IDString(void) { return (VQA_IDSTRING); }
 
 /****************************************************************************
  *
@@ -485,12 +487,12 @@ char *VQA_IDString(void) { return (VQA_IDSTRING); }
  *
  ****************************************************************************/
 
-long User_Update(VQAHandle *vqa) {
-  VQAData *vqabuf;
+long User_Update(VQAHandle* vqa) {
+  VQAData* vqabuf;
   long rc = 0;
 
   /* Dereference data members for quicker access. */
-  vqabuf = ((VQAHandleP *)vqa)->VQABuf;
+  vqabuf = ((VQAHandleP*)vqa)->VQABuf;
 
   if (vqabuf->Flags & VQADATF_UPDATE) {
     /* Invoke the page flip routine */

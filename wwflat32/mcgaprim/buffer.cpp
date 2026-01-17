@@ -63,12 +63,12 @@
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-BufferClass::BufferClass(VOID *buffer, LONG size) {
+BufferClass::BufferClass(VOID* buffer, LONG size) {
   Size = size;  // find size of physical buffer
 
-  if (buffer) {               // if buffer is specified
-    Buffer = (BYTE *)buffer;  //		point to it and mark
-    Allocated = FALSE;        //		it as user allocated
+  if (buffer) {              // if buffer is specified
+    Buffer = (BYTE*)buffer;  //		point to it and mark
+    Allocated = FALSE;       //		it as user allocated
   } else {
     Buffer = new BYTE[Size];  // otherwise allocate it and
     Allocated = TRUE;         //		mark it system alloced

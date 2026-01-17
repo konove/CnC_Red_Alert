@@ -154,7 +154,7 @@ int RandomStraw::Seed_Bits_Needed(void) const {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 void RandomStraw::Seed_Bit(int seed) {
-  char *ptr = ((char *)&Random[0]) + ((SeedBits / CHAR_BIT) % sizeof(Random));
+  char* ptr = ((char*)&Random[0]) + ((SeedBits / CHAR_BIT) % sizeof(Random));
   char frac = (char)(1 << (SeedBits & (CHAR_BIT - 1)));
 
   if (seed & 0x01) {
@@ -257,7 +257,7 @@ void RandomStraw::Scramble_Seed(void) {
     int tocopy = sizeof(digest) < (sizeof(Random) - index)
                      ? sizeof(digest)
                      : (sizeof(Random) - index);
-    memmove(((char *)&Random[0]) + index, digest, tocopy);
+    memmove(((char*)&Random[0]) + index, digest, tocopy);
   }
 }
 
@@ -280,16 +280,16 @@ void RandomStraw::Scramble_Seed(void) {
  * HISTORY: * 07/04/1996 JLB : Created. * 07/10/1996 JLB : Revamped to make
  *cryptographically secure.                               *
  *=============================================================================================*/
-int RandomStraw::Get(void *source, int slen) {
+int RandomStraw::Get(void* source, int slen) {
   if (source == nullptr || slen < 1) {
     return (Straw::Get(source, slen));
   }
 
   int total = 0;
   while (slen > 0) {
-    *(char *)source = (char)Random[Current++];
+    *(char*)source = (char)Random[Current++];
     Current = Current % (sizeof(Random) / sizeof(Random[0]));
-    source = (char *)source + sizeof(char);
+    source = (char*)source + sizeof(char);
     slen--;
     total++;
   }

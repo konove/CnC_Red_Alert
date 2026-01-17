@@ -160,10 +160,10 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(char *buf, int buflen) {
+int NullModemConnClass::Send(char* buf, int buflen) {
   // int status;
-  int *ibuf;
-  SerialHeaderType *header;
+  int* ibuf;
+  SerialHeaderType* header;
   unsigned long sendlen;
 
   /*------------------------------------------------------------------------
@@ -174,7 +174,7 @@ int NullModemConnClass::Send(char *buf, int buflen) {
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
-  header = (SerialHeaderType *)SendBuf;
+  header = (SerialHeaderType*)SendBuf;
   header->MagicNumber = PACKET_SERIAL_START;
   header->Length = (short)buflen;
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
@@ -182,7 +182,7 @@ int NullModemConnClass::Send(char *buf, int buflen) {
   sendlen = sizeof(SerialHeaderType);
   memcpy(SendBuf + sendlen, buf, buflen);
   sendlen += buflen;
-  ibuf = (int *)(SendBuf + sendlen);
+  ibuf = (int*)(SendBuf + sendlen);
   *ibuf = Compute_CRC(buf, buflen);
   sendlen += sizeof(int);
 
@@ -197,10 +197,10 @@ int NullModemConnClass::Send(char *buf, int buflen) {
   if (Winsock.Get_Connected() || GameToPlay == GAME_INTERNET) {
     Winsock.Write(SendBuf, (int)sendlen);
   } else {
-    SerialPort->Write_To_Serial_Port((unsigned char *)SendBuf, (int)sendlen);
+    SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
   }
 #else
-  SerialPort->Write_To_Serial_Port((unsigned char *)SendBuf, (int)sendlen);
+  SerialPort->Write_To_Serial_Port((unsigned char*)SendBuf, (int)sendlen);
 #endif  // WINSOCK
 
   // if ( status == ASSUCCESS ) {
@@ -232,7 +232,7 @@ int NullModemConnClass::Send(char *buf, int buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Compute_CRC(char *buf, int buflen) {
+int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
   unsigned int sum, hibit;
 
   sum = 0;

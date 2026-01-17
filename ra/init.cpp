@@ -188,18 +188,18 @@ void Init_Random(void);
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
-bool Load_Recording_Values(CCFileClass &file);
-bool Save_Recording_Values(CCFileClass &file);
+bool Load_Recording_Values(CCFileClass& file);
+bool Save_Recording_Values(CCFileClass& file);
 
 #ifdef WOLAPI_INTEGRATION
 extern int WOL_Main();
 #include "WolapiOb.h"
-extern WolapiObject *pWolapi;
+extern WolapiObject* pWolapi;
 #endif
 
 bool Expansion_Dialog(bool bCounterstrike);
 
-extern bool Is_Mission_Counterstrike(char *file_name);
+extern bool Is_Mission_Counterstrike(char* file_name);
 
 /***********************************************************************************************
  * Load_Prolog_Page -- Loads the special pre-prolog "please wait" page. *
@@ -240,7 +240,7 @@ static void Load_Prolog_Page(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Init_Game(int, char *[]) {
+bool Init_Game(int, char*[]) {
 /*
 **	Allocate the benchmark tracking objects only if the machine and
 **	compile flags indicate.
@@ -996,7 +996,7 @@ bool Select_Game(bool /*fade*/) {
                     */
                     WWDebugString("RA95 - About to flush packet queue.\n");
                     WWDebugString("RA95 - Allocating scrap memory.\n");
-                    char *temp_buffer = new char[1024];
+                    char* temp_buffer = new char[1024];
 
                     WWDebugString("RA95 - Creating timer class instance.\n");
                     CountDownTimerClass ptimer;
@@ -1174,7 +1174,7 @@ bool Select_Game(bool /*fade*/) {
 #ifdef PORTABLE
               // we don't even have IPX
               PacketTransport = new UDPInterfaceClass;
-              PacketTransport->Set_Broadcast_Address((char *)"255.255.255.255");
+              PacketTransport->Set_Broadcast_Address((char*)"255.255.255.255");
 #else
               //							if
               //(WWMessageBox().Process("Select a protocol to use for network
@@ -1545,7 +1545,7 @@ static void Play_Intro(bool sequenced) {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 #ifdef MOVIE640
-GraphicBufferClass VQ640(640, 400, (void *)nullptr);
+GraphicBufferClass VQ640(640, 400, (void*)nullptr);
 #endif
 void Anim_Init(void) {
   /* Configure player with INI file */
@@ -1564,15 +1564,15 @@ void Anim_Init(void) {
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
 #ifdef LORES
-  AnimControl.ImageBuf = (unsigned char *)HidPage.Get_Offset();
+  AnimControl.ImageBuf = (unsigned char*)HidPage.Get_Offset();
 #else
-  AnimControl.ImageBuf = (unsigned char *)SysMemPage.Get_Offset();
+  AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
 #endif
 #ifdef MOVIE640
   if (IsVQ640) {
     AnimControl.ImageWidth = 640;
     AnimControl.ImageHeight = 400;
-    AnimControl.ImageBuf = (unsigned char *)VQ640.Get_Offset();
+    AnimControl.ImageBuf = (unsigned char*)VQ640.Get_Offset();
   }
 #endif
   AnimControl.Vmode = 0;
@@ -1607,7 +1607,7 @@ void Anim_Init(void) {
  *                                                                                             *
  * HISTORY: * 03/18/1995 JLB : Created. *
  *=============================================================================================*/
-bool Parse_Command_Line(int argc, char *argv[]) {
+bool Parse_Command_Line(int argc, char* argv[]) {
   /*
   **	Parse the command line and set globals to reflect the parameters
   **	passed in.
@@ -1620,7 +1620,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
 
   for (int index = 1; index < argc; index++) {
     std::string original_arg = argv[index];  // Copy for preserving case.
-    char *string = strupr(argv[index]);      // Pointer to argument.
+    char* string = strupr(argv[index]);      // Pointer to argument.
 
     /*
     **	Print usage text only if requested.
@@ -1641,7 +1641,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
     /*
     **	Check to see if the parameter is a cheat enabling one.
     */
-    long const *optr = &CheatCodes[0];
+    long const* optr = &CheatCodes[0];
     while (*optr) {
       if (*optr++ == ob) {
         Debug_Playtest = true;
@@ -1754,7 +1754,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
       ** Scan the command-line string, pulling off each address piece
       */
       int i = 0;
-      char *p = strtok(string + 8, ".");
+      char* p = strtok(string + 8, ".");
       while (p) {
         int x;
 
@@ -2040,7 +2040,7 @@ bool Parse_Command_Line(int argc, char *argv[]) {
  *                                                                                             *
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
-long Obfuscate(char const *string) {
+long Obfuscate(char const* string) {
   char buffer[128];
 
   if (!string) return (0);
@@ -2372,7 +2372,7 @@ static void Init_Color_Remaps(void) {
   Load_Picture("PALETTE.CPS", HiddenPage, HiddenPage, nullptr, BM_DEFAULT);
 #endif
   for (PlayerColorType pcolor = PCOLOR_FIRST; pcolor < PCOLOR_COUNT; pcolor++) {
-    unsigned char *ptr = ColorRemaps[pcolor].RemapTable;
+    unsigned char* ptr = ColorRemaps[pcolor].RemapTable;
 
     for (int color = 0; color < 256; color++) {
       ptr[color] = color;
@@ -2443,7 +2443,7 @@ static void Init_Color_Remaps(void) {
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
   */
-  memset((void *)&MetalScheme, 4, sizeof(MetalScheme));
+  memset((void*)&MetalScheme, 4, sizeof(MetalScheme));
   for (int color_counter = 0; color_counter < 16; color_counter++) {
     MetalScheme.FontRemap[color_counter] = color_counter;
   }
@@ -2553,7 +2553,7 @@ static void Init_Expansion_Files(void) {
   */
   FindFileState state;
   if (Find_First_File("SC*.MIX", state)) {
-    char *ptr;
+    char* ptr;
     do {
       // scores shouldn't be loaded here but may be found if main has been
       // extracted
@@ -2566,7 +2566,7 @@ static void Init_Expansion_Files(void) {
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
-    char *ptr;
+    char* ptr;
     do {
       ptr = strdup(state.name);
       // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
@@ -2639,7 +2639,7 @@ static void Init_Fonts(void) {
   GradFont6Ptr = MFCD::Retrieve("GRAD6FNT.FNT");
   EditorFont = MFCD::Retrieve("EDITFNT.FNT");
   Font8Ptr = MFCD::Retrieve("8POINT.FNT");
-  FontPtr = (char *)Font8Ptr;
+  FontPtr = (char*)Font8Ptr;
   Set_Font(FontPtr);
   Font3Ptr = MFCD::Retrieve("3POINT.FNT");
   ScoreFontPtr = MFCD::Retrieve("SCOREFNT.FNT");
@@ -2844,7 +2844,7 @@ static void Init_Bootstrap_Mixfiles(void) {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 // #define DENZIL_MIXEXTRACT
-void Extract(char *filename, char *outfile);
+void Extract(char* filename, char* outfile);
 
 static void Init_Secondary_Mixfiles(void) {
   if (CCFileClass("MAIN1.MIX").Is_Available()) {
@@ -2854,14 +2854,14 @@ static void Init_Secondary_Mixfiles(void) {
     // (they don't contain the base missions)
     if (CCFileClass("MAIN3.MIX").Is_Available() &&
         !CCFileClass("GENERAL3.MIX").Is_Available()) {
-      MFCD *tmp = new MFCD("MAIN3.MIX", &FastKey);
+      MFCD* tmp = new MFCD("MAIN3.MIX", &FastKey);
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
     if (CCFileClass("MAIN4.MIX").Is_Available() &&
         !CCFileClass("GENERAL4.MIX").Is_Available()) {
-      MFCD *tmp = new MFCD("MAIN4.MIX", &FastKey);
+      MFCD* tmp = new MFCD("MAIN4.MIX", &FastKey);
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
       delete tmp;
@@ -3042,16 +3042,16 @@ static void Bootstrap(void) {
   RawFileClass strings("CONQUER.ENG");
   if (strings.Is_Available()) {
     SystemStrings = new char[strings.Size()];
-    strings.Read((void *)SystemStrings, strings.Size());
+    strings.Read((void*)SystemStrings, strings.Size());
   } else {
-    SystemStrings = (char const *)MFCD::Retrieve(Language_Name("CONQUER"));
+    SystemStrings = (char const*)MFCD::Retrieve(Language_Name("CONQUER"));
   }
-  DebugStrings = (char const *)MFCD::Retrieve("DEBUG.ENG");
+  DebugStrings = (char const*)MFCD::Retrieve("DEBUG.ENG");
 
   /*
   **	Default palette initialization.
   */
-  const void *palette_data = MFCD::Retrieve("TEMPERAT.PAL");
+  const void* palette_data = MFCD::Retrieve("TEMPERAT.PAL");
   if (!palette_data) {
     fprintf(stderr,
             "ERROR: Cannot find TEMPERAT.PAL - game data files not found!\n");
@@ -3107,7 +3107,7 @@ static void Init_Mouse(void) {
   ShowCursor(false);
 #endif
   if (MouseInstalled) {
-    void const *temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
+    void const* temp_mouse_shapes = MFCD::Retrieve("MOUSE.SHP");
     if (temp_mouse_shapes) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
       while (Get_Mouse_State() > 1) Show_Mouse();
@@ -3177,7 +3177,7 @@ static void Init_Bulk_Data(void) {
 
   // now allocate and copy
   TutorialTextData = new char[totallen];
-  char *textptr = (char *)TutorialTextData;
+  char* textptr = (char*)TutorialTextData;
 
   for (int index = 0; index < ARRAY_SIZE(TutorialTextOffsets); index++) {
     char num[10];
@@ -3211,7 +3211,7 @@ static void Init_Bulk_Data(void) {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_Keys(void) {
-  RAMFileClass file((void *)Keys, strlen(Keys));
+  RAMFileClass file((void*)Keys, strlen(Keys));
   INIClass ini;
   ini.Load(file);
 
@@ -3248,7 +3248,7 @@ static void Init_Keys(void) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Save_Recording_Values(CCFileClass &file) {
+bool Save_Recording_Values(CCFileClass& file) {
   Session.Save(file);
   file.Write(&BuildLevel, sizeof(BuildLevel));
   file.Write(&Debug_Unshroud, sizeof(Debug_Unshroud));
@@ -3280,7 +3280,7 @@ bool Save_Recording_Values(CCFileClass &file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Load_Recording_Values(CCFileClass &file) {
+bool Load_Recording_Values(CCFileClass& file) {
   Session.Load(file);
   file.Read(&BuildLevel, sizeof(BuildLevel));
   file.Read(&Debug_Unshroud, sizeof(Debug_Unshroud));
@@ -3299,14 +3299,14 @@ void __PRO(void) {
 }
 }
 
-void Extract(char *filename, char *outname) {
+void Extract(char* filename, char* outname) {
   CCFileClass inFile(filename);
   CCFileClass outFile(outname);
 
   inFile.Open();
   outFile.Open(WRITE);
 
-  void *buffer = malloc(32768);
+  void* buffer = malloc(32768);
 
   if (buffer) {
     unsigned long size = inFile.Size();
@@ -3324,7 +3324,7 @@ void Extract(char *filename, char *outname) {
 
 bool bUsingDVD = false;
 
-const char *Game_Registry_Key();
+const char* Game_Registry_Key();
 
 //***********************************************************************************************
 bool Is_DVD_Installed() {

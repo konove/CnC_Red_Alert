@@ -284,9 +284,9 @@ void TcpipManagerClass::Start_Server(void) {
  * HISTORY: * 3/20/96 2:58PM ST : Created *
  *=============================================================================================*/
 
-int TcpipManagerClass::Read(void *buffer, int buffer_len) {
+int TcpipManagerClass::Read(void* buffer, int buffer_len) {
   int bytes_copied = 0;
-  char *dest_buf = (char *)buffer;
+  char* dest_buf = (char*)buffer;
 
   /*
   ** Make sure the message loop gets called because all the Winsock
@@ -326,8 +326,8 @@ int TcpipManagerClass::Read(void *buffer, int buffer_len) {
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
 
-void TcpipManagerClass::Write(void *buffer, int buffer_len) {
-  char *source_buf = (char *)buffer;
+void TcpipManagerClass::Write(void* buffer, int buffer_len) {
+  char* source_buf = (char*)buffer;
 
   /*
   ** Copy the data to one of the classes internal buffers
@@ -383,7 +383,7 @@ bool TcpipManagerClass::Add_Client(void) {
   ** Accept the connection. If there is an error then dont do anything else
   */
   addrsize = sizeof(addr);
-  ConnectSocket = accept(ListenSocket, (sockaddr *)&addr, &addrsize);
+  ConnectSocket = accept(ListenSocket, (sockaddr*)&addr, &addrsize);
   if (ConnectSocket == INVALID_SOCKET) {
     // Show_Error("accept", WSAGetLastError());
     return (false);
@@ -392,11 +392,10 @@ bool TcpipManagerClass::Add_Client(void) {
   /*
   ** Set options for this socket
   */
-  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char *)&delay, 4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char *)&SocketReceiveBuffer,
+  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&delay, 4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer,
              4);
-  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF, (char *)&SocketSendBuffer,
-             4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
 
   /*
   ** Save the clients address
@@ -411,7 +410,7 @@ bool TcpipManagerClass::Add_Client(void) {
   ** when this is complete or when it times out.
   */
   Async = WSAAsyncGetHostByAddr(MainWindow, WM_HOSTBYADDRESS,
-                                (char const *)&addr.sin_addr, 4, PF_INET,
+                                (char const*)&addr.sin_addr, 4, PF_INET,
                                 &HostBuff[0], MAXGETHOSTSTRUCT);
 
   /*
@@ -439,7 +438,7 @@ bool TcpipManagerClass::Add_Client(void) {
   addr.sin_port = htons(PlanetWestwoodPortNumber);
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(UDPSocket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+  if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket(UDPSocket);
     ConnectStatus = NOT_CONNECTING;
     return (false);
@@ -448,8 +447,8 @@ bool TcpipManagerClass::Add_Client(void) {
   /*
   ** Set options for the UDP socket
   */
-  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char *)&SocketReceiveBuffer, 4);
-  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char *)&SocketSendBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
 
 #ifndef PORTABLE
   /*
@@ -483,7 +482,7 @@ bool TcpipManagerClass::Add_Client(void) {
  *=============================================================================================*/
 #ifndef PORTABLE
 void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
-  struct hostent *hentry;
+  struct hostent* hentry;
   struct sockaddr_in addr;
   int event;
   int rc;
@@ -501,7 +500,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         */
         ConnectStatus = CONNECTING;
         if (WSAGETASYNCERROR(lParam) == 0) {
-          hentry = (struct hostent *)&HostBuff[0];
+          hentry = (struct hostent*)&HostBuff[0];
           strcpy(&ClientName[0], hentry->h_name);
         }
         Async = 0;
@@ -513,7 +512,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
         */
         ConnectStatus = CONTACTING_SERVER;
         if (WSAGETASYNCERROR(lParam) == 0) {
-          hentry = (struct hostent *)&HostBuff[0];
+          hentry = (struct hostent*)&HostBuff[0];
           strcpy(Server.Name, hentry->h_name);
         } else {
           Server.Name[0] = 0;
@@ -528,7 +527,7 @@ void TcpipManagerClass::Message_Handler(HWND, UINT message, UINT, LONG lParam) {
     */
     case WM_HOSTBYNAME:
       if (WSAGETASYNCERROR(lParam) == 0) {
-        hentry = (struct hostent *)&HostBuff[0];
+        hentry = (struct hostent*)&HostBuff[0];
         memcpy(&(Server.Addr.s_addr), hentry->h_addr, 4);
         memcpy(&UDPIPAddress, hentry->h_addr, 4);
         strcpy(Server.DotAddr, inet_ntoa(Server.Addr));
@@ -701,7 +700,7 @@ void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
  *                                                                                             *
  * HISTORY: * 3/20/96 3:19PM ST : Created *
  *=============================================================================================*/
-void TcpipManagerClass::Set_Host_Address(char *address) {
+void TcpipManagerClass::Set_Host_Address(char* address) {
   strcpy(HostAddress, address);
 }
 
@@ -767,7 +766,7 @@ void TcpipManagerClass::Start_Client(void) {
   addr.sin_port = htons(PlanetWestwoodPortNumber);
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(UDPSocket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+  if (bind(UDPSocket, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket(UDPSocket);
     Close_Socket(ConnectSocket);
     ConnectStatus = NOT_CONNECTING;
@@ -777,8 +776,8 @@ void TcpipManagerClass::Start_Client(void) {
   /*
   ** Set options for the UDP socket
   */
-  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char *)&SocketReceiveBuffer, 4);
-  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char *)&SocketSendBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, (char*)&SocketReceiveBuffer, 4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, (char*)&SocketSendBuffer, 4);
 
 #ifndef PORTABLE
   /*
@@ -830,7 +829,7 @@ void TcpipManagerClass::Close_Socket(SOCKET s) {
 
   ling.l_onoff = 0;   // linger off
   ling.l_linger = 0;  // timeout in seconds (ie close now)
-  setsockopt(s, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling));
+  setsockopt(s, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling));
   closesocket(s);
 }
 
@@ -840,9 +839,9 @@ void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
   unsigned long error_code;
   socklen_t length = 4;
 
-  getsockopt(socket, SOL_SOCKET, SO_ERROR, (char *)&error_code, &length);
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, &length);
   error_code = 0;
-  setsockopt(socket, SOL_SOCKET, SO_ERROR, (char *)&error_code, length);
+  setsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, length);
 }
 
 #endif

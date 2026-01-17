@@ -73,22 +73,22 @@ typedef struct _DisplayInfo {
   long XRes;
   long YRes;
   long VBIbit;
-  void *Extended;
+  void* Extended;
 } DisplayInfo;
 
 /*---------------------------------------------------------------------------
  * Function prototypes
  *-------------------------------------------------------------------------*/
 
-DisplayInfo *SetVideoMode(long mode);
-DisplayInfo *GetDisplayInfo(void);
+DisplayInfo* SetVideoMode(long mode);
+DisplayInfo* GetDisplayInfo(void);
 long TestVBIBit(void);
 long GetVBIBit(void);
 
 void SetupXPaging(void);
 void FlipXPage(void);
-unsigned char *GetXHidPage(void);
-unsigned char *GetXSeenPage(void);
+unsigned char* GetXHidPage(void);
+unsigned char* GetXSeenPage(void);
 void DisplayXPage(long page);
 
 #ifdef __cplusplus
@@ -101,11 +101,11 @@ void cdecl ClearVRAM(void);
 long cdecl SetXMode(long mode);
 void cdecl ClearXMode(void);
 void cdecl ShowXPage(unsigned long StartOffset);
-void cdecl Xmode_BufferCopy_320x200(void *buff, void *screen);
-void cdecl Xmode_Blit(void *buffer, void *screen, long imgwidth,
+void cdecl Xmode_BufferCopy_320x200(void* buff, void* screen);
+void cdecl Xmode_Blit(void* buffer, void* screen, long imgwidth,
                       long imgheight);
-void cdecl MCGA_BufferCopy(unsigned char *buffer, unsigned char *dummy);
-void cdecl MCGA_Blit(unsigned char *buffer, unsigned char *screen,
+void cdecl MCGA_BufferCopy(unsigned char* buffer, unsigned char* dummy);
+void cdecl MCGA_Blit(unsigned char* buffer, unsigned char* screen,
                      long imgwidth, long imgheight);
 
 #ifdef __cplusplus

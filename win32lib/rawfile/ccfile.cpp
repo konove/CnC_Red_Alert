@@ -48,14 +48,17 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "function.h"
+#include "ccfile.h"
+
 #include <direct.h>
+#include <dos.h>
 #include <fcntl.h>
 #include <io.h>
-#include <dos.h>
-#include <cerrno>
 #include <share.h>
-#include "ccfile.h"
+
+#include <cerrno>
+
+#include "function.h"
 
 /***********************************************************************************************
  * CCFileClass::Error -- Handles displaying a file error message. *
@@ -81,7 +84,7 @@
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Error(int, int, char const *) {
+void CCFileClass::Error(int, int, char const*) {
   if (!Force_CD_Available(RequiredCD)) {
     Prog_End();
     exit(EXIT_FAILURE);
@@ -104,7 +107,7 @@ void CCFileClass::Error(int, int, char const *) {
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-CCFileClass::CCFileClass(char const *filename) {
+CCFileClass::CCFileClass(char const* filename) {
   Set_Name(filename);
   FromDisk = false;
   Pointer = 0;
@@ -151,7 +154,7 @@ CCFileClass::CCFileClass(void) : CDFileClass() {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Write(void const *buffer, long size) {
+long CCFileClass::Write(void const* buffer, long size) {
   /*
   **	If this is part of a mixfile, then writing is not allowed. Error out
   *with a fatal *	message.
@@ -182,7 +185,7 @@ long CCFileClass::Write(void const *buffer, long size) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Read(void *buffer, long size) {
+long CCFileClass::Read(void* buffer, long size) {
   int opened = false;
 
   if (!Is_Open()) {
@@ -396,7 +399,7 @@ int CCFileClass::Open(int rights) {
   **	Check to see if file is part of a mixfile and that mixfile is currently
   *loaded *	into RAM.
   */
-  MixFileClass *mixfile = 0;
+  MixFileClass* mixfile = 0;
   if (MixFileClass::Offset(File_Name(), &Pointer, &mixfile, &Start, &Length)) {
     /*
     **	If the mixfile is located on disk, then fake out the file system to read
@@ -412,11 +415,11 @@ int CCFileClass::Open(int rights) {
       *support however. Also *	note that the filename attached to this object
       *is NOT the same as the file *	attached to the file handle.
       */
-      char const *dupfile = strdup(File_Name());
+      char const* dupfile = strdup(File_Name());
       Open(mixfile->Filename, READ);
       Searching(false);  // Disable multi-drive search.
       Set_Name(dupfile);
-      free((void *)dupfile);
+      free((void*)dupfile);
       Start = start;
       Length = length;
       FromDisk = true;
@@ -440,13 +443,13 @@ int CCFileClass::Open(int rights) {
 static CCFileClass Handles[10];
 
 #ifdef NEVER
-bool __cdecl Set_Search_Drives(BYTE const *) {
+bool __cdecl Set_Search_Drives(BYTE const*) {
   CCFileClass::Set_Search_Path(path);
   return (true);
 }
 #endif
 
-WORD __cdecl Open_File(BYTE const *file_name, WORD mode) {
+WORD __cdecl Open_File(BYTE const* file_name, WORD mode) {
   for (int index = 0; index < sizeof(Handles) / sizeof(Handles[0]); index++) {
     if (!Handles[index].Is_Open()) {
       if (Handles[index].Open(file_name, mode)) {
@@ -464,40 +467,40 @@ VOID __cdecl Close_File(WORD handle) {
   }
 }
 
-LONG __cdecl Read_File(WORD handle, VOID *buf, ULONG bytes) {
+LONG __cdecl Read_File(WORD handle, VOID* buf, ULONG bytes) {
   if (handle != ERROR && Handles[handle].Is_Open()) {
     return (Handles[handle].Read(buf, bytes));
   }
   return (0);
 }
 
-LONG __cdecl Write_File(WORD handle, VOID const *buf, ULONG bytes) {
+LONG __cdecl Write_File(WORD handle, VOID const* buf, ULONG bytes) {
   if (handle != ERROR && Handles[handle].Is_Open()) {
     return (Handles[handle].Write(buf, bytes));
   }
   return (0);
 }
 
-WORD __cdecl Find_File(BYTE const *file_name) {
+WORD __cdecl Find_File(BYTE const* file_name) {
   CCFileClass file(file_name);
   return (file.Is_Available());
 }
 
 #ifdef NEVER
-WORD __cdecl Delete_File(BYTE const *file_name) {
+WORD __cdecl Delete_File(BYTE const* file_name) {
   return (CCFileClass(file_name).Delete());
 }
 
-WORD __cdecl Create_File(BYTE const *file_name) {
+WORD __cdecl Create_File(BYTE const* file_name) {
   return (CCFileClass(file_name).Create());
 }
 
-ULONG __cdecl Load_Data(BYTE const *name, VOID *ptr, ULONG size) {
+ULONG __cdecl Load_Data(BYTE const* name, VOID* ptr, ULONG size) {
   return (CCFileClass(name).Read(ptr, size));
 }
 #endif
 
-VOID *__cdecl Load_Alloc_Data(BYTE const *name, WORD) {
+VOID* __cdecl Load_Alloc_Data(BYTE const* name, WORD) {
   CCFileClass file(name);
 
   return (Load_Alloc_Data(file));
@@ -511,7 +514,7 @@ ULONG __cdecl File_Size(WORD handle) {
 }
 
 #ifdef NEVER
-ULONG __cdecl Write_Data(BYTE const *name, VOID const *ptr, ULONG size) {
+ULONG __cdecl Write_Data(BYTE const* name, VOID const* ptr, ULONG size) {
   return (CCFileClass(name).Write(ptr, size));
 }
 #endif
@@ -533,7 +536,7 @@ VOID __cdecl WWDOS_Init(VOID) {}
 
 VOID __cdecl WWDOS_Shutdown(VOID) {}
 
-WORD __cdecl Find_Disk_Number(BYTE const *) { return (0); }
+WORD __cdecl Find_Disk_Number(BYTE const*) { return (0); }
 #endif
 
 // ULONG cdecl Load_Uncompress(BYTE const *file, BuffType uncomp_buff, BuffType

@@ -67,9 +67,9 @@
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-PKey::PKey(void const *exponent, void const *modulus) {
-  Modulus.DERDecode((unsigned char *)modulus);
-  Exponent.DERDecode((unsigned char *)exponent);
+PKey::PKey(void const* exponent, void const* modulus) {
+  Modulus.DERDecode((unsigned char*)modulus);
+  Exponent.DERDecode((unsigned char*)exponent);
   BitPrecision = Modulus.BitCount() - 1;
 }
 
@@ -90,11 +90,11 @@ PKey::PKey(void const *exponent, void const *modulus) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encode_Modulus(void *buffer) const {
+int PKey::Encode_Modulus(void* buffer) const {
   if (buffer == nullptr) {
     return (0);
   }
-  return (Modulus.DEREncode((unsigned char *)buffer));
+  return (Modulus.DEREncode((unsigned char*)buffer));
 }
 
 /***********************************************************************************************
@@ -116,11 +116,11 @@ int PKey::Encode_Modulus(void *buffer) const {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encode_Exponent(void *buffer) const {
+int PKey::Encode_Exponent(void* buffer) const {
   if (buffer == nullptr) {
     return (0);
   }
-  return (Exponent.DEREncode((unsigned char *)buffer));
+  return (Exponent.DEREncode((unsigned char*)buffer));
 }
 
 /***********************************************************************************************
@@ -139,8 +139,8 @@ int PKey::Encode_Exponent(void *buffer) const {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-void PKey::Decode_Modulus(void *buffer) {
-  Modulus.DERDecode((unsigned char *)buffer);
+void PKey::Decode_Modulus(void* buffer) {
+  Modulus.DERDecode((unsigned char*)buffer);
   BitPrecision = Modulus.BitCount() - 1;
 }
 
@@ -159,8 +159,8 @@ void PKey::Decode_Modulus(void *buffer) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-void PKey::Decode_Exponent(void *buffer) {
-  Exponent.DERDecode((unsigned char *)buffer);
+void PKey::Decode_Exponent(void* buffer) {
+  Exponent.DERDecode((unsigned char*)buffer);
 }
 
 /***********************************************************************************************
@@ -191,7 +191,7 @@ void PKey::Decode_Exponent(void *buffer) {
  * HISTORY: * 07/05/1996 JLB : Created. * 07/10/1996 JLB : Must supply source of
  *random data.                                       *
  *=============================================================================================*/
-void PKey::Generate(Straw &random, int bits, PKey &fastkey, PKey &slowkey) {
+void PKey::Generate(Straw& random, int bits, PKey& fastkey, PKey& slowkey) {
   /*
   **	Key generation consists of create a key pair and then testing the key
   **	pair. If the test fails, then repeat the process. The test and repeat
@@ -275,7 +275,7 @@ void PKey::Generate(Straw &random, int bits, PKey &fastkey, PKey &slowkey) {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Encrypt(void const *source, int slen, void *dest) const {
+int PKey::Encrypt(void const* source, int slen, void* dest) const {
   int total = 0;
 
   /*
@@ -295,8 +295,8 @@ int PKey::Encrypt(void const *source, int slen, void *dest) const {
     */
     memmove(dest, &temp, Crypt_Block_Size());
     slen -= Plain_Block_Size();
-    source = (char *)source + Plain_Block_Size();
-    dest = (char *)dest + Crypt_Block_Size();
+    source = (char*)source + Plain_Block_Size();
+    dest = (char*)dest + Crypt_Block_Size();
     total += Crypt_Block_Size();
   }
 
@@ -326,7 +326,7 @@ int PKey::Encrypt(void const *source, int slen, void *dest) const {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int PKey::Decrypt(void const *source, int slen, void *dest) const {
+int PKey::Decrypt(void const* source, int slen, void* dest) const {
   int total = 0;
   BigInt temp;
 
@@ -347,8 +347,8 @@ int PKey::Decrypt(void const *source, int slen, void *dest) const {
     */
     memmove(dest, &temp, Plain_Block_Size());
     slen -= Crypt_Block_Size();
-    source = (char *)source + Crypt_Block_Size();
-    dest = (char *)dest + Plain_Block_Size();
+    source = (char*)source + Crypt_Block_Size();
+    dest = (char*)dest + Plain_Block_Size();
     total += Plain_Block_Size();
   }
 

@@ -42,17 +42,17 @@ extern "C" {
 
 typedef void __cdecl (*MPlayerInit_Type)(void);
 typedef void __cdecl (*MPlayerDestroy_Type)(void);
-typedef int __cdecl (*Send_Private_Message_Type)(void *buf, int buflen,
+typedef int __cdecl (*Send_Private_Message_Type)(void* buf, int buflen,
                                                  int ack_req, int conn_id);
-typedef int __cdecl (*Get_Private_Message_Type)(void *buf, int *buflen,
-                                                int *conn_id);
-typedef int __cdecl (*Send_Global_Message_Type)(void *buf, int buflen,
+typedef int __cdecl (*Get_Private_Message_Type)(void* buf, int* buflen,
+                                                int* conn_id);
+typedef int __cdecl (*Send_Global_Message_Type)(void* buf, int buflen,
                                                 int ack_req, int addr);
-typedef int __cdecl (*Get_Global_Message_Type)(void *buf, int *buflen,
-                                               int *address);
-typedef int __cdecl (*Create_Connection_Type)(int id, char *name, int address);
+typedef int __cdecl (*Get_Global_Message_Type)(void* buf, int* buflen,
+                                               int* address);
+typedef int __cdecl (*Create_Connection_Type)(int id, char* name, int address);
 typedef int __cdecl (*Delete_Connection_Type)(int id);
-typedef char *__cdecl (*Connection_Name_Type)(int id);
+typedef char* __cdecl (*Connection_Name_Type)(int id);
 typedef int __cdecl (*Connection_Address_Type)(int id);
 typedef int __cdecl (*Num_Connections_Type)(void);
 typedef int __cdecl (*Connection_ID_Type)(int id);
@@ -136,27 +136,27 @@ MPlayerManClass::~MPlayerManClass() { MPlayerManDestroy(); }
 // here's what we do to get private & broadcasts over the same chunnel
 // we package up an extra dword at the beginning to indicate the address
 
-int MPlayerManClass::Send_Private_Message(void *buf, int buflen, int ack_req,
+int MPlayerManClass::Send_Private_Message(void* buf, int buflen, int ack_req,
                                           int conn_id) {
   return Send_Private_Message_DLL(buf, buflen, ack_req, conn_id);
 }
 
-int MPlayerManClass::Get_Private_Message(void *buf, int *buflen, int *conn_id) {
+int MPlayerManClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
   return Get_Private_Message_DLL(buf, buflen, conn_id);
 }
 
-int MPlayerManClass::Send_Global_Message(void *buf, int buflen, int ack_req,
+int MPlayerManClass::Send_Global_Message(void* buf, int buflen, int ack_req,
                                          int addr) {
   return Send_Global_Message_DLL(buf, buflen, ack_req, addr);
 }
 
-int MPlayerManClass::Get_Global_Message(void *buf, int *buflen, int *address) {
+int MPlayerManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
   return Get_Global_Message_DLL(buf, buflen, address);
 }
 
 int MPlayerManClass::Service(void) { return STATUS_OK; }
 
-int MPlayerManClass::Create_Connection(int id, char *name, int address) {
+int MPlayerManClass::Create_Connection(int id, char* name, int address) {
   return Create_Connection_DLL(id, name, address);
 }
 
@@ -164,7 +164,7 @@ int MPlayerManClass::Delete_Connection(int id) {
   return Delete_Connection_DLL(id);
 }
 
-char *MPlayerManClass::Connection_Name(int id) {
+char* MPlayerManClass::Connection_Name(int id) {
   return Connection_Name_DLL(id);
 }
 
@@ -208,7 +208,7 @@ void MPlayerManClass::Set_Timing(unsigned long /*retrydelta*/,
 }
 
 void MPlayerManClass::Configure_Debug(int /*index*/, int /*type_offset*/,
-                                      int /*type_size*/, char ** /*names*/,
+                                      int /*type_size*/, char** /*names*/,
                                       int /*namestart*/, int /*namecount*/) {
   // unsupported
 }

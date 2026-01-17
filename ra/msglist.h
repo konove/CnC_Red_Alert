@@ -139,25 +139,25 @@ class MessageListClass {
   void Init(int x, int y, int max_msg, int maxchars, int height, int edit_x,
             int edit_y, int overflow_on, int over_start, int over_end,
             int width = 640);
-  TextLabelClass *Add_Message(char const *name, int id, char const *txt,
+  TextLabelClass* Add_Message(char const* name, int id, char const* txt,
                               PlayerColorType color, TextPrintType style,
                               int timeout);
-  int Concat_Message(char const *name, int id, char const *txt, int timeout);
+  int Concat_Message(char const* name, int id, char const* txt, int timeout);
 
   //.....................................................................
   // Message access utility routines
   //.....................................................................
-  char *Get_Message(int id);
-  TextLabelClass *Get_Label(int id);
+  char* Get_Message(int id);
+  TextLabelClass* Get_Label(int id);
 
   //.....................................................................
   // Message-editing support routines
   //.....................................................................
-  TextLabelClass *Add_Edit(PlayerColorType color, TextPrintType style, char *to,
+  TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style, char* to,
                            char cursor = 0, int width = 640);
   void Remove_Edit(void);
-  char *Get_Edit_Buf(void);
-  char *Get_Overflow_Buf(void) { return (OverflowBuf); }
+  char* Get_Edit_Buf(void);
+  char* Get_Overflow_Buf(void) { return (OverflowBuf); }
   void Clear_Overflow_Buf(void) { OverflowBuf[0] = 0; }
   int Is_Edit(void) { return (IsEdit); }
   void Set_Edit_Color(PlayerColorType color);
@@ -166,7 +166,7 @@ class MessageListClass {
   // Maintenance routines
   //.....................................................................
   int Manage(void);
-  int Input(KeyNumType &input);
+  int Input(KeyNumType& input);
   void Draw(void);
   int Num_Messages(void);
   void Set_Width(int width);
@@ -177,7 +177,7 @@ class MessageListClass {
   //.....................................................................
   // Message parsing
   //.....................................................................
-  int Trim_Message(char *dest, char *src, int min_chars, int max_chars,
+  int Trim_Message(char* dest, char* src, int min_chars, int max_chars,
                    int scandir);
 
   //.....................................................................
@@ -188,7 +188,7 @@ class MessageListClass {
   //.....................................................................
   // Private Data
   //.....................................................................
-  TextLabelClass *MessageList;  // list of messages
+  TextLabelClass* MessageList;  // list of messages
   int MessageX;                 // x-coord of upper-left
   int MessageY;                 // y-coord of upper-left
   int MaxMessages;              // max messages allowed
@@ -205,7 +205,7 @@ class MessageListClass {
   unsigned AdjustEdit : 1;                // 1 = edit field appears over msgs
   int EditX;                              // x-coord of edit field
   int EditY;                              // y-coord of edit field
-  TextLabelClass *EditLabel;              // ptr to current edit label
+  TextLabelClass* EditLabel;              // ptr to current edit label
   char EditBuf[MAX_MESSAGE_LENGTH + 30];  // buffer for editable message
   char OverflowBuf[MAX_MESSAGE_LENGTH + 30];  // overflow area
   int EditCurPos;                             // current edit position

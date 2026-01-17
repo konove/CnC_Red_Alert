@@ -225,7 +225,7 @@ void SliderClass::Recalc_Thumb(void) {
  *consumed and further processing of the gadget list should be   * aborted? *
  * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-int SliderClass::Action(unsigned flags, KeyNumType &key) {
+int SliderClass::Action(unsigned flags, KeyNumType& key) {
   /*
   **	Handle the mouse click in a special way. If the click was not on the
   *thumb, then *	jump the thumb position one "step" in the appropriate
@@ -383,8 +383,8 @@ int SliderClass::Draw_Me(int forced) {
  *-- Which gadget is being touched.                                         *
  * OUTPUT:  none * WARNINGS:   none * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void SliderClass::Peer_To_Peer(unsigned flags, KeyNumType &,
-                               ControlClass &whom) {
+void SliderClass::Peer_To_Peer(unsigned flags, KeyNumType&,
+                               ControlClass& whom) {
   if (flags & LEFTRELEASE) {
     if (&whom == PlusGadget) {
       Step(false);

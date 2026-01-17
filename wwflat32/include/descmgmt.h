@@ -47,8 +47,8 @@
 extern "C" {
 #endif
 
-#include <dos.h>
 #include <bios.h>
+#include <dos.h>
 
 #ifdef __cplusplus
 }

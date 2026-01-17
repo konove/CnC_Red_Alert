@@ -152,8 +152,8 @@ class CellClass {
   **	These point to the object(s) that are located in this cell or overlap
   **	this cell.
   */
-  ObjectClass *OccupierPtr;
-  ObjectClass *Overlappers[3];
+  ObjectClass* OccupierPtr;
+  ObjectClass* Overlappers[3];
 
   /*
   **	This array of bit flags is used to indicate which sub positions
@@ -185,12 +185,12 @@ class CellClass {
   // Resets the cell to its default initial state.
   void Reset(void);
 
-  int operator==(CellClass const &cell) const { return &cell == this; };
+  int operator==(CellClass const& cell) const { return &cell == this; };
 
   /*
   **	Query functions.
   */
-  ObjectClass *Cell_Occupier(void) const;
+  ObjectClass* Cell_Occupier(void) const;
   static int Spot_Index(COORDINATE coord);
   bool Is_Spot_Free(int spot_index) const {
     return (!(Flag.Composite & (1 << spot_index)));
@@ -199,33 +199,33 @@ class CellClass {
   COORDINATE Free_Spot(void) const { return Closest_Free_Spot(Cell_Coord()); };
   bool Is_Generally_Clear(void) const;
   TARGET As_Target(void) const { return ::As_Target(Cell_Number()); };
-  BuildingClass *Cell_Building(void) const;
-  CellClass const &Adjacent_Cell(FacingType face) const;
-  CellClass &Adjacent_Cell(FacingType face) {
-    return (CellClass &)((*((CellClass const *)this)).Adjacent_Cell(face));
+  BuildingClass* Cell_Building(void) const;
+  CellClass const& Adjacent_Cell(FacingType face) const;
+  CellClass& Adjacent_Cell(FacingType face) {
+    return (CellClass&)((*((CellClass const*)this)).Adjacent_Cell(face));
   };
   COORDINATE Cell_Coord(void) const;
   int Cell_Color(bool override = false) const;
   CELL Cell_Number(void) const;
   LandType Land_Type(void) const { return Land; };
-  ObjectClass *Cell_Find_Object(RTTIType rtti) const;
-  ObjectClass *Cell_Object(int x = 0, int y = 0) const;
-  TechnoClass *Cell_Techno(int x = 0, int y = 0) const;
-  TerrainClass *Cell_Terrain(void) const;
-  UnitClass *Cell_Unit(void) const;
-  InfantryClass *Cell_Infantry(void) const;
-  TriggerClass *Get_Trigger(void) const;
+  ObjectClass* Cell_Find_Object(RTTIType rtti) const;
+  ObjectClass* Cell_Object(int x = 0, int y = 0) const;
+  TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
+  TerrainClass* Cell_Terrain(void) const;
+  UnitClass* Cell_Unit(void) const;
+  InfantryClass* Cell_Infantry(void) const;
+  TriggerClass* Get_Trigger(void) const;
   int Clear_Icon(void) const;
-  bool Goodie_Check(FootClass *object);
-  ObjectClass *Fetch_Occupier(void) const;
+  bool Goodie_Check(FootClass* object);
+  ObjectClass* Fetch_Occupier(void) const;
 
   /*
   **	Object placement and removal flag operations.
   */
-  void Occupy_Down(ObjectClass *object);
-  void Occupy_Up(ObjectClass *object);
-  void Overlap_Down(ObjectClass *object);
-  void Overlap_Up(ObjectClass *object);
+  void Occupy_Down(ObjectClass* object);
+  void Occupy_Up(ObjectClass* object);
+  void Overlap_Down(ObjectClass* object);
+  void Overlap_Up(ObjectClass* object);
   bool Flag_Place(HousesType house);
   bool Flag_Remove(void);
 
@@ -233,8 +233,8 @@ class CellClass {
   **	File I/O.
   */
   bool Should_Save(void) const;
-  bool Save(FileClass &file);
-  bool Load(FileClass &file);
+  bool Save(FileClass& file);
+  bool Load(FileClass& file);
   void Code_Pointers(void);
   void Decode_Pointers(void);
 
@@ -257,12 +257,12 @@ class CellClass {
   void Incoming(COORDINATE threat = 0, bool forced = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
-  int operator!=(CellClass const &) const { return 0; };
+  int operator!=(CellClass const&) const { return 0; };
 
   int Validate(void) const;
 
  private:
-  CellClass(CellClass const &) {};
+  CellClass(CellClass const&) {};
 
   LandType Land;  // The land type of this cell.
 };

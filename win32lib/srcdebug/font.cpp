@@ -36,13 +36,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "font.h"
-#include <malloc.h>
+
 #include <dos.h>
 #include <fcntl.h>
 #include <io.h>
+#include <malloc.h>
 #include <sys\stat.h>
-#include <cstring>
 #include <wwstd.h>
+
+#include <cstring>
 
 /***************************************************************************
  * CHAR_PIXEL_WIDTH -- Return pixel width of a character.
@@ -89,7 +91,7 @@ int __cdecl Char_Pixel_Width(char chr) {
  *   01/31/1992 DRD : Use Char_Pixel_Width.                                *
  *   06/30/1994 SKB : Converted to 32 bit library.                         *
  *=========================================================================*/
-unsigned int __cdecl String_Pixel_Width(char const *string) {
+unsigned int __cdecl String_Pixel_Width(char const* string) {
   WORD width;        // Working accumulator of string width.
   WORD largest = 0;  // Largest recorded width of the string.
 
@@ -125,8 +127,8 @@ unsigned int __cdecl String_Pixel_Width(char const *string) {
  * HISTORY:                                                                *
  *   07/20/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID __cdecl Get_Next_Text_Print_XY(GraphicViewPortClass &gp,
-                                    unsigned long offset, INT *x, INT *y) {
+VOID __cdecl Get_Next_Text_Print_XY(GraphicViewPortClass& gp,
+                                    unsigned long offset, INT* x, INT* y) {
   INT buffwidth;
 
   if (offset) {

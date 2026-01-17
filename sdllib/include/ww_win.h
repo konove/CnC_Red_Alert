@@ -45,9 +45,9 @@ union SDL_Event;
 /*=========================================================================*/
 int Change_Window(int windnum);
 
-void SDL_Create_Main_Window(const char *title, int width, int height);
+void SDL_Create_Main_Window(const char* title, int width, int height);
 void SDL_Event_Loop();
-void SDL_Event_Handler(SDL_Event *event);  // implemented in app
+void SDL_Event_Handler(SDL_Event* event);  // implemented in app
 void SDL_Send_Quit();
 void Video_End_Frame();
 
@@ -82,13 +82,13 @@ extern unsigned int WinW;
 extern unsigned int Window;
 
 extern int MoreOn;
-extern char *TXT_MoreText;
+extern char* TXT_MoreText;
 
-extern void (*Window_More_Ptr)(char const *, int, int, int);
+extern void (*Window_More_Ptr)(char const*, int, int, int);
 
 // Handle to the program's main SDL window (SDL_Window* cast to void* for
 // portability). Created by SDL_Create_Main_Window() and used throughout the
 // windowing system.
-extern void *MainWindow;
+extern void* MainWindow;
 
 #endif  // CNC_RED_ALERT_SDLLIB_WW_WIN_H_

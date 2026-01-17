@@ -38,14 +38,14 @@ the left is used for retrieval and it must be specified in uppercase
 for the 'get' functions. E.g. getString("KEY",valWstring);
 \***************************************************************************/
 
-#include <cstdlib>
-#include <cstdio>
-#include <cctype>
-
 #include "configfile.h"
 
-static uint32 Wstring_Hash(Wstring &string);
-static char *Eat_Spaces(char *string);
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+
+static uint32 Wstring_Hash(Wstring& string);
+static char* Eat_Spaces(char* string);
 
 ConfigFile::ConfigFile() : dictionary(Wstring_Hash) {}
 
@@ -53,11 +53,11 @@ ConfigFile::~ConfigFile() {}
 
 // Read and parse the config file.  The key value pairs will be stored
 //   for later access by the getString/getInt functions.
-bit8 ConfigFile::readFile(FILE *in) {
+bit8 ConfigFile::readFile(FILE* in) {
   char string[256];
   Wstring key;
   Wstring value;
-  char *cptr;
+  char* cptr;
 
   memset(string, 0, 256);
   while (fgets(string, 256, in)) {
@@ -80,19 +80,19 @@ bit8 ConfigFile::readFile(FILE *in) {
 }
 
 // Get a config entry as a string
-bit8 ConfigFile::getString(Wstring &key, Wstring &value) {
+bit8 ConfigFile::getString(Wstring& key, Wstring& value) {
   return (dictionary.getValue(key, value));
 }
 
 // Get a config entry as a string
-bit8 ConfigFile::getString(char *key, Wstring &value) {
+bit8 ConfigFile::getString(char* key, Wstring& value) {
   Wstring sKey;
   sKey.set(key);
   return (getString(sKey, value));
 }
 
 // Get a config entry as an integer
-bit8 ConfigFile::getInt(Wstring &key, sint32 &value) {
+bit8 ConfigFile::getInt(Wstring& key, sint32& value) {
   Wstring svalue;
   bit8 retval = dictionary.getValue(key, svalue);
   if (retval == FALSE) return (FALSE);
@@ -101,14 +101,14 @@ bit8 ConfigFile::getInt(Wstring &key, sint32 &value) {
 }
 
 // Get a config entry as an integer
-bit8 ConfigFile::getInt(char *key, sint32 &value) {
+bit8 ConfigFile::getInt(char* key, sint32& value) {
   Wstring sKey;
   sKey.set(key);
   return (getInt(sKey, value));
 }
 
 // Get a config entry as an integer
-bit8 ConfigFile::getInt(Wstring &key, sint16 &value) {
+bit8 ConfigFile::getInt(Wstring& key, sint16& value) {
   Wstring svalue;
   bit8 retval = dictionary.getValue(key, svalue);
   if (retval == FALSE) return (FALSE);
@@ -117,7 +117,7 @@ bit8 ConfigFile::getInt(Wstring &key, sint16 &value) {
 }
 
 // Get a config entry as an integer
-bit8 ConfigFile::getInt(char *key, sint16 &value) {
+bit8 ConfigFile::getInt(char* key, sint16& value) {
   Wstring sKey;
   sKey.set(key);
   return (getInt(sKey, value));
@@ -127,7 +127,7 @@ bit8 ConfigFile::getInt(char *key, sint16 &value) {
 
 // Given a Wstring, return a 32 bit integer that has a good numeric
 //   distributation for the purposes of indexing into a hash table.
-static uint32 Wstring_Hash(Wstring &string) {
+static uint32 Wstring_Hash(Wstring& string) {
   uint32 retval = 0;
   retval = string.length();
   for (uint32 i = 0; i < string.length(); i++) {
@@ -138,8 +138,8 @@ static uint32 Wstring_Hash(Wstring &string) {
   return (retval);
 }
 
-static char *Eat_Spaces(char *string) {
-  char *retval = string;
+static char* Eat_Spaces(char* string) {
+  char* retval = string;
   while (isspace(*retval)) retval++;
   return (retval);
 }

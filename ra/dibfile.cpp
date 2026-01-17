@@ -75,7 +75,7 @@ HANDLE ReadDIBFile(int);
 BOOL MyRead(int, LPSTR, DWORD);
 BOOL SaveDIBFile(void);
 BOOL WriteDIB(LPSTR, HANDLE);
-DWORD PASCAL MyWrite(int, VOID FAR *, DWORD);
+DWORD PASCAL MyWrite(int, VOID FAR*, DWORD);
 
 /*************************************************************************
  *
@@ -438,7 +438,7 @@ OKExit:
 *************************************************************************/
 
 BOOL MyRead(int hFile, LPSTR lpBuffer, DWORD dwSize) {
-  char huge *lpInBuf = (char huge *)lpBuffer;
+  char huge* lpInBuf = (char huge*)lpBuffer;
   int nBytes;
 
   /*
@@ -471,10 +471,10 @@ BOOL MyRead(int hFile, LPSTR lpBuffer, DWORD dwSize) {
 
  ****************************************************************************/
 
-DWORD PASCAL MyWrite(int iFileHandle, VOID FAR *lpBuffer, DWORD dwBytes) {
+DWORD PASCAL MyWrite(int iFileHandle, VOID FAR* lpBuffer, DWORD dwBytes) {
   DWORD dwBytesTmp = dwBytes;  // Save # of bytes for return value
-  BYTE huge *hpBuffer =
-      (BYTE huge *)lpBuffer;  // make a huge pointer to the data
+  BYTE huge* hpBuffer =
+      (BYTE huge*)lpBuffer;  // make a huge pointer to the data
 
   /*
    * Write out the data in 32767 byte chunks.
@@ -496,7 +496,7 @@ DWORD PASCAL MyWrite(int iFileHandle, VOID FAR *lpBuffer, DWORD dwBytes) {
 //	Added to allow "loading" from a location in memory.
 //	A modification of ReadDIBFile(), above.
 //***********************************************************************************************
-HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
+HDIB LoadDIB_FromMemory(const unsigned char* pData, DWORD dwBitsSize) {
   BITMAPFILEHEADER bmfHeader;
   UINT nNumColors;  // Number of colors in table
   HANDLE hDIB;
@@ -504,8 +504,8 @@ HDIB LoadDIB_FromMemory(const unsigned char *pData, DWORD dwBitsSize) {
   LPBITMAPINFOHEADER lpbi;
   DWORD offBits;
 
-  const unsigned char *const pDataStart = pData;
-  const unsigned char *pDataEnd =
+  const unsigned char* const pDataStart = pData;
+  const unsigned char* pDataEnd =
       pData + dwBitsSize;  //	One char past end of "file".
 
   // Allocate memory for header & color table.	We'll enlarge this

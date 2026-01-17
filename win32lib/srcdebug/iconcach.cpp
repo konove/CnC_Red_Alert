@@ -54,11 +54,13 @@
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32
 
-#include <windows.h>
-#include "ddraw.h"
-#include "misc.h"
 #include "iconcach.h"
+
+#include <windows.h>
+
+#include "ddraw.h"
 #include "gbuffer.h"
+#include "misc.h"
 
 static DDSURFACEDESC VideoSurfaceDescription;
 
@@ -168,7 +170,7 @@ BOOL Optimize_Video_Memory_Cache(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:36AM ST : Created *
  *=============================================================================================*/
-BOOL Cache_New_Icon(int icon_index, void *icon_ptr) {
+BOOL Cache_New_Icon(int icon_index, void* icon_ptr) {
   if (!CacheMemoryExhausted) {
     return (CachedIcons[icon_index].Cache_It(icon_ptr));
   } else {
@@ -245,13 +247,13 @@ void Restore_Cached_Icons(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:39AM ST : Created *
  *=============================================================================================*/
-void Register_Icon_Set(void *icon_data, BOOL pre_cache) {
+void Register_Icon_Set(void* icon_data, BOOL pre_cache) {
   for (int i = 0; i < MAX_ICON_SETS; i++) {
     if (!IconSetList[i].IconSetPtr) {
-      IconSetList[i].IconSetPtr = (IControl_Type *)icon_data;
+      IconSetList[i].IconSetPtr = (IControl_Type*)icon_data;
 
       if (i) {
-        IControl_Type *previous_set = IconSetList[i - 1].IconSetPtr;
+        IControl_Type* previous_set = IconSetList[i - 1].IconSetPtr;
         IconSetList[i].IconListOffset =
             IconSetList[i - 1].IconListOffset + ((int)previous_set->Count) * 2;
         if (IconSetList[i].IconListOffset > MAX_LOOKUP_ENTRIES * 2) {
@@ -368,7 +370,7 @@ void IconCacheClass::Restore(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:44AM ST : Created *
  *=============================================================================================*/
-BOOL IconCacheClass::Cache_It(void *icon_ptr) {
+BOOL IconCacheClass::Cache_It(void* icon_ptr) {
   DDSCAPS surface_capabilities;
   BOOL return_value;
 

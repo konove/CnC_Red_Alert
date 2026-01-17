@@ -39,8 +39,9 @@
  *   CDTC::Set -- Set the time of a timer. * CDTC::Reset -- Clear the timer. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
 #include <descmgmt.h>
+#include <wwstd.h>
+
 #include "timer.H"
 
 /////////////////////////////////////////////////////////////////////////////////

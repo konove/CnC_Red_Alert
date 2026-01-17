@@ -63,7 +63,7 @@
 
 DDEServerClass DDEServer;  // Instance of the DDE Server class
 
-Instance_Class *DDE_Class = NULL;  // pointer for client callback
+Instance_Class* DDE_Class = NULL;  // pointer for client callback
                                    // this *must* be called DDE_Class
 
 BOOL RA95AlreadyRunning = false;  // Was there an instance of Red Alert 95
@@ -75,7 +75,7 @@ BOOL RA95AlreadyRunning = false;  // Was there an instance of Red Alert 95
 extern HWND MainWindow;
 extern TimerClass GameTimer;
 extern bool GameTimerInUse;
-extern void WWDebugString(char const *string);
+extern void WWDebugString(char const* string);
 
 /***********************************************************************************************
  * DDE_Callback -- DDE server callback function *
@@ -90,7 +90,7 @@ extern void WWDebugString(char const *string);
  *                                                                                             *
  * HISTORY: * 6/8/96 3:19PM ST : Created *
  *=============================================================================================*/
-BOOL CALLBACK DDE_Callback(unsigned char *data, long length) {
+BOOL CALLBACK DDE_Callback(unsigned char* data, long length) {
   return (DDEServer.Callback(data, length));
 }
 
@@ -196,7 +196,7 @@ DDEServerClass::~DDEServerClass(void) {
  *                                                                                             *
  * HISTORY: * 6/8/96 3:21PM ST : Created *
  *=============================================================================================*/
-BOOL DDEServerClass::Callback(unsigned char *data, long length) {
+BOOL DDEServerClass::Callback(unsigned char* data, long length) {
   /*
   ** If the packet length < 0 then this is a special advisory packet
   */
@@ -228,7 +228,7 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
     /*
     ** Find out what kind of packet this is and its length.
     */
-    int *packet_pointer = (int *)data;
+    int* packet_pointer = (int*)data;
     int actual_length = ntohl(*packet_pointer++);
     int packet_type = ntohl(*packet_pointer++);
 
@@ -297,7 +297,7 @@ BOOL DDEServerClass::Callback(unsigned char *data, long length) {
  *                                                                                             *
  * HISTORY: * 6/8/96 3:23PM ST : Created *
  *=============================================================================================*/
-char *DDEServerClass::Get_MPlayer_Game_Info(void) { return (MPlayerGameInfo); }
+char* DDEServerClass::Get_MPlayer_Game_Info(void) { return (MPlayerGameInfo); }
 
 /***********************************************************************************************
  * DDESC::Delete_MPlayer_Game_Info -- clears out multi player game setup info *
@@ -350,15 +350,15 @@ int DDEServerClass::Time_Since_Heartbeat(void) {
  *                                                                                             *
  * HISTORY: * 6/9/96 11:07PM ST : Created *
  *=============================================================================================*/
-BOOL Send_Data_To_DDE_Server(char *data, int length, int packet_type) {
+BOOL Send_Data_To_DDE_Server(char* data, int length, int packet_type) {
   if (DDE_Class->Open_Poke_Connection(DDE_Class->remote_name) == false) {
     WWDebugString("RA95 - Failed to connect for POKE!");
     return (false);
   }
 
-  char *poke_data = new char[length + 2 * sizeof(int)];
+  char* poke_data = new char[length + 2 * sizeof(int)];
 
-  int *poke_data_int = (int *)poke_data;
+  int* poke_data_int = (int*)poke_data;
 
   *poke_data_int = htonl(length + 2 * sizeof(int));
   *(poke_data_int + 1) = htonl(packet_type);

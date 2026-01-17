@@ -31,7 +31,7 @@
 #include "td/type.h"
 
 int AbstractClass::Distance(const TARGET target) const {
-  const BuildingClass *obj = As_Building(target);
+  const BuildingClass* obj = As_Building(target);
   int dist = Distance(As_Coord(target));
 
   // For buildings, adjust by average radius to get distance to edge.
@@ -45,10 +45,10 @@ int AbstractClass::Distance(const TARGET target) const {
 
 // Constructor for AbstractTypeClass.
 // Initializes the display name and INI identifier for this object type.
-AbstractTypeClass::AbstractTypeClass(const int name, char const *ini) {
+AbstractTypeClass::AbstractTypeClass(const int name, char const* ini) {
   Name = name;
   strncpy(IniName, ini, sizeof(IniName));
-  static_cast<char &>(IniName[sizeof(IniName) - 1]) = '\0';
+  static_cast<char&>(IniName[sizeof(IniName) - 1]) = '\0';
 }
 
 RTTIType AbstractTypeClass::What_Am_I() const { return RTTI_ABSTRACTTYPE; }

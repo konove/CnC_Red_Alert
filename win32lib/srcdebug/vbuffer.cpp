@@ -69,7 +69,7 @@
  * HISTORY:                                                                *
  *   05/09/1994 PWG : Created.                                             *
  *=========================================================================*/
-VideoViewPortClass::VideoViewPortClass(VideoBufferClass *vbuffer, int x, int y,
+VideoViewPortClass::VideoViewPortClass(VideoBufferClass* vbuffer, int x, int y,
                                        int w, int h) {
   Attach(vbuffer, x, y, w, h);
 }
@@ -114,7 +114,7 @@ VideoViewPortClass::~VideoViewPortClass(void) {}
  * HISTORY:                                                                *
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
-void VideoViewPortClass::Attach(VideoBufferClass *vbuffer, int x, int y, int w,
+void VideoViewPortClass::Attach(VideoBufferClass* vbuffer, int x, int y, int w,
                                 int h) {
   /*======================================================================*/
   /* Verify that the x and y coordinates are valid and placed within the
@@ -164,7 +164,8 @@ void VideoViewPortClass::Attach(VideoBufferClass *vbuffer, int x, int y, int w,
  *                                                                  			*
  * INPUT:   	WORD the new x pixel position of the Video view port
  ** WORD the new y pixel position of the Video view port * WORD the new width of
- *the viewport in pixels			  			* WORD the new height of the viewport in pixels		  			*
+ *the viewport in pixels			  			* WORD
+ * the new height of the viewport in pixels 	*
  *                                                                  			*
  * OUTPUT:  	BOOL whether the Video View Port could be sucessfully
  ** resized.

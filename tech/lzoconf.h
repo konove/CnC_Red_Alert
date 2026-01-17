@@ -101,12 +101,12 @@ typedef long lzo_int;
 
 /* no typedef here because of const-pointer issues */
 #define lzo_byte unsigned char __LZO_MMODEL
-#define lzo_voidp void __LZO_MMODEL *
-#define lzo_bytep unsigned char __LZO_MMODEL *
-#define lzo_uintp lzo_uint __LZO_MMODEL *
-#define lzo_intp lzo_int __LZO_MMODEL *
-#define lzo_voidpp lzo_voidp __LZO_MMODEL *
-#define lzo_bytepp lzo_bytep __LZO_MMODEL *
+#define lzo_voidp void __LZO_MMODEL*
+#define lzo_bytep unsigned char __LZO_MMODEL*
+#define lzo_uintp lzo_uint __LZO_MMODEL*
+#define lzo_intp lzo_int __LZO_MMODEL*
+#define lzo_voidpp lzo_voidp __LZO_MMODEL*
+#define lzo_bytepp lzo_bytep __LZO_MMODEL*
 
 /* Unsigned type that can store all bits of a lzo_voidp */
 typedef unsigned long lzo_ptr_t;
@@ -136,20 +136,20 @@ typedef unsigned long lzo_ptr_t;
 #define LZO_EXTERN(_rettype) LZO_EXTERN_C _rettype __LZO_ENTRY __LZO_EXPORT
 #endif
 
-typedef int __LZO_ENTRY(__LZO_EXPORT *lzo_compress_t)(const lzo_byte *src,
+typedef int __LZO_ENTRY(__LZO_EXPORT* lzo_compress_t)(const lzo_byte* src,
                                                       lzo_uint src_len,
-                                                      lzo_byte *dst,
-                                                      lzo_uint *dst_len,
+                                                      lzo_byte* dst,
+                                                      lzo_uint* dst_len,
                                                       lzo_voidp wrkmem);
 
-typedef int __LZO_ENTRY(__LZO_EXPORT *lzo_decompress_t)(const lzo_byte *src,
+typedef int __LZO_ENTRY(__LZO_EXPORT* lzo_decompress_t)(const lzo_byte* src,
                                                         lzo_uint src_len,
-                                                        lzo_byte *dst,
-                                                        lzo_uint *dst_len,
+                                                        lzo_byte* dst,
+                                                        lzo_uint* dst_len,
                                                         lzo_voidp wrkmem);
 
 /* a progress indicator callback function */
-typedef void __LZO_ENTRY(__LZO_EXPORT *lzo_progress_callback_t)(lzo_uint,
+typedef void __LZO_ENTRY(__LZO_EXPORT* lzo_progress_callback_t)(lzo_uint,
                                                                 lzo_uint);
 
 /***********************************************************************
@@ -174,7 +174,7 @@ LZO_EXTERN(int) lzo_init(void);
 
 /* version functions (useful for shared libraries) */
 LZO_EXTERN(unsigned) lzo_version(void);
-LZO_EXTERN(const char *) lzo_version_string(void);
+LZO_EXTERN(const char*) lzo_version_string(void);
 
 /* string functions */
 LZO_EXTERN(int)
@@ -188,7 +188,7 @@ lzo_memset(lzo_voidp _s, int _c, lzo_uint _len);
 
 /* checksum functions */
 LZO_EXTERN(lzo_uint)
-lzo_adler32(lzo_uint _adler, const lzo_byte *_buf, lzo_uint _len);
+lzo_adler32(lzo_uint _adler, const lzo_byte* _buf, lzo_uint _len);
 
 /* misc. */
 LZO_EXTERN(int) lzo_assert(int _expr);

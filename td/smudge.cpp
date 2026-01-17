@@ -67,7 +67,7 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *SmudgeClass::VTable;
+void* SmudgeClass::VTable;
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
@@ -116,10 +116,10 @@ int SmudgeClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void *SmudgeClass::operator new(size_t) throw() {
-  void *ptr = Smudges.Allocate();
+void* SmudgeClass::operator new(size_t) throw() {
+  void* ptr = Smudges.Allocate();
   if (ptr) {
-    ((SmudgeClass *)ptr)->IsActive = true;
+    ((SmudgeClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -138,11 +138,11 @@ void *SmudgeClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::operator delete(void *ptr) {
+void SmudgeClass::operator delete(void* ptr) {
   if (ptr) {
-    ((SmudgeClass *)ptr)->IsActive = false;
+    ((SmudgeClass*)ptr)->IsActive = false;
   }
-  Smudges.Free((SmudgeClass *)ptr);
+  Smudges.Free((SmudgeClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -191,12 +191,12 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeClass::Init(void) {
-  SmudgeClass *ptr;
+  SmudgeClass* ptr;
 
   Smudges.Free_All();
 
   ptr = new SmudgeClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -226,7 +226,7 @@ bool SmudgeClass::Mark(MarkType mark) {
         for (int h = 0; h < Class->Height; h++) {
           CELL newcell = origin + w + (h * MAP_CELL_W);
           if (Map.In_Radar(newcell)) {
-            CellClass *cell = &Map[newcell];
+            CellClass* cell = &Map[newcell];
 
             if (Class->IsBib) {
               cell->Smudge = Class->Type;
@@ -293,11 +293,11 @@ bool SmudgeClass::Mark(MarkType mark) {
  * HISTORY: * 09/01/1994 JLB : Created. * 07/24/1995 JLB : Sets the smudge data
  *value as well.                                      *
  *=============================================================================================*/
-void SmudgeClass::Read_INI(char *buffer) {
+void SmudgeClass::Read_INI(char* buffer) {
   char buf[128];  // Working string staging buffer.
 
   int len = strlen(buffer) + 2;
-  char *tbuffer = buffer + len;
+  char* tbuffer = buffer + len;
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, tbuffer,
                             ShapeBufferSize - len, buffer);
@@ -308,7 +308,7 @@ void SmudgeClass::Read_INI(char *buffer) {
                               sizeof(buf) - 1, buffer);
     smudge = SmudgeTypeClass::From_Name(strtok(buf, ","));
     if (smudge != SMUDGE_NONE) {
-      char *ptr = strtok(nullptr, ",");
+      char* ptr = strtok(nullptr, ",");
       if (ptr) {
         int data = 0;
         CELL cell = atoi(ptr);
@@ -339,10 +339,10 @@ void SmudgeClass::Read_INI(char *buffer) {
  * HISTORY: * 09/01/1994 JLB : Created. * 07/24/1995 JLB : Records the smudge
  *data as well.                                         *
  *=============================================================================================*/
-void SmudgeClass::Write_INI(char *buffer) {
+void SmudgeClass::Write_INI(char* buffer) {
   char uname[10];
   char buf[127];
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing template data from the ini file.
@@ -359,11 +359,11 @@ void SmudgeClass::Write_INI(char *buffer) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass *ptr;
+    CellClass* ptr;
 
     ptr = &Map[index];
     if (ptr->Smudge != SMUDGE_NONE) {
-      SmudgeTypeClass const *stype =
+      SmudgeTypeClass const* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
       if (!stype->IsBib) {
         sprintf(uname, "%03d", index);
@@ -396,7 +396,7 @@ void SmudgeClass::Disown(CELL cell) {
   if (Class->IsBib) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CellClass &cellptr = Map[cell + w + (h * MAP_CELL_W)];
+        CellClass& cellptr = Map[cell + w + (h * MAP_CELL_W)];
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {

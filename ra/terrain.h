@@ -70,11 +70,11 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Constructor for terrain object class.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   TerrainClass(TerrainType id, CELL cell);
-  TerrainClass(NoInitClass const &x)
+  TerrainClass(NoInitClass const& x)
       : ObjectClass(x), Class(x), StageClass(x) {};
   virtual ~TerrainClass(void);
   operator TerrainType(void) const { return Class->Type; };
@@ -89,7 +89,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -116,7 +116,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual bool Mark(MarkType mark = MARK_CHANGE);
-  unsigned char *Radar_Icon(CELL cell);
+  unsigned char* Radar_Icon(CELL cell);
 
   /*
   **	User I/O.
@@ -128,8 +128,8 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   virtual void Fire_Out(void);
   virtual bool Catch_Fire(void);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source, bool forced = false);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source, bool forced = false);
 
   /*
   **	AI.
@@ -140,17 +140,17 @@ class TerrainClass : public ObjectClass, public StageClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass &ini);
-  static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "TERRAIN"; };
-  bool Load(Straw &file);
-  bool Save(Pipe &file) const;
+  static void Read_INI(CCINIClass& ini);
+  static void Write_INI(CCINIClass& ini);
+  static char const* INI_Name(void) { return "TERRAIN"; };
+  bool Load(Straw& file);
+  bool Save(Pipe& file) const;
 
  private:
   /*

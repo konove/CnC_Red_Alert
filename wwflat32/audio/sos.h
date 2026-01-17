@@ -55,10 +55,10 @@ typedef struct _tagCAPABILITIES {
   WORD wMixerOnBoard;     // board contains mixer
   WORD wMixerFlags;       // mixer capabilities
   WORD wFlags;            // miscellaneous flags
-  short far *lpPortList;  // list of usable ports
-  short far *lpDMAList;   // list of usable dma channels
-  short far *lpIRQList;   // list of usable irq channels
-  short far *lpRateList;  // list of usable rates, -1 if any in min to max
+  short far* lpPortList;  // list of usable ports
+  short far* lpDMAList;   // list of usable dma channels
+  short far* lpIRQList;   // list of usable irq channels
+  short far* lpRateList;  // list of usable rates, -1 if any in min to max
   WORD fBackground;       // foreground or background driver
   WORD wDeviceID;         // ID for the device
   WORD wTimerID;          // ID for the timer
@@ -66,7 +66,7 @@ typedef struct _tagCAPABILITIES {
 } _SOS_CAPABILITIES;
 
 // far pointer to the device capabilities structure
-typedef _SOS_CAPABILITIES far *LPSOSDEVICECAPS;
+typedef _SOS_CAPABILITIES far* LPSOSDEVICECAPS;
 
 // flag types for driver
 #define _FLAGS_SIGNED 0x8000
@@ -212,8 +212,8 @@ typedef struct _tagSAMPLE {
   short sampleChannel;    // channel to play sample on
   short sampleLoopCount;  // loop count
   short sampleLastFill;   // last fill position
-  VOID(far cdecl *sampleCallback)
-  (WORD, WORD, WORD);  // callback function for sample
+  VOID(far cdecl* sampleCallback)(WORD, WORD,
+                                  WORD);  // callback function for sample
 
   WORD samplePitchAdd;
   short samplePitchFraction;
@@ -348,7 +348,7 @@ typedef struct {
   WORD wSampleID;
 
   // far pointer to the callback function
-  VOID(far cdecl *lpCallback)(WORD, WORD, WORD);
+  VOID(far cdecl* lpCallback)(WORD, WORD, WORD);
 
   // port to use if driver is a non-dma background driver
   WORD wSamplePort;
@@ -400,7 +400,7 @@ typedef struct {
   WORD wSampleRate;
   WORD wParam;
   LONG dwParam;
-  VOID(far *lpFillHandler)(VOID);
+  VOID(far* lpFillHandler)(VOID);
   LPSTR lpDriverMemory;
   LPSTR lpDriverMemoryCS;
   LPSTR lpTimerMemory;

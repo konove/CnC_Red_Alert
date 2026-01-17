@@ -146,7 +146,7 @@ class HouseTypeClass {
   **	The INI name of the house is pointed to by this element. This is the
   **	identification name used in the scenario INI file.
   */
-  char const *IniName;
+  char const* IniName;
 
   /*
   **	The full name (translated) of the house is identified by this number.
@@ -180,7 +180,7 @@ class HouseTypeClass {
   /*
   **	This points to the default remap table for this house.
   */
-  unsigned char const *RemapTable;
+  unsigned char const* RemapTable;
   PlayerColorType RemapColor;
 
   /*
@@ -191,17 +191,17 @@ class HouseTypeClass {
   char Prefix;
 
   //------------------------------------------------------------------------
-  HouseTypeClass(HousesType house, char const *ini, int fullname,
-                 char const *ext, int lemon, int color, int bright_color,
-                 PlayerColorType remapcolor, unsigned char const *remap,
+  HouseTypeClass(HousesType house, char const* ini, int fullname,
+                 char const* ext, int lemon, int color, int bright_color,
+                 PlayerColorType remapcolor, unsigned char const* remap,
                  char prefix);
 
-  static HousesType From_Name(char const *name);
-  static HouseTypeClass const &As_Reference(HousesType house);
+  static HousesType From_Name(char const* name);
+  static HouseTypeClass const& As_Reference(HousesType house);
   static void One_Time(void);
 
  private:
-  static HouseTypeClass const *const Pointers[HOUSE_COUNT];
+  static HouseTypeClass const* const Pointers[HOUSE_COUNT];
 };
 
 /***************************************************************************
@@ -228,15 +228,15 @@ class AbstractTypeClass {
   int Name;
 
   AbstractTypeClass(void) {};
-  AbstractTypeClass(int name, char const *ini);
-  AbstractTypeClass(NoInitClass const &) {};
+  AbstractTypeClass(int name, char const* ini);
+  AbstractTypeClass(NoInitClass const&) {};
   virtual RTTIType What_Am_I(void) const;
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
   virtual int Full_Name(void) const;
-  void Set_Name(char const *buf) const {
-    strncpy((char *)IniName, buf, sizeof(IniName));
-    ((char &)IniName[sizeof(IniName) - 1]) = '\0';
+  void Set_Name(char const* buf) const {
+    strncpy((char*)IniName, buf, sizeof(IniName));
+    ((char&)IniName[sizeof(IniName) - 1]) = '\0';
   };
   virtual unsigned short Get_Ownable(void) const;
 };
@@ -322,40 +322,40 @@ class ObjectTypeClass : public AbstractTypeClass {
   *object is constructed. *	The "mutable" keyword allows easy modification
   *to this otherwise const object.
   */
-  void const *ImageData;
+  void const* ImageData;
 
   /*
   **	This points to the radar imagery for this object.
   */
-  void const *RadarIcon;
+  void const* RadarIcon;
 
   //--------------------------------------------------------------------
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
                   bool is_stealthy, bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, int fullname,
-                  char const *name, ArmorType armor, unsigned short strength);
+                  char const* name, ArmorType armor, unsigned short strength);
 
   static void One_Time(void);
 
   virtual int Max_Pips(void) const;
-  virtual void Dimensions(int &width, int &height) const;
+  virtual void Dimensions(int& width, int& height) const;
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const = 0;
   virtual int Cost_Of(void) const;
   virtual int Time_To_Build(HousesType house) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *) const = 0;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual short const *Overlap_List(void) const;
-  virtual BuildingClass *Who_Can_Build_Me(bool, bool, HousesType) const;
-  virtual void const *Get_Cameo_Data(void) const;
-  void const *Get_Image_Data(void) const { return ImageData; };
-  void const *Get_Radar_Data(void) const { return RadarIcon; };
+  virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual short const* Overlap_List(void) const;
+  virtual BuildingClass* Who_Can_Build_Me(bool, bool, HousesType) const;
+  virtual void const* Get_Cameo_Data(void) const;
+  void const* Get_Image_Data(void) const { return ImageData; };
+  void const* Get_Radar_Data(void) const { return RadarIcon; };
 
 #ifdef SCENARIO_EDITOR
   virtual void Display(int, int, WindowNumberType, HousesType) const {};
 #endif
 
-  static void const *SelectShapes;
-  static void const *PipShapes;
+  static void const* SelectShapes;
+  static void const* PipShapes;
 };
 
 /***************************************************************************
@@ -491,7 +491,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	This is the small icon image that is used to display the object in
   **	the sidebar for construction selection purposes.
   */
-  void const *CameoData;
+  void const* CameoData;
 
   /*
   **	These are the weapons that this techno object is armed with.
@@ -500,7 +500,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   WeaponType Secondary;
 
   //--------------------------------------------------------------------
-  TechnoTypeClass(int name, char const *ininame, unsigned char level, long pre,
+  TechnoTypeClass(int name, char const* ininame, unsigned char level, long pre,
                   bool is_leader, bool is_scanner, bool is_nominal,
                   bool is_transporter, bool is_flammable, bool is_crushable,
                   bool is_stealthy, bool is_selectable, bool is_legal_target,
@@ -515,7 +515,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   virtual int Max_Passengers(void) const;
   virtual int Repair_Cost(void) const;
   virtual int Repair_Step(void) const;
-  virtual void const *Get_Cameo_Data(void) const;
+  virtual void const* Get_Cameo_Data(void) const;
   virtual int Cost_Of(void) const;
   virtual int Time_To_Build(HousesType house) const;
   virtual unsigned short Get_Ownable(void) const;
@@ -607,7 +607,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *that are *	more suitable than others. This list is here to inform the
   *system which *	directions those are.
   */
-  short const *ExitList;
+  short const* ExitList;
 
   /*
   **	This is the structure type identifier. It can serve as a unique
@@ -674,7 +674,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.
   */
-  BuildingTypeClass(StructType type, int name, char const *ininame,
+  BuildingTypeClass(StructType type, int name, char const* ininame,
                     COORDINATE exitpoint, unsigned char level, long pre,
                     bool is_scanner, bool is_regulated, bool is_bibbed,
                     bool is_nominal, bool is_wall, bool is_factory,
@@ -688,13 +688,13 @@ class BuildingTypeClass : public TechnoTypeClass {
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, ArmorType armor,
                     unsigned long canenter, unsigned capacity, int power,
-                    int drain, BSizeType size, short const *exitlist,
-                    short const *sizelist, short const *overlap);
+                    int drain, BSizeType size, short const* exitlist,
+                    short const* sizelist, short const* overlap);
   virtual RTTIType What_Am_I(void) const { return RTTI_BUILDINGTYPE; };
   operator StructType(void) const { return (Type); };
 
-  static BuildingTypeClass const &As_Reference(StructType type);
-  static StructType From_Name(char const *name);
+  static BuildingTypeClass const& As_Reference(StructType type);
+  static StructType From_Name(char const* name);
   static void Init(TheaterType theater);
   static void One_Time(void);
   static void Prep_For_Add(void);
@@ -708,20 +708,20 @@ class BuildingTypeClass : public TechnoTypeClass {
     return coord & 0xFF00FF00L;
   }
   virtual int Max_Pips(void) const;
-  virtual void Dimensions(int &width, int &height) const;
+  virtual void Dimensions(int& width, int& height) const;
   virtual int Legal_Placement(CELL pos) const;
   virtual bool Create_And_Place(CELL cell, HousesType house) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *house) const;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual short const *Overlap_List(void) const;
-  virtual BuildingClass *Who_Can_Build_Me(bool intheory, bool legal,
+  virtual ObjectClass* Create_One_Of(HouseClass* house) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual short const* Overlap_List(void) const;
+  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
-  virtual void const *Get_Buildup_Data(void) const { return (BuildupData); };
+  virtual void const* Get_Buildup_Data(void) const { return (BuildupData); };
 
   virtual int Raw_Cost(void) const;
   virtual int Repair_Cost(void) const;
   virtual int Repair_Step(void) const;
-  bool Bib_And_Offset(SmudgeType &bib, CELL &cell) const;
+  bool Bib_And_Offset(SmudgeType& bib, CELL& cell) const;
 
 #ifdef SCENARIO_EDITOR
   virtual void Display(int x, int y, WindowNumberType window,
@@ -734,7 +734,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	are used to indicate the building's "footprint". This footprint is used
   **	to determine building placement legality and terrain passibility.
   */
-  short const *OccupyList;
+  short const* OccupyList;
 
   /*
   **	Buildings can often times overlap a cell but not actually "occupy" it
@@ -742,15 +742,15 @@ class BuildingTypeClass : public TechnoTypeClass {
   *indicate which *	cells the building has visual overlap but does not
   *occupy.
   */
-  short const *OverlapList;
+  short const* OverlapList;
 
-  static BuildingTypeClass const *const Pointers[STRUCT_COUNT];
+  static BuildingTypeClass const* const Pointers[STRUCT_COUNT];
 
   /*
   **	The construction animation graphic data pointer is
   **	pointed to by this element.
   */
-  void const *BuildupData;
+  void const* BuildupData;
 
   void Init_Anim(BStateType state, int start, int count, int rate) const;
 };
@@ -890,7 +890,7 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  UnitTypeClass(UnitType type, int name, char const *ininame, AnimType exp,
+  UnitTypeClass(UnitType type, int name, char const* ininame, AnimType exp,
                 unsigned char level, long pre, bool is_goodie, bool is_leader,
                 bool is_eight, bool is_nominal, bool is_transporter,
                 bool is_crushable, bool is_crusher, bool is_harvest,
@@ -906,17 +906,17 @@ class UnitTypeClass : public TechnoTypeClass {
                 MPHType maxSpeed, unsigned rot, int toffset, MissionType order);
   virtual RTTIType What_Am_I(void) const { return RTTI_UNITTYPE; };
 
-  static UnitType From_Name(char const *name);
-  static UnitTypeClass const &As_Reference(UnitType type);
+  static UnitType From_Name(char const* name);
+  static UnitTypeClass const& As_Reference(UnitType type);
   static void Init(TheaterType);
   static void One_Time(void);
   static void Prep_For_Add(void);
 
-  virtual void Dimensions(int &width, int &height) const;
+  virtual void Dimensions(int& width, int& height) const;
   virtual bool Create_And_Place(CELL cell, HousesType house) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *house) const;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual BuildingClass *Who_Can_Build_Me(bool intheory, bool legal,
+  virtual ObjectClass* Create_One_Of(HouseClass* house) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
   virtual int Max_Pips(void) const;
 
@@ -931,10 +931,10 @@ class UnitTypeClass : public TechnoTypeClass {
   /*
   **	This is a pointer to the wake shape (as needed by the gunboat).
   */
-  static void const *WakeShapes;
+  static void const* WakeShapes;
 
  private:
-  static UnitTypeClass const *const Pointers[UNIT_COUNT];
+  static UnitTypeClass const* const Pointers[UNIT_COUNT];
 };
 
 /***************************************************************************
@@ -944,7 +944,7 @@ class UnitTypeClass : public TechnoTypeClass {
 */
 class InfantryTypeClass : public TechnoTypeClass {
  private:
-  static InfantryTypeClass const *const Pointers[INFANTRY_COUNT];
+  static InfantryTypeClass const* const Pointers[INFANTRY_COUNT];
 
  public:
   /*
@@ -1003,32 +1003,32 @@ class InfantryTypeClass : public TechnoTypeClass {
   /*
   **	This is the explicit unit class constructor.
   */
-  InfantryTypeClass(InfantryType type, int name, char const *ininame,
+  InfantryTypeClass(InfantryType type, int name, char const* ininame,
                     unsigned char level, long pre, bool is_female,
                     bool is_leader, bool is_crawling, bool is_civilian,
                     bool is_nominal, bool is_fraidycat, bool is_capture,
-                    bool is_theater, int ammo, int *do_table, int firelaunch,
+                    bool is_theater, int ammo, int* do_table, int firelaunch,
                     int pronelaunch, unsigned short strength, int sightrange,
                     int cost, int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, MPHType maxSpeed);
   virtual RTTIType What_Am_I(void) const { return RTTI_INFANTRYTYPE; };
 
-  static InfantryType From_Name(char const *name);
-  static InfantryTypeClass const &As_Reference(InfantryType type) {
+  static InfantryType From_Name(char const* name);
+  static InfantryTypeClass const& As_Reference(InfantryType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType);
   static void One_Time(void);
   static void Prep_For_Add(void);
 
-  virtual void Dimensions(int &width, int &height) const {
+  virtual void Dimensions(int& width, int& height) const {
     width = 12;
     height = 16;
   };
   virtual bool Create_And_Place(CELL cell, HousesType house) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *house) const;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual BuildingClass *Who_Can_Build_Me(bool intheory, bool legal,
+  virtual ObjectClass* Create_One_Of(HouseClass* house) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
   virtual int Full_Name(void) const;
 
@@ -1167,7 +1167,7 @@ class BulletTypeClass : public ObjectTypeClass {
   int Range;
 
   //---------------------------------------------------------------------
-  BulletTypeClass(BulletType type, char const *ininame, bool is_high,
+  BulletTypeClass(BulletType type, char const* ininame, bool is_high,
                   bool is_homing, bool is_arcing, bool is_dropping,
                   bool is_invisible, bool is_proximity_armed,
                   bool is_flame_equipped, bool is_fueled, bool is_faceless,
@@ -1177,7 +1177,7 @@ class BulletTypeClass : public ObjectTypeClass {
 
   virtual RTTIType What_Am_I(void) const { return RTTI_BULLETTYPE; };
 
-  static BulletTypeClass const &As_Reference(BulletType type) {
+  static BulletTypeClass const& As_Reference(BulletType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType){};
@@ -1186,10 +1186,10 @@ class BulletTypeClass : public ObjectTypeClass {
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const {
     return false;
   };
-  virtual ObjectClass *Create_One_Of(HouseClass *) const { return nullptr; };
+  virtual ObjectClass* Create_One_Of(HouseClass*) const { return nullptr; };
 
  private:
-  static BulletTypeClass const *const Pointers[BULLET_COUNT];
+  static BulletTypeClass const* const Pointers[BULLET_COUNT];
 };
 
 /****************************************************************************
@@ -1245,12 +1245,12 @@ class TerrainTypeClass : public ObjectTypeClass {
                    bool is_spawn, bool is_destroyable, bool is_transformable,
                    bool is_flammable, bool is_crushable, bool is_selectable,
                    bool is_legal_target, bool is_insignificant, bool is_immune,
-                   char const *ininame, int fullname, unsigned short strength,
-                   ArmorType armor, short const *occupy, short const *overlap);
+                   char const* ininame, int fullname, unsigned short strength,
+                   ArmorType armor, short const* occupy, short const* overlap);
   virtual RTTIType What_Am_I(void) const { return RTTI_TERRAINTYPE; };
 
-  static TerrainType From_Name(char const *name);
-  static TerrainTypeClass const &As_Reference(TerrainType type) {
+  static TerrainType From_Name(char const* name);
+  static TerrainTypeClass const& As_Reference(TerrainType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType theater = THEATER_TEMPERATE);
@@ -1261,9 +1261,9 @@ class TerrainTypeClass : public ObjectTypeClass {
     return coord & 0xFF00FF00L;
   }
   virtual bool Create_And_Place(CELL cell, HousesType house) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *) const;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual short const *Overlap_List(void) const;
+  virtual ObjectClass* Create_One_Of(HouseClass*) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual short const* Overlap_List(void) const;
 
 #ifdef SCENARIO_EDITOR
   virtual void Display(int x, int y, WindowNumberType window,
@@ -1271,10 +1271,10 @@ class TerrainTypeClass : public ObjectTypeClass {
 #endif
 
  private:
-  short const *Occupy;
-  short const *Overlap;
+  short const* Occupy;
+  short const* Overlap;
 
-  static TerrainTypeClass const *const Pointers[TERRAIN_COUNT];
+  static TerrainTypeClass const* const Pointers[TERRAIN_COUNT];
 };
 
 /****************************************************************************
@@ -1314,16 +1314,16 @@ class TemplateTypeClass : public ObjectTypeClass {
   unsigned char Width, Height;
 
   LandType AltLand;
-  char const *AltIcons;
+  char const* AltIcons;
 
   //----------------------------------------------------------
-  TemplateTypeClass(TemplateType iconset, int theater, char const *ininame,
+  TemplateTypeClass(TemplateType iconset, int theater, char const* ininame,
                     int fullname, LandType land, int width, int height,
-                    LandType altland, char const *alticons);
+                    LandType altland, char const* alticons);
   virtual RTTIType What_Am_I(void) const { return RTTI_TEMPLATETYPE; };
 
-  static TemplateType From_Name(char const *name);
-  static TemplateTypeClass const &As_Reference(TemplateType type) {
+  static TemplateType From_Name(char const* name);
+  static TemplateTypeClass const& As_Reference(TemplateType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType theater);
@@ -1334,8 +1334,8 @@ class TemplateTypeClass : public ObjectTypeClass {
     return coord & 0xFF00FF00L;
   }
   virtual bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *) const;
-  virtual short const *Occupy_List(bool placement = false) const;
+  virtual ObjectClass* Create_One_Of(HouseClass*) const;
+  virtual short const* Occupy_List(bool placement = false) const;
 
 #ifdef SCENARIO_EDITOR
   virtual void Display(int x, int y, WindowNumberType window,
@@ -1343,7 +1343,7 @@ class TemplateTypeClass : public ObjectTypeClass {
 #endif
 
  private:
-  static TemplateTypeClass const *const Pointers[TEMPLATE_COUNT];
+  static TemplateTypeClass const* const Pointers[TEMPLATE_COUNT];
 };
 
 /****************************************************************************
@@ -1488,7 +1488,7 @@ class AnimTypeClass : public ObjectTypeClass {
   AnimType ChainTo;
 
   //---------------------------------------------------------------------------
-  AnimTypeClass(AnimType anim, char const *name, int size, int biggest,
+  AnimTypeClass(AnimType anim, char const* name, int size, int biggest,
                 bool isnormal, bool iswhite, bool isscorcher, bool iscrater,
                 bool issticky, bool ground, bool istrans, bool isflame,
                 unsigned int damage, int delaytime, int start, int loopstart,
@@ -1496,7 +1496,7 @@ class AnimTypeClass : public ObjectTypeClass {
                 AnimType chainto);
   virtual RTTIType What_Am_I(void) const { return RTTI_ANIMTYPE; };
 
-  static AnimTypeClass const &As_Reference(AnimType type) {
+  static AnimTypeClass const& As_Reference(AnimType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType){};
@@ -1505,10 +1505,10 @@ class AnimTypeClass : public ObjectTypeClass {
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const {
     return false;
   };
-  virtual ObjectClass *Create_One_Of(HouseClass *) const { return nullptr; };
+  virtual ObjectClass* Create_One_Of(HouseClass*) const { return nullptr; };
 
  private:
-  static AnimTypeClass const *const Pointers[ANIM_COUNT];
+  static AnimTypeClass const* const Pointers[ANIM_COUNT];
 };
 
 /****************************************************************************
@@ -1548,7 +1548,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   unsigned char ROT;
   MissionType Mission;
 
-  AircraftTypeClass(AircraftType airtype, int name, char const *ininame,
+  AircraftTypeClass(AircraftType airtype, int name, char const* ininame,
                     unsigned char level, long pre, bool is_leader,
                     bool is_twoshooter, bool is_transporter, bool is_fixedwing,
                     bool is_rotorequipped, bool is_rotorcustom,
@@ -1562,8 +1562,8 @@ class AircraftTypeClass : public TechnoTypeClass {
                     MPHType MaxSpeed, int ROT, MissionType deforder);
   virtual RTTIType What_Am_I(void) const;
 
-  static AircraftType From_Name(char const *name);
-  static AircraftTypeClass const &As_Reference(AircraftType a) {
+  static AircraftType From_Name(char const* name);
+  static AircraftTypeClass const& As_Reference(AircraftType a) {
     return *Pointers[a];
   };
   static void Init(TheaterType);
@@ -1572,12 +1572,12 @@ class AircraftTypeClass : public TechnoTypeClass {
 
   virtual int Repair_Cost(void) const;
   virtual int Repair_Step(void) const;
-  virtual void Dimensions(int &width, int &height) const;
+  virtual void Dimensions(int& width, int& height) const;
   virtual bool Create_And_Place(CELL, HousesType) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *house) const;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual short const *Overlap_List(void) const;
-  virtual BuildingClass *Who_Can_Build_Me(bool intheory, bool legal,
+  virtual ObjectClass* Create_One_Of(HouseClass* house) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual short const* Overlap_List(void) const;
+  virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
   virtual int Max_Pips(void) const;
 
@@ -1586,11 +1586,11 @@ class AircraftTypeClass : public TechnoTypeClass {
                        HousesType house) const;
 #endif
 
-  static void const *LRotorData;
-  static void const *RRotorData;
+  static void const* LRotorData;
+  static void const* RRotorData;
 
  private:
-  static AircraftTypeClass const *const Pointers[AIRCRAFT_COUNT];
+  static AircraftTypeClass const* const Pointers[AIRCRAFT_COUNT];
 };
 
 /****************************************************************************
@@ -1673,15 +1673,15 @@ class OverlayTypeClass : public ObjectTypeClass {
   unsigned IsRadarVisible : 1;
 
   //----------------------------------------------------------
-  OverlayTypeClass(OverlayType iconset, char const *ininame, int fullname,
+  OverlayTypeClass(OverlayType iconset, char const* ininame, int fullname,
                    LandType ground, int damagelevels, int damagepoints,
                    bool isradarinvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
                    bool iswall, bool iscrate);
   virtual RTTIType What_Am_I(void) const { return RTTI_OVERLAYTYPE; };
 
-  static OverlayType From_Name(char const *name);
-  static OverlayTypeClass const &As_Reference(OverlayType type) {
+  static OverlayType From_Name(char const* name);
+  static OverlayTypeClass const& As_Reference(OverlayType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType);
@@ -1692,10 +1692,10 @@ class OverlayTypeClass : public ObjectTypeClass {
     return coord & 0xFF00FF00L;
   }
   virtual bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *) const;
-  virtual short const *Occupy_List(bool placement = false) const;
+  virtual ObjectClass* Create_One_Of(HouseClass*) const;
+  virtual short const* Occupy_List(bool placement = false) const;
   virtual void Draw_It(int x, int y, int data) const;
-  virtual unsigned char *Radar_Icon(int data) const;
+  virtual unsigned char* Radar_Icon(int data) const;
 
 #ifdef SCENARIO_EDITOR
   virtual void Display(int x, int y, WindowNumberType window,
@@ -1703,7 +1703,7 @@ class OverlayTypeClass : public ObjectTypeClass {
 #endif
 
  private:
-  static OverlayTypeClass const *const Pointers[OVERLAY_COUNT];
+  static OverlayTypeClass const* const Pointers[OVERLAY_COUNT];
 };
 
 /****************************************************************************
@@ -1745,12 +1745,12 @@ class SmudgeTypeClass : public ObjectTypeClass {
   unsigned IsBib : 1;
 
   //----------------------------------------------------------
-  SmudgeTypeClass(SmudgeType smudge, char const *ininame, int fullname,
+  SmudgeTypeClass(SmudgeType smudge, char const* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater);
   virtual RTTIType What_Am_I(void) const { return RTTI_SMUDGETYPE; };
 
-  static SmudgeType From_Name(char const *name);
-  static SmudgeTypeClass const &As_Reference(SmudgeType type) {
+  static SmudgeType From_Name(char const* name);
+  static SmudgeTypeClass const& As_Reference(SmudgeType type) {
     return *Pointers[type];
   };
   static void Init(TheaterType);
@@ -1758,9 +1758,9 @@ class SmudgeTypeClass : public ObjectTypeClass {
   static void Prep_For_Add(void);
 
   virtual bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const;
-  virtual ObjectClass *Create_One_Of(HouseClass *) const;
-  virtual short const *Occupy_List(bool placement = false) const;
-  virtual short const *Overlap_List(void) const { return Occupy_List(); };
+  virtual ObjectClass* Create_One_Of(HouseClass*) const;
+  virtual short const* Occupy_List(bool placement = false) const;
+  virtual short const* Overlap_List(void) const { return Occupy_List(); };
   virtual void Draw_It(int x, int y, int data) const;
 
 #ifdef SCENARIO_EDITOR
@@ -1769,7 +1769,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
 #endif
 
  private:
-  static SmudgeTypeClass const *const Pointers[SMUDGE_COUNT];
+  static SmudgeTypeClass const* const Pointers[SMUDGE_COUNT];
 };
 
 #endif

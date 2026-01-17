@@ -60,7 +60,7 @@
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Handle_Teams(char const *caption) {
+void MapEditClass::Handle_Teams(char const* caption) {
   int rc;
 
   /*------------------------------------------------------------------------
@@ -168,7 +168,7 @@ void MapEditClass::Handle_Teams(char const *caption) {
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Select_Team(char const *caption) {
+int MapEditClass::Select_Team(char const* caption) {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -235,7 +235,7 @@ int MapEditClass::Select_Team(char const *caption) {
   ........................................................................*/
   RedrawType display;                // requested redraw level
   bool process;                      // loop while true
-  char *teamtext[TEAMTYPE_MAX + 1];  // text for defined teams
+  char* teamtext[TEAMTYPE_MAX + 1];  // text for defined teams
   KeyNumType input;                  // user input
   bool edit_team = false;            // true = user wants to edit
   bool new_team = false;             // true = user wants to new
@@ -250,7 +250,7 @@ int MapEditClass::Select_Team(char const *caption) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass *commands = NULL;  // the button list
+  GadgetClass* commands = NULL;  // the button list
 
   ListClass teamlist(TEAM_LIST, D_LIST_X, D_LIST_Y, D_LIST_W, D_LIST_H,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -742,7 +742,7 @@ int MapEditClass::Edit_Team(void) {
   /*........................................................................
   Buttons:
   ........................................................................*/
-  ControlClass *commands;
+  ControlClass* commands;
   EditClass name_edt(BUTTON_NAME, name_buf, 8,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, D_NAME_X,
                      D_NAME_Y, D_NAME_W, D_NAME_H, EditClass::ALPHANUMERIC);
@@ -1523,8 +1523,8 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   ......................... Team display variables .........................
   */
-  const TechnoTypeClass **teamclass;  // array of team classes
-  int *teamcount;                     // array of class counts
+  const TechnoTypeClass** teamclass;  // array of team classes
+  int* teamcount;                     // array of class counts
   int numcols;                        // # units displayed horizontally
   int numrows;                        // # units displayed vertically
                                       //	int col;
@@ -1563,7 +1563,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Buttons.
   */
-  ControlClass *commands;
+  ControlClass* commands;
 
   TextButtonClass okbtn(
       BUTTON_OK, TXT_OK,
@@ -1578,8 +1578,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Set up the team data arrays (ObjectTypeClass pointers & count)
   */
-  teamclass =
-      (const TechnoTypeClass **)(new TechnoTypeClass *[MAX_TEAM_CLASSES]);
+  teamclass = (const TechnoTypeClass**)(new TechnoTypeClass*[MAX_TEAM_CLASSES]);
   teamcount = new int[MAX_TEAM_CLASSES];
 
   /*
@@ -1975,7 +1974,7 @@ int MapEditClass::Team_Members(HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/02/1995 JLB : Created. *
  *=============================================================================================*/
-void MapEditClass::Draw_Member(TechnoTypeClass const *ptr, int index, int quant,
+void MapEditClass::Draw_Member(TechnoTypeClass const* ptr, int index, int quant,
                                HousesType house, int pic_x, int pic_y) {
   int numcols = (D_DIALOG_W - 32) / D_PICTURE_W;
   int col = index % numcols;
@@ -2047,8 +2046,8 @@ void MapEditClass::Draw_Member(TechnoTypeClass const *ptr, int index, int quant,
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Build_Mission_List(
-    int missioncount, TeamMissionStruct *missions,
-    char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20], ListClass *list) {
+    int missioncount, TeamMissionStruct* missions,
+    char missionbuf[TeamTypeClass::MAX_TEAM_MISSIONS][20], ListClass* list) {
   /*
   ** Start with an empty list
   */

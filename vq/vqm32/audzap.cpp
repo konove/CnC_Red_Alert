@@ -41,8 +41,10 @@
  *
  ****************************************************************************/
 
-#include <cstdio>
 #include <mem.h>
+
+#include <cstdio>
+
 #include "compress.h"
 
 /*---------------------------------------------------------------------------
@@ -93,16 +95,16 @@ long _4bitdecode[16] = {-9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8};
  *
  ****************************************************************************/
 
-long AudioZap(void *source, void *dest, long size) {
-  unsigned char *s = (unsigned char *)source;
-  unsigned char *d = (unsigned char *)dest;
+long AudioZap(void* source, void* dest, long size) {
+  unsigned char* s = (unsigned char*)source;
+  unsigned char* d = (unsigned char*)dest;
   long delta;
   unsigned long previous = 0x80;
   long outcount = 0;
-  unsigned char *s4;
+  unsigned char* s4;
   unsigned long p4;
   long max4;
-  unsigned char *lastraw = 0;
+  unsigned char* lastraw = 0;
   long osize = size;
   unsigned long i;
   unsigned long dd;
@@ -113,7 +115,7 @@ long AudioZap(void *source, void *dest, long size) {
    * amplitudes are not audible.
    */
   max4 = size;
-  s = (unsigned char *)source;
+  s = (unsigned char*)source;
 
   while (size > 0 && outcount < osize) {
     /* First check for runs of zero deltas.  If a run of at least

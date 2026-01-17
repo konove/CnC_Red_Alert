@@ -49,7 +49,7 @@
 class GScreenClass {
  public:
   GScreenClass(void);
-  GScreenClass(NoInitClass const &) {};
+  GScreenClass(NoInitClass const&) {};
 
   /*
   ** Initialization
@@ -63,10 +63,10 @@ class GScreenClass {
   /*
   **	Player I/O is routed through here. It is called every game tick.
   */
-  virtual void Input(KeyNumType &key, int &x, int &y);
-  virtual void AI(KeyNumType &, int, int) {};
-  virtual void Add_A_Button(GadgetClass &gadget);
-  virtual void Remove_A_Button(GadgetClass &gadget);
+  virtual void Input(KeyNumType& key, int& x, int& y);
+  virtual void AI(KeyNumType&, int, int) {};
+  virtual void Add_A_Button(GadgetClass& gadget);
+  virtual void Remove_A_Button(GadgetClass& gadget);
 
   /*
   **	Called when map needs complete updating.
@@ -101,13 +101,13 @@ class GScreenClass {
   /*
   **	Misc routines.
   */
-  virtual void *Shadow_Address(void) { return (ShadowPage); };
+  virtual void* Shadow_Address(void) { return (ShadowPage); };
 
   /*
   **	This points to the buttons that are used for input. All of the derived
   *classes will *	attached their specific buttons to this list.
   */
-  static GadgetClass *Buttons;
+  static GadgetClass* Buttons;
 
  private:
   /*
@@ -131,7 +131,7 @@ class GScreenClass {
   *to speed *	display rendering by using an only-update-changed-pixels
   *algorithm.
   */
-  static GraphicBufferClass *ShadowPage;
+  static GraphicBufferClass* ShadowPage;
 };
 
 #endif

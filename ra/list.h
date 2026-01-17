@@ -59,30 +59,30 @@
 class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-            void const *up, void const *down);
-  ListClass(ListClass const &list);
+            void const* up, void const* down);
+  ListClass(ListClass const& list);
   virtual ~ListClass(void);
 
-  virtual int Add_Item(char const *text);
+  virtual int Add_Item(char const* text);
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar(void);
   virtual void Bump(int up);
   virtual int Count(void) const { return List.Count(); };
   virtual int Current_Index(void) const;
-  virtual char const *Current_Item(void) const;
+  virtual char const* Current_Item(void) const;
   virtual int Draw_Me(int forced);
-  virtual char const *Get_Item(size_t index) const;
+  virtual char const* Get_Item(size_t index) const;
   virtual int Step_Selected_Index(int forward);
   virtual void Flag_To_Redraw(void);
 
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType &key,
-                            ControlClass &whom);
-  virtual void Remove_Item(char const *text);
+  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                            ControlClass& whom);
+  virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int);
   virtual int Remove_Scroll_Bar(void);
   virtual void Set_Selected_Index(int index);
-  virtual void Set_Selected_Index(char const *text);
-  virtual void Set_Tabs(int const *tabs);
+  virtual void Set_Selected_Index(char const* text);
+  virtual void Set_Tabs(int const* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
   virtual void Set_Position(int x, int y);
@@ -91,13 +91,13 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  virtual LinkClass &Add(LinkClass &object);
-  virtual LinkClass &Add_Tail(LinkClass &object);
-  virtual LinkClass &Add_Head(LinkClass &object);
-  virtual GadgetClass *Remove(void);
+  virtual LinkClass& Add(LinkClass& object);
+  virtual LinkClass& Add_Tail(LinkClass& object);
+  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual GadgetClass* Remove(void);
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
 
   /*
@@ -111,14 +111,14 @@ class ListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  int const *Tabs;
+  int const* Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager. The
   *pointers *	are stored in EMS. The text that is pointed to may also be in
   *EMS.
   */
-  DynamicVectorClass<char const *> List;
+  DynamicVectorClass<char const*> List;
 
   /*
   **	This is the total pixel height of a standard line of text. This is
@@ -156,11 +156,11 @@ template <class T>
 class TListClass : public ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             void const *up, void const *down);
-  TListClass(TListClass<T> const &list);
+             void const* up, void const* down);
+  TListClass(TListClass<T> const& list);
   virtual ~TListClass(void);
   T operator[](int index) const { return (List[index]); };
-  T &operator[](int index) { return (List[index]); };
+  T& operator[](int index) { return (List[index]); };
 
   virtual int Add_Item(T text);
   virtual int Add_Scroll_Bar(void);
@@ -174,14 +174,14 @@ class TListClass : public ControlClass {
   virtual void Flag_To_Redraw(void);
   virtual T Get_Item(int index) const { return (List[index]); };
 
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType &key,
-                            ControlClass &whom);
+  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                            ControlClass& whom);
   virtual void Remove_Item(T);
   virtual void Remove_Index(int);
   virtual int Remove_Scroll_Bar(void);
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T item);
-  virtual void Set_Tabs(int const *tabs);
+  virtual void Set_Tabs(int const* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
   virtual void Set_Position(int x, int y);
@@ -190,13 +190,13 @@ class TListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  virtual LinkClass &Add(LinkClass &object);
-  virtual LinkClass &Add_Tail(LinkClass &object);
-  virtual LinkClass &Add_Head(LinkClass &object);
-  virtual GadgetClass *Remove(void);
+  virtual LinkClass& Add(LinkClass& object);
+  virtual LinkClass& Add_Tail(LinkClass& object);
+  virtual LinkClass& Add_Head(LinkClass& object);
+  virtual GadgetClass* Remove(void);
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType &key);
+  virtual int Action(unsigned flags, KeyNumType& key);
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -209,7 +209,7 @@ class TListClass : public ControlClass {
   **	<TAB> characters found in a list box string. The tabs are a series of
   **	pixel offsets from the starting pixel position of the text.
   */
-  int const *Tabs;
+  int const* Tabs;
 
   /*
   **	The actual list of text pointers is maintained by this list manager.
@@ -249,7 +249,7 @@ class TListClass : public ControlClass {
 
 template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
-                          TextPrintType flags, void const *up, void const *down)
+                          TextPrintType flags, void const* up, void const* down)
     : ControlClass(id, x, y, w, h, LEFTPRESS | LEFTRELEASE | KEYBOARD, false),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
@@ -281,7 +281,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
 }
 
 template <class T>
-TListClass<T>::TListClass(TListClass<T> const &list)
+TListClass<T>::TListClass(TListClass<T> const& list)
     : ControlClass(list),
       TextFlags(list.TextFlags),
       Tabs(list.Tabs),
@@ -408,7 +408,7 @@ void TListClass<T>::Remove_Item(T text) {
 }
 
 template <class T>
-int TListClass<T>::Action(unsigned flags, KeyNumType &key) {
+int TListClass<T>::Action(unsigned flags, KeyNumType& key) {
   if (flags & LEFTRELEASE) {
     key = KN_NONE;
     flags &= (~LEFTRELEASE);
@@ -532,8 +532,8 @@ int TListClass<T>::Current_Index(void) const {
 }
 
 template <class T>
-void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType &,
-                                 ControlClass &whom) {
+void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType&,
+                                 ControlClass& whom) {
   if (flags & LEFTRELEASE) {
     if (&whom == &UpGadget) {
       Step(true);
@@ -634,7 +634,7 @@ int TListClass<T>::Remove_Scroll_Bar(void) {
 }
 
 template <class T>
-void TListClass<T>::Set_Tabs(int const *tabs) {
+void TListClass<T>::Set_Tabs(int const* tabs) {
   Tabs = tabs;
 }
 
@@ -666,7 +666,7 @@ void TListClass<T>::Draw_Entry(int index, int x, int y, int width,
 #endif
 
 template <class T>
-LinkClass &TListClass<T>::Add(LinkClass &list) {
+LinkClass& TListClass<T>::Add(LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -683,7 +683,7 @@ LinkClass &TListClass<T>::Add(LinkClass &list) {
 }
 
 template <class T>
-LinkClass &TListClass<T>::Add_Head(LinkClass &list) {
+LinkClass& TListClass<T>::Add_Head(LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -700,7 +700,7 @@ LinkClass &TListClass<T>::Add_Head(LinkClass &list) {
 }
 
 template <class T>
-LinkClass &TListClass<T>::Add_Tail(LinkClass &list) {
+LinkClass& TListClass<T>::Add_Tail(LinkClass& list) {
   /*
   **	Add myself to the list.
   */
@@ -719,7 +719,7 @@ LinkClass &TListClass<T>::Add_Tail(LinkClass &list) {
 }
 
 template <class T>
-GadgetClass *TListClass<T>::Remove(void) {
+GadgetClass* TListClass<T>::Remove(void) {
   /*
   **	Remove the scroll bar if it's active
   */

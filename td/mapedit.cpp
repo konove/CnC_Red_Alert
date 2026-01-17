@@ -286,7 +286,7 @@ void MapEditClass::Init_IO(void) {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Read_INI(char *buffer) {
+void MapEditClass::Read_INI(char* buffer) {
   /*
   ------------------------ Invoke parent's Read_INI ------------------------
   */
@@ -311,7 +311,7 @@ void MapEditClass::Read_INI(char *buffer) {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Write_INI(char *buffer) {
+void MapEditClass::Write_INI(char* buffer) {
   /*
   ----------------------- Invoke parent's Write_INI ------------------------
   */
@@ -372,7 +372,7 @@ void MapEditClass::Clear_List(void) {
  * HISTORY:                                                                *
  *   06/04/1994 JLB : Created.                                             *
  *=========================================================================*/
-bool MapEditClass::Add_To_List(ObjectTypeClass const *object) {
+bool MapEditClass::Add_To_List(ObjectTypeClass const* object) {
   /*
   **	Add the object if there's room.
   */
@@ -488,7 +488,7 @@ bool MapEditClass::Add_To_List(ObjectTypeClass const *object) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::AI(KeyNumType &input, int x, int y) {
+void MapEditClass::AI(KeyNumType& input, int x, int y) {
   int rc;
   MissionType mission;
   int strength;
@@ -496,7 +496,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
   int i;
   int found;            // for removing a waypoint label
   int waypt_idx;        // for labelling a waypoint
-  BaseNodeClass *node;  // for removing from an AI Base
+  BaseNodeClass* node;  // for removing from an AI Base
   HousesType house;
 
   /*------------------------------------------------------------------------
@@ -969,7 +969,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
           if (HouseClass::As_Pointer(house) &&
               CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
             HouseClass::As_Pointer(house)->Flag_Attach(
-                (UnitClass *)CurrentObject[0], true);
+                (UnitClass*)CurrentObject[0], true);
           }
         }
       }
@@ -1131,8 +1131,8 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
           ** from the Base's Node list.
           */
           if (CurrentObject[0]->What_Am_I() == RTTI_BUILDING &&
-              Base.Is_Node((BuildingClass *)CurrentObject[0])) {
-            node = Base.Get_Node((BuildingClass *)CurrentObject[0]);
+              Base.Is_Node((BuildingClass*)CurrentObject[0])) {
+            node = Base.Get_Node((BuildingClass*)CurrentObject[0]);
             Base.Nodes.Delete(*node);
           }
 
@@ -1219,7 +1219,7 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
         */
         mission = MapEditMissions[MissionList->Current_Index()];
         if (CurrentObject[0]->Get_Mission() != mission) {
-          ((TechnoClass *)CurrentObject[0])->Set_Mission(mission);
+          ((TechnoClass*)CurrentObject[0])->Set_Mission(mission);
           Changed = 1;
         }
       }
@@ -1273,18 +1273,18 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
         ........................ Set new facing .........................
         */
         if (FacingDial->Get_Direction() !=
-            ((TechnoClass *)CurrentObject[0])->PrimaryFacing.Get()) {
+            ((TechnoClass*)CurrentObject[0])->PrimaryFacing.Get()) {
           /*
           ..................... Set body's facing ......................
           */
-          ((TechnoClass *)CurrentObject[0])
+          ((TechnoClass*)CurrentObject[0])
               ->PrimaryFacing.Set(FacingDial->Get_Direction());
 
           /*
           ............. Set turret facing, if there is one .............
           */
           if (CurrentObject[0]->What_Am_I() == RTTI_UNIT) {
-            ((UnitClass *)CurrentObject[0])
+            ((UnitClass*)CurrentObject[0])
                 ->SecondaryFacing.Set(FacingDial->Get_Direction());
           }
 
@@ -1336,9 +1336,9 @@ void MapEditClass::AI(KeyNumType &input, int x, int y) {
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Draw_It(bool forced) {
-  char const *label;
+  char const* label;
   char buf[40];
-  char const *tptr;
+  char const* tptr;
 
   MouseClass::Draw_It(forced);
 
@@ -1417,7 +1417,7 @@ bool MapEditClass::Mouse_Moved(void) {
   static int old_mx = 0;
   static int old_my = 0;
   static CELL old_zonecell = 0;
-  const ObjectTypeClass *objtype = NULL;
+  const ObjectTypeClass* objtype = NULL;
   bool retcode = false;
 
   /*
@@ -1484,7 +1484,7 @@ bool MapEditClass::Mouse_Moved(void) {
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Main_Menu(void) {
-  char const *_menus[MAX_MAIN_MENU_NUM + 1];
+  char const* _menus[MAX_MAIN_MENU_NUM + 1];
   int selection;  // option the user picks
   bool process;   // menu stays up while true
   int rc;
@@ -1674,7 +1674,7 @@ void MapEditClass::Main_Menu(void) {
 void MapEditClass::AI_Menu(void) {
   int selection;  // option the user picks
   bool process;   // menu stays up while true
-  char const *_menus[MAX_AI_MENU_NUM + 1];
+  char const* _menus[MAX_AI_MENU_NUM + 1];
 
   /*
   -------------------------- Fill in menu strings --------------------------
@@ -1776,7 +1776,7 @@ void MapEditClass::AI_Menu(void) {
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
 bool MapEditClass::Verify_House(HousesType house,
-                                ObjectTypeClass const *objtype) {
+                                ObjectTypeClass const* objtype) {
   /*
   --------------- Verify that new house can own this object ----------------
   */
@@ -1800,7 +1800,7 @@ bool MapEditClass::Verify_House(HousesType house,
  *   11/23/1994 BR : Created.                                              *
  *=========================================================================*/
 HousesType MapEditClass::Cycle_House(HousesType curhouse,
-                                     ObjectTypeClass const *objtype) {
+                                     ObjectTypeClass const* objtype) {
   HousesType count;  // prevents an infinite loop
 
   /*------------------------------------------------------------------------
@@ -1859,7 +1859,7 @@ void MapEditClass::Fatal(int txt) {
   exit(EXIT_FAILURE);
 }
 
-bool MapEditClass::Scroll_Map(DirType facing, int &distance, bool really) {
+bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
   if (Debug_Map) {
     /*
     ** The popup gadgets require the entire map to be redrawn if we scroll.
@@ -1871,7 +1871,7 @@ bool MapEditClass::Scroll_Map(DirType facing, int &distance, bool really) {
   return (MouseClass::Scroll_Map(facing, distance, really));
 }
 
-void MapEditClass::Detach(ObjectClass *object) {
+void MapEditClass::Detach(ObjectClass* object) {
   if (GrabbedObject == object) {
     GrabbedObject = 0;
   }

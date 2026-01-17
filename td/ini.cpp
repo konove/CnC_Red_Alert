@@ -100,8 +100,8 @@
 static void Assign_Houses(void);
 static void Remove_AI_Players(void);
 static void Create_Units(void);
-static void Sort_Cells(CELL *cells, int numcells, CELL *outcells);
-static int Furthest_Cell(CELL *cells, int numcells, CELL *tcells,
+static void Sort_Cells(CELL* cells, int numcells, CELL* outcells);
+static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
                          int numtcells);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
@@ -125,7 +125,7 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist);
  * HISTORY: * 05/28/1994 JLB : Created. * 05/01/1995 BRR : 2-player scenarios
  *use same names as multiplayer                         *
  *=============================================================================================*/
-void Set_Scenario_Name(char *buf, int scenario, ScenarioPlayerType player,
+void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
                        ScenarioDirType dir, ScenarioVarType var) {
   char c_player;  // character representing player type
   char c_dir;     // character representing direction type
@@ -247,8 +247,8 @@ void Set_Scenario_Name(char *buf, int scenario, ScenarioPlayerType player,
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Read_Scenario_Ini(char *root, bool fresh) {
-  char *buffer;                       // Scenario.ini staging buffer pointer.
+bool Read_Scenario_Ini(char* root, bool fresh) {
+  char* buffer;                       // Scenario.ini staging buffer pointer.
   char fname[_MAX_FNAME + _MAX_EXT];  // full INI filename
   char buf[128];                      // Working string staging buffer.
   int rndmax;
@@ -264,7 +264,7 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   if (fresh) {
@@ -504,7 +504,7 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
   /*
   **	Read in any briefing text.
   */
-  char *stage = &BriefingText[0];
+  char* stage = &BriefingText[0];
   *stage = '\0';
   int index = 1;
 
@@ -534,7 +534,7 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
     memset(_ShapeBuffer, '\0', _ShapeBufferSize);
     CCFileClass("MISSION.INI").Read(_ShapeBuffer, _ShapeBufferSize);
 
-    char *work = &BriefingText[0];
+    char* work = &BriefingText[0];
     int index = 1;
 
     /*
@@ -595,7 +595,7 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
 
         for (int i = 0; i < MPlayerMax; i++) {
           HousesType house = (HousesType)(i + (int)HOUSE_MULTI1);
-          HouseClass *housep = HouseClass::As_Pointer(house);
+          HouseClass* housep = HouseClass::As_Pointer(house);
           housep->BlitzTime = IRandom(rndmin, rndmax);
         }
       }
@@ -649,9 +649,9 @@ bool Read_Scenario_Ini(char *root, bool fresh) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. * 05/11/1995 JLB : Updates movie data. *
  *=============================================================================================*/
-void Write_Scenario_Ini(char * /*root*/) {
+void Write_Scenario_Ini(char* /*root*/) {
 #ifdef CHEAT_KEYS
-  char *buffer;                       // Scenario.ini staging buffer pointer.
+  char* buffer;                       // Scenario.ini staging buffer pointer.
   char fname[_MAX_FNAME + _MAX_EXT];  // full scenario name
   HousesType house;
   CCFileClass file;
@@ -660,7 +660,7 @@ void Write_Scenario_Ini(char * /*root*/) {
   **	Get a working pointer to the INI staging buffer. Make sure that the
   *buffer *	starts cleared out of any data.
   */
-  buffer = (char *)_ShapeBuffer;
+  buffer = (char*)_ShapeBuffer;
   memset(buffer, '\0', _ShapeBufferSize);
 
   switch (ScenPlayer) {
@@ -769,13 +769,13 @@ void Write_Scenario_Ini(char * /*root*/) {
 static void Assign_Houses(void) {
   HousesType house;
   HousesType pref_house;
-  HouseClass *housep;
+  HouseClass* housep;
   bool house_used[MAX_PLAYERS];  // true = this house is in use
   bool color_used[6];            // true = this color is in use
   int i, j;
   PlayerColorType color;
   HousesType house2;
-  HouseClass *housep2;
+  HouseClass* housep2;
 
   char wibble[256];
   sprintf(wibble, "C&C95 - In 'Assign_Houses'. Number of players:%d\n",
@@ -825,8 +825,8 @@ static void Assign_Houses(void) {
     /*
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
-    memset((char *)housep->Name, 0, MPLAYER_NAME_MAX);
-    strncpy((char *)housep->Name, MPlayerNames[i], MPLAYER_NAME_MAX - 1);
+    memset((char*)housep->Name, 0, MPLAYER_NAME_MAX);
+    strncpy((char*)housep->Name, MPlayerNames[i], MPLAYER_NAME_MAX - 1);
     housep->IsHuman = true;
     housep->Init_Data(color, pref_house, MPlayerCredits);
 
@@ -901,7 +901,7 @@ static void Assign_Houses(void) {
 static void Remove_AI_Players(void) {
   int i;
   HousesType house;
-  HouseClass *housep;
+  HouseClass* housep;
 
   for (i = 0; i < MAX_PLAYERS; i++) {
     house = (HousesType)(i + (int)HOUSE_MULTI1);
@@ -997,7 +997,7 @@ static void Create_Units(void) {
   int num_waypts;
 
   HousesType h;      // house loop counter
-  HouseClass *hptr;  // ptr to house being processed
+  HouseClass* hptr;  // ptr to house being processed
 
   CELL centroid;  // centroid of this house's stuff
   int try_count;  // # times we've tried to select a centroid
@@ -1005,7 +1005,7 @@ static void Create_Units(void) {
 
   int u_limit;       // last allowable index of units for this BuildLevel
   int i_limit;       // last allowable index of infantry for this BuildLevel
-  TechnoClass *obj;  // newly-created object
+  TechnoClass* obj;  // newly-created object
   int i, j, k;       // loop counters
   int scaleval;      // value to scale # units or infantry
 
@@ -1145,7 +1145,7 @@ static void Create_Units(void) {
           hptr->FlagHome = 0;
           hptr->FlagLocation = 0;
           if (Special.IsCaptureTheFlag) {
-            hptr->Flag_Attach((UnitClass *)obj, true);
+            hptr->Flag_Attach((UnitClass*)obj, true);
           }
         }
       } else {
@@ -1296,13 +1296,13 @@ static void Create_Units(void) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-int Scan_Place_Object(ObjectClass *obj, CELL cell) {
+int Scan_Place_Object(ObjectClass* obj, CELL cell) {
   int dist;             // for object placement
   FacingType rot;       // for object placement
   FacingType fcounter;  // for object placement
   int tryval;
   CELL newcell;
-  TechnoClass *techno;
+  TechnoClass* techno;
   int skipit;
 
   /*------------------------------------------------------------------------
@@ -1393,7 +1393,7 @@ int Scan_Place_Object(ObjectClass *obj, CELL cell) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static void Sort_Cells(CELL *cells, int numcells, CELL *outcells) {
+static void Sort_Cells(CELL* cells, int numcells, CELL* outcells) {
   int i, j, k;
   int num_sorted = 0;
   int num_unsorted = numcells;
@@ -1441,7 +1441,7 @@ static void Sort_Cells(CELL *cells, int numcells, CELL *outcells) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static int Furthest_Cell(CELL *cells, int numcells, CELL *tcells,
+static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
                          int numtcells) {
   int i;
   int j;

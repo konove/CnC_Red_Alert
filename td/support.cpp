@@ -6,7 +6,7 @@
 
 #include "sdllib/include/gbuffer.h"
 
-void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
+void* Conquer_Build_Fading_Table(void const* palette, void* dest, int color,
                                  int frac) {
   unsigned matchvalue;
   uint8_t targetred;
@@ -27,14 +27,14 @@ void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
   if (frac > 255) frac = 255;
 
   // Record the target gun values.
-  auto pal8 = (uint8_t *)palette;
+  auto pal8 = (uint8_t*)palette;
   targetred = pal8[color * 3 + 0];
   targetgreen = pal8[color * 3 + 0];
   targetblue = pal8[color * 3 + 0];
 
   // Main loop
 
-  auto dptr = (uint8_t *)dest;
+  auto dptr = (uint8_t*)dest;
 
   // Transparent black never gets remapped.
   *dptr++ = 0;
@@ -100,18 +100,18 @@ void *Conquer_Build_Fading_Table(void const *palette, void *dest, int color,
 }
 
 void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
-                   GraphicViewPortClass &gpage) {
+                   GraphicViewPortClass& gpage) {
   gpage.Fill_Rect(x, y, x + size - 1, y + size - 1, color);
 }
 
 // from RA readline.cpp
-void strtrim(char *buffer) {
+void strtrim(char* buffer) {
   if (!buffer || *buffer == '\0') {
     return;
   }
 
   // Strip leading whitespace
-  const auto *source = buffer;
+  const auto* source = buffer;
   while (std::isspace(static_cast<unsigned char>(*source))) {
     ++source;
   }

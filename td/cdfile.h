@@ -58,19 +58,19 @@
 */
 class CDFileClass : public RawFileClass {
  public:
-  CDFileClass(char const *filename);
+  CDFileClass(char const* filename);
   CDFileClass(void);
   virtual ~CDFileClass(void) {};
 
-  virtual char const *Set_Name(char const *filename);
-  virtual int Open(char const *filename, int rights = READ);
+  virtual char const* Set_Name(char const* filename);
+  virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);
 
   void Searching(int on) { IsDisabled = !on; };
 
   static bool Is_There_Search_Drives(void) { return (First != nullptr); };
-  static int Set_Search_Drives(char *pathlist);
-  static void Add_Search_Drive(char *path);
+  static int Set_Search_Drives(char* pathlist);
+  static void Add_Search_Drive(char* path);
   static void Clear_Search_Drives(void);
   static void Refresh_Search_Drives(void);
   static void Set_CD_Drive(int drive);
@@ -88,14 +88,14 @@ class CDFileClass : public RawFileClass {
   *search *	path. There can be many such search paths available.
   */
   typedef struct {
-    void *Next;        // Pointer to next search record.
-    char const *Path;  // Pointer to path string.
+    void* Next;        // Pointer to next search record.
+    char const* Path;  // Pointer to path string.
   } SearchDriveType;
 
   /*
   **	This points to the first path record.
   */
-  static SearchDriveType *First;
+  static SearchDriveType* First;
 
   /*
   ** This is a copy of the unparsed search path list

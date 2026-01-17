@@ -158,7 +158,7 @@ MissionType MissionClass::Get_Mission(void) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void MissionClass::Debug_Dump(MonoClass *mono) const {
+void MissionClass::Debug_Dump(MonoClass* mono) const {
   mono->Set_Cursor(21, 1);
   mono->Printf("%5.5s[%4.4s]", MissionClass::Mission_Name(Mission),
                MissionClass::Mission_Name(MissionQueue));
@@ -351,7 +351,7 @@ void MissionClass::Assign_Mission(MissionType order) {
  * HISTORY: * 10/07/1992 JLB : Created. * 04/22/1994 JLB : Converted to static
  *member function.                                     *
  *=============================================================================================*/
-MissionType MissionClass::Mission_From_Name(char const *name) {
+MissionType MissionClass::Mission_From_Name(char const* name) {
   MissionType order;
 
   if (name) {
@@ -380,7 +380,7 @@ MissionType MissionClass::Mission_From_Name(char const *name) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-char const *MissionClass::Mission_Name(MissionType mission) {
+char const* MissionClass::Mission_Name(MissionType mission) {
   return (mission == MISSION_NONE ? "None" : Missions[mission]);
 }
 
@@ -435,7 +435,7 @@ bool MissionClass::Restore_Mission(void) {
 **	a unit can have. The system initiated orders have no use for the ASCII
 *name *	associated, but they are listed here for completeness sake.
 */
-char const *MissionClass::Missions[MISSION_COUNT] = {
+char const* MissionClass::Missions[MISSION_COUNT] = {
     "Sleep",  "Attack",   "Move",         "Retreat", "Guard",
     "Sticky", "Enter",    "Capture",      "Harvest", "Area Guard",
     "Return", "Stop",     "Ambush",       "Hunt",    "Timed Hunt",

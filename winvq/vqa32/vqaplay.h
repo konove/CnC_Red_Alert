@@ -49,7 +49,7 @@
  *-------------------------------------------------------------------------*/
 
 // MEG - 11.28.95 - added for debug
-extern void Debug_Printf(char *format_string, ...);
+extern void Debug_Printf(char* format_string, ...);
 
 #define VQASTANDALONE 0 /* Stand alone player */
 #define VQAVOC_ON 0     /* Enable VOC file override */
@@ -147,12 +147,12 @@ extern void Debug_Printf(char *format_string, ...);
  * EVAFont        - Pointer to font to use for E.V.A text cations. (For C&C)
  */
 typedef struct _VQAConfig {
-  long (*DrawerCallback)(unsigned char *screen, long framenum);
-  long (*EventHandler)(unsigned long event, void *buffer, long nbytes);
+  long (*DrawerCallback)(unsigned char* screen, long framenum);
+  long (*EventHandler)(unsigned long event, void* buffer, long nbytes);
   unsigned long NotifyFlags;
   long Vmode;
   long VBIBit;
-  unsigned char *ImageBuf;
+  unsigned char* ImageBuf;
   long ImageWidth;
   long ImageHeight;
   long X1, Y1;
@@ -164,10 +164,10 @@ typedef struct _VQAConfig {
   long NumFrameBufs;
   long NumCBBufs;
   uint32_t AudioDeviceID;  // SDL_AudioDeviceID
-  void (**AudioCallback)(uint8_t *, int);
-  void *AudioSpec;  // pointer to an SDL_AudioSpec
-  char *VocFile;
-  unsigned char *AudioBuf;
+  void (**AudioCallback)(uint8_t*, int);
+  void* AudioSpec;  // pointer to an SDL_AudioSpec
+  char* VocFile;
+  unsigned char* AudioBuf;
   long AudioBufSize;
   long AudioRate;
   long Volume;
@@ -178,8 +178,8 @@ typedef struct _VQAConfig {
   long DigiIRQ;
   long DigiDMA;
   long Language;
-  char *CapFont;
-  char *EVAFont; /* For C&C Only */
+  char* CapFont;
+  char* EVAFont; /* For C&C Only */
 } VQAConfig;
 
 /* Drawer Configuration flags (DrawFlags) */
@@ -233,7 +233,7 @@ typedef struct _VQAInfo {
   long NumFrames;
   long ImageWidth;
   long ImageHeight;
-  unsigned char *ImageBuf;
+  unsigned char* ImageBuf;
 } VQAInfo;
 
 /* VQAStatistics: Statistics about the VQA movie played.
@@ -284,36 +284,36 @@ struct VQAHandle {
  *-------------------------------------------------------------------------*/
 
 /* Configuration routines. */
-void VQA_INIConfig(VQAConfig *config);
-void VQA_DefaultConfig(VQAConfig *config);
+void VQA_INIConfig(VQAConfig* config);
+void VQA_DefaultConfig(VQAConfig* config);
 
 /* Handle manipulation routines. */
-VQAHandle *VQA_Alloc(void);
-void VQA_Free(VQAHandle *vqa);
-void VQA_Reset(VQAHandle *vqa);
-void VQA_InitAsDOS(VQAHandle *vqa);
-void VQA_Init(VQAHandle *vqa,
-              int64_t (*iohandler)(VQAHandle *vqa, int64_t action, void *buffer,
+VQAHandle* VQA_Alloc(void);
+void VQA_Free(VQAHandle* vqa);
+void VQA_Reset(VQAHandle* vqa);
+void VQA_InitAsDOS(VQAHandle* vqa);
+void VQA_Init(VQAHandle* vqa,
+              int64_t (*iohandler)(VQAHandle* vqa, int64_t action, void* buffer,
                                    int64_t nbytes));
-unsigned char *VQA_GetPalette(VQAHandle *vqa);
-long VQA_GetPaletteSize(VQAHandle *vqa);
-void VQA_Set_DrawBuffer(VQAHandle *vqa, unsigned char *buffer,
+unsigned char* VQA_GetPalette(VQAHandle* vqa);
+long VQA_GetPaletteSize(VQAHandle* vqa);
+void VQA_Set_DrawBuffer(VQAHandle* vqa, unsigned char* buffer,
                         unsigned long width, unsigned long height, long xpos,
                         long ypos);
 
 /* File routines. */
-long VQA_Open(VQAHandle *vqa, char const *filename, VQAConfig *config);
-void VQA_Close(VQAHandle *vqa);
-long VQA_Play(VQAHandle *vqa, long mode);
-long VQA_SeekFrame(VQAHandle *vqa, long frame, long fromwhere);
-long VQA_SetStop(VQAHandle *vqa, long stop);
+long VQA_Open(VQAHandle* vqa, char const* filename, VQAConfig* config);
+void VQA_Close(VQAHandle* vqa);
+long VQA_Play(VQAHandle* vqa, long mode);
+long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);
+long VQA_SetStop(VQAHandle* vqa, long stop);
 void VQA_PauseAudio(void);
 void VQA_ResumeAudio(void);
 
 /* Information/statistics access routines. */
-void VQA_GetInfo(VQAHandle *vqa, VQAInfo *info);
-void VQA_GetStats(VQAHandle *vqa, VQAStatistics *stats);
-char *VQA_Version(void);
-char *VQA_IDString(void);
+void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
+void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
+char* VQA_Version(void);
+char* VQA_IDString(void);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

@@ -48,15 +48,16 @@
  ** RedBookClass::StopCDMusic(VOID)
  ** = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
+#include <dos.h>
+
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <dos.h>
 
-#include "wwstd.h"
 #include "playcd.h"
 #include "wwmem.h"
+#include "wwstd.h"
 
 /***************************************************************************
  * RedBookClass -- default constructor
@@ -246,7 +247,7 @@ VOID RedBookClass::FullCDVolume(UBYTE chan) {
   }
 
   //	WriteRealMem(REALPTR(Volm_addrp) << 16, &Volm, sizeof(VolmType));
-  Mem_Copy(&Volm, (void *)(Volm_addrp.seg << 4), sizeof(VolmType));
+  Mem_Copy(&Volm, (void*)(Volm_addrp.seg << 4), sizeof(VolmType));
 
   regs.x.eax = 0x1510;
   regs.x.ecx = cdDrive[0];
@@ -256,7 +257,7 @@ VOID RedBookClass::FullCDVolume(UBYTE chan) {
   DPMI_real_intr(0x2F, &regs, &sregs);
 
   //	ReadRealMem(&Volm, REALPTR(Volm_addrp) << 16, sizeof(VolmType));
-  Mem_Copy((void *)(Volm_addrp.seg << 4), &Volm, sizeof(VolmType));
+  Mem_Copy((void*)(Volm_addrp.seg << 4), &Volm, sizeof(VolmType));
 }
 
 /***************************************************************************
@@ -283,7 +284,7 @@ VOID RedBookClass::PlayTrack(UWORD track) {
   Tinfo.TrnsAdSeg = Tinfo_addrp.seg;
 
   //	WriteRealMem(REALPTR(Tinfo_addrp) << 16, &Tinfo, sizeof(TinfoType));
-  Mem_Copy(&Tinfo, (void *)(Tinfo_addrp.seg << 4), sizeof(TinfoType));
+  Mem_Copy(&Tinfo, (void*)(Tinfo_addrp.seg << 4), sizeof(TinfoType));
 
   regs.x.eax = 0x1510;
   regs.x.ecx = cdDrive[0];
@@ -294,7 +295,7 @@ VOID RedBookClass::PlayTrack(UWORD track) {
                  &sregs);  // gets start time of track in Tinfo.Start
 
   //	ReadRealMem(&Tinfo, REALPTR(Tinfo_addrp) << 16, sizeof(TinfoType));
-  Mem_Copy((void *)(Tinfo_addrp.seg << 4), &Tinfo, sizeof(TinfoType));
+  Mem_Copy((void*)(Tinfo_addrp.seg << 4), &Tinfo, sizeof(TinfoType));
 
   Play.Start = Tinfo.Start;
   Tinfo.Track++;
@@ -303,7 +304,7 @@ VOID RedBookClass::PlayTrack(UWORD track) {
   Tinfo.TrnsAdSeg = Tinfo_addrp.seg;
 
   //	WriteRealMem(REALPTR(Tinfo_addrp) << 16, &Tinfo, sizeof(TinfoType));
-  Mem_Copy(&Tinfo, (void *)(Tinfo_addrp.seg << 4), sizeof(TinfoType));
+  Mem_Copy(&Tinfo, (void*)(Tinfo_addrp.seg << 4), sizeof(TinfoType));
 
   regs.x.eax = 0x1510;
   regs.x.ecx = cdDrive[0];
@@ -314,12 +315,12 @@ VOID RedBookClass::PlayTrack(UWORD track) {
                  &sregs);  // gets start time of following track in Tinfo.Start
 
   //	ReadRealMem(&Tinfo, REALPTR(Tinfo_addrp) << 16, sizeof(TinfoType));
-  Mem_Copy((void *)(Tinfo_addrp.seg << 4), &Tinfo, sizeof(TinfoType));
+  Mem_Copy((void*)(Tinfo_addrp.seg << 4), &Tinfo, sizeof(TinfoType));
 
   Play.CntSect = RedToHS(Tinfo.Start) - RedToHS(Play.Start) - 1;
 
   //	WriteRealMem(REALPTR(Play_addrp) << 16, &Play, sizeof(PlayType));
-  Mem_Copy(&Play, (void *)(Play_addrp.seg << 4), sizeof(PlayType));
+  Mem_Copy(&Play, (void*)(Play_addrp.seg << 4), sizeof(PlayType));
 
   regs.x.eax = 0x1510;
   regs.x.ecx = cdDrive[0];
@@ -329,7 +330,7 @@ VOID RedBookClass::PlayTrack(UWORD track) {
   DPMI_real_intr(0x2F, &regs, &sregs);
 
   //	ReadRealMem(&Play, REALPTR(Play_addrp) << 16, sizeof(PlayType));
-  Mem_Copy((void *)(Play_addrp.seg << 4), &Play, sizeof(PlayType));
+  Mem_Copy((void*)(Play_addrp.seg << 4), &Play, sizeof(PlayType));
 
   FullCDVolume(CHBOTH);
 }
@@ -403,7 +404,7 @@ VOID RedBookClass::PlayMSF(UBYTE startM, UBYTE startS, UBYTE startF, UBYTE endM,
   Play.CntSect = RedToHS(MSFtoRed(endM, endS, endF)) - RedToHS(Play.Start) - 1;
 
   //	WriteRealMem(REALPTR(Play_addrp) << 16, &Play, sizeof(PlayType));
-  Mem_Copy(&Play, (void *)(Play_addrp.seg << 4), sizeof(PlayType));
+  Mem_Copy(&Play, (void*)(Play_addrp.seg << 4), sizeof(PlayType));
 
   regs.x.eax = 0x1510;
   regs.x.ecx = cdDrive[0];
@@ -413,7 +414,7 @@ VOID RedBookClass::PlayMSF(UBYTE startM, UBYTE startS, UBYTE startF, UBYTE endM,
   DPMI_real_intr(0x2F, &regs, &sregs);
 
   //	ReadRealMem(&Play, REALPTR(Play_addrp) << 16, sizeof(PlayType));
-  Mem_Copy((void *)(Play_addrp.seg << 4), &Play, sizeof(PlayType));
+  Mem_Copy((void*)(Play_addrp.seg << 4), &Play, sizeof(PlayType));
 
   FullCDVolume(chan);
 }
@@ -444,7 +445,7 @@ UWORD RedBookClass::CheckCDMusic(VOID) {
   Stat.TrnsAdSeg = Stat_addrp.seg;
 
   //	WriteRealMem(REALPTR(Stat_addrp) << 16, &Stat, sizeof(StatType));
-  Mem_Copy(&Stat, (void *)(Stat_addrp.seg << 4), sizeof(StatType));
+  Mem_Copy(&Stat, (void*)(Stat_addrp.seg << 4), sizeof(StatType));
 
   regs.x.ecx = cdDrive[0];
   regs.x.ebx = offsetof(StatType, Length);
@@ -454,7 +455,7 @@ UWORD RedBookClass::CheckCDMusic(VOID) {
   DPMI_real_intr(0x2F, &regs, &sregs);
 
   //	ReadRealMem(&Stat, REALPTR(Stat_addrp) << 16, sizeof(StatType));
-  Mem_Copy((void *)(Stat_addrp.seg << 4), &Stat, sizeof(StatType));
+  Mem_Copy((void*)(Stat_addrp.seg << 4), &Stat, sizeof(StatType));
 
   return (Stat.Status & 0x200);
 }
@@ -476,7 +477,7 @@ UWORD RedBookClass::CheckCDMusic(VOID) {
 
 VOID RedBookClass::StopCDMusic(VOID) {
   //	WriteRealMem(REALPTR(Stop_addrp) << 16, &Stop, sizeof(StopType));
-  Mem_Copy(&Stop, (void *)(Stop_addrp.seg << 4), sizeof(StopType));
+  Mem_Copy(&Stop, (void*)(Stop_addrp.seg << 4), sizeof(StopType));
 
   regs.x.eax = 0x1510;
   regs.x.ecx = cdDrive[0];
@@ -486,5 +487,5 @@ VOID RedBookClass::StopCDMusic(VOID) {
   DPMI_real_intr(0x2F, &regs, &sregs);
 
   //	ReadRealMem(&Stop, REALPTR(Stop_addrp) << 16, sizeof(StopType));
-  Mem_Copy((void *)(Stop_addrp.seg << 4), &Stop, sizeof(StopType));
+  Mem_Copy((void*)(Stop_addrp.seg << 4), &Stop, sizeof(StopType));
 }

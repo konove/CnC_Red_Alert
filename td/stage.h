@@ -70,7 +70,7 @@ class StageClass {
     Stage = 0;
     Rate = 0;
   };
-  StageClass(NoInitClass const &x) {};
+  StageClass(NoInitClass const& x) {};
 
   int Fetch_Stage(void) const { return Stage; };
   int Fetch_Rate(void) const { return Rate; };
@@ -89,7 +89,7 @@ class StageClass {
     return false;
   };
 #ifdef CHEAT_KEYS
-  void Debug_Dump(MonoClass *mono) const {
+  void Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(56, 7);
     mono->Printf("%3d[%d]", Stage, Rate);
   };

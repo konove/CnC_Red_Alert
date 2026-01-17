@@ -43,7 +43,7 @@
 #include <arpa/inet.h>
 #endif
 
-FieldClass::FieldClass(char const *id, char data) {
+FieldClass::FieldClass(char const* id, char data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_CHAR;
   Size = sizeof(data);
@@ -52,7 +52,7 @@ FieldClass::FieldClass(char const *id, char data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, unsigned char data) {
+FieldClass::FieldClass(char const* id, unsigned char data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_UNSIGNED_CHAR;
   Size = sizeof(data);
@@ -61,7 +61,7 @@ FieldClass::FieldClass(char const *id, unsigned char data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, short data) {
+FieldClass::FieldClass(char const* id, short data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_SHORT;
   Size = sizeof(data);
@@ -70,7 +70,7 @@ FieldClass::FieldClass(char const *id, short data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, unsigned short data) {
+FieldClass::FieldClass(char const* id, unsigned short data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_UNSIGNED_SHORT;
   Size = sizeof(data);
@@ -79,7 +79,7 @@ FieldClass::FieldClass(char const *id, unsigned short data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, long data) {
+FieldClass::FieldClass(char const* id, long data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_LONG;
   Size = sizeof(data);
@@ -88,7 +88,7 @@ FieldClass::FieldClass(char const *id, long data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, unsigned long data) {
+FieldClass::FieldClass(char const* id, unsigned long data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_UNSIGNED_LONG;
   Size = sizeof(data);
@@ -97,7 +97,7 @@ FieldClass::FieldClass(char const *id, unsigned long data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, const char *data) {
+FieldClass::FieldClass(char const* id, const char* data) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_STRING;
   Size = (unsigned short)(strlen(data) + 1);
@@ -106,7 +106,7 @@ FieldClass::FieldClass(char const *id, const char *data) {
   Next = nullptr;
 }
 
-FieldClass::FieldClass(char const *id, void *data, int length) {
+FieldClass::FieldClass(char const* id, void* data, int length) {
   strncpy(ID, id, sizeof(ID));
   DataType = TYPE_CHUNK;
   Size = (unsigned short)length;
@@ -141,12 +141,12 @@ void FieldClass::Host_To_Net(void) {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *((unsigned short *)Data) = htons(*((unsigned short *)Data));
+      *((unsigned short*)Data) = htons(*((unsigned short*)Data));
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *((unsigned long *)Data) = htonl(*((unsigned long *)Data));
+      *((unsigned long*)Data) = htonl(*((unsigned long*)Data));
       break;
 
     //
@@ -196,12 +196,12 @@ void FieldClass::Net_To_Host(void) {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      *((unsigned short *)Data) = ntohs(*((unsigned short *)Data));
+      *((unsigned short*)Data) = ntohs(*((unsigned short*)Data));
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      *((unsigned long *)Data) = ntohl(*((unsigned long *)Data));
+      *((unsigned long*)Data) = ntohl(*((unsigned long*)Data));
       break;
 
     //

@@ -68,7 +68,7 @@
 
 class InfantryClass : public FootClass {
  public:
-  InfantryTypeClass const *const Class;
+  InfantryTypeClass const* const Class;
   operator InfantryType(void) const { return Class->Type; };
 
   /*
@@ -125,12 +125,12 @@ class InfantryClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   InfantryClass(void);
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(NoInitClass const &x)
+  InfantryClass(NoInitClass const& x)
       : FootClass(x), Class(Class), Comment(x) {};
   virtual ~InfantryClass(void);
   virtual RTTIType What_Am_I(void) const;
@@ -146,7 +146,7 @@ class InfantryClass : public FootClass {
   **	Query functions.
   */
   virtual bool Is_Infantry(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const;
+  virtual ObjectTypeClass const& Class_Of(void) const;
   virtual int Full_Name(void) const;
 
   /*
@@ -166,7 +166,7 @@ class InfantryClass : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual short const *Overlap_List(void) const;
+  virtual short const* Overlap_List(void) const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual void Look(bool incremental = false);
 
@@ -176,24 +176,24 @@ class InfantryClass : public FootClass {
   virtual void Response_Select(void);
   virtual void Response_Move(void);
   virtual void Response_Attack(void);
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
+  virtual void Active_Click_With(ActionType action, ObjectClass* object);
 
   /*
   **	Combat related.
   */
   virtual int Made_A_Kill(void);
-  virtual ActionType What_Action(ObjectClass *object) const;
+  virtual ActionType What_Action(ObjectClass* object) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual void Assign_Mission(MissionType order);
-  virtual BulletClass *Fire_At(TARGET target, int which);
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr);
+  virtual BulletClass* Fire_At(TARGET target, int which);
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr);
   virtual TARGET As_Target(void) const;
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
   virtual void Assign_Target(TARGET);
-  virtual RadioMessageType Receive_Message(RadioClass *from,
+  virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long &param);
+                                           long& param);
   virtual int Rearm_Delay(bool second) const;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
@@ -209,7 +209,7 @@ class InfantryClass : public FootClass {
   **	occupation flags and driver instructions.
   */
   virtual bool Stop_Driver(void);
-  virtual bool Start_Driver(COORDINATE &coord);
+  virtual bool Start_Driver(COORDINATE& coord);
 
   /*
   **	AI.
@@ -222,17 +222,17 @@ class InfantryClass : public FootClass {
 **	Scenario and debug support.
 */
 #ifdef CHEAT_KEYS
-  virtual void Debug_Dump(MonoClass *mono) const;
+  virtual void Debug_Dump(MonoClass* mono) const;
 #endif
 
   /*
   **	File I/O.
   */
-  static void Read_INI(char *buffer);
-  static void Write_INI(char *buffer);
-  static char const *INI_Name(void) { return "INFANTRY"; };
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  static void Read_INI(char* buffer);
+  static void Write_INI(char* buffer);
+  static char const* INI_Name(void) { return "INFANTRY"; };
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -264,7 +264,7 @@ class InfantryClass : public FootClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

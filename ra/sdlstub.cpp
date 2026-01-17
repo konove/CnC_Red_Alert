@@ -20,7 +20,7 @@
 void Focus_Loss(void);
 void Focus_Restore(void);
 
-void WWDebugString(char const * /*string*/) {}
+void WWDebugString(char const* /*string*/) {}
 
 void Check_For_Focus_Loss(void) {
   if (!GameInFocus) {
@@ -67,7 +67,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   // Gbuffer_Focus_Loss_Function = &Focus_Loss;
 }
 
-void SDL_Event_Handler(SDL_Event *event) {
+void SDL_Event_Handler(SDL_Event* event) {
   if (Keyboard->Event_Handler(event)) return;
 
   switch (event->type) {

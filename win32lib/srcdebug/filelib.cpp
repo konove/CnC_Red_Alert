@@ -88,8 +88,8 @@
  *   11/09/1991 JLB : Created.                                             *
  *=========================================================================*/
 #pragma argsused
-WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const *file_name) {
-  BYTE *ptr = NULL;  // Working file name pointer (just name and extension).
+WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const* file_name) {
+  BYTE* ptr = NULL;  // Working file name pointer (just name and extension).
 
   /*
   ** Since the file name may include a path, we must extract the true
@@ -97,14 +97,14 @@ WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const *file_name) {
   */
   if (file_name) {
 #if LIB_EXTERNS_RESOLVED
-    ptr = strrchr((char *)file_name, (int)'\\');
+    ptr = strrchr((char*)file_name, (int)'\\');
 #else
     ptr = NULL;
 #endif
     if (ptr) {
       ptr++;
     } else {
-      ptr = (BYTE *)file_name;
+      ptr = (BYTE*)file_name;
     }
   }
 
@@ -136,7 +136,7 @@ WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const *file_name) {
  *   11/09/1991 JLB : Created.                                             *
  *=========================================================================*/
 #pragma argsused
-VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const *filename) {
+VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const* filename) {
 #if LIB_EXTERNS_RESOLVED
   (VOID) IO_Error(errormsgnum, filename);
 #endif
@@ -162,7 +162,7 @@ VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const *filename) {
  * HISTORY:                                                                *
  *   02/16/1993  QY : Created.                                             *
  *=========================================================================*/
-LONG cdecl Read_File_With_Recovery(WORD handle, VOID *buf, UWORD bytes) {
+LONG cdecl Read_File_With_Recovery(WORD handle, VOID* buf, UWORD bytes) {
   WORD newhandle;
   LONG bytes_read;
 
@@ -218,7 +218,7 @@ LONG cdecl Read_File_With_Recovery(WORD handle, VOID *buf, UWORD bytes) {
  * HISTORY:                                                                *
  *   02/16/1993  QY : Created.                                             *
  *=========================================================================*/
-WORD cdecl Open_File_With_Recovery(BYTE const *file_name, UWORD mode) {
+WORD cdecl Open_File_With_Recovery(BYTE const* file_name, UWORD mode) {
   WORD handle;
 
   Hard_Error_Occured = FALSE;
@@ -271,9 +271,9 @@ WORD cdecl Open_File_With_Recovery(BYTE const *file_name, UWORD mode) {
 BOOL cdecl Cache_File(WORD index, WORD file_handle) {
   LONG filesize;   // Size of the memory block needed.
   LONG freecache;  // Amount of free XMS.
-  FileDataType *filedata = NULL;
+  FileDataType* filedata = NULL;
   FileDataType hold;
-  FileHandleType *filehandletable;
+  FileHandleType* filehandletable;
   WORD flag;  // Type of system memory to cache file.
   WORD file;
 
@@ -304,7 +304,7 @@ BOOL cdecl Cache_File(WORD index, WORD file_handle) {
     // Go through freeing files until there is enouph space in the
     // memory pool.
     while (filesize > Mem_Avail(FileCacheHeap)) {
-      VOID *node;
+      VOID* node;
 
       // Get the oldest non used file pointer.
       node = Mem_Find_Oldest(FileCacheHeap);
@@ -357,7 +357,7 @@ BOOL cdecl Cache_File(WORD index, WORD file_handle) {
       // Close the parent file.  Remove it's open count.
       if (filedata->Flag & FILEF_PACKED) {
         FileDataType p_hold;
-        FileDataType *parent;
+        FileDataType* parent;
 
         parent = &FileDataPtr[filedata->Disk];
         parent->OpenCount--;

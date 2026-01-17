@@ -36,8 +36,9 @@
  *   Remove_Timer_System -- Removes the timer system.                      *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <wwstd.h>
 #include <descmgmt.h>
+#include <wwstd.h>
+
 #include "timer.H"
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -48,15 +49,15 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// timera.asm
-///functions//////////////////////////////
+/// functions//////////////////////////////
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern VOID *Get_RM_Timer_Address(VOID);
+extern VOID* Get_RM_Timer_Address(VOID);
 extern ULONG Get_RM_Timer_Size(VOID);
-extern BOOL Install_Timer_Interrupt(VOID *bin_ptr, UINT rm_size, UINT freq,
+extern BOOL Install_Timer_Interrupt(VOID* bin_ptr, UINT rm_size, UINT freq,
                                     BOOL partial);
 extern BOOL Remove_Timer_Interrupt(VOID);
 
@@ -93,7 +94,7 @@ CountDownTimerClass CountDown(BT_SYSTEM, 0);
  *   07/06/1994 SKB : Created.                                             *
  *=========================================================================*/
 BOOL Init_Timer_System(UINT freq, BOOL partial) {
-  VOID *binary;
+  VOID* binary;
   UINT binsize;
   BOOL success;
 
@@ -106,7 +107,7 @@ BOOL Init_Timer_System(UINT freq, BOOL partial) {
 
 #else
   WORD fd;
-  VOID *mem;
+  VOID* mem;
 
   //
   // Open binary image of real mode timer code.

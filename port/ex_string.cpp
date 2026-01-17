@@ -9,7 +9,7 @@
 #include <span>
 #include <string_view>
 
-int stricmp(const char *string1, const char *string2) {
+int stricmp(const char* string1, const char* string2) {
   const std::string_view view1(string1);
   const std::string_view view2(string2);
 
@@ -35,7 +35,7 @@ int stricmp(const char *string1, const char *string2) {
   return 1;
 }
 
-int strnicmp(const char *string1, const char *string2, const size_t count) {
+int strnicmp(const char* string1, const char* string2, const size_t count) {
   std::string_view view1(string1);
   std::string_view view2(string2);
 
@@ -66,9 +66,9 @@ int strnicmp(const char *string1, const char *string2, const size_t count) {
 }
 
 // TODO(konove): Replace all usage of this function with absl::EqualsIgnoreCase
-int memicmp(const void *buffer1, const void *buffer2, const size_t count) {
-  auto view1 = std::span(static_cast<const unsigned char *>(buffer1), count);
-  auto view2 = std::span(static_cast<const unsigned char *>(buffer2), count);
+int memicmp(const void* buffer1, const void* buffer2, const size_t count) {
+  auto view1 = std::span(static_cast<const unsigned char*>(buffer1), count);
+  auto view2 = std::span(static_cast<const unsigned char*>(buffer2), count);
 
   auto cmp = [](const unsigned char chr_a, const unsigned char chr_b) noexcept {
     return std::tolower(chr_a) <=> std::tolower(chr_b);
@@ -86,21 +86,21 @@ int memicmp(const void *buffer1, const void *buffer2, const size_t count) {
 }
 
 // TODO(konove): Replace all usage of this function with absl::AsciiStrToUpper
-char *strupr(char *str) {
+char* strupr(char* str) {
   std::transform(str, str + strlen(str), str,
                  [](const unsigned char chr) { return std::toupper(chr); });
   return str;
 }
 
 // TODO(konove): Replace all usage of this function with absl::AsciiStrToLower
-char *strlwr(char *str) {
+char* strlwr(char* str) {
   std::transform(str, str + strlen(str), str,
                  [](const unsigned char chr) { return std::tolower(chr); });
   return str;
 }
 
 // TODO(konove): Replace all usage of this function with std::reverse
-char *strrev(char *str) {
+char* strrev(char* str) {
   std::reverse(str, str + strlen(str));
   return str;
 }

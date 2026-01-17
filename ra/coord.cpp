@@ -83,8 +83,8 @@
 CELL Coord_Cell(COORDINATE coord) {
   CELL_COMPOSITE cell;
   cell.Cell = 0;
-  cell.Sub.X = ((COORD_COMPOSITE &)coord).Sub.X.Sub.Cell;
-  cell.Sub.Y = ((COORD_COMPOSITE &)coord).Sub.Y.Sub.Cell;
+  cell.Sub.X = ((COORD_COMPOSITE&)coord).Sub.X.Sub.Cell;
+  cell.Sub.Y = ((COORD_COMPOSITE&)coord).Sub.Y.Sub.Cell;
   return (cell.Cell);
   //	return(XY_Cell(((COORD_COMPOSITE)coord).Sub.X,
   //((COORD_COMPOSITE)composite).Sub.Y));
@@ -165,7 +165,7 @@ int Distance(COORDINATE coord1, COORDINATE coord2) {
  *   06/03/1994 JLB : Converted to general purpose spillage functionality. *
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
-short const *Coord_Spillage_List(COORDINATE coord, int maxsize) {
+short const* Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static short const _MoveSpillage[(int)FACING_COUNT + 1][5] = {
       {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
       {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
@@ -279,7 +279,7 @@ short const *Coord_Spillage_List(COORDINATE coord, int maxsize) {
  *                                                                                             *
  * HISTORY: * 07/22/1996 JLB : Created. *
  *=============================================================================================*/
-short const *Coord_Spillage_List(COORDINATE coord, Rect const &rect,
+short const* Coord_Spillage_List(COORDINATE coord, Rect const& rect,
                                  bool nocenter) {
   if (!rect.Is_Valid()) {
     static short const _list[] = {REFRESH_EOL};
@@ -321,7 +321,7 @@ short const *Coord_Spillage_List(COORDINATE coord, Rect const &rect,
   */
   int count = 0;
   static short _spillagelist[128];
-  short *ptr = _spillagelist;
+  short* ptr = _spillagelist;
   for (int yy = celly; yy <= celly2; yy++) {
     for (int xx = cellx; xx <= cellx2; xx++) {
       short offset = (XY_Cell(xx, yy) - coordcell);
@@ -370,7 +370,7 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, unsigned short distance) {
   return (XY_Coord(x, y));
 #endif
 
-  Move_Point(*(short *)&start, *(((short *)&start) + 1), dir, distance);
+  Move_Point(*(short*)&start, *(((short*)&start) + 1), dir, distance);
   return (start);
 }
 
@@ -443,7 +443,7 @@ int calcy(signed short v, short distance) {
   return -((v * distance) >> 7);
 }
 
-void Move_Point(short &x, short &y, DirType dir, unsigned short distance) {
+void Move_Point(short& x, short& y, DirType dir, unsigned short distance) {
   static signed char const CosTable[256] = {
       0,    3,    6,    9,    12,   15,   18,   21,   24,   27,   30,
       33,   36,   39,   42,   45,   48,   51,   54,   57,   59,   62,
@@ -556,7 +556,7 @@ void Move_Point(short &x, short &y, DirType dir, unsigned short distance) {
 // Loss of precision in initializations (8 bits to 7 bits) warning. Hmmm.. can
 // this be fixed?
 // lint -e569
-void Normal_Move_Point(short &x, short &y, DirType dir,
+void Normal_Move_Point(short& x, short& y, DirType dir,
                        unsigned short distance) {
   static signed char const CosTable[256] = {
       0,    3,    6,    9,    12,   15,   18,   21,   24,   27,   30,

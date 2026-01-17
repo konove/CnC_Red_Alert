@@ -60,14 +60,14 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *attributes *	for this bullet is located in the BulletTypeClass pointed to by
   *this variable.
   */
-  BulletTypeClass const *const Class;
+  BulletTypeClass const* const Class;
   operator BulletType(void) const { return Class->Type; };
 
   /*
   **	Records who sent this "present" so that an appropriate "thank you" can
   **	be returned.
   */
-  TechnoClass *Payback;
+  TechnoClass* Payback;
 
   /*
   **	This is the facing that the projectile is travelling.
@@ -77,12 +77,12 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
-  static void operator delete(void *ptr);
+  static void* operator new(size_t size) throw();
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void operator delete(void* ptr);
   BulletClass(void);
   BulletClass(BulletType id);
-  BulletClass(NoInitClass const &x)
+  BulletClass(NoInitClass const& x)
       : ObjectClass(x),
         Class(Class),
         FlyClass(x),
@@ -101,20 +101,20 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   virtual void Assign_Target(TARGET target) { TarCom = target; };
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
   virtual LayerType In_Which_Layer(void) const { return LAYER_TOP; };
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
   virtual void Detach(TARGET target, bool all);
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual bool Mark(MarkType mark = MARK_CHANGE);
   virtual void AI(void);
-  virtual short const *Occupy_List(void) const;
-  virtual short const *Overlap_List(void) const { return Occupy_List(); };
+  virtual short const* Occupy_List(void) const;
+  virtual short const* Overlap_List(void) const { return Occupy_List(); };
   virtual TARGET As_Target(void) const;
 
   /*
   **	File I/O.
   */
-  bool Load(FileClass &file);
-  bool Save(FileClass &file);
+  bool Load(FileClass& file);
+  bool Save(FileClass& file);
   virtual void Code_Pointers(void);
   virtual void Decode_Pointers(void);
 
@@ -162,7 +162,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   ** This contains the value of the Virtual Function Table Pointer
   */
-  static void *VTable;
+  static void* VTable;
 };
 
 #endif

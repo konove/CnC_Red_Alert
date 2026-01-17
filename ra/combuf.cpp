@@ -303,7 +303,7 @@ void CommBufferClass::Init_Send_Queue(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int CommBufferClass::Queue_Send(void *buf, int buflen, void *extrabuf,
+int CommBufferClass::Queue_Send(void* buf, int buflen, void* extrabuf,
                                 int extralen) {
   int i;
   int index;
@@ -393,8 +393,8 @@ int CommBufferClass::Queue_Send(void *buf, int buflen, void *extrabuf,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int CommBufferClass::UnQueue_Send(void *buf, int *buflen, int index,
-                                  void *extrabuf, int *extralen) {
+int CommBufferClass::UnQueue_Send(void* buf, int* buflen, int index,
+                                  void* extrabuf, int* extralen) {
   int i;
 
   //------------------------------------------------------------------------
@@ -468,7 +468,7 @@ int CommBufferClass::UnQueue_Send(void *buf, int *buflen, int index,
  * HISTORY:                                                                *
  *   12/21/1994 BR : Created.                                              *
  *=========================================================================*/
-SendQueueType *CommBufferClass::Get_Send(int index) {
+SendQueueType* CommBufferClass::Get_Send(int index) {
   if (SendQueue[SendIndex[index]].IsActive == 0) {
     return (nullptr);
   } else {
@@ -499,7 +499,7 @@ SendQueueType *CommBufferClass::Get_Send(int index) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int CommBufferClass::Queue_Receive(void *buf, int buflen, void *extrabuf,
+int CommBufferClass::Queue_Receive(void* buf, int buflen, void* extrabuf,
                                    int extralen) {
   int i;
   int index;
@@ -590,8 +590,8 @@ int CommBufferClass::Queue_Receive(void *buf, int buflen, void *extrabuf,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int CommBufferClass::UnQueue_Receive(void *buf, int *buflen, int index,
-                                     void *extrabuf, int *extralen) {
+int CommBufferClass::UnQueue_Receive(void* buf, int* buflen, int index,
+                                     void* extrabuf, int* extralen) {
   int i;
 
   //------------------------------------------------------------------------
@@ -663,7 +663,7 @@ int CommBufferClass::UnQueue_Receive(void *buf, int *buflen, int index,
  * HISTORY:                                                                *
  *   12/21/1994 BR : Created.                                              *
  *=========================================================================*/
-ReceiveQueueType *CommBufferClass::Get_Receive(int index) {
+ReceiveQueueType* CommBufferClass::Get_Receive(int index) {
   if (ReceiveQueue[ReceiveIndex[index]].IsActive == 0) {
     return (nullptr);
   } else {
@@ -824,7 +824,7 @@ void CommBufferClass::Reset_Response_Time(void) {
  *   05/31/1995 BRR : Created.                                             *
  *=========================================================================*/
 void CommBufferClass::Configure_Debug(int type_offset, int type_size,
-                                      char **names, int namestart,
+                                      char** names, int namestart,
                                       int namecount) {
   DebugOffset = type_offset;
   DebugSize = type_size;
@@ -866,7 +866,7 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
     unsigned short MagicNumber;
     unsigned char Code;
     unsigned long PacketID;
-  } *hdr;
+  }* hdr;
 
   //------------------------------------------------------------------------
   //	If few enough entries, call the verbose debug version
@@ -966,7 +966,7 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
   for (i = 0; i < MaxSend; i++) {
     Mono_Set_Cursor(send_col[col], row + 8);
     if (SendQueue[i].IsActive) {
-      hdr = (CommHdr *)SendQueue[i].Buffer;
+      hdr = (CommHdr*)SendQueue[i].Buffer;
       hdr->MagicNumber = hdr->MagicNumber;
       hdr->Code = hdr->Code;
       Mono_Printf("%4d %2d  %d", hdr->PacketID, SendQueue[i].SendCount,
@@ -990,7 +990,7 @@ void CommBufferClass::Mono_Debug_Print(int refresh) {
   for (i = 0; i < MaxReceive; i++) {
     Mono_Set_Cursor(receive_col[col], row + 8);
     if (ReceiveQueue[i].IsActive) {
-      hdr = (CommHdr *)ReceiveQueue[i].Buffer;
+      hdr = (CommHdr*)ReceiveQueue[i].Buffer;
       Mono_Printf("%4d  %d  %d", hdr->PacketID, ReceiveQueue[i].IsRead,
                   ReceiveQueue[i].IsACK);
     } else {
@@ -1042,7 +1042,7 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
     unsigned short MagicNumber;
     unsigned char Code;
     unsigned long PacketID;
-  } *hdr;
+  }* hdr;
 
   //------------------------------------------------------------------------
   //	Refresh the screen
@@ -1139,7 +1139,7 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
       //..................................................................
       //	Get header info
       //..................................................................
-      hdr = (CommHdr *)SendQueue[i].Buffer;
+      hdr = (CommHdr*)SendQueue[i].Buffer;
       hdr->MagicNumber = hdr->MagicNumber;
       hdr->Code = hdr->Code;
       sprintf(txt, "%4d %2d %-5s  ", hdr->PacketID, SendQueue[i].SendCount,
@@ -1153,10 +1153,10 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
           val = *(SendQueue[i].Buffer + DebugOffset);
 
         } else if (DebugSize == 2) {
-          val = *((short *)(SendQueue[i].Buffer + DebugOffset));
+          val = *((short*)(SendQueue[i].Buffer + DebugOffset));
 
         } else if (DebugSize == 4) {
-          val = *((int *)(SendQueue[i].Buffer + DebugOffset));
+          val = *((int*)(SendQueue[i].Buffer + DebugOffset));
         }
         sprintf(txt + strlen(txt), "%4d  ", val);
 
@@ -1193,7 +1193,7 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
       //..................................................................
       //	Get header info
       //..................................................................
-      hdr = (CommHdr *)ReceiveQueue[i].Buffer;
+      hdr = (CommHdr*)ReceiveQueue[i].Buffer;
       hdr->MagicNumber = hdr->MagicNumber;
       hdr->Code = hdr->Code;
       sprintf(txt, "%4d %2d %-5s  ", hdr->PacketID, ReceiveQueue[i].IsRead,
@@ -1207,10 +1207,10 @@ void CommBufferClass::Mono_Debug_Print2(int refresh) {
           val = *(ReceiveQueue[i].Buffer + DebugOffset);
 
         } else if (DebugSize == 2) {
-          val = *((short *)(ReceiveQueue[i].Buffer + DebugOffset));
+          val = *((short*)(ReceiveQueue[i].Buffer + DebugOffset));
 
         } else if (DebugSize == 4) {
-          val = *((int *)(ReceiveQueue[i].Buffer + DebugOffset));
+          val = *((int*)(ReceiveQueue[i].Buffer + DebugOffset));
         }
         sprintf(txt + strlen(txt), "%4d  ", val);
 

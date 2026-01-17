@@ -87,7 +87,7 @@
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-TriggerClass *As_Trigger(TARGET target) {
+TriggerClass* As_Trigger(TARGET target) {
   return (Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
                                     : nullptr);
 }
@@ -107,7 +107,7 @@ TriggerClass *As_Trigger(TARGET target) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass *As_Team(TARGET target) {
+TeamClass* As_Team(TARGET target) {
   return (Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target))
                                  : nullptr);
 }
@@ -128,7 +128,7 @@ TeamClass *As_Team(TARGET target) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass *As_TeamType(TARGET target) {
+TeamTypeClass* As_TeamType(TARGET target) {
   return (Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
                                      : nullptr);
 }
@@ -150,7 +150,7 @@ TeamTypeClass *As_TeamType(TARGET target) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-AnimClass *As_Animation(TARGET target) {
+AnimClass* As_Animation(TARGET target) {
   return (Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
                                       : nullptr);
 }
@@ -170,7 +170,7 @@ AnimClass *As_Animation(TARGET target) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-BulletClass *As_Bullet(TARGET target) {
+BulletClass* As_Bullet(TARGET target) {
   return (Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
                                    : nullptr);
 }
@@ -191,7 +191,7 @@ BulletClass *As_Bullet(TARGET target) {
  *                                                                                             *
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
-AircraftClass *As_Aircraft(TARGET target) {
+AircraftClass* As_Aircraft(TARGET target) {
   return (Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
                                      : nullptr);
 }
@@ -214,11 +214,11 @@ AircraftClass *As_Aircraft(TARGET target) {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass *As_Techno(TARGET target) {
-  ObjectClass *obj = As_Object(target);
+TechnoClass* As_Techno(TARGET target) {
+  ObjectClass* obj = As_Object(target);
 
   if (obj && obj->Is_Techno()) {
-    return (TechnoClass *)obj;
+    return (TechnoClass*)obj;
   }
   return (nullptr);
 }
@@ -239,9 +239,9 @@ TechnoClass *As_Techno(TARGET target) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass *As_Object(TARGET target) {
+ObjectClass* As_Object(TARGET target) {
   int val = Target_Value(target);
-  ObjectClass *object = nullptr;
+  ObjectClass* object = nullptr;
 
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
@@ -305,7 +305,7 @@ ObjectClass *As_Object(TARGET target) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-UnitClass *As_Unit(TARGET target) {
+UnitClass* As_Unit(TARGET target) {
   return (Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target))
                                  : nullptr);
 }
@@ -326,13 +326,13 @@ UnitClass *As_Unit(TARGET target) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryClass *As_Infantry(TARGET target) {
+InfantryClass* As_Infantry(TARGET target) {
   return (Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
                                      : nullptr);
 }
 
 #ifdef NEVER
-TerrainClass *As_Terrain(TARGET target) {
+TerrainClass* As_Terrain(TARGET target) {
   return (Is_Target_Terrain(target) ? &Terrains[Target_Value(target)] : NULL);
 }
 #endif
@@ -352,7 +352,7 @@ TerrainClass *As_Terrain(TARGET target) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-BuildingClass *As_Building(TARGET target) {
+BuildingClass* As_Building(TARGET target) {
   return (Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
                                      : nullptr);
 }
@@ -378,7 +378,7 @@ BuildingClass *As_Building(TARGET target) {
 bool Target_Legal(TARGET target) {
   if (!Target_Legal(target)) return (false);
 
-  ObjectClass *obj = As_Object(target);
+  ObjectClass* obj = As_Object(target);
   if (obj) {
     return (obj->Get_Strength() > 0 && obj->IsActive && !obj->IsInLimbo &&
             obj->Class_Of().IsLegalTarget);
@@ -434,7 +434,7 @@ COORDINATE As_Coord(TARGET target) {
     *then ask it *	for the center coordinate. Return the center coordinate
     *as the target's coordinate.
     */
-    ObjectClass *obj = As_Object(target);
+    ObjectClass* obj = As_Object(target);
     if (obj) {
 #ifndef PORTABLE
       /*
@@ -443,7 +443,7 @@ COORDINATE As_Coord(TARGET target) {
       *assigned after
       ** the object is already destroyed - 1/15/97 3:13PM
       */
-      if (IsBadReadPtr((void *)obj, sizeof(ObjectClass)) || !obj->IsActive) {
+      if (IsBadReadPtr((void*)obj, sizeof(ObjectClass)) || !obj->IsActive) {
         // OutputDebugString ("C&C95 - As_Coord called for invalid target
         // object\m");
         return (0x00000000L);
@@ -490,7 +490,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
     *then ask it *	for the center coordinate. Return the center coordinate
     *as the target's coordinate.
     */
-    ObjectClass *obj = As_Object(target);
+    ObjectClass* obj = As_Object(target);
     if (obj) {
       return (obj->Docking_Coord());
     }

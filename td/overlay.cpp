@@ -68,7 +68,7 @@
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
-void *OverlayClass::VTable;
+void* OverlayClass::VTable;
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
@@ -119,12 +119,12 @@ int OverlayClass::Validate(void) const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayClass::Init(void) {
-  OverlayClass *ptr;
+  OverlayClass* ptr;
 
   Overlays.Free_All();
 
   ptr = new OverlayClass();
-  VTable = ((void **)(((char *)ptr) + sizeof(AbstractClass) - 4))[0];
+  VTable = ((void**)(((char*)ptr) + sizeof(AbstractClass) - 4))[0];
   delete ptr;
 }
 
@@ -142,10 +142,10 @@ void OverlayClass::Init(void) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void *OverlayClass::operator new(size_t) throw() {
-  void *ptr = Overlays.Allocate();
+void* OverlayClass::operator new(size_t) throw() {
+  void* ptr = Overlays.Allocate();
   if (ptr) {
-    ((OverlayClass *)ptr)->IsActive = true;
+    ((OverlayClass*)ptr)->IsActive = true;
   }
   return (ptr);
 }
@@ -164,11 +164,11 @@ void *OverlayClass::operator new(size_t) throw() {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::operator delete(void *ptr) {
+void OverlayClass::operator delete(void* ptr) {
   if (ptr) {
-    ((OverlayClass *)ptr)->IsActive = false;
+    ((OverlayClass*)ptr)->IsActive = false;
   }
-  Overlays.Free((OverlayClass *)ptr);
+  Overlays.Free((OverlayClass*)ptr);
 }
 
 /***********************************************************************************************
@@ -218,7 +218,7 @@ bool OverlayClass::Mark(MarkType mark) {
   if (ObjectClass::Mark(mark)) {
     if (mark == MARK_DOWN) {
       CELL cell = Coord_Cell(Coord);
-      CellClass *cellptr = &Map[cell];
+      CellClass* cellptr = &Map[cell];
 
       /*
       **	Road placement occurs in two steps. First the foundation is
@@ -352,8 +352,8 @@ bool OverlayClass::Mark(MarkType mark) {
  * HISTORY: * 09/01/1994 JLB : Created. * 07/24/1995 JLB : Specifically forbid
  *manual crates in multiplayer scenarios.              *
  *=============================================================================================*/
-void OverlayClass::Read_INI(char *buffer) {
-  char *tbuffer;
+void OverlayClass::Read_INI(char* buffer) {
+  char* tbuffer;
   int len;  // Length of data in buffer.
   char buf[128];
 
@@ -403,11 +403,11 @@ void OverlayClass::Read_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Write_INI(char *buffer) {
+void OverlayClass::Write_INI(char* buffer) {
   int index;
   char uname[10];
   char buf[128];
-  char *tbuffer;  // Accumulation buffer of unit IDs.
+  char* tbuffer;  // Accumulation buffer of unit IDs.
 
   /*
   **	First, clear out all existing unit data from the ini file.
@@ -424,7 +424,7 @@ void OverlayClass::Write_INI(char *buffer) {
   **	Write the unit data out.
   */
   for (index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass *cellptr = &Map[index];
+    CellClass* cellptr = &Map[index];
 
     if (cellptr->Overlay != OVERLAY_NONE) {
       sprintf(uname, "%03d", index);
