@@ -265,17 +265,10 @@ fixed EngineerCaptureLevel =
 #ifdef WIN32
 unsigned short Hard_Error_Occured = 0;
 WWMouseClass* WWMouse = nullptr;
-#ifndef LORES
 GraphicBufferClass SysMemPage(DEFAULT_SCREEN_WIDTH, 200, (void*)nullptr);
-#endif
 WinTimerClass* WindowsTimer = nullptr;
-#ifdef LORES
-int ScreenWidth = 320;
-int ScreenHeight = 200;
-#else
 int ScreenWidth = 640;
 int ScreenHeight = 400;
-#endif
 GraphicBufferClass ModeXBuff;
 bool InMovie = false;  // Are we currently playing a VQ movie?
 #ifndef PORTABLE

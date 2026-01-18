@@ -986,13 +986,8 @@ char* Argv[20];  // Pointers to command line arguments
 int Argc;        // Command line argument count
 
 WWKeyboardClass Kbd;
-#ifdef LORES
-int ScreenWidth = 320;
-int ScreenHeight = 200;
-#else
 int ScreenWidth = 640;
 int ScreenHeight = 400;
-#endif
 WWMouseClass* WWMouse = nullptr;
 #ifndef PORTABLE
 HANDLE hInstance;

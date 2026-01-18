@@ -969,9 +969,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
     VideoBackBufferAllowed = ini.Get_Bool("Options", "VideoBackBuffer", true);
     AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
-#ifndef LORES
     ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
-#endif
 
     /*
     ** See if an alternative socket number has been specified

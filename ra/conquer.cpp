@@ -2940,11 +2940,7 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
         Load_Interpolated_Palettes(palname.c_str());
 #endif
 // Set_Palette(BlackPalette);
-#ifdef LORES
-        HidPage.Clear();
-#else
         SysMemPage.Clear();
-#endif
         InMovie = true;
 #endif  // WIN32
         VQA_Play(vqa, VQAMODE_RUN);
@@ -3289,13 +3285,8 @@ void const* Get_Radar_Icon(void const* shapefile, int shapenum, int frames,
     */
 #ifdef WIN32
     void* ptr;
-#ifdef LORES
-    if ((ptr = (void*)(Build_Frame(shapefile, shapenum + framelp,
-                                   HiddenPage.Get_Buffer()))) != nullptr) {
-#else
     ptr = Build_Frame(shapefile, shapenum + framelp, SysMemPage.Get_Buffer());
     if (ptr != nullptr) {
-#endif
       ptr = Get_Shape_Header_Data(ptr);
 #else   // WIN32
     if (Build_Frame(shapefile, shapenum + framelp, HidPage.Get_Buffer()) <=
@@ -3725,10 +3716,7 @@ long VQ_Call_Back(unsigned char*, long) {
     Keyboard->Clear();
   }
   Check_VQ_Palette_Set();
-#ifdef LORES
-  if (!IsVQ640)  // we can't scale down
-    HidPage.Blit(SeenBuff);
-#elif defined(MOVIE640)
+#ifdef MOVIE640
   if (IsVQ640) {
     VQ640.Blit(SeenBuff);
   } else {

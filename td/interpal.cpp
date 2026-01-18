@@ -54,8 +54,6 @@
 #include "td/compat.h"
 #include "td/externs.h"
 
-#ifndef LORES
-
 bool InterpolationPaletteChanged = false;
 
 unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
@@ -216,8 +214,6 @@ void Create_Palette_Interpolation_Table(void) {
   InterpolationPaletteChanged = false;
 }
 
-#endif
-
 /***********************************************************************************************
  * Increase_Palette_Luminance -- increase contrast of colours in a palette *
  *                                                                                             *
@@ -261,7 +257,6 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   }
 }
 
-#ifndef LORES
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *
@@ -286,4 +281,3 @@ void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
                                     source->Get_Height());
   source->Unlock();
 }
-#endif

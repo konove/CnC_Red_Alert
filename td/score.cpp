@@ -318,11 +318,7 @@ void ScoreTimeClass::Update(void) {
     Timer.Set(TimerReset);
     if (++Stage >= MaxStage) Stage = 0;
     oldpage = LogicPage;
-#ifdef LORES
-    Set_Logic_Page(HidPage);
-#else
     Set_Logic_Page(PseudoSeenBuff);
-#endif
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL,
                   nullptr, nullptr);
     Set_Logic_Page(oldpage);
@@ -345,11 +341,7 @@ void ScoreCredsClass::Update(void) {
     Timer.Set(TimerReset);
     if (++Stage >= MaxStage) Stage = 0;
     oldpage = LogicPage;
-#ifdef LORES
-    Set_Logic_Page(HidPage);
-#else
     Set_Logic_Page(PseudoSeenBuff);
-#endif
     if (Stage < 22) {
       Play_Sample(Clock1, 255, Options.Normalize_Sound(70));
     } else {
@@ -788,10 +780,6 @@ void ScoreClass::Presentation(void) {
 
   /* --- Now display the background animation --- */
   Hide_Mouse();
-#ifdef LORES
-  Animate_Frame(anim, HidPage, 1);
-  HidPage.Blit(SeenBuff);
-#else
   Animate_Frame(anim, SysMemPage, 1);
   SysMemPage.Blit(*PseudoSeenBuff);
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
@@ -800,7 +788,6 @@ void ScoreClass::Presentation(void) {
   InterpolationPaletteChanged = true;
   Read_Interpolation_Palette(inter_pal);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, inter_pal);
-#endif
   Fade_Palette_To(Palette, FADE_PALETTE_FAST, Call_Back);
 
   Play_Sample(country4, 255, Options.Normalize_Sound(90));
@@ -808,11 +795,7 @@ void ScoreClass::Presentation(void) {
   int frame = 1;
   StreamLowImpact = true;
   while (frame < Get_Animation_Frame_Count(anim)) {
-#ifdef LORES
-    Animate_Frame(anim, HidPage, frame++);
-#else
     Animate_Frame(anim, *PseudoSeenBuff, frame++);
-#endif
     ////////////////Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
     Call_Back_Delay(2);
   }
@@ -832,9 +815,7 @@ void ScoreClass::Presentation(void) {
   ScoreObjs[2] = new ScoreTimeClass(8, 172, hiscore2shape, 10, 4);
 
   /* Now display the stuff */
-#ifndef LORES
   PseudoSeenBuff->Blit(SysMemPage);
-#endif
 
   if (house == HOUSE_BAD) {
     /*
@@ -848,11 +829,7 @@ void ScoreClass::Presentation(void) {
                     1);
   }
 
-#ifdef LORES
-  Set_Logic_Page(SeenBuff);
-#else
   Set_Logic_Page(PseudoSeenBuff);
-#endif
 
 #ifdef FRENCH
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 200, 3, _greenpal));
@@ -927,11 +904,7 @@ void ScoreClass::Presentation(void) {
     Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 88);
   }
 
-#ifdef LORES
-  Set_Logic_Page(SeenBuff);
-#else
   Set_Logic_Page(*PseudoSeenBuff);
-#endif
 
   /*
   ** Print out stats on buildings destroyed
@@ -1025,11 +998,7 @@ void ScoreClass::Presentation(void) {
   /*
   ** Now display the hall of fame
   */
-#ifdef LORES
-  Set_Logic_Page(SeenBuff);
-#else
   Set_Logic_Page(*PseudoSeenBuff);
-#endif
 
   for (int i = 0; i < NUMFAMENAMES; i++) {
     Alloc_Object(new ScorePrintClass(hallfame[i].name, HALLFAME_X,
@@ -1191,9 +1160,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
   /*
   ** Print the # of buildings on the hidpage so we only need to do it once
   */
-#ifndef LORES
   PseudoSeenBuff->Blit(SysMemPage);
-#endif
   Set_Logic_Page(SysMemPage);
   Call_Back_Delay(30);
   BlitList.Add(RESFACTOR * (BUILDING_X + 8), RESFACTOR * (BUILDING_Y),
@@ -1272,20 +1239,13 @@ void ScoreClass::Do_Nod_Buildings_Graph(void) {
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
                   ScoreRemapYellow, Map.UnitShadow);
-#ifdef LORES
-    SysMemPage.Blit(HidPage, 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X,
-                    48);
-#else
     SysMemPage.Blit(*PseudoSeenBuff, 0, 0, BUILDING_X, BUILDING_Y,
                     320 - BUILDING_X, 48);
-#endif
 
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
-#ifndef LORES
     Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
-#endif
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
     HidPage.Blit(SeenBuff);
@@ -1347,11 +1307,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
   SysMemPage.Fill_Rect(0, 0, 124, 9, TBLACK);
   CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, nullptr,
                 nullptr);
-#ifdef LORES
-  Set_Logic_Page(HidPage);
-#else
   Set_Logic_Page(PseudoSeenBuff);
-#endif
 
   BlitList.Add(RESFACTOR * 297, RESFACTOR * (ypos + 2), RESFACTOR * 297,
                RESFACTOR * (ypos + 2), 5 * 12, 12);
@@ -1361,11 +1317,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
       CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
                     nullptr, nullptr);
     } else {
-#ifdef LORES
-      SysMemPage.Blit(HidPage, 0, 0, 172, ypos, 3 + gdikilled, 9);
-#else
       SysMemPage.Blit(*PseudoSeenBuff, 0, 0, 172, ypos, 3 + gdikilled, 9);
-#endif
     }
 
     Count_Up_Print("%d", (i * gkilled) / max, gkilled, 297, ypos + 2);
@@ -1386,11 +1338,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
       CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
                     nullptr, nullptr);
     } else {
-#ifdef LORES
-      SysMemPage.Blit(HidPage, 0, 0, 172, ypos + 12, 3 + nodkilled, 9);
-#else
       SysMemPage.Blit(*PseudoSeenBuff, 0, 0, 172, ypos + 12, 3 + nodkilled, 9);
-#endif
     }
 
     Count_Up_Print("%d", (i * nkilled) / max, nkilled, 297, ypos + 14);
@@ -1468,17 +1416,13 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
   ** Draw the infantrymen and pause briefly before running the graph
   */
   Draw_InfantryMen();
-#ifndef LORES
   SysMemPage.Blit(*PseudoSeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y,
                   320 - BARGRAPH_X, 34);
   // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff, NULL);
-#endif
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
-#ifndef LORES
   Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
-#endif
   BlitList.Update();
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff);
@@ -1501,13 +1445,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
     for (int q = 0; q < 3; q++) {
       Draw_InfantryMen();
       Draw_Bar_Graphs(i, gdikilled, nodkilled, civkilled);
-#ifdef LORES
-      SysMemPage.Blit(HidPage, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X,
-                      34);
-#else
       SysMemPage.Blit(*PseudoSeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y,
                       320 - BARGRAPH_X, 34);
-#endif
       Count_Up_Print("%d", (i * GKilled) / max, GKilled, SCORETEXT_X + 64,
                      CASUALTY_Y + 2);
       Count_Up_Print("%d", (i * NKilled) / max, NKilled, SCORETEXT_X + 64,
@@ -1536,13 +1475,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(void) {
       if (InfantryMan[i].anim >= DO_GUN_DEATH) k = 1;
     if (k) Draw_InfantryMen();
     Draw_Bar_Graphs(max, gdikilled, nodkilled, civkilled);
-#ifdef LORES
-    SysMemPage.Blit(HidPage, 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X,
-                    34);
-#else
     SysMemPage.Blit(*PseudoSeenBuff, 0, 0, BARGRAPH_X, CASUALTY_Y,
                     320 - BARGRAPH_X, 34);
-#endif
     Call_Back_Delay(1);
   }
 }
@@ -1718,9 +1652,7 @@ void ScoreClass::Input_Name(char str[], int xpos, int ypos,
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
-#ifndef LORES
     Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
-#endif
     BlitList.Update();
     HidPage.Blit(SeenBuff);
 
@@ -2046,9 +1978,7 @@ void Call_Back_Delay(int time) {
     // BlitList.Update();
     //}else{
     Animate_Score_Objs();
-#ifndef LORES
     Interpolate_2X_Scale(PseudoSeenBuff, &HidPage, nullptr);
-#endif
     BlitList.Update();
     WWMouse->Draw_Mouse(&HidPage);
     HidPage.Blit(SeenBuff);
@@ -2156,13 +2086,11 @@ void Multi_Score_Presentation(void) {
   ** Display the background animation
   */
   VisiblePage.Clear();
-#ifndef LORES
   InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
   Animate_Frame(anim, *PseudoSeenBuff, 1);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MULTSCOR.PAL");
-#endif
   Fade_Palette_To(Palette, FADE_PALETTE_FAST, Call_Back);
 
   int frame = 1;

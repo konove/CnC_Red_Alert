@@ -1563,11 +1563,7 @@ void Anim_Init(void) {
   AnimControl.EventHandler = VQ_Event_Handler;
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
-#ifdef LORES
-  AnimControl.ImageBuf = (unsigned char*)HidPage.Get_Offset();
-#else
   AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
-#endif
 #ifdef MOVIE640
   if (IsVQ640) {
     AnimControl.ImageWidth = 640;

@@ -71,9 +71,7 @@
 // #define DONGLE
 
 // Enable 640x400 VQ movie capability in WIN32 mode
-#ifndef LORES
 #define MOVIE640
-#endif
 
 // Fixes score screen crash
 // #define FIXIT_SCORE_CRASH

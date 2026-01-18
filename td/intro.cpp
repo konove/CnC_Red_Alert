@@ -99,17 +99,6 @@ VQAHandle* Open_Movie(char* name) {
  * HISTORY: * 5/08/1995 BWG : Created. *
  *=============================================================================================*/
 void Choose_Side(void) {
-#ifdef LORES
-  static unsigned char const _yellowpal[] = {0x0,  0x0, 0xC9, 0x0, 0xBA, 0x0,
-                                             0x93, 0x0, 0x61, 0x0, 0x0,  0x0,
-                                             0x0,  0x0, 0xEE, 0x0};
-  static unsigned char const _redpal[] = {0x0,  0x0, 0xA8, 0x0, 0xD9, 0x0,
-                                          0xDA, 0x0, 0xE1, 0x0, 0x0,  0x0,
-                                          0x0,  0x0, 0xD4, 0x0};
-  static unsigned char const _graypal[] = {0x0,  0x0, 0x17, 0x0, 0x10, 0x0,
-                                           0x12, 0x0, 0x14, 0x0, 0x0,  0x0,
-                                           0x0,  0x0, 0x1C, 0x0};
-#else
   static unsigned char const _yellowpal[] = {0x0,  0xC9, 0xBA, 0x93, 0x61, 0xEE,
                                              0xee, 0x0,  0x0,  0x0,  0x0,  0x0,
                                              0x0,  0x0,  0x0,  0x0};
@@ -119,7 +108,6 @@ void Choose_Side(void) {
   static unsigned char const _graypal[] = {0x0,  0x17, 0x10, 0x12, 0x14, 0x1c,
                                            0x12, 0x1c, 0x14, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0x1C, 0x0};
-#endif
 
   void* anim;
   VQAHandle *gdibrief = nullptr, *nodbrief = nullptr;
@@ -140,9 +128,7 @@ void Choose_Side(void) {
       SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
   TextPrintBuffer->Clear();
   BlitList.Clear();
-#ifndef LORES
   PseudoSeenBuff = new GraphicBufferClass(320, 200, (void*)nullptr);
-#endif
   int frame = 0, endframe = 255, lettersdone = 0;
 
   Hide_Mouse();
@@ -181,28 +167,20 @@ void Choose_Side(void) {
                         Palette);
   Call_Back();
 
-#ifndef LORES
   InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
   Read_Interpolation_Palette("SIDES.PAL");
-#endif
 
   nodbrief = Open_Movie("NOD1PRE.VQA");
-#ifndef LORES
   gdi_start_palette = Load_Interpolated_Palettes("NOD1PRE.VQP");
-#endif
   Call_Back();
   gdibrief = Open_Movie("GDI1.VQA");
-#ifndef LORES
   Load_Interpolated_Palettes("GDI1.VQP", true);
-#endif
 
   WWMouse->Erase_Mouse(&HidPage, true);
   HiddenPage.Clear();
-#ifndef LORES
   PseudoSeenBuff->Clear();
   SysMemPage.Clear();
-#endif
   // if (!Special.IsFromInstall) {
   VisiblePage.Clear();
   Set_Palette(Palette);
@@ -233,21 +211,13 @@ void Choose_Side(void) {
   while (Get_Mouse_State()) Show_Mouse();
 
   while (endframe != frame || (speechplaying && Is_Sample_Playing(speech))) {
-#ifdef LORES
-    Animate_Frame(anim, HidPage, frame++);
-#else
     Animate_Frame(anim, SysMemPage, frame++);
-#endif
     if (setpalette) {
       Wait_Vert_Blank();
       Set_Palette(Palette);
       setpalette = 0;
     }
-#ifdef LORES
-    // SysMemPage.Blit(HidPage,0,22, 0,22, 320,156);
-#else
     SysMemPage.Blit(*PseudoSeenBuff, 0, 22, 0, 22, 320, 156);
-#endif
 
     /*
     ** If the sample has stopped or is about to then restart it
@@ -302,15 +272,10 @@ void Choose_Side(void) {
   Close_Animation(anim);
 
   // erase the "choose side" text
-#ifdef LORES
-  HidPage.Fill_Rect(0, 180, 319, 199, 0);
-  SeenBuff.Fill_Rect(0, 180, 319, 199, 0);
-#else
   PseudoSeenBuff->Fill_Rect(0, 180, 319, 199, 0);
   SeenBuff.Fill_Rect(0, 180 * 2, 319 * 2, 199 * 2, 0);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SIDES.PAL");
   SysMemPage.Clear();
-#endif
 
   Keyboard::Clear();
 
@@ -384,9 +349,7 @@ void Choose_Side(void) {
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
 
-#ifndef LORES
   delete PseudoSeenBuff;
-#endif
   delete TextPrintBuffer;
   TextPrintBuffer = nullptr;
   BlitList.Clear();

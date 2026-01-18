@@ -802,10 +802,8 @@ void Read_Setup_Options(RawFileClass* config_file) {
         WWGetPrivateProfileInt("Options", "VideoBackBuffer", 1, buffer);
     AllowHardwareBlitFills =
         WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer);
-#ifndef LORES
     ScreenHeight =
         WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) ? 480 : 400;
-#endif
     IsV107 = WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer);
 
     /*

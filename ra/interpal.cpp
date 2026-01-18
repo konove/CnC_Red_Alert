@@ -55,8 +55,6 @@
 #include "sdllib/include/misc.h"
 #include "sdllib/include/ww_mouse.h"
 
-#ifndef LORES
-
 bool InterpolationPaletteChanged = false;
 
 unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
@@ -217,8 +215,6 @@ void Create_Palette_Interpolation_Table(void) {
   InterpolationPaletteChanged = false;
 }
 
-#endif
-
 /***********************************************************************************************
  * Increase_Palette_Luminance -- increase contrast of colours in a palette *
  *                                                                                             *
@@ -263,7 +259,7 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   }
 }
 
-#if defined(WIN32) && !defined(LORES)
+#if defined(WIN32)
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *

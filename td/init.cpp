@@ -251,11 +251,6 @@ bool Init_Game(int, char*[]) {
   int temp = RequiredCD;
   RequiredCD = -2;
 
-#ifdef LORES
-  // has less fonts, but includes the title image
-  MixFileClass::Register("LOCAL.MIX");
-  MixFileClass::Cache("LOCAL.MIX");
-#else
   MixFileClass::Register("CCLOCAL.MIX");
   MixFileClass::Cache("CCLOCAL.MIX");
   DLOG(INFO) << "C&C95 - About to register UPDATE.MIX";
@@ -263,7 +258,6 @@ bool Init_Game(int, char*[]) {
   DLOG(INFO) << "C&C95 - About to register UPDATEC.MIX";
   MixFileClass::Register("UPDATEC.MIX");
   MixFileClass::Cache("UPDATEC.MIX");
-#endif
 
 #ifdef JAPANESE
   DLOG(INFO) << "C&C95 - About to register LANGUAGE.MIX";
@@ -289,12 +283,7 @@ bool Init_Game(int, char*[]) {
   Font6Ptr = Load_Alloc_Data(f);
   // ScoreFontPtr = MixFileClass::Retrieve("12GRNGRD.FNT");	//GRAD12FN");
   // //("SCOREFNT.FNT");
-#ifdef LORES
-  // 12GRNGRD is in UPDATE.MIX
-  f.Open("SCOREFNT.FNT");
-#else
   f.Open("12GRNGRD.FNT");
-#endif
   ScoreFontPtr = Load_Alloc_Data(f);
   FontLEDPtr = MixFileClass::Retrieve("LED.FNT");
   VCRFontPtr = MixFileClass::Retrieve("VCR.FNT");
@@ -1914,11 +1903,7 @@ void Anim_Init(void) {
   AnimControl.ImageWidth = 320;
   AnimControl.ImageHeight = 200;
   AnimControl.Vmode = 0;
-#ifdef LORES
-  AnimControl.ImageBuf = (unsigned char*)HidPage.Get_Offset();
-#else
   AnimControl.ImageBuf = (unsigned char*)SysMemPage.Get_Offset();
-#endif
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
   AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;

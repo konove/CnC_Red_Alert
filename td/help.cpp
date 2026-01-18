@@ -278,13 +278,8 @@ void HelpClass::Draw_It(bool forced) {
 
   if (Text != TXT_NONE && (forced || !CountDownTimer.Time())) {
     if (LogicPage->Lock()) {
-#ifdef LORES
-      Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK,
-                       TPF_6POINT | TPF_NOSHADOW);
-#else
       Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK,
                        TPF_MAP | TPF_NOSHADOW);
-#endif
       LogicPage->Draw_Rect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
                            DrawY + FontHeight, Color);
 
@@ -292,13 +287,8 @@ void HelpClass::Draw_It(bool forced) {
         char buffer[15];
         sprintf(buffer, "$%d", Cost);
         int width = String_Pixel_Width(buffer);
-#ifdef LORES
-        Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
-                         TPF_6POINT | TPF_NOSHADOW);
-#else
         Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, BLACK,
                          TPF_MAP | TPF_NOSHADOW);
-#endif
         LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
                              DrawY + FontHeight + FontHeight - 1, Color);
         LogicPage->Draw_Line(DrawX, DrawY + FontHeight,
@@ -331,11 +321,7 @@ void HelpClass::Draw_It(bool forced) {
 void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
-#ifdef LORES
-    Fancy_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_6POINT | TPF_NOSHADOW);
-#else
     Fancy_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_MAP | TPF_NOSHADOW);
-#endif
     Width = String_Pixel_Width(Text_String(Text));
     if (IsRight) {
       DrawX = X - Width;
