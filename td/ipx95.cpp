@@ -56,14 +56,14 @@ int IPX_Close_Socket(unsigned short socket) {
   return (0);
 }
 
-int IPX_Get_Connection_Number(void) { return (IPX_Get_Connection_Number95()); }
+int IPX_Get_Connection_Number() { return (IPX_Get_Connection_Number95()); }
 
 int IPX_Broadcast_Packet(unsigned char* buf, int buflen) {
   return (IPX_Broadcast_Packet95(buf, buflen));
 }
 
 extern "C" {
-extern void __cdecl Int3(void);
+extern void __cdecl Int3();
 }
 
 int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,

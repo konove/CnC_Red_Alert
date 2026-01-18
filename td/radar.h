@@ -62,14 +62,14 @@ class RadarClass : public DisplayClass {
   int RadPWidth;
   int RadPHeight;
 
-  RadarClass(void);
+  RadarClass();
   RadarClass(NoInitClass const& x) : DisplayClass(x) {};
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);    // One-time inits
-  virtual void Init_Clear(void);  // Clears all to known state
+  virtual void One_Time();    // One-time inits
+  virtual void Init_Clear();  // Clears all to known state
 
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   virtual CELL Click_Cell_Calc(int x, int y);
@@ -85,7 +85,7 @@ class RadarClass : public DisplayClass {
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
 
   void Set_Radar_Position(CELL cell);
-  CELL Radar_Position(void);
+  CELL Radar_Position();
   bool Radar_Activate(int control);
   void Plot_Radar_Pixel(CELL cell);
   void Radar_Pixel(CELL cell);
@@ -97,23 +97,23 @@ class RadarClass : public DisplayClass {
   bool Cell_On_Radar(CELL cell);
   void Render_Infantry(CELL cell, int x, int y, int size);
   void Render_Overlay(CELL cell, int x, int y, int size);
-  void Radar_Anim(void);
-  bool Is_Radar_Active(void) { return IsRadarActive; };
-  bool Is_Radar_Existing(void) { return (DoesRadarExist); };
+  void Radar_Anim();
+  bool Is_Radar_Active() { return IsRadarActive; };
+  bool Is_Radar_Existing() { return (DoesRadarExist); };
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   ** Toggles player names on & off
   */
   void Player_Names(bool on);
-  int Is_Player_Names(void) { return IsPlayerNames; }
-  void Draw_Names(void);
-  int Is_Zoomed(void) { return IsZoomed; }
+  int Is_Player_Names() { return IsPlayerNames; }
+  void Draw_Names();
+  int Is_Zoomed() { return IsZoomed; }
 
  protected:
   /*
@@ -154,7 +154,7 @@ class RadarClass : public DisplayClass {
   */
   class TacticalClass : public GadgetClass {
    public:
-    TacticalClass(void)
+    TacticalClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {};

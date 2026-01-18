@@ -157,7 +157,7 @@ MouseQY		DD	0
 ;*                                                                         *
 ;* OUTPUT:      VOID * to the address of the real mode timer               *
 ;*                                                                         *
-;* PROTO:	VOID	*Get_RM_Keyboard_Address(VOID);			   *
+;* PROTO:	VOID	*Get_RM_Keyboard_Address();			   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/06/1994 SKB : Created.                                             *
@@ -178,7 +178,7 @@ endif;ifdef NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:      LONG size of the real mode timer code                      *
 ;*                                                                         *
-;* PROTO:	LONG	Get_RM_Keyboard_Size(VOID);
+;* PROTO:	LONG	Get_RM_Keyboard_Size();
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/06/1994 SKB : Created.                                             *
@@ -529,7 +529,7 @@ endif ;NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:	VOID Remove_Interrupt(VOID)                                *
+;* PROTO:	VOID Remove_Interrupt()                                *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/13/1994 PWG : Created.                                             *
@@ -707,7 +707,7 @@ endif; NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:      Keynum of the key that was pressed, FALSE otherwise        *
 ;*
-;* PROTO:	INT Check_Key_Num(VOID);
+;* PROTO:	INT Check_Key_Num();
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/14/1994 PWG : Created.                                             *
@@ -743,7 +743,7 @@ endif; NOT_FOR_WIN95
 ;* OUTPUT:      WORD key flags are in the high byte of return word, key    *
 ;*		  num is in the low byte.
 ;*                                                                         *
-;* PROTO:	WORD Get_Key_Num(VOID);
+;* PROTO:	WORD Get_Key_Num();
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/14/1994 PWG : Created.                                             *
@@ -1051,7 +1051,7 @@ endif; NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:      INT the ASCII sequence for the key that was pressed        *
 ;*                                                                         *
-;* PROTO:	INT Check_Key(VOID);                                       *
+;* PROTO:	INT Check_Key();                                       *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/15/1994 PWG : Created.                                             *
@@ -1129,7 +1129,7 @@ endif; NOT_FOR_WIN95
 ;* OUTPUT:      AH - hold the key bits                                     *
 ;*		AL - holds the ASCII key value				   *
 ;*                                                                         *
-;* PROTO:	INT Get_Key(VOID);					   *
+;* PROTO:	INT Get_Key();					   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/15/1994 PWG : Created.                                             *
@@ -1258,7 +1258,7 @@ endif; NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:	VOID Clear_KeyBuffer(VOID);				   *
+;* PROTO:	VOID Clear_KeyBuffer();				   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/19/1994 PWG : Created.                                             *
@@ -1321,7 +1321,7 @@ endif; NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:	INT 0 = no key in buffer, !0 = a key with the bits set     *
 ;*                                                                         *
-;* PROTO:	INT Check_Key_Bits(VOID);				   *
+;* PROTO:	INT Check_Key_Bits();				   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/20/1994 PWG : Created.                                             *
@@ -1401,7 +1401,7 @@ endif; NOT_FOR_WIN95
 ;*                                                                         *
 ;* OUTPUT:	INT 0 = no key in buffer, !0 = a key with the bits set	   *
 ;*                                                                         *
-;* PROTO:	INT Check_Key_Bits(VOID);				   *
+;* PROTO:	INT Check_Key_Bits();				   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/20/1994 PWG : Created.                                             *

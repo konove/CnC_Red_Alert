@@ -88,10 +88,10 @@ typedef enum {
 /*=========================================================================*/
 int File_Stream_Sample_Vol(char const* filename, int volume,
                            bool real_time_start = false);
-void Sound_Callback(void);
+void Sound_Callback();
 bool Audio_Init(void* window, int bits_per_sample, bool stereo, int rate,
                 int reverse_channels);
-void Sound_End(void);
+void Sound_End();
 void Stop_Sample(int handle);
 bool Sample_Status(int handle);
 bool Is_Sample_Playing(void const* sample);
@@ -103,9 +103,9 @@ int Play_Sample_Handle(void const* sample, int priority, int volume,
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
 int Get_Free_Sample_Handle(int priority);
-int Get_Digi_Handle(void);
+int Get_Digi_Handle();
 bool Start_Primary_Sound_Buffer(bool forced);
-void Stop_Primary_Sound_Buffer(void);
+void Stop_Primary_Sound_Buffer();
 
 #ifdef TD
 void* Load_Sample(char const* filename);

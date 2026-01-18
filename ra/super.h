@@ -48,7 +48,7 @@
 class SuperClass {
  public:
   SuperClass(NoInitClass const& x) : Control(x) {};
-  SuperClass(void) : Control(NoInitClass()) {};
+  SuperClass() : Control(NoInitClass()) {};
   SuperClass(int recharge, bool powered, VoxType charging = VOX_NONE,
              VoxType ready = VOX_NONE, VoxType impatient = VOX_NONE,
              VoxType suspend = VOX_NONE);
@@ -57,14 +57,14 @@ class SuperClass {
   bool Enable(bool onetime = false, bool player = false, bool quiet = false);
   void Forced_Charge(bool player = false);
   bool AI(bool player = false);
-  bool Remove(void);
-  void Impatient_Click(void) const;
-  int Anim_Stage(void) const;
+  bool Remove();
+  void Impatient_Click() const;
+  int Anim_Stage() const;
   bool Discharged(bool player);
-  bool Is_Ready(void) const { return (IsReady); }
-  bool Is_Present(void) const { return (IsPresent); }
-  bool Is_One_Time(void) const { return (IsOneTime && IsPresent); }
-  bool Is_Powered(void) const { return (IsPowered); }
+  bool Is_Ready() const { return (IsReady); }
+  bool Is_Present() const { return (IsPresent); }
+  bool Is_One_Time() const { return (IsOneTime && IsPresent); }
+  bool Is_Powered() const { return (IsPowered); }
 
  private:
   bool Recharge(bool player = false);

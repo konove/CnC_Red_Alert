@@ -173,7 +173,7 @@ void* PacketLater = nullptr;
  * HISTORY: * 5/29/96 12:38PM ST : Created *
  *=============================================================================================*/
 
-void Send_Statistics_Packet(void) {
+void Send_Statistics_Packet() {
 #ifndef DEMO
 
   PacketClass stats;
@@ -689,12 +689,12 @@ void Send_Statistics_Packet(void) {
 #endif  // DEMO
 }
 
-void Register_Game_Start_Time(void) {
+void Register_Game_Start_Time() {
   GameTimer.Set(0, true);
   GameTimerInUse = true;
 }
 
-extern void Register_Game_End_Time(void) {
+extern void Register_Game_End_Time() {
   GameEndTime = GameTimer.Time();
   GameTimerInUse = false;
 }

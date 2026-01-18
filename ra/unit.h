@@ -137,55 +137,55 @@ class UnitClass : public DriveClass {
   UnitClass(UnitType classid, HousesType house);
   UnitClass(NoInitClass const& x)
       : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {};
-  operator UnitType(void) const { return Class->Type; };
-  virtual ~UnitClass(void);
+  operator UnitType() const { return Class->Type; };
+  virtual ~UnitClass();
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual ObjectTypeClass const& Class_Of(void) const;
-  static void Init(void);
+  virtual ObjectTypeClass const& Class_Of() const;
+  static void Init();
 
-  bool Goto_Clear_Spot(void);
-  bool Try_To_Deploy(void);
+  bool Goto_Clear_Spot();
+  bool Try_To_Deploy();
   virtual void Scatter(COORDINATE threat, bool forced = false,
                        bool nokidding = false);
 
   bool Tiberium_Check(CELL& center, int x, int y);
   bool Flag_Attach(HousesType house);
-  bool Flag_Remove(void);
+  bool Flag_Remove();
   bool Goto_Tiberium(int radius);
-  bool Harvesting(void);
-  void APC_Close_Door(void);
-  void APC_Open_Door(void);
+  bool Harvesting();
+  void APC_Close_Door();
+  void APC_Open_Door();
 
   /*
   **	Query functions.
   */
   bool Should_Crush_It(TechnoClass const* it) const;
-  int Credit_Load(void) const;
-  virtual DirType Turret_Facing(void) const {
+  int Credit_Load() const;
+  virtual DirType Turret_Facing() const {
     if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
     return (PrimaryFacing.Current());
   }
-  int Shape_Number(void) const;
-  virtual int Pip_Count(void) const;
-  virtual InfantryType Crew_Type(void) const;
-  virtual DirType Fire_Direction(void) const;
+  int Shape_Number() const;
+  virtual int Pip_Count() const;
+  virtual InfantryType Crew_Type() const;
+  virtual DirType Fire_Direction() const;
   virtual bool Ok_To_Move(DirType facing) const;
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
-  virtual fixed Tiberium_Load(void) const;
+  virtual fixed Tiberium_Load() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y(void) const;
+  virtual COORDINATE Sort_Y() const;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
 
   /*
@@ -225,18 +225,18 @@ class UnitClass : public DriveClass {
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);
-  virtual void AI(void);
-  virtual int Mission_Guard_Area(void);
-  virtual int Mission_Unload(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Harvest(void);
-  virtual int Mission_Hunt(void);
-  virtual int Mission_Repair(void);
-  virtual int Mission_Move(void);
-  void Rotation_AI(void);
-  void Firing_AI(void);
-  void Reload_AI(void);
-  bool Edge_Of_World_AI(void);
+  virtual void AI();
+  virtual int Mission_Guard_Area();
+  virtual int Mission_Unload();
+  virtual int Mission_Guard();
+  virtual int Mission_Harvest();
+  virtual int Mission_Hunt();
+  virtual int Mission_Repair();
+  virtual int Mission_Move();
+  void Rotation_AI();
+  void Firing_AI();
+  void Reload_AI();
+  bool Edge_Of_World_AI();
 
 /*
 **	Scenario and debug support.
@@ -250,21 +250,21 @@ class UnitClass : public DriveClass {
   */
   virtual void Assign_Destination(TARGET target);
   virtual void Overrun_Square(CELL cell, bool threaten = true);
-  virtual void Approach_Target(void);
-  virtual int Offload_Tiberium_Bail(void);
+  virtual void Approach_Target();
+  virtual int Offload_Tiberium_Bail();
   virtual void Enter_Idle_Mode(bool initial = false);
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
   virtual void Per_Cell_Process(PCPType why);
-  void Exit_Repair(void);
-  void Shroud_Regen(void);
+  void Exit_Repair();
+  void Shroud_Regen();
 
   /*
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "UNITS"; };
+  static char const* INI_Name() { return "UNITS"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 };

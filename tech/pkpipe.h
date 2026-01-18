@@ -125,8 +125,8 @@ class PKPipe : public Pipe {
   */
   int BytesLeft;
 
-  int Encrypted_Key_Length(void) const;
-  int Plain_Key_Length(void) const;
+  int Encrypted_Key_Length() const;
+  int Plain_Key_Length() const;
 
   PKPipe(PKPipe& rvalue);
   PKPipe& operator=(PKPipe const& pipe);

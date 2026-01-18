@@ -71,7 +71,7 @@ VectorClass<T>::VectorClass(base::ssize size, T const* array)
 }
 
 template <class T>
-VectorClass<T>::~VectorClass(void) {
+VectorClass<T>::~VectorClass() {
   VectorClass<T>::Clear();
 }
 
@@ -136,7 +136,7 @@ base::ssize VectorClass<T>::ID(T const& object) {
 
 // Frees memory and resets to empty state.
 template <class T>
-void VectorClass<T>::Clear(void) {
+void VectorClass<T>::Clear() {
   if (Vector && IsAllocated) {
     delete[] Vector;
     Vector = nullptr;

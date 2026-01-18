@@ -40,7 +40,7 @@
 #ifndef ENDING_H
 #define ENDING_H
 
-void Nod_Ending(void);
-void GDI_Ending(void);
+void Nod_Ending();
+void GDI_Ending();
 
 #endif

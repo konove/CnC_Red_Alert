@@ -283,7 +283,7 @@ BOOL Instance_Class::Open_Poke_Connection(HSZ name) {
  *   6/1/1996 SW : Created.                                                *
  *=========================================================================*/
 
-BOOL Instance_Class::Close_Poke_Connection(void) {
+BOOL Instance_Class::Close_Poke_Connection() {
   if (conv_handle) {
     HCONV temp_handle = conv_handle;
     conv_handle = NULL;

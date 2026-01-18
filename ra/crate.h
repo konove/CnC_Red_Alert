@@ -47,19 +47,19 @@
 
 class CrateClass {
  public:
-  CrateClass(void) : Timer(NoInitClass()), Cell(-1) {}
-  void Init(void) { Make_Invalid(); }
+  CrateClass() : Timer(NoInitClass()), Cell(-1) {}
+  void Init() { Make_Invalid(); }
   bool Create_Crate(CELL cell);
   bool Is_Here(CELL cell) const { return (Is_Valid() && cell == Cell); }
-  bool Remove_It(void);
-  bool Is_Expired(void) const { return (Is_Valid() && Timer == 0); }
-  bool Is_Valid(void) const { return (Cell != -1); }
+  bool Remove_It();
+  bool Is_Expired() const { return (Is_Valid() && Timer == 0); }
+  bool Is_Valid() const { return (Cell != -1); }
 
  private:
   static bool Put_Crate(CELL& cell);
   static bool Get_Crate(CELL cell);
 
-  void Make_Invalid(void) {
+  void Make_Invalid() {
     Cell = -1;
     Timer.Stop();
   }

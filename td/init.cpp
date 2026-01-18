@@ -151,8 +151,8 @@ long FAR PASCAL _export Start_Game_Proc(HWND hwnd, UINT message, UINT wParam,
 }
 #endif
 
-extern bool Server_Remote_Connect(void);
-extern bool Client_Remote_Connect(void);
+extern bool Server_Remote_Connect();
+extern bool Client_Remote_Connect();
 extern bool SpawnedFromWChat;
 
 /***********************************************************************************************
@@ -738,7 +738,7 @@ bool Init_Game(int, char*[]) {
   return (true);
 }
 
-void Uninit_Game(void) {
+void Uninit_Game() {
   delete Map.ShadowPage;
   Map.ShadowPage = NULL;
   Map.Free_Cells();
@@ -775,7 +775,7 @@ void Uninit_Game(void) {
   delete[] Palette;
 }
 
-extern bool Do_The_Internet_Menu_Thang(void);
+extern bool Do_The_Internet_Menu_Thang();
 extern int ShowCommand;
 
 /***********************************************************************************************
@@ -792,8 +792,8 @@ extern int ShowCommand;
  *                                                                                             *
  * HISTORY: * 06/05/1995 BRR : Created. *
  *=============================================================================================*/
-extern int Com_Fake_Scenario_Dialog(void);
-extern int Com_Show_Fake_Scenario_Dialog(void);
+extern int Com_Fake_Scenario_Dialog();
+extern int Com_Show_Fake_Scenario_Dialog();
 extern int WChatMaxAhead;
 extern int WChatSendRate;
 void Check_From_WChat(char* wchat_name);
@@ -1881,7 +1881,7 @@ static void Play_Intro(bool for_real) {
 extern LPDIRECTSOUND SoundObject;
 extern LPDIRECTSOUNDBUFFER PrimaryBufferPtr;
 #endif
-void Anim_Init(void) {
+void Anim_Init() {
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
   //	void const * font = Load_Font(FONT8);
@@ -2491,7 +2491,7 @@ bool Parse_Command_Line(int argc, char* argv[]) {
  *                                                                                             *
  * HISTORY: * 08/18/1995 BRR : Created. *
  *=============================================================================================*/
-void Parse_INI_File(void) {
+void Parse_INI_File() {
   char* buffer;  // INI staging buffer pointer.
   char buf[128];
   static char section[40];
@@ -2578,7 +2578,7 @@ void Parse_INI_File(void) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 JLB : Created. *
  *=============================================================================================*/
-int Version_Number(void) {
+int Version_Number() {
 #ifdef OBSOLETE
   static bool initialized = false;
   static int version;
@@ -2718,7 +2718,7 @@ int Version_Number(void) {
  * HISTORY:                                                                *
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Save_Recording_Values(void) {
+void Save_Recording_Values() {
   RecordFile.Write(&GameToPlay, sizeof(GameToPlay));
   RecordFile.Write(&ModemGameToPlay, sizeof(ModemGameToPlay));
   RecordFile.Write(&BuildLevel, sizeof(BuildLevel));
@@ -2766,7 +2766,7 @@ void Save_Recording_Values(void) {
  * HISTORY:                                                                *
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Load_Recording_Values(void) {
+void Load_Recording_Values() {
   Read_MultiPlayer_Settings();
 
   RecordFile.Read(&GameToPlay, sizeof(GameToPlay));

@@ -67,13 +67,13 @@ class ScrollClass : public HelpClass {
   int Inertia;
 
  public:
-  ScrollClass(void);
+  ScrollClass();
   ScrollClass(NoInitClass const& x) : HelpClass(x) {};
 
   bool Set_Autoscroll(int control);
 
   virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Init_IO(void) {
+  virtual void Init_IO() {
     Counter = 0;
     HelpClass::Init_IO();
   };

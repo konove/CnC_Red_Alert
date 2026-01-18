@@ -96,7 +96,7 @@ TimerClass::TimerClass(BaseTimerEnum timer, BOOL on) {
  * HISTORY:                                                                *
  *   05/03/1995 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Time(void) {
+long TimerClass::Time() {
   if (Started) {
     long ticks = Get_Ticks();
     Accumulated += ticks - (Started - 1);
@@ -119,7 +119,7 @@ long TimerClass::Time(void) {
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Stop(void) {
+long TimerClass::Stop() {
   long time = Time();
   Started = 0;
   return (time);
@@ -138,7 +138,7 @@ long TimerClass::Stop(void) {
  * HISTORY:                                                                *
  *   07/12/1994 SKB : Created.                                             *
  *=========================================================================*/
-long TimerClass::Start(void) {
+long TimerClass::Start() {
   if (!Started) {
     Started = Get_Ticks() + 1;
   }

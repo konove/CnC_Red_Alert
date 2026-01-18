@@ -89,7 +89,7 @@ char const* HelpClass::HelpText;
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-HelpClass::HelpClass(void)
+HelpClass::HelpClass()
     : HelpX(0),
       HelpY(0),
       HelpWidth(0),
@@ -115,7 +115,7 @@ HelpClass::HelpClass(void)
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void HelpClass::Init_Clear(void) {
+void HelpClass::Init_Clear() {
   TabClass::Init_Clear();
 
   Set_Text(TXT_NONE);
@@ -138,7 +138,7 @@ void HelpClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-short const* HelpClass::Overlap_List(void) const {
+short const* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer) {
     ((short&)(OverlapList[0])) = REFRESH_EOL;
   }

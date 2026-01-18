@@ -69,7 +69,7 @@
  * HISTORY:                                                                *
  *   04/18/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID Unfragment_File_Cache(VOID) {
+VOID Unfragment_File_Cache() {
   FileDataType* filedata;
   FileDataType* parent;
   UWORD idx;

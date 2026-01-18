@@ -49,20 +49,20 @@ class ObjectClass;
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
  public:
   //-----------------------------------------------------------------
-  void Sort(void);
+  void Sort();
   bool Submit(ObjectClass const* object, bool sort = false);
   int Sorted_Add(ObjectClass const* const object);
 
-  virtual void Init(void) { Clear(); };
-  virtual void One_Time(void) {};
+  virtual void Init() { Clear(); };
+  virtual void One_Time() {};
 
   /*
   **	File I/O.
   */
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 };
 
 #endif

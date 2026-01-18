@@ -59,7 +59,7 @@ class IPXAddressClass {
   /*.....................................................................
   Constructors:
   .....................................................................*/
-  IPXAddressClass(void);
+  IPXAddressClass();
   IPXAddressClass(NetNumType net, NetNodeType node);
   IPXAddressClass(IPXHeaderType* header);
 
@@ -79,7 +79,7 @@ class IPXAddressClass {
   /*.....................................................................
   Tells if this address is a broadcast address
   .....................................................................*/
-  int Is_Broadcast(void);
+  int Is_Broadcast();
 
   /*.....................................................................
   Overloaded operators:

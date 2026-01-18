@@ -630,7 +630,7 @@ int File_Stream_Sample_Vol(char const* filename, int volume,
  *                                                                                             *
  * HISTORY: * 01/06/1994 JLB : Created. *
  *=============================================================================================*/
-VOID cdecl __saveregs __loadds Sound_Callback(VOID) {
+VOID cdecl __saveregs __loadds Sound_Callback() {
   int index;
   SampleTrackerType* st;
 
@@ -969,9 +969,8 @@ BOOL Audio_Init(int sample, int address, int inter, int dma, RateType rate,
       LockedData.SampleTracker[index].FileHandle = ERROR;
       LockedData.SampleTracker[index].QueueBuffer = NULL;
     }
-    error = sosTIMERRegisterEvent(MAINTENANCE_RATE,
-                                  (void(__far*)(void))maintenance_callback,
-                                  &MaintainTimer);
+    error = sosTIMERRegisterEvent(
+        MAINTENANCE_RATE, (void(__far*)())maintenance_callback, &MaintainTimer);
     if (error) {
       printf("Unable to initialize the maintenance callback.\n");
       Get_Key();
@@ -1005,7 +1004,7 @@ BOOL Audio_Init(int sample, int address, int inter, int dma, RateType rate,
  *                                                                                             *
  * HISTORY: * 07/23/1991 JLB : Created. *
  *=============================================================================================*/
-VOID Sound_End(VOID) {
+VOID Sound_End() {
   if (LockedData.DigiHandle != -1) {
     sosTIMERRemoveEvent(DigiTimer);
     sosTIMERRemoveEvent(MaintainTimer);
@@ -1404,7 +1403,7 @@ VOID Fade_Sample(int handle, int ticks) {
     }
   }
 }
-int Get_Digi_Handle(void) { return (LockedData.DigiHandle); }
+int Get_Digi_Handle() { return (LockedData.DigiHandle); }
 
 /***************************************************************************
  * SAMPLE_LENGTH -- returns length of a sample in ticks                    *

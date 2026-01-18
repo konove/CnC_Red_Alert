@@ -93,7 +93,7 @@ class VersionClass {
   //.....................................................................
   // Constructor/Destructor
   //.....................................................................
-  VersionClass(void);
+  VersionClass();
   virtual ~VersionClass() {};
 
   //.....................................................................
@@ -101,15 +101,15 @@ class VersionClass {
   // number contains the major version in the high word, and the minor
   // version in the low word.  They should be interpreted in hex.
   //.....................................................................
-  unsigned long Version_Number(void);
-  unsigned short Major_Version(void);
-  unsigned short Minor_Version(void);
+  unsigned long Version_Number();
+  unsigned short Major_Version();
+  unsigned short Minor_Version();
 
   //.....................................................................
   // Retrieves a pointer to the version # as a text string (#.#), with
   // the trailing 0's trimmed off.
   //.....................................................................
-  char* Version_Name(void);
+  char* Version_Name();
 
   //.....................................................................
   // Retrieves a pointer to the current version text.
@@ -124,23 +124,23 @@ class VersionClass {
   //.....................................................................
   // These routines support "version clipping".
   //.....................................................................
-  void Init_Clipping(void);
+  void Init_Clipping();
   unsigned long Clip_Version(unsigned long minver, unsigned long maxver);
-  unsigned long Get_Clipped_Version(void) { return (MaxClipVer); }
+  unsigned long Get_Clipped_Version() { return (MaxClipVer); }
 
   //.....................................................................
   // These routines return the theoretical lowest & highest version #'s
   // that this program will connect to; this does not take any previous
   // version clipping into account.
   //.....................................................................
-  unsigned long Min_Version(void);
-  unsigned long Max_Version(void);
+  unsigned long Min_Version();
+  unsigned long Max_Version();
 
  private:
   //.....................................................................
   // Fills in a 'VersionText' with a descriptive version name.
   //.....................................................................
-  void Read_Text_String(void);
+  void Read_Text_String();
 
   //.....................................................................
   // These values define the major & minor version #'s for the current
@@ -195,7 +195,7 @@ class VersionClass {
   unsigned TextInit : 1;
 };
 
-char const* Version_Name(void);
+char const* Version_Name();
 
 #endif
 /************************** end of version.h *******************************/

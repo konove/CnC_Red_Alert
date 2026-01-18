@@ -51,12 +51,12 @@ class ScreenClass {
   MouseShapeType NormalMouseShape;
 
  public:
-  ScreenClass(void) {
+  ScreenClass() {
     CurrentMouseShape = SHP_NONE;
     NormalMouseShape = SHP_MOUSE;
   };
 
-  Init(void);
+  Init();
   Set_Default_Mouse(MouseShapeType mouse);
   Force_Mouse_Shape(MouseShapeType mouse);
 

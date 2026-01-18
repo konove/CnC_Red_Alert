@@ -83,7 +83,7 @@ GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-GScreenClass::GScreenClass(void) {
+GScreenClass::GScreenClass() {
   IsToUpdate = true;
   IsToRedraw = true;
 }
@@ -114,7 +114,7 @@ GScreenClass::GScreenClass(void) {
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::One_Time(void) {
+void GScreenClass::One_Time() {
   /*
   **	Allocate the screen shadow page. This page is used to reduce access to
   *the *	actual screen memory. It contains a duplicate of what the
@@ -167,7 +167,7 @@ void GScreenClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 12/28/1994 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Init_Clear(void) {
+void GScreenClass::Init_Clear() {
   /*
   ** Clear the ShadowPage & HidPage to force a complete shadow blit.
   */
@@ -208,7 +208,7 @@ void GScreenClass::Init_Theater(TheaterType) {}
  *                                                                                             *
  * HISTORY: * 12/28/1994 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Init_IO(void) {
+void GScreenClass::Init_IO() {
   /*
   ** Reset the button list.  This means that any other elements of the map that
   *need
@@ -372,7 +372,7 @@ void GScreenClass::Remove_A_Button(GadgetClass& gadget) {
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Render(void) {
+void GScreenClass::Render() {
   // if (Buttons && Buttons->Is_List_To_Redraw()) {
   //	IsToRedraw = true;
   // }
@@ -425,7 +425,7 @@ GraphicBufferClass* ScreenList[MAX_SCREENS_SAVED];
 int CurrentScreen = 0;
 bool ScreenRecording = false;
 
-void Add_Current_Screen(void) {
+void Add_Current_Screen() {
   if (ScreenRecording) {
     ScreenList[CurrentScreen] = new GraphicBufferClass;
     ScreenList[CurrentScreen]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
@@ -469,7 +469,7 @@ extern bool CanVblankSync;
  * HISTORY: * 02/14/1994 JLB : Created. * 05/01/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void GScreenClass::Blit_Display(void) {
+void GScreenClass::Blit_Display() {
   WWMouse->Draw_Mouse(&HidPage);
   HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
                false);

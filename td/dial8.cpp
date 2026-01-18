@@ -295,7 +295,7 @@ int Dial8Class::Draw_Me(int forced) {
  * HISTORY:                                                                *
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
-DirType Dial8Class::Get_Direction(void) const { return (Direction); }
+DirType Dial8Class::Get_Direction() const { return (Direction); }
 
 /***************************************************************************
  * Dial8Class::Set_Direction -- sets current direction (0-255) of dial     *

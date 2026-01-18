@@ -1228,7 +1228,7 @@ Call_Interrupt_Chain:
 ;
 ; PROTOTYPE:
 ;
-;	VOID Low_Hide_Mouse(VOID);
+;	VOID Low_Hide_Mouse();
 ;
 ; NOTE: does not check if mouse is currently being updated.
 ;
@@ -1274,7 +1274,7 @@ Call_Interrupt_Chain:
 ; This function displays the mouse cursor on the screen if it was hidden.
 ;
 ; PROTOTYPE:
-;	VOID Low_Show_Mouse(VOID);
+;	VOID Low_Show_Mouse();
 ;
 ; NOTE: does not check if mouse is currently being updated.
 ;----------------------------------------------------------------------------

@@ -56,7 +56,7 @@
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-DoorClass::DoorClass(void) {
+DoorClass::DoorClass() {
   State = IS_CLOSED;
   IsToRedraw = false;
   Stages = 0;
@@ -76,7 +76,7 @@ DoorClass::DoorClass(void) {
  *                                                                                             *
  * HISTORY: * 06/13/1995 JLB : Created. *
  *=============================================================================================*/
-void DoorClass::AI(void) {
+void DoorClass::AI() {
   if (Control.Graphic_Logic()) {
     if (Control.Fetch_Stage() >= Stages) {
       Control.Set_Rate(0);
@@ -174,7 +174,7 @@ bool DoorClass::Close_Door(int rate, int stages) {
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-int DoorClass::Door_Stage(void) const {
+int DoorClass::Door_Stage() const {
   switch (State) {
     case IS_CLOSING:
       return ((Stages - 1) - Control.Fetch_Stage());

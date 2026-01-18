@@ -21,21 +21,21 @@
  */
 /*=========================================================================*/
 
-short Decompress_Frame(void* source, void* dest, short size);
+short Decompress_Frame(void *source, void *dest, short size);
 int cdecl Stream_Sample_Vol(void *buffer, long size, BOOL (*callback);
 int cdecl Stream_Sample(void *buffer, long size, BOOL (*callback);
 int cdecl File_Stream_Sample(char const *filename);
 int cdecl File_Stream_Sample_Vol(char const *filename, int volume);
-void cdecl _saveregs _loadds Sound_Callback(void);
-void cdecl far _saveregs _loadds maintenance_callback(void);
+void cdecl _saveregs _loadds Sound_Callback();
+void cdecl far _saveregs _loadds maintenance_callback();
 void *cdecl Load_Sample(char const *filename);
 long cdecl Load_Sample_Into_Buffer(char const *filename, void *buffer, long size);
 long cdecl Sample_Read(int fh, void *buffer, long size);
 void cdecl Free_Sample(void const *sample);
 BOOL cdecl Sound_Init(int sfx, int score, int sample);
-void far VQA_TimerCallback(void);
+void far VQA_TimerCallback();
 BOOL Audio_Init(int sample, int address, int inter, int dma);
-void cdecl Sound_End(void);
+void cdecl Sound_End();
 void cdecl Stop_Sample(int handle);
 BOOL cdecl Sample_Status(int handle);
 BOOL cdecl Is_Sample_Playing(void const * sample);

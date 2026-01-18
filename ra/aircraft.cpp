@@ -403,7 +403,7 @@ bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Shape_Number(void) const {
+int AircraftClass::Shape_Number() const {
   int shapenum = 0;
 
   switch (Class->Rotation) {
@@ -674,7 +674,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Hunt(void) {
+int AircraftClass::Mission_Hunt() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -905,7 +905,7 @@ int AircraftClass::Mission_Hunt(void) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::AI(void) {
+void AircraftClass::AI() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1112,7 +1112,7 @@ short const* AircraftClass::Overlap_List(bool redraw) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Init(void) { Aircraft.Free_All(); }
+void AircraftClass::Init() { Aircraft.Free_All(); }
 
 /***********************************************************************************************
  * AircraftClass::Mission_Unload -- Handles unloading cargo. *
@@ -1130,7 +1130,7 @@ void AircraftClass::Init(void) { Aircraft.Free_All(); }
  *                                                                                             *
  * HISTORY: * 10/31/94   JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Unload(void) {
+int AircraftClass::Mission_Unload() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1340,7 +1340,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
  *                                                                                             *
  * HISTORY: * 11/02/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AircraftClass::Sort_Y(void) const {
+COORDINATE AircraftClass::Sort_Y() const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1366,7 +1366,7 @@ COORDINATE AircraftClass::Sort_Y(void) const {
  * HISTORY: * 03/19/1995 JLB : Created. * 08/13/1995 JLB : Handles aircraft
  *altitude gain after takeoff logic.                      *
  *=============================================================================================*/
-int AircraftClass::Mission_Retreat(void) {
+int AircraftClass::Mission_Retreat() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -1492,7 +1492,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Paradrop_Cargo(void) {
+int AircraftClass::Paradrop_Cargo() {
   FootClass* passenger = Detach_Object();
   if (passenger) {
     if (!passenger->Paradrop(Center_Coord())) {
@@ -1672,7 +1672,7 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Move(void) {
+int AircraftClass::Mission_Move() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2377,7 +2377,7 @@ ActionType AircraftClass::What_Action(CELL cell) const {
  * HISTORY: * 06/19/1995 JLB : Created. * 03/04/1996 JLB : Fixed wing aircraft
  *always face down the runway.                         *
  *=============================================================================================*/
-DirType AircraftClass::Pose_Dir(void) const {
+DirType AircraftClass::Pose_Dir() const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2407,7 +2407,7 @@ DirType AircraftClass::Pose_Dir(void) const {
  * HISTORY: * 06/19/1995 JLB : Created. * 09/22/1995 JLB : Fixes brain dead
  *helicopter for Nod scen #7.                             *
  *=============================================================================================*/
-int AircraftClass::Mission_Attack(void) {
+int AircraftClass::Mission_Attack() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2913,7 +2913,7 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Process_Take_Off(void) {
+bool AircraftClass::Process_Take_Off() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -2974,7 +2974,7 @@ bool AircraftClass::Process_Take_Off(void) {
  * HISTORY: * 06/12/1995 JLB : Created. * 03/04/1996 JLB : Handles fixed wing
  *aircraft.                                             *
  *=============================================================================================*/
-bool AircraftClass::Process_Landing(void) {
+bool AircraftClass::Process_Landing() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3209,7 +3209,7 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
  *                                                                                             *
  * HISTORY: * 06/11/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Pip_Count(void) const {
+int AircraftClass::Pip_Count() const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3244,7 +3244,7 @@ int AircraftClass::Pip_Count(void) const {
  * HISTORY: * 06/12/1995 JLB : Created. * 07/04/1995 JLB : Ground controller
  *gives orders.                                          *
  *=============================================================================================*/
-int AircraftClass::Mission_Enter(void) {
+int AircraftClass::Mission_Enter() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3483,7 +3483,7 @@ int AircraftClass::Mission_Enter(void) {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET AircraftClass::Good_LZ(void) const {
+TARGET AircraftClass::Good_LZ() const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3562,7 +3562,7 @@ void AircraftClass::Set_Speed(int speed) {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-DirType AircraftClass::Fire_Direction(void) const {
+DirType AircraftClass::Fire_Direction() const {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3584,7 +3584,7 @@ DirType AircraftClass::Fire_Direction(void) const {
  *                                                                                             *
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
-AircraftClass::~AircraftClass(void) {
+AircraftClass::~AircraftClass() {
   if (GameActive && Class) {
     /*
     **	Remove this member from any team it may be associated with. This must
@@ -3666,7 +3666,7 @@ void AircraftClass::Scatter(COORDINATE, bool, bool) {
  * HISTORY: * 07/18/1995 JLB : Created. * 10/10/1995 JLB : Hunts for harvesters
  *that are unescorted.                                *
  *=============================================================================================*/
-int AircraftClass::Mission_Guard(void) {
+int AircraftClass::Mission_Guard() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3802,7 +3802,7 @@ int AircraftClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Guard_Area(void) {
+int AircraftClass::Mission_Guard_Area() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3837,7 +3837,7 @@ int AircraftClass::Mission_Guard_Area(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Response_Attack(void) {
+void AircraftClass::Response_Attack() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3861,7 +3861,7 @@ void AircraftClass::Response_Attack(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Response_Move(void) {
+void AircraftClass::Response_Move() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3885,7 +3885,7 @@ void AircraftClass::Response_Move(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Response_Select(void) {
+void AircraftClass::Response_Select() {
   assert(Aircraft.ID(this) == ID);
   assert(IsActive);
 
@@ -3985,7 +3985,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Landing_Takeoff_AI(void) {
+bool AircraftClass::Landing_Takeoff_AI() {
   /*
   **	Handle landing and taking off logic. Helicopters are prime users of this
   *technique. The *	aircraft will either gain or lose altitude as
@@ -4119,7 +4119,7 @@ bool AircraftClass::Landing_Takeoff_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Edge_Of_World_AI(void) {
+bool AircraftClass::Edge_Of_World_AI() {
   if (!Map.In_Radar(Coord_Cell(Coord))) {
     if (Mission == MISSION_RETREAT /*|| (*this == AIRCRAFT_CARGO && !Is_Something_Attached())*/) {
       /*
@@ -4177,7 +4177,7 @@ bool AircraftClass::Edge_Of_World_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Movement_AI(void) {
+void AircraftClass::Movement_AI() {
   /*
   **	If for some strange reason, there is a valid NavCom, but this aircraft
   *is not *	in a movement order, then give it a movement order.
@@ -4216,7 +4216,7 @@ void AircraftClass::Movement_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Rotation_AI(void) {
+void AircraftClass::Rotation_AI() {
   if (PrimaryFacing.Is_Rotating()) {
     Mark(MARK_CHANGE_REDRAW);
     if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
@@ -4305,7 +4305,7 @@ void AircraftClass::Assign_Destination(TARGET dest) {
  *                                                                                             *
  * HISTORY: * 10/20/1996 JLB : Created. *
  *=============================================================================================*/
-LayerType AircraftClass::In_Which_Layer(void) const {
+LayerType AircraftClass::In_Which_Layer() const {
   if (Class->IsFixedWing && Height > 0) {
     return (LAYER_TOP);
   }

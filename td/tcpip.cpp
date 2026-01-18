@@ -99,7 +99,7 @@ TcpipManagerClass Winsock;  // The object for interfacing with Winsock
  *                                                                                             *
  * HISTORY: * 3/20/96 2:51PM ST : Created *
  *=============================================================================================*/
-TcpipManagerClass::TcpipManagerClass(void) {
+TcpipManagerClass::TcpipManagerClass() {
   WinsockInitialised = false;
   Connected = false;
   UseUDP = true;
@@ -121,7 +121,7 @@ TcpipManagerClass::TcpipManagerClass(void) {
  * HISTORY: * 3/20/96 2:52PM ST : Created *
  *=============================================================================================*/
 
-TcpipManagerClass::~TcpipManagerClass(void) { Close(); }
+TcpipManagerClass::~TcpipManagerClass() { Close(); }
 
 /***********************************************************************************************
  * TMC::Close -- restores any currently in use Winsock resources *
@@ -137,7 +137,7 @@ TcpipManagerClass::~TcpipManagerClass(void) { Close(); }
  * HISTORY: * 3/20/96 2:52PM ST : Created *
  *=============================================================================================*/
 
-void TcpipManagerClass::Close(void) {
+void TcpipManagerClass::Close() {
   /*
   ** If we never initialised the class in the first place then just return
   */
@@ -195,7 +195,7 @@ void TcpipManagerClass::Close(void) {
  * HISTORY: * 3/20/96 2:54PM ST : Created *
  *=============================================================================================*/
 
-bool TcpipManagerClass::Init(void) {
+bool TcpipManagerClass::Init() {
   /*
   ** Just return true if we are already set up
   */
@@ -249,7 +249,7 @@ bool TcpipManagerClass::Init(void) {
  * HISTORY: * 3/20/96 2:56PM ST : Created *
  *=============================================================================================*/
 
-void TcpipManagerClass::Start_Server(void) {
+void TcpipManagerClass::Start_Server() {
   int i;
   // struct sockaddr_in addr;
 
@@ -418,7 +418,7 @@ void TcpipManagerClass::Write(void* buffer, int buffer_len) {
  * HISTORY: * 3/20/96 3:02PM ST : Created *
  *=============================================================================================*/
 
-bool TcpipManagerClass::Add_Client(void) {
+bool TcpipManagerClass::Add_Client() {
   struct sockaddr_in addr;
   socklen_t addrsize;
   bool delay = true;
@@ -814,7 +814,7 @@ void TcpipManagerClass::Set_Host_Address(char* address) {
  * HISTORY: * 3/20/96 3:19PM ST : Created *
  *=============================================================================================*/
 
-void TcpipManagerClass::Start_Client(void) {
+void TcpipManagerClass::Start_Client() {
   struct sockaddr_in addr;
   int i;
 

@@ -72,7 +72,7 @@ static long NonDisplayedPage;
  * SYNOPSIS
  *     SetupXPaging()
  *
- *     void SetupXPaging(void);
+ *     void SetupXPaging();
  *
  * FUNCTION
  *
@@ -84,7 +84,7 @@ static long NonDisplayedPage;
  *
  ****************************************************************************/
 
-void SetupXPaging(void) {
+void SetupXPaging() {
   DisplayedPage = 1;
   NonDisplayedPage = DisplayedPage ^ 1;
 }
@@ -97,7 +97,7 @@ void SetupXPaging(void) {
  * SYNOPSIS
  *     FlipXPage()
  *
- *     void FlipXPage(void);
+ *     void FlipXPage();
  *
  * FUNCTION
  *
@@ -109,7 +109,7 @@ void SetupXPaging(void) {
  *
  ****************************************************************************/
 
-void FlipXPage(void) {
+void FlipXPage() {
   ShowXPage(PageStartOffsets[NonDisplayedPage]);
   DisplayedPage = NonDisplayedPage;
   NonDisplayedPage = DisplayedPage ^ 1;
@@ -149,7 +149,7 @@ void DisplayXPage(long page) {
  * SYNOPSIS
  *     HidPage = GetXHidPage()
  *
- *     unsigned char *GetXHidPage(void);
+ *     unsigned char *GetXHidPage();
  *
  * FUNCTION
  *
@@ -161,7 +161,7 @@ void DisplayXPage(long page) {
  *
  ****************************************************************************/
 
-unsigned char* GetXHidPage(void) {
+unsigned char* GetXHidPage() {
   return ((unsigned char*)PageStartOffsets[NonDisplayedPage]);
 }
 
@@ -173,7 +173,7 @@ unsigned char* GetXHidPage(void) {
  * SYNOPSIS
  *     SeenPage = GetXSeenPage()
  *
- *     unsigned char *GetXSeenPage(void);
+ *     unsigned char *GetXSeenPage();
  *
  * FUNCTION
  *
@@ -185,6 +185,6 @@ unsigned char* GetXHidPage(void) {
  *
  ****************************************************************************/
 
-unsigned char* GetXSeenPage(void) {
+unsigned char* GetXSeenPage() {
   return ((unsigned char*)PageStartOffsets[DisplayedPage]);
 }

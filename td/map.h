@@ -50,17 +50,17 @@
 
 class MapClass : public GScreenClass {
  public:
-  MapClass(void) {};
+  MapClass() {};
   MapClass(NoInitClass const& x) : GScreenClass(x) {};
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);     // Theater-specific inits
-  virtual void Init_Clear(void);   // Clears all to known state
-  virtual void Alloc_Cells(void);  // Allocates buffers
-  virtual void Free_Cells(void);   // Frees buffers
-  virtual void Init_Cells(void);   // Frees buffers
+  virtual void One_Time();     // Theater-specific inits
+  virtual void Init_Clear();   // Clears all to known state
+  virtual void Alloc_Cells();  // Allocates buffers
+  virtual void Free_Cells();   // Frees buffers
+  virtual void Init_Cells();   // Frees buffers
 
   /*--------------------------------------------------------
   ** Main functions that deal with groupings of cells within the map or deals
@@ -80,23 +80,23 @@ class MapClass : public GScreenClass {
   void Overlap_Up(CELL cell, ObjectClass* object);
   bool Read_Binary(char const* root, unsigned long* crc);
   bool Write_Binary(char const* root);
-  bool Place_Random_Crate(void);
+  bool Place_Random_Crate();
 
-  long Overpass(void);
+  long Overpass();
 
-  virtual void Logic(void);
+  virtual void Logic();
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   ** Debug routine
   */
-  int Validate(void);
+  int Validate();
 
   /*
   **	This is the dimensions and position of the sub section of the global

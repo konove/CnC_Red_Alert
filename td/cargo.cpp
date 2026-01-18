@@ -142,7 +142,7 @@ void CargoClass::Attach(FootClass* object) {
  * HISTORY: * 04/23/1994 JLB : Created. * 06/07/1994 JLB : Handles generic
  *object types.                                            *
  *=============================================================================================*/
-FootClass* CargoClass::Detach_Object(void) {
+FootClass* CargoClass::Detach_Object() {
   FootClass* unit = Attached_Object();
 
   if (unit) {
@@ -170,7 +170,7 @@ FootClass* CargoClass::Detach_Object(void) {
  * HISTORY: * 09/07/1992 JLB : Created. * 06/07/1994 JLB : Handles generic
  *object types.                                            *
  *=============================================================================================*/
-FootClass* CargoClass::Attached_Object(void) const {
+FootClass* CargoClass::Attached_Object() const {
   if (Is_Something_Attached()) {
     return (CargoHold);
   }

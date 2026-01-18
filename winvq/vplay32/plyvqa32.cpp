@@ -95,8 +95,8 @@ void Print_Play_Stats(VQAConfig* config, VQAStatistics* stats);
 long VQCallback(unsigned char* screen, long framenum);
 
 extern "C" {
-int __cdecl Check_Key(void);
-int __cdecl Get_Key(void);
+int __cdecl Check_Key();
+int __cdecl Get_Key();
 }
 
 /****************************************************************************
@@ -279,7 +279,7 @@ void main(long argc, char** argv) {
  * SYNOPSIS
  *     Usage()
  *
- *     void Usage(void);
+ *     void Usage();
  *
  * FUNCTION
  *
@@ -586,7 +586,7 @@ void Print_Play_Stats(VQAConfig* config, VQAStatistics* stats) {
  * SYNOPSIS
  *     Key = Check_Key()
  *
- *     short Check_Key(void);
+ *     short Check_Key();
  *
  * FUNCTION
  *
@@ -598,7 +598,7 @@ void Print_Play_Stats(VQAConfig* config, VQAStatistics* stats) {
  *
  ****************************************************************************/
 
-int Check_Key(void) {
+int Check_Key() {
   if (kbhit()) {
     LastKey = getch();
     return (LastKey);
@@ -615,7 +615,7 @@ int Check_Key(void) {
  * SYNOPSIS
  *     Key = Get_Key()
  *
- *     short Get_Key(void);
+ *     short Get_Key();
  *
  * FUNCTION
  *
@@ -627,7 +627,7 @@ int Check_Key(void) {
  *
  ****************************************************************************/
 
-int Get_Key(void) { return (LastKey); }
+int Get_Key() { return (LastKey); }
 
 #ifndef __WATCOMC__
 #if (0)

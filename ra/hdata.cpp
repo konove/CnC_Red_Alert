@@ -359,7 +359,7 @@ void HouseTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseTypeClass::Init_Heap(void) {
+void HouseTypeClass::Init_Heap() {
   /*
   **	These house type class objects must be allocated in the exact order that
   *they *	are specified in the HousesType enumeration. This is necessary
@@ -429,7 +429,7 @@ HousesType HouseTypeClass::From_Name(char const* name) {
  * HISTORY: * 05/21/1994 JLB : Converted to member function. * 06/19/1996 JLB :
  *Converted to regular heap class management.                              *
  *=============================================================================================*/
-void HouseTypeClass::One_Time(void) {}
+void HouseTypeClass::One_Time() {}
 
 /***********************************************************************************************
  * HouseTypeClass::As_Reference -- Fetches a reference to the house specified. *
@@ -464,7 +464,7 @@ HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned char const* HouseTypeClass::Remap_Table(void) const {
+unsigned char const* HouseTypeClass::Remap_Table() const {
   return (ColorRemaps[RemapColor].RemapTable);
 }
 

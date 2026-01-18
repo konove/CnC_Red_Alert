@@ -71,8 +71,8 @@
 
 /* Externals */
 extern "C" {
-extern int __cdecl Check_Key(void);
-extern int __cdecl Get_Key(void);
+extern int __cdecl Check_Key();
+extern int __cdecl Get_Key();
 }
 
 /****************************************************************************
@@ -83,7 +83,7 @@ extern int __cdecl Get_Key(void);
  * SYNOPSIS
  *     VQAHandle = VQA_Alloc()
  *
- *     VQAHandle *VQA_Alloc(void);
+ *     VQAHandle *VQA_Alloc();
  *
  * FUNCTION
  *     Obtain a VQAHandle. This handle is used by most VQA library functions,
@@ -496,7 +496,7 @@ void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
  * SYNOPSIS
  *     Version = VQA_Version()
  *
- *     char *VQA_Version(void);
+ *     char *VQA_Version();
  *
  * FUNCTION
  *     Return the version of the VQA player library.
@@ -519,7 +519,7 @@ char* VQA_Version() { return (VQA_VERSION); }
  * SYNOPSIS
  *     IDString = VQA_IDString()
  *
- *     char *VQA_IDString(void);
+ *     char *VQA_IDString();
  *
  * FUNCTION
  *     Return the ID string of this VQA player library.

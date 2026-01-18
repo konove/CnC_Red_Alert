@@ -49,18 +49,18 @@
 
 class TabClass : public SidebarClass {
  public:
-  TabClass(void);
+  TabClass();
   TabClass(NoInitClass const& x)
       : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {};
 
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
-  static void Draw_Credits_Tab(void);
+  static void Draw_Credits_Tab();
   static void Hilite_Tab(int tab);
-  void Flash_Money(void);
+  void Flash_Money();
 
-  virtual void One_Time(void);  // One-time inits
-  void Redraw_Tab(void) {
+  virtual void One_Time();  // One-time inits
+  void Redraw_Tab() {
     IsToRedraw = true;
     Flag_To_Redraw(false);
   };

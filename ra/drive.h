@@ -99,29 +99,29 @@ class DriveClass : public FootClass {
   */
   DriveClass(RTTIType rtti, int id, HousesType house);
   DriveClass(NoInitClass const& x) : FootClass(x), MoebiusCountDown(x) {};
-  virtual ~DriveClass(void) {};
+  virtual ~DriveClass() {};
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
   bool Teleport_To(CELL cell);
-  virtual void Response_Select(void);
-  virtual void Response_Move(void);
-  virtual void Response_Attack(void);
+  virtual void Response_Select();
+  virtual void Response_Move();
+  virtual void Response_Attack();
   virtual void Scatter(COORDINATE threat, bool forced = false,
                        bool nokidding = false);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   void Do_Turn(DirType dir);
   virtual void Overrun_Square(CELL, bool = true) {};
   virtual void Assign_Destination(TARGET target);
   virtual void Per_Cell_Process(PCPType why);
   virtual bool Ok_To_Move(DirType) const;
-  virtual void AI(void);
+  virtual void AI();
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   void Force_Track(int track, COORDINATE coord);
-  virtual bool Stop_Driver(void);
+  virtual bool Stop_Driver();
 
   void Mark_Track(COORDINATE headto, MarkType type);
 
@@ -187,9 +187,9 @@ class DriveClass : public FootClass {
   **	Member function prototypes.
   */
   virtual void Fixup_Path(PathType* path);
-  bool While_Moving(void);
-  bool Start_Of_Move(void);
-  void Lay_Track(void);
+  bool While_Moving();
+  bool Start_Of_Move();
+  void Lay_Track();
   COORDINATE Smooth_Turn(COORDINATE adj, DirType& dir);
 
   static TurnTrackType const TrackControl[67];

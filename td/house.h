@@ -389,7 +389,7 @@ class HouseClass {
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
-  HouseClass(void) : Class(nullptr) {};
+  HouseClass() : Class(nullptr) {};
   HouseClass(HousesType house);
   HouseClass(NoInitClass const& x)
       : Class(Class),
@@ -406,8 +406,8 @@ class HouseClass {
         SpeakPowerDelay(x),
         SpeakMoneyDelay(x),
         SpeakMaxedDelay(x) {};
-  ~HouseClass(void);
-  operator HousesType(void) const;
+  ~HouseClass();
+  operator HousesType() const;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -425,9 +425,9 @@ class HouseClass {
   void Init_Data(PlayerColorType color, HousesType house, int credits);
 
   void Sell_Wall(CELL cell);
-  bool Flag_To_Die(void);
-  bool Flag_To_Win(void);
-  bool Flag_To_Lose(void);
+  bool Flag_To_Die();
+  bool Flag_To_Win();
+  bool Flag_To_Lose();
   void Make_Ally(HousesType house);
   void Make_Ally(ObjectClass* object) {
     if (object) Make_Ally(object->Owner());
@@ -442,7 +442,7 @@ class HouseClass {
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif
-  void AI(void);
+  void AI();
   bool Can_Build(StructType structure, HousesType house) const;
   bool Can_Build(InfantryType infantry, HousesType house) const;
   bool Can_Build(UnitType unit, HousesType) const;
@@ -454,23 +454,23 @@ class HouseClass {
   TechnoTypeClass const* Suggest_New_Object(RTTIType objectype) const;
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
-  long Available_Money(void) const;
+  long Available_Money() const;
   void Spend_Money(unsigned money);
   void Refund_Money(unsigned money);
-  void Attacked(void);
+  void Attacked();
   void Adjust_Power(int adjust) { Power += adjust; };
   void Adjust_Drain(int adjust) { Drain += adjust; };
   int Adjust_Capacity(int adjust, bool inanger = false);
-  int Power_Fraction(void) const;
-  int Tiberium_Fraction(void) {
+  int Power_Fraction() const;
+  int Tiberium_Fraction() {
     return (!Tiberium) ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
   };
-  void Begin_Production(void) { IsStarted = true; };
+  void Begin_Production() { IsStarted = true; };
   TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
 
-  static void Init(void);
-  static void One_Time(void);
+  static void Init();
+  static void One_Time();
   static HouseClass* As_Pointer(HousesType house);
 
   /*
@@ -482,13 +482,13 @@ class HouseClass {
   static void Write_Flag_INI(char* buffer);
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	Special house actions.
@@ -496,14 +496,14 @@ class HouseClass {
   //		void  Init_Ion_Cannon(bool first_time, bool one_time_effect =
   // false); 		void  Init_Air_Strike(bool first_time, bool
   // one_time_effect = false); 		void  Init_Nuke_Bomb(bool first_time,
-  // bool one_time_effect = false); 		void  Remove_Ion_Cannon(void);
+  // bool one_time_effect = false); 		void  Remove_Ion_Cannon();
   // void
-  // Remove_Air_Strike(void); 		void  Remove_Nuke_Bomb(void);
+  // Remove_Air_Strike(); 		void  Remove_Nuke_Bomb();
   void Detach(TARGET target, bool all);
   void Add_Nuke_Piece(int piece = -1);
   //		void  Make_Air_Strike_Available(bool present, bool
   // one_time_effect = false);
-  bool Has_Nuke_Device(void);
+  bool Has_Nuke_Device();
 
   /*
   **	This vector holds the recorded status of the map regions. It is through
@@ -543,18 +543,18 @@ class HouseClass {
   /*
   ** This routine completely removes this house & all its objects from the game.
   */
-  void Clobber_All(void);
+  void Clobber_All();
 
   /*
   ** This routine blows up everything in this house.  Fun!
   */
-  void Blowup_All(void);
+  void Blowup_All();
 
   /*
   ** This routine gets called in multiplayer games when every unit, building,
   ** and infantry for a house is destroyed.
   */
-  void MPlayer_Defeated(void);
+  void MPlayer_Defeated();
 
  private:
   void Silo_Redraw_Check(long oldtib, long oldcap);

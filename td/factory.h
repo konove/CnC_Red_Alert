@@ -52,43 +52,43 @@
 
 class FactoryClass : private StageClass {
  public:
-  FactoryClass(void);
+  FactoryClass();
   FactoryClass(NoInitClass const& x) : StageClass(x) {};
-  ~FactoryClass(void);
+  ~FactoryClass();
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
 
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O.
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
-  bool Abandon(void);
-  bool Completed(void);
-  bool Has_Changed(void);
-  bool Has_Completed(void);
-  bool Is_Building(void) const { return (Fetch_Rate() != 0); };
+  bool Abandon();
+  bool Completed();
+  bool Has_Changed();
+  bool Has_Completed();
+  bool Is_Building() const { return (Fetch_Rate() != 0); };
   bool Set(TechnoTypeClass const& object, HouseClass& house);
   bool Set(int const& type, HouseClass& house);
-  bool Start(void);
-  bool Suspend(void);
-  int Completion(void);
-  TechnoClass* Get_Object(void) const;
-  int Get_Special_Item(void) const;
-  void AI(void);
+  bool Start();
+  bool Suspend();
+  int Completion();
+  TechnoClass* Get_Object() const;
+  int Get_Special_Item() const;
+  void AI();
   void Set(TechnoClass& object);
-  HouseClass* Get_House(void) { return (House); };
+  HouseClass* Get_House() { return (House); };
 
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	This flag is used to maintain the pool of factory class objects. If the
@@ -102,7 +102,7 @@ class FactoryClass : private StageClass {
     STEP_COUNT = 108  // Number of steps to break production down into.
   };
 
-  int Cost_Per_Tick(void);
+  int Cost_Per_Tick();
 
  private:
   /*

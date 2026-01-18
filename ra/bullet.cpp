@@ -146,7 +146,7 @@ BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-BulletClass::~BulletClass(void) {
+BulletClass::~BulletClass() {
   if (GameActive) {
     /*
     **	SPECIAL CASE:
@@ -372,7 +372,7 @@ bool BulletClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::AI(void) {
+void BulletClass::AI() {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
@@ -536,7 +536,7 @@ void BulletClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int BulletClass::Shape_Number(void) const {
+int BulletClass::Shape_Number() const {
   int shapenum = 0;
 
   if (!Class->IsFaceless) {
@@ -647,7 +647,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init(void) { Bullets.Free_All(); }
+void BulletClass::Init() { Bullets.Free_All(); }
 
 /***********************************************************************************************
  * BulletClass::Detach -- Removes specified target from this bullet's targeting
@@ -860,7 +860,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BulletClass::Target_Coord(void) const {
+COORDINATE BulletClass::Target_Coord() const {
   assert(Bullets.ID(this) == ID);
   assert(IsActive);
 
@@ -885,7 +885,7 @@ COORDINATE BulletClass::Target_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BulletClass::Sort_Y(void) const {
+COORDINATE BulletClass::Sort_Y() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -908,7 +908,7 @@ COORDINATE BulletClass::Sort_Y(void) const {
  *                                                                                             *
  * HISTORY: * 10/10/1996 JLB : Created. *
  *=============================================================================================*/
-LayerType BulletClass::In_Which_Layer(void) const {
+LayerType BulletClass::In_Which_Layer() const {
   if (Class->IsSubSurface) {
     return (LAYER_SURFACE);
   }

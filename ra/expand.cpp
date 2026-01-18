@@ -83,7 +83,7 @@
  *                                                                                             *
  * HISTORY: * 3/5/97 1:59PM ST : Fixed to check for EXPAND.MIX *
  *=============================================================================================*/
-bool Expansion_CS_Present(void) {
+bool Expansion_CS_Present() {
   //	ajw 9/29/98
   return Is_Counterstrike_Installed();
   //	RawFileClass file("EXPAND.MIX");
@@ -103,7 +103,7 @@ bool Expansion_CS_Present(void) {
  *                                                                                             *
  * HISTORY: * 7/9/97 1:59PM BG : Fixed to check for EXPAND2.MIX *
  *=============================================================================================*/
-bool Expansion_AM_Present(void) {
+bool Expansion_AM_Present() {
   //	ajw 9/29/98
   return Is_Aftermath_Installed();
   //	RawFileClass file("EXPAND2.MIX");
@@ -263,7 +263,7 @@ class EListClass : public ListClass {
   virtual EObjectClass* Get_Object(int index) const {
     return ((EObjectClass*)ListClass::Get_Item(index));
   }
-  virtual EObjectClass* Current_Object(void) {
+  virtual EObjectClass* Current_Object() {
     return ((EObjectClass*)ListClass::Current_Item());
   }
 
@@ -275,7 +275,7 @@ class EListClass : public ListClass {
     return (ListClass::Add_Item(text));
   };
   int Add_Item(int text) override { return (ListClass::Add_Item(text)); };
-  char const* Current_Item(void) const override {
+  char const* Current_Item() const override {
     return (ListClass::Current_Item());
   };
   virtual char const* Get_Item(int index) const {

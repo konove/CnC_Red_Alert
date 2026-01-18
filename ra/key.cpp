@@ -65,7 +65,7 @@
 
 #include "ra/monoc.h"
 
-// void Message_Loop(void);
+// void Message_Loop();
 
 // WWKeyboardClass * _Kbd = NULL;
 
@@ -81,8 +81,7 @@
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-WWKeyboardClass::WWKeyboardClass(void)
-    : MouseQX(0), MouseQY(0), Head(0), Tail(0) {
+WWKeyboardClass::WWKeyboardClass() : MouseQX(0), MouseQY(0), Head(0), Tail(0) {
   //	_Kbd = this;
 
   memset(KeyState, '\0', sizeof(KeyState));
@@ -101,7 +100,7 @@ WWKeyboardClass::WWKeyboardClass(void)
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-unsigned short WWKeyboardClass::Buff_Get(void) {
+unsigned short WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
 
@@ -145,7 +144,7 @@ bool WWKeyboardClass::Is_Mouse_Key(unsigned short key) {
  * HISTORY: * 10/16/1995 PWG : Created. * 09/24/1996 JLB : Converted to new
  *style keyboard system.                                  *
  *=============================================================================================*/
-unsigned short WWKeyboardClass::Check(void) const {
+unsigned short WWKeyboardClass::Check() const {
   ((WWKeyboardClass*)this)->Fill_Buffer_From_System();
   if (Is_Buffer_Empty()) return (false);
   return (Peek_Element());
@@ -164,7 +163,7 @@ unsigned short WWKeyboardClass::Check(void) const {
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-unsigned short WWKeyboardClass::Get(void) {
+unsigned short WWKeyboardClass::Get() {
   while (!Check()) {
   }  // wait for key in buffer
   return (Buff_Get());
@@ -363,7 +362,7 @@ WWKeyboardClass::Down(unsigned short key) {
 }
 
 extern "C" {
-void __cdecl Stop_Execution(void);
+void __cdecl Stop_Execution();
 }
 
 /***********************************************************************************************
@@ -382,7 +381,7 @@ void __cdecl Stop_Execution(void);
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned short WWKeyboardClass::Fetch_Element(void) {
+unsigned short WWKeyboardClass::Fetch_Element() {
   unsigned short val = 0;
   if (Head != Tail) {
     val = Buffer[Head];
@@ -409,7 +408,7 @@ unsigned short WWKeyboardClass::Fetch_Element(void) {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned short WWKeyboardClass::Peek_Element(void) const {
+unsigned short WWKeyboardClass::Peek_Element() const {
   if (!Is_Buffer_Empty()) {
     return (Buffer[Head]);
   }
@@ -457,7 +456,7 @@ bool WWKeyboardClass::Put_Element(unsigned short val) {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-bool WWKeyboardClass::Is_Buffer_Full(void) const {
+bool WWKeyboardClass::Is_Buffer_Full() const {
   if ((Tail + 1) % ARRAY_SIZE(Buffer) == Head) {
     return (true);
   }
@@ -480,7 +479,7 @@ bool WWKeyboardClass::Is_Buffer_Full(void) const {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-bool WWKeyboardClass::Is_Buffer_Empty(void) const {
+bool WWKeyboardClass::Is_Buffer_Empty() const {
   if (Head == Tail) {
     return (true);
   }
@@ -503,7 +502,7 @@ bool WWKeyboardClass::Is_Buffer_Empty(void) const {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-void WWKeyboardClass::Fill_Buffer_From_System(void) {
+void WWKeyboardClass::Fill_Buffer_From_System() {
   if (!Is_Buffer_Full()) {
     MSG msg;
     while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
@@ -530,7 +529,7 @@ void WWKeyboardClass::Fill_Buffer_From_System(void) {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-void WWKeyboardClass::Clear(void) {
+void WWKeyboardClass::Clear() {
   /*
   **	Extract any windows pending keyboard message events and then clear out
   *the keyboard *	buffer.
@@ -726,7 +725,7 @@ bool WWKeyboardClass::Message_Handler(HWND window, UINT message, UINT wParam,
  *                                                                                             *
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Available_Buffer_Room(void) const {
+int WWKeyboardClass::Available_Buffer_Room() const {
   int avail;
   if (Head == Tail) {
     avail = ARRAY_SIZE(Buffer);

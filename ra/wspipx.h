@@ -59,8 +59,8 @@ typedef sockaddr_storage SOCKADDR_IPX;
 */
 class IPXInterfaceClass : public WinsockInterfaceClass {
  public:
-  IPXInterfaceClass(void);
-  // virtual ~IPXInterfaceClass(void){Close();};
+  IPXInterfaceClass();
+  // virtual ~IPXInterfaceClass(){Close();};
   bool Get_Network_Card_Address(int card_number, SOCKADDR_IPX* addr);
 #ifndef PORTABLE
   virtual long Message_Handler(HWND window, UINT message, UINT wParam,
@@ -68,9 +68,9 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
 #endif
   virtual bool Open_Socket(SOCKET socketnum);
 
-  virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_IPX); };
+  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_IPX); };
 
-  virtual int Protocol_Event_Message(void) { return (WM_IPXASYNCEVENT); };
+  virtual int Protocol_Event_Message() { return (WM_IPXASYNCEVENT); };
 
  private:
   /*

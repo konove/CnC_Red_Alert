@@ -74,7 +74,7 @@ LABEL	RealBinEnd	BYTE
 ;*	VOID * to the address of the real mode IPX code			   *
 ;*                                                                         *
 ;* PROTO:								   *
-;*	VOID	*Get_RM_IPX_Address(VOID);			           *
+;*	VOID	*Get_RM_IPX_Address();			           *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/06/1994 SKB : Created.                                             *
@@ -96,7 +96,7 @@ LABEL	RealBinEnd	BYTE
 ;*	LONG size of the real mode IPX code                                *
 ;*                                                                         *
 ;* PROTO:					   			   *
-;*	LONG	Get_RM_IPX_Size(VOID);				   	   *
+;*	LONG	Get_RM_IPX_Size();				   	   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   07/06/1994 SKB : Created.                                             *

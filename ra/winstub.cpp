@@ -59,15 +59,15 @@
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus
-extern void VQA_PauseAudio(void);
-extern void VQA_ResumeAudio(void);
+extern void VQA_PauseAudio();
+extern void VQA_ResumeAudio();
 
 // #include "WolDebug.h"
 
-void Focus_Loss(void);
-void Focus_Restore(void);
+void Focus_Loss();
+void Focus_Restore();
 
-BOOL Any_Locked(void) {
+BOOL Any_Locked() {
   if (SeenBuff.Get_LockCount() || HidPage.Get_LockCount()) {
     return (true);
   } else {
@@ -89,7 +89,7 @@ BOOL Any_Locked(void) {
  * HISTORY: * 2/2/96 10:49AM ST : Created *
  *=============================================================================================*/
 
-void Check_For_Focus_Loss(void) {
+void Check_For_Focus_Loss() {
   static BOOL focus_last_time = 1;
   MSG msg;
 
@@ -501,11 +501,11 @@ void Colour_Debug(int call_number) {
 //
 //
 
-// IPXAddressClass::IPXAddressClass(void) {
+// IPXAddressClass::IPXAddressClass() {
 //	int i;
 //	i++;
 // }
-// int IPXManagerClass::Num_Connections(void) { return (0); }
+// int IPXManagerClass::Num_Connections() { return (0); }
 // int IPXManagerClass::Connection_ID( int ) { return (0); }
 // IPXAddressClass * IPXManagerClass::Connection_Address( int ) { return
 // ((IPXAddressClass*)0); } char * IPXManagerClass::Connection_Name( int ) {
@@ -539,7 +539,7 @@ void Colour_Debug(int call_number) {
 // IPXManagerClass::Response_Time() { return (0); } int
 // IPXManagerClass::Private_Num_Send( int ) { return (0); }
 
-//_VQAHandle  *  VQA_Alloc(void) { return ((_VQAHandle *)0); }
+//_VQAHandle  *  VQA_Alloc() { return ((_VQAHandle *)0); }
 // void  VQA_Init( _VQAHandle  *, long ( *)()) {}
 // long  VQA_Open( _VQAHandle  *, char const  *, _VQAConfig  * ) { return (0); }
 // void  VQA_Free( _VQAHandle  * ) {}
@@ -633,7 +633,7 @@ void Assert_Failure(char* expression, int line, char* file) {
  *                                                                                             *
  * HISTORY: * 5/22/96 3:57PM ST : Created *
  *=============================================================================================*/
-void Memory_Error_Handler(void) {
+void Memory_Error_Handler() {
   VisiblePage.Clear();
   CCPalette.Set();
   while (Get_Mouse_State()) {

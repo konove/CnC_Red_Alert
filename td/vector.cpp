@@ -111,7 +111,7 @@ VectorClass<T>::VectorClass(unsigned size, T const* array) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-VectorClass<T>::~VectorClass(void) {
+VectorClass<T>::~VectorClass() {
   VectorClass<T>::Clear();
 }
 
@@ -272,7 +272,7 @@ int VectorClass<T>::ID(T const& object) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-void VectorClass<T>::Clear(void) {
+void VectorClass<T>::Clear() {
   if (Vector && IsAllocated) {
     delete[] Vector;
     Vector = nullptr;

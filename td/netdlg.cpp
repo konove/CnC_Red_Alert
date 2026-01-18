@@ -201,7 +201,7 @@ typedef enum {
 /*
 ******************************** Prototypes *********************************
 */
-static int Net_Join_Dialog(void);
+static int Net_Join_Dialog();
 static void Clear_Game_List(ListClass* gamelist);
 static void Clear_Player_List(ListClass* playerlist);
 static int Request_To_Join(char* playername, int join_index,
@@ -211,10 +211,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         ListClass* gamelist,
                                         ColorListClass* playerlist,
                                         int join_index);
-static int Net_New_Dialog(void);
+static int Net_New_Dialog();
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist);
-static int Net_Fake_New_Dialog(void);
-static int Net_Fake_Join_Dialog(void);
+static int Net_Fake_New_Dialog();
+static int Net_Fake_Join_Dialog();
 
 /***********************************************************************************************
  * Init_Network -- initializes network stuff
@@ -231,7 +231,7 @@ static int Net_Fake_Join_Dialog(void);
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-bool Init_Network(void) {
+bool Init_Network() {
   NetNumType net;
   NetNodeType node;
 
@@ -277,7 +277,7 @@ bool Init_Network(void) {
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void Shutdown_Network(void) {
+void Shutdown_Network() {
 //
 // Note: The thought behind this section of code was that if the program
 // terminates early, without an EventClass::EXIT event, it still needs to
@@ -510,7 +510,7 @@ void Destroy_Connection(int id, int error) {
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-bool Remote_Connect(void) {
+bool Remote_Connect() {
   int rc;
   int stealth;  // original state of NetStealth flag
 
@@ -611,7 +611,7 @@ bool Remote_Connect(void) {
  *                                                                         						    *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-bool Server_Remote_Connect(void) {
+bool Server_Remote_Connect() {
   int stealth;  // original state of NetStealth flag
 
   /*------------------------------------------------------------------------
@@ -666,7 +666,7 @@ bool Server_Remote_Connect(void) {
  *                                                                         						    *
  * HISTORY: * 02/14/1995 ST : Created. *
  *=============================================================================================*/
-bool Client_Remote_Connect(void) {
+bool Client_Remote_Connect() {
   int rc;
   int stealth;  // original state of NetStealth flag
 
@@ -794,7 +794,7 @@ bool Client_Remote_Connect(void) {
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-static int Net_Join_Dialog(void) {
+static int Net_Join_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
@@ -2713,7 +2713,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-static int Net_New_Dialog(void) {
+static int Net_New_Dialog() {
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
@@ -4173,7 +4173,7 @@ void Net_Reconnect_Dialog(int reconn, int fresh, int oldest_index,
  *                                                                                             *
  * HISTORY: * 1/6/97 3:23PM ST : Created *
  *=============================================================================================*/
-void Wait_For_Focus(void) {
+void Wait_For_Focus() {
   CountDownTimerClass focus_timer;
   focus_timer.Set(5 * 60);
 #ifndef PORTABLE
@@ -4221,7 +4221,7 @@ extern bool Spawn_WChat(bool can_launch);
  *                                                                                             *
  * HISTORY: * 5/24/96 10:34AM ST : Created *
  *=============================================================================================*/
-static int Net_Fake_New_Dialog(void) {
+static int Net_Fake_New_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   int d_dialog_w = 120 * factor;                       // dialog width
@@ -4798,7 +4798,7 @@ static int Net_Fake_New_Dialog(void) {
  * HISTORY: * 5/24/96 11:07AM ST : Created *
  *=============================================================================================*/
 
-static int Net_Fake_Join_Dialog(void) {
+static int Net_Fake_Join_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions

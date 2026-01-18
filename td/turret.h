@@ -70,8 +70,8 @@ class TurretClass : public DriveClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
  protected:
   TurretClass(UnitType classid, HousesType house);
@@ -82,10 +82,10 @@ class TurretClass : public DriveClass {
 
   BulletClass* Fire_At(TARGET target, int which);
 
-  virtual DirType Fire_Direction(void) const;
+  virtual DirType Fire_Direction() const;
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
   virtual bool Ok_To_Move(DirType facing);
-  virtual void AI(void);
+  virtual void AI();
   virtual COORDINATE Fire_Coord(int which) const;
 };
 

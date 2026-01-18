@@ -58,7 +58,7 @@ LockedDataType LockedData;
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-void Init_Locked_Data(void) {
+void Init_Locked_Data() {
   /*
   ** Initialize all of the data elements that need to be locked.
   */
@@ -103,7 +103,7 @@ void Init_Locked_Data(void) {
   sosCODEC_Lock();
 }
 
-void Unlock_Locked_Data(void) {
+void Unlock_Locked_Data() {
   /*
   ** Lock the sound specific c functions that will cause us problems if
   ** they are swapped out during an interrupt.

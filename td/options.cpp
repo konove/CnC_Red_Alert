@@ -101,7 +101,7 @@
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-OptionsClass::OptionsClass(void) {
+OptionsClass::OptionsClass() {
   GameSpeed = TIMER_SECOND / TICKS_PER_SECOND;
   ScrollRate = TIMER_SECOND / TICKS_PER_SECOND;
   Volume = 0xE0;
@@ -138,7 +138,7 @@ OptionsClass::OptionsClass(void) {
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::One_Time(void) { Set_Score_Vol(ScoreVolume); }
+void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume); }
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
@@ -155,7 +155,7 @@ void OptionsClass::One_Time(void) { Set_Score_Vol(ScoreVolume); }
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Process(void) {}
+void OptionsClass::Process() {}
 
 /***********************************************************************************************
  * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
@@ -276,7 +276,7 @@ void OptionsClass::Set_Brightness(int brightness) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Get_Brightness(void) const {
+int OptionsClass::Get_Brightness() const {
   return (Cardinal_To_Fixed(0x80, Brightness - 0x40));
 }
 
@@ -319,7 +319,7 @@ void OptionsClass::Set_Color(int color) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Get_Color(void) const { return (Color); }
+int OptionsClass::Get_Color() const { return (Color); }
 
 /***********************************************************************************************
  * OptionsClass::Set_Contrast -- Sets the contrast to the value specified. *
@@ -359,7 +359,7 @@ void OptionsClass::Set_Contrast(int contrast) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Get_Contrast(void) const {
+int OptionsClass::Get_Contrast() const {
   return (Cardinal_To_Fixed(0x80, Contrast - 0x40));
 }
 
@@ -402,7 +402,7 @@ void OptionsClass::Set_Tint(int tint) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-int OptionsClass::Get_Tint(void) const { return (Tint); }
+int OptionsClass::Get_Tint() const { return (Tint); }
 
 /***********************************************************************************************
  * OptionsClass::Adjust_Palette -- Adjusts the palette according to the settings
@@ -489,7 +489,7 @@ void OptionsClass::Adjust_Palette(void* oldpal, void* newpal,
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void OptionsClass::Load_Settings(void) {
+void OptionsClass::Load_Settings() {
   char* buffer;  // INI staging buffer pointer.
 
   /*
@@ -670,7 +670,7 @@ void OptionsClass::Load_Settings(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void OptionsClass::Save_Settings(void) {
+void OptionsClass::Save_Settings() {
   char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
 
@@ -724,7 +724,7 @@ void OptionsClass::Save_Settings(void) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-void OptionsClass::Set(void) {
+void OptionsClass::Set() {
   Set_Brightness(Brightness);
   Set_Contrast(Contrast);
   Set_Color(Color);
@@ -772,7 +772,7 @@ int OptionsClass::Normalize_Delay(int delay) const {
   return (delay);
 }
 
-void OptionsClass::Fixup_Palette(void) const {
+void OptionsClass::Fixup_Palette() const {
   Adjust_Palette(OriginalPalette, GamePalette, Brightness, Color, Tint,
                  Contrast);
 }

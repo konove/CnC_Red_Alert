@@ -81,7 +81,7 @@ CDTimerClass<SystemTimerClass> MouseClass::Timer = 0;
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-MouseClass::MouseClass(void)
+MouseClass::MouseClass()
     : IsSmall(false),
       CurrentMouseShape(MOUSE_NORMAL),
       NormalMouseShape(MOUSE_NORMAL),
@@ -124,7 +124,7 @@ void MouseClass::Set_Default_Mouse(MouseType mouse, bool size) {
  *                                                                                             *
  * HISTORY: * 03/27/1995 JLB : Created. *
  *=============================================================================================*/
-void MouseClass::Revert_Mouse_Shape(void) {
+void MouseClass::Revert_Mouse_Shape() {
   Override_Mouse_Shape(NormalMouseShape, false);
 }
 
@@ -290,7 +290,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void MouseClass::One_Time(void) {
+void MouseClass::One_Time() {
   ScrollClass::One_Time();
 
 /*
@@ -323,7 +323,7 @@ void MouseClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void MouseClass::Init_Clear(void) {
+void MouseClass::Init_Clear() {
   ScrollClass::Init_Clear();
   IsSmall = false;
   NormalMouseShape = MOUSE_NORMAL;

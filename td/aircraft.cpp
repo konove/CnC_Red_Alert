@@ -168,7 +168,7 @@ void* AircraftClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int AircraftClass::Validate(void) const {
+int AircraftClass::Validate() const {
   int num;
 
   num = Aircraft.ID(this);
@@ -196,7 +196,7 @@ int AircraftClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET AircraftClass::As_Target(void) const {
+TARGET AircraftClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_AIRCRAFT, Aircraft.ID(this)));
 }
@@ -618,7 +618,7 @@ void AircraftClass::Write_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Hunt(void) {
+int AircraftClass::Mission_Hunt() {
   Validate();
   if (Class->IsFixedWing) {
     enum { LOOK_FOR_TARGET, FLY_TO_TARGET, DROP_BOMBS };
@@ -711,7 +711,7 @@ int AircraftClass::Mission_Hunt(void) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::AI(void) {
+void AircraftClass::AI() {
   Validate();
   /*
   **	A Mission change can always occur if the aircraft is landed or flying.
@@ -964,7 +964,7 @@ bool AircraftClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftClass::Overlap_List(void) const {
+short const* AircraftClass::Overlap_List() const {
   Validate();
   static short const _list[] = {-(MAP_CELL_W - 1),
                                 -MAP_CELL_W,
@@ -1004,7 +1004,7 @@ short const* AircraftClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Init(void) {
+void AircraftClass::Init() {
   AircraftClass* ptr;
 
   Aircraft.Free_All();
@@ -1030,7 +1030,7 @@ void AircraftClass::Init(void) {
  *                                                                                             *
  * HISTORY: * 10/31/94   JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Unload(void) {
+int AircraftClass::Mission_Unload() {
   Validate();
   if (Class->IsFixedWing) {
     enum { PICK_AIRSTRIP, FLY_TO_AIRSTRIP, BUG_OUT };
@@ -1342,7 +1342,7 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
  *                                                                                             *
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
-LayerType AircraftClass::In_Which_Layer(void) const {
+LayerType AircraftClass::In_Which_Layer() const {
   Validate();
   if (Class->IsFixedWing) return (LAYER_TOP);
 
@@ -1369,7 +1369,7 @@ LayerType AircraftClass::In_Which_Layer(void) const {
  *                                                                                             *
  * HISTORY: * 11/02/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AircraftClass::Sort_Y(void) const {
+COORDINATE AircraftClass::Sort_Y() const {
   Validate();
   return (Coord_Add(Coord, 0x00800000L));
 }
@@ -1393,7 +1393,7 @@ COORDINATE AircraftClass::Sort_Y(void) const {
  * HISTORY: * 03/19/1995 JLB : Created. * 08/13/1995 JLB : Handles aircraft
  *altitude gain after takeoff logic.                      *
  *=============================================================================================*/
-int AircraftClass::Mission_Retreat(void) {
+int AircraftClass::Mission_Retreat() {
   Validate();
   if (Class->IsFixedWing) {
     if (Class->IsFixedWing && Altitude < FLIGHT_LEVEL) {
@@ -1617,7 +1617,7 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Move(void) {
+int AircraftClass::Mission_Move() {
   Validate();
   if (Class->IsFixedWing) {
     /*
@@ -2181,7 +2181,7 @@ ActionType AircraftClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-DirType AircraftClass::Pose_Dir(void) const {
+DirType AircraftClass::Pose_Dir() const {
   Validate();
   if (*this == AIRCRAFT_TRANSPORT) {
     return (DIR_N);
@@ -2205,7 +2205,7 @@ DirType AircraftClass::Pose_Dir(void) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Attack(void) {
+int AircraftClass::Mission_Attack() {
   Validate();
   if (Class->IsFixedWing) {
     Assign_Mission(MISSION_HUNT);
@@ -2474,7 +2474,7 @@ COORDINATE AircraftClass::Fire_Coord(int) const {
                      0x040));
 }
 
-COORDINATE AircraftClass::Target_Coord(void) const {
+COORDINATE AircraftClass::Target_Coord() const {
   Validate();
   return (Coord_Add(XYP_Coord(0, -Altitude), Coord));
 }
@@ -2697,7 +2697,7 @@ DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Process_Take_Off(void) {
+bool AircraftClass::Process_Take_Off() {
   Validate();
   IsLanding = false;
   IsTakingOff = true;
@@ -2743,7 +2743,7 @@ bool AircraftClass::Process_Take_Off(void) {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Process_Landing(void) {
+bool AircraftClass::Process_Landing() {
   Validate();
   IsTakingOff = false;
   IsLanding = true;
@@ -2917,7 +2917,7 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
  *                                                                                             *
  * HISTORY: * 06/11/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Pip_Count(void) const {
+int AircraftClass::Pip_Count() const {
   Validate();
   int retval = 0;
 
@@ -2951,7 +2951,7 @@ int AircraftClass::Pip_Count(void) const {
  * HISTORY: * 06/12/1995 JLB : Created. * 07/04/1995 JLB : Ground controller
  *gives orders.                                          *
  *=============================================================================================*/
-int AircraftClass::Mission_Enter(void) {
+int AircraftClass::Mission_Enter() {
   Validate();
   enum { INITIAL, TAKEOFF, ALTITUDE, TRAVEL, LANDING };
   switch (Status) {
@@ -3068,7 +3068,7 @@ int AircraftClass::Mission_Enter(void) {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET AircraftClass::Good_LZ(void) const {
+TARGET AircraftClass::Good_LZ() const {
   Validate();
   /*
   **	Scan through all of the buildings and try to land near
@@ -3139,7 +3139,7 @@ void AircraftClass::Set_Speed(int speed) {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-DirType AircraftClass::Fire_Direction(void) const {
+DirType AircraftClass::Fire_Direction() const {
   Validate();
   return (SecondaryFacing.Current());
 }
@@ -3159,7 +3159,7 @@ DirType AircraftClass::Fire_Direction(void) const {
  *                                                                                             *
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
-AircraftClass::~AircraftClass(void) {
+AircraftClass::~AircraftClass() {
   if (GameActive && Class) {
     /*
     **	If there are any cargo members, delete them.
@@ -3270,7 +3270,7 @@ int AircraftClass::Threat_Range(int control) const {
  *                                                                                             *
  * HISTORY: * 07/18/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Guard(void) {
+int AircraftClass::Mission_Guard() {
   Validate();
   if (Altitude == FLIGHT_LEVEL) {
     /*
@@ -3384,7 +3384,7 @@ int AircraftClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftClass::Mission_Guard_Area(void) {
+int AircraftClass::Mission_Guard_Area() {
   Validate();
   if (Altitude == FLIGHT_LEVEL) {
     Enter_Idle_Mode();
@@ -3417,7 +3417,7 @@ int AircraftClass::Mission_Guard_Area(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Response_Attack(void) {
+void AircraftClass::Response_Attack() {
   Validate();
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR, VOC_YESSIR,
                                 VOC_YESSIR};
@@ -3441,7 +3441,7 @@ void AircraftClass::Response_Attack(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Response_Move(void) {
+void AircraftClass::Response_Move() {
   Validate();
   static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
                                 VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
@@ -3465,7 +3465,7 @@ void AircraftClass::Response_Move(void) {
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Response_Select(void) {
+void AircraftClass::Response_Select() {
   Validate();
   static VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};

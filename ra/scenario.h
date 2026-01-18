@@ -57,15 +57,15 @@
 class ScenarioClass {
  public:
   // Constructor.
-  ScenarioClass(void);
+  ScenarioClass();
   void Set_Scenario_Name(int scenario, ScenarioPlayerType player,
                          ScenarioDirType dir = SCEN_DIR_NONE,
                          ScenarioVarType var = SCEN_VAR_NONE);
   void Set_Scenario_Name(char const* name);
 
   bool Set_Global_To(int global, bool value);
-  void Do_BW_Fade(void);
-  void Do_Fade_AI(void);
+  void Do_BW_Fade();
+  void Do_Fade_AI();
 
   /*
   **	This is the source of the random numbers used in the game. This controls
@@ -335,16 +335,16 @@ void Disect_Scenario_Name(char const* name, int& scenario,
                           ScenarioPlayerType& player, ScenarioDirType& dir,
                           ScenarioVarType& var);
 void Post_Load_Game(int load_net);
-bool End_Game(void);
+bool End_Game();
 bool Read_Scenario(char* root);
 bool Start_Scenario(char* root, bool briefing = true);
-HousesType Select_House(void);
-void Clear_Scenario(void);
+HousesType Select_House();
+void Clear_Scenario();
 void Do_Briefing(char const* text);
-void Do_Lose(void);
-void Do_Win(void);
-void Do_Restart(void);
-void Fill_In_Data(void);
+void Do_Lose();
+void Do_Win();
+void Do_Restart();
+void Fill_In_Data();
 bool Restate_Mission(char const* name, int button1, int button2);
 bool BGMessageBox(char const* text, int button1, int button2);
 

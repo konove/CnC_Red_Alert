@@ -208,7 +208,7 @@ class EventClass {
   } Data;
 
   //-------------- Functions ---------------------
-  EventClass(void) { Type = EMPTY; };
+  EventClass() { Type = EMPTY; };
   EventClass(SpecialClass data);
   EventClass(EventType type, TARGET target);
   EventClass(EventType type);
@@ -223,7 +223,7 @@ class EventClass {
   EventClass(AnimType anim, HousesType owner, COORDINATE coord);
 
   // Process the event.
-  void Execute(void);
+  void Execute();
 
   int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; };
 

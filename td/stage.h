@@ -65,19 +65,19 @@ class StageClass {
   unsigned char Rate;
 
  public:
-  StageClass(void) {
+  StageClass() {
     StageTimer = 0;
     Stage = 0;
     Rate = 0;
   };
   StageClass(NoInitClass const& x) {};
 
-  int Fetch_Stage(void) const { return Stage; };
-  int Fetch_Rate(void) const { return Rate; };
+  int Fetch_Stage() const { return Stage; };
+  int Fetch_Rate() const { return Rate; };
   void Set_Stage(int stage) { Stage = stage; };
   void Set_Rate(unsigned char rate) { Rate = StageTimer = rate; };
-  void AI(void) {};
-  bool Graphic_Logic(void) {
+  void AI() {};
+  bool Graphic_Logic() {
     if (Rate) {
       StageTimer--;
       if (!StageTimer) {
@@ -98,8 +98,8 @@ class StageClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers(void) { return; }
-  void Decode_Pointers(void) { return; }
+  void Code_Pointers() { return; }
+  void Decode_Pointers() { return; }
 };
 
 #endif

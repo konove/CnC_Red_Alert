@@ -168,7 +168,7 @@ class BitmapClass {
 class TPoint2D {
  public:
   TPoint2D(int xx, int yy) : x(xx), y(yy) {};
-  TPoint2D(void) : x(0), y(0) {};
+  TPoint2D() : x(0), y(0) {};
 
   int x;
   int y;
@@ -189,7 +189,7 @@ extern HWND MainWindow;                // handle to programs main window
 /*
 ** Pointer to function to call if we detect a focus loss
 */
-extern void (*Gbuffer_Focus_Loss_Function)(void);
+extern void (*Gbuffer_Focus_Loss_Function)();
 
 enum GBC_Enum {
   GBC_NONE = 0,
@@ -261,15 +261,15 @@ class GraphicViewPortClass {
   /* define functions to get at the private data members
    */
   /*===================================================================*/
-  long Get_Offset(void);
-  int Get_Height(void);
-  int Get_Width(void);
-  int Get_XAdd(void);
-  int Get_XPos(void);
-  int Get_YPos(void);
-  int Get_Pitch(void);
-  inline BOOL Get_IsDirectDraw(void);
-  GraphicBufferClass* Get_Graphic_Buffer(void);
+  long Get_Offset();
+  int Get_Height();
+  int Get_Width();
+  int Get_XAdd();
+  int Get_XPos();
+  int Get_YPos();
+  int Get_Pitch();
+  inline BOOL Get_IsDirectDraw();
+  GraphicBufferClass* Get_Graphic_Buffer();
 
   /*===================================================================*/
   /* Define a function which allows us to change a video viewport on	*/
@@ -411,21 +411,21 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   GraphicBufferClass(int w, int h, GBC_Enum flags);
   GraphicBufferClass(int w, int h, void* buffer, long size);
   GraphicBufferClass(int w, int h, void* buffer = 0);
-  GraphicBufferClass(void);
+  GraphicBufferClass();
   ~GraphicBufferClass();
 
   void DD_Init(GBC_Enum flags);
   void Init(int w, int h, void* buffer, long size, GBC_Enum flags);
-  void Un_Init(void);
+  void Un_Init();
   void Attach_DD_Surface(GraphicBufferClass* attach_buffer);
-  BOOL Lock(void);
-  BOOL Unlock(void);
+  BOOL Lock();
+  BOOL Unlock();
 
   void Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt, long scale,
                     unsigned char angle);
 
   // Member to get a pointer to a direct draw surface
-  LPDIRECTDRAWSURFACE Get_DD_Surface(void);
+  LPDIRECTDRAWSURFACE Get_DD_Surface();
 
  protected:
   LPDIRECTDRAWSURFACE
@@ -433,7 +433,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   DDSURFACEDESC VideoSurfaceDescription;  // Description of the said surface
 };
 
-inline int GraphicViewPortClass::Get_LockCount(void) { return (LockCount); }
+inline int GraphicViewPortClass::Get_LockCount() { return (LockCount); }
 
 /***********************************************************************************************
  * GVPC::Get_IsDirectDraw -- provide read access to the IsDirectDraw flag *
@@ -448,9 +448,7 @@ inline int GraphicViewPortClass::Get_LockCount(void) { return (LockCount); }
  *                                                                                             *
  * HISTORY: * 11/29/95 1:02PM ST : Created *
  *=============================================================================================*/
-inline BOOL GraphicViewPortClass::Get_IsDirectDraw(void) {
-  return (IsDirectDraw);
-}
+inline BOOL GraphicViewPortClass::Get_IsDirectDraw() { return (IsDirectDraw); }
 
 /***********************************************************************************************
  * GBC::Get_DD_Surface -- returns a pointer to the buffer direct draw surface *
@@ -465,7 +463,7 @@ inline BOOL GraphicViewPortClass::Get_IsDirectDraw(void) {
  *                                                                                             *
  * HISTORY: * 9/29/95 9:43AM ST : Created *
  *=============================================================================================*/
-inline LPDIRECTDRAWSURFACE GraphicBufferClass::Get_DD_Surface(void) {
+inline LPDIRECTDRAWSURFACE GraphicBufferClass::Get_DD_Surface() {
   return (VideoSurfacePtr);
 }
 
@@ -483,7 +481,7 @@ inline LPDIRECTDRAWSURFACE GraphicBufferClass::Get_DD_Surface(void) {
  * HISTORY: * 09-19-95 12:33pm ST : Created * 10/09/1995     : Moved actually
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
-inline BOOL GraphicViewPortClass::Lock(void) {
+inline BOOL GraphicViewPortClass::Lock() {
   BOOL lock = GraphicBuff->Lock();
   if (!lock) return (FALSE);
 
@@ -507,7 +505,7 @@ inline BOOL GraphicViewPortClass::Lock(void) {
  * HISTORY: * 09-19-95 02:20pm ST : Created * 10/09/1995     : Moved actually
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
-inline BOOL GraphicViewPortClass::Unlock(void) {
+inline BOOL GraphicViewPortClass::Unlock() {
   BOOL unlock = GraphicBuff->Unlock();
   if (!unlock) return (FALSE);
   if (this != GraphicBuff && IsDirectDraw && !GraphicBuff->LockCount) {
@@ -526,7 +524,7 @@ inline BOOL GraphicViewPortClass::Unlock(void) {
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long GraphicViewPortClass::Get_Offset(void) { return (Offset); }
+inline long GraphicViewPortClass::Get_Offset() { return (Offset); }
 
 /***************************************************************************
  * GVPC::GET_HEIGHT -- Gets the height of a virtual viewport instance      *
@@ -538,7 +536,7 @@ inline long GraphicViewPortClass::Get_Offset(void) { return (Offset); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Height(void) { return (Height); }
+inline int GraphicViewPortClass::Get_Height() { return (Height); }
 
 /***************************************************************************
  * GVPC::GET_WIDTH -- Get the width of a virtual viewport instance
@@ -551,7 +549,7 @@ inline int GraphicViewPortClass::Get_Height(void) { return (Height); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Width(void) { return (Width); }
+inline int GraphicViewPortClass::Get_Width() { return (Width); }
 
 /***************************************************************************
  * GVPC::GET_XADD -- Get the X add offset for virtual viewport instance    *
@@ -563,7 +561,7 @@ inline int GraphicViewPortClass::Get_Width(void) { return (Width); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XAdd(void) { return (XAdd); }
+inline int GraphicViewPortClass::Get_XAdd() { return (XAdd); }
 /***************************************************************************
  * GVPC::GET_XPOS -- Get the x pos of the VP on the Video                  *
  *                                                                         *
@@ -575,7 +573,7 @@ inline int GraphicViewPortClass::Get_XAdd(void) { return (XAdd); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XPos(void) { return (XPos); }
+inline int GraphicViewPortClass::Get_XPos() { return (XPos); }
 
 /***************************************************************************
  * GVPC::GET_YPOS -- Get the y pos of the VP on the video                  *
@@ -590,7 +588,7 @@ inline int GraphicViewPortClass::Get_XPos(void) { return (XPos); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_YPos(void) { return (YPos); }
+inline int GraphicViewPortClass::Get_YPos() { return (YPos); }
 
 /***************************************************************************
  * GVPC::GET_GRAPHIC_BUFFER -- Get the graphic buffer of the VP.            *
@@ -602,7 +600,7 @@ inline int GraphicViewPortClass::Get_YPos(void) { return (YPos); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer(void) {
+inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
   return (GraphicBuff);
 }
 
@@ -1271,7 +1269,7 @@ inline VOID GraphicViewPortClass::Remap(VOID* remap) {
   Unlock();
 }
 
-inline int GraphicViewPortClass::Get_Pitch(void) { return (Pitch); }
+inline int GraphicViewPortClass::Get_Pitch() { return (Pitch); }
 /*=========================================================================*/
 /* The following BufferClass functions are defined here because they act
  */

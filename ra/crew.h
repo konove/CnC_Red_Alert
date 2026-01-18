@@ -55,11 +55,11 @@ class CrewClass {
   /*
   **	Constructors, Destructors, and overloaded operators.
   */
-  CrewClass(void) : Kills(0) {};
+  CrewClass() : Kills(0) {};
   CrewClass(NoInitClass const&) {};
-  ~CrewClass(void) {};
+  ~CrewClass() {};
 
-  int Made_A_Kill(void) {
+  int Made_A_Kill() {
     Kills++;
     return (Kills);
   };

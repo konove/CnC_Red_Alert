@@ -68,7 +68,7 @@
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::New_Scenario(void) {
+int MapEditClass::New_Scenario() {
   int scen_num;
   ScenarioPlayerType player;
   ScenarioDirType dir;
@@ -206,7 +206,7 @@ int MapEditClass::New_Scenario(void) {
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Load_Scenario(void) {
+int MapEditClass::Load_Scenario() {
   int scen_num;
   ScenarioPlayerType player;
   ScenarioDirType dir;
@@ -310,7 +310,7 @@ int MapEditClass::Load_Scenario(void) {
    * HISTORY:                                                                *
    *   10/21/1994 BR : Created.                                              *
    *=========================================================================*/
-  int MapEditClass::Save_Scenario(void) {
+  int MapEditClass::Save_Scenario() {
     int scen_num;
     ScenarioPlayerType player;
     ScenarioDirType dir;
@@ -1601,7 +1601,7 @@ int MapEditClass::Load_Scenario(void) {
    *   11/14/1994 BR : Created.                                              *
    *   02/13/1996 JLB : Revamped to new system.                              *
    *=========================================================================*/
-  int MapEditClass::Scenario_Dialog(void) {
+  int MapEditClass::Scenario_Dialog() {
     TheaterType orig_theater = Scen.Theater;  // original theater
     HousesType house = PlayerPtr->Class->House;
     HousesType newhouse = house;
@@ -2484,7 +2484,7 @@ int MapEditClass::Load_Scenario(void) {
    * HISTORY:                                                                *
    *   11/29/1994 BR : Created.                                              *
    *=========================================================================*/
-  void MapEditClass::Handle_Triggers(void) {
+  void MapEditClass::Handle_Triggers() {
     int rc;
 
     /*
@@ -2611,7 +2611,7 @@ int MapEditClass::Load_Scenario(void) {
    *   11/29/1994 BR : Created.                                              *
    *   05/07/1996 JLB : Streamlined and sort trigger list.                   *
    *=========================================================================*/
-  int MapEditClass::Select_Trigger(void) {
+  int MapEditClass::Select_Trigger() {
     /*
     **	Dialog & button dimensions
     */

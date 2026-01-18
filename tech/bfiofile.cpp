@@ -110,7 +110,7 @@ BufferIOFileClass::BufferIOFileClass(char const* filename)
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-BufferIOFileClass::BufferIOFileClass(void)
+BufferIOFileClass::BufferIOFileClass()
     : IsAllocated(false),
       IsOpen(false),
       IsDiskOpen(false),
@@ -142,7 +142,7 @@ BufferIOFileClass::BufferIOFileClass(void)
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-BufferIOFileClass::~BufferIOFileClass(void) { Free(); }
+BufferIOFileClass::~BufferIOFileClass() { Free(); }
 
 /***********************************************************************************************
  * BufferIOFileClass::Cache -- Load part or all of a file data into RAM. *
@@ -315,7 +315,7 @@ bool BufferIOFileClass::Cache(long size, void* ptr) {
  *                                                                                             *
  * HISTORY: * 11/10/1995 DRD : Created. *
  *=============================================================================================*/
-void BufferIOFileClass::Free(void) {
+void BufferIOFileClass::Free() {
   if (Buffer) {
     if (IsAllocated) {
       delete[] static_cast<char*>(Buffer);
@@ -345,7 +345,7 @@ void BufferIOFileClass::Free(void) {
  *                                                                                             *
  * HISTORY: * 11/15/1995 DRD : Created. *
  *=============================================================================================*/
-bool BufferIOFileClass::Commit(void) {
+bool BufferIOFileClass::Commit() {
   long size;
 
   if (UseBuffer) {
@@ -442,7 +442,7 @@ int BufferIOFileClass::Is_Available(int) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-int BufferIOFileClass::Is_Open(void) const {
+int BufferIOFileClass::Is_Open() const {
   if (IsOpen && UseBuffer) {
     return (true);
   }
@@ -898,7 +898,7 @@ long BufferIOFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-long BufferIOFileClass::Size(void) {
+long BufferIOFileClass::Size() {
   if (IsOpen && UseBuffer) {
     return (FileSize);
   }
@@ -920,7 +920,7 @@ long BufferIOFileClass::Size(void) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-void BufferIOFileClass::Close(void) {
+void BufferIOFileClass::Close() {
   if (UseBuffer) {
     Commit();
 

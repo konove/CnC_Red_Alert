@@ -169,7 +169,7 @@ char const* TeamTypeClass::TMissions[TMISSION_COUNT] = {
  *   12/07/1994 BR : Created.                                              *
  *   11/22/1995 JLB : Uses initializer constructor method.                 *
  *=========================================================================*/
-TeamTypeClass::TeamTypeClass(void)
+TeamTypeClass::TeamTypeClass()
     : AbstractTypeClass(RTTI_TEAMTYPE, TeamTypes.ID(this), TXT_NONE, ""),
       IsRoundAbout(false),
       IsSuicide(false),
@@ -205,7 +205,7 @@ TeamTypeClass::TeamTypeClass(void)
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Init(void) { TeamTypes.Free_All(); }
+void TeamTypeClass::Init() { TeamTypes.Free_All(); }
 
 /***************************************************************************
  * TeamTypeClass::As_Pointer -- gets ptr for team type with given name     *
@@ -341,7 +341,7 @@ void TeamTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass* TeamTypeClass::Create_One_Of(void) const {
+TeamClass* TeamTypeClass::Create_One_Of() const {
   if (ScenarioInit || Number < MaxAllowed) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return (new TeamClass(this, HouseClass::As_Pointer(House)));
@@ -363,7 +363,7 @@ TeamClass* TeamTypeClass::Create_One_Of(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Destroy_All_Of(void) const {
+void TeamTypeClass::Destroy_All_Of() const {
   for (int index = 0; index < Teams.Count(); index++) {
     TeamClass* team = Teams.Ptr(index);
 
@@ -647,7 +647,7 @@ void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-bool TeamTypeClass::Edit(void) {
+bool TeamTypeClass::Edit() {
   /*
   **	Dialog & button dimensions
   */
@@ -1466,7 +1466,7 @@ int atoh(char* str) {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TeamTypeClass::Member_Description(void) const {
+char const* TeamTypeClass::Member_Description() const {
   static char buffer[128];
 
   buffer[0] = '\0';
@@ -1510,7 +1510,7 @@ char const* TeamTypeClass::Member_Description(void) const {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TeamTypeClass::Description(void) const {
+char const* TeamTypeClass::Description() const {
   static char _buffer[128];
   char extra = ' ';
   char loc[3];

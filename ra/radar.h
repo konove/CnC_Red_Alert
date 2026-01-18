@@ -50,7 +50,7 @@
 
 class RadarClass : public DisplayClass {
  public:
-  RadarClass(void);
+  RadarClass();
   RadarClass(NoInitClass const& x) : DisplayClass(x) {};
 
   /*
@@ -70,8 +70,8 @@ class RadarClass : public DisplayClass {
   /*
   ** Initialization
   */
-  virtual void One_Time(void);    // One-time inits
-  virtual void Init_Clear(void);  // Clears all to known state
+  virtual void One_Time();    // One-time inits
+  virtual void Init_Clear();  // Clears all to known state
 
   virtual void Flag_Cell(CELL cell);
   virtual bool Map_Cell(CELL cell, HouseClass* house);
@@ -87,9 +87,9 @@ class RadarClass : public DisplayClass {
   int Click_In_Radar(int& x, int& y, bool change = false) const;
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
 
-  bool Is_Zoomable(void) const;
+  bool Is_Zoomable() const;
   void Set_Radar_Position(CELL cell);
-  CELL Radar_Position(void);
+  CELL Radar_Position();
   bool Radar_Activate(int control);
   void Plot_Radar_Pixel(CELL cell);
   void Radar_Pixel(CELL cell);
@@ -101,23 +101,23 @@ class RadarClass : public DisplayClass {
   bool Cell_On_Radar(CELL cell);
   void Render_Infantry(CELL cell, int x, int y, int size);
   void Render_Overlay(CELL cell, int x, int y, int size);
-  void Radar_Anim(void);
-  bool Is_Radar_Active(void);
-  bool Is_Radar_Existing(void);
+  void Radar_Anim();
+  bool Is_Radar_Active();
+  bool Is_Radar_Existing();
 
   /*
   ** Toggles player names on & off
   */
   void Player_Names(bool on);
-  int Is_Player_Names(void) { return IsPlayerNames; }
-  bool Spying_On_House(void) { return IsHouseSpy; }
-  void Draw_Names(void);
-  bool Draw_House_Info(void);
-  int Is_Zoomed(void) { return IsZoomed; }
-  bool Get_Jammed(void);
+  int Is_Player_Names() { return IsPlayerNames; }
+  bool Spying_On_House() { return IsHouseSpy; }
+  void Draw_Names();
+  bool Draw_House_Info();
+  int Is_Zoomed() { return IsZoomed; }
+  bool Get_Jammed();
   void Set_Jammed(bool jam) { IsRadarJammed = jam; }
-  bool Spy_Next_House(void);
-  void Activate_Pulse(void);
+  bool Spy_Next_House();
+  void Activate_Pulse();
 
  protected:
   /*
@@ -167,7 +167,7 @@ class RadarClass : public DisplayClass {
   */
   class RTacticalClass : public GadgetClass {
    public:
-    RTacticalClass(void)
+    RTacticalClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {};

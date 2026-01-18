@@ -91,7 +91,7 @@ int BufferPipe::Put(void const* source, int slen) {
 // FilePipe
 //---------------------------------------------------------------------------------------------------------
 
-FilePipe::~FilePipe(void) {
+FilePipe::~FilePipe() {
   if (Valid_File() && HasOpened) {
     HasOpened = false;
     File->Close();
@@ -119,7 +119,7 @@ FilePipe::~FilePipe(void) {
  *                                                                                             *
  * HISTORY: * 07/05/1996 JLB : Created. *
  *=============================================================================================*/
-int FilePipe::End(void) {
+int FilePipe::End() {
   int total = Pipe::End();
   if (Valid_File() && HasOpened) {
     HasOpened = false;

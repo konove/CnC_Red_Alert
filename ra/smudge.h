@@ -74,24 +74,24 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
   SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(x) {};
-  operator SmudgeType(void) const { return Class->Type; };
-  virtual ~SmudgeClass(void) {
+  operator SmudgeType() const { return Class->Type; };
+  virtual ~SmudgeClass() {
     if (GameActive) SmudgeClass::Limbo();
     Class = nullptr;
   };
 
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "SMUDGE"; };
+  static char const* INI_Name() { return "SMUDGE"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   virtual bool Mark(MarkType);
   virtual void Draw_It(int, int, WindowNumberType) const {};
 

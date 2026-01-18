@@ -106,7 +106,7 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
   IsColorized = 0;
 }
 
-SliderClass::~SliderClass(void) {
+SliderClass::~SliderClass() {
   if (PlusGadget) {
     delete PlusGadget;
     PlusGadget = nullptr;
@@ -188,7 +188,7 @@ int SliderClass::Set_Value(int value) {
  * INPUT:      none * OUTPUT:     none * WARNINGS:   none * HISTORY: 01/15/1995
  *JLB : Created.                                                       *
  *=============================================================================================*/
-void SliderClass::Recalc_Thumb(void) {
+void SliderClass::Recalc_Thumb() {
   int length = IsHorizontal ? Width : Height;
   int size = Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, Thumb));
   ThumbSize = std::max(size, 4);
@@ -306,7 +306,7 @@ int SliderClass::Step(int up) {
  *hidden when this routine is called.               * HISTORY:    01/16/1995 JLB
  *: Created.                                                       *
  *=============================================================================================*/
-void SliderClass::Draw_Thumb(void) {
+void SliderClass::Draw_Thumb() {
   if (IsHorizontal) {
     Draw_Box(X + ThumbStart, Y, ThumbSize, Height, BOXSTYLE_GREEN_RAISED, true);
   } else {

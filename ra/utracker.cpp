@@ -90,7 +90,7 @@ UnitTrackerClass::UnitTrackerClass(int unit_count) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:10AM ST : Created *
  *=============================================================================================*/
-UnitTrackerClass::~UnitTrackerClass(void) { delete UnitTotals; }
+UnitTrackerClass::~UnitTrackerClass() { delete UnitTotals; }
 
 /***********************************************************************************************
  * UTC::Increment_Unit_Total -- Increment the total for the specefied unit *
@@ -140,7 +140,7 @@ void UnitTrackerClass::Decrement_Unit_Total(int unit_type) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:13AM ST : Created *
  *=============================================================================================*/
-long* UnitTrackerClass::Get_All_Totals(void) { return (UnitTotals); }
+long* UnitTrackerClass::Get_All_Totals() { return (UnitTotals); }
 
 /***********************************************************************************************
  * UTC::Clear_Unit_Total -- Clear out all the unit totals *
@@ -155,7 +155,7 @@ long* UnitTrackerClass::Get_All_Totals(void) { return (UnitTotals); }
  *                                                                                             *
  * HISTORY: * 6/7/96 0:14AM ST : Created *
  *=============================================================================================*/
-void UnitTrackerClass::Clear_Unit_Total(void) {
+void UnitTrackerClass::Clear_Unit_Total() {
   memset(UnitTotals, 0, UnitCount * sizeof(long));
 }
 
@@ -173,7 +173,7 @@ void UnitTrackerClass::Clear_Unit_Total(void) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:15AM ST : Created *
  *=============================================================================================*/
-void UnitTrackerClass::To_Network_Format(void) {
+void UnitTrackerClass::To_Network_Format() {
   if (!InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
       UnitTotals[i] = htonl(UnitTotals[i]);
@@ -196,7 +196,7 @@ void UnitTrackerClass::To_Network_Format(void) {
  *                                                                                             *
  * HISTORY: * 6/7/96 0:15AM ST : Created *
  *=============================================================================================*/
-void UnitTrackerClass::To_PC_Format(void) {
+void UnitTrackerClass::To_PC_Format() {
   if (InNetworkFormat) {
     for (int i = 0; i < UnitCount; i++) {
       UnitTotals[i] = ntohl(UnitTotals[i]);

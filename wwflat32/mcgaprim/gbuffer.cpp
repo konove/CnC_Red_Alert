@@ -83,7 +83,7 @@ GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* gbuffer, int x,
  * HISTORY:                                                                *
  *   05/09/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass::GraphicViewPortClass(void) {}
+GraphicViewPortClass::GraphicViewPortClass() {}
 
 /***************************************************************************
  * GVPC::~GRAPHICVIEWPORTCLASS -- Destructor for GraphicViewPortClass *
@@ -95,7 +95,7 @@ GraphicViewPortClass::GraphicViewPortClass(void) {}
  * HISTORY:                                                                *
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass::~GraphicViewPortClass(void) {}
+GraphicViewPortClass::~GraphicViewPortClass() {}
 
 /***************************************************************************
  * GVPC::ATTACH -- Attaches a viewport to a buffer class                   *

@@ -137,7 +137,7 @@ EditClass::EditClass(int id, char* text, int max_len, TextPrintType flags,
  *                                                                                             *
  * HISTORY: * 01/24/1995 JLB : Created. *
  *=============================================================================================*/
-EditClass::~EditClass(void) {
+EditClass::~EditClass() {
   if (Has_Focus()) {
     Clear_Focus();
   }
@@ -316,7 +316,7 @@ int EditClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void EditClass::Draw_Background(void) {
+void EditClass::Draw_Background() {
   Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_BOX, true);
 }
 

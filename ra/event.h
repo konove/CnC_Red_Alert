@@ -238,7 +238,7 @@ class EventClass {
   } Data;
 
   //-------------- Constructors ---------------------
-  EventClass(void) { Type = EMPTY; };
+  EventClass() { Type = EMPTY; };
   EventClass(SpecialClass data);
   EventClass(EventType type, TargetClass target);
   EventClass(EventType type);
@@ -260,7 +260,7 @@ class EventClass {
   EventClass(EventType type, void* ptr, unsigned long size);
 
   // Process the event.
-  void Execute(void);
+  void Execute();
 
   int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; };
 

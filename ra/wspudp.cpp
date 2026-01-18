@@ -91,7 +91,7 @@ typedef int socklen_t;
  *                                                                                             *
  * HISTORY: * 8/5/97 12:11PM ST : Created *
  *=============================================================================================*/
-UDPInterfaceClass::UDPInterfaceClass(void) : WinsockInterfaceClass() {}
+UDPInterfaceClass::UDPInterfaceClass() : WinsockInterfaceClass() {}
 
 /***********************************************************************************************
  * UDPIC::~UDPInterfaceClass -- UDPInterface class destructor *
@@ -106,7 +106,7 @@ UDPInterfaceClass::UDPInterfaceClass(void) : WinsockInterfaceClass() {}
  *                                                                                             *
  * HISTORY: * 10/9/97 12:17PM ST : Created *
  *=============================================================================================*/
-UDPInterfaceClass::~UDPInterfaceClass(void) {
+UDPInterfaceClass::~UDPInterfaceClass() {
   while (BroadcastAddresses.Count()) {
     delete[] BroadcastAddresses[0];
     BroadcastAddresses.Delete(0);

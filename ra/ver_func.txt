@@ -14,7 +14,7 @@
  * HISTORY:                                                                                    *
  *   03/24/1995 JLB : Created.                                                                 *
  *=============================================================================================*/
-int Version_Number(void)
+int Version_Number()
 {
 #ifdef OBSOLETE
 	static bool initialized = false;

@@ -99,12 +99,12 @@ extern bool Server;
 
 class TcpipManagerClass {
  public:
-  TcpipManagerClass(void);
-  ~TcpipManagerClass(void);
+  TcpipManagerClass();
+  ~TcpipManagerClass();
 
-  bool Init(void);
-  void Start_Server(void);
-  void Start_Client(void);
+  bool Init();
+  void Start_Server();
+  void Start_Client();
   void Close_Socket(SOCKET s);
 #ifdef _WIN32
   void Message_Handler(HWND window, UINT message, UINT wParam, LONG lParam);
@@ -112,13 +112,13 @@ class TcpipManagerClass {
   void Copy_To_In_Buffer(int bytes);
   int Read(void* buffer, int buffer_len);
   void Write(void* buffer, int buffer_len);
-  bool Add_Client(void);
-  void Close(void);
+  bool Add_Client();
+  void Close();
   void Set_Host_Address(char* address);
   void Set_Protocol_UDP(bool state);
   void Clear_Socket_Error(SOCKET socket);
 
-  inline bool Get_Connected(void) { return (Connected); }
+  inline bool Get_Connected() { return (Connected); }
 
   typedef enum ConnectStatusEnum {
     CONNECTED_OK = 0,
@@ -133,9 +133,7 @@ class TcpipManagerClass {
     CONNECTION_LOST
   } ConnectStatusEnum;
 
-  inline ConnectStatusEnum Get_Connection_Status(void) {
-    return (ConnectStatus);
-  }
+  inline ConnectStatusEnum Get_Connection_Status() { return (ConnectStatus); }
 
  private:
   //...........................................................................

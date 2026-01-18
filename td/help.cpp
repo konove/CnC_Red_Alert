@@ -96,7 +96,7 @@ CountDownTimerClass HelpClass::CountDownTimer;
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-HelpClass::HelpClass(void) {
+HelpClass::HelpClass() {
   X = 0;
   Y = 0;
   Width = 0;
@@ -118,7 +118,7 @@ HelpClass::HelpClass(void) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void HelpClass::Init_Clear(void) {
+void HelpClass::Init_Clear() {
   TabClass::Init_Clear();
 
   Set_Text(TXT_NONE);
@@ -141,7 +141,7 @@ void HelpClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-short const* HelpClass::Overlap_List(void) const {
+short const* HelpClass::Overlap_List() const {
   if (Text == TXT_NONE || CountDownTimer.Time()) {
     ((short&)(OverlapList[0])) = REFRESH_EOL;
   }

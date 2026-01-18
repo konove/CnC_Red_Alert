@@ -90,7 +90,7 @@ LZWPipe::LZWPipe(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LZWPipe::~LZWPipe(void) {
+LZWPipe::~LZWPipe() {
   delete[] Buffer;
   Buffer = nullptr;
 
@@ -255,7 +255,7 @@ int LZWPipe::Put(void const* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LZWPipe::Flush(void) {
+int LZWPipe::Flush() {
   assert(Buffer != nullptr);
 
   int total = 0;

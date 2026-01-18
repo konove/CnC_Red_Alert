@@ -52,7 +52,7 @@
 */
 class BaseNodeClass {
  public:
-  BaseNodeClass(void) {};
+  BaseNodeClass() {};
   int operator==(BaseNodeClass const& node);
   int operator!=(BaseNodeClass const& node);
   int operator>(BaseNodeClass const& node);
@@ -70,24 +70,24 @@ class BaseClass {
   /**********************************************************************
   ** Constructor/Destructor
   */
-  BaseClass(void) {};
+  BaseClass() {};
   virtual ~BaseClass() { Nodes.Clear(); }
 
   /**********************************************************************
   ** Initialization
   */
-  void Init(void) { Nodes.Clear(); }
+  void Init() { Nodes.Clear(); }
 
   /**********************************************************************
   ** The standard suite of load/save support routines
   */
   void Read_INI(char* buffer);
   void Write_INI(char* buffer);
-  static char const* INI_Name(void) { return "Base"; }
+  static char const* INI_Name() { return "Base"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers(void) {};
-  virtual void Decode_Pointers(void) {};
+  virtual void Code_Pointers() {};
+  virtual void Decode_Pointers() {};
 
   /**********************************************************************
   ** Tells if the given node has been built or not

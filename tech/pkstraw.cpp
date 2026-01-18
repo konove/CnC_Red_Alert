@@ -269,7 +269,7 @@ int PKStraw::Get(void* source, int length) {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-int PKStraw::Encrypted_Key_Length(void) const {
+int PKStraw::Encrypted_Key_Length() const {
   if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Crypt_Block_Size());
@@ -294,7 +294,7 @@ int PKStraw::Encrypted_Key_Length(void) const {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-int PKStraw::Plain_Key_Length(void) const {
+int PKStraw::Plain_Key_Length() const {
   if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Plain_Block_Size());

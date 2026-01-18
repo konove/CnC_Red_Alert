@@ -102,7 +102,7 @@ MonoClass::BoxDataType const MonoClass::CharData[MonoClass::COUNT] = {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::MonoClass(void) {
+MonoClass::MonoClass() {
   int index;
 
   Attrib = DEFAULT_ATTRIBUTE;  // Normal text color.
@@ -134,7 +134,7 @@ MonoClass::MonoClass(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::~MonoClass(void) { PageUsage[Page] = 0; }
+MonoClass::~MonoClass() { PageUsage[Page] = 0; }
 
 /***********************************************************************************************
  * MonoClass::Draw_Box -- Draws a box using the IBM linedraw characters. *
@@ -281,7 +281,7 @@ void MonoClass::Set_Cursor(int x, int y) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Clear(void) {
+void MonoClass::Clear() {
   CellType cell;
 
   if (!Enabled) return;
@@ -569,7 +569,7 @@ MonoClass& MonoClass::operator=(MonoClass const& src) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::View(void) {
+void MonoClass::View() {
   MonoClass* displace;  // The page that is being displaced.
 
   if (Get_Current() == this) return;
@@ -646,7 +646,7 @@ int Mono_Printf(char const* string, ...) {
   return ((short)strlen(buffer));
 }
 
-void Mono_Clear_Screen(void) {
+void Mono_Clear_Screen() {
   if (MonoClass::Is_Enabled()) {
     MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
@@ -690,7 +690,7 @@ void Mono_Print(void const* text) {
   }
 }
 
-int Mono_X(void) {
+int Mono_X() {
   if (MonoClass::Is_Enabled()) {
     MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
@@ -702,7 +702,7 @@ int Mono_X(void) {
   return (0);
 }
 
-int Mono_Y(void) {
+int Mono_Y() {
   if (MonoClass::Is_Enabled()) {
     MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {

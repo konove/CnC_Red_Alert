@@ -59,10 +59,10 @@
 
 #include "ww_win.h"
 
-PRIVATE void Scroll_Window(void);
-PRIVATE void Flush_Line(void);
+PRIVATE void Scroll_Window();
+PRIVATE void Flush_Line();
 PRIVATE void In_Char(char* str);
-PRIVATE char Fetch_Char(void);
+PRIVATE char Fetch_Char();
 
 PRIVATE int ScrollCounter =
     0;                  //	Count of the lines displayed before a pause.
@@ -208,7 +208,7 @@ void Set_More_Prompt(char const* prompt, int space, int fcolor, int bcolor) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Set_More_On(void) {
+void Set_More_On() {
   MoreOn = TRUE;
   ScrollCounter = 0;
 }
@@ -228,7 +228,7 @@ void Set_More_On(void) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Set_More_Off(void) { MoreOn = FALSE; }
+void Set_More_Off() { MoreOn = FALSE; }
 
 /***************************************************************************
  * CHANGE_WINDOW -- Changes the 'current' window in the system.            *
@@ -309,7 +309,7 @@ int Change_New_Window(int windnum) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-void New_Window(void) {
+void New_Window() {
   int x, y, w, h;
 
   x = WinX << 3;
@@ -685,7 +685,7 @@ void Window_Print(char const string[], ...) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-PRIVATE void Scroll_Window(void) {
+PRIVATE void Scroll_Window() {
   int y;  // Top pixel row of bottom line of window.
 
   /*
@@ -728,7 +728,7 @@ PRIVATE void Scroll_Window(void) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-PRIVATE void Flush_Line(void) {
+PRIVATE void Flush_Line() {
   int breakit, breaksize, breakwidth;
   int x, y;        // Coordinates of text print.
   int breakpoint;  // Point to break the line (if possible).
@@ -930,7 +930,7 @@ PRIVATE void In_Char(char* str) {
  * HISTORY:                                                                *
  *   07/25/1991 JLB : Created.                                             *
  *=========================================================================*/
-PRIVATE char Fetch_Char(void) {
+PRIVATE char Fetch_Char() {
   char c;  // Character to return.
 
   if (!Char[0]) {

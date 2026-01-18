@@ -118,7 +118,7 @@ TextButtonClass::TextButtonClass(unsigned id, char const* text,
  *                                                                                             *
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-TextButtonClass::TextButtonClass(void) : ToggleClass(0, 0, 0, 0, 0) {
+TextButtonClass::TextButtonClass() : ToggleClass(0, 0, 0, 0, 0) {
   IsBlackBorder = false;
   String = nullptr;
   PrintFlags = TPF_8POINT;
@@ -281,7 +281,7 @@ void TextButtonClass::Set_Text(int text, bool resize) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void TextButtonClass::Draw_Background(void) {
+void TextButtonClass::Draw_Background() {
   /*
   **	Draw a border if selected style.
   */

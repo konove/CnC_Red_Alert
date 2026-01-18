@@ -180,7 +180,7 @@ void* UnitClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int UnitClass::Validate(void) const {
+int UnitClass::Validate() const {
   int num;
 
   num = Units.ID(this);
@@ -281,7 +281,7 @@ void Turret_Adjust(DirType dir, int& x, int& y) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET UnitClass::As_Target(void) const {
+TARGET UnitClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_UNIT, Units.ID(this)));
 }
@@ -369,7 +369,7 @@ void UnitClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE UnitClass::Sort_Y(void) const {
+COORDINATE UnitClass::Sort_Y() const {
   Validate();
   if (IsTethered && *this == UNIT_HOVER) {
     return (Coord_Add(Coord, 0xFF800000L));
@@ -391,7 +391,7 @@ COORDINATE UnitClass::Sort_Y(void) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::AI(void) {
+void UnitClass::AI() {
   Validate();
 
   /*
@@ -1087,7 +1087,7 @@ void UnitClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-UnitClass::~UnitClass(void) {
+UnitClass::~UnitClass() {
   if (GameActive && Class) {
     /*
     **	If there are any cargo members, delete them.
@@ -1274,7 +1274,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Find_LZ(void) {
+void UnitClass::Find_LZ() {
   Validate();
   CELL cell;  // Map exit cell number.
 
@@ -1306,7 +1306,7 @@ void UnitClass::Find_LZ(void) {
  * HISTORY: * 05/31/1994 JLB : Created. * 07/31/1995 JLB : Second infantry
  *unloaded MUST be the one tethered.                       *
  *=============================================================================================*/
-bool UnitClass::Unload_Hovercraft_Process(void) {
+bool UnitClass::Unload_Hovercraft_Process() {
   Validate();
   bool unloaded = false;
   FootClass* unit;  // The unit to be unloaded.
@@ -1426,7 +1426,7 @@ bool UnitClass::Unload_Hovercraft_Process(void) {
  *                                                                                             *
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Goto_Clear_Spot(void) {
+bool UnitClass::Goto_Clear_Spot() {
   Validate();
   Mark(MARK_UP);
   if (!Target_Legal(NavCom) && BuildingTypeClass::As_Reference(STRUCT_CONST)
@@ -1483,7 +1483,7 @@ bool UnitClass::Goto_Clear_Spot(void) {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Try_To_Deploy(void) {
+bool UnitClass::Try_To_Deploy() {
   Validate();
   if (!Target_Legal(NavCom) && !IsRotating) {
     if (*this == UNIT_MCV) {
@@ -2106,7 +2106,7 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
   return (false);
 }
 
-bool UnitClass::Goto_Tiberium(void) {
+bool UnitClass::Goto_Tiberium() {
   Validate();
   if (!Target_Legal(NavCom)) {
     CELL center = Coord_Cell(Center_Coord());
@@ -2164,7 +2164,7 @@ bool UnitClass::Goto_Tiberium(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Harvesting(void) {
+bool UnitClass::Harvesting() {
   Validate();
   CELL cell = Coord_Cell(Coord);
   CellClass* ptr = &Map[cell];
@@ -2216,7 +2216,7 @@ bool UnitClass::Harvesting(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Unload(void) {
+int UnitClass::Mission_Unload() {
   Validate();
   enum { INITIAL_CHECK, MANEUVERING, OPENING_DOOR, UNLOADING, CLOSING_DOOR };
   DirType dir;
@@ -2374,7 +2374,7 @@ int UnitClass::Mission_Unload(void) {
  * HISTORY: * 07/18/1994 JLB : Created. * 06/21/1995 JLB : Force guard mode if
  *no Tiberium found.                                   *
  *=============================================================================================*/
-int UnitClass::Mission_Harvest(void) {
+int UnitClass::Mission_Harvest() {
   Validate();
   enum {
     LOOKING,
@@ -2496,7 +2496,7 @@ int UnitClass::Mission_Harvest(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Hunt(void) {
+int UnitClass::Mission_Hunt() {
   Validate();
   if (*this == UNIT_MCV) {
     switch (Status) {
@@ -2597,7 +2597,7 @@ void UnitClass::Look(bool incremental) {
  * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
  *Coord_Spillable_List function.                                      *
  *=============================================================================================*/
-short const* UnitClass::Overlap_List(void) const {
+short const* UnitClass::Overlap_List() const {
   Validate();
   static short const _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
   int size;
@@ -2974,7 +2974,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Init(void) {
+void UnitClass::Init() {
   UnitClass* ptr;
 
   Units.Free_All();
@@ -2999,7 +2999,7 @@ void UnitClass::Init(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE UnitClass::Target_Coord(void) const {
+COORDINATE UnitClass::Target_Coord() const {
   Validate();
   //	if (*this == UNIT_GUNBOAT) {
   //		return(Coord_Move(Coord, PrimaryFacing.Current(), 0x0080));
@@ -3067,7 +3067,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Stop_Driver(void) {
+bool UnitClass::Stop_Driver() {
   Validate();
 
   /*
@@ -3145,7 +3145,7 @@ bool UnitClass::Start_Driver(COORDINATE& headto) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Limbo(void) {
+bool UnitClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
     Stop_Driver();
@@ -3166,7 +3166,7 @@ bool UnitClass::Limbo(void) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Response_Select(void) {
+void UnitClass::Response_Select() {
   Validate();
   static VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
                                 VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
@@ -3197,7 +3197,7 @@ void UnitClass::Response_Select(void) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Response_Move(void) {
+void UnitClass::Response_Move() {
   Validate();
   static VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
                                 VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
@@ -3228,7 +3228,7 @@ void UnitClass::Response_Move(void) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Response_Attack(void) {
+void UnitClass::Response_Attack() {
   Validate();
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR, VOC_YESSIR,
                                 VOC_YESSIR};
@@ -3353,7 +3353,7 @@ ActionType UnitClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Can_Player_Move(void) const {
+bool UnitClass::Can_Player_Move() const {
   Validate();
   return (TarComClass::Can_Player_Move() && *this != UNIT_GUNBOAT &&
           *this != UNIT_HOVER);
@@ -3516,7 +3516,7 @@ void UnitClass::Write_INI(char* buffer) {
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
 #define XYCELL(x, y) (y * MAP_CELL_W + x)
-void UnitClass::Exit_Repair(void) {
+void UnitClass::Exit_Repair() {
   Validate();
   int i;
   CELL cell;
@@ -3559,7 +3559,7 @@ void UnitClass::Exit_Repair(void) {
  * HISTORY: * 05/08/1995 JLB : Created. * 05/08/1995 JLB : Fixes gunboat
  *problems.                                                  *
  *=============================================================================================*/
-int UnitClass::Mission_Guard(void) {
+int UnitClass::Mission_Guard() {
   Validate();
   if (*this == UNIT_HOVER) {
     if (Is_Something_Attached()) {
@@ -3599,7 +3599,7 @@ int UnitClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 05/09/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Move(void) {
+int UnitClass::Mission_Move() {
   Validate();
   IsHarvesting = false;
 
@@ -3742,7 +3742,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Attack(void) {
+int UnitClass::Mission_Attack() {
   Validate();
   if (*this == UNIT_GUNBOAT) {
     Assign_Mission(MISSION_HUNT);
@@ -3790,7 +3790,7 @@ bool UnitClass::Flag_Attach(HousesType house) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Flag_Remove(void) {
+bool UnitClass::Flag_Remove() {
   Validate();
   if (Flagged != HOUSE_NONE) {
     Flagged = HOUSE_NONE;
@@ -3814,7 +3814,7 @@ bool UnitClass::Flag_Remove(void) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Stun(void) {
+void UnitClass::Stun() {
   Validate();
   if (Flagged != HOUSE_NONE) {
     HouseClass::As_Pointer(Flagged)->Flag_Attach(Coord_Cell(Coord));
@@ -3837,7 +3837,7 @@ void UnitClass::Stun(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Pip_Count(void) const {
+int UnitClass::Pip_Count() const {
   Validate();
   if (Class->IsTransporter) {
     return (How_Many());
@@ -3862,7 +3862,7 @@ int UnitClass::Pip_Count(void) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::APC_Close_Door(void) {
+void UnitClass::APC_Close_Door() {
   Validate();
   Close_Door(10, 2);
 }
@@ -3880,7 +3880,7 @@ void UnitClass::APC_Close_Door(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::APC_Open_Door(void) {
+void UnitClass::APC_Open_Door() {
   Validate();
   if (!IsDriving && !IsRotating) {
     if (PrimaryFacing == DIR_NW || PrimaryFacing == DIR_NE) {
@@ -3907,7 +3907,7 @@ void UnitClass::APC_Open_Door(void) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const* UnitClass::Remap_Table(void) {
+void const* UnitClass::Remap_Table() {
   Validate();
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
     return (House->Remap_Table(IsBlushing, false));
@@ -3931,7 +3931,7 @@ void const* UnitClass::Remap_Table(void) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryType UnitClass::Crew_Type(void) const {
+InfantryType UnitClass::Crew_Type() const {
   Validate();
   if (Class->Primary == WEAPON_NONE) {
     if (Random_Pick(0, 1) == 0) {
@@ -3958,7 +3958,7 @@ InfantryType UnitClass::Crew_Type(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-RTTIType UnitClass::What_Am_I(void) const {
+RTTIType UnitClass::What_Am_I() const {
   Validate();
   return (RTTI_UNIT);
 }

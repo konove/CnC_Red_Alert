@@ -88,7 +88,7 @@ class IPXConnClass : public NonSequencedConnClass
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  virtual void Init(void);
+  virtual void Init();
 
   /*.....................................................................
   The Configure function is for configuring all connections at once.
@@ -107,8 +107,8 @@ class IPXConnClass : public NonSequencedConnClass
   connections at once (there's no way to turn listening on for only one
   connection; it's all or nothing).
   .....................................................................*/
-  static bool Start_Listening(void);
-  static bool Stop_Listening(void);
+  static bool Start_Listening();
+  static bool Stop_Listening();
 
   /*.....................................................................
   The Destination IPX Address for this connection

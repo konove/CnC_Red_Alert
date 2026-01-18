@@ -84,7 +84,7 @@
  * HISTORY:                                                                *
  *   12/14/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPX_SPX_Installed(void) {
+int IPX_SPX_Installed() {
 #ifndef NOT_FOR_WIN95
 
   return (IPX_Initialise());
@@ -250,7 +250,7 @@ int IPX_Open_Socket(unsigned short socket) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifdef NOT_FOR_WIN95
-int IPX_Close_Socket(unsigned short socket) {
+int IPX_Close_Socket(u nsigned short socket) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -310,7 +310,7 @@ int IPX_Close_Socket(unsigned short socket) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifdef NOT_FOR_WIN95
-int IPX_Get_Connection_Number(void) {
+int IPX_Get_Connection_Number() {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -1121,7 +1121,7 @@ int IPX_Cancel_Event(struct ECB* ecb_ptr) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifdef NOT_FOR_WIN95
-void Let_IPX_Breath(void) {
+void Let_IPX_Breath() {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;

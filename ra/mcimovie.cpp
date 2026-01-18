@@ -199,7 +199,7 @@ bool MCIMovie::Play(HWND window) {
  *
  ****************************************************************************/
 
-bool MCIMovie::Pause(void) {
+bool MCIMovie::Pause() {
   if (mDeviceID == 0) return false;
 
   if (mciSendCommand(mDeviceID, MCI_PAUSE, 0, (DWORD)NULL)) return false;
@@ -221,7 +221,7 @@ bool MCIMovie::Pause(void) {
  *
  ****************************************************************************/
 
-bool MCIMovie::Close(void) {
+bool MCIMovie::Close() {
   MCIERROR rc;
 
   if (mDeviceID == 0) return false;
@@ -251,7 +251,7 @@ bool MCIMovie::Close(void) {
  *
  ****************************************************************************/
 
-bool MCIMovie::SizeDestination(void) {
+bool MCIMovie::SizeDestination() {
   MCIERROR rc;
   MCI_DGV_PUT_PARMS putParm;
   RECT rect;

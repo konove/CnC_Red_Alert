@@ -87,7 +87,7 @@ ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h)
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void ToggleClass::Turn_On(void) {
+void ToggleClass::Turn_On() {
   IsOn = true;
   Flag_To_Redraw();
 }
@@ -106,7 +106,7 @@ void ToggleClass::Turn_On(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void ToggleClass::Turn_Off(void) {
+void ToggleClass::Turn_Off() {
   IsOn = false;
   Flag_To_Redraw();
 }

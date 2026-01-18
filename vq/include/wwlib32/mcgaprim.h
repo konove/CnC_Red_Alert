@@ -104,7 +104,7 @@ extern void Shadow_Blit(long int xpix, long int ypix, long int width,
                         long int height, GraphicViewPortClass& src,
                         VideoBufferClass& dst, void* shadowbuff);
 
-//	extern int Get_Standard_Selector(VOID);
+//	extern int Get_Standard_Selector();
 //	extern VOID Set_Selector(UWORD sel);
 #ifdef __cplusplus
 }

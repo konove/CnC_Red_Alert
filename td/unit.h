@@ -70,57 +70,57 @@ class UnitClass : public TarComClass {
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
-  UnitClass(void) {};
+  UnitClass() {};
   UnitClass(UnitType classid, HousesType house);
   UnitClass(NoInitClass const& x) : TarComClass(x) {};
-  operator UnitType(void) const { return Class->Type; };
-  virtual ~UnitClass(void);
-  virtual RTTIType What_Am_I(void) const;
+  operator UnitType() const { return Class->Type; };
+  virtual ~UnitClass();
+  virtual RTTIType What_Am_I() const;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
-  bool Goto_Clear_Spot(void);
-  bool Try_To_Deploy(void);
+  bool Goto_Clear_Spot();
+  bool Try_To_Deploy();
 
   bool Tiberium_Check(CELL& center, int x, int y);
   bool Flag_Attach(HousesType house);
-  bool Flag_Remove(void);
-  void Find_LZ(void);
-  bool Unload_Hovercraft_Process(void);
-  bool Goto_Tiberium(void);
-  bool Harvesting(void);
-  void APC_Close_Door(void);
-  void APC_Open_Door(void);
+  bool Flag_Remove();
+  void Find_LZ();
+  bool Unload_Hovercraft_Process();
+  bool Goto_Tiberium();
+  bool Harvesting();
+  void APC_Close_Door();
+  void APC_Open_Door();
 
   /*
   **	Query functions.
   */
-  virtual bool Can_Player_Move(void) const;
-  virtual int Pip_Count(void) const;
-  virtual InfantryType Crew_Type(void) const;
+  virtual bool Can_Player_Move() const;
+  virtual int Pip_Count() const;
+  virtual InfantryType Crew_Type() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y(void) const;
+  virtual COORDINATE Sort_Y() const;
 
   /*
   **	Object entry and exit from the game system.
   */
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const* Remap_Table(void);
+  virtual void const* Remap_Table();
   virtual void Look(bool incremental = false);
-  virtual short const* Overlap_List(void) const;
+  virtual short const* Overlap_List() const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
 
   /*
@@ -130,24 +130,24 @@ class UnitClass : public TarComClass {
   virtual ActionType What_Action(ObjectClass* object) const;
   virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell);
-  virtual void Response_Select(void);
-  virtual void Response_Move(void);
-  virtual void Response_Attack(void);
+  virtual void Response_Select();
+  virtual void Response_Move();
+  virtual void Response_Attack();
 
   /*
   **	Combat related.
   */
-  virtual COORDINATE Target_Coord(void) const;
+  virtual COORDINATE Target_Coord() const;
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr);
-  virtual TARGET As_Target(void) const;
-  virtual void Stun(void);
+  virtual TARGET As_Target() const;
+  virtual void Stun();
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Stop_Driver(void);
+  virtual bool Stop_Driver();
   virtual bool Start_Driver(COORDINATE& coord);
 
   /*
@@ -157,13 +157,13 @@ class UnitClass : public TarComClass {
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);
-  virtual void AI(void);
-  virtual int Mission_Attack(void);
-  virtual int Mission_Unload(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Harvest(void);
-  virtual int Mission_Hunt(void);
-  virtual int Mission_Move(void);
+  virtual void AI();
+  virtual int Mission_Attack();
+  virtual int Mission_Unload();
+  virtual int Mission_Guard();
+  virtual int Mission_Harvest();
+  virtual int Mission_Hunt();
+  virtual int Mission_Move();
   virtual FireErrorType Can_Fire(TARGET, int which) const;
 
 /*
@@ -181,7 +181,7 @@ class UnitClass : public TarComClass {
                                   FacingType facing = FACING_NONE) const;
   virtual void Per_Cell_Process(bool center);
   virtual void Scatter(COORDINATE threat, bool forced = false);
-  void Exit_Repair(void);
+  void Exit_Repair();
   //		MoveType Blocking_Object(TechnoClass const *techno, CELL cell)
   // const;
 
@@ -190,16 +190,16 @@ class UnitClass : public TarComClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name(void) { return "UNITS"; };
+  static char const* INI_Name() { return "UNITS"; };
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
  private:
   /*

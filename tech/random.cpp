@@ -84,7 +84,7 @@ RandomClass::RandomClass(unsigned seed) : Seed(seed) {
  *                                                                                             *
  * HISTORY: * 02/27/1996 JLB : Created. *
  *=============================================================================================*/
-int RandomClass::operator()(void) {
+int RandomClass::operator()() {
 #ifdef RANDOM_COUNT
   Count1++;
   printf("Frame %d: Random Count1:%d Count2:%d (%x)\n", Frame, Count1, Count2,

@@ -223,7 +223,7 @@ DisplayInfo* SetVideoMode(long mode) {
  * SYNOPSIS
  *     DisplayInfo = GetDisplayInfo()
  *
- *     DisplayInfo *GetDisplayInfo(void);
+ *     DisplayInfo *GetDisplayInfo();
  *
  * FUNCTION
  *     Return a pointer to the current display information structure.
@@ -236,7 +236,7 @@ DisplayInfo* SetVideoMode(long mode) {
  *
  ****************************************************************************/
 
-DisplayInfo* GetDisplayInfo(void) {
+DisplayInfo* GetDisplayInfo() {
   if (_Display.Mode != 0) {
     return (&_Display);
   } else {
@@ -252,7 +252,7 @@ DisplayInfo* GetDisplayInfo(void) {
  * SYNOPSIS
  *     VBIBit = GetVBIBit()
  *
- *     long GetVBIBit(void);
+ *     long GetVBIBit();
  *
  * FUNCTION
  *     Return the polarity of the vertical blank bit.
@@ -265,4 +265,4 @@ DisplayInfo* GetDisplayInfo(void) {
  *
  ****************************************************************************/
 
-long GetVBIBit(void) { return (_Display.VBIbit); }
+long GetVBIBit() { return (_Display.VBIbit); }

@@ -44,12 +44,12 @@
 
 class LZWEngine {
  public:
-  LZWEngine(void);
+  LZWEngine();
 
   int Compress(Buffer const& input, Buffer const& output);
   int Uncompress(Buffer const& input, Buffer const& output);
 
-  void Reset(void);
+  void Reset();
 
  private:
   typedef short CodeType;
@@ -58,13 +58,13 @@ class LZWEngine {
     CodeType ParentCode;
     char CharValue;
 
-    CodeClass(void) {}
+    CodeClass() {}
     CodeClass(CodeType code, CodeType parent, char c)
         : CodeValue(code), ParentCode(parent), CharValue(c) {}
 
     enum { UNUSED = -1 };
-    void Make_Unused(void) { CodeValue = UNUSED; }
-    bool Is_Unused(void) const { return (CodeValue == UNUSED); }
+    void Make_Unused() { CodeValue = UNUSED; }
+    bool Is_Unused() const { return (CodeValue == UNUSED); }
     bool Is_Matching(CodeType code, char c) const {
       return (ParentCode == code && CharValue == c);
     }

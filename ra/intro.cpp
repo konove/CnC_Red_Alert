@@ -82,7 +82,7 @@ VQAHandle* Open_Movie(char* name) {
  *                                                                                             *
  * HISTORY: * 5/08/1995 BWG : Created. *
  *=============================================================================================*/
-void Choose_Side(void)  //	ajw - In RA, all this did was play a movie.
+void Choose_Side()  //	ajw - In RA, all this did was play a movie.
                         // Denzil is using it in its original sense.
 {
   Whom = HOUSE_GOOD;

@@ -84,7 +84,7 @@ VideoViewPortClass::VideoViewPortClass(VideoBufferClass* vbuffer, int x, int y,
  * HISTORY:                                                                *
  *   05/09/1994 PWG : Created.                                             *
  *=========================================================================*/
-VideoViewPortClass::VideoViewPortClass(void) {}
+VideoViewPortClass::VideoViewPortClass() {}
 
 /***************************************************************************
  * VVPC::~VIDEOVIEWPORTCLASS -- Destructor for GraphicViewPortClass
@@ -97,7 +97,7 @@ VideoViewPortClass::VideoViewPortClass(void) {}
  * HISTORY:                                                                *
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
-VideoViewPortClass::~VideoViewPortClass(void) {}
+VideoViewPortClass::~VideoViewPortClass() {}
 
 /***************************************************************************
  * VVPC::ATTACH -- Attaches a viewport to a buffer class                   *

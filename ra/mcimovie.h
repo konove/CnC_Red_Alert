@@ -34,12 +34,12 @@ class MCIMovie {
 
   bool Open(const char* name, const char* device);
   bool Play(HWND window);
-  bool Pause(void);
-  bool Close(void);
+  bool Pause();
+  bool Close();
 
-  LONG GetWidth(void) { return ((mDeviceID) ? mWidth : 0); }
+  LONG GetWidth() { return ((mDeviceID) ? mWidth : 0); }
 
-  LONG GetHeight(void) { return ((mDeviceID) ? mHeight : 0); }
+  LONG GetHeight() { return ((mDeviceID) ? mHeight : 0); }
 
  protected:
   HWND mMainWindow;  // Application window
@@ -53,7 +53,7 @@ class MCIMovie {
   LONG mWidth, mHeight;
 
  private:
-  bool SizeDestination(void);
+  bool SizeDestination();
   bool AttachWindow(HWND window);
 
   static int mRegistered;

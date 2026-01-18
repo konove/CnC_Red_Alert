@@ -213,7 +213,7 @@ void *BuildingClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int BuildingClass::Validate(void) const {
+int BuildingClass::Validate() const {
   int num;
 
   num = Buildings.ID(this);
@@ -936,7 +936,7 @@ BulletClass *BuildingClass::Fire_At(TARGET target, int which) {
  * HISTORY: * 05/31/1994 JLB : Created. * 12/26/1994 JLB : Handles production. *
  *   06/11/1995 JLB : Revamped. *
  *=============================================================================================*/
-void BuildingClass::AI(void) {
+void BuildingClass::AI() {
   Validate();
 
   /*
@@ -1844,7 +1844,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
  *                                                                                             *
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
-BuildingClass::~BuildingClass(void) {
+BuildingClass::~BuildingClass() {
   if (GameActive && Class) {
     if (House) {
       House->CurBuildings--;
@@ -2062,7 +2062,7 @@ void BuildingClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Init(void) {
+void BuildingClass::Init() {
   BuildingClass *ptr;
 
   Buildings.Free_All();
@@ -2295,7 +2295,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
  * HISTORY: * 11/11/1994 JLB : Created. * 12/23/1994 JLB : Only updates for
  *PLAYER buildings.                                       *
  *=============================================================================================*/
-void BuildingClass::Update_Buildables(void) {
+void BuildingClass::Update_Buildables() {
   Validate();
   if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
@@ -2371,7 +2371,7 @@ void BuildingClass::Update_Buildables(void) {
  *                                                                                             *
  * HISTORY: * 11/30/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Fire_Out(void) {
+void BuildingClass::Fire_Out() {
   Validate();
   //	SAM = SAM_READY;
   //	IsFiring = false;
@@ -2393,7 +2393,7 @@ void BuildingClass::Fire_Out(void) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Limbo(void) {
+bool BuildingClass::Limbo() {
   Validate();
   //	HouseClass *housep;
   //	RTTIType bld_type;
@@ -3114,7 +3114,7 @@ void BuildingClass::Write_INI(char *buffer) {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET BuildingClass::As_Target(void) const {
+TARGET BuildingClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_BUILDING, Buildings.ID(this)));
 }
@@ -3134,12 +3134,12 @@ TARGET BuildingClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Center_Coord(void) const {
+COORDINATE BuildingClass::Center_Coord() const {
   Validate();
   return (Coord_Add(Coord, CenterOffset[Class->Size]));
 }
 
-COORDINATE BuildingClass::Docking_Coord(void) const {
+COORDINATE BuildingClass::Docking_Coord() const {
   Validate();
   if (*this == STRUCT_HELIPAD) {
     return (Coord_Add(Coord, XYP_COORD(24, 18)));
@@ -3228,7 +3228,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Toggle_Primary(void) {
+bool BuildingClass::Toggle_Primary() {
   Validate();
   if (IsLeader) {
     IsLeader = false;
@@ -3434,7 +3434,7 @@ bool BuildingClass::Captured(HouseClass *newowner) {
  * HISTORY: * 05/23/1995 JLB : Created. * 06/19/1995 JLB : Handles buildings
  *that come with bibs built-in.                          *
  *=============================================================================================*/
-COORDINATE BuildingClass::Sort_Y(void) const {
+COORDINATE BuildingClass::Sort_Y() const {
   Validate();
   if (*this == STRUCT_REPAIR) {
     return (Coord);
@@ -3487,7 +3487,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *buildup data, then the building can't be sold.            * 07/17/1995 JLB :
  *Cannot sell a refinery that has a harvester attached.                    *
  *=============================================================================================*/
-bool BuildingClass::Can_Demolish(void) const {
+bool BuildingClass::Can_Demolish() const {
   Validate();
   if (Class->Get_Buildup_Data() && BState != BSTATE_CONSTRUCTION &&
       !Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
@@ -3514,7 +3514,7 @@ bool BuildingClass::Can_Demolish(void) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Guard(void) {
+int BuildingClass::Mission_Guard() {
   Validate();
   /*
   **	If this building has a weapon, then search for a target to attack. When
@@ -3590,7 +3590,7 @@ int BuildingClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Construction(void) {
+int BuildingClass::Mission_Construction() {
   Validate();
   enum { INITIAL, DURING };
   switch (Status) {
@@ -3640,7 +3640,7 @@ int BuildingClass::Mission_Construction(void) {
  *units on a repair bay.                                 * 08/20/1995 JLB :
  *Scatters infantry from scattered starting points.                        *
  *=============================================================================================*/
-int BuildingClass::Mission_Deconstruction(void) {
+int BuildingClass::Mission_Deconstruction() {
   Validate();
   /*
   **	Always force repair off.
@@ -3811,7 +3811,7 @@ int BuildingClass::Mission_Deconstruction(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Attack(void) {
+int BuildingClass::Mission_Attack() {
   Validate();
   if (*this == STRUCT_SAM) {
     switch (Status) {
@@ -4021,7 +4021,7 @@ int BuildingClass::Mission_Attack(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Harvest(void) {
+int BuildingClass::Mission_Harvest() {
   Validate();
   enum {
     INITIAL,          // Dock the Tiberium canister.
@@ -4105,7 +4105,7 @@ int BuildingClass::Mission_Harvest(void) {
  *facility                                                  * 07/29/1995 JLB :
  *Repair rate is controlled by power rating.                               *
  *=============================================================================================*/
-int BuildingClass::Mission_Repair(void) {
+int BuildingClass::Mission_Repair() {
   Validate();
   if (*this == STRUCT_CONST) {
     enum { INITIAL, DURING };
@@ -4259,7 +4259,7 @@ int BuildingClass::Mission_Repair(void) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
-int BuildingClass::Mission_Missile(void) {
+int BuildingClass::Mission_Missile() {
   Validate();
   enum { INITIAL, DOOR_OPENING, LAUNCH_UP, LAUNCH_DOWN, DONE_LAUNCH };
 
@@ -4446,7 +4446,7 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
  * HISTORY:                                                                *
  *   06/21/1995 PWG : Created.                                             *
  *=========================================================================*/
-void BuildingClass::Update_Specials(void) { Validate(); }
+void BuildingClass::Update_Specials() { Validate(); }
 
 /***********************************************************************************************
  * BuildingClass::Pip_Count -- Determines "full" pips to display for building. *
@@ -4462,7 +4462,7 @@ void BuildingClass::Update_Specials(void) { Validate(); }
  *                                                                                             *
  * HISTORY: * 06/28/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Pip_Count(void) const {
+int BuildingClass::Pip_Count() const {
   Validate();
   return (Fixed_To_Cardinal(Class->Max_Pips(), House->Tiberium_Fraction()));
 }
@@ -4527,7 +4527,7 @@ void BuildingClass::Death_Announcement(TechnoClass const *) const {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-DirType BuildingClass::Fire_Direction(void) const {
+DirType BuildingClass::Fire_Direction() const {
   Validate();
   if (Class->IsTurretEquipped) {
     return (PrimaryFacing.Current());
@@ -4551,7 +4551,7 @@ DirType BuildingClass::Fire_Direction(void) const {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const *BuildingClass::Remap_Table(void) {
+void const *BuildingClass::Remap_Table() {
   Validate();
   return (House->Remap_Table(IsBlushing, false));
 }
@@ -4572,7 +4572,7 @@ void const *BuildingClass::Remap_Table(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Unload(void) {
+int BuildingClass::Mission_Unload() {
   Validate();
   if (*this == STRUCT_WEAP) {
     enum { INITIAL, OPEN, LEAVE, CLOSE };
@@ -4638,7 +4638,7 @@ int BuildingClass::Mission_Unload(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Power_Output(void) const {
+int BuildingClass::Power_Output() const {
   Validate();
   if (Class->Power) {
     return (Fixed_To_Cardinal(
@@ -4687,7 +4687,7 @@ void BuildingClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Refund_Amount(void) const {
+int BuildingClass::Refund_Amount() const {
   Validate();
   int cost = TechnoClass::Refund_Amount();
 
@@ -4718,7 +4718,7 @@ int BuildingClass::Refund_Amount(void) const {
  *                                                                                             *
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryType BuildingClass::Crew_Type(void) const {
+InfantryType BuildingClass::Crew_Type() const {
   Validate();
   switch (Class->Type) {
     case STRUCT_STORAGE:
@@ -4868,7 +4868,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass *techno, CELL cell) {
   return (again);
 }
 
-void BuildingClass::Hidden(void) {
+void BuildingClass::Hidden() {
   //	if (IsDiscoveredByPlayer && House->IsHuman) {
   //		House->Adjust_Drain(-Class->Drain);
   //	}

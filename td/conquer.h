@@ -786,10 +786,10 @@ extern unsigned char* InterpolatedPalettes[100];
 extern bool PalettesRead;
 extern unsigned PaletteCounter;
 
-extern void Free_Interpolated_Palettes(void);
+extern void Free_Interpolated_Palettes();
 extern int Load_Interpolated_Palettes(char const* filename, bool add = false);
 
-void Center_About_Objects(void);
+void Center_About_Objects();
 bool Force_CD_Available(int cd);
 void Handle_View(int view, int action = 0);
 void Handle_Team(int team, int action = 0);
@@ -798,7 +798,7 @@ class TechnoTypeClass;
 
 TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id);
 std::string Fading_Table_Name(char const* base, TheaterType theater);
-void Unselect_All(void);
+void Unselect_All();
 void Play_Movie(char const* name, ThemeType theme = THEME_NONE,
                 bool clrscrn = true);
 bool Main_Loop();
@@ -807,7 +807,7 @@ TheaterType Theater_From_Name(char const* name);
 void Main_Game(int argc, char* argv[]);
 long VQ_Call_Back(unsigned char* buffer = nullptr, long frame = 0);
 long VQ_Event_Handler(unsigned long event, void* buffer, long nbytes);
-void Call_Back(void);
+void Call_Back();
 char const* Language_Name(char const* basename);
 SourceType Source_From_Name(char const* name);
 char const* Name_From_Source(SourceType source);
@@ -828,10 +828,10 @@ void CC_Add_Shape_To_Global(void const* shapeptr, char* filename, char code);
 void Bubba_Print(char* format, ...);
 
 void Heap_Dump_Check(char* string);
-void Dump_Heap_Pointers(void);
+void Dump_Heap_Pointers();
 
 void Validate_Error(char* name);
 void const* Hires_Retrieve(const char* name);
-int Get_Resolution_Factor(void);
+int Get_Resolution_Factor();
 
 #endif  // CNC_RED_ALERT_TD_CONQUER_H_

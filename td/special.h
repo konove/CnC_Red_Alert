@@ -43,7 +43,7 @@
 
 class SpecialClass {
  public:
-  void Init(void) {
+  void Init() {
     IsScrollMod = false;
     IsGross = false;
     IsHealthBar = true;
@@ -241,6 +241,6 @@ class SpecialClass {
   unsigned IsFromWChat : 1;
 };
 
-void Special_Dialog(void);
+void Special_Dialog();
 
 #endif

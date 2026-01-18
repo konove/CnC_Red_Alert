@@ -83,7 +83,7 @@ char const* FunctionNames[] = {"_IPX_Initialise",
                                "_IPX_Get_Local_Target95",
                                nullptr};
 
-extern void Get_OS_Version(void);
+extern void Get_OS_Version();
 bool WindowsNT = false;
 
 /***********************************************************************************************
@@ -100,7 +100,7 @@ bool WindowsNT = false;
  *                                                                                             *
  * HISTORY: * 4/1/97 11:40AM ST : Created *
  *=============================================================================================*/
-bool Load_IPX_Dll(void) {
+bool Load_IPX_Dll() {
   Get_OS_Version();
   if (WindowsNT) return (false);
 
@@ -144,7 +144,7 @@ bool Load_IPX_Dll(void) {
  *                                                                                             *
  * HISTORY: * 4/1/97 2:37PM ST : Created *
  *=============================================================================================*/
-void Unload_IPX_Dll(void) {
+void Unload_IPX_Dll() {
   if (IpxDllInstance) {
     FreeLibrary(IpxDllInstance);
     IpxDllInstance = NULL;
@@ -160,14 +160,14 @@ int IPX_Close_Socket(unsigned short socket) {
   return (0);
 }
 
-int IPX_Get_Connection_Number(void) { return (IPX_Get_Connection_Number95()); }
+int IPX_Get_Connection_Number() { return (IPX_Get_Connection_Number95()); }
 
 int IPX_Broadcast_Packet(unsigned char* buf, int buflen) {
   return (IPX_Broadcast_Packet95(buf, buflen));
 }
 
 extern "C" {
-extern void __cdecl Int3(void);
+extern void __cdecl Int3();
 }
 
 int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,

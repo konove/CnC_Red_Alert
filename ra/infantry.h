@@ -128,31 +128,31 @@ class InfantryClass : public FootClass {
   static void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
   InfantryClass(NoInitClass const& x) : FootClass(x), Class(x), Comment(x) {};
-  virtual ~InfantryClass(void);
-  operator InfantryType(void) const { return Class->Type; };
+  virtual ~InfantryClass();
+  operator InfantryType() const { return Class->Type; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
   virtual void Assign_Destination(TARGET);
 
   /*
   **	Query functions.
   */
-  virtual bool Is_Ready_To_Random_Animate(void) const;
-  void const* Get_Image_Data(void) const;
-  int Shape_Number(void) const;
-  virtual ObjectTypeClass const& Class_Of(void) const;
-  virtual int Full_Name(void) const;
+  virtual bool Is_Ready_To_Random_Animate() const;
+  void const* Get_Image_Data() const;
+  int Shape_Number() const;
+  virtual ObjectTypeClass const& Class_Of() const;
+  virtual int Full_Name() const;
 
   /*
   **	Object entry and exit from the game system.
   */
   virtual bool Unlimbo(COORDINATE coord, DirType facing);
   virtual bool Paradrop(COORDINATE coord);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   virtual void Detach(TARGET target, bool all);
 
   /*
@@ -165,9 +165,9 @@ class InfantryClass : public FootClass {
   /*
   **	User I/O.
   */
-  virtual void Response_Select(void);
-  virtual void Response_Move(void);
-  virtual void Response_Attack(void);
+  virtual void Response_Select();
+  virtual void Response_Move();
+  virtual void Response_Attack();
   virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual void Active_Click_With(ActionType action, CELL cell) {
     FootClass::Active_Click_With(action, cell);
@@ -197,20 +197,20 @@ class InfantryClass : public FootClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Stop_Driver(void);
+  virtual bool Stop_Driver();
   virtual bool Start_Driver(COORDINATE& coord);
 
   /*
   **	AI.
   */
-  virtual void AI(void);
-  void Fear_AI(void);
+  virtual void AI();
+  void Fear_AI();
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
-  virtual int Mission_Attack(void);
-  bool Edge_Of_World_AI(void);
-  void Firing_AI(void);
-  void Doing_AI(void);
-  void Movement_AI(void);
+  virtual int Mission_Attack();
+  bool Edge_Of_World_AI();
+  void Firing_AI();
+  void Doing_AI();
+  void Movement_AI();
 
 /*
 **	Scenario and debug support.
@@ -224,7 +224,7 @@ class InfantryClass : public FootClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "INFANTRY"; };
+  static char const* INI_Name() { return "INFANTRY"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
@@ -232,7 +232,7 @@ class InfantryClass : public FootClass {
   **	Movement and animation.
   */
   virtual bool Do_Action(DoType todo, bool force = false);
-  virtual bool Random_Animate(void);
+  virtual bool Random_Animate();
   virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const;
   virtual void Per_Cell_Process(PCPType why);
   virtual void Enter_Idle_Mode(bool initial = false);

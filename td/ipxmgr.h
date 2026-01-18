@@ -160,8 +160,8 @@ These routines report the location & length of the real-mode routine, as
 it's stored in protected-mode memory.
 ---------------------------------------------------------------------------*/
 extern "C" {
-void* Get_RM_IPX_Address(void);
-long Get_RM_IPX_Size(void);
+void* Get_RM_IPX_Address();
+long Get_RM_IPX_Size();
 }
 
 /*
@@ -183,8 +183,8 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Initialization routines.
   .....................................................................*/
-  int Init(void);
-  int Is_IPX(void);
+  int Init();
+  int Is_IPX();
   virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                           unsigned long timeout);
   void Set_Bridge(NetNumType bridge);
@@ -195,7 +195,7 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   bool Create_Connection(int id, char* name, IPXAddressClass* address);
   bool Delete_Connection(int id);
-  virtual int Num_Connections(void);
+  virtual int Num_Connections();
   virtual int Connection_ID(int index);
   char* Connection_Name(int id);
   IPXAddressClass* Connection_Address(int id);
@@ -216,19 +216,19 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   The main polling routine; should be called as often as possible.
   .....................................................................*/
-  virtual int Service(void);
+  virtual int Service();
 
   /*.....................................................................
   This routine reports which connection has an error on it.
   .....................................................................*/
-  int Get_Bad_Connection(void);
+  int Get_Bad_Connection();
 
   /*.....................................................................
   Queue utility routines.  The application can determine how many
   messages are in the send/receive queues.
   .....................................................................*/
-  virtual int Global_Num_Send(void);
-  virtual int Global_Num_Receive(void);
+  virtual int Global_Num_Send();
+  virtual int Global_Num_Receive();
   virtual int Private_Num_Send(int id = CONNECTION_NONE);
   virtual int Private_Num_Receive(int id = CONNECTION_NONE);
 
@@ -244,14 +244,14 @@ class IPXManagerClass : public ConnManClass {
   Routines to return the largest average queue response time, and to
   reset the response time for all queues.
   .....................................................................*/
-  virtual unsigned long Response_Time(void);
-  unsigned long Global_Response_Time(void);
-  virtual void Reset_Response_Time(void);
+  virtual unsigned long Response_Time();
+  unsigned long Global_Response_Time();
+  virtual void Reset_Response_Time();
 
   /*.....................................................................
   This routine returns a pointer to the oldest non-ACK'd buffer I've sent.
   .....................................................................*/
-  void* Oldest_Send(void);
+  void* Oldest_Send();
 
   /*.....................................................................
   Debug routines
@@ -267,8 +267,8 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   These routines allocate & free the DOS Real-mode memory block.
   .....................................................................*/
-  int Alloc_RealMode_Mem(void);
-  int Free_RealMode_Mem(void);
+  int Alloc_RealMode_Mem();
+  int Free_RealMode_Mem();
 
   /*.....................................................................
   Misc variables

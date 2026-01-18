@@ -117,7 +117,7 @@ FixedHeapClass::FixedHeapClass(int size) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-FixedHeapClass::~FixedHeapClass(void) { FixedHeapClass::Clear(); }
+FixedHeapClass::~FixedHeapClass() { FixedHeapClass::Clear(); }
 
 /***********************************************************************************************
  * FixedHeapClass::Set_Heap -- Assigns a memory block for this heap manager. *
@@ -191,7 +191,7 @@ int FixedHeapClass::Set_Heap(int count, void* buffer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void* FixedHeapClass::Allocate(void) {
+void* FixedHeapClass::Allocate() {
   if (ActiveCount < TotalCount) {
     int index = base::first_false(FreeFlag);
 
@@ -274,7 +274,7 @@ int FixedHeapClass::ID(void const* pointer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void FixedHeapClass::Clear(void) {
+void FixedHeapClass::Clear() {
   /*
   **	Free the old buffer (if present).
   */
@@ -302,7 +302,7 @@ void FixedHeapClass::Clear(void) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::Free_All(void) {
+int FixedHeapClass::Free_All() {
   ActiveCount = 0;
   FreeFlag.assign(FreeFlag.size(), false);
   return (true);
@@ -324,12 +324,12 @@ int FixedHeapClass::Free_All(void) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedIHeapClass::Free_All(void) {
+int FixedIHeapClass::Free_All() {
   ActivePointers.Delete_All();
   return (FixedHeapClass::Free_All());
 }
 
-void FixedIHeapClass::Clear(void) {
+void FixedIHeapClass::Clear() {
   FixedHeapClass::Clear();
   ActivePointers.Clear();
 }
@@ -343,7 +343,7 @@ int FixedIHeapClass::Set_Heap(int count, void* buffer) {
   return (false);
 }
 
-void* FixedIHeapClass::Allocate(void) {
+void* FixedIHeapClass::Allocate() {
   void* ptr = FixedHeapClass::Allocate();
   if (ptr) {
     ActivePointers.Add(ptr);
@@ -501,7 +501,7 @@ int TFixedIHeapClass<T>::Load(FileClass& file) {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-void TFixedIHeapClass<T>::Code_Pointers(void) {
+void TFixedIHeapClass<T>::Code_Pointers() {
   int i;
 
   for (i = 0; i < ActiveCount; i++) {
@@ -522,7 +522,7 @@ void TFixedIHeapClass<T>::Code_Pointers(void) {
  * HISTORY: * 03/15/1995 BRR : Created. *
  *=============================================================================================*/
 template <class T>
-void TFixedIHeapClass<T>::Decode_Pointers(void) {
+void TFixedIHeapClass<T>::Decode_Pointers() {
   int i;
 
   for (i = 0; i < ActiveCount; i++) {

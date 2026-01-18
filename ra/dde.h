@@ -85,7 +85,7 @@ class Instance_Class {
   /*.....................................................................
   Destructor:
   .....................................................................*/
-  ~Instance_Class(void);  // the destructor
+  ~Instance_Class();  // the destructor
 
   /*.....................................................................
   Send data routine:
@@ -119,7 +119,7 @@ class Instance_Class {
   /*.....................................................................
   Close connection with remote server
   .....................................................................*/
-  BOOL Close_Poke_Connection(void);
+  BOOL Close_Poke_Connection();
 
   //
   // static members

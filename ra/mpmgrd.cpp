@@ -58,7 +58,7 @@ typedef struct {
 #define GDOSPENDINGQUEUE 17
 #define GWINWORKQUEUE2 18
 
-MPlayerManClass::MPlayerManClass(void) : ConnManClass() {
+MPlayerManClass::MPlayerManClass() : ConnManClass() {
   unsigned size;
 
   MGenGetMasterNode(&size);
@@ -189,7 +189,7 @@ int MPlayerManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
   return STATUS_OK;
 }
 
-int MPlayerManClass::Service(void) { return STATUS_OK; }
+int MPlayerManClass::Service() { return STATUS_OK; }
 
 int MPlayerManClass::Create_Connection(int id, char* name, int address) {
   _Connections[_nConnections] = address;
@@ -231,7 +231,7 @@ int MPlayerManClass::Connection_Address(int id) {
   return _Connections[idx];
 }
 
-int MPlayerManClass::Num_Connections(void) { return _nConnections; }
+int MPlayerManClass::Num_Connections() { return _nConnections; }
 
 int MPlayerManClass::Connection_ID(int index) { return _ID[index]; }
 
@@ -247,9 +247,9 @@ int MPlayerManClass::Connection_Index(int id) {
   return -1;
 }
 
-int MPlayerManClass::Global_Num_Send(void) { return 0; }
+int MPlayerManClass::Global_Num_Send() { return 0; }
 
-int MPlayerManClass::Global_Num_Receive(void) {
+int MPlayerManClass::Global_Num_Receive() {
   return MGenGetQueueCtr(GDOSPENDINGQUEUE);
 }
 
@@ -259,11 +259,11 @@ int MPlayerManClass::Private_Num_Receive(int /*id*/) {
   return MGenGetQueueCtr(DOSPENDINGQUEUE);
 }
 
-void MPlayerManClass::Reset_Response_Time(void) {
+void MPlayerManClass::Reset_Response_Time() {
   // unsupported
 }
 
-unsigned long MPlayerManClass::Response_Time(void) {
+unsigned long MPlayerManClass::Response_Time() {
   return (160 * 60) / 1000;  // 160 microseconds one way (9 ticks)
 }
 
@@ -283,9 +283,9 @@ void MPlayerManClass::Mono_Debug_Print(int /*index*/, int /*refresh*/) {
   // unsupported
 }
 
-int MPlayerManClass::Init(void) { return STATUS_OK; }
+int MPlayerManClass::Init() { return STATUS_OK; }
 
-int MPlayerManClass::Find_Num_Connections(void) {
+int MPlayerManClass::Find_Num_Connections() {
   TGAMEDEF game_def;
   int sz = sizeof(game_def);
 
@@ -294,7 +294,7 @@ int MPlayerManClass::Find_Num_Connections(void) {
   return (game_def.numPlayers - 1);
 }
 
-void MPlayerManClass::Flush_All(void) {
+void MPlayerManClass::Flush_All() {
   MGenFlushNodes(DOSPENDINGQUEUE, FREEQUEUE);
   MGenFlushNodes(GDOSPENDINGQUEUE, FREEQUEUE);
 }

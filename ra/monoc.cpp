@@ -105,7 +105,7 @@ MonoClass::BoxDataType const MonoClass::CharData[MonoClass::COUNT] = {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::MonoClass(void)
+MonoClass::MonoClass()
     : X(0),
       Y(0),
       Attrib(NORMAL),
@@ -143,7 +143,7 @@ MonoClass::MonoClass(void)
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-MonoClass::~MonoClass(void) { PageUsage[Page] = nullptr; }
+MonoClass::~MonoClass() { PageUsage[Page] = nullptr; }
 
 /***********************************************************************************************
  * MonoClass::Pan -- Scroll the window right or left. *
@@ -383,7 +383,7 @@ void MonoClass::Set_Cursor(int x, int y) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::Clear(void) {
+void MonoClass::Clear() {
   if (!Enabled) return;
 
   Set_Cursor(0, 0);
@@ -771,7 +771,7 @@ MonoClass& MonoClass::operator=(MonoClass const& src) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-void MonoClass::View(void) {
+void MonoClass::View() {
   if (Get_Current() == this) return;
 
   /*
@@ -877,7 +877,7 @@ int Mono_Printf(char const* string, ...) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-void Mono_Clear_Screen(void) {
+void Mono_Clear_Screen() {
   if (MonoClass::Is_Enabled()) {
     MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
@@ -986,7 +986,7 @@ void Mono_Print(void const* text) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-int Mono_X(void) {
+int Mono_X() {
   if (MonoClass::Is_Enabled()) {
     MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {
@@ -1012,7 +1012,7 @@ int Mono_X(void) {
  *                                                                                             *
  * HISTORY: * 06/04/1996 JLB : Created. *
  *=============================================================================================*/
-int Mono_Y(void) {
+int Mono_Y() {
   if (MonoClass::Is_Enabled()) {
     MonoClass* mono = MonoClass::Get_Current();
     if (!mono) {

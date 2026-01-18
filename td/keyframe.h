@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_KEYFRAME_H_
 #define CNC_RED_ALERT_TD_KEYFRAME_H_
 
-int Get_Last_Frame_Length(void);
+int Get_Last_Frame_Length();
 void* Build_Frame(void const* dataptr, unsigned short framenumber,
                   void* buffptr);
 unsigned short Get_Build_Frame_Count(void const* dataptr);

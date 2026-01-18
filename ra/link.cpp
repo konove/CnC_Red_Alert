@@ -88,7 +88,7 @@ LinkClass::LinkClass(LinkClass const& link) : Next(nullptr), Prev(nullptr) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass::~LinkClass(void) { Remove(); }
+LinkClass::~LinkClass() { Remove(); }
 
 /***********************************************************************************************
  * LinkClass::Zap -- Forces the link pointers to NULL. *
@@ -107,7 +107,7 @@ LinkClass::~LinkClass(void) { Remove(); }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void LinkClass::Zap(void) {
+void LinkClass::Zap() {
   Next = nullptr;
   Prev = nullptr;
 }
@@ -159,7 +159,7 @@ LinkClass& LinkClass::operator=(LinkClass const& link) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass* LinkClass::Get_Next(void) const { return (Next); }
+LinkClass* LinkClass::Get_Next() const { return (Next); }
 
 /***********************************************************************************************
  * LinkClass::Get_Prev -- Fetches previous object in linked list. *
@@ -177,7 +177,7 @@ LinkClass* LinkClass::Get_Next(void) const { return (Next); }
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass* LinkClass::Get_Prev(void) const { return (Prev); }
+LinkClass* LinkClass::Get_Prev() const { return (Prev); }
 
 /***********************************************************************************************
  * LinkClass::Head_Of_List -- Finds the head of the list. *
@@ -193,7 +193,7 @@ LinkClass* LinkClass::Get_Prev(void) const { return (Prev); }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& LinkClass::Head_Of_List(void) {
+LinkClass& LinkClass::Head_Of_List() {
   LinkClass* link = this;
   while (link->Prev) {
     link = link->Prev;
@@ -216,7 +216,7 @@ LinkClass& LinkClass::Head_Of_List(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& LinkClass::Tail_Of_List(void) {
+LinkClass& LinkClass::Tail_Of_List() {
   LinkClass* link = this;
   while (link->Next) {
     link = link->Next;
@@ -342,7 +342,7 @@ LinkClass& LinkClass::Add_Tail(LinkClass& list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass* LinkClass::Remove(void) {
+LinkClass* LinkClass::Remove() {
   LinkClass* head = &Head_Of_List();
   LinkClass* tail = &Tail_Of_List();
 

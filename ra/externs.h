@@ -77,7 +77,7 @@
 
 extern char _staging_buffer[32000];
 extern "C" {
-void _PRO(void);
+void _PRO();
 }
 
 /*
@@ -373,16 +373,16 @@ extern "C" {
 extern bool IsTheaterShape;
 }
 
-extern void Reset_Theater_Shapes(void);
+extern void Reset_Theater_Shapes();
 extern TheaterType LastTheater;
 
 void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
                       int height, unsigned char* remap_table);
 void Do_Vortex(int x, int y, int frame);
 
-extern bool ReadyToQuit;          // Are we about to exit cleanly
-extern bool InDebugger;           // Are we being run from a debugger
-void Memory_Error_Handler(void);  // Memory error handler function
+extern bool ReadyToQuit;      // Are we about to exit cleanly
+extern bool InDebugger;       // Are we being run from a debugger
+void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(char const* string);
 
 /*************************************************************
@@ -403,13 +403,13 @@ extern bool ConnectionLost;
 extern void* PacketLater;
 extern bool SpawnedFromWChat;
 extern int ShowCommand;
-void Register_Game_Start_Time(void);
-void Register_Game_End_Time(void);
-void Send_Statistics_Packet(void);
+void Register_Game_Start_Time();
+void Register_Game_End_Time();
+void Send_Statistics_Packet();
 void Check_From_WChat(char* wchat_name);
-bool Do_The_Internet_Menu_Thang(void);
-bool Server_Remote_Connect(void);
-bool Client_Remote_Connect(void);
+bool Do_The_Internet_Menu_Thang();
+bool Server_Remote_Connect();
+bool Client_Remote_Connect();
 extern int UnitBuildPenalty;
 
 /*

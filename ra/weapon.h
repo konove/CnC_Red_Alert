@@ -57,19 +57,19 @@ class WeaponTypeClass {
  public:
   WeaponTypeClass(char const* name);
   WeaponTypeClass(NoInitClass const&) {}
-  ~WeaponTypeClass(void);
+  ~WeaponTypeClass();
 
   void* operator new(size_t) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   void operator delete(void* pointer);
 
-  char const* Name(void) const { return (IniName); }
+  char const* Name() const { return (IniName); }
   bool Read_INI(CCINIClass& ini);
   static WeaponTypeClass* As_Pointer(WeaponType weapon);
-  void Code_Pointers(void) {}
-  void Decode_Pointers(void) {}
-  ThreatType Allowed_Threats(void) const;
-  bool Is_Wall_Destroyer(void) const;
+  void Code_Pointers() {}
+  void Decode_Pointers() {}
+  ThreatType Allowed_Threats() const;
+  bool Is_Wall_Destroyer() const;
 
   /*
   **	This is both the weapon type number and the index number into

@@ -51,9 +51,9 @@ class CargoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  CargoClass(void) : Quantity(0), CargoHold(nullptr) {};
+  CargoClass() : Quantity(0), CargoHold(nullptr) {};
   CargoClass(NoInitClass const&) {};
-  ~CargoClass(void) { CargoHold = nullptr; };
+  ~CargoClass() { CargoHold = nullptr; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -62,19 +62,19 @@ class CargoClass {
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif
-  void AI(void) {};
+  void AI() {};
 
-  int How_Many(void) const { return Quantity; };
-  bool Is_Something_Attached(void) const { return (CargoHold != nullptr); };
-  FootClass* Attached_Object(void) const;
-  FootClass* Detach_Object(void);
+  int How_Many() const { return Quantity; };
+  bool Is_Something_Attached() const { return (CargoHold != nullptr); };
+  FootClass* Attached_Object() const;
+  FootClass* Detach_Object();
   void Attach(FootClass* object);
 
   /*
   **	File I/O.
   */
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
  private:
   /*

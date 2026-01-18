@@ -97,8 +97,8 @@
 #define PROFILE_SYSTEM NEW_PROFILE_SYSTEM
 
 extern "C" {
-void __cdecl Profile_Init(void);
-void __cdecl Profile_End(void);
-void __cdecl Start_Profiler(void);
-void __cdecl Stop_Profiler(void);
+void __cdecl Profile_Init();
+void __cdecl Profile_End();
+void __cdecl Start_Profiler();
+void __cdecl Stop_Profiler();
 }

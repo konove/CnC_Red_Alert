@@ -234,7 +234,7 @@ int fixed::To_ASCII(char* buffer, int maxlen) const {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-char const* fixed::As_ASCII(void) const {
+char const* fixed::As_ASCII() const {
   static char buffer[32];
 
   To_ASCII(buffer, sizeof(buffer));

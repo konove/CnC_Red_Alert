@@ -62,14 +62,14 @@ class TimerClass {
   TimerClass(BaseTimerEnum timer = BT_SYSTEM, bool start = false);
 
   // No destructor.
-  ~TimerClass(void) {}
+  ~TimerClass() {}
 
   //
   long Set(long value, bool start = true);  // Set initial timer value.
-  long Stop(void);                          // Pause timer.
-  long Start(void);                         // Resume timer.
+  long Stop();                              // Pause timer.
+  long Start();                             // Resume timer.
   long Reset(bool start = true);            // Reset timer to zero.
-  long Time(void);                          // Fetch current timer value.
+  long Time();                              // Fetch current timer value.
 
  protected:
   long Started;      // Time last started (0 == not paused).
@@ -77,7 +77,7 @@ class TimerClass {
 
  private:
   BaseTimerEnum TickType;
-  long Get_Ticks(void);
+  long Get_Ticks();
 };
 
 inline long TimerClass::Reset(bool start) { return (Set(0, start)); }
@@ -90,25 +90,25 @@ class CountDownTimerClass : private TimerClass {
   CountDownTimerClass(BaseTimerEnum timer = BT_SYSTEM, bool on = false);
 
   // No destructor.
-  ~CountDownTimerClass(void) {}
+  ~CountDownTimerClass() {}
 
   // Public functions
   long Set(long set, bool start = true);  // Set count down value.
   long Reset(bool start = true);          // Reset timer to zero.
-  long Stop(void);                        // Pause timer.
-  long Start(void);                       // Resume timer.
-  long Time(void);                        // Fetch current count down value.
+  long Stop();                            // Pause timer.
+  long Start();                           // Resume timer.
+  long Time();                            // Fetch current count down value.
 
  protected:
   long DelayTime;  // Ticks remaining before countdown timer expires.
 };
 
-inline long CountDownTimerClass::Stop(void) {
+inline long CountDownTimerClass::Stop() {
   TimerClass::Stop();
   return (Time());
 }
 
-inline long CountDownTimerClass::Start(void) {
+inline long CountDownTimerClass::Start() {
   TimerClass::Start();
   return (Time());
 }

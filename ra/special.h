@@ -48,7 +48,7 @@ class SpecialClass {
   **	This initializes all members just like a constructor. A constructor
   **	cannot be used for this class because it is part of a union.
   */
-  void Init(void);
+  void Init();
 
   /*
   **	If the shroud should regenerated, then this flag will be true.

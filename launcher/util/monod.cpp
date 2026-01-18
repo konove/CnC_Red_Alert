@@ -18,7 +18,7 @@
 
 #include "monod.h"
 
-MonoD::MonoD(void) {
+MonoD::MonoD() {
 #ifdef _WIN32
   unsigned long retval;
   handle = CreateFile("\\\\.\\MONO", GENERIC_READ | GENERIC_WRITE, 0, NULL,

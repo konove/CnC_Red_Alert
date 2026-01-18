@@ -173,7 +173,7 @@ void Shorten_Attached_Anims(ObjectClass* obj) {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/15/1994 JLB : Handles flat anims
  *(infantry decay anims).                               *
  *=============================================================================================*/
-COORDINATE AnimClass::Sort_Y(void) const {
+COORDINATE AnimClass::Sort_Y() const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -210,7 +210,7 @@ COORDINATE AnimClass::Sort_Y(void) const {
  * HISTORY: * 09/19/1994 JLB : Created. * 02/02/1996 JLB : Coordinate based on
  *visual center of object.                             *
  *=============================================================================================*/
-COORDINATE AnimClass::Center_Coord(void) const {
+COORDINATE AnimClass::Center_Coord() const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -355,7 +355,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Overlap_List(void) const {
+short const* AnimClass::Overlap_List() const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -444,7 +444,7 @@ short const* AnimClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Init(void) { Anims.Free_All(); }
+void AnimClass::Init() { Anims.Free_All(); }
 
 /***********************************************************************************************
  * AnimClass::new -- Allocates an anim object from the pool. *
@@ -583,7 +583,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created. *
  *=============================================================================================*/
-AnimClass::~AnimClass(void) {
+AnimClass::~AnimClass() {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -650,7 +650,7 @@ AnimClass::~AnimClass(void) {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::AI(void) {
+void AnimClass::AI() {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -867,7 +867,7 @@ void AnimClass::Attach_To(ObjectClass* obj) {
  *                                                                                             *
  * HISTORY: * 12/25/1994 JLB : Created. *
  *=============================================================================================*/
-LayerType AnimClass::In_Which_Layer(void) const {
+LayerType AnimClass::In_Which_Layer() const {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -900,7 +900,7 @@ LayerType AnimClass::In_Which_Layer(void) const {
  *                                                                                             *
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Start(void) {
+void AnimClass::Start() {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);
@@ -938,7 +938,7 @@ void AnimClass::Start(void) {
  *                                                                                             *
  * HISTORY: * 06/30/1995 JLB : Created. * 10/17/1995 JLB : Ion camera added. *
  *=============================================================================================*/
-void AnimClass::Middle(void) {
+void AnimClass::Middle() {
 #ifdef VIC
   assert(Anims.ID(this) == ID);
   assert(IsActive);

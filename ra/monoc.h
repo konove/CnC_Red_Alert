@@ -68,20 +68,20 @@ class MonoClass {
     COUNT
   } BoxStyleType;
 
-  MonoClass(void);
-  ~MonoClass(void);
+  MonoClass();
+  ~MonoClass();
 
-  static void Enable(void) { Enabled = true; };
-  static void Disable(void) { Enabled = false; };
-  static bool Is_Enabled(void) { return Enabled; };
-  static MonoClass* Get_Current(void) { return PageUsage[0]; };
+  static void Enable() { Enabled = true; };
+  static void Disable() { Enabled = false; };
+  static bool Is_Enabled() { return Enabled; };
+  static MonoClass* Get_Current() { return PageUsage[0]; };
 
   void Sub_Window(int x = 0, int y = 0, int w = -1, int h = -1);
   void Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib);
   void Draw_Box(int x, int y, int w, int h, MonoAttribute attrib = NORMAL,
                 BoxStyleType thick = SINGLE);
   void Set_Default_Attribute(MonoAttribute attrib) { Attrib = attrib; };
-  void Clear(void);
+  void Clear();
   void Set_Cursor(int x, int y);
   void Print(char const* text);
   void Print(int text);
@@ -90,13 +90,13 @@ class MonoClass {
   void Text_Print(char const* text, int x, int y,
                   MonoAttribute attrib = NORMAL);
   void Text_Print(int text, int x, int y, MonoAttribute attrib = NORMAL);
-  void View(void);
+  void View();
   void Scroll(int lines = 1);
   void Pan(int cols = 1);
-  int Get_X(void) const { return X; };
-  int Get_Y(void) const { return Y; };
-  int Get_Width(void) const { return (SubW); };
-  int Get_Height(void) const { return (SubH); };
+  int Get_X() const { return X; };
+  int Get_Y() const { return Y; };
+  int Get_Width() const { return (SubW); };
+  int Get_Height() const { return (SubH); };
 
   /*
   **	Handles deep copies for the mono class objects. This performs what is
@@ -200,7 +200,7 @@ class MonoClass {
   MonoPageType* Raw_Ptr(int page) const {
     return &((MonoPageType*)0xB0000)[page];
   }
-  MonoPageType* Page_Ptr(void) const { return (Raw_Ptr(Page)); }
+  MonoPageType* Page_Ptr() const { return (Raw_Ptr(Page)); }
 
   /*
   **	If this is true, then monochrome output is allowed. It defaults to false
@@ -215,12 +215,12 @@ int Mono_Printf(int string, ...);
 extern void Mono_Set_Cursor(int x, int y);
 extern int Mono_Printf(int string, ...);
 extern int Mono_Printf(char const* string, ...);
-extern void Mono_Clear_Screen(void);
+extern void Mono_Clear_Screen();
 extern void Mono_Text_Print(void const* text, int x, int y, int attrib);
 extern void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);
 extern void Mono_Print(void const* text);
-extern int Mono_X(void);
-extern int Mono_Y(void);
+extern int Mono_X();
+extern int Mono_Y();
 #endif
 
 #endif

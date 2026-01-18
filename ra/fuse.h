@@ -51,16 +51,16 @@
 */
 class FuseClass {
  public:
-  FuseClass(void);
+  FuseClass();
   FuseClass(NoInitClass const&) {};
-  ~FuseClass(void) {};
+  ~FuseClass() {};
 
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);
   bool Fuse_Checkup(COORDINATE newlocation);
   void Fuse_Write(FileClass& file);
   void Fuse_Read(FileClass& file);
-  COORDINATE Fuse_Target(void);
+  COORDINATE Fuse_Target();
 
   /*
   **	Fuses can detonate if enough time has elapsed. This value counts
@@ -90,6 +90,6 @@ class FuseClass {
   short Proximity;
 };
 
-inline COORDINATE FuseClass::Fuse_Target(void) { return (HeadTo); }
+inline COORDINATE FuseClass::Fuse_Target() { return (HeadTo); }
 
 #endif

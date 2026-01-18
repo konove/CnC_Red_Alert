@@ -192,7 +192,7 @@ COORDINATE AbstractTypeClass::Coord_Fixup(COORDINATE coord) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int AbstractTypeClass::Full_Name(void) const {
+int AbstractTypeClass::Full_Name() const {
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
     if (NameIDOverride[index] == ((RTTI + 1) * 100) + ID) {
       return (-(index + 1));
@@ -217,6 +217,6 @@ int AbstractTypeClass::Full_Name(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int AbstractTypeClass::Get_Ownable(void) const {
+int AbstractTypeClass::Get_Ownable() const {
   return (HOUSEF_ALLIES | HOUSEF_SOVIET | HOUSEF_OTHERS);
 }

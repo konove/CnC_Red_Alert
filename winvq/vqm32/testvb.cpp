@@ -57,7 +57,7 @@
  * SYNOPSIS
  *     Polarity = TestVBIBit()
  *
- *     long TestVBIBit(void);
+ *     long TestVBIBit();
  *
  * FUNCTION
  *
@@ -69,7 +69,7 @@
  *
  ****************************************************************************/
 
-long TestVBIBit(void) {
+long TestVBIBit() {
   static struct timeb mytime;
   long curtime;
   long endtime;

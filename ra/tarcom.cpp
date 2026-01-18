@@ -54,7 +54,7 @@
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-TarComClass::~TarComClass(void) {}
+TarComClass::~TarComClass() {}
 
 #ifdef CHEAT_KEYS
 /***********************************************************************************************
@@ -90,7 +90,7 @@ void TarComClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void TarComClass::AI(void) {
+void TarComClass::AI() {
   assert(IsActive);
 
   TurretClass::AI();

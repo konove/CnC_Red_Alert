@@ -131,16 +131,16 @@ struct InfantryAnim {
   char delay;
   InfantryTypeClass const* Class;
 } InfantryMan[NUMINFANTRYMEN];
-void Draw_InfantryMen(void);
+void Draw_InfantryMen();
 void Draw_InfantryMan(int index);
 void New_Infantry_Anim(int index, int anim);
 void Draw_Bar_Graphs(int i, int gkilled, int nkilled);
 void Animate_Cursor(int pos, int ypos);
-void Animate_Score_Objs(void);
+void Animate_Score_Objs();
 void Cycle_Wait_Click(bool cycle = true);
 
-void Disable_Uncompressed_Shapes(void);
-void Enable_Uncompressed_Shapes(void);
+void Disable_Uncompressed_Shapes();
+void Enable_Uncompressed_Shapes();
 
 void const* Beepy6;
 int ControlQ;  // cheat key to skip past score/mapsel screens
@@ -180,7 +180,7 @@ ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const* data, int maxval,
   TimerReset = xtimer;
 }
 
-void ScoreTimeClass::Update(void) {
+void ScoreTimeClass::Update() {
 #ifdef WIN32
   GraphicViewPortClass* oldpage;
 #else
@@ -211,7 +211,7 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const* data,
   CashTurn = MFCD::Retrieve("CASHTURN.AUD");
 }
 
-void ScoreCredsClass::Update(void) {
+void ScoreCredsClass::Update() {
 #ifdef WIN32
   GraphicViewPortClass* oldpage;
 #else
@@ -253,7 +253,7 @@ ScorePrintClass::ScorePrintClass(void const* string, int xpos, int ypos,
   Stage = 0;
 }
 
-void ScorePrintClass::Update(void) {
+void ScorePrintClass::Update() {
   static char localstr[2] = {0, 0};
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
@@ -318,7 +318,7 @@ ScoreScaleClass::ScoreScaleClass(void const* string, int xpos, int ypos,
 #endif
 }
 
-void ScoreScaleClass::Update(void) {
+void ScoreScaleClass::Update() {
   static int _destx[] = {0, 80, 107, 134, 180, 228};
   static int _destw[] = {6, 20, 30, 40, 60, 80};
 
@@ -404,7 +404,7 @@ static unsigned char const _redpal[] = {0xD0, 0xD1, 0xD7, 0xD3, 0xD9, 0xD5,
 static unsigned char const _yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
                                            0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
                                            0x0,  0x0, 0xED, 0x0};
-void ScoreClass::Presentation(void) {
+void ScoreClass::Presentation() {
 #ifdef WIN32
 //	if (Keyboard != NULL) return;
 #endif
@@ -967,7 +967,7 @@ void Cycle_Wait_Click(bool cycle) {
   Keyboard->Clear();
 }
 
-void ScoreClass::Do_Nod_Buildings_Graph(void) {
+void ScoreClass::Do_Nod_Buildings_Graph() {
   int shapenum;
   InfantryTypeClass const* ramboclass;
 
@@ -1224,7 +1224,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
   /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
 }
 
-void ScoreClass::Do_Nod_Casualties_Graph(void) {
+void ScoreClass::Do_Nod_Casualties_Graph() {
   int i, gdikilled, nodkilled, maxval;
 
   void const* e1ptr = MFCD::Retrieve("E1.SHP");
@@ -1864,7 +1864,7 @@ char* Int_Print(int a) {
  * HISTORY: * 06/11/1995  BWG: Created. *
  *=============================================================================================*/
 
-void Multi_Score_Presentation(void) {
+void Multi_Score_Presentation() {
   char remap[16];
 #if RESFACTOR == 2
   GraphicBufferClass* pseudoseenbuff =
@@ -2020,7 +2020,7 @@ void Multi_Score_Presentation(void) {
   Show_Mouse();
 }
 
-void ScoreClass::Init(void) {
+void ScoreClass::Init() {
   Score = 0;
   NKilled = 0;
   GKilled = 0;

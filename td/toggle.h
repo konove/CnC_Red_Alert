@@ -54,8 +54,8 @@
 class ToggleClass : public ControlClass {
  public:
   ToggleClass(unsigned id, int x, int y, int w, int h);
-  virtual void Turn_On(void);
-  virtual void Turn_Off(void);
+  virtual void Turn_On();
+  virtual void Turn_Off();
 
   /*
   **	Is this button in a pressed down state? This occurs when the mouse is

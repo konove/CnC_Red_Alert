@@ -375,7 +375,7 @@ int NullModemClass::Init(int port, int, char* dev_name, int baud, char parity,
  *                                                                                             *
  * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Num_Connections(void) { return (NumConnections); }
+int NullModemClass::Num_Connections() { return (NumConnections); }
 
 /***********************************************************************************************
  * NMC::Delete_Connection -- removes the connection *
@@ -390,7 +390,7 @@ int NullModemClass::Num_Connections(void) { return (NumConnections); }
  *                                                                                             *
  * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Delete_Connection(void) {
+int NullModemClass::Delete_Connection() {
   if (Connection) {
     delete Connection;
     Connection = nullptr;
@@ -429,7 +429,7 @@ int NullModemClass::Delete_Connection(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 11:46AM ST : Documented / Win32 support *
  *=============================================================================================*/
-int NullModemClass::Init_Send_Queue(void) {
+int NullModemClass::Init_Send_Queue() {
   /*---------------------------------------------------------------
   Init the send queue
   -----------------------------------------------------------------*/
@@ -559,7 +559,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
  *                                                                                             *
  * HISTORY: * 8/2/96 11:43AM ST : Documented / Win32 support *
  *=============================================================================================*/
-void NullModemClass::Shutdown(void) {
+void NullModemClass::Shutdown() {
   if (PortHandle && SerialPort) {
     SerialPort->Serial_Port_Close();
     delete SerialPort;
@@ -713,7 +713,7 @@ int NullModemClass::Get_Message(void* buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemClass::Service(void) {
+int NullModemClass::Service() {
   int pos;  // current position in RXBuf
   int i;    // loop counter
   // int status;
@@ -931,7 +931,7 @@ int NullModemClass::Service(void) {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-int NullModemClass::Num_Send(void) {
+int NullModemClass::Num_Send() {
   if (Connection)
     return (Connection->Queue->Num_Send());
   else
@@ -951,7 +951,7 @@ int NullModemClass::Num_Send(void) {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-int NullModemClass::Num_Receive(void) {
+int NullModemClass::Num_Receive() {
   if (Connection)
     return (Connection->Queue->Num_Receive());
   else
@@ -971,7 +971,7 @@ int NullModemClass::Num_Receive(void) {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long NullModemClass::Response_Time(void) {
+unsigned long NullModemClass::Response_Time() {
   if (Connection)
     return (Connection->Queue->Avg_Response_Time());
   else
@@ -991,7 +991,7 @@ unsigned long NullModemClass::Response_Time(void) {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-void NullModemClass::Reset_Response_Time(void) {
+void NullModemClass::Reset_Response_Time() {
   if (Connection) Connection->Queue->Reset_Response_Time();
 
 } /* end of Reset_Response_Time */
@@ -1008,7 +1008,7 @@ void NullModemClass::Reset_Response_Time(void) {
  * HISTORY:                                                                *
  *   05/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-void* NullModemClass::Oldest_Send(void) {
+void* NullModemClass::Oldest_Send() {
   int i;
   SendQueueType* send_entry;  // ptr to send entry header
   CommHeaderType* packet;
@@ -1911,7 +1911,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
  * HISTORY:                                                                *
  *   06/02/1995 DRD : Created.                                             *
  *=========================================================================*/
-bool NullModemClass::Hangup_Modem(void) {
+bool NullModemClass::Hangup_Modem() {
   int status;
   int delay;
   char buffer[81];
@@ -2021,7 +2021,7 @@ void NullModemClass::Setup_Modem_Echo(void (*func)(char c)) {
  *                                                                                             *
  * HISTORY: * 8/2/96 12:50PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-void NullModemClass::Remove_Modem_Echo(void) {
+void NullModemClass::Remove_Modem_Echo() {
   SerialPort->Set_Echo_Function(nullptr);
   // HMSetUpEchoRoutine( NULL );
 
@@ -2040,7 +2040,7 @@ void NullModemClass::Remove_Modem_Echo(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
-void NullModemClass::Print_EchoBuf(void) {
+void NullModemClass::Print_EchoBuf() {
   for (int i = 0; i < strlen(NullModem.EchoBuf); i++) {
     if (NullModem.EchoBuf[i] == '\r') {
       NullModem.EchoBuf[i] = 1;
@@ -2065,7 +2065,7 @@ void NullModemClass::Print_EchoBuf(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
-void NullModemClass::Reset_EchoBuf(void) {
+void NullModemClass::Reset_EchoBuf() {
   *EchoBuf = 0;
   EchoCount = 0;
 }
@@ -2084,7 +2084,7 @@ void NullModemClass::Reset_EchoBuf(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 12:52PM ST : Documented *
  *=============================================================================================*/
-int NullModemClass::Abort_Modem(void)
+int NullModemClass::Abort_Modem()
 // int NullModemClass::Abort_Modem( PORT * )
 {
   /*........................................................................
@@ -2127,8 +2127,8 @@ int NullModemClass::Abort_Modem(void)
  *                                                                                             *
  * HISTORY: * 8/2/96 2:59PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-void NullModemClass::Setup_Abort_Modem(void) {
-  SerialPort->Set_Abort_Function((int (*)(void))Abort_Modem);
+void NullModemClass::Setup_Abort_Modem() {
+  SerialPort->Set_Abort_Function((int (*)())Abort_Modem);
 } /* end of Setup_Abort_Modem */
 
 /***********************************************************************************************
@@ -2144,7 +2144,7 @@ void NullModemClass::Setup_Abort_Modem(void) {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:01PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-void NullModemClass::Remove_Abort_Modem(void) {
+void NullModemClass::Remove_Abort_Modem() {
   SerialPort->Set_Abort_Function(nullptr);
 } /* end of Remove_Abort_Modem */
 
@@ -2179,7 +2179,7 @@ int NullModemClass::Change_IRQ_Priority(int) {
  *                                                                                             *
  * HISTORY: * 8/2/96 3:06PM ST : Documented / Win32 support added *
  *=============================================================================================*/
-int NullModemClass::Get_Modem_Status(void) {
+int NullModemClass::Get_Modem_Status() {
   int modemstatus;
   int status;
   char buffer[81];

@@ -66,7 +66,7 @@ LockedDataType LockedData;
  * HISTORY:                                                                *
  *   06/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-void Init_Locked_Data(void) {
+void Init_Locked_Data() {
   /*
   ** Initialize all of the data elements that need to be locked.
   */

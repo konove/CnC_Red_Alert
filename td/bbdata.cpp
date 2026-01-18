@@ -577,7 +577,7 @@ BulletTypeClass::BulletTypeClass(
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletTypeClass::One_Time(void) {
+void BulletTypeClass::One_Time() {
   BulletType index;
 
   /*

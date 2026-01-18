@@ -208,7 +208,7 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectClass::Get_Image_Data(void) const {
+void const* ObjectClass::Get_Image_Data() const {
   return (Class_Of().Get_Image_Data());
 }
 
@@ -227,7 +227,7 @@ void const* ObjectClass::Get_Image_Data(void) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-char const* ObjectClass::Name(void) const { return (Class_Of().Name()); }
+char const* ObjectClass::Name() const { return (Class_Of().Name()); }
 
 /***********************************************************************************************
  * ObjectClass::Exit_Coord -- Return with the exit coordinate for this object. *
@@ -245,7 +245,7 @@ char const* ObjectClass::Name(void) const { return (Class_Of().Name()); }
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Exit_Coord(void) const { return (Center_Coord()); }
+COORDINATE ObjectClass::Exit_Coord() const { return (Center_Coord()); }
 
 /***********************************************************************************************
  * ObjectClass::AI -- Handles generic object AI processing. *
@@ -262,7 +262,7 @@ COORDINATE ObjectClass::Exit_Coord(void) const { return (Center_Coord()); }
  *                                                                                             *
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::AI(void) {
+void ObjectClass::AI() {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -373,7 +373,7 @@ ActionType ObjectClass::What_Action(CELL) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-LayerType ObjectClass::In_Which_Layer(void) const {
+LayerType ObjectClass::In_Which_Layer() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -400,7 +400,7 @@ LayerType ObjectClass::In_Which_Layer(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Get_Ownable(void) const {
+int ObjectClass::Get_Ownable() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -422,7 +422,7 @@ int ObjectClass::Get_Ownable(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Repair(void) const {
+bool ObjectClass::Can_Repair() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -444,7 +444,7 @@ bool ObjectClass::Can_Repair(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Demolish(void) const {
+bool ObjectClass::Can_Demolish() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -467,7 +467,7 @@ bool ObjectClass::Can_Demolish(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Player_Fire(void) const {
+bool ObjectClass::Can_Player_Fire() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -490,7 +490,7 @@ bool ObjectClass::Can_Player_Fire(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Player_Move(void) const {
+bool ObjectClass::Can_Player_Move() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -514,7 +514,7 @@ bool ObjectClass::Can_Player_Move(void) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Target_Coord(void) const {
+COORDINATE ObjectClass::Target_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -538,7 +538,7 @@ COORDINATE ObjectClass::Target_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Center_Coord(void) const {
+COORDINATE ObjectClass::Center_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -560,7 +560,7 @@ COORDINATE ObjectClass::Center_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Render_Coord(void) const {
+COORDINATE ObjectClass::Render_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -584,7 +584,7 @@ COORDINATE ObjectClass::Render_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Docking_Coord(void) const {
+COORDINATE ObjectClass::Docking_Coord() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -609,7 +609,7 @@ COORDINATE ObjectClass::Docking_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Sort_Y(void) const {
+COORDINATE ObjectClass::Sort_Y() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -680,7 +680,7 @@ void ObjectClass::Record_The_Kill(TechnoClass*) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Do_Shimmer(void) {
+void ObjectClass::Do_Shimmer() {
   assert(this != nullptr);
   assert(IsActive);
 }
@@ -727,7 +727,7 @@ int ObjectClass::Exit_Object(TechnoClass*) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Hidden(void) {
+void ObjectClass::Hidden() {
   assert(this != nullptr);
   assert(IsActive);
 }
@@ -915,7 +915,7 @@ void ObjectClass::Scatter(COORDINATE, bool, bool) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Catch_Fire(void) {
+bool ObjectClass::Catch_Fire() {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -938,7 +938,7 @@ bool ObjectClass::Catch_Fire(void) {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Fire_Out(void) {
+void ObjectClass::Fire_Out() {
   assert(this != nullptr);
   assert(IsActive);
 }
@@ -962,7 +962,7 @@ void ObjectClass::Fire_Out(void) {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Value(void) const {
+int ObjectClass::Value() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -985,7 +985,7 @@ int ObjectClass::Value(void) const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-MissionType ObjectClass::Get_Mission(void) const {
+MissionType ObjectClass::Get_Mission() const {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1081,7 +1081,7 @@ void ObjectClass::Move(FacingType facing) {
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Unselect(void) {
+void ObjectClass::Unselect() {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1110,7 +1110,7 @@ void ObjectClass::Unselect(void) {
  *loaner object.                                           * 07/23/1995 JLB :
  *Adds to head or tail depending on leader type flag.                      *
  *=============================================================================================*/
-bool ObjectClass::Select(void) {
+bool ObjectClass::Select() {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1286,7 +1286,7 @@ void ObjectClass::Debug_Dump(MonoClass* mono) const {
  * HISTORY: * 05/08/1994 JLB : Created. * 12/23/1994 JLB : Flags map and flags
  *unit only.                                           *
  *=============================================================================================*/
-void ObjectClass::Mark_For_Redraw(void) {
+void ObjectClass::Mark_For_Redraw() {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1318,7 +1318,7 @@ void ObjectClass::Mark_For_Redraw(void) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Limbo(void) {
+bool ObjectClass::Limbo() {
   assert(this != nullptr);
   assert(IsActive);
 
@@ -1771,7 +1771,7 @@ bool ObjectClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Init(void) { CurrentObject.Clear(); }
+void ObjectClass::Init() { CurrentObject.Clear(); }
 
 /***********************************************************************************************
  * ObjectClass::Revealed -- Reveals this object to the house specified. *
@@ -1879,10 +1879,10 @@ short const* ObjectClass::Overlap_List(bool) const {
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return (Class_Of().Who_Can_Build_Me(intheory, legal, Owner()));
 };
-fixed ObjectClass::Health_Ratio(void) const {
+fixed ObjectClass::Health_Ratio() const {
   return (fixed(Strength, Class_Of().MaxStrength));
 };
-int ObjectClass::Full_Name(void) const { return Class_Of().Full_Name(); };
+int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };
 
 //**********************************************************************************************
 // MODULE SEPARATION -- ObjectTypeClass member functions follow.
@@ -1960,7 +1960,7 @@ ObjectTypeClass::~ObjectTypeClass() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Max_Pips(void) const { return (0); }
+int ObjectTypeClass::Max_Pips() const { return (0); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Dimensions -- Gets the dimensions of the object in pixels. *
@@ -2002,7 +2002,7 @@ void ObjectTypeClass::Dimensions(int& width, int& height) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Cost_Of(void) const { return (0); }
+int ObjectTypeClass::Cost_Of() const { return (0); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Time_To_Build -- Fetches the time to construct this object.
@@ -2021,7 +2021,7 @@ int ObjectTypeClass::Cost_Of(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Time_To_Build(void) const { return (0); }
+int ObjectTypeClass::Time_To_Build() const { return (0); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Get_Cameo_Data -- Fetches pointer to cameo data for this
@@ -2039,7 +2039,7 @@ int ObjectTypeClass::Time_To_Build(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
+void const* ObjectTypeClass::Get_Cameo_Data() const { return (nullptr); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
@@ -2081,7 +2081,7 @@ short const* ObjectTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const* ObjectTypeClass::Overlap_List(void) const {
+short const* ObjectTypeClass::Overlap_List() const {
   static short const _list[] = {REFRESH_EOL};
   return (_list);
 }
@@ -2101,7 +2101,7 @@ short const* ObjectTypeClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectTypeClass::One_Time(void) {
+void ObjectTypeClass::One_Time() {
   SelectShapes = MFCD::Retrieve("SELECT.SHP");
 
 #ifndef NDEBUG

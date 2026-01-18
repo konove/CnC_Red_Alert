@@ -72,7 +72,7 @@
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::New_Scenario(void) {
+int MapEditClass::New_Scenario() {
   int scen_num = Scenario;
   ScenarioPlayerType player = ScenPlayer;
   ScenarioDirType dir = ScenDir;
@@ -179,7 +179,7 @@ int MapEditClass::New_Scenario(void) {
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Load_Scenario(void) {
+int MapEditClass::Load_Scenario() {
   int scen_num = Scenario;
   ScenarioPlayerType player = ScenPlayer;
   ScenarioDirType dir = ScenDir;
@@ -264,7 +264,7 @@ int MapEditClass::Load_Scenario(void) {
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Save_Scenario(void) {
+int MapEditClass::Save_Scenario() {
   int scen_num = Scenario;
   ScenarioPlayerType player = ScenPlayer;
   ScenarioDirType dir = ScenDir;
@@ -1558,7 +1558,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
  * HISTORY:                                                                *
  *   11/14/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Scenario_Dialog(void) {
+int MapEditClass::Scenario_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -2164,7 +2164,7 @@ int MapEditClass::Scenario_Dialog(void) {
  * HISTORY:                                                                *
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Handle_Triggers(void) {
+void MapEditClass::Handle_Triggers() {
   int rc;
 
   /*------------------------------------------------------------------------
@@ -2283,7 +2283,7 @@ void MapEditClass::Handle_Triggers(void) {
  * HISTORY:                                                                *
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Select_Trigger(void) {
+int MapEditClass::Select_Trigger() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -2626,7 +2626,7 @@ int MapEditClass::Select_Trigger(void) {
  * HISTORY:                                                                *
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Edit_Trigger(void) {
+int MapEditClass::Edit_Trigger() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3255,7 +3255,7 @@ int MapEditClass::Edit_Trigger(void) {
  * HISTORY:                                                                *
  *   03/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MapEditClass::Import_Triggers(void) {
+int MapEditClass::Import_Triggers() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3592,7 +3592,7 @@ int MapEditClass::Import_Triggers(void) {
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Import_Teams(void) {
+int MapEditClass::Import_Teams() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/

@@ -43,9 +43,9 @@
 #include "tech/xpipe.h"
 #include "tech/xstraw.h"
 
-LZWEngine::LZWEngine(void) { Reset(); }
+LZWEngine::LZWEngine() { Reset(); }
 
-void LZWEngine::Reset(void) {
+void LZWEngine::Reset() {
   for (int i = 0; i < TABLE_SIZE; i++) {
     dict[i].Make_Unused();
   }
@@ -280,12 +280,12 @@ struct CodeClass {
   CodeType ParentCode;
   char CharValue;
 
-  CodeClass(void) {}
+  CodeClass() {}
   CodeClass(CodeType code, CodeType parent, char c)
       : CodeValue(code), ParentCode(parent), CharValue(c) {}
 
-  void Make_Unused(void) { CodeValue = UNUSED; }
-  bool Is_Unused(void) const { return (CodeValue == UNUSED); }
+  void Make_Unused() { CodeValue = UNUSED; }
+  bool Is_Unused() const { return (CodeValue == UNUSED); }
   bool Is_Matching(CodeType code, char c) const {
     return (ParentCode == code && CharValue == c);
   }

@@ -596,7 +596,7 @@ void OverlayTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void OverlayTypeClass::Init_Heap(void) {
+void OverlayTypeClass::Init_Heap() {
   /*
   **	These overlay type class objects must be allocated in the exact order
   *that they *	are specified in the OverlayType enumeration. This is necessary
@@ -645,7 +645,7 @@ void OverlayTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayTypeClass::One_Time(void) {}
+void OverlayTypeClass::One_Time() {}
 
 /***********************************************************************************************
  * OverlayTypeClass::From_Name -- Determine overlay from ASCII name. *
@@ -769,7 +769,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 08/06/1994 JLB : Created *
  *=============================================================================================*/
-void OverlayTypeClass::Prep_For_Add(void) {
+void OverlayTypeClass::Prep_For_Add() {
   for (OverlayType index = OVERLAY_FIRST; index < OVERLAY_COUNT; index++) {
     OverlayTypeClass const& overlay = As_Reference(index);
     if (overlay.Get_Image_Data() != NULL && !overlay.IsWall &&

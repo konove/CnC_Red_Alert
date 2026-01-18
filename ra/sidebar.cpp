@@ -190,7 +190,7 @@ void const* SidebarClass::StripClass::SpecialShapes[SPC_COUNT];
  *                                                                                             *
  * HISTORY: * 11/17/1994 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::SidebarClass(void)
+SidebarClass::SidebarClass()
     : IsSidebarActive(false),
       IsToRedraw(true),
       IsRepairActive(false),
@@ -265,7 +265,7 @@ SidebarClass::SidebarClass(NoInitClass const& x) : PowerClass(x) {
  *                                                                                             *
  * HISTORY: * 10/28/94   JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::One_Time(void) {
+void SidebarClass::One_Time() {
   PowerClass::One_Time();
 
   /*
@@ -317,7 +317,7 @@ void SidebarClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Init_Clear(void) {
+void SidebarClass::Init_Clear() {
   PowerClass::Init_Clear();
 
   IsToRedraw = true;
@@ -342,7 +342,7 @@ void SidebarClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Init_IO(void) {
+void SidebarClass::Init_IO() {
   PowerClass::Init_IO();
 
   /*
@@ -432,7 +432,7 @@ void SidebarClass::Init_Theater(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 9/18/1996 BWG : Created. *
  *=============================================================================================*/
-void SidebarClass::Reload_Sidebar(void) {
+void SidebarClass::Reload_Sidebar() {
   static const char* sidebarnames[] = {
       "SIDE?NA.SHP",  // NATO
       "SIDE?NA.SHP",
@@ -947,7 +947,7 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 11/30/1994 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Recalc(void) {
+void SidebarClass::Recalc() {
   bool redraw = false;
 
   redraw |= Column[0].Recalc();
@@ -1148,7 +1148,7 @@ void const* SidebarClass::StripClass::Get_Special_Cameo(
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::Init_Clear(void) {
+void SidebarClass::StripClass::Init_Clear() {
   IsScrollingDown = false;
   IsScrolling = false;
   IsBuilding = false;
@@ -1266,7 +1266,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   }
 }
 
-void SidebarClass::StripClass::Reload_LogoShapes(void) {
+void SidebarClass::StripClass::Reload_LogoShapes() {
   /*
   ** Load hi-res strip art here since it is player side specific
   */
@@ -1308,7 +1308,7 @@ void SidebarClass::StripClass::Reload_LogoShapes(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::Activate(void) {
+void SidebarClass::StripClass::Activate() {
   UpButton[ID].Zap();
   Map.Add_A_Button(UpButton[ID]);
 
@@ -1337,7 +1337,7 @@ void SidebarClass::StripClass::Activate(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::Deactivate(void) {
+void SidebarClass::StripClass::Deactivate() {
   Map.Remove_A_Button(UpButton[ID]);
   Map.Remove_A_Button(DownButton[ID]);
   for (int index = 0; index < MAX_VISIBLE; index++) {
@@ -1426,7 +1426,7 @@ bool SidebarClass::StripClass::Scroll(bool up) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::Flag_To_Redraw(void) {
+void SidebarClass::StripClass::Flag_To_Redraw() {
   IsToRedraw = true;
   // Map.SidebarClass::IsToRedraw = true;
   Map.Flag_To_Redraw(false);
@@ -1861,7 +1861,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. * 06/26/1995 JLB : Doesn't collapse
  *sidebar when buildables removed.                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::Recalc(void) {
+bool SidebarClass::StripClass::Recalc() {
   int ok;
 
   if (Debug_Map || !BuildableCount) {
@@ -1931,7 +1931,7 @@ bool SidebarClass::StripClass::Recalc(void) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-SidebarClass::StripClass::SelectClass::SelectClass(void)
+SidebarClass::StripClass::SelectClass::SelectClass()
     : ControlClass(0, 0, 0, (OBJECT_WIDTH - 1) * RESFACTOR,
                    OBJECT_HEIGHT * RESFACTOR, LEFTPRESS | RIGHTPRESS | LEFTUP),
       Strip(nullptr),
@@ -2352,7 +2352,7 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
  *                                                                                             *
  * HISTORY: * 07/31/1996 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Zoom_Mode_Control(void) {
+void SidebarClass::Zoom_Mode_Control() {
 #ifdef WIN32
   /*
   ** If radar is active, cycle as follows:

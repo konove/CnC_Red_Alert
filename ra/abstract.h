@@ -92,15 +92,15 @@ class AbstractClass {
   AbstractClass(RTTIType rtti, int id)
       : RTTI(rtti), ID(id), Coord(0xFFFFFFFFL), Height(0) {};
   AbstractClass(NoInitClass const& x) { x(); };
-  virtual ~AbstractClass(void) {};
+  virtual ~AbstractClass() {};
 
   /*
   **	Query functions.
   */
-  virtual char const* Name(void) const { return (""); }
-  virtual HousesType Owner(void) const { return HOUSE_NONE; };
-  TARGET As_Target(void) const { return (Build_Target(RTTI, ID)); };
-  RTTIType What_Am_I(void) const { return (RTTI); };
+  virtual char const* Name() const { return (""); }
+  virtual HousesType Owner() const { return HOUSE_NONE; };
+  TARGET As_Target() const { return (Build_Target(RTTI, ID)); };
+  RTTIType What_Am_I() const { return (RTTI); };
 
 /*
 **	Scenario and debug support.
@@ -112,8 +112,8 @@ class AbstractClass {
   /*
   **	Coordinate query support functions.
   */
-  virtual COORDINATE Center_Coord(void) const { return Coord; };
-  virtual COORDINATE Target_Coord(void) const { return Coord; };
+  virtual COORDINATE Center_Coord() const { return Coord; };
+  virtual COORDINATE Target_Coord() const { return Coord; };
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -149,7 +149,7 @@ class AbstractClass {
   /*
   **	AI.
   */
-  virtual void AI(void) {};
+  virtual void AI() {};
 };
 
 #endif

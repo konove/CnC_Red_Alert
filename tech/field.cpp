@@ -127,7 +127,7 @@ FieldClass::FieldClass(char const* id, void* data, int length) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-void FieldClass::Host_To_Net(void) {
+void FieldClass::Host_To_Net() {
   //
   // Before we convert the data type, we should convert the actual data
   //  sent.
@@ -174,7 +174,7 @@ void FieldClass::Host_To_Net(void) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-void FieldClass::Net_To_Host(void) {
+void FieldClass::Net_To_Host() {
   //
   // Convert the variables to host order.  This needs to be converted so
   // the switch statement does compares on the data that follows.

@@ -32,7 +32,7 @@
 ;*-------------------------------------------------------------------------*
 ;* Functions:                                                              *
 ;*                                                                         *
-; VOID Get_Devices(VOID);                                                  *
+; VOID Get_Devices();                                                  *
 ; WORD Is_Device_Real(WORD drive);                                         *
 ;*                                                                         *
 ;* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
@@ -54,7 +54,7 @@ GLOBAL              DefaultDrive         :BYTE
 ;
 ; Here are prototypes for the routines defined within this module:
 ;
-; VOID Get_Devices(VOID);
+; VOID Get_Devices();
 ; WORD Is_Device_Real(WORD drive);
 ;
 ; ----------------------------------------------------------------
@@ -65,7 +65,7 @@ CODESEG
 ;
 ; GET_DEVICES
 ;
-; VOID Get_Devices(VOID);
+; VOID Get_Devices();
 ;
 ; This routine establishes the default disk drive and the maximum drive
 ; available in the current system.

@@ -59,15 +59,15 @@ class WWKeyboardClass {
   /* Define the functions which work with the Keyboard Class
    */
   /*===================================================================*/
-  bool Check(void);   // checks keybuff for meta key
-  int Get(void);      // gets a meta key from the keybuffer
+  bool Check();       // checks keybuff for meta key
+  int Get();          // gets a meta key from the keybuffer
   bool Put(int key);  // dumps a key into the keybuffer
   bool Put_Key_Message(
       unsigned vk_key,
       bool release = false);  // handles keyboard related message
                               //   and mouse clicks and dbl clicks
   int To_ASCII(int num);      // converts keynum to ascii value
-  void Clear(void);           // clears all keys from keybuffer
+  void Clear();               // clears all keys from keybuffer
   int Down(int key);          // tests to see if a key is down
 
   /*===================================================================*/
@@ -97,7 +97,7 @@ class WWKeyboardClass {
   /* Define the private access functions which are used by keyboard
    */
   /*===================================================================*/
-  int Buff_Get(void);
+  int Buff_Get();
 
   /*===================================================================*/
   /* Define the private access variables which are used with the

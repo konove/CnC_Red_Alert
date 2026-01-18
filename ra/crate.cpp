@@ -66,7 +66,7 @@
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool CrateClass::Remove_It(void) {
+bool CrateClass::Remove_It() {
   if (Is_Valid()) {
     Get_Crate(Cell);
     Make_Invalid();

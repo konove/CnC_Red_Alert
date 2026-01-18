@@ -626,7 +626,7 @@ void Debug_Key(unsigned input) {
  *monochrome system.                                           *
  *=============================================================================================*/
 #define UPDATE_INTERVAL TIMER_SECOND
-void Self_Regulate(void) {
+void Self_Regulate() {
   static CountDownTimerClass DebugTimer(BT_SYSTEM);
   static ObjectClass* _lastobject = 0;
 

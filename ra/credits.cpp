@@ -76,7 +76,7 @@
  *                                                                                             *
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
-CreditClass::CreditClass(void)
+CreditClass::CreditClass()
     : Credits(0),
       Current(0),
       IsToRedraw(false),

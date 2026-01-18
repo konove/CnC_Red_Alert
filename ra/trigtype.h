@@ -107,7 +107,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   TActionClass Action2;
   MultiStyleType ActionControl;
 
-  TriggerTypeClass(void);
+  TriggerTypeClass();
   TriggerTypeClass(NoInitClass const& x)
       : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {};
   ~TriggerTypeClass() override = default;
@@ -119,7 +119,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   /*
   **	Initialization: clears all trigger types in preparation for new scenario
   */
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O routines
@@ -129,29 +129,29 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   void Build_INI_Entry(std::string& buffer) const;
 
-  static char const* INI_Name(void) { return "Trigs"; };
+  static char const* INI_Name() { return "Trigs"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	Processing routines
   */
-  TriggerClass* Create_One_Of(void) const;
-  void Destroy_All_Of(void) const;
+  TriggerClass* Create_One_Of() const;
+  void Destroy_All_Of() const;
 
   /*
   **	Utility routines
   */
   void Detach(TARGET target, bool all = true);
-  AttachType Attaches_To(void) const;
-  TARGET As_Target(void) const;
+  AttachType Attaches_To() const;
+  TARGET As_Target() const;
   static TriggerTypeClass* From_Name(char const* name);
-  bool Edit(void);
+  bool Edit();
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-  char const* Description(void) const;
-  operator const char*(void) const { return (Description()); };
+  char const* Description() const;
+  operator const char*() const { return (Description()); };
 #endif
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;

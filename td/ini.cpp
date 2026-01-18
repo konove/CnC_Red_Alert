@@ -97,9 +97,9 @@
 
 /************************************* Prototypes
  * *********************************************/
-static void Assign_Houses(void);
-static void Remove_AI_Players(void);
-static void Create_Units(void);
+static void Assign_Houses();
+static void Remove_AI_Players();
+static void Create_Units();
 static void Sort_Cells(CELL* cells, int numcells, CELL* outcells);
 static int Furthest_Cell(CELL* cells, int numcells, CELL* tcells,
                          int numtcells);
@@ -766,7 +766,7 @@ void Write_Scenario_Ini(char* /*root*/) {
  * HISTORY: * 06/09/1995 BRR : Created. * 07/14/1995 JLB : Records name of
  *player in house structure.                               *
  *=============================================================================================*/
-static void Assign_Houses(void) {
+static void Assign_Houses() {
   HousesType house;
   HousesType pref_house;
   HouseClass* housep;
@@ -898,7 +898,7 @@ static void Assign_Houses(void) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-static void Remove_AI_Players(void) {
+static void Remove_AI_Players() {
   int i;
   HousesType house;
   HouseClass* housep;
@@ -953,7 +953,7 @@ static void Remove_AI_Players(void) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-static void Create_Units(void) {
+static void Create_Units() {
   enum {
     NUM_UNIT_CATEGORIES = 8,
     NUM_INFANTRY_CATEGORIES = 5,

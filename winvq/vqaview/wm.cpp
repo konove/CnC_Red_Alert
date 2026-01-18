@@ -53,7 +53,7 @@
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-void Menu_Exit_Game(void);
+void Menu_Exit_Game();
 
 /***************************************************************************
  * WM_COMMAND_FUNC -- Handles all main window commands                     *
@@ -211,6 +211,6 @@ long WM_ActivateApp_Func(WindowHandle window_handle, unsigned int message,
   return (0);
 }
 
-void Menu_Exit_Game(void) {
+void Menu_Exit_Game() {
   PostMessage(Main_Window.Get_Window_Handle(), WM_CLOSE, 0, 0L);
 }

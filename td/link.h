@@ -48,24 +48,24 @@
 */
 class LinkClass {
  public:
-  LinkClass(void);
-  virtual ~LinkClass(void);
+  LinkClass();
+  virtual ~LinkClass();
 
-  virtual LinkClass* Get_Next(void) const;
-  virtual LinkClass* Get_Prev(void) const;
+  virtual LinkClass* Get_Next() const;
+  virtual LinkClass* Get_Prev() const;
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual LinkClass const& Head_Of_List(void) const;
-  virtual LinkClass& Head_Of_List(void) {
+  virtual LinkClass const& Head_Of_List() const;
+  virtual LinkClass& Head_Of_List() {
     return (LinkClass&)(((LinkClass const*)this)->Head_Of_List());
   };
-  virtual LinkClass const& Tail_Of_List(void) const;
-  virtual LinkClass& Tail_Of_List(void) {
+  virtual LinkClass const& Tail_Of_List() const;
+  virtual LinkClass& Tail_Of_List() {
     return (LinkClass&)(((LinkClass const*)this)->Tail_Of_List());
   };
-  virtual void Zap(void);
-  virtual LinkClass* Remove(void);
+  virtual void Zap();
+  virtual LinkClass* Remove();
 
   LinkClass& operator=(LinkClass& link);  // Assignment operator.
   LinkClass(LinkClass& link);             // Copy constructor.

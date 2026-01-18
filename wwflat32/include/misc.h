@@ -45,7 +45,7 @@
 /* Prog_End Must be supplied by the user program in startup.cpp
  */
 /*=========================================================================*/
-VOID cdecl Prog_End(VOID);
+VOID cdecl Prog_End();
 VOID cdecl Exit(INT errorval, const BYTE* message, ...);
 
 /*=========================================================================*/
@@ -53,7 +53,7 @@ VOID cdecl Exit(INT errorval, const BYTE* message, ...);
  */
 /*=========================================================================*/
 void Delay(int duration);
-void Vsync(void);
+void Vsync();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FINDARGV.CPP
@@ -78,7 +78,7 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
  */
 /*=========================================================================*/
 
-BYTE* cdecl Version(VOID);
+BYTE* cdecl Version();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: IRANDOM.CPP
@@ -98,14 +98,14 @@ extern "C" {
 /* Prog_End Must be supplied by the user program in startup.cpp
  */
 /*=========================================================================*/
-int Get_CPU(VOID);
+int Get_CPU();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: RANDOM.ASM
  */
 /*=========================================================================*/
 
-UBYTE Random(VOID);
+UBYTE Random();
 int Get_Random_Mask(int maxval);
 
 /*=========================================================================*/
@@ -165,10 +165,10 @@ long Calculate_CRC(void* buffer, long length);
  */
 /*=========================================================================*/
 
-extern WORD Processor(VOID);
-extern WORD Operating_System(VOID);
+extern WORD Processor();
+extern WORD Operating_System();
 extern ULONG random(ULONG mod);
-extern void randomize(void);
+extern void randomize();
 
 extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);
 extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);

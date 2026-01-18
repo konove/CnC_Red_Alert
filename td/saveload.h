@@ -16,9 +16,9 @@ bool Write_Object(void* ptr, int class_size, FileClass& file);
 TARGET TechnoType_To_Target(TechnoTypeClass const* ptr);
 TechnoTypeClass const* Target_To_TechnoType(TARGET target);
 void* Get_VTable(void* ptr, int base_size);
-void Code_All_Pointers(void);
-void Decode_All_Pointers(void);
-void Dump(void);
+void Code_All_Pointers();
+void Decode_All_Pointers();
+void Dump();
 void Set_VTable(void* ptr, int base_size, void* vtable);
 
 #endif  // CNC_RED_ALERT_TD_SAVELOAD_H_

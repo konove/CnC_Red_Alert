@@ -177,7 +177,7 @@ extern BOOL UseCD;
  */
 /*=========================================================================*/
 
-void __cdecl WWDOS_Shutdown(void);
+void __cdecl WWDOS_Shutdown();
 FileInitErrorType __cdecl WWDOS_Init(unsigned long cachesize, char* filedata,
                                      char* cdpath);
 
@@ -202,7 +202,7 @@ int __cdecl Open_File_With_Recovery(char const* file_name, unsigned int mode);
  */
 /*=========================================================================*/
 
-void Unfragment_File_Cache(void);
+void Unfragment_File_Cache();
 BOOL __cdecl Make_File_Resident(char const* filename);
 int __cdecl Flush_Unused_File_Cache(int flush_keeps);
 BOOL __cdecl Free_Resident_File(char const* file);
@@ -222,7 +222,7 @@ BOOL __cdecl Change_File_Size(int handle, unsigned long new_size);
 /*=========================================================================*/
 
 int __cdecl Get_DOS_Handle(int fh);
-int __cdecl Free_Handles(void);
+int __cdecl Free_Handles();
 int __cdecl Find_Disk_Number(char const* file_name);
 int __cdecl Set_File_Flags(char const* filename, int flags);
 int __cdecl Clear_File_Flags(char const* filename, int flags);

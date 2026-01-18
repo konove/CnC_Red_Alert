@@ -267,7 +267,7 @@ extern int Convert_HMI_To_Direct_Sound_Volume(int volume);
  * HISTORY: *
  *     ....Unknown * 10/17/95 10:15PM ST : tidied up a tad for direct sound *
  *=============================================================================================*/
-VOID far __cdecl maintenance_callback(VOID) {
+VOID far __cdecl maintenance_callback() {
   int index;              // index used in for loop
   SampleTrackerType* st;  // ptr to SampleTracker structure
   DWORD play_cursor;      // Position that direct sound is reading from

@@ -57,8 +57,8 @@ class RandomClass {
  public:
   RandomClass(unsigned seed = 0);
 
-  operator int(void) { return (operator()()); };
-  int operator()(void);
+  operator int() { return (operator()()); };
+  int operator()();
   int operator()(int minval, int maxval);
 
   enum {

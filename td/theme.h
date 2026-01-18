@@ -67,23 +67,23 @@ class ThemeClass {
   enum { THEME_DELAY = TIMER_SECOND };
 
  public:
-  ThemeClass(void);
+  ThemeClass();
 
   ThemeType From_Name(char const* name);
   int Track_Length(ThemeType index);
-  int Max_Themes(void) { return THEME_COUNT; };
+  int Max_Themes() { return THEME_COUNT; };
   char const* Full_Name(ThemeType index) const;
   char const* Base_Name(ThemeType index) const;
-  void AI(void);
+  void AI();
   void Queue_Song(ThemeType index);
   int Play_Song(ThemeType index);
-  ThemeType What_Is_Playing(void) { return Score; };
-  void Stop(void);
-  void Fade_Out(void) { Queue_Song(THEME_NONE); };
-  int Still_Playing(void);
+  ThemeType What_Is_Playing() { return Score; };
+  void Stop();
+  void Fade_Out() { Queue_Song(THEME_NONE); };
+  int Still_Playing();
   ThemeType Next_Song(ThemeType index);
   bool Is_Allowed(ThemeType index) const;
-  static void Scan(void);
+  static void Scan();
 };
 
 #endif

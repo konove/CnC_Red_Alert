@@ -51,19 +51,19 @@
 
 class PowerClass : public RadarClass {
  public:
-  PowerClass(void);
+  PowerClass();
   PowerClass(NoInitClass const& x) : RadarClass(x), FlashTimer(x) {};
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);  // One-time inits
+  virtual void One_Time();  // One-time inits
 
-  virtual void Init_Clear(void);  // Clears all to known state
+  virtual void Init_Clear();  // Clears all to known state
   virtual void Draw_It(bool complete = false);
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Refresh_Cells(CELL cell, short const* list);
-  void Flash_Power(void);
+  void Flash_Power();
 
   unsigned IsToRedraw : 1;
 
@@ -73,7 +73,7 @@ class PowerClass : public RadarClass {
   */
   class PowerButtonClass : public GadgetClass {
    public:
-    PowerButtonClass(void)
+    PowerButtonClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {};

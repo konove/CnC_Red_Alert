@@ -205,16 +205,16 @@ class GraphicViewPortClass {
   /* define functions to get at the private data members
    */
   /*===================================================================*/
-  long Get_Offset(void);
-  int Get_Height(void);
-  int Get_Width(void);
-  int Get_XAdd(void);
-  int Get_XPos(void);
-  int Get_YPos(void);
-  GraphicBufferClass* Get_Graphic_Buffer(void);
+  long Get_Offset();
+  int Get_Height();
+  int Get_Width();
+  int Get_XAdd();
+  int Get_XPos();
+  int Get_YPos();
+  GraphicBufferClass* Get_Graphic_Buffer();
 
-  int Lock(void) const { return (TRUE); }
-  void Unlock(void) const {}
+  int Lock() const { return (TRUE); }
+  void Unlock() const {}
 
   /*===================================================================*/
   /* Define a function which allows us to change a video viewport on	*/
@@ -348,7 +348,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long GraphicViewPortClass::Get_Offset(void) { return (Offset); }
+inline long GraphicViewPortClass::Get_Offset() { return (Offset); }
 
 /***************************************************************************
  * GVPC::GET_HEIGHT -- Gets the height of a virtual viewport instance      *
@@ -360,7 +360,7 @@ inline long GraphicViewPortClass::Get_Offset(void) { return (Offset); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Height(void) { return (Height); }
+inline int GraphicViewPortClass::Get_Height() { return (Height); }
 
 /***************************************************************************
  * GVPC::GET_WIDTH -- Get the width of a virtual viewport instance
@@ -373,7 +373,7 @@ inline int GraphicViewPortClass::Get_Height(void) { return (Height); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Width(void) { return (Width); }
+inline int GraphicViewPortClass::Get_Width() { return (Width); }
 
 /***************************************************************************
  * GVPC::GET_XADD -- Get the X add offset for virtual viewport instance    *
@@ -385,7 +385,7 @@ inline int GraphicViewPortClass::Get_Width(void) { return (Width); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XAdd(void) { return (XAdd); }
+inline int GraphicViewPortClass::Get_XAdd() { return (XAdd); }
 /***************************************************************************
  * GVPC::GET_XPOS -- Get the x pos of the VP on the Video                  *
  *                                                                         *
@@ -397,7 +397,7 @@ inline int GraphicViewPortClass::Get_XAdd(void) { return (XAdd); }
  * HISTORY:                                                                *
 ;*   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XPos(void) { return (XPos); }
+inline int GraphicViewPortClass::Get_XPos() { return (XPos); }
 
 /***************************************************************************
  * GVPC::GET_YPOS -- Get the y pos of the VP on the video                  *
@@ -412,7 +412,7 @@ inline int GraphicViewPortClass::Get_XPos(void) { return (XPos); }
  * HISTORY:                                                                *
 ;*   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_YPos(void) { return (YPos); }
+inline int GraphicViewPortClass::Get_YPos() { return (YPos); }
 
 /***************************************************************************
  * GVPC::GET_GRAPHIC_BUFFER -- Get the graphic buffer of the VP.            *
@@ -424,7 +424,7 @@ inline int GraphicViewPortClass::Get_YPos(void) { return (YPos); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer(void) {
+inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
   return (GraphicBuff);
 }
 

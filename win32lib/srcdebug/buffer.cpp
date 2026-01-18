@@ -32,7 +32,7 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *   BC::BufferClass -- The default (void) constructor for a buffer class  *
+ *   BC::BufferClass -- The default () constructor for a buffer class  *
  *   BC::~BufferClass -- The destructor for the buffer class               *
  *   BC::BufferClass -- The standard constructor for a buffer class        *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -94,7 +94,7 @@ BufferClass::BufferClass(LONG size) {
 }
 
 /***************************************************************************
- * BC::BufferClass -- The default (void) constructor for a buffer class    *
+ * BC::BufferClass -- The default () constructor for a buffer class    *
  *                                                                         *
  * INPUT:		none *
  *                                                                         *
@@ -108,7 +108,7 @@ BufferClass::BufferClass(LONG size) {
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-BufferClass::BufferClass(VOID) {
+BufferClass::BufferClass() {
   Buffer = NULL;
   Size = 0;
   Allocated = FALSE;
@@ -124,7 +124,7 @@ BufferClass::BufferClass(VOID) {
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-BufferClass::~BufferClass(VOID) {
+BufferClass::~BufferClass() {
   if (Allocated) {
     delete[] Buffer;
   }

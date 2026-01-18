@@ -1746,7 +1746,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::Prep_For_Add(void) {
+void InfantryTypeClass::Prep_For_Add() {
   for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
     Map.Add_To_List(&As_Reference(index));
   }
@@ -1799,7 +1799,7 @@ InfantryType InfantryTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::One_Time(void) {
+void InfantryTypeClass::One_Time() {
   InfantryType index;
 
   for (index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
@@ -1941,7 +1941,7 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *                                                                                             *
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
-int InfantryTypeClass::Full_Name(void) const {
+int InfantryTypeClass::Full_Name() const {
   if (Debug_Map || !IsNominal || Special.IsNamed || Type == INFANTRY_C10 ||
       Type == INFANTRY_DELPHI || Type == INFANTRY_MOEBIUS) {
     return (TechnoTypeClass::Full_Name());

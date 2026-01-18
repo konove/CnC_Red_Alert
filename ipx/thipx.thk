@@ -28,7 +28,7 @@ typedef struct tag_get_buffer_struct{
 
 
 
-BOOL _IPX_Initialise(void)
+BOOL _IPX_Initialise()
 {
 }
 
@@ -41,7 +41,7 @@ INT  _IPX_Close_Socket95(INT)
 {
 }
 
-INT  _IPX_Get_Connection_Number95(void)
+INT  _IPX_Get_Connection_Number95()
 {
 }
 
@@ -67,11 +67,11 @@ INT _IPX_Get_Local_Target95(network_number *netnum, physical_node *node, short, 
 }
 
 
-INT _IPX_Start_Listening95(void)
+INT _IPX_Start_Listening95()
 {
 }
 
-INT _IPX_Shut_Down95(void)
+INT _IPX_Shut_Down95()
 {
 }
 

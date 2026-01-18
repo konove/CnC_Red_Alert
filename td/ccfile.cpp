@@ -152,7 +152,7 @@ CCFileClass::CCFileClass(char const* filename)
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-CCFileClass::CCFileClass(void) {
+CCFileClass::CCFileClass() {
   FromDisk = false;
   Pointer = nullptr;
   Position = 0;
@@ -313,7 +313,7 @@ long CCFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-long CCFileClass::Size(void) {
+long CCFileClass::Size() {
   if (Pointer || FromDisk) return (Length);
 
   return (CDFileClass::Size());
@@ -355,7 +355,7 @@ int CCFileClass::Is_Available(int) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Is_Open(void) const {
+int CCFileClass::Is_Open() const {
   /*
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
@@ -377,7 +377,7 @@ int CCFileClass::Is_Open(void) const {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Close(void) {
+void CCFileClass::Close() {
   FromDisk = false;
   Pointer = nullptr;
   Position = 0;  // Starts at beginning offset.
@@ -552,7 +552,7 @@ unsigned long __cdecl Seek_File(int handle, long offset, int starting) {
   return (0);
 }
 
-void WWDOS_Shutdown(void) {
+void WWDOS_Shutdown() {
   for (int index = 0; index < 10; index++) {
     Handles[index].Set_Name(nullptr);
   }
@@ -564,9 +564,9 @@ bool __cdecl Multi_Drive_Search(bool on) {
   return (on);
 }
 
-VOID __cdecl WWDOS_Init(VOID) {}
+VOID __cdecl WWDOS_Init() {}
 
-VOID __cdecl WWDOS_Shutdown(VOID) {}
+VOID __cdecl WWDOS_Shutdown() {}
 
 int __cdecl Find_Disk_Number(char const*) { return (0); }
 #endif
@@ -586,4 +586,4 @@ int __cdecl Find_Disk_Number(char const*) { return (0); }
 
 //}
 
-void Unfragment_File_Cache(void) {}
+void Unfragment_File_Cache() {}

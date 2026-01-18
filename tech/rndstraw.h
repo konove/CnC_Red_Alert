@@ -50,18 +50,18 @@
 */
 class RandomStraw : public Straw {
  public:
-  RandomStraw(void);
-  virtual ~RandomStraw(void);
+  RandomStraw();
+  virtual ~RandomStraw();
 
   virtual int Get(void* source, int slen);
 
-  void Reset(void);
+  void Reset();
   void Seed_Bit(int seed);
   void Seed_Byte(char seed);
   void Seed_Short(short seed);
   void Seed_Long(long seed);
 
-  int Seed_Bits_Needed(void) const;
+  int Seed_Bits_Needed() const;
 
  private:
   /*
@@ -83,7 +83,7 @@ class RandomStraw : public Straw {
   */
   RandomClass Random[32];
 
-  void Scramble_Seed(void);
+  void Scramble_Seed();
 
   RandomStraw(RandomStraw& rvalue);
   RandomStraw& operator=(RandomStraw const& pipe);

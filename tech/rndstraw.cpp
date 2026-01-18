@@ -68,7 +68,7 @@
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-RandomStraw::RandomStraw(void) : SeedBits(0), Current(0) { Reset(); }
+RandomStraw::RandomStraw() : SeedBits(0), Current(0) { Reset(); }
 
 /***********************************************************************************************
  * RandomStraw::~RandomStraw -- Destructor for random straw class. *
@@ -84,7 +84,7 @@ RandomStraw::RandomStraw(void) : SeedBits(0), Current(0) { Reset(); }
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-RandomStraw::~RandomStraw(void) { Reset(); }
+RandomStraw::~RandomStraw() { Reset(); }
 
 /***********************************************************************************************
  * RandomStraw::Reset -- Reset the data to known initial state. *
@@ -100,7 +100,7 @@ RandomStraw::~RandomStraw(void) { Reset(); }
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-void RandomStraw::Reset(void) {
+void RandomStraw::Reset() {
   SeedBits = 0;
   Current = 0;
   memset(Random, '\0', sizeof(Random));
@@ -128,7 +128,7 @@ void RandomStraw::Reset(void) {
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-int RandomStraw::Seed_Bits_Needed(void) const {
+int RandomStraw::Seed_Bits_Needed() const {
   const int total = sizeof(Random) * CHAR_BIT;
   if (SeedBits < total) {
     return (total - SeedBits);
@@ -245,7 +245,7 @@ void RandomStraw::Seed_Long(long seed) {
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-void RandomStraw::Scramble_Seed(void) {
+void RandomStraw::Scramble_Seed() {
   SHAEngine sha;
 
   for (int index = 0; index < sizeof(Random); index++) {

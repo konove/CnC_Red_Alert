@@ -84,9 +84,7 @@
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TriggerClass::Description(void) const {
-  return (Class->Description());
-}
+char const* TriggerClass::Description() const { return (Class->Description()); }
 
 /***********************************************************************************************
  * TriggerClass::Draw_It -- Draws this trigger as if it were part of a list box.
@@ -163,7 +161,7 @@ TriggerClass::TriggerClass(TriggerTypeClass* trigtype)
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-TriggerClass::~TriggerClass(void) {
+TriggerClass::~TriggerClass() {
   if (GameActive && Class.Is_Valid() &&
       (Class->Attaches_To() & ATTACH_GENERAL) != 0) {
     if (LogicTriggerID >= LogicTriggers.ID(this)) {
@@ -204,7 +202,7 @@ TriggerClass::~TriggerClass(void) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Init(void) { Triggers.Free_All(); }
+void TriggerClass::Init() { Triggers.Free_All(); }
 
 /***********************************************************************************************
  * TriggerClass::Spring -- Spring the trigger (possibly). *
@@ -420,7 +418,7 @@ void TriggerClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TriggerClass::As_Target(void) const {
+TARGET TriggerClass::As_Target() const {
   assert(Triggers.ID(this) == ID);
 
   return (Build_Target(RTTI_TRIGGER, ID));

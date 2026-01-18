@@ -95,7 +95,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   Utility routines.
   .....................................................................*/
-  unsigned long Actual_Max_Packet(void) {
+  unsigned long Actual_Max_Packet() {
     return (MaxPacketLen + (sizeof(SerialHeaderType)) + sizeof(int) +
             sizeof(char));
   }
@@ -109,7 +109,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   This routine returns the number of bytes extra added the packet
   for communication.
   .....................................................................*/
-  static int Packet_Overhead_Size(void);
+  static int Packet_Overhead_Size();
 
   /*
   --------------------------- Private Interface ----------------------------

@@ -64,7 +64,7 @@ IconListClass::IconListClass(int id, int x, int y, int w, int h,
 }
 
 //***********************************************************************************************
-IconListClass::~IconListClass(void) {
+IconListClass::~IconListClass() {
   //	Delete the IconList_ItemExtras structs created to hold extra info on
   // each item.
   for (int i = 0; i < ExtrasList.Count(); i++)

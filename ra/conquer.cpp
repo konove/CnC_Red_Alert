@@ -183,11 +183,11 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user);
 void* Get_Shape_Header_Data(void* ptr);
 extern bool Spawn_WChat(bool can_launch);
 
-void Enable_Secret_Units(void);
+void Enable_Secret_Units();
 
 extern bool Is_Mission_Aftermath(char* file_name);
 extern bool Is_Mission_Counterstrike(char* file_name);
-extern void Do_Draw(void);
+extern void Do_Draw();
 
 #ifdef CHEAT_KEYS
 bool bNoMovies = false;
@@ -198,20 +198,20 @@ bool bNoMovies = false;
 *****************************************/
 void Keyboard_Process(KeyNumType& input);
 static void Message_Input(KeyNumType& input);
-static void Color_Cycle(void);
-bool Map_Edit_Loop(void);
+static void Color_Cycle();
+bool Map_Edit_Loop();
 
 extern "C" {
 bool UseOldShapeDraw = false;
 }
 
 #ifdef CHEAT_KEYS
-void Dump_Heap_Pointers(void);
+void Dump_Heap_Pointers();
 void Error_In_Heap_Pointers(char* string);
 #endif
-static void Do_Record_Playback(void);
+static void Do_Record_Playback();
 
-void Toggle_Formation(void);
+void Toggle_Formation();
 
 extern "C" {
 extern char* __nheapbeg;
@@ -229,11 +229,11 @@ char FormationEvent = 0;  // 0 = no event, 1 = formation was toggled
  --------------------------------------------------*/
 
 #if (TEN)
-void TEN_Call_Back(void);
+void TEN_Call_Back();
 #endif  // TEN
 
 #if (MPATH)
-void MPATH_Call_Back(void);
+void MPATH_Call_Back();
 #endif  // MPATH
 
 /***********************************************************************************************
@@ -995,7 +995,7 @@ void Keyboard_Process(KeyNumType& input) {
 #endif
 }
 
-void Toggle_Formation(void) {
+void Toggle_Formation() {
   int team = -1;
   long minx = 0x7FFFFFFFL, miny = 0x7FFFFFFFL;
   long maxx = 0, maxy = 0;
@@ -1579,7 +1579,7 @@ static void Message_Input(KeyNumType& input) {
  *text fade color.                                                 * 07/16/1996
  *JLB : Faster pulsing of white color. *
  *=============================================================================================*/
-void Color_Cycle(void) {
+void Color_Cycle() {
   static CDTimerClass<SystemTimerClass> _timer;
   static CDTimerClass<SystemTimerClass> _ftimer;
   static bool _up = false;
@@ -1669,7 +1669,7 @@ void Color_Cycle(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-void Call_Back(void) {
+void Call_Back() {
   /*
   **	Music and speech maintenance
   */
@@ -1750,7 +1750,7 @@ void Call_Back(void) {
 #endif
 }
 
-void IPX_Call_Back(void) {
+void IPX_Call_Back() {
   Ipx.Service();
 
   /*
@@ -1836,7 +1836,7 @@ void IPX_Call_Back(void) {
 }
 
 #if (TEN)
-void TEN_Call_Back(void) {
+void TEN_Call_Back() {
   int id;
 
   Ten->Service();
@@ -1891,7 +1891,7 @@ void TEN_Call_Back(void) {
 #endif  // TEN
 
 #if (MPATH)
-void MPATH_Call_Back(void) {
+void MPATH_Call_Back() {
   int id;
 
   MPath->Service();
@@ -2111,7 +2111,7 @@ FacingType KN_To_Facing(int input) {
  *                                                                                             *
  * HISTORY: * 01/04/1995 JLB : Created. * 03/06/1995 JLB : Fixed. *
  *=============================================================================================*/
-static void Sync_Delay(void) {
+static void Sync_Delay() {
   /*
   **	Accumulate the number of 'spare' ticks that are frittered away here.
   */
@@ -2156,8 +2156,8 @@ static void Sync_Delay(void) {
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
 #ifdef WIN32
-extern void Check_For_Focus_Loss(void);
-void Reallocate_Big_Shape_Buffer(void);
+extern void Check_For_Focus_Loss();
+void Reallocate_Big_Shape_Buffer();
 #endif  // WIN32
 
 bool Main_Loop() {
@@ -2483,7 +2483,7 @@ bool Main_Loop() {
  * HISTORY:                                                                *
  *   10/19/1994 BR : Created.                                              *
  *=========================================================================*/
-bool Map_Edit_Loop(void) {
+bool Map_Edit_Loop() {
   /*
   **	Redraw the map.
   */
@@ -2793,7 +2793,7 @@ int Load_Interpolated_Palettes(char const* filename, bool add) {
   return (num_palettes);
 }
 
-void Free_Interpolated_Palettes(void) {
+void Free_Interpolated_Palettes() {
   for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
       free(InterpolatedPalettes[i]);
@@ -2823,8 +2823,8 @@ void Free_Interpolated_Palettes(void) {
  * HISTORY: * 12/19/1994 JLB : Created. *
  *=============================================================================================*/
 #ifdef WIN32
-extern void Suspend_Audio_Thread(void);
-extern void Resume_Audio_Thread(void);
+extern void Suspend_Audio_Thread();
+extern void Resume_Audio_Thread();
 
 #ifdef MOVIE640
 extern GraphicBufferClass VQ640;
@@ -2939,7 +2939,7 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
 #else
         Load_Interpolated_Palettes(palname.c_str());
 #endif
-// Set_Palette(BlackPalette);
+        // Set_Palette(BlackPalette);
         SysMemPage.Clear();
         InMovie = true;
 #endif  // WIN32
@@ -3176,7 +3176,7 @@ MPG_RESPONSE far __stdcall MpegCallback(MPG_CMD cmd, LPVOID data, LPVOID user) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void Unselect_All(void) {
+void Unselect_All() {
   while (CurrentObject.Count()) {
     CurrentObject[0]->Unselect();
   }
@@ -3707,7 +3707,7 @@ TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
 #ifdef WIN32
-void Check_VQ_Palette_Set(void);
+void Check_VQ_Palette_Set();
 
 long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
@@ -4516,7 +4516,7 @@ bool Force_CD_Available(int cd_desired)  //	ajw
  *                                                                                             *
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
-static void Do_Record_Playback(void) {
+static void Do_Record_Playback() {
   int count;
   TARGET tgt;
   int i;
@@ -4870,7 +4870,7 @@ const char* Game_Registry_Key() {
  *                                                                                             *
  * HISTORY: * 4/1/97 11:39PM ST : Created *
  *=============================================================================================*/
-bool Is_Counterstrike_Installed(void) {
+bool Is_Counterstrike_Installed() {
 #ifdef _WIN32
   //	ajw 9/29/98
   static bool bAlreadyChecked = false;
@@ -4902,7 +4902,7 @@ bool Is_Counterstrike_Installed(void) {
 
 /***********************************************************************************************
  *=============================================================================================*/
-bool Is_Aftermath_Installed(void) {
+bool Is_Aftermath_Installed() {
 #ifdef _WIN32
   //	ajw 9/29/98
   static bool bAlreadyChecked = false;
@@ -4932,7 +4932,7 @@ bool Is_Aftermath_Installed(void) {
   //	return(file.Is_Available());
 }
 
-void Enable_Secret_Units(void) {
+void Enable_Secret_Units() {
 #if 0
 	SecretUnitsEnabled=true;
 	UnitTypeClass::As_Reference(UNIT_PHASE).Level=10;

@@ -73,32 +73,32 @@ struct KeyboardClass : public WWKeyboardClass {
   int& MouseQY;
 
   KeyboardClass() : IsLibrary(true), MouseQX(::MouseQX), MouseQY(::MouseQY) {}
-  KeyNumType Get(void) {
+  KeyNumType Get() {
     return (IsLibrary ? (KeyNumType)Get_Key_Num() : (KeyNumType)getch());
   };
-  KeyNumType Check(void) {
+  KeyNumType Check() {
     return (IsLibrary ? (KeyNumType)Check_Key_Num() : (KeyNumType)kbhit());
   };
   KeyASCIIType To_ASCII(KeyNumType key) {
     return ((KeyASCIIType)KN_To_KA(key));
   };
-  void Clear(void) {
+  void Clear() {
     if (IsLibrary) Clear_KeyBuffer();
   };
   int Down(KeyNumType key) { return (Key_Down(key)); };
 #else
   KeyboardClass() : IsLibrary(true) {}
-  KeyNumType Get(void) { return ((KeyNumType)WWKeyboardClass::Get()); };
-  KeyNumType Check(void) { return ((KeyNumType)WWKeyboardClass::Check()); };
+  KeyNumType Get() { return ((KeyNumType)WWKeyboardClass::Get()); };
+  KeyNumType Check() { return ((KeyNumType)WWKeyboardClass::Check()); };
   KeyASCIIType To_ASCII(KeyNumType key) {
     return ((KeyASCIIType)WWKeyboardClass::To_ASCII(key));
   };
-  void Clear(void) { WWKeyboardClass::Clear(); };
+  void Clear() { WWKeyboardClass::Clear(); };
   int Down(KeyNumType key) { return (WWKeyboardClass::Down(key)); };
 #endif
 
-  int Mouse_X(void) { return (Get_Mouse_X()); };
-  int Mouse_Y(void) { return (Get_Mouse_Y()); };
+  int Mouse_X() { return (Get_Mouse_X()); };
+  int Mouse_Y() { return (Get_Mouse_Y()); };
 };
 
 /*
@@ -351,18 +351,18 @@ extern void outport(int port, unsigned short data);
 extern std::uint64_t Frame;
 class FrameTimerClass {
  public:
-  std::uint64_t operator()(void) const { return (Frame); };
-  operator std::uint64_t(void) const { return (Frame); };
+  std::uint64_t operator()() const { return (Frame); };
+  operator std::uint64_t() const { return (Frame); };
 };
 
 #ifndef WIN32
 extern bool TimerSystemOn;
 extern "C" {
-std::uint64_t Get_System_Tick_Count(void);
-std::uint64_t Get_User_Tick_Count(void);
+std::uint64_t Get_System_Tick_Count();
+std::uint64_t Get_User_Tick_Count();
 }
 // bool Init_Timer_System(unsigned int freq, int partial=false);
-bool Remove_Timer_System(void);
+bool Remove_Timer_System();
 #else
 extern WinTimerClass* WindowsTimer;
 #endif
@@ -372,17 +372,17 @@ extern WinTimerClass* WindowsTimer;
 class SystemTimerClass {
  public:
 #ifdef WIN32
-  std::uint64_t operator()(void) const {
+  std::uint64_t operator()() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_System_Tick_Count());
   };
-  operator std::uint64_t(void) const {
+  operator std::uint64_t() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_System_Tick_Count());
   };
 #else
-  std::uint64_t operator()(void) const { return (Get_System_Tick_Count()); };
-  operator std::uint64_t(void) const { return (Get_System_Tick_Count()); };
+  std::uint64_t operator()() const { return (Get_System_Tick_Count()); };
+  operator std::uint64_t() const { return (Get_System_Tick_Count()); };
 #endif
 };
 #endif
@@ -390,17 +390,17 @@ class SystemTimerClass {
 class UserTimerClass {
  public:
 #ifdef WIN32
-  std::uint64_t operator()(void) const {
+  std::uint64_t operator()() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_User_Tick_Count());
   };
-  operator std::uint64_t(void) const {
+  operator std::uint64_t() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_User_Tick_Count());
   };
 #else
-  std::uint64_t operator()(void) const { return (Get_User_Tick_Count()); };
-  operator std::uint64_t(void) const { return (Get_User_Tick_Count()); };
+  std::uint64_t operator()() const { return (Get_User_Tick_Count()); };
+  operator std::uint64_t() const { return (Get_User_Tick_Count()); };
 #endif
 };
 
@@ -467,11 +467,11 @@ class SmartPtr {
   SmartPtr(NoInitClass const&) {}
   SmartPtr(T* realptr = nullptr) : Pointer(realptr) {}
   SmartPtr(SmartPtr const& rvalue) : Pointer(rvalue.Pointer) {}
-  ~SmartPtr(void) { Pointer = nullptr; }
+  ~SmartPtr() { Pointer = nullptr; }
 
-  operator T*(void) const { return (Pointer); }
+  operator T*() const { return (Pointer); }
 
-  operator long(void) const { return ((long)Pointer); }
+  operator long() const { return ((long)Pointer); }
 
   SmartPtr<T> operator++(int) {
     assert(Pointer != nullptr);
@@ -479,7 +479,7 @@ class SmartPtr {
     ++Pointer;
     return (temp);
   }
-  SmartPtr<T>& operator++(void) {
+  SmartPtr<T>& operator++() {
     assert(Pointer != nullptr);
     ++Pointer;
     return (*this);
@@ -490,7 +490,7 @@ class SmartPtr {
     --Pointer;
     return (temp);
   }
-  SmartPtr<T>& operator--(void) {
+  SmartPtr<T>& operator--() {
     assert(Pointer != nullptr);
     --Pointer;
     return (*this);
@@ -500,11 +500,11 @@ class SmartPtr {
     Pointer = rvalue.Pointer;
     return (*this);
   }
-  T* operator->(void) const {
+  T* operator->() const {
     assert(Pointer != nullptr);
     return (Pointer);
   }
-  T& operator*(void) const {
+  T& operator*() const {
     assert(Pointer != nullptr);
     return (*Pointer);
   }

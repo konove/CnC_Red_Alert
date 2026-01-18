@@ -17,18 +17,18 @@
 #include "sdllib/include/ww_win.h"
 #include "winvq/vqa32/vqaplay.h"
 
-void Focus_Loss(void);
-void Focus_Restore(void);
+void Focus_Loss();
+void Focus_Restore();
 
 void WWDebugString(char const* /*string*/) {}
 
-void Check_For_Focus_Loss(void) {
+void Check_For_Focus_Loss() {
   if (!GameInFocus) {
     SDL_Event_Loop();
     if (GameInFocus) VQA_ResumeAudio();
   }
 }
-void Memory_Error_Handler(void) {
+void Memory_Error_Handler() {
   VisiblePage.Clear();
   CCPalette.Set();
   while (Get_Mouse_State()) {

@@ -77,52 +77,50 @@ class AircraftClass : public FootClass, public FlyClass {
   static void* operator new(size_t) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void*);
-  operator AircraftType(void) const { return Class->Type; };
+  operator AircraftType() const { return Class->Type; };
   AircraftClass(AircraftType classid, HousesType house);
   AircraftClass(NoInitClass const& x)
       : FootClass(x), FlyClass(x), Class(x), SecondaryFacing(x), SightTimer(x) {
         };
-  virtual ~AircraftClass(void);
+  virtual ~AircraftClass();
 
-  static void Init(void);
+  static void Init();
 
-  virtual int Mission_Attack(void);
-  virtual int Mission_Unload(void);
-  virtual int Mission_Hunt(void);
-  virtual int Mission_Retreat(void);
-  virtual int Mission_Move(void);
-  virtual int Mission_Enter(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Guard_Area(void);
+  virtual int Mission_Attack();
+  virtual int Mission_Unload();
+  virtual int Mission_Hunt();
+  virtual int Mission_Retreat();
+  virtual int Mission_Move();
+  virtual int Mission_Enter();
+  virtual int Mission_Guard();
+  virtual int Mission_Guard_Area();
 
   virtual void Assign_Destination(TARGET target);
   /*
   **	State machine support routines.
   */
-  bool Process_Take_Off(void);
-  bool Process_Landing(void);
+  bool Process_Take_Off();
+  bool Process_Landing();
   int Process_Fly_To(bool slowdown, TARGET dest);
 
   /*
   **	Query functions.
   */
-  virtual LayerType In_Which_Layer(void) const;
-  virtual DirType Turret_Facing(void) const {
-    return (SecondaryFacing.Current());
-  }
-  int Shape_Number(void) const;
+  virtual LayerType In_Which_Layer() const;
+  virtual DirType Turret_Facing() const { return (SecondaryFacing.Current()); }
+  int Shape_Number() const;
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   virtual ActionType What_Action(ObjectClass const* target) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
-  virtual int Pip_Count(void) const;
+  virtual int Pip_Count() const;
   TARGET Good_Fire_Location(TARGET target) const;
   bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
-  DirType Pose_Dir(void) const;
-  TARGET Good_LZ(void) const;
-  virtual DirType Fire_Direction(void) const;
+  DirType Pose_Dir() const;
+  TARGET Good_LZ() const;
+  virtual DirType Fire_Direction() const;
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
 
   /*
@@ -136,7 +134,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y(void) const;
+  virtual COORDINATE Sort_Y() const;
 
   /*
   **	Object entry and exit from the game system.
@@ -162,9 +160,9 @@ class AircraftClass : public FootClass, public FlyClass {
   virtual void Player_Assign_Mission(MissionType mission,
                                      TARGET target = TARGET_NONE,
                                      TARGET destination = TARGET_NONE);
-  virtual void Response_Select(void);
-  virtual void Response_Move(void);
-  virtual void Response_Attack(void);
+  virtual void Response_Select();
+  virtual void Response_Move();
+  virtual void Response_Attack();
 
   /*
   **	Combat related.
@@ -176,12 +174,12 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	AI.
   */
-  bool Landing_Takeoff_AI(void);
-  bool Edge_Of_World_AI(void);
-  void Movement_AI(void);
-  void Rotation_AI(void);
-  int Paradrop_Cargo(void);
-  virtual void AI(void);
+  bool Landing_Takeoff_AI();
+  bool Edge_Of_World_AI();
+  void Movement_AI();
+  void Rotation_AI();
+  int Paradrop_Cargo();
+  virtual void AI();
   virtual void Enter_Idle_Mode(bool initial = false);
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
@@ -200,7 +198,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "AIRCRAFT"; };
+  static char const* INI_Name() { return "AIRCRAFT"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

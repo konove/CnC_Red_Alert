@@ -19,8 +19,8 @@ bool Read_Object(void* ptr, int base_size, int class_size, FileClass& file,
                  void* vtable);
 bool Save_Game(int id, char const* descr, bool bargraph = false);
 bool Write_Object(void* ptr, int class_size, FileClass& file);
-void Code_All_Pointers(void);
-void Decode_All_Pointers(void);
-void Dump(void);
+void Code_All_Pointers();
+void Decode_All_Pointers();
+void Dump();
 
 #endif  // CNC_RED_ALERT_RA_SAVELOAD_H_

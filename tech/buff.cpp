@@ -156,7 +156,7 @@ Buffer& Buffer::operator=(Buffer const& buffer) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-Buffer::~Buffer(void) { Reset(); }
+Buffer::~Buffer() { Reset(); }
 
 /***********************************************************************************************
  * Buffer::Reset -- Clears the buffer object to null state. *
@@ -174,7 +174,7 @@ Buffer::~Buffer(void) { Reset(); }
  *                                                                                             *
  * HISTORY: * 09/07/1996 JLB : Created. *
  *=============================================================================================*/
-void Buffer::Reset(void) {
+void Buffer::Reset() {
   if (IsAllocated) {
     delete[] static_cast<char*>(BufferPtr);
   }

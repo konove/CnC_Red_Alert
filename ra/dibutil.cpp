@@ -792,7 +792,7 @@ int FAR PalEntriesOnDevice(HDC hDC) {
  *
  ************************************************************************/
 
-HPALETTE FAR GetSystemPalette(void) {
+HPALETTE FAR GetSystemPalette() {
   HDC hDC;                      // handle to a DC
   static HPALETTE hPal = NULL;  // handle to a palette
   HANDLE hLogPal;               // handle to a logical palette

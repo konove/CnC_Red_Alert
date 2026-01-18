@@ -52,7 +52,7 @@ class EgoClass {
   ~EgoClass();
 
   bool Scroll(int distance);
-  void Render(void);
+  void Render();
   void Wipe(GraphicBufferClass* background);
 
   char* Text;
@@ -61,6 +61,6 @@ class EgoClass {
   TextPrintType Flags;
 };
 
-void Show_Who_Was_Responsible(void);
+void Show_Who_Was_Responsible();
 
 #endif  // CNC_RED_ALERT_RA_EGOS_H_

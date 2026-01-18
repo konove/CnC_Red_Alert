@@ -23,7 +23,7 @@ static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void*) {
   return 0;
 }
 
-bool GraphicBufferClass::Lock(void) {
+bool GraphicBufferClass::Lock() {
   if (!PaletteSurface) return true;
 
   if (!LockCount) {
@@ -35,7 +35,7 @@ bool GraphicBufferClass::Lock(void) {
   return true;
 }
 
-bool GraphicBufferClass::Unlock(void) {
+bool GraphicBufferClass::Unlock() {
   if (!PaletteSurface || !LockCount) return true;
 
   LockCount--;

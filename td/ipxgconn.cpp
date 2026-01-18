@@ -410,7 +410,7 @@ int IPXGlobalConnClass::Send(char* buf, int buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Service_Receive_Queue(void) {
+int IPXGlobalConnClass::Service_Receive_Queue() {
   GlobalHeaderType ackpacket;    // ACK packet to send
   ReceiveQueueType* rec_entry;   // ptr to receive entry header
   GlobalHeaderType* packet_hdr;  // packet header

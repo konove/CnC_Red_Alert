@@ -94,7 +94,7 @@ LZWStraw::LZWStraw(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LZWStraw::~LZWStraw(void) {
+LZWStraw::~LZWStraw() {
   delete[] Buffer;
   Buffer = nullptr;
 

@@ -377,7 +377,7 @@ int File_Stream_Sample_Vol(char const* filename, int volume,
   return id;
 }
 
-void Sound_Callback(void) {
+void Sound_Callback() {
   // update file stream
   for (auto& chan : Channels) {
     if (chan.file_handle == -1) continue;
@@ -454,7 +454,7 @@ bool Audio_Init(void* /*window*/, int /*bits_per_sample*/, bool stereo,
   return true;
 }
 
-void Sound_End(void) {
+void Sound_End() {
   SDL_CloseAudioDevice(AudioDevice);
 
   delete[] MixBuffer;
@@ -612,7 +612,7 @@ int Get_Free_Sample_Handle(int priority) {
   return id;
 }
 
-int Get_Digi_Handle(void) {
+int Get_Digi_Handle() {
   // used to check if audio is initialised
   return AudioDevice ? 1 : -1;
 }
@@ -622,7 +622,7 @@ bool Start_Primary_Sound_Buffer(bool /*forced*/) {
   return true;
 }
 
-void Stop_Primary_Sound_Buffer(void) {
+void Stop_Primary_Sound_Buffer() {
   SDL_PauseAudioDevice(AudioDevice, true);
 }
 

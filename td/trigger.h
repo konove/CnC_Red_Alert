@@ -127,14 +127,14 @@ class TriggerClass {
   **
   **	Constructor/Destructor
   */
-  TriggerClass(void);
+  TriggerClass();
   TriggerClass(NoInitClass const& x) {};
-  ~TriggerClass(void);
+  ~TriggerClass();
 
   /*
   **	Initialization: clears all triggers in preparation for new scenario
   */
-  static void Init(void);
+  static void Init();
 
   /*
   **	Processing routines
@@ -142,7 +142,7 @@ class TriggerClass {
   bool Spring(EventType event, ObjectClass* object);  // object-based
   bool Spring(EventType event, CELL cell);            // cell-based
   bool Spring(EventType event, HousesType house, long data = 0);  // house-based
-  bool Remove(void);
+  bool Remove();
 
   /*
   **	File I/O routines
@@ -150,11 +150,11 @@ class TriggerClass {
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
-  static char const* INI_Name(void) { return "Triggers"; };
+  static char const* INI_Name() { return "Triggers"; };
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	As_Pointer gets a pointer to the trigger object give the mnemonic
@@ -164,15 +164,15 @@ class TriggerClass {
   /*
   **	Data Access routines
   */
-  //		EventType Get_Event(void) const {return (Event);}
+  //		EventType Get_Event() const {return (Event);}
   //		void Set_Event(EventType event) {Event = event;}
-  //		ActionType Get_Action(void) const {return (Action);}
+  //		ActionType Get_Action() const {return (Action);}
   //		void Set_Action(ActionType action) {Action = action;}
-  //		HousesType Get_House(void) const {return(House);}
+  //		HousesType Get_House() const {return(House);}
   //		void Set_House(HousesType house) {House = house;}
-  //		long Get_Data(void) const {return(Data);}
+  //		long Get_Data() const {return(Data);}
   //		void Set_Data(long credits) {Data = credits;}
-  char const* Get_Name(void) const { return (Name); }
+  char const* Get_Name() const { return (Name); }
   void Set_Name(char const* buf) {
     strncpy(Name, buf, sizeof(Name));
     Name[sizeof(Name) - 1] = '\0';
@@ -181,7 +181,7 @@ class TriggerClass {
   /*
   **	Utility routines
   */
-  TARGET As_Target(void) const;
+  TARGET As_Target() const;
   static bool Event_Need_Object(EventType event);
   static bool Event_Need_House(EventType event);
   static bool Event_Need_Data(EventType event);
@@ -201,7 +201,7 @@ class TriggerClass {
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	This is the pointer to the team that gets created or destroyed when

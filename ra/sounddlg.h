@@ -107,8 +107,8 @@ class SoundControlsClass {
   };
 
  public:
-  SoundControlsClass(void) {}
-  void Process(void);
+  SoundControlsClass() {}
+  void Process();
 };
 
 #endif

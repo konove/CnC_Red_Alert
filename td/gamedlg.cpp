@@ -74,7 +74,7 @@
  * INPUT:   none * OUTPUT:  none * WARNINGS:   none * HISTORY: * 12/31/1994 MML
  *: Created.                                                                 *
  *=============================================================================================*/
-void GameControlsClass::Process(void) {
+void GameControlsClass::Process() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   /*

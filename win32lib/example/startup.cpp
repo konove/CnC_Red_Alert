@@ -168,7 +168,7 @@ WORD main(WORD argc, BYTE* argv[]) {
  * HISTORY:                                                                *
  *   08/01/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID Prog_End(VOID) {
+VOID Prog_End() {
   /*======================================================================*/
   /* Get rid of the keyboard handler.
    */

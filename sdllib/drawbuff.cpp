@@ -953,7 +953,7 @@ GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer, long size)
 GraphicBufferClass::GraphicBufferClass(int w, int h, void* buffer)
     : GraphicBufferClass(w, h, buffer, w * h) {}
 
-GraphicBufferClass::GraphicBufferClass(void) { GraphicBuff = this; }
+GraphicBufferClass::GraphicBufferClass() { GraphicBuff = this; }
 
 GraphicBufferClass::~GraphicBufferClass() { Un_Init(); }
 
@@ -984,7 +984,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
   }
 }
 
-void GraphicBufferClass::Un_Init(void) {
+void GraphicBufferClass::Un_Init() {
   // de-alloc surface
 }
 

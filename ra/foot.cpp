@@ -356,7 +356,7 @@ bool FootClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Basic_Path(void) {
+bool FootClass::Basic_Path() {
   assert(IsActive);
 
   PathType* path;  // Pointer to path control structure.
@@ -547,7 +547,7 @@ bool FootClass::Basic_Path(void) {
  * HISTORY: * 07/18/1994 JLB : Created. * 10/02/1996 JLB : Player controlled or
  *human owned units don't scan for targets.           *
  *=============================================================================================*/
-int FootClass::Mission_Move(void) {
+int FootClass::Mission_Move() {
   assert(IsActive);
 
   if (!Target_Legal(NavCom) && !IsDriving && MissionQueue == MISSION_NONE) {
@@ -580,7 +580,7 @@ int FootClass::Mission_Move(void) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Capture(void) {
+int FootClass::Mission_Capture() {
   assert(IsActive);
 
   /*
@@ -617,7 +617,7 @@ int FootClass::Mission_Capture(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Attack(void) {
+int FootClass::Mission_Attack() {
   assert(IsActive);
   if (Target_Legal(TarCom)) {
     Approach_Target();
@@ -641,7 +641,7 @@ int FootClass::Mission_Attack(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Guard(void) {
+int FootClass::Mission_Guard() {
   assert(IsActive);
 
   if (!Target_Something_Nearby(THREAT_RANGE)) {
@@ -704,7 +704,7 @@ int FootClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Hunt(void) {
+int FootClass::Mission_Hunt() {
   assert(IsActive);
   if (!Target_Something_Nearby(THREAT_NORMAL)) {
 #if (0)
@@ -773,7 +773,7 @@ int FootClass::Mission_Hunt(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. * 12/12/1994 JLB : Greatly simplified. *
  *=============================================================================================*/
-bool FootClass::Stop_Driver(void) {
+bool FootClass::Stop_Driver() {
   assert(IsActive);
 
   if (HeadToCoord) {
@@ -842,7 +842,7 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 10/17/1994 JLB : Created. * 11/04/1994 JLB : Sort value is
  *different when unloading from aircraft.                    *
  *=============================================================================================*/
-COORDINATE FootClass::Sort_Y(void) const {
+COORDINATE FootClass::Sort_Y() const {
   assert(IsActive);
 
   if (IsUnloading) {
@@ -872,7 +872,7 @@ COORDINATE FootClass::Sort_Y(void) const {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Stun(void) {
+void FootClass::Stun() {
   assert(IsActive);
 
   Assign_Destination(TARGET_NONE);
@@ -900,7 +900,7 @@ void FootClass::Stun(void) {
  *Enhanced search algorithm.                                               *
  *   05/20/1995 JLB : Always approaches if the object is off the map. *
  *=============================================================================================*/
-void FootClass::Approach_Target(void) {
+void FootClass::Approach_Target() {
   assert(IsActive);
 
   /*
@@ -1021,7 +1021,7 @@ void FootClass::Approach_Target(void) {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. * 07/27/1995 JLB : Greatly simplified. *
  *=============================================================================================*/
-int FootClass::Mission_Guard_Area(void) {
+int FootClass::Mission_Guard_Area() {
   assert(IsActive);
 
   if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
@@ -1603,7 +1603,7 @@ void FootClass::Override_Mission(MissionType mission, TARGET tarcom,
  * HISTORY:                                                                *
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Restore_Mission(void) {
+bool FootClass::Restore_Mission() {
   assert(IsActive);
 
   if (TechnoClass::Restore_Mission()) {
@@ -1744,7 +1744,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
  * HISTORY: * 05/15/1995 JLB : Created. * 09/22/1995 JLB : Modified to handle
  *the "on hold" condition.                              *
  *=============================================================================================*/
-int FootClass::Mission_Enter(void) {
+int FootClass::Mission_Enter() {
   assert(IsActive);
 
   /*
@@ -2098,7 +2098,7 @@ void FootClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Offload_Tiberium_Bail(void) {
+int FootClass::Offload_Tiberium_Bail() {
   assert(IsActive);
 
   return (0);
@@ -2146,7 +2146,7 @@ MoveType FootClass::Can_Enter_Cell(CELL, FacingType) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Can_Demolish(void) const {
+bool FootClass::Can_Demolish() const {
   assert(IsActive);
 
   switch (What_Am_I()) {
@@ -2214,7 +2214,7 @@ void FootClass::Sell_Back(int control) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE FootClass::Likely_Coord(void) const {
+COORDINATE FootClass::Likely_Coord() const {
   assert(IsActive);
 
   if (Head_To_Coord()) {
@@ -2276,7 +2276,7 @@ CELL FootClass::Adjust_Dest(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Handle_Navigation_List(void) {
+void FootClass::Handle_Navigation_List() {
   /*
   **	The navigation queue only needs to be processed if there is
   **	currently no navigation target for this object.
@@ -2382,7 +2382,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Clear_Navigation_List(void) {
+void FootClass::Clear_Navigation_List() {
   for (int index = 0; index < ARRAY_SIZE(NavQueue); index++) {
     NavQueue[index] = TARGET_NONE;
   }
@@ -2405,7 +2405,7 @@ void FootClass::Clear_Navigation_List(void) {
  *                                                                                             *
  * HISTORY: * 08/05/1996 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Is_Allowed_To_Leave_Map(void) const {
+bool FootClass::Is_Allowed_To_Leave_Map() const {
   /*
   **	If the unit hasn't entered the map yet, then don't allow leave the game.
   */
@@ -2495,7 +2495,7 @@ bool FootClass::Is_Recruitable(HouseClass const* house) const {
  *                                                                                             *
  * HISTORY: * 09/17/1996 JLB : Created. *
  *=============================================================================================*/
-void FootClass::AI(void) {
+void FootClass::AI() {
   TechnoClass::AI();
 
 // FootClass::Per_Cell_Process does this function already.
@@ -2526,7 +2526,7 @@ void FootClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Is_On_Priority_Mission(void) const {
+bool FootClass::Is_On_Priority_Mission() const {
   if (Mission == MISSION_ENTER) return (true);
   return (false);
 }
@@ -2548,7 +2548,7 @@ bool FootClass::Is_On_Priority_Mission(void) const {
  *                                                                                             *
  * HISTORY: * 10/05/1996 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Retreat(void) {
+int FootClass::Mission_Retreat() {
   assert(IsActive);
 
   enum { FIND_EDGE, TRAVELLING };

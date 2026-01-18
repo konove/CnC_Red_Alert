@@ -69,17 +69,17 @@ class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             void const* up, void const* down);
-  virtual ~ListClass(void);
+  virtual ~ListClass();
 
   //		static ListClass * Create_One_Of(int id, int x, int y, int w,
   // int h, TextPrintType flags, void const * up, void const * down);
   virtual int Add_Item(char const* text);
   virtual int Add_Item(int text);
-  virtual int Add_Scroll_Bar(void);
+  virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
-  virtual int Count(void) { return List.Count(); };
-  virtual int Current_Index(void);
-  virtual char const* Current_Item(void);
+  virtual int Count() { return List.Count(); };
+  virtual int Current_Index();
+  virtual char const* Current_Item();
   virtual int Draw_Me(int forced);
   virtual char const* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
@@ -87,7 +87,7 @@ class ListClass : public ControlClass {
   virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
                             ControlClass& whom);
   virtual void Remove_Item(char const* text);
-  virtual int Remove_Scroll_Bar(void);
+  virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Tabs(int const* tabs);
   virtual int Set_View_Index(int index);
@@ -100,7 +100,7 @@ class ListClass : public ControlClass {
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual GadgetClass* Remove(void);
+  virtual GadgetClass* Remove();
 
  protected:
   virtual int Action(unsigned flags, KeyNumType& key);

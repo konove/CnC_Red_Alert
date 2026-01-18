@@ -77,8 +77,8 @@
 extern "C" {
 #endif
 
-extern int cdecl Check_Key(void);
-extern int cdecl Get_Key(void);
+extern int cdecl Check_Key();
+extern int cdecl Get_Key();
 
 #ifdef __cplusplus
 }
@@ -92,7 +92,7 @@ extern int cdecl Get_Key(void);
  * SYNOPSIS
  *     VQAHandle = VQA_Alloc()
  *
- *     VQAHandle *VQA_Alloc(void);
+ *     VQAHandle *VQA_Alloc();
  *
  * FUNCTION
  *     Obtain a VQAHandle. This handle is used by most VQA library functions,
@@ -107,7 +107,7 @@ extern int cdecl Get_Key(void);
  *
  ****************************************************************************/
 
-VQAHandle* VQA_Alloc(void) {
+VQAHandle* VQA_Alloc() {
   VQAHandleP* vqa;
 
   if ((vqa = (VQAHandleP*)malloc(sizeof(VQAHandleP))) != NULL) {
@@ -429,7 +429,7 @@ void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
  * SYNOPSIS
  *     Version = VQA_Version()
  *
- *     char *VQA_Version(void);
+ *     char *VQA_Version();
  *
  * FUNCTION
  *     Return the version of the VQA player library.
@@ -442,7 +442,7 @@ void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats) {
  *
  ****************************************************************************/
 
-char* VQA_Version(void) { return (VQA_VERSION); }
+char* VQA_Version() { return (VQA_VERSION); }
 
 /****************************************************************************
  *
@@ -452,7 +452,7 @@ char* VQA_Version(void) { return (VQA_VERSION); }
  * SYNOPSIS
  *     IDString = VQA_IDString()
  *
- *     char *VQA_IDString(void);
+ *     char *VQA_IDString();
  *
  * FUNCTION
  *     Return the ID string of this VQA player library.
@@ -465,7 +465,7 @@ char* VQA_Version(void) { return (VQA_VERSION); }
  *
  ****************************************************************************/
 
-char* VQA_IDString(void) { return (VQA_IDSTRING); }
+char* VQA_IDString() { return (VQA_IDSTRING); }
 
 /****************************************************************************
  *

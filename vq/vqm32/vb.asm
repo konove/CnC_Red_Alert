@@ -57,7 +57,7 @@
 ;* SYNOPSIS
 ;*     WaitNoVB()
 ;*
-;*     void WaitNoVB(void);
+;*     void WaitNoVB();
 ;*
 ;* FUNCTION
 ;*     Sit and wait for the active scan of the display.
@@ -100,7 +100,7 @@
 ;* SYNOPSIS
 ;*     WaitVB()
 ;*
-;*     void WaitVB(void);
+;*     void WaitVB();
 ;*
 ;* FUNCTION
 ;*     Sit and wait for the vertical blank of the display.

@@ -255,12 +255,12 @@ bit8 Wstring::removeChar(char c) {
   return (removed);
 }
 
-void Wstring::removeSpaces(void) {
+void Wstring::removeSpaces() {
   removeChar(' ');
   removeChar('\t');
 }
 
-void Wstring::clear(void) {
+void Wstring::clear() {
   if (str) delete[] (str);
   str = nullptr;
 }
@@ -280,7 +280,7 @@ void Wstring::cellCopy(char* dest, uint32 len) {
   dest[len] = 0;
 }
 
-char* Wstring::get(void) {
+char* Wstring::get() {
   if (!str) return "";
   return str;
 }
@@ -290,7 +290,7 @@ char Wstring::get(uint32 index) {
   return (0);
 }
 
-uint32 Wstring::length(void) {
+uint32 Wstring::length() {
   if (str == nullptr) return (0);
   return ((uint32)strlen(str));
 }
@@ -421,7 +421,7 @@ char Wstring::set(uint32 size, IN char* string) {
 
 // This function converts all alphabetical characters in the string to lower
 // case.
-void Wstring::toLower(void) {
+void Wstring::toLower() {
   uint32 i;
 
   for (i = 0; i < length(); i++) {
@@ -431,7 +431,7 @@ void Wstring::toLower(void) {
 
 // This function converts all alphabetical characters in the string to upper
 // case.
-void Wstring::toUpper(void) {
+void Wstring::toUpper() {
   uint32 i;
 
   for (i = 0; i < length(); i++) {

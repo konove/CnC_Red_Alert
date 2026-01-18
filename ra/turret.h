@@ -48,13 +48,13 @@ class TurretClass : public DriveClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
  protected:
   TurretClass(UnitType classid, HousesType house);
-  TurretClass(void);
-  virtual ~TurretClass(void);
+  TurretClass();
+  virtual ~TurretClass();
 };
 
 #endif

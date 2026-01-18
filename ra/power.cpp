@@ -79,7 +79,7 @@ PowerClass::PowerButtonClass PowerClass::PowerButton;
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-PowerClass::PowerClass(void)
+PowerClass::PowerClass()
     : IsToRedraw(false),
       IsActive(false),
       FlashTimer(0),
@@ -110,7 +110,7 @@ PowerClass::PowerClass(void)
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Init_Clear(void) {
+void PowerClass::Init_Clear() {
   RadarClass::Init_Clear();
   RecordedDrain = -1;
   RecordedPower = -1;
@@ -139,7 +139,7 @@ void PowerClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::One_Time(void) {
+void PowerClass::One_Time() {
   RadarClass::One_Time();
   PowerButton.X = POWER_X * RESFACTOR;
   PowerButton.Y = POWER_Y * RESFACTOR;
@@ -483,7 +483,7 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 10/14/1996 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Flash_Power(void) {
+void PowerClass::Flash_Power() {
   FlashTimer = TICKS_PER_SECOND;
   IsToRedraw = true;
   Flag_To_Redraw(false);

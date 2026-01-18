@@ -78,7 +78,7 @@ class MusicListClass : public ListClass {
   void Draw_Entry(int index, int x, int y, int width, int selected) override;
 };
 
-int SoundControlsClass::Init(void) {
+int SoundControlsClass::Init() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   Option_Width = 292 * factor;
   Option_Height = 146 * factor;
@@ -140,7 +140,7 @@ int SoundControlsClass::Init(void) {
  *                                                                                             *
  * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
-void SoundControlsClass::Process(void) {
+void SoundControlsClass::Process() {
   //	ThemeType theme;
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;

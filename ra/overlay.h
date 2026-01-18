@@ -72,20 +72,20 @@ class OverlayClass : public ObjectClass {
   static void operator delete(void* ptr);
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
   OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(x) {};
-  virtual ~OverlayClass(void) {
+  virtual ~OverlayClass() {
     if (GameActive) OverlayClass::Limbo();
     Class = nullptr;
   };
-  operator OverlayType(void) const { return Class->Type; };
+  operator OverlayType() const { return Class->Type; };
 
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "OVERLAY"; };
+  static char const* INI_Name() { return "OVERLAY"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
@@ -93,7 +93,7 @@ class OverlayClass : public ObjectClass {
   **	Virtual support functionality.
   */
   virtual bool Mark(MarkType);
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   virtual void Draw_It(int, int, WindowNumberType) const {};
 
  private:

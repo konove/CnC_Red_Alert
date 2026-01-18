@@ -57,12 +57,12 @@ class SuperClass {
   void Forced_Charge(bool player = false);
   bool AI(bool player = false);
   bool Remove(bool forced = false);
-  void Impatient_Click(void) const;
-  int Anim_Stage(void) const;
+  void Impatient_Click() const;
+  int Anim_Stage() const;
   bool Discharged(bool player);
-  bool Is_Ready(void) const { return (IsReady); };
-  bool Is_Present(void) const { return (IsPresent); };
-  bool Is_One_Time(void) const { return (IsOneTime && IsPresent); };
+  bool Is_Ready() const { return (IsReady); };
+  bool Is_Present() const { return (IsPresent); };
+  bool Is_One_Time() const { return (IsOneTime && IsPresent); };
 
  private:
   bool Recharge(bool player = false);

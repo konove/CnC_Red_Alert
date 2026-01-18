@@ -157,9 +157,9 @@ void Keyboard_Process(KeyNumType& input);
 #ifndef DEMO
 static void Message_Input(KeyNumType& input);
 #endif
-static bool Color_Cycle(void);
-bool Map_Edit_Loop(void);
-void Trap_Object(void);
+static bool Color_Cycle();
+bool Map_Edit_Loop();
+void Trap_Object();
 
 extern "C" {
 bool UseOldShapeDraw = false;
@@ -167,13 +167,13 @@ bool UseOldShapeDraw = false;
 
 #ifdef CHEAT_KEYS
 void Heap_Dump_Check(char* string);
-void Dump_Heap_Pointers(void);
+void Dump_Heap_Pointers();
 void Error_In_Heap_Pointers(char* string);
 #endif
-static void Do_Record_Playback(void);
-extern void Register_Game_Start_Time(void);
-extern void Register_Game_End_Time(void);
-extern void Send_Statistics_Packet(void);
+static void Do_Record_Playback();
+extern void Register_Game_Start_Time();
+extern void Register_Game_End_Time();
+extern void Send_Statistics_Packet();
 extern "C" {
 extern char* __nheapbeg;
 }
@@ -1109,7 +1109,7 @@ static void Message_Input(KeyNumType& input) {
  *values.                                             * 12/21/1994 JLB : Handles
  *text fade color.                                                 *
  *=============================================================================================*/
-bool Color_Cycle(void) {
+bool Color_Cycle() {
   static CountDownTimerClass _timer(BT_SYSTEM, 0L);
   static CountDownTimerClass _ftimer(BT_SYSTEM, 0L);
   static bool _up = false;
@@ -1194,7 +1194,7 @@ bool Color_Cycle(void) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-void Call_Back(void) {
+void Call_Back() {
 #ifndef DEMO
   int i;
   int id;
@@ -1477,7 +1477,7 @@ FacingType KN_To_Facing(int input) {
  *                                                                                             *
  * HISTORY: * 01/04/1995 JLB : Created. * 03/06/1995 JLB : Fixed. *
  *=============================================================================================*/
-static void Sync_Delay(void) {
+static void Sync_Delay() {
   /*
   **	Delay one tick and keep a record that one tick was "wasted" here.
   **	This accumulates into a running histogram of performance.
@@ -1516,8 +1516,8 @@ static void Sync_Delay(void) {
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-extern void Check_For_Focus_Loss(void);
-void Reallocate_Big_Shape_Buffer(void);
+extern void Check_For_Focus_Loss();
+void Reallocate_Big_Shape_Buffer();
 
 bool Main_Loop() {
   KeyNumType input;  // Player input.
@@ -1758,7 +1758,7 @@ bool Main_Loop() {
  * HISTORY:                                                                *
  *   10/19/1994 BR : Created.                                              *
  *=========================================================================*/
-bool Map_Edit_Loop(void) {
+bool Map_Edit_Loop() {
   /*
   **	Redraw the map.
   */
@@ -1884,7 +1884,7 @@ void Init_VQ_Threading(CCFileClass* file) {
   VQBytesLeft = file->Size();
 }
 
-void Cleanup_VQ_Threading(void) {
+void Cleanup_VQ_Threading() {
   while (ThreadReading) {
   }
   if (VQThreadBuffer) {
@@ -2310,7 +2310,7 @@ int Load_Interpolated_Palettes(char const* filename, bool add) {
   return (num_palettes);
 }
 
-void Free_Interpolated_Palettes(void) {
+void Free_Interpolated_Palettes() {
   for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
       free(InterpolatedPalettes[i]);
@@ -2341,8 +2341,8 @@ void Free_Interpolated_Palettes(void) {
  *=============================================================================================*/
 extern bool InMovie;
 extern bool VQPaletteChange;
-extern void Suspend_Audio_Thread(void);
-extern void Resume_Audio_Thread(void);
+extern void Suspend_Audio_Thread();
+extern void Resume_Audio_Thread();
 void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
   /*
   ** Don't play movies in editor mode
@@ -2499,7 +2499,7 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void Unselect_All(void) {
+void Unselect_All() {
   while (CurrentObject.Count()) {
     CurrentObject[0]->Unselect();
   }
@@ -2860,7 +2860,7 @@ TechnoTypeClass const* Fetch_Techno_Type(RTTIType type, int id) {
  * HISTORY:                                                                *
  *   06/02/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Trap_Object(void) {
+void Trap_Object() {
   int i;
 
   TrapObject.Ptr.All = nullptr;
@@ -2997,7 +2997,7 @@ void Trap_Object(void) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
-void Check_VQ_Palette_Set(void);
+void Check_VQ_Palette_Set();
 
 long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
@@ -3306,7 +3306,7 @@ void Heap_Dump_Check(char* string) {
   //	Debug_Heap_Dump = false;
 }
 
-void Dump_Heap_Pointers(void) {
+void Dump_Heap_Pointers() {
   char *ptr, *lptr, *nptr, *cptr, *dptr, *wlptr, *nlptr, *aptr, *clptr;
   int numallocs, numfrees, sizefree;
   static char _freeorused[2][5] = {"FREE", "USED"};
@@ -3858,7 +3858,7 @@ void Validate_Error(char* /*name*/) {
  *                                                                                              *
  * HISTORY: * 08/15/1995 BRR : Created. *
  *=============================================================================================*/
-static void Do_Record_Playback(void) {
+static void Do_Record_Playback() {
   int count;
   TARGET tgt;
   int i;
@@ -3991,6 +3991,4 @@ void const* Hires_Retrieve(const char* name) {
   }
   return (MixFileClass::Retrieve(filename));
 }
-int Get_Resolution_Factor(void) {
-  return ((SeenBuff.Get_Width() == 320) ? 0 : 1);
-}
+int Get_Resolution_Factor() { return ((SeenBuff.Get_Width() == 320) ? 0 : 1); }

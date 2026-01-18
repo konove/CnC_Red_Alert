@@ -67,10 +67,10 @@ extern ULONG Map_Segment_To_Address(ULONG address, ULONG length);
 extern "C" {
 // Assemble functions
 extern UWORD FixSelector(UWORD sel);
-extern UWORD GetDs(void);
-extern UWORD GetCs(void);
-extern VOID GetDefaultSelectors(VOID);
-extern UWORD Get_Standard_Selector(void);
+extern UWORD GetDs();
+extern UWORD GetCs();
+extern VOID GetDefaultSelectors();
+extern UWORD Get_Standard_Selector();
 
 // Assembly data variables
 extern UWORD CodeSelector;

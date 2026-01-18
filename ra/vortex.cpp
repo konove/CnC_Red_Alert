@@ -107,7 +107,7 @@ ChronalVortexClass ChronalVortex;
  *                                                                                             *
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
-ChronalVortexClass::ChronalVortexClass(void) {
+ChronalVortexClass::ChronalVortexClass() {
   Active = 0;
   Theater = THEATER_NONE;
   Speed = 10;
@@ -130,7 +130,7 @@ ChronalVortexClass::ChronalVortexClass(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
-ChronalVortexClass::~ChronalVortexClass(void) {
+ChronalVortexClass::~ChronalVortexClass() {
   delete RenderBuffer;
   Active = 0;
 }
@@ -202,7 +202,7 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:30PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Disappear(void) {
+void ChronalVortexClass::Disappear() {
   if (Hidden) {
     Active = false;
   } else {
@@ -224,7 +224,7 @@ void ChronalVortexClass::Disappear(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:30PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Hide(void) {
+void ChronalVortexClass::Hide() {
   if (!StartShutdown) {
     StartHiding = true;
   }
@@ -243,7 +243,7 @@ void ChronalVortexClass::Hide(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:31PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Show(void) {
+void ChronalVortexClass::Show() {
   /*
   ** Dont do anything if vortx is dying.
   */
@@ -284,7 +284,7 @@ void ChronalVortexClass::Show(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:32PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Stop(void) {
+void ChronalVortexClass::Stop() {
   if (Active) Active = false;
 }
 
@@ -358,7 +358,7 @@ void ChronalVortexClass::Save(Pipe& file) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:34PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::AI(void) {
+void ChronalVortexClass::AI() {
   int chance;
 
   /*
@@ -464,7 +464,7 @@ void ChronalVortexClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:39PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Movement(void) {
+void ChronalVortexClass::Movement() {
   bool newpick = true;
 
   /*
@@ -563,7 +563,7 @@ void ChronalVortexClass::Set_Target(ObjectClass* target) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:42PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Attack(void) {
+void ChronalVortexClass::Attack() {
   int distance;
   // if(TargetObject) return;
   // if(!TargetObject) return;
@@ -648,7 +648,7 @@ void ChronalVortexClass::Attack(void) {
  * HISTORY: * 8/29/96 4:45PM ST : Created *
  *=============================================================================================*/
 #define ZAP_COUNT 1
-void ChronalVortexClass::Zap_Target(void) {
+void ChronalVortexClass::Zap_Target() {
   if (!Hidden && Target_Legal(TargetObject) && ZapFrame < ZAP_COUNT) {
     /*
     ** Get the center of the vortex.
@@ -788,7 +788,7 @@ void ChronalVortexClass::Coordinate_Remap(GraphicViewPortClass* inbuffer, int x,
  *                                                                                             *
  * HISTORY: * 8/29/96 4:49PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Render(void) {
+void ChronalVortexClass::Render() {
   if (Active && !Hidden) {
     char fname[80];
 
@@ -1028,7 +1028,7 @@ void ChronalVortexClass::Render(void) {
  *                                                                                             *
  * HISTORY: * 8/29/96 4:50PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Set_Redraw(void) {
+void ChronalVortexClass::Set_Redraw() {
   if (Active) {
     CELL xc = Coord_XCell(Position);
     CELL yc = Coord_YCell(Position);

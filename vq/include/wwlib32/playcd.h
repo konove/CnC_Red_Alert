@@ -186,10 +186,10 @@ class GetCDClass {
   UBYTE cdDrive[26];  // CD Drive letters from MSCDEX
 
  public:
-  GetCDClass(VOID);   // This is the default constructor
-  ~GetCDClass(VOID);  // This is the destructor
+  GetCDClass();   // This is the default constructor
+  ~GetCDClass();  // This is the destructor
 
-  WORD GetCDDrive(VOID);
+  WORD GetCDDrive();
 };
 
 /***************************************************************************
@@ -220,8 +220,8 @@ class RedBookClass : public GetCDClass {
   TinfoType Tinfo;
 
  public:
-  RedBookClass(VOID);   // This is the default constructor
-  ~RedBookClass(VOID);  // This is the destructor
+  RedBookClass();   // This is the default constructor
+  ~RedBookClass();  // This is the destructor
 
   ULONG RedToHS(ULONG i);
   ULONG MSFtoRed(UBYTE m, UBYTE s, UBYTE f);
@@ -230,8 +230,8 @@ class RedBookClass : public GetCDClass {
   VOID Play_CD_MSL(UWORD min_sec, UWORD len);
   VOID PlayMSF(UBYTE startM, UBYTE startS, UBYTE startF, UBYTE endM, UBYTE endS,
                UBYTE endF, UBYTE chan);
-  UWORD CheckCDMusic(VOID);
-  VOID StopCDMusic(VOID);
+  UWORD CheckCDMusic();
+  VOID StopCDMusic();
 };
 
 /***************************** End of Playcd.h ****************************/

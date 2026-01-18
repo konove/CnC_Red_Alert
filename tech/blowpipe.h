@@ -52,11 +52,11 @@ class BlowPipe : public Pipe {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   BlowPipe(CryptControl control) : BF(nullptr), Counter(0), Control(control) {}
-  virtual ~BlowPipe(void) {
+  virtual ~BlowPipe() {
     delete BF;
     BF = nullptr;
   }
-  virtual int Flush(void);
+  virtual int Flush();
 
   virtual int Put(void const* source, int slen);
 

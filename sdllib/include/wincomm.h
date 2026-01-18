@@ -71,7 +71,7 @@ enum { CTS_SET = 0x10, DSR_SET = 0x20, RI_SET = 0x40, CD_SET = 0x80 };
 
 class WinModemClass {
  public:
-  WinModemClass(void);                 // WinModemClass Contructor
+  WinModemClass();                     // WinModemClass Contructor
   virtual ~WinModemClass() = default;  // WinModemClass Destructor
 
   /*
@@ -91,7 +91,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: PortClose
   */
-  void Serial_Port_Close(void);
+  void Serial_Port_Close();
 
   /*
   ** This member copies any bytes from the internal class serial buffer
@@ -111,7 +111,7 @@ class WinModemClass {
   /*
   ** Wait for the outgoing buffer to empty
   */
-  void Wait_For_Serial_Write(void);
+  void Wait_For_Serial_Write();
 
   /*
   ** Set the dial type to DIAL_TOUCH_TONE or DIAL_PULSE
@@ -126,7 +126,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: GetModemStatus
   */
-  virtual unsigned Get_Modem_Status(void);
+  virtual unsigned Get_Modem_Status();
 
   /*
   ** Set the DTR line to the given state
@@ -172,12 +172,12 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMSetUpAbortKey
   */
-  virtual void Set_Abort_Function(int (*func)(void));
+  virtual void Set_Abort_Function(int (*func)());
 
   /*
   ** Member to allow access to the serial port handle
   */
-  HANDLE Get_Port_Handle(void) const;
+  HANDLE Get_Port_Handle() const;
 
   /*
   ** Modem send result codes
@@ -231,7 +231,7 @@ class WinModemClass {
 class WinNullModemClass : public WinModemClass {
  public:
   virtual inline void Set_Modem_Dial_Type(int) {};
-  virtual inline unsigned Get_Modem_Status(void) { return (0); };
+  virtual inline unsigned Get_Modem_Status() { return (0); };
   virtual inline void Set_Serial_DTR(bool) {};
   virtual inline int Get_Modem_Result(int, char*, int) { return (0); };
   virtual inline void Dial_Modem(char*) {};
@@ -239,7 +239,7 @@ class WinNullModemClass : public WinModemClass {
     return (0);
   };
   virtual inline void Set_Echo_Function(void (*)(char)) {};
-  virtual inline void Set_Abort_Function(int (*)(void)) {};
+  virtual inline void Set_Abort_Function(int (*)()) {};
 };
 
 extern WinModemClass* SerialPort;

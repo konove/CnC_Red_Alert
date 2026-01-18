@@ -64,7 +64,7 @@
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-ShapeButtonClass::ShapeButtonClass(void)
+ShapeButtonClass::ShapeButtonClass()
     : ToggleClass(0, 0, 0, 0, 0), ReflectButtonState(false) {}
 
 /***********************************************************************************************

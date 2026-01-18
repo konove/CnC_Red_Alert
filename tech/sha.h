@@ -50,7 +50,7 @@
 */
 class SHAEngine {
  public:
-  SHAEngine(void) : IsCached(false), Length(0), PartialCount(0) {
+  SHAEngine() : IsCached(false), Length(0), PartialCount(0) {
     Acc.Long[0] = SA;
     Acc.Long[1] = SB;
     Acc.Long[2] = SC;
@@ -58,14 +58,14 @@ class SHAEngine {
     Acc.Long[4] = SE;
   };
 
-  void Init(void) { new ((void*)this) SHAEngine; };
+  void Init() { new ((void*)this) SHAEngine; };
 
   // Fetch result as if source data were to stop now.
   int Result(void* result) const;
 
   void Hash(void const* data, long length);
 
-  static int Digest_Size(void) { return (sizeof(SHADigest)); }
+  static int Digest_Size() { return (sizeof(SHADigest)); }
 
  private:
   typedef union {

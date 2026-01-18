@@ -2062,7 +2062,7 @@ void AnimTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void AnimTypeClass::Init_Heap(void) {
+void AnimTypeClass::Init_Heap() {
   /*
   **	These anim type class objects must be allocated in the exact order that
   *they *	are specified in the AnimType enumeration. This is necessary
@@ -2165,7 +2165,7 @@ void AnimTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimTypeClass::One_Time(void) {
+void AnimTypeClass::One_Time() {
   for (AnimType index = ANIM_FIRST; index < ANIM_COUNT; ++index) {
     const AnimTypeClass& anim = As_Reference(index);
 

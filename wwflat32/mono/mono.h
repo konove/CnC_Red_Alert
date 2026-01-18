@@ -43,7 +43,7 @@
 
 // Mono Screen routines
 //==================================================================
-int Initialize_Mono_Screen(void);
+int Initialize_Mono_Screen();
 
 // C Routines
 //==================================================================
@@ -57,7 +57,7 @@ extern unsigned MonoScreen;
 extern unsigned MonoEnabled;
 
 extern void Mono_Set_Cursor(int x, int y);
-extern void Mono_Clear_Screen(void);
+extern void Mono_Clear_Screen();
 extern void Mono_Scroll(int lines);
 extern void Mono_Put_Char(char character, int attrib = 2);
 extern void Mono_Draw_Rect(int x, int y, int w, int h, int attrib = 2,

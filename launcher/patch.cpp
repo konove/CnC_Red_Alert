@@ -104,7 +104,7 @@ BOOL CALLBACK Update_Info_Proc(HWND hwnd, UINT iMsg, WPARAM wParam,
 }
 
 // Restart the computer for certain types of patches
-void Shutdown_Computer_Now(void);
+void Shutdown_Computer_Now();
 
 LPVOID CALLBACK __export PatchCallBack(UINT ID, LPVOID Param);
 
@@ -284,7 +284,7 @@ void Apply_Patch(char* patchfile, ConfigFile& config, int skuIndex) {
   }
 }
 
-void Shutdown_Computer_Now(void) {
+void Shutdown_Computer_Now() {
   HANDLE hToken;
   TOKEN_PRIVILEGES tkp;
 

@@ -143,7 +143,7 @@
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int CellClass::Validate(void) const {
+int CellClass::Validate() const {
   int num;
 
   num = Cell_Number();
@@ -171,7 +171,7 @@ int CellClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 08/09/1994 JLB : Created. *
  *=============================================================================================*/
-CellClass::CellClass(void)
+CellClass::CellClass()
     : IsPlot(false),
       IsCursorHere(false),
       IsMapped(false),
@@ -362,7 +362,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  * HISTORY: * 08/05/1992 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-BuildingClass* CellClass::Cell_Building(void) const {
+BuildingClass* CellClass::Cell_Building() const {
   Validate();
   return ((BuildingClass*)Cell_Find_Object(RTTI_BUILDING));
 }
@@ -382,7 +382,7 @@ BuildingClass* CellClass::Cell_Building(void) const {
  *                                                                                             *
  * HISTORY: * 05/18/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainClass* CellClass::Cell_Terrain(void) const {
+TerrainClass* CellClass::Cell_Terrain() const {
   Validate();
   return ((TerrainClass*)Cell_Find_Object(RTTI_TERRAIN));
 }
@@ -502,7 +502,7 @@ void CellClass::Redraw_Objects(bool forced) {
  *                                                                                             *
  * HISTORY: * 05/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Is_Generally_Clear(void) const {
+bool CellClass::Is_Generally_Clear() const {
   Validate();
   if (ScenarioInit) return (true);
   if (Flag.Composite || IsFlagged || Cell_Occupier()) {
@@ -559,7 +559,7 @@ bool CellClass::Is_Generally_Clear(void) const {
  * HISTORY: * 05/29/1994 JLB : Created. * 06/20/1994 JLB : Knows about template
  *pointer in cell object.                             *
  *=============================================================================================*/
-void CellClass::Recalc_Attributes(void) {
+void CellClass::Recalc_Attributes() {
   Validate();
   /*
   **	Check for wall effects.
@@ -845,7 +845,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-UnitClass* CellClass::Cell_Unit(void) const {
+UnitClass* CellClass::Cell_Unit() const {
   Validate();
   return ((UnitClass*)Cell_Find_Object(RTTI_UNIT));
 }
@@ -867,7 +867,7 @@ UnitClass* CellClass::Cell_Unit(void) const {
  *                                                                                             *
  * HISTORY: * 12/21/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryClass* CellClass::Cell_Infantry(void) const {
+InfantryClass* CellClass::Cell_Infantry() const {
   Validate();
   return ((InfantryClass*)Cell_Find_Object(RTTI_INFANTRY));
 }
@@ -1170,7 +1170,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
  *                                                                                             *
  * HISTORY: * 08/01/1994 JLB : Created. *
  *=============================================================================================*/
-void CellClass::Concrete_Calc(void) {
+void CellClass::Concrete_Calc() {
   Validate();
   static FacingType _even[5] = {FACING_N, FACING_S, FACING_SW, FACING_W,
                                 FACING_NW};
@@ -1391,7 +1391,7 @@ void CellClass::Concrete_Calc(void) {
  * HISTORY: * 09/19/1994 JLB : Created. * 09/19/1994 BWG : Updated to handle
  *partially-damaged walls.                               *
  *=============================================================================================*/
-void CellClass::Wall_Update(void) {
+void CellClass::Wall_Update() {
   Validate();
   static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
                                    FACING_NONE};
@@ -1469,7 +1469,7 @@ void CellClass::Wall_Update(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE CellClass::Cell_Coord(void) const {
+COORDINATE CellClass::Cell_Coord() const {
   Validate();
   return (::Cell_Coord(Cell_Number()));
 }
@@ -1574,7 +1574,7 @@ int CellClass::Reduce_Wall(int damage) {
  *                                                                                             *
  * HISTORY: * 12/01/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass* CellClass::Get_Trigger(void) const {
+TriggerClass* CellClass::Get_Trigger() const {
   Validate();
   if (IsTrigger) {
     return (CellTriggers[Cell_Number()]);
@@ -1724,7 +1724,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  * HISTORY: * 12/26/1994 JLB : Created. * 06/09/1995 JLB : Uses 16 entry
  *scramble algorithm.                                        *
  *=============================================================================================*/
-int CellClass::Clear_Icon(void) const {
+int CellClass::Clear_Icon() const {
   Validate();
   CELL cell = Cell_Number();
   return ((cell & 0x03) | ((cell >> 4) & 0x0C));
@@ -2299,7 +2299,7 @@ bool CellClass::Flag_Place(HousesType house) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Flag_Remove(void) {
+bool CellClass::Flag_Remove() {
   Validate();
   if (IsFlagged) {
     IsFlagged = false;
@@ -2325,7 +2325,7 @@ bool CellClass::Flag_Remove(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void CellClass::Shimmer(void) {
+void CellClass::Shimmer() {
   Validate();
   ObjectClass* object = Cell_Occupier();
 
@@ -2350,7 +2350,7 @@ void CellClass::Shimmer(void) {
  *                                                                                             *
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* CellClass::Cell_Occupier(void) const {
+ObjectClass* CellClass::Cell_Occupier() const {
   ObjectClass* ptr = OccupierPtr;
 
   while (ptr && !ptr->IsActive) {
@@ -2376,4 +2376,4 @@ ObjectClass* CellClass::Cell_Occupier(void) const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-CELL CellClass::Cell_Number(void) const { return (Map.ID(this)); }
+CELL CellClass::Cell_Number() const { return (Map.ID(this)); }

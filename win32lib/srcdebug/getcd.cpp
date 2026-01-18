@@ -69,7 +69,7 @@
  *   12/4/95    ST   : fixed for Win95                                     *
  *=========================================================================*/
 
-GetCDClass::GetCDClass(VOID) {
+GetCDClass::GetCDClass() {
   char path[] = {"a:\\"};
 
   CDCount = 0;
@@ -116,7 +116,7 @@ GetCDClass::GetCDClass(VOID) {
  *   12/4/95    ST: fixed for Win95                                        *
  *=========================================================================*/
 
-GetCDClass::~GetCDClass(VOID) {
+GetCDClass::~GetCDClass() {
   //	if(cdDrive_addrp.seg)
   //		DPMI_real_free(cdDrive_addrp);		// free up those
   // conventional buffers

@@ -143,7 +143,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
  * INPUT:      none * OUTPUT:     none * WARNINGS:   none * HISTORY: 01/16/1995
  *JLB : Created.                                                       *
  *=============================================================================================*/
-ListClass::~ListClass(void) { Remove_Scroll_Bar(); }
+ListClass::~ListClass() { Remove_Scroll_Bar(); }
 
 /***********************************************************************************************
  * ListClass::Add_Item -- Adds an item to the list box. *
@@ -426,7 +426,7 @@ char const* ListClass::Get_Item(int index) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-char const* ListClass::Current_Item(void) { return (List[SelectedIndex]); }
+char const* ListClass::Current_Item() { return (List[SelectedIndex]); }
 
 /***********************************************************************************************
  * ListClass::Current_Index -- Fetches the current selected index. *
@@ -443,7 +443,7 @@ char const* ListClass::Current_Item(void) { return (List[SelectedIndex]); }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Current_Index(void) { return (SelectedIndex); }
+int ListClass::Current_Index() { return (SelectedIndex); }
 
 /***********************************************************************************************
  * ListClass::Peer_To_Peer -- A peer gadget was touched -- make adjustments. *
@@ -526,7 +526,7 @@ int ListClass::Set_View_Index(int index) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Add_Scroll_Bar(void) {
+int ListClass::Add_Scroll_Bar() {
   if (!IsScrollActive) {
     IsScrollActive = true;
 
@@ -592,7 +592,7 @@ int ListClass::Add_Scroll_Bar(void) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-int ListClass::Remove_Scroll_Bar(void) {
+int ListClass::Remove_Scroll_Bar() {
   if (IsScrollActive) {
     IsScrollActive = false;
     Width += ScrollGadget.Width;
@@ -781,7 +781,7 @@ LinkClass& ListClass::Add_Tail(LinkClass& list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* ListClass::Remove(void) {
+GadgetClass* ListClass::Remove() {
   /*
   **	Remove the scroll bar if it's active
   */

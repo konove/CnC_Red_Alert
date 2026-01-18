@@ -357,7 +357,7 @@ int GaugeClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-void GaugeClass::Draw_Thumb(void) {
+void GaugeClass::Draw_Thumb() {
   int x = Value_To_Pixel(CurValue);
 
   if ((x + 4) > Value_To_Pixel(MaxValue)) {

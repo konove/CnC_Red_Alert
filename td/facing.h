@@ -53,14 +53,14 @@
 */
 class FacingClass {
  public:
-  FacingClass(void);
+  FacingClass();
   FacingClass(DirType dir) { CurrentFacing = DesiredFacing = dir; };
   FacingClass(NoInitClass const&) {};
 
-  operator DirType(void) const { return CurrentFacing; };
+  operator DirType() const { return CurrentFacing; };
 
-  DirType Current(void) const { return CurrentFacing; };
-  DirType Desired(void) const { return DesiredFacing; };
+  DirType Current() const { return CurrentFacing; };
+  DirType Desired() const { return DesiredFacing; };
 
   int Set_Desired(DirType facing);
   int Set_Current(DirType facing);
@@ -70,11 +70,11 @@ class FacingClass {
     Set_Desired(facing);
   };
 
-  DirType Get(void) const { return CurrentFacing; }
+  DirType Get() const { return CurrentFacing; }
 
-  int Is_Rotating(void) const { return (DesiredFacing != CurrentFacing); };
+  int Is_Rotating() const { return (DesiredFacing != CurrentFacing); };
 
-  int Difference(void) const {
+  int Difference() const {
     return (signed char)(*((unsigned char*)&DesiredFacing) -
                          *((unsigned char*)&CurrentFacing));
   };

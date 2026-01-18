@@ -327,7 +327,7 @@ FONTINFOMAXWIDTH	EQU	5
 ;***********************************************************
 ; DRAW_CHAR_SETUP
 ;
-; VOID Draw_Char_Setup(VOID);
+; VOID Draw_Char_Setup();
 ;
 ; This routine sets up code segment variables for Draw_Char.
 ; 

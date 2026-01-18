@@ -50,7 +50,7 @@
 // Look at FileErrorType below for the IO_Error function.
 // extern WORD __cdecl ( __cdecl IO_Error)(FileErrorType error, BYTE const
 // *filename);
-VOID __cdecl Prog_End(VOID);
+VOID __cdecl Prog_End();
 extern WORD Hard_Error_Occured;
 
 //////////////////////// END OF DON'T BELONG //////////////////////////////////

@@ -66,28 +66,28 @@ class ThemeClass {
   enum { THEME_DELAY = TIMER_SECOND };
 
  public:
-  ThemeClass(void);
+  ThemeClass();
 
   ThemeType From_Name(char const* name) const;
   ThemeType Next_Song(ThemeType index) const;
-  ThemeType What_Is_Playing(void) const { return Score; }
+  ThemeType What_Is_Playing() const { return Score; }
   bool Is_Allowed(ThemeType index) const;
   bool Is_Regular(ThemeType theme) const {
     return (theme != THEME_NONE && _themes[theme].Normal);
   }
   char const* Base_Name(ThemeType index) const;
   char const* Full_Name(ThemeType index) const;
-  int Max_Themes(void) const { return THEME_COUNT; }
+  int Max_Themes() const { return THEME_COUNT; }
   int Play_Song(ThemeType index);
-  int Still_Playing(void) const;
+  int Still_Playing() const;
   int Track_Length(ThemeType index) const;
-  static void Scan(void);
-  void AI(void);
-  void Fade_Out(void) { Queue_Song(THEME_QUIET); }
+  static void Scan();
+  void AI();
+  void Fade_Out() { Queue_Song(THEME_QUIET); }
   void Queue_Song(ThemeType index);
   void Set_Theme_Data(ThemeType theme, int scenario, int owners);
-  void Stop(void);
-  void Suspend(void);
+  void Stop();
+  void Suspend();
 };
 
 #endif

@@ -66,7 +66,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 
-TarComClass::~TarComClass(void) {}
+TarComClass::~TarComClass() {}
 
 #ifdef CHEAT_KEYS
 /***********************************************************************************************
@@ -102,7 +102,7 @@ void TarComClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void TarComClass::AI(void) {
+void TarComClass::AI() {
   TurretClass::AI();
 
   if (Class->Primary != WEAPON_NONE) {

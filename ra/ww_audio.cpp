@@ -821,7 +821,7 @@ void Speak(VoxType voice) {
  * HISTORY: * 12/27/1994 JLB : Created. * 10/11/1996 JLB : Handles multiple
  *speech buffers.                                         *
  *=============================================================================================*/
-void Speak_AI(void) {
+void Speak_AI() {
   static int _index = 0;
   if (Debug_Quiet || SampleType == 0) return;
 
@@ -883,7 +883,7 @@ void Speak_AI(void) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-void Stop_Speaking(void) {
+void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   Stop_Sample_Playing(SpeechBuffer);
 }
@@ -903,7 +903,7 @@ void Stop_Speaking(void) {
  *                                                                                             *
  * HISTORY: * 03/12/1995 JLB : Created. *
  *=============================================================================================*/
-bool Is_Speaking(void) {
+bool Is_Speaking() {
   Speak_AI();
   if (!Debug_Quiet && SampleType != 0 &&
       (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer))) {

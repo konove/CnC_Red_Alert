@@ -127,7 +127,7 @@ class xTargetClass {
 
  public:
   // conversion operator to RTTIType
-  operator RTTIType(void) const { return (RTTIType(Target.Sub.Exponent)); }
+  operator RTTIType() const { return (RTTIType(Target.Sub.Exponent)); }
 
   // comparison operator
   int operator==(xTargetClass& tgt) {
@@ -135,68 +135,68 @@ class xTargetClass {
   }
 
   // conversion operator to regular TARGET type
-  TARGET As_TARGET(void) const { return (Target.Target); }
+  TARGET As_TARGET() const { return (Target.Target); }
 
-  unsigned Value(void) const { return (Target.Sub.Mantissa); };
+  unsigned Value() const { return (Target.Sub.Mantissa); };
 
-  void Invalidate(void) {
+  void Invalidate() {
     Target.Sub.Exponent = RTTI_NONE;
     Target.Sub.Mantissa = (1 << TARGET_MANTISSA) - 1;
   }
-  bool Is_Valid(void) const { return (Target.Sub.Exponent != RTTI_NONE); }
+  bool Is_Valid() const { return (Target.Sub.Exponent != RTTI_NONE); }
 
-  TARGET As_Target(void) const { return (Target.Target); }
-  AbstractTypeClass* As_TypeClass(void) const;
-  AbstractClass* As_Abstract(void) const;
-  TechnoClass* As_Techno(void) const;
-  ObjectClass* As_Object(void) const;
-  CellClass* As_Cell(void) const;
+  TARGET As_Target() const { return (Target.Target); }
+  AbstractTypeClass* As_TypeClass() const;
+  AbstractClass* As_Abstract() const;
+  TechnoClass* As_Techno() const;
+  ObjectClass* As_Object() const;
+  CellClass* As_Cell() const;
 
   /*
   **	Helper routines to combine testing for, and fetching a pointer to, the
   **	type of object indicated.
   */
-  TriggerTypeClass* As_TriggerType(void) const {
+  TriggerTypeClass* As_TriggerType() const {
     if (*this == RTTI_TRIGGERTYPE) return ((TriggerTypeClass*)As_TypeClass());
     return (nullptr);
   }
-  TeamTypeClass* As_TeamType(void) const {
+  TeamTypeClass* As_TeamType() const {
     if (*this == RTTI_TEAMTYPE) return ((TeamTypeClass*)As_TypeClass());
     return (nullptr);
   }
-  TerrainClass* As_Terrain(void) const {
+  TerrainClass* As_Terrain() const {
     if (*this == RTTI_TERRAIN) return ((TerrainClass*)As_Abstract());
     return (nullptr);
   }
-  BulletClass* As_Bullet(void) const {
+  BulletClass* As_Bullet() const {
     if (*this == RTTI_BULLET) return ((BulletClass*)As_Abstract());
     return (nullptr);
   }
-  AnimClass* As_Anim(void) const {
+  AnimClass* As_Anim() const {
     if (*this == RTTI_ANIM) return ((AnimClass*)As_Abstract());
     return (nullptr);
   }
-  TeamClass* As_Team(void) const {
+  TeamClass* As_Team() const {
     if (*this == RTTI_TEAM) return ((TeamClass*)As_Abstract());
     return (nullptr);
   }
-  InfantryClass* As_Infantry(void) const {
+  InfantryClass* As_Infantry() const {
     if (*this == RTTI_INFANTRY) return ((InfantryClass*)As_Techno());
     return (nullptr);
   }
-  UnitClass* As_Unit(void) const {
+  UnitClass* As_Unit() const {
     if (*this == RTTI_UNIT) return ((UnitClass*)As_Techno());
     return (nullptr);
   }
-  BuildingClass* As_Building(void) const {
+  BuildingClass* As_Building() const {
     if (*this == RTTI_BUILDING) return ((BuildingClass*)As_Techno());
     return (nullptr);
   }
-  AircraftClass* As_Aircraft(void) const {
+  AircraftClass* As_Aircraft() const {
     if (*this == RTTI_AIRCRAFT) return ((AircraftClass*)As_Techno());
     return (nullptr);
   }
-  VesselClass* As_Vessel(void) const {
+  VesselClass* As_Vessel() const {
     if (*this == RTTI_VESSEL) return ((VesselClass*)As_Techno());
     return (nullptr);
   }
@@ -214,7 +214,7 @@ class xTargetClass {
 */
 class TargetClass : public xTargetClass {
  public:
-  TargetClass(void) { Invalidate(); }
+  TargetClass() { Invalidate(); }
   TargetClass(NoInitClass const&) {}
   TargetClass(RTTIType rtti, int id) {
     Target.Sub.Exponent = rtti;

@@ -36,7 +36,7 @@
  *-------------------------------------------------------------------------*
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- *		RedBookClass::~RedBookClass(VOID)
+ *		RedBookClass::~RedBookClass()
  ** RedBookClass::RedToHS(ULONG i)
  ** RedBookClass::MSFtoRed(UBYTE m, UBYTE s, UBYTE f)
  ** RedBookClass::FullCDVolume(UBYTE chan)
@@ -44,8 +44,8 @@
  ** RedBookClass::Play_CD_MSL(UWORD min_sec, UWORD len)
  ** RedBookClass::PlayMSF(UBYTE startM, UBYTE startS, UBYTE startF, * UBYTE
  *endM, UBYTE endS, UBYTE endF, UBYTE chan)		*
- *		RedBookClass::CheckCDMusic(VOID)
- ** RedBookClass::StopCDMusic(VOID)
+ *		RedBookClass::CheckCDMusic()
+ ** RedBookClass::StopCDMusic()
  ** = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 #include <dos.h>
@@ -76,7 +76,7 @@
  **
  *=========================================================================*/
 
-RedBookClass::RedBookClass(VOID)
+RedBookClass::RedBookClass()
     : GetCDClass()  // call the base constructor
 
 {
@@ -144,7 +144,7 @@ RedBookClass::RedBookClass(VOID)
  *   05/26/1994 SW : Created.                                              *
  *=========================================================================*/
 
-RedBookClass::~RedBookClass(VOID) {
+RedBookClass::~RedBookClass() {
   if (Tinfo_addrp.seg)
     DPMI_real_free(Tinfo_addrp);  // free up those conventional buffers
 
@@ -440,7 +440,7 @@ VOID RedBookClass::PlayMSF(UBYTE startM, UBYTE startS, UBYTE startF, UBYTE endM,
  *   05/27/1994 SW : Created.                                              *
  *=========================================================================*/
 
-UWORD RedBookClass::CheckCDMusic(VOID) {
+UWORD RedBookClass::CheckCDMusic() {
   Stat.TrnsAdOff = offsetof(StatType, StatInfo);
   Stat.TrnsAdSeg = Stat_addrp.seg;
 
@@ -475,7 +475,7 @@ UWORD RedBookClass::CheckCDMusic(VOID) {
  *   05/27/1994  SW : Created.                                             *
  *=========================================================================*/
 
-VOID RedBookClass::StopCDMusic(VOID) {
+VOID RedBookClass::StopCDMusic() {
   //	WriteRealMem(REALPTR(Stop_addrp) << 16, &Stop, sizeof(StopType));
   Mem_Copy(&Stop, (void*)(Stop_addrp.seg << 4), sizeof(StopType));
 

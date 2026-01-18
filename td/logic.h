@@ -50,7 +50,7 @@
 */
 class LogicClass : public LayerClass {
  public:
-  void AI(void);
+  void AI();
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif

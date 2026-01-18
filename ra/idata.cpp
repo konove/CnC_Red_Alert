@@ -1002,7 +1002,7 @@ void InfantryTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::Init_Heap(void) {
+void InfantryTypeClass::Init_Heap() {
   /*
   **	These infantry type class objects must be allocated in the exact order
   *that they *	are specified in the InfantryType enumeration. This is necessary
@@ -1167,7 +1167,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::Prep_For_Add(void) {
+void InfantryTypeClass::Prep_For_Add() {
   for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
     Map.Add_To_List(&As_Reference(index));
   }
@@ -1220,7 +1220,7 @@ InfantryType InfantryTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::One_Time(void) {
+void InfantryTypeClass::One_Time() {
   for (InfantryType index = INFANTRY_FIRST; index < INFANTRY_COUNT; index++) {
     CCFileClass file;
 
@@ -1277,7 +1277,7 @@ void InfantryTypeClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
-int InfantryTypeClass::Full_Name(void) const {
+int InfantryTypeClass::Full_Name() const {
   if (Debug_Map || !IsNominal || Rule.IsNamed || Type == INFANTRY_C10 ||
       Type == INFANTRY_DELPHI || Type == INFANTRY_EINSTEIN) {
     return (TechnoTypeClass::Full_Name());

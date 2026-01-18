@@ -86,7 +86,7 @@ void Window_Hide_Mouse(int window) {
  * HISTORY:                                                                *
  *   05/22/1991 JLB : Created.                                             *
  *=========================================================================*/
-void Window_Show_Mouse(void) {
+void Window_Show_Mouse() {
   //	Conditional_Show_Mouse();
 }
 #endif

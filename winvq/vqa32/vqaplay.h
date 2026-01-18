@@ -288,7 +288,7 @@ void VQA_INIConfig(VQAConfig* config);
 void VQA_DefaultConfig(VQAConfig* config);
 
 /* Handle manipulation routines. */
-VQAHandle* VQA_Alloc(void);
+VQAHandle* VQA_Alloc();
 void VQA_Free(VQAHandle* vqa);
 void VQA_Reset(VQAHandle* vqa);
 void VQA_InitAsDOS(VQAHandle* vqa);
@@ -307,13 +307,13 @@ void VQA_Close(VQAHandle* vqa);
 long VQA_Play(VQAHandle* vqa, long mode);
 long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);
 long VQA_SetStop(VQAHandle* vqa, long stop);
-void VQA_PauseAudio(void);
-void VQA_ResumeAudio(void);
+void VQA_PauseAudio();
+void VQA_ResumeAudio();
 
 /* Information/statistics access routines. */
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
 void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
-char* VQA_Version(void);
-char* VQA_IDString(void);
+char* VQA_Version();
+char* VQA_IDString();
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_

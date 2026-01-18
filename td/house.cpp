@@ -184,7 +184,7 @@
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int HouseClass::Validate(void) const {
+int HouseClass::Validate() const {
   int num;
 
   num = Houses.ID(this);
@@ -212,7 +212,7 @@ int HouseClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-HouseClass::operator HousesType(void) const {
+HouseClass::operator HousesType() const {
   Validate();
   return (Class->House);
 }
@@ -259,7 +259,7 @@ HouseClass* HouseClass::As_Pointer(HousesType house) {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::One_Time(void) {
+void HouseClass::One_Time() {
   //	for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
   //		new(index) HouseClass;
   //	}
@@ -456,7 +456,7 @@ HouseClass::HouseClass(HousesType house)
   TotalCrates = new UnitTrackerClass(TOTAL_CRATE_TYPES);  // 15 crate types
 }
 
-HouseClass::~HouseClass(void) {
+HouseClass::~HouseClass() {
   delete AircraftTotals;
   delete InfantryTotals;
   delete UnitTotals;
@@ -758,7 +758,7 @@ bool HouseClass::Can_Build(AircraftType aircraft, HousesType house) const {
  *   12/07/1994 BR : Created.                                              *
  *   12/17/1994 JLB : Resets tracker bits.                                 *
  *=========================================================================*/
-void HouseClass::Init(void) {
+void HouseClass::Init() {
   Houses.Free_All();
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
@@ -782,7 +782,7 @@ void HouseClass::Init(void) {
  * HISTORY: * 12/27/1994 JLB : Created. * 07/17/1995 JLB : Limits EVA speaking
  *unless the player can do something.                  *
  *=============================================================================================*/
-void HouseClass::AI(void) {
+void HouseClass::AI() {
   Validate();
 
   /*
@@ -1437,7 +1437,7 @@ void HouseClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Attacked(void) {
+void HouseClass::Attacked() {
   Validate();
   if (SpeakAttackDelay.Expired() && PlayerPtr->Class->House == Class->House) {
     Speak(VOX_BASE_UNDER_ATTACK);
@@ -1498,7 +1498,7 @@ void HouseClass::Harvested(unsigned tiberium) {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-long HouseClass::Available_Money(void) const {
+long HouseClass::Available_Money() const {
   Validate();
   return (Tiberium + Credits);
 }
@@ -2764,7 +2764,7 @@ void HouseClass::Init_Ion_Cannon(bool first_time, bool one_time_effect) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
-void HouseClass::Remove_Ion_Cannon(void) {
+void HouseClass::Remove_Ion_Cannon() {
   Validate();
   if (IonCannonPresent) {
     IonCannonPresent = false;
@@ -2792,7 +2792,7 @@ void HouseClass::Remove_Ion_Cannon(void) {
  *   05/16/1995 BRR : Created.                                             *
  *   06/09/1995 JLB : Handles aircraft.                                    *
  *=========================================================================*/
-void HouseClass::Clobber_All(void) {
+void HouseClass::Clobber_All() {
   Validate();
   int i;
 
@@ -2894,7 +2894,7 @@ void HouseClass::Init_Nuke_Bomb(bool first_time, bool one_time_effect) {
  * HISTORY: * 05/18/1995 JLB : commented * 07/25/1995 JLB : Handles recharge
  *reset logic.                                            *
  *=============================================================================================*/
-void HouseClass::Remove_Nuke_Bomb(void) {
+void HouseClass::Remove_Nuke_Bomb() {
   Validate();
   if (NukePresent && !NukeOneTimeFlag) {
     NukePresent = false;
@@ -2970,7 +2970,7 @@ void HouseClass::Init_Air_Strike(bool first_time, bool one_time_effect) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
-void HouseClass::Remove_Air_Strike(void) {
+void HouseClass::Remove_Air_Strike() {
   Validate();
   AirPresent = false;
   AirReady = false;
@@ -3592,7 +3592,7 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
  * HISTORY:                                                                *
  *   05/25/1995 BRR : Created.                                             *
  *=========================================================================*/
-void HouseClass::MPlayer_Defeated(void) {
+void HouseClass::MPlayer_Defeated() {
   Validate();
   char txt[80];
   int i, j, k;
@@ -3909,7 +3909,7 @@ void HouseClass::MPlayer_Defeated(void) {
  *   05/16/1995 BRR : Created.                                             *
  *   06/09/1995 JLB : Handles aircraft.                                    *
  *=========================================================================*/
-void HouseClass::Blowup_All(void) {
+void HouseClass::Blowup_All() {
   Validate();
   int i;
   int damage;
@@ -4049,7 +4049,7 @@ void HouseClass::Blowup_All(void) {
  *                                                                                             *
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_To_Die(void) {
+bool HouseClass::Flag_To_Die() {
   Validate();
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
@@ -4076,7 +4076,7 @@ bool HouseClass::Flag_To_Die(void) {
  *                                                                                             *
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_To_Win(void) {
+bool HouseClass::Flag_To_Win() {
   Validate();
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
@@ -4105,7 +4105,7 @@ bool HouseClass::Flag_To_Win(void) {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_To_Lose(void) {
+bool HouseClass::Flag_To_Lose() {
   Validate();
   IsToWin = false;
   if (!IsToDie && !IsToLose) {
@@ -4197,7 +4197,7 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
  *                                                                                             *
  * HISTORY: * 07/22/1995 JLB : Created. *
  *=============================================================================================*/
-int HouseClass::Power_Fraction(void) const {
+int HouseClass::Power_Fraction() const {
   Validate();
   if (Power) {
     if (Drain) {
@@ -4227,7 +4227,7 @@ int HouseClass::Power_Fraction(void) const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Has_Nuke_Device(void) {
+bool HouseClass::Has_Nuke_Device() {
   Validate();
   if (GameToPlay != GAME_NORMAL || !IsHuman) return (true);
   return ((NukePieces & 0x07) == 0x07);

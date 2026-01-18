@@ -77,8 +77,8 @@ typedef enum WinCommDialMethodType {
 
 class WinModemClass {
  public:
-  WinModemClass(void);           // WinModemClass Contructor
-  virtual ~WinModemClass(void);  // WinModemClass Destructor
+  WinModemClass();           // WinModemClass Contructor
+  virtual ~WinModemClass();  // WinModemClass Destructor
 
   /*
   ** Serial port open should be called to get a handle to the COM port
@@ -97,7 +97,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: PortClose
   */
-  void Serial_Port_Close(void);
+  void Serial_Port_Close();
 
   /*
   ** This member copies any bytes from the internal class serial buffer
@@ -117,7 +117,7 @@ class WinModemClass {
   /*
   ** Wait for the outgoing buffer to empty
   */
-  void Wait_For_Serial_Write(void);
+  void Wait_For_Serial_Write();
 
   /*
   ** Set the dial type to DIAL_TOUCH_TONE or DIAL_PULSE
@@ -132,7 +132,7 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: GetModemStatus
   */
-  virtual unsigned Get_Modem_Status(void);
+  virtual unsigned Get_Modem_Status();
 
   /*
   ** Set the DTR line to the given state
@@ -178,12 +178,12 @@ class WinModemClass {
   **
   ** Replacement for Greenleaf function: HMSetUpAbortKey
   */
-  virtual void Set_Abort_Function(int (*func)(void));
+  virtual void Set_Abort_Function(int (*func)());
 
   /*
   ** Member to allow access to the serial port handle
   */
-  HANDLE Get_Port_Handle(void);
+  HANDLE Get_Port_Handle();
 
   /*
   ** Status vars for debugging purposes
@@ -217,7 +217,7 @@ class WinModemClass {
   ** Copy incoming data from the windows file buffer into the internal class
   *buffer
   */
-  BOOL Read_Serial_Chars(void);
+  BOOL Read_Serial_Chars();
 
   /*
   ** Pointer to the internal class circular buffer for incoming data
@@ -268,7 +268,7 @@ class WinModemClass {
   /*
   ** Pointer to function for aborting when ESC pressed - can be NULL
   */
-  int (*AbortFunction)(void);
+  int (*AbortFunction)();
 
   /*
   ** Serial buffer for asyncronous reads
@@ -290,7 +290,7 @@ class WinModemClass {
 class WinNullModemClass : public WinModemClass {
  public:
   virtual inline void Set_Modem_Dial_Type(int) {};
-  virtual inline unsigned Get_Modem_Status(void) { return (0); };
+  virtual inline unsigned Get_Modem_Status() { return (0); };
   virtual inline void Set_Serial_DTR(BOOL){};
   virtual inline int Get_Modem_Result(int, char*, int) { return (0); };
   virtual inline void Dial_Modem(char*) {};
@@ -298,7 +298,7 @@ class WinNullModemClass : public WinModemClass {
     return (0);
   };
   virtual inline void Set_Echo_Function(void (*)(char)) {};
-  virtual inline void Set_Abort_Function(int (*)(void)) {};
+  virtual inline void Set_Abort_Function(int (*)()) {};
 };
 
 extern WinModemClass* SerialPort;

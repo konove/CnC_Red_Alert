@@ -114,8 +114,8 @@ class PKStraw : public Straw {
   */
   int BytesLeft;
 
-  int Encrypted_Key_Length(void) const;
-  int Plain_Key_Length(void) const;
+  int Encrypted_Key_Length() const;
+  int Plain_Key_Length() const;
 
   PKStraw(PKStraw& rvalue);
   PKStraw& operator=(PKStraw const& straw);

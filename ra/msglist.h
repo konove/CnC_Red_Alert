@@ -129,13 +129,13 @@ class MessageListClass {
   //.....................................................................
   // Constructor/Destructor
   //.....................................................................
-  MessageListClass(void);
+  MessageListClass();
   ~MessageListClass();
 
   //.....................................................................
   // Initialization
   //.....................................................................
-  void Reset(void);
+  void Reset();
   void Init(int x, int y, int max_msg, int maxchars, int height, int edit_x,
             int edit_y, int overflow_on, int over_start, int over_end,
             int width = 640);
@@ -155,23 +155,23 @@ class MessageListClass {
   //.....................................................................
   TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style, char* to,
                            char cursor = 0, int width = 640);
-  void Remove_Edit(void);
-  char* Get_Edit_Buf(void);
-  char* Get_Overflow_Buf(void) { return (OverflowBuf); }
-  void Clear_Overflow_Buf(void) { OverflowBuf[0] = 0; }
-  int Is_Edit(void) { return (IsEdit); }
+  void Remove_Edit();
+  char* Get_Edit_Buf();
+  char* Get_Overflow_Buf() { return (OverflowBuf); }
+  void Clear_Overflow_Buf() { OverflowBuf[0] = 0; }
+  int Is_Edit() { return (IsEdit); }
   void Set_Edit_Color(PlayerColorType color);
 
   //.....................................................................
   // Maintenance routines
   //.....................................................................
-  int Manage(void);
+  int Manage();
   int Input(KeyNumType& input);
-  void Draw(void);
-  int Num_Messages(void);
+  void Draw();
+  int Num_Messages();
   void Set_Width(int width);
-  void Set_Edit_Focus(void);
-  bool Has_Edit_Focus(void);
+  void Set_Edit_Focus();
+  bool Has_Edit_Focus();
 
  private:
   //.....................................................................
@@ -183,7 +183,7 @@ class MessageListClass {
   //.....................................................................
   // Compute the y-coord of the message list
   //.....................................................................
-  void Compute_Y(void);
+  void Compute_Y();
 
   //.....................................................................
   // Private Data

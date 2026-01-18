@@ -130,7 +130,7 @@ NonSequencedConnClass::~NonSequencedConnClass() { delete Queue; }
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void NonSequencedConnClass::Init(void) {
+void NonSequencedConnClass::Init() {
   NumRecNoAck = 0;
   NumRecAck = 0;
   NumSendNoAck = 0;
@@ -525,7 +525,7 @@ int NonSequencedConnClass::Get_Packet(void* buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Service_Send_Queue(void) {
+int NonSequencedConnClass::Service_Send_Queue() {
   int i;
   int num_entries;
   SendQueueType* send_entry;   // ptr to send queue entry
@@ -679,7 +679,7 @@ int NonSequencedConnClass::Service_Send_Queue(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Service_Receive_Queue(void) {
+int NonSequencedConnClass::Service_Receive_Queue() {
   ReceiveQueueType* rec_entry;  // ptr to receive entry header
   CommHeaderType* packet_hdr;   // packet header
   int i;

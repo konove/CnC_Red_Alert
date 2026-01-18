@@ -80,7 +80,7 @@ void const* TabClass::TabShape = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-TabClass::TabClass(void)
+TabClass::TabClass()
     : FlasherTimer(0), IsToRedraw(false), MoneyFlashTimer(0) {}
 
 /***********************************************************************************************
@@ -165,7 +165,7 @@ void TabClass::Draw_It(bool complete) {
   IsToRedraw = false;
 }
 
-void TabClass::Draw_Credits_Tab(void) {
+void TabClass::Draw_Credits_Tab() {
 #ifdef WIN32
   /*
   ** Use the new sidebar art for 640x400
@@ -323,13 +323,13 @@ void TabClass::Set_Active(int select) {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-void TabClass::One_Time(void) {
+void TabClass::One_Time() {
   SidebarClass::One_Time();
   RawFileClass file("tabs.shp");
   TabShape = MFCD::Retrieve("TABS.SHP");
 }
 
-void TabClass::Flash_Money(void) {
+void TabClass::Flash_Money() {
   IsToRedraw = true;
   Flag_To_Redraw(false);
   MoneyFlashTimer = 7;

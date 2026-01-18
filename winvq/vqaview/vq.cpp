@@ -216,7 +216,7 @@ VQAClass::VQAClass(char* filename, char* buffer, short media_src,
   vqa_is_open = FALSE;
 }
 
-VQAClass::~VQAClass(void) {
+VQAClass::~VQAClass() {
   for (int i = 0; i < 50; i++) {
     if (InterpolatedPalettes[i]) {
       free(InterpolatedPalettes[i]);
@@ -497,7 +497,7 @@ void Rebuild_Interpolated_Palette(unsigned char* interpal) {
  * HISTORY: * 12/21/95 10:36AM ST : Created *
  *=============================================================================================*/
 
-void VQAClass::Read_Palettes(void) {
+void VQAClass::Read_Palettes() {
   unsigned char* comp_buff = (unsigned char*)malloc(65536);
   unsigned comp_size;
 
@@ -574,7 +574,7 @@ void VQAClass::Read_Palettes(void) {
  * HISTORY: * 12/21/95 10:37AM ST : Created *
  *=============================================================================================*/
 
-void VQAClass::Write_Palettes(void) {
+void VQAClass::Write_Palettes() {
   unsigned char* comp_buff = (unsigned char*)malloc(65536);
   unsigned comp_size;
 
@@ -625,7 +625,7 @@ void VQAClass::Write_Palettes(void) {
  *   See PVCS log
  **
  *=========================================================================*/
-BOOL VQAClass::Open_And_Load_Buffers(void) {
+BOOL VQAClass::Open_And_Load_Buffers() {
   VQAInfo vqa_info;
   unsigned char* pal_ptr;
   INT i;
@@ -888,7 +888,7 @@ void VQAClass::Play_VQA_Frame(INT frame_number) {
  * HISTORY:                                                                *
  *   03/29/1995  MG : Created.                                             *
  *=========================================================================*/
-void VQAClass::Pause_VQA(void) { VQA_Play(vqa_handle, VQAMODE_PAUSE); }
+void VQAClass::Pause_VQA() { VQA_Play(vqa_handle, VQAMODE_PAUSE); }
 
 /***************************************************************************
  * VQACLASS::CLOSE_AND_FREE_VQA -- Closes vqa, frees instance, frees cache *
@@ -907,7 +907,7 @@ void VQAClass::Pause_VQA(void) { VQA_Play(vqa_handle, VQAMODE_PAUSE); }
  *   See PVCS log.
  **
  *=========================================================================*/
-void VQAClass::Close_And_Free_VQA(void) {
+void VQAClass::Close_And_Free_VQA() {
   if (vqa_is_open) {
     VQA_Close(vqa_handle);
   }
@@ -927,7 +927,7 @@ void VQAClass::Close_And_Free_VQA(void) {
  *   See PVCS log
  **
  *=========================================================================*/
-unsigned short Check_Key(void) { return (0); }
+unsigned short Check_Key() { return (0); }
 
 /***************************************************************************
  * GET_KEY -- NULL function for VQA play library.                          *
@@ -942,7 +942,7 @@ unsigned short Check_Key(void) { return (0); }
  *   See PVCS log
  **
  *=========================================================================*/
-unsigned short Get_Key(void) { return (0); }
+unsigned short Get_Key() { return (0); }
 
 /***************************************************************************
  * Set_Movie_Frame_Rate - Debug function for setting movie playback rate   *
@@ -955,7 +955,7 @@ unsigned short Get_Key(void) { return (0); }
  *                                                                         *
  * HISTORY:                                                                *
  *=========================================================================*/
-void Set_Movie_Frame_Rate(void) {
+void Set_Movie_Frame_Rate() {
   int retval;
 
 #if (0)

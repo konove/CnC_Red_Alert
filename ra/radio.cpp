@@ -263,7 +263,7 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool RadioClass::Limbo(void) {
+bool RadioClass::Limbo() {
   assert(IsActive);
 
   if (!IsInLimbo) {

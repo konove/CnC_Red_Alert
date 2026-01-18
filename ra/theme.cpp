@@ -165,7 +165,7 @@ char const* ThemeClass::Base_Name(ThemeType theme) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeClass::ThemeClass(void)
+ThemeClass::ThemeClass()
     : Current(-1), Score(THEME_NONE), Pending(THEME_NONE) {}
 
 /***********************************************************************************************
@@ -205,7 +205,7 @@ char const* ThemeClass::Full_Name(ThemeType theme) const {
  * HISTORY: * 09/08/1994 JLB : Created. * 01/23/1995 JLB : Picks new song just
  *as it is about to play it.                           *
  *=============================================================================================*/
-void ThemeClass::AI(void) {
+void ThemeClass::AI() {
   if (SampleType && !Debug_Quiet) {
     if (ScoresPresent && Options.ScoreVolume != 0 && !Still_Playing() &&
         Pending != THEME_NONE) {
@@ -418,7 +418,7 @@ int ThemeClass::Track_Length(ThemeType theme) const {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void ThemeClass::Stop(void) {
+void ThemeClass::Stop() {
   if (ScoresPresent && SampleType && !Debug_Quiet && Current != -1) {
     Stop_Sample(Current);
     Current = -1;
@@ -427,7 +427,7 @@ void ThemeClass::Stop(void) {
   }
 }
 
-void ThemeClass::Suspend(void) {
+void ThemeClass::Suspend() {
   if (ScoresPresent && SampleType && !Debug_Quiet && Current != -1) {
     Stop_Sample(Current);
     Current = -1;
@@ -449,7 +449,7 @@ void ThemeClass::Suspend(void) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-int ThemeClass::Still_Playing(void) const {
+int ThemeClass::Still_Playing() const {
   if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
     return (Sample_Status(Current));
   }
@@ -571,7 +571,7 @@ ThemeType ThemeClass::From_Name(char const* name) const {
  *                                                                                             *
  * HISTORY: * 01/04/1996 JLB : Created. *
  *=============================================================================================*/
-void ThemeClass::Scan(void) {
+void ThemeClass::Scan() {
   for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
     _themes[theme].Available =
         CCFileClass(Theme_File_Name(theme)).Is_Available();

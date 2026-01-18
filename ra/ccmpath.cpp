@@ -55,7 +55,7 @@
  * HISTORY:                                                                *
  *   01/09/1996 BRR : Created.                                             *
  *=========================================================================*/
-int Init_MPATH(void) {
+int Init_MPATH() {
 #if (MPATH)
   //------------------------------------------------------------------------
   // Allocate a packet buffer for MPATH's use
@@ -114,7 +114,7 @@ int Init_MPATH(void) {
  * HISTORY:                                                                *
  *   01/09/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Shutdown_MPATH(void) {
+void Shutdown_MPATH() {
 #if (MPATH)
   CDTimerClass<SystemTimerClass> timer;
 
@@ -160,7 +160,7 @@ void Shutdown_MPATH(void) {
  * HISTORY:                                                                *
  *   01/10/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Connect_MPATH(void) {
+void Connect_MPATH() {
 #if (MPATH)
   typedef struct ConnectPacketTag {
     NetCommandType Dummy;         // packet type; set to PING

@@ -75,7 +75,7 @@ void __cdecl Buffer_Draw_Stamp(void const* thisptr, void const* icondata,
 void __cdecl Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata,
                                     int icon, int x_pixel, int y_pixel,
                                     void const* remap, int, int, int, int);
-void* __cdecl Get_Font_Palette_Ptr(void);
+void* __cdecl Get_Font_Palette_Ptr();
 }
 
 extern GraphicViewPortClass* LogicPage;

@@ -46,7 +46,7 @@
 
 #include "keyboard.h"
 
-void Message_Loop(void);
+void Message_Loop();
 
 WWKeyboardClass* _Kbd;
 
@@ -60,7 +60,7 @@ WWKeyboardClass* _Kbd;
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-WWKeyboardClass::WWKeyboardClass(void) {
+WWKeyboardClass::WWKeyboardClass() {
   _Kbd = this;
   //
   // Initialize the keyboard remap table for our system (note it would be bad if
@@ -121,7 +121,7 @@ WWKeyboardClass::WWKeyboardClass(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Buff_Get(void) {
+int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
   int temp = Buffer[Head];       // get key out of the buffer
@@ -154,7 +154,7 @@ BOOL WWKeyboardClass::Is_Mouse_Key(int key) {
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-BOOL WWKeyboardClass::Check(void) {
+BOOL WWKeyboardClass::Check() {
   Message_Loop();
   unsigned short temp;               // store temp holding spot for key
   if (Head == Tail) return (FALSE);  // if no keys in buff then get out
@@ -175,7 +175,7 @@ BOOL WWKeyboardClass::Check(void) {
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Get(void) {
+int WWKeyboardClass::Get() {
   int temp, bits;  // store temp holding spot for key
 
   while (!Check()) {
@@ -271,7 +271,7 @@ WWKeyboardClass::Put_Key_Message(UINT vk_key, BOOL release, BOOL dbl) {
   return (Put(vk_key | bits));
 }
 
-void WWKeyboardClass::Clear(void) { Head = Tail; }
+void WWKeyboardClass::Clear() { Head = Tail; }
 
 int WWKeyboardClass::To_ASCII(int key) { return (key); }
 
@@ -288,7 +288,7 @@ VOID WWKeyboardClass::Split(int& key, int& shift, int& ctrl, int& alt, int& rls,
 }
 
 extern "C" {
-void __cdecl Stop_Execution(void);
+void __cdecl Stop_Execution();
 }
 
 #pragma off(unreferenced)
@@ -371,7 +371,7 @@ void WWKeyboardClass::Message_Handler(HWND, UINT message, UINT wParam,
 
 extern BOOL GameInFocus;
 
-void Message_Loop(void) {
+void Message_Loop() {
   MSG msg;
 
   do {
@@ -404,17 +404,17 @@ void Message_Loop(void) {
  * HISTORY:                                                                *
  *   10/26/1995     : Created.                                             *
  *=========================================================================*/
-int Check_Key(void) {
+int Check_Key() {
   if (!_Kbd) return (KA_NONE);
   return (_Kbd->Check() & ~WWKEY_SHIFT_BIT);
 }
 
-void Clear_KeyBuffer(void) {
+void Clear_KeyBuffer() {
   if (!_Kbd) return;
   _Kbd->Clear();
 }
 
-int Check_Key_Num(void) {
+int Check_Key_Num() {
   if (!_Kbd) return (KN_NONE);
   int key = _Kbd->Check();
   int flags = key & 0xFF00;
@@ -427,7 +427,7 @@ int Check_Key_Num(void) {
   return (key | flags);
 }
 
-int Get_Key_Num(void) {
+int Get_Key_Num() {
   if (!_Kbd) return (KN_NONE);
   int key = _Kbd->Get();
   int flags = key & 0xFF00;
@@ -457,7 +457,7 @@ int Key_Down(int key) {
   return (_Kbd->Down(key));
 }
 
-int Get_Key(void) {
+int Get_Key() {
   if (!_Kbd) return (KN_NONE);
   return (_Kbd->Get() & ~WWKEY_SHIFT_BIT);
 }

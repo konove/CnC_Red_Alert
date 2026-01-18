@@ -83,7 +83,7 @@ class ControlClass : public GadgetClass {
   unsigned ID;
 
  protected:
-  virtual unsigned Get_ID(void) const;
+  virtual unsigned Get_ID() const;
   virtual int Action(unsigned flags, KeyNumType& key);
 
   /*

@@ -42,8 +42,8 @@
 
 class GameControlsClass {
  public:
-  GameControlsClass(void) {};
-  void Process(void);
+  GameControlsClass() {};
+  void Process();
 };
 
 #endif

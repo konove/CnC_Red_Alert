@@ -160,7 +160,7 @@ CommQueueClass::~CommQueueClass() {
  * HISTORY:                                                                *
  *   01/20/1995 BR : Created.                                              *
  *=========================================================================*/
-void CommQueueClass::Init(void) {
+void CommQueueClass::Init() {
   int i;
 
   /*
@@ -336,7 +336,7 @@ int CommQueueClass::UnQueue_Send(void* buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-SendQueueType* CommQueueClass::Next_Send(void) {
+SendQueueType* CommQueueClass::Next_Send() {
   if (SendCount == 0) {
     return (nullptr);
   } else {
@@ -507,7 +507,7 @@ int CommQueueClass::UnQueue_Receive(void* buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-ReceiveQueueType* CommQueueClass::Next_Receive(void) {
+ReceiveQueueType* CommQueueClass::Next_Receive() {
   if (ReceiveCount == 0) {
     return (nullptr);
   } else {
@@ -621,7 +621,7 @@ void CommQueueClass::Add_Delay(unsigned long delay) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommQueueClass::Avg_Response_Time(void) { return (MeanDelay); }
+unsigned long CommQueueClass::Avg_Response_Time() { return (MeanDelay); }
 
 /***************************************************************************
  * CommQueueClass::Max_Response_Time -- returns max response time *
@@ -641,7 +641,7 @@ unsigned long CommQueueClass::Avg_Response_Time(void) { return (MeanDelay); }
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommQueueClass::Max_Response_Time(void) { return (MaxDelay); }
+unsigned long CommQueueClass::Max_Response_Time() { return (MaxDelay); }
 
 /***************************************************************************
  * CommQueueClass::Reset_Response_Time -- resets computations
@@ -662,7 +662,7 @@ unsigned long CommQueueClass::Max_Response_Time(void) { return (MaxDelay); }
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-void CommQueueClass::Reset_Response_Time(void) {
+void CommQueueClass::Reset_Response_Time() {
   DelaySum = 0L;
   NumDelay = 0L;
   MeanDelay = 0L;

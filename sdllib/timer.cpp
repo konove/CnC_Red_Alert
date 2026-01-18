@@ -27,12 +27,12 @@ long TimerClass::Set(long value, bool start) {
   return Time();
 }
 
-long TimerClass::Start(void) {
+long TimerClass::Start() {
   if (!Started) Started = Get_Ticks() + 1;
   return Time();
 }
 
-long TimerClass::Time(void) {
+long TimerClass::Time() {
   if (Started) {
     long ticks = Get_Ticks();
     Accumulated += ticks - (Started - 1);
@@ -41,7 +41,7 @@ long TimerClass::Time(void) {
   return Accumulated;
 }
 
-long TimerClass::Get_Ticks(void) {
+long TimerClass::Get_Ticks() {
   if (WindowsTimer && TickType == BT_SYSTEM)  // BT_USER seems unused
     return WindowsTimer->Get_System_Tick_Count();
 
@@ -64,7 +64,7 @@ long CountDownTimerClass::Set(long value, bool start) {
   return Time();
 }
 
-long CountDownTimerClass::Time(void) {
+long CountDownTimerClass::Time() {
   long ticks = DelayTime - TimerClass::Time();
 
   if (ticks < 0) ticks = 0;

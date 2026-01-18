@@ -72,7 +72,7 @@
 #include "td/jshell.h"
 #include "td/object.h"
 
-MissionClass::MissionClass(void) {
+MissionClass::MissionClass() {
   Status = 0;
   Timer = 0;
   Mission = MISSION_NONE;
@@ -80,27 +80,27 @@ MissionClass::MissionClass(void) {
   MissionQueue = MISSION_NONE;
 }
 
-int MissionClass::Mission_Sleep(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Ambush(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Attack(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Capture(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Guard(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Guard_Area(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Harvest(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Hunt(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Timed_Hunt(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Move(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Retreat(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Return(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Stop(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Unload(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Enter(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Construction(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Deconstruction(void) {
+int MissionClass::Mission_Sleep() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Ambush() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Attack() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Capture() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Guard() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Guard_Area() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Harvest() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Hunt() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Timed_Hunt() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Move() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Retreat() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Return() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Stop() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Unload() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Enter() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Construction() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Deconstruction() {
   return TICKS_PER_SECOND * 30;
 };
-int MissionClass::Mission_Repair(void) { return TICKS_PER_SECOND * 30; };
-int MissionClass::Mission_Missile(void) { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Repair() { return TICKS_PER_SECOND * 30; };
+int MissionClass::Mission_Missile() { return TICKS_PER_SECOND * 30; };
 
 /***********************************************************************************************
  * MissionClass::Set_Mission -- Sets the mission to the specified value. *
@@ -139,7 +139,7 @@ void MissionClass::Set_Mission(MissionType mission) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-MissionType MissionClass::Get_Mission(void) const {
+MissionType MissionClass::Get_Mission() const {
   return (Mission == MISSION_NONE ? MissionQueue : Mission);
 }
 
@@ -187,7 +187,7 @@ void MissionClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 04/23/1994 JLB : Created. * 06/25/1995 JLB : Added new missions. *
  *=============================================================================================*/
-void MissionClass::AI(void) {
+void MissionClass::AI() {
   ObjectClass::AI();
 
   /*
@@ -295,7 +295,7 @@ void MissionClass::AI(void) {
  * HISTORY: * 04/23/1994 JLB : Created. * 07/14/1994 JLB : Simplified. *
  *   06/17/1995 JLB : Returns success flag. *
  *=============================================================================================*/
-bool MissionClass::Commence(void) {
+bool MissionClass::Commence() {
   if (MissionQueue != MISSION_NONE) {
     Mission = MissionQueue;
     MissionQueue = MISSION_NONE;
@@ -421,7 +421,7 @@ void MissionClass::Override_Mission(MissionType mission, TARGET, TARGET) {
  *                                                                                             *
  * HISTORY: * 04/28/1995 PWG : Created. *
  *=============================================================================================*/
-bool MissionClass::Restore_Mission(void) {
+bool MissionClass::Restore_Mission() {
   if (SuspendedMission != MISSION_NONE) {
     Assign_Mission(SuspendedMission);
     SuspendedMission = MISSION_NONE;

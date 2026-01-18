@@ -73,7 +73,7 @@ void GetGameDef(void* gameDef, int* len) {
   MGenMoveTo(REC_QUEUE, IDLE_QUEUE);
 }
 
-int LPCGetMPAddr(void) {
+int LPCGetMPAddr() {
   RTQ_NODE* n = MGenGetNode(IDLE_QUEUE);
   LPCData* p;
   LPCReturn* r;
@@ -99,7 +99,7 @@ int LPCGetMPAddr(void) {
   return retVal;
 }
 
-void NullLPC(void) {
+void NullLPC() {
   RTQ_NODE* n = MGenGetNode(IDLE_QUEUE);
   LPCData* p;
 

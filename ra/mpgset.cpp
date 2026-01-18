@@ -138,7 +138,7 @@ MPGSettings::MPGSettings(FileClass& file) : mDeviceName(nullptr) {
  *
  ****************************************************************************/
 
-MPGSettings::~MPGSettings(void) {
+MPGSettings::~MPGSettings() {
   if (mDeviceName) free(mDeviceName);
 
 #ifdef MCIMPEG
@@ -205,7 +205,7 @@ bool MPGSettings::Save(FileClass& file) {
  *
  ****************************************************************************/
 
-void MPGSettings::Dialog(void) {
+void MPGSettings::Dialog() {
   //	Dialog & button dimensions
   int d_dialog_w = 200 * RESFACTOR;
   int d_dialog_h = 100 * RESFACTOR;

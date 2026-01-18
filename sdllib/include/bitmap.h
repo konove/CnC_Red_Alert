@@ -14,7 +14,7 @@ class BitmapClass {
 class TPoint2D {
  public:
   TPoint2D(int xx, int yy) : x(xx), y(yy) {};
-  TPoint2D(void) : x(0), y(0) {};
+  TPoint2D() : x(0), y(0) {};
 
   int x;
   int y;

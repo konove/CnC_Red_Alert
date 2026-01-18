@@ -27,15 +27,15 @@
 
 class MPlayerManClass : public ConnManClass {
  public:
-  MPlayerManClass(void);
+  MPlayerManClass();
 
   // queues up incoming packets appropriately
-  int Service(void);
+  int Service();
 
   // initialization
-  int Init(void);
-  int Find_Num_Connections(void);
-  void Flush_All(void);
+  int Init();
+  int Find_Num_Connections();
+  void Flush_All();
 
   // send/receive data
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
@@ -47,7 +47,7 @@ class MPlayerManClass : public ConnManClass {
   int Get_Global_Message(void* buf, int* buflen, int* address = nullptr);
 
   // manage connections
-  int Num_Connections(void);
+  int Num_Connections();
   int Connection_ID(int index);
   int Connection_Index(int id);
   int Create_Connection(int id, char* name, int address);
@@ -57,14 +57,14 @@ class MPlayerManClass : public ConnManClass {
 
   // queueing routines
 
-  int Global_Num_Send(void);
-  int Global_Num_Receive(void);
+  int Global_Num_Send();
+  int Global_Num_Receive();
   int Private_Num_Send(int id = CONNECTION_NONE);
   int Private_Num_Receive(int id = CONNECTION_NONE);
 
   // timing magnagement
-  void Reset_Response_Time(void);
-  unsigned long Response_Time(void);
+  void Reset_Response_Time();
+  unsigned long Response_Time();
   void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                   unsigned long timeout);
 

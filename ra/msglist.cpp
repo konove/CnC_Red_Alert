@@ -93,7 +93,7 @@
  * HISTORY:                                                                *
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-MessageListClass::MessageListClass(void) {
+MessageListClass::MessageListClass() {
   int i;
 
   //------------------------------------------------------------------------
@@ -272,7 +272,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
  *                                                                                             *
  * HISTORY: * 03/04/1997 JLB : Created. *
  *=============================================================================================*/
-void MessageListClass::Reset(void) {
+void MessageListClass::Reset() {
   //------------------------------------------------------------------------
   //	Remove every entry in the list
   //------------------------------------------------------------------------
@@ -690,7 +690,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
  *                                                                                             *
  * HISTORY: * 10/19/96 4:41PM ST : Created *
  *=============================================================================================*/
-void MessageListClass::Set_Edit_Focus(void) {
+void MessageListClass::Set_Edit_Focus() {
   if (IsEdit) EditLabel->Set_Focus();
 }
 
@@ -708,7 +708,7 @@ void MessageListClass::Set_Edit_Focus(void) {
  *                                                                                             *
  * HISTORY: * 10/19/96 4:41PM ST : Created *
  *=============================================================================================*/
-bool MessageListClass::Has_Edit_Focus(void) {
+bool MessageListClass::Has_Edit_Focus() {
   if (IsEdit) {
     return (EditLabel->Has_Focus());
   } else {
@@ -824,7 +824,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
  * HISTORY:                                                                *
  *   11/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MessageListClass::Remove_Edit(void) {
+void MessageListClass::Remove_Edit() {
   //------------------------------------------------------------------------
   // If the edit field is active, delete it
   //------------------------------------------------------------------------
@@ -860,7 +860,7 @@ void MessageListClass::Remove_Edit(void) {
  * HISTORY:                                                                *
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-char* MessageListClass::Get_Edit_Buf(void) {
+char* MessageListClass::Get_Edit_Buf() {
   return (EditBuf + EditInitPos);
 
 }  // end of Get_Edit_Buf
@@ -907,7 +907,7 @@ void MessageListClass::Set_Edit_Color(PlayerColorType color) {
  * HISTORY:                                                                *
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Manage(void) {
+int MessageListClass::Manage() {
   TextLabelClass* txtlabel;
   TextLabelClass* next;
   int changed = 0;
@@ -1138,7 +1138,7 @@ int MessageListClass::Input(KeyNumType& input) {
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MessageListClass::Draw(void) {
+void MessageListClass::Draw() {
   char txt[2] = {0, 0};
 
   if (IsEdit) {
@@ -1187,7 +1187,7 @@ void MessageListClass::Draw(void) {
  * HISTORY:                                                                *
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Num_Messages(void) {
+int MessageListClass::Num_Messages() {
   GadgetClass* gadg;
   int num;
 
@@ -1352,7 +1352,7 @@ int MessageListClass::Trim_Message(char* dest, char* src, int min_chars,
  * HISTORY:                                                                *
  *   11/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MessageListClass::Compute_Y(void) {
+void MessageListClass::Compute_Y() {
   GadgetClass* gadg;
   int y;
 

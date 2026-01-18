@@ -67,7 +67,7 @@
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-TurretClass::~TurretClass(void) {}
+TurretClass::~TurretClass() {}
 
 /***********************************************************************************************
  * TurretClass::TurretClass -- The default constructor for turret class objects.
@@ -84,7 +84,7 @@ TurretClass::~TurretClass(void) {}
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-TurretClass::TurretClass(void) {}
+TurretClass::TurretClass() {}
 
 /***********************************************************************************************
  * TurretClass::TurretClass -- Normal constructor for the turret class. *

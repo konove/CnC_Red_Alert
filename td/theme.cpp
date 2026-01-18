@@ -150,7 +150,7 @@ char const* ThemeClass::Base_Name(ThemeType theme) const {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeClass::ThemeClass(void) {
+ThemeClass::ThemeClass() {
   Current = -1;
   Score = THEME_NONE;
   Pending = THEME_NONE;
@@ -193,7 +193,7 @@ char const* ThemeClass::Full_Name(ThemeType theme) const {
  * HISTORY: * 09/08/1994 JLB : Created. * 01/23/1995 JLB : Picks new song just
  *as it is about to play it.                           *
  *=============================================================================================*/
-void ThemeClass::AI(void) {
+void ThemeClass::AI() {
   if (SampleType && !Debug_Quiet) {
     if (ScoresPresent && Options.ScoreVolume && !Still_Playing() &&
         Pending != THEME_NONE) {
@@ -405,7 +405,7 @@ int ThemeClass::Track_Length(ThemeType theme) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void ThemeClass::Stop(void) {
+void ThemeClass::Stop() {
   if (ScoresPresent && SampleType && !Debug_Quiet) {
     if (Current != -1) {
       Stop_Sample(Current);
@@ -429,7 +429,7 @@ void ThemeClass::Stop(void) {
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-int ThemeClass::Still_Playing(void) {
+int ThemeClass::Still_Playing() {
   if (ScoresPresent && SampleType && Current != -1 && !Debug_Quiet) {
     return (Sample_Status(Current));
   }
@@ -541,7 +541,7 @@ ThemeType ThemeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 01/04/1996 JLB : Created. *
  *=============================================================================================*/
-void ThemeClass::Scan(void) {
+void ThemeClass::Scan() {
   for (ThemeType theme = THEME_FIRST; theme < THEME_COUNT; theme++) {
     //		if (theme == THEME_J1 && !Special.IsJurassic) {
     //			_themes[theme].Available = false;

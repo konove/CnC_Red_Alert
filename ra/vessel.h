@@ -96,28 +96,28 @@ class VesselClass : public DriveClass {
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
-  operator VesselType(void) const { return Class->Type; };
+  operator VesselType() const { return Class->Type; };
 
-  static void Init(void);
+  static void Init();
 
-  virtual ~VesselClass(void);
-  virtual ObjectTypeClass const& Class_Of(void) const;
+  virtual ~VesselClass();
+  virtual ObjectTypeClass const& Class_Of() const;
 
-  virtual MZoneType Zone_Check_Type(void) const { return (MZONE_WATER); }
-  int Shape_Number(void) const;
-  void Rotation_AI(void);
-  void Combat_AI(void);
-  bool Edge_Of_World_AI(void);
-  void Repair_AI(void);
-  virtual DirType Turret_Facing(void) const {
+  virtual MZoneType Zone_Check_Type() const { return (MZONE_WATER); }
+  int Shape_Number() const;
+  void Rotation_AI();
+  void Combat_AI();
+  bool Edge_Of_World_AI();
+  void Repair_AI();
+  virtual DirType Turret_Facing() const {
     if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
     return (PrimaryFacing.Current());
   }
   virtual bool Start_Driver(COORDINATE& headto);
-  virtual int Mission_Retreat(void);
-  virtual int Mission_Unload(void);
-  void LST_Open_Door(void);
-  void LST_Close_Door(void);
+  virtual int Mission_Retreat();
+  virtual int Mission_Unload();
+  void LST_Open_Door();
+  void LST_Close_Door();
   virtual COORDINATE Fire_Coord(int which) const;
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType from = FACING_NONE) const;
@@ -127,7 +127,7 @@ class VesselClass : public DriveClass {
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);
-  virtual void AI(void);
+  virtual void AI();
   virtual void Per_Cell_Process(PCPType why);
   virtual void Assign_Destination(TARGET target);
 
@@ -142,14 +142,14 @@ class VesselClass : public DriveClass {
   virtual void Active_Click_With(ActionType action, CELL cell);
   virtual void Active_Click_With(ActionType action, ObjectClass* object);
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
-  virtual bool Is_Allowed_To_Recloak(void) const;
+  virtual bool Is_Allowed_To_Recloak() const;
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
   /*
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "SHIPS"; };
+  static char const* INI_Name() { return "SHIPS"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

@@ -217,7 +217,7 @@ bool Movie::Open(const char* name) {
  *
  ****************************************************************************/
 
-void Movie::Close(void) {
+void Movie::Close() {
   // Stop currently playing movie
   if ((gMMStream != NULL) && (mPlaying == true)) {
     gMMStream->SetState(STREAMSTATE_STOP);
@@ -297,7 +297,7 @@ bool Movie::Play(IDirectDrawSurface* surface) {
  *
  ****************************************************************************/
 
-bool Movie::Update(void) {
+bool Movie::Update() {
   // Update each frame
   if (gDDSample->Update(0, NULL, NULL, 0) != S_OK) {
     gMMStream->SetState(STREAMSTATE_STOP);

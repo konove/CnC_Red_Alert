@@ -96,7 +96,7 @@
  * HISTORY:                                                                *
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Placement_Dialog(void) {
+int MapEditClass::Placement_Dialog() {
   HousesType house;
 
   /*........................................................................
@@ -859,7 +859,7 @@ int MapEditClass::Placement_Dialog(void) {
  * HISTORY:                                                                *
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Start_Placement(void) {
+void MapEditClass::Start_Placement() {
   int i;
 
   /*------------------------------------------------------------------------
@@ -958,7 +958,7 @@ void MapEditClass::Start_Placement(void) {
  * HISTORY:                                                                *
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Place_Object(void) {
+int MapEditClass::Place_Object() {
   CELL template_cell;        // cell being checked for template
   COORDINATE obj_coord;      // coord of occupier object
   int okflag;                // OK to place a template?
@@ -1182,7 +1182,7 @@ int MapEditClass::Place_Object(void) {
  * HISTORY:                                                                *
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Cancel_Placement(void) {
+void MapEditClass::Cancel_Placement() {
   /*
   ---------------------- Delete the placement object -----------------------
   */
@@ -1224,7 +1224,7 @@ void MapEditClass::Cancel_Placement(void) {
  * HISTORY:                                                                *
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Next(void) {
+void MapEditClass::Place_Next() {
   delete PendingObjectPtr;
   PendingObjectPtr = NULL;
   PendingObject = NULL;
@@ -1313,7 +1313,7 @@ void MapEditClass::Place_Next(void) {
  * HISTORY:                                                                *
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Prev(void) {
+void MapEditClass::Place_Prev() {
   delete PendingObjectPtr;
   PendingObjectPtr = NULL;
   PendingObject = NULL;
@@ -1395,7 +1395,7 @@ void MapEditClass::Place_Prev(void) {
  * HISTORY:                                                                *
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Next_Category(void) {
+void MapEditClass::Place_Next_Category() {
   int i;
 
   /*
@@ -1483,7 +1483,7 @@ void MapEditClass::Place_Next_Category(void) {
  * HISTORY:                                                                *
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Prev_Category(void) {
+void MapEditClass::Place_Prev_Category() {
   int i;
 
   /*
@@ -1584,7 +1584,7 @@ void MapEditClass::Place_Prev_Category(void) {
  * HISTORY:                                                                *
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Home(void) {
+void MapEditClass::Place_Home() {
   delete PendingObjectPtr;
   PendingObjectPtr = NULL;
   PendingObject = NULL;
@@ -1656,7 +1656,7 @@ void MapEditClass::Place_Home(void) {
  * HISTORY:                                                                *
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Toggle_House(void) {
+void MapEditClass::Toggle_House() {
   TechnoClass* tp;
 
   /*
@@ -1753,7 +1753,7 @@ void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* btnlist,
  * HISTORY:                                                                *
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Start_Trigger_Placement(void) {
+void MapEditClass::Start_Trigger_Placement() {
   Set_Default_Mouse(MOUSE_CAN_MOVE);
   Override_Mouse_Shape(MOUSE_CAN_MOVE);
 }
@@ -1773,7 +1773,7 @@ void MapEditClass::Start_Trigger_Placement(void) {
  * HISTORY:                                                                *
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Stop_Trigger_Placement(void) {
+void MapEditClass::Stop_Trigger_Placement() {
   CurTrigger = NULL;
   Set_Default_Mouse(MOUSE_NORMAL);
   Override_Mouse_Shape(MOUSE_NORMAL);
@@ -1794,7 +1794,7 @@ void MapEditClass::Stop_Trigger_Placement(void) {
  * HISTORY:                                                                *
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Trigger(void) {
+void MapEditClass::Place_Trigger() {
   ObjectClass* object = NULL;  // Generic object clicked on.
   int x, y;
   CELL cell;  // Cell that was selected.
@@ -1858,7 +1858,7 @@ void MapEditClass::Place_Trigger(void) {
  * HISTORY:                                                                *
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Start_Base_Building(void) {
+void MapEditClass::Start_Base_Building() {
   /*
   ** Fully build the base so the user can edit it
   */
@@ -1892,7 +1892,7 @@ void MapEditClass::Start_Base_Building(void) {
  * HISTORY:                                                                *
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Cancel_Base_Building(void) {
+void MapEditClass::Cancel_Base_Building() {
   /*
   ** Build the base to the proper amount
   */

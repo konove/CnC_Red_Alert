@@ -191,11 +191,11 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   return old_cursor;
 }
 
-void WWMouseClass::Hide_Mouse(void) {
+void WWMouseClass::Hide_Mouse() {
   if (!State++) SDL_ShowCursor(SDL_DISABLE);
 }
 
-void WWMouseClass::Show_Mouse(void) {
+void WWMouseClass::Show_Mouse() {
   if (!State) return;
   if (--State == 0) {
     if (PaletteDirty) Update_Palette();
@@ -206,13 +206,13 @@ void WWMouseClass::Show_Mouse(void) {
 void WWMouseClass::Conditional_Hide_Mouse(int /*x1*/, int /*y1*/, int /*x2*/,
                                           int /*y2*/) {}
 
-void WWMouseClass::Conditional_Show_Mouse(void) {}
+void WWMouseClass::Conditional_Show_Mouse() {}
 
-int WWMouseClass::Get_Mouse_State(void) { return State; }
+int WWMouseClass::Get_Mouse_State() { return State; }
 
-int WWMouseClass::Get_Mouse_X(void) { return LastX; }
+int WWMouseClass::Get_Mouse_X() { return LastX; }
 
-int WWMouseClass::Get_Mouse_Y(void) { return LastY; }
+int WWMouseClass::Get_Mouse_Y() { return LastY; }
 
 void WWMouseClass::Draw_Mouse(GraphicViewPortClass* /*scr*/) {
   // we're using a "hardware" cursor, so don't need to do anything
@@ -221,13 +221,13 @@ void WWMouseClass::Draw_Mouse(GraphicViewPortClass* /*scr*/) {
 void WWMouseClass::Erase_Mouse(GraphicViewPortClass* /*scr*/, bool /*forced*/) {
 }
 
-void WWMouseClass::Set_Cursor_Clip(void) {
+void WWMouseClass::Set_Cursor_Clip() {
   if (!NoMouseGrab) {
     SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_TRUE);
   }
 }
 
-void WWMouseClass::Clear_Cursor_Clip(void) {
+void WWMouseClass::Clear_Cursor_Clip() {
   SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_FALSE);
 }
 
@@ -265,11 +265,11 @@ void WWMouseClass::Update_Pos(int x, int y) {
   LastY = y;
 }
 
-void Hide_Mouse(void) {
+void Hide_Mouse() {
   if (_Mouse) _Mouse->Hide_Mouse();
 }
 
-void Show_Mouse(void) {
+void Show_Mouse() {
   if (_Mouse) _Mouse->Show_Mouse();
 }
 
@@ -277,11 +277,11 @@ void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {
   if (_Mouse) _Mouse->Conditional_Hide_Mouse(x1, y1, x2, y2);
 }
 
-void Conditional_Show_Mouse(void) {
+void Conditional_Show_Mouse() {
   if (_Mouse) _Mouse->Conditional_Show_Mouse();
 }
 
-int Get_Mouse_State(void) {
+int Get_Mouse_State() {
   if (_Mouse) return _Mouse->Get_Mouse_State();
   return 0;
 }
@@ -291,12 +291,12 @@ void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
   return nullptr;
 }
 
-int Get_Mouse_X(void) {
+int Get_Mouse_X() {
   if (_Mouse) return _Mouse->Get_Mouse_X();
   return 0;
 }
 
-int Get_Mouse_Y(void) {
+int Get_Mouse_Y() {
   if (_Mouse) return _Mouse->Get_Mouse_Y();
   return 0;
 }

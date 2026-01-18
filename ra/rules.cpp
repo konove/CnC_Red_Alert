@@ -110,7 +110,7 @@ static inline int _Scale_To_256(int val) {
  *                                                                                             *
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
-RulesClass::RulesClass(void)
+RulesClass::RulesClass()
     : TurboBoost("1.5"),
       AttackInterval(3),
       AttackDelay(5),

@@ -75,7 +75,7 @@ class SequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  virtual void Init(void);
+  virtual void Init();
 
   /*.....................................................................
   Send/Receive routines.
@@ -96,8 +96,8 @@ class SequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Routines to service the Send & Receive queues.
   .....................................................................*/
-  virtual int Service_Send_Queue(void);
-  virtual int Service_Receive_Queue(void);
+  virtual int Service_Send_Queue();
+  virtual int Service_Receive_Queue();
 
   /*.....................................................................
   Running totals of # of packets we send & receive which require an ACK,

@@ -424,7 +424,7 @@ void TerrainTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void TerrainTypeClass::Init_Heap(void) {
+void TerrainTypeClass::Init_Heap() {
   /*
   **	These terrain type class objects must be allocated in the exact order
   *that they *	are specified in the TerrainType enumeration. This is necessary
@@ -485,7 +485,7 @@ void TerrainTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void TerrainTypeClass::One_Time(void) {}
+void TerrainTypeClass::One_Time() {}
 
 /***********************************************************************************************
  * TerrainTypeClass::Init -- Loads terrain object shape files. *
@@ -599,7 +599,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainTypeClass::Prep_For_Add(void) {
+void TerrainTypeClass::Prep_For_Add() {
   for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -693,7 +693,7 @@ short const* TerrainTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
-short const* TerrainTypeClass::Overlap_List(void) const {
+short const* TerrainTypeClass::Overlap_List() const {
   if (Overlap != nullptr) return (Overlap);
 
   static short const _simple[1] = {REFRESH_EOL};

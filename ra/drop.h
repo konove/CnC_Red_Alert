@@ -52,32 +52,32 @@ class DropListClass : public EditClass {
  public:
   DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                 int y, int w, int h, void const* up, void const* down);
-  virtual ~DropListClass(void) {};
+  virtual ~DropListClass() {};
 
   virtual DropListClass& Add(LinkClass& object);
   virtual DropListClass& Add_Tail(LinkClass& object);
   virtual DropListClass& Add_Head(LinkClass& object);
-  virtual DropListClass* Remove(void);
-  virtual void Zap(void);
+  virtual DropListClass* Remove();
+  virtual void Zap();
 
   virtual int Add_Item(char const* text);
-  virtual char const* Current_Item(void);
-  virtual int Current_Index(void);
+  virtual char const* Current_Item();
+  virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(char const* text);
   virtual void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom);
-  virtual void Clear_Focus(void);
-  virtual int Count(void) const { return (List.Count()); };
+  virtual void Clear_Focus();
+  virtual int Count() const { return (List.Count()); };
   virtual char const* Get_Item(int index) const {
     return (List.Get_Item(index));
   };
 
 #ifdef WOLAPI_INTEGRATION
-  virtual void Flag_To_Redraw(void);
+  virtual void Flag_To_Redraw();
 #endif
 
-  void Expand(void);
-  void Collapse(void);
+  void Expand();
+  void Collapse();
 
   virtual void Set_Position(int x, int y);
 
@@ -112,7 +112,7 @@ class TDropListClass : public EditClass {
   TDropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                  int y, int w, int h, void const* up, void const* down);
   TDropListClass(TDropListClass<T> const& list);
-  virtual ~TDropListClass(void) {};
+  virtual ~TDropListClass() {};
 
   T operator[](int index) const { return (List[index]); };
   T& operator[](int index) { return (List[index]); };
@@ -120,21 +120,21 @@ class TDropListClass : public EditClass {
   virtual TDropListClass<T>& Add(LinkClass& object);
   virtual TDropListClass<T>& Add_Tail(LinkClass& object);
   virtual TDropListClass<T>& Add_Head(LinkClass& object);
-  virtual TDropListClass<T>* Remove(void);
-  void Zap(void);
+  virtual TDropListClass<T>* Remove();
+  void Zap();
 
   virtual int Add_Item(T text);
-  virtual T Current_Item(void);
-  virtual int Current_Index(void);
+  virtual T Current_Item();
+  virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T item);
   virtual void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom);
-  virtual void Clear_Focus(void);
-  virtual int Count(void) const { return (List.Count()); };
+  virtual void Clear_Focus();
+  virtual int Count() const { return (List.Count()); };
   virtual T Get_Item(int index) const { return (List.Get_Item(index)); };
 
-  void Expand(void);
-  void Collapse(void);
+  void Expand();
+  void Collapse();
 
   virtual void Set_Position(int x, int y);
 
@@ -176,7 +176,7 @@ TDropListClass<T>::TDropListClass(int id, char* text, int max_len,
 }
 
 template <class T>
-void TDropListClass<T>::Zap(void) {
+void TDropListClass<T>::Zap() {
   Collapse();
   List.Zap();
   DropButton.Zap();
@@ -202,7 +202,7 @@ TDropListClass<T>& TDropListClass<T>::Add_Head(LinkClass& object) {
 }
 
 template <class T>
-TDropListClass<T>* TDropListClass<T>::Remove(void) {
+TDropListClass<T>* TDropListClass<T>::Remove() {
   if (IsDropped) {
     Collapse();
   }
@@ -218,12 +218,12 @@ int TDropListClass<T>::Add_Item(T item) {
 }
 
 template <class T>
-T TDropListClass<T>::Current_Item(void) {
+T TDropListClass<T>::Current_Item() {
   return (List.Current_Item());
 }
 
 template <class T>
-int TDropListClass<T>::Current_Index(void) {
+int TDropListClass<T>::Current_Index() {
   return (List.Current_Index());
 }
 
@@ -238,7 +238,7 @@ void TDropListClass<T>::Set_Selected_Index(int index) {
 }
 
 template <class T>
-void TDropListClass<T>::Clear_Focus(void) {
+void TDropListClass<T>::Clear_Focus() {
   Collapse();
 }
 
@@ -264,7 +264,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
 }
 
 template <class T>
-void TDropListClass<T>::Expand(void) {
+void TDropListClass<T>::Expand() {
   if (!IsDropped) {
     List.X = X;
     List.Y = Y + 9;
@@ -277,7 +277,7 @@ void TDropListClass<T>::Expand(void) {
 }
 
 template <class T>
-void TDropListClass<T>::Collapse(void) {
+void TDropListClass<T>::Collapse() {
   if (IsDropped) {
     List.Remove();
     IsDropped = false;

@@ -87,4 +87,4 @@ int CRCPipe::Put(const void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CRCPipe::Result(void) const { return crc_.Value(); }
+long CRCPipe::Result() const { return crc_.Value(); }

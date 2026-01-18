@@ -423,7 +423,7 @@
 ;* SYNOPSIS
 ;*     ClearXMode()
 ;*
-;*     void ClearXMode(void);
+;*     void ClearXMode();
 ;*
 ;* FUNCTION
 ;*

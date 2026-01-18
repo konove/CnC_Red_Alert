@@ -73,7 +73,7 @@
 
 HANDLE ReadDIBFile(int);
 BOOL MyRead(int, LPSTR, DWORD);
-BOOL SaveDIBFile(void);
+BOOL SaveDIBFile();
 BOOL WriteDIB(LPSTR, HANDLE);
 DWORD PASCAL MyWrite(int, VOID FAR*, DWORD);
 

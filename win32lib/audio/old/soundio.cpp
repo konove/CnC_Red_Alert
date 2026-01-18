@@ -150,7 +150,7 @@ CRITICAL_SECTION GlobalAudioCriticalSection;
 /*
 ** Function to call if we detect focus loss
 */
-extern void (*Audio_Focus_Loss_Function)(void) = NULL;
+extern void (*Audio_Focus_Loss_Function)() = NULL;
 
 /*=========================================================================*/
 /* The following PRIVATE functions are in this file:                       */
@@ -636,7 +636,7 @@ int File_Stream_Sample_Vol(char const* filename, int volume,
  *                                                                                             *
  * HISTORY: * 01/06/1994 JLB : Created. *
  *=============================================================================================*/
-void __cdecl Sound_Callback(void) {
+void __cdecl Sound_Callback() {
   int index;
   SampleTrackerType* st;
 
@@ -906,7 +906,7 @@ void Sound_Thread(void*) {
  * HISTORY: * 12/22/95 4:06PM ST : Created *
  *=============================================================================================*/
 
-BOOL Set_Primary_Buffer_Format(void) {
+BOOL Set_Primary_Buffer_Format() {
   if (SoundObject && PrimaryBufferPtr) {
     return (PrimaryBufferPtr->SetFormat(&PrimaryBuffFormat) == DS_OK);
   }
@@ -1171,7 +1171,7 @@ BOOL Audio_Init(HWND window, int bits_per_sample, BOOL stereo, int rate,
  * HISTORY: * 07/23/1991 JLB : Created. * 11/02/1995 ST  : Modified for Direct
  *Sound                                                *
  *=============================================================================================*/
-void Sound_End(void) {
+void Sound_End() {
   int index;
 
   if (SoundObject && PrimaryBufferPtr) {
@@ -1509,7 +1509,7 @@ BOOL Attempt_Audio_Restore(LPDIRECTSOUNDBUFFER sound_buffer) {
  *Multiple sample playback rates.                                          *
  *   11/02/1995 ST  : Windows Direct Sound support *
  *=============================================================================================*/
-extern BOOL Any_Locked(void);
+extern BOOL Any_Locked();
 int Play_Sample_Handle(void const* sample, int priority, int volume,
                        signed short, int id) {
   AUDHeaderType RawHeader;
@@ -1805,7 +1805,7 @@ int Play_Sample_Handle(void const* sample, int priority, int volume,
  * HISTORY: * 11/3/95 3:53PM ST : Created *
  *=============================================================================================*/
 
-void Restore_Sound_Buffers(void) {
+void Restore_Sound_Buffers() {
   if (PrimaryBufferPtr) {
     PrimaryBufferPtr->Restore();
   }
@@ -1898,7 +1898,7 @@ void Fade_Sample(int handle, int ticks) {
   }
 }
 
-int Get_Digi_Handle(void) { return (LockedData.DigiHandle); }
+int Get_Digi_Handle() { return (LockedData.DigiHandle); }
 
 /***************************************************************************
  * SAMPLE_LENGTH -- returns length of a sample in ticks                    *
@@ -1990,7 +1990,7 @@ BOOL Start_Primary_Sound_Buffer(BOOL forced) {
  * HISTORY: * 2/1/96 12:28PM ST : Created *
  *=============================================================================================*/
 
-void Stop_Primary_Sound_Buffer(void) {
+void Stop_Primary_Sound_Buffer() {
   if (PrimaryBufferPtr) {
     PrimaryBufferPtr->Stop();
     PrimaryBufferPtr->Stop();  // Oh I
@@ -2003,14 +2003,14 @@ void Stop_Primary_Sound_Buffer(void) {
   }
 }
 
-void Suspend_Audio_Thread(void) {
+void Suspend_Audio_Thread() {
   if (SoundThreadActive) {
     SuspendThread(SoundThreadHandle);
     SoundThreadActive = FALSE;
   }
 }
 
-void Resume_Audio_Thread(void) {
+void Resume_Audio_Thread() {
   if (!SoundThreadActive) {
     ResumeThread(SoundThreadHandle);
     SoundThreadActive = TRUE;

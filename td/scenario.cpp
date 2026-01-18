@@ -261,7 +261,7 @@ bool Read_Scenario(char* root) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-void Fill_In_Data(void) {
+void Fill_In_Data() {
   /*
   **	The basic scenario data load does not contain the full set of
   **	game data. We now must fill in the missing pieces.
@@ -302,7 +302,7 @@ void Fill_In_Data(void) {
  *allocations, so changes memset code.                      * 07/13/1995 JLB :
  *End count down moved here.                                               *
  *=============================================================================================*/
-void Clear_Scenario(void) {
+void Clear_Scenario() {
   EndCountDown = TICKS_PER_SECOND * 30;
   CrateCount = 0;
   CrateTimer = 0;
@@ -360,7 +360,7 @@ void Clear_Scenario(void) {
  * HISTORY: * 08/05/1992 JLB : Created. * 01/01/1995 JLB : Carries money forward
  *into next scenario.                                *
  *=============================================================================================*/
-void Do_Win(void) {
+void Do_Win() {
   Map.Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
@@ -582,7 +582,7 @@ void Do_Win(void) {
  *                                                                                             *
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
-void Do_Lose(void) {
+void Do_Lose() {
   Map.Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
@@ -677,7 +677,7 @@ void Do_Lose(void) {
  *                                                                                             *
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
-void Do_Restart(void) {
+void Do_Restart() {
   bool hidden = Get_Mouse_State();
 
   if (hidden) Show_Mouse();

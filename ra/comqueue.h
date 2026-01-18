@@ -104,37 +104,37 @@ class CommQueueClass {
   */
   CommQueueClass(int numsend, int numrecieve, int maxlen);
   virtual ~CommQueueClass();
-  void Init(void);
+  void Init();
 
   /*
   ......................... Send Queue routines .........................
   */
-  int Queue_Send(void* buf, int buflen);      // add to Send queue
-  int UnQueue_Send(void* buf, int* buflen);   // remove from Send queue
-  SendQueueType* Next_Send(void);             // ptr to next avail entry
-  int Num_Send(void) { return (SendCount); }  // # entries in queue
-  int Max_Send(void) { return (MaxSend); }    // max # send queue entries
-  SendQueueType* Get_Send(int index);         // random access to queue
-  unsigned long Send_Total(void) { return (SendTotal); }
+  int Queue_Send(void* buf, int buflen);     // add to Send queue
+  int UnQueue_Send(void* buf, int* buflen);  // remove from Send queue
+  SendQueueType* Next_Send();                // ptr to next avail entry
+  int Num_Send() { return (SendCount); }     // # entries in queue
+  int Max_Send() { return (MaxSend); }       // max # send queue entries
+  SendQueueType* Get_Send(int index);        // random access to queue
+  unsigned long Send_Total() { return (SendTotal); }
 
   /*
   ....................... Receive Queue routines ........................
   */
-  int Queue_Receive(void* buf, int buflen);         // add to Receive queue
-  int UnQueue_Receive(void* buf, int* buflen);      // remove from Receive queue
-  ReceiveQueueType* Next_Receive(void);             // ptr to next avail entry
-  int Num_Receive(void) { return (ReceiveCount); }  // # entries in queue
-  int Max_Receive(void) { return (MaxReceive); }    // max # recv queue entries
-  ReceiveQueueType* Get_Receive(int index);         // random access to queue
-  unsigned long Receive_Total(void) { return (ReceiveTotal); }
+  int Queue_Receive(void* buf, int buflen);     // add to Receive queue
+  int UnQueue_Receive(void* buf, int* buflen);  // remove from Receive queue
+  ReceiveQueueType* Next_Receive();             // ptr to next avail entry
+  int Num_Receive() { return (ReceiveCount); }  // # entries in queue
+  int Max_Receive() { return (MaxReceive); }    // max # recv queue entries
+  ReceiveQueueType* Get_Receive(int index);     // random access to queue
+  unsigned long Receive_Total() { return (ReceiveTotal); }
 
   /*
   ....................... Response time routines ........................
   */
-  void Add_Delay(unsigned long delay);    // accumulates response time
-  unsigned long Avg_Response_Time(void);  // gets mean response time
-  unsigned long Max_Response_Time(void);  // gets max response time
-  void Reset_Response_Time(void);         // resets computations
+  void Add_Delay(unsigned long delay);  // accumulates response time
+  unsigned long Avg_Response_Time();    // gets mean response time
+  unsigned long Max_Response_Time();    // gets max response time
+  void Reset_Response_Time();           // resets computations
 
   /*
   ........................ Debug output routines ........................

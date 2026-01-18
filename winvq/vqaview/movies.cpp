@@ -51,7 +51,7 @@
 //==========================================================================
 
 void VQA_Test(char* filename);
-void Create_Palette_Interpolation_Table(void);
+void Create_Palette_Interpolation_Table();
 void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicBufferClass* dest);
 
 //==========================================================================
@@ -62,7 +62,7 @@ extern "C" {
 extern unsigned char* InterpolationPalette;
 extern unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE]
                                                 [SIZE_OF_PALETTE];
-extern void __cdecl Asm_Create_Palette_Interpolation_Table(void);
+extern void __cdecl Asm_Create_Palette_Interpolation_Table();
 extern void __cdecl Asm_Interpolate(unsigned char* src_ptr,
                                     unsigned char* dest_ptr, int lines,
                                     int src_width, int dest_width);
@@ -93,7 +93,7 @@ GraphicBufferClass* Hid_Page = NULL;
  * HISTORY:                                                                *
  *   09/29/1995  MG : Created.                                             *
  *=========================================================================*/
-int Initialize_Movie_System(void) {
+int Initialize_Movie_System() {
 #if (!DRAW_TO_VIDEO)
   //
   // Set up the graphic pages:
@@ -129,7 +129,7 @@ int Initialize_Movie_System(void) {
  * HISTORY:                                                                *
  *   09/29/1995  MG : Created.                                             *
  *=========================================================================*/
-void Free_Movie_System(void) {
+void Free_Movie_System() {
 #if (!DRAW_TO_VIDEO)
   if (Draw_Page) {
     delete (Draw_Page);
@@ -397,7 +397,7 @@ long Draw_To_Buffer_Callback(unsigned char* buffer, long frame_number) {
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Create_Palette_Interpolation_Table(void) {
+void Create_Palette_Interpolation_Table() {
   //	InterpolationPalette = (unsigned char*)CurrentPalette;
   //	Asm_Create_Palette_Interpolation_Table();
   // #if 0

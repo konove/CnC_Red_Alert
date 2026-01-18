@@ -1490,7 +1490,7 @@ bool CCINIClass::Put_Buildings(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 11/01/1996 JLB : Created. *
  *=============================================================================================*/
-int CCINIClass::Get_Unique_ID(void) const {
+int CCINIClass::Get_Unique_ID() const {
   if (!IsDigestPresent) {
     ((CCINIClass*)this)->Calculate_Message_Digest();
   }
@@ -1514,7 +1514,7 @@ int CCINIClass::Get_Unique_ID(void) const {
  *                                                                                             *
  * HISTORY: * 11/01/1996 JLB : Created. *
  *=============================================================================================*/
-void CCINIClass::Calculate_Message_Digest(void) {
+void CCINIClass::Calculate_Message_Digest() {
   /*
   **	Calculate the message digest for the INI data that was read.
   */
@@ -1539,4 +1539,4 @@ void CCINIClass::Calculate_Message_Digest(void) {
  *                                                                                             *
  * HISTORY: * 11/01/1996 JLB : Created. *
  *=============================================================================================*/
-void CCINIClass::Invalidate_Message_Digest(void) { IsDigestPresent = false; }
+void CCINIClass::Invalidate_Message_Digest() { IsDigestPresent = false; }

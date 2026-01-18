@@ -212,11 +212,11 @@ class TeamClass : public AbstractClass {
         Trigger(x),
         TimeOut(x),
         Member(x) {};
-  virtual ~TeamClass(void);
+  virtual ~TeamClass();
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
-  static void Init(void);
+  static void Init();
   static void Suspend_Teams(int priority, HouseClass const* house);
   void Debug_Dump(MonoClass* mono) const;
 
@@ -225,24 +225,24 @@ class TeamClass : public AbstractClass {
   */
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
-  bool Is_Empty(void) const { return (Member == (void*)nullptr); }
-  bool Has_Entered_Map(void) const;
-  void Force_Active(void) {
+  bool Is_Empty() const { return (Member == (void*)nullptr); }
+  bool Has_Entered_Map() const;
+  void Force_Active() {
     IsForcedActive = true;
     IsUnderStrength = false;
   };
   bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
-  void AI(void);
+  void AI();
   void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
   bool Add(FootClass*);
   bool Can_Add(FootClass* obj, int& typeindex) const;
   void Assign_Mission_Target(TARGET new_target);
-  bool Is_Leaving_Map(void) const;
-  void Scan_Limit(void);
+  bool Is_Leaving_Map() const;
+  void Scan_Limit();
 
  private:
   /*
@@ -256,27 +256,27 @@ class TeamClass : public AbstractClass {
   */
   CDTimerClass<FrameTimerClass> TimeOut;
 
-  int TMission_Formation(void);
-  int TMission_Attack(void);
-  int TMission_Spy(void);
-  int TMission_Follow(void);
-  int TMission_Loop(void);
-  int TMission_Load(void);
-  int TMission_Unload(void);
-  int TMission_Invulnerable(void);
-  int TMission_Set_Global(void);
-  int TMission_Patrol(void);
-  int TMission_Deploy(void);
-  bool Coordinate_Regroup(void);
-  void Coordinate_Attack(void);
-  void Coordinate_Move(void);
+  int TMission_Formation();
+  int TMission_Attack();
+  int TMission_Spy();
+  int TMission_Follow();
+  int TMission_Loop();
+  int TMission_Load();
+  int TMission_Unload();
+  int TMission_Invulnerable();
+  int TMission_Set_Global();
+  int TMission_Patrol();
+  int TMission_Deploy();
+  bool Coordinate_Regroup();
+  void Coordinate_Attack();
+  void Coordinate_Move();
   bool Coordinate_Conscript(FootClass* unit);
-  void Coordinate_Do(void);
+  void Coordinate_Do();
   void Calc_Center(TARGET& center, TARGET& obj_center) const;
   int Recruit(int typeindex);
   bool Is_A_Member(void const* who) const;
-  bool Lagging_Units(void);
-  FootClass* Fetch_A_Leader(void) const;
+  bool Lagging_Units();
+  FootClass* Fetch_A_Leader() const;
 
   /*
   **	Points to the first member in the list of members for this team.

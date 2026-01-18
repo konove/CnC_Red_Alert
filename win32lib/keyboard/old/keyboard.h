@@ -55,24 +55,24 @@ class WWKeyboardClass {
   /* Define the functions which work with the Keyboard Class
    */
   /*===================================================================*/
-  BOOL Check(void);   // checks keybuff for meta key
-  int Get(void);      // gets a meta key from the keybuffer
+  BOOL Check();       // checks keybuff for meta key
+  int Get();          // gets a meta key from the keybuffer
   BOOL Put(int key);  // dumps a key into the keybuffer
   BOOL Put_Key_Message(
       UINT vk_key, BOOL release = FALSE,  // handles keyboard related message
       BOOL dbl = FALSE);                  //   and mouse clicks and dbl clicks
-  int Check_Num(void);                    // checks keybuff for a keynum key
-  int Get_VK(void);                       // gets keynum key from key buff
-  int Check_ACII(void);                   // checks keybuff for an ascii key
-  int Get_ASCII(void);                    // gets an ascii key from keybuff
-  int Check_Bits(void);                   // checks keybuff for key w/ bits
-  int Get_Bits(void);                     // get key from keybuff w/ bits
+  int Check_Num();                        // checks keybuff for a keynum key
+  int Get_VK();                           // gets keynum key from key buff
+  int Check_ACII();                       // checks keybuff for an ascii key
+  int Get_ASCII();                        // gets an ascii key from keybuff
+  int Check_Bits();                       // checks keybuff for key w/ bits
+  int Get_Bits();                         // get key from keybuff w/ bits
   int To_ASCII(int num);                  // converts keynum to ascii value
   int Option_On(int option);              // turns specified option on
   int Option_Off(int option);             // turns specified option off
-  void Clear(void);                       // clears all keys from keybuffer
+  void Clear();                           // clears all keys from keybuffer
   int Down(int key);                      // tests to see if a key is down
-  void AI(void);                          // messaging logic for key manager
+  void AI();                              // messaging logic for key manager
 
   /*===================================================================*/
   /* Define the main hook for the message processing loop.
@@ -100,7 +100,7 @@ class WWKeyboardClass {
   /* Define the private access functions which are used by keyboard
    */
   /*===================================================================*/
-  int Buff_Get(void);
+  int Buff_Get();
 
   /*===================================================================*/
   /* Define the private access variables which are used with the
@@ -672,10 +672,10 @@ extern WWKeyboardClass* _Kbd;
 ** The following routines provide some compatability with the old westwood
 ** library.
 */
-int Check_Key(void);
-int Check_Key_Num(void);
-int Get_Key_Num(void);
-int Get_Key(void);
+int Check_Key();
+int Check_Key_Num();
+int Get_Key_Num();
+int Get_Key();
 int KN_To_KA(int key);
-void Clear_KeyBuffer(void);
+void Clear_KeyBuffer();
 int Key_Down(int key);

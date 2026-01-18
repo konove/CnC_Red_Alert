@@ -56,7 +56,7 @@ class TriggerTypeClass;
 */
 class CCINIClass : public INIClass {
  public:
-  CCINIClass(void) : IsDigestPresent(false) {}
+  CCINIClass() : IsDigestPresent(false) {}
 
   bool Load(FileClass& file, bool withdigest);
   bool Load(Straw& file, bool withdigest);
@@ -130,11 +130,11 @@ class CCINIClass : public INIClass {
   bool Put_WeaponType(char const* section, char const* entry, WeaponType value);
   bool Put_CrateType(char const* section, char const* entry, CrateType value);
 
-  int Get_Unique_ID(void) const;
+  int Get_Unique_ID() const;
 
  private:
-  void Calculate_Message_Digest(void);
-  void Invalidate_Message_Digest(void);
+  void Calculate_Message_Digest();
+  void Invalidate_Message_Digest();
 
   bool IsDigestPresent : 1;
 

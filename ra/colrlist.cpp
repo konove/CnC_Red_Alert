@@ -94,7 +94,7 @@ ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-ColorListClass::~ColorListClass(void) {
+ColorListClass::~ColorListClass() {
   Colors.Clear();
   SelectColor = nullptr;
 }

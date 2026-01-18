@@ -122,6 +122,6 @@ int harderr_handler(unsigned, unsigned, unsigned*);
 int harderr_handler(unsigned, unsigned, unsigned __far*);
 #endif
 
-int Get_CD_Drive(void);
+int Get_CD_Drive();
 
 #endif

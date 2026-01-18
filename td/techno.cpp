@@ -270,7 +270,7 @@ TechnoTypeClass::TechnoTypeClass(
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoTypeClass::Raw_Cost(void) const { return (Cost); }
+int TechnoTypeClass::Raw_Cost() const { return (Cost); }
 
 /***********************************************************************************************
  * TechnoTypeClass::Get_Ownable -- Fetches the ownable bits for this object
@@ -288,7 +288,7 @@ int TechnoTypeClass::Raw_Cost(void) const { return (Cost); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned short TechnoTypeClass::Get_Ownable(void) const { return (Ownable); }
+unsigned short TechnoTypeClass::Get_Ownable() const { return (Ownable); }
 
 /***********************************************************************************************
  * TechnoTypeClass::Time_To_Build -- Fetches the time to build this object. *
@@ -341,7 +341,7 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoTypeClass::Cost_Of(void) const { return (Cost); }
+int TechnoTypeClass::Cost_Of() const { return (Cost); }
 
 /***********************************************************************************************
  * TechnoTypeClass::Get_Cameo_Data -- Fetches the cameo image for this object
@@ -360,7 +360,7 @@ int TechnoTypeClass::Cost_Of(void) const { return (Cost); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void const* TechnoTypeClass::Get_Cameo_Data(void) const { return (CameoData); }
+void const* TechnoTypeClass::Get_Cameo_Data() const { return (CameoData); }
 
 /***********************************************************************************************
  * TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step. *
@@ -378,7 +378,7 @@ void const* TechnoTypeClass::Get_Cameo_Data(void) const { return (CameoData); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoTypeClass::Repair_Cost(void) const { return (0); }
+int TechnoTypeClass::Repair_Cost() const { return (0); }
 
 /***********************************************************************************************
  * TechnoTypeClass::Repair_Step -- Fetches the health to repair one step. *
@@ -395,7 +395,7 @@ int TechnoTypeClass::Repair_Cost(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoTypeClass::Repair_Step(void) const { return (0); }
+int TechnoTypeClass::Repair_Step() const { return (0); }
 
 #ifdef CHEAT_KEYS
 /***********************************************************************************************
@@ -454,7 +454,7 @@ void TechnoClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass::TechnoClass(void) : TarCom(TARGET_NONE), House(nullptr) {
+TechnoClass::TechnoClass() : TarCom(TARGET_NONE), House(nullptr) {
   Arm = 0;
   Ammo = -1;
   PurchasePrice = 0;
@@ -556,7 +556,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Hidden(void) {
+void TechnoClass::Hidden() {
   if (!IsDiscoveredByPlayer) return;
   if (!House->IsHuman) {
     IsDiscoveredByPlayer = false;
@@ -1535,7 +1535,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-HousesType TechnoClass::Owner(void) const { return (House->Class->House); }
+HousesType TechnoClass::Owner() const { return (House->Class->House); }
 
 /***********************************************************************************************
  * TechnoClass::Clicked_As_Target -- Sets the flash count for this techno
@@ -1570,7 +1570,7 @@ void TechnoClass::Clicked_As_Target(int count) { FlashCount = count; }
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::AI(void) {
+void TechnoClass::AI() {
   CargoClass::AI();
   RadioClass::AI();
   DoorClass::AI();
@@ -1718,7 +1718,7 @@ void TechnoClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Select(void) {
+bool TechnoClass::Select() {
   if (!IsDiscoveredByPlayer && !IsOwnedByPlayer && !Debug_Unshroud) {
     return (false);
   }
@@ -1837,7 +1837,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Stun(void) {
+void TechnoClass::Stun() {
   Assign_Target(TARGET_NONE);
   Assign_Destination(TARGET_NONE);
   Transmit_Message(RADIO_OVER_OUT);
@@ -2303,7 +2303,7 @@ ActionType TechnoClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Can_Player_Move(void) const { return (PlayerPtr == House); }
+bool TechnoClass::Can_Player_Move() const { return (PlayerPtr == House); }
 
 /***********************************************************************************************
  * TechnoClass::Can_Player_Fire -- Determines if the player can give this object
@@ -2321,7 +2321,7 @@ bool TechnoClass::Can_Player_Move(void) const { return (PlayerPtr == House); }
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Can_Player_Fire(void) const {
+bool TechnoClass::Can_Player_Fire() const {
   if (House->IsHuman && Is_Techno() &&
       Techno_Type_Class()->Primary != WEAPON_NONE) {
     return (true);
@@ -2345,7 +2345,7 @@ bool TechnoClass::Can_Player_Fire(void) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Is_Weapon_Equipped(void) const {
+bool TechnoClass::Is_Weapon_Equipped() const {
   return (Techno_Type_Class()->Primary != WEAPON_NONE);
 }
 
@@ -2368,7 +2368,7 @@ bool TechnoClass::Is_Weapon_Equipped(void) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Can_Repair(void) const {
+bool TechnoClass::Can_Repair() const {
   /*
   **	Temporary hack to disable repair cursor over non-buildings.
   */
@@ -2453,7 +2453,7 @@ void TechnoClass::Override_Mission(MissionType mission, TARGET tarcom,
  * HISTORY:                                                                *
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool TechnoClass::Restore_Mission(void) {
+bool TechnoClass::Restore_Mission() {
   if (RadioClass::Restore_Mission()) {
     Assign_Target(SuspendedTarCom);
     return (true);
@@ -2596,7 +2596,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoTypeClass::Max_Passengers(void) const {
+int TechnoTypeClass::Max_Passengers() const {
   if (IsTransporter) {
     return (5);
   }
@@ -2812,7 +2812,7 @@ CELL TechnoClass::Nearby_Location(TechnoClass const*) const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Do_Uncloak(void) {
+void TechnoClass::Do_Uncloak() {
   if (IsCloakable && (Cloak == CLOAKED || Cloak == CLOAKING)) {
     Sound_Effect(VOC_CLOAK, Coord);
     Cloak = UNCLOAKING;
@@ -2834,7 +2834,7 @@ void TechnoClass::Do_Uncloak(void) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Do_Cloak(void) {
+void TechnoClass::Do_Cloak() {
   if (IsCloakable && (Cloak == UNCLOAKED || Cloak == UNCLOAKING)) {
     Sound_Effect(VOC_CLOAK, Coord);
     Detach_All(false);
@@ -2859,7 +2859,7 @@ void TechnoClass::Do_Cloak(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Do_Shimmer(void) {
+void TechnoClass::Do_Shimmer() {
   if (IsCloakable && Cloak == CLOAKED) {
     Cloak = CLOAKING;
     CloakingDevice.Set_Stage(MAX_UNCLOAK_STAGE / 2);
@@ -2986,7 +2986,7 @@ void TechnoClass::Techno_Draw_Object(void const* shapefile, int shapenum, int x,
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const* TechnoClass::Remap_Table(void) {
+void const* TechnoClass::Remap_Table() {
   return (House->Remap_Table(IsBlushing, true));
 }
 
@@ -3075,7 +3075,7 @@ void TechnoClass::Kill_Cargo(TechnoClass* source) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryType TechnoClass::Crew_Type(void) const {
+InfantryType TechnoClass::Crew_Type() const {
   InfantryType infantry = INFANTRY_E1;
   if (House->ActLike == HOUSE_NEUTRAL) {
     infantry = Random_Pick(INFANTRY_C1, INFANTRY_C9);
@@ -3106,7 +3106,7 @@ InfantryType TechnoClass::Crew_Type(void) const {
  * HISTORY: * 07/29/1995 JLB : Created. * 08/16/1995 JLB : Adjusted for early
  *mission lame-out.                                     *
  *=============================================================================================*/
-int TechnoClass::Value(void) const {
+int TechnoClass::Value() const {
   int value = 0;
 
   /*
@@ -3401,7 +3401,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const* enemy) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char TechnoClass::Get_Ownable(void) const {
+unsigned char TechnoClass::Get_Ownable() const {
   return ((TechnoTypeClass const&)Class_Of()).Ownable;
 }
 
@@ -3420,7 +3420,7 @@ unsigned char TechnoClass::Get_Ownable(void) const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Is_Techno(void) const { return (true); }
+bool TechnoClass::Is_Techno() const { return (true); }
 
 /***********************************************************************************************
  * TechnoClass::Risk -- Fetches the risk associated with this object. *
@@ -3436,7 +3436,7 @@ bool TechnoClass::Is_Techno(void) const { return (true); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Risk(void) const { return (Techno_Type_Class()->Risk); }
+int TechnoClass::Risk() const { return (Techno_Type_Class()->Risk); }
 
 /***********************************************************************************************
  * TechnoClass::Tiberium_Load -- Fetches the current tiberium load percentage. *
@@ -3456,7 +3456,7 @@ int TechnoClass::Risk(void) const { return (Techno_Type_Class()->Risk); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Tiberium_Load(void) const { return (0x0000); }
+int TechnoClass::Tiberium_Load() const { return (0x0000); }
 
 /***********************************************************************************************
  * TechnoClass::Desired_Load_Dir -- Fetches loading parameters for this object.
@@ -3503,7 +3503,7 @@ DirType TechnoClass::Desired_Load_Dir(ObjectClass*, CELL& moveto) const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Pip_Count(void) const { return (0); }
+int TechnoClass::Pip_Count() const { return (0); }
 
 /***********************************************************************************************
  * TechnoClass::Fire_Direction -- Fetches the direction projectile fire will
@@ -3522,7 +3522,7 @@ int TechnoClass::Pip_Count(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Fire_Direction(void) const {
+DirType TechnoClass::Fire_Direction() const {
   return (PrimaryFacing.Current());
 }
 
@@ -3541,7 +3541,7 @@ DirType TechnoClass::Fire_Direction(void) const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Response_Select(void) {}
+void TechnoClass::Response_Select() {}
 
 /***********************************************************************************************
  * TechnoClass::Response_Move -- Handles the voice repsonse to a movement
@@ -3559,7 +3559,7 @@ void TechnoClass::Response_Select(void) {}
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Response_Move(void) {}
+void TechnoClass::Response_Move() {}
 
 /***********************************************************************************************
  * TechnoClass::Response_Attack -- Handles the voice response when given attack
@@ -3577,7 +3577,7 @@ void TechnoClass::Response_Move(void) {}
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Response_Attack(void) {}
+void TechnoClass::Response_Attack() {}
 
 /***********************************************************************************************
  * TechnoClass::Target_Something_Nearby -- Handles finding and assigning a
@@ -3657,7 +3657,7 @@ int TechnoClass::Exit_Object(TechnoClass*) { return (0); }
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Random_Animate(void) {}
+void TechnoClass::Random_Animate() {}
 
 /***********************************************************************************************
  * TechnoClass::Assign_Destination -- Assigns movement destination to the
@@ -3889,7 +3889,7 @@ CELL TechnoClass::Find_Exit_Cell(TechnoClass const*) const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::Refund_Amount(void) const {
+int TechnoClass::Refund_Amount() const {
   int cost = Techno_Type_Class()->Raw_Cost();
 
   /*

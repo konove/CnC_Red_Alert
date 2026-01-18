@@ -87,7 +87,7 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int SmudgeClass::Validate(void) const {
+int SmudgeClass::Validate() const {
   int num;
 
   num = Smudges.ID(this);
@@ -190,7 +190,7 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Init(void) {
+void SmudgeClass::Init() {
   SmudgeClass* ptr;
 
   Smudges.Free_All();

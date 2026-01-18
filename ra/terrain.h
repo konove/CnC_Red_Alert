@@ -76,37 +76,37 @@ class TerrainClass : public ObjectClass, public StageClass {
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const& x)
       : ObjectClass(x), Class(x), StageClass(x) {};
-  virtual ~TerrainClass(void);
-  operator TerrainType(void) const { return Class->Type; };
+  virtual ~TerrainClass();
+  operator TerrainType() const { return Class->Type; };
 
-  static void Init(void);
+  static void Init();
 
   /*
   **	Terrain specific support functions.
   */
-  void Start_To_Crumble(void);
+  void Start_To_Crumble();
 
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Center_Coord(void) const;
-  virtual COORDINATE Render_Coord(void) const { return Coord; };
-  virtual COORDINATE Sort_Y(void) const {
+  virtual COORDINATE Center_Coord() const;
+  virtual COORDINATE Render_Coord() const { return Coord; };
+  virtual COORDINATE Sort_Y() const {
     return Coord_Add(Coord, Class->CenterBase);
   };
-  virtual COORDINATE Target_Coord(void) const;
+  virtual COORDINATE Target_Coord() const;
 
   /*
   **	Object entry and exit from the game system.
   */
   virtual bool Unlimbo(COORDINATE coord, DirType dir = DIR_N);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
 
@@ -126,15 +126,15 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Combat related.
   */
-  virtual void Fire_Out(void);
-  virtual bool Catch_Fire(void);
+  virtual void Fire_Out();
+  virtual bool Catch_Fire();
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source, bool forced = false);
 
   /*
   **	AI.
   */
-  virtual void AI(void);
+  virtual void AI();
 
 /*
 **	Scenario and debug support.
@@ -148,7 +148,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "TERRAIN"; };
+  static char const* INI_Name() { return "TERRAIN"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

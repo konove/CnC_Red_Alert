@@ -277,7 +277,7 @@ void VQA_INIConfig(VQAConfig* config);
 void VQA_DefaultConfig(VQAConfig* config);
 
 /* Handle manipulation routines. */
-VQAHandle* VQA_Alloc(void);
+VQAHandle* VQA_Alloc();
 void VQA_Free(VQAHandle* vqa);
 void VQA_InitAsDOS(VQAHandle* vqa);
 void VQA_Init(VQAHandle* vqa, long (*iohandler)(VQAHandle* vqa, long action,
@@ -292,7 +292,7 @@ long VQA_SeekFrame(VQAHandle* vqa, long frame, long fromwhere);
 /* Information/statistics access routines. */
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
 void VQA_GetStats(VQAHandle* vqa, VQAStatistics* stats);
-char* VQA_Version(void);
-char* VQA_IDString(void);
+char* VQA_Version();
+char* VQA_IDString();
 
 #endif /* VQAPLAY_H */

@@ -96,7 +96,7 @@ GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* gbuffer, int x,
  * HISTORY:                                                                *
  *   05/09/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass::GraphicViewPortClass(void) {}
+GraphicViewPortClass::GraphicViewPortClass() {}
 
 /***************************************************************************
  * GVPC::~GRAPHICVIEWPORTCLASS -- Destructor for GraphicViewPortClass *
@@ -108,7 +108,7 @@ GraphicViewPortClass::GraphicViewPortClass(void) {}
  * HISTORY:                                                                *
  *   05/10/1994 PWG : Created.                                             *
  *=========================================================================*/
-GraphicViewPortClass::~GraphicViewPortClass(void) {
+GraphicViewPortClass::~GraphicViewPortClass() {
   Offset = nullptr;
   Width = 0;   // Record width of Buffer
   Height = 0;  // Record height of Buffer
@@ -356,7 +356,7 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
  * HISTORY: * 6/6/96 12:44PM ST : Created *
  *=============================================================================================*/
 
-void GraphicBufferClass::Un_Init(void) {
+void GraphicBufferClass::Un_Init() {
   if (IsDirectDraw) {
     if (VideoSurfacePtr) {
       while (LockCount) {
@@ -385,7 +385,7 @@ void GraphicBufferClass::Un_Init(void) {
  * HISTORY:                                                                *
  *   10/09/1995     : Created.                                             *
  *=========================================================================*/
-GraphicBufferClass::GraphicBufferClass(void) {
+GraphicBufferClass::GraphicBufferClass() {
   GraphicBuff = this;  // Get a pointer to our self
   VideoSurfacePtr = NULL;
   memset(&VideoSurfaceDescription, 0, sizeof(DDSURFACEDESC));
@@ -518,7 +518,7 @@ extern BOOL GameInFocus;
 extern void Block_Mouse(GraphicBufferClass* buffer);
 extern void Unblock_Mouse(GraphicBufferClass* buffer);
 
-BOOL GraphicBufferClass::Lock(void) {
+BOOL GraphicBufferClass::Lock() {
   HRESULT result;
   int restore_attempts = 0;
 
@@ -601,7 +601,7 @@ BOOL GraphicBufferClass::Lock(void) {
  *   10/09/1995     : Code stolen from Steve Tall                          *
  *=========================================================================*/
 
-BOOL GraphicBufferClass::Unlock(void) {
+BOOL GraphicBufferClass::Unlock() {
   //
   // If there is no lock count or this is not a direct draw surface
   // then just return true as there is no harm done.

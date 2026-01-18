@@ -90,12 +90,12 @@
 
 #if (VQAAUDIO_ON)
 long AutoDetect(_SOS_CAPABILITIES* digicaps, long bitsize, long channels);
-void far TimerCallback(void);
+void far TimerCallback();
 void far cdecl AudioCallback(WORD wDriverHandle, WORD wAction, WORD wSampleID);
 
 /* Dummy functions used to mark the start/end address of the file. */
-static void StartAddr(void);
-static void EndAddr(void);
+static void StartAddr();
+static void EndAddr();
 
 /*---------------------------------------------------------------------------
  * GLOBAL DATA
@@ -118,7 +118,7 @@ char* HMIDevName = "<none>";
  * It is necessary for locking the memory the module occupies. This prevents
  * the virtual memory manager from swapping out this memory.
  */
-static void StartAddr(void) {}
+static void StartAddr() {}
 
 /****************************************************************************
  *
@@ -204,7 +204,7 @@ long VQA_StartTimerInt(VQAHandleP* vqap, long init) {
  * SYNOPSIS
  *     VQA_StopTimerInt()
  *
- *     void VQA_StopTimerInt(void);
+ *     void VQA_StopTimerInt();
  *
  * FUNCTION
  *     Remove our timer event from the HMI timer system. Uninitialize the
@@ -272,7 +272,7 @@ void VQA_StopTimerInt(VQAHandleP* vqap) {
  * SYNOPSIS
  *     TimerCallback()
  *
- *     void TimerCallback(void);
+ *     void TimerCallback();
  *
  * FUNCTION
  *     Our custom timer event. This is the timer event that we register with
@@ -286,7 +286,7 @@ void VQA_StopTimerInt(VQAHandleP* vqap) {
  *
  ****************************************************************************/
 
-void far TimerCallback(void) { VQATickCount++; }
+void far TimerCallback() { VQATickCount++; }
 
 /****************************************************************************
  *
@@ -515,7 +515,7 @@ long VQA_OpenAudio(VQAHandleP* vqap) {
  * SYNOPSIS
  *     VQA_CloseAudio()
  *
- *     void VQA_CloseAudio(void);
+ *     void VQA_CloseAudio();
  *
  * FUNCTION
  *     Removes VQA's involvement in the audio system.
@@ -990,7 +990,7 @@ void far cdecl AudioCallback(WORD wDriverHandle, WORD wAction, WORD wSampleID) {
 }
 
 /* Dummy function used to mark the beginning address of the file. */
-static void EndAddr(void) {}
+static void EndAddr() {}
 #endif /* VQAAUDIO_ON */
 
 /****************************************************************************
@@ -1079,7 +1079,7 @@ void VQA_SetTimer(VQAHandleP* vqap, long time, long method) {
  * SYNOPSIS
  *     Time = VQA_GetTime()
  *
- *     unsigned long VQA_GetTime(void);
+ *     unsigned long VQA_GetTime();
  *
  * FUNCTION
  *     This routine returns timer ticks computed one of 3 ways:
@@ -1233,7 +1233,7 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
  * SYNOPSIS
  *     Method = VQA_TimerMethod()
  *
- *     long VQA_TimerMethod(void);
+ *     long VQA_TimerMethod();
  *
  * FUNCTION
  *     Returns the ID of the current timer method being used.
@@ -1246,7 +1246,7 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
  *
  ****************************************************************************/
 
-long VQA_TimerMethod(void) {
+long VQA_TimerMethod() {
 #if (VQAAUDIO_ON)
   return (TimerMethod);
 #else

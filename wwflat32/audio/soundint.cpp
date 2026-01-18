@@ -282,7 +282,7 @@ long Sample_Copy(SampleTrackerType* st, void** source, long* ssize,
   return (datasize);
 }
 
-VOID far cdecl maintenance_callback(VOID) {
+VOID far cdecl maintenance_callback() {
   save_my_regs();
   int index;
   SampleTrackerType* st;
@@ -494,7 +494,7 @@ VOID cdecl far DigiCallback(unsigned int driverhandle, unsigned int callsource,
   }
 }
 
-void far HMI_TimerCallback(void) {}
+void far HMI_TimerCallback() {}
 
 /***************************************************************************
  * ADD_LONG_TO_POINTER -- Adds an offset to a ptr casted void              *

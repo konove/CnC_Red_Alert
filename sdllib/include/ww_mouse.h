@@ -46,14 +46,14 @@ class WWMouseClass {
                int mouse_max_height);
   ~WWMouseClass();
   void* Set_Cursor(int xhotspot, int yhotspot, void* cursor);
-  void Process_Mouse(void);
-  void Hide_Mouse(void);
-  void Show_Mouse(void);
+  void Process_Mouse();
+  void Hide_Mouse();
+  void Show_Mouse();
   void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
-  void Conditional_Show_Mouse(void);
-  int Get_Mouse_State(void);
-  int Get_Mouse_X(void);
-  int Get_Mouse_Y(void);
+  void Conditional_Show_Mouse();
+  int Get_Mouse_State();
+  int Get_Mouse_X();
+  int Get_Mouse_Y();
   void Get_Mouse_XY(int& x, int& y);
   //
   // The following two routines can be used to render the mouse onto a
@@ -64,8 +64,8 @@ class WWMouseClass {
 
   void Block_Mouse(GraphicBufferClass* buffer);
   void Unblock_Mouse(GraphicBufferClass* buffer);
-  void Set_Cursor_Clip(void);
-  void Clear_Cursor_Clip(void);
+  void Set_Cursor_Clip();
+  void Clear_Cursor_Clip();
 
   void Update_Palette();
   void Update_Pos(int x, int y);
@@ -106,14 +106,14 @@ class WWMouseClass {
   bool PaletteDirty = false;
 };
 
-void Hide_Mouse(void);
-void Show_Mouse(void);
+void Hide_Mouse();
+void Show_Mouse();
 void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
-void Conditional_Show_Mouse(void);
-int Get_Mouse_State(void);
+void Conditional_Show_Mouse();
+int Get_Mouse_State();
 void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor);
-int Get_Mouse_X(void);
-int Get_Mouse_Y(void);
+int Get_Mouse_X();
+int Get_Mouse_Y();
 
 void Update_Mouse_Palette();
 void Update_Mouse_Pos(int x, int y);

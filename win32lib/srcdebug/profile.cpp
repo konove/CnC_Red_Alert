@@ -74,7 +74,7 @@ extern "C" void Profiler_Callback(UINT, UINT, DWORD, DWORD, DWORD);
 
 unsigned ProfilerEvent;
 
-void Start_Profiler(void) {
+void Start_Profiler() {
   memset(&ProfileList[0], -1, PROFILE_RATE * 60 * MAX_PROFILE_TIME * 4);
   Copy_CHK();
   ProfilerEvent = timeSetEvent(
@@ -83,7 +83,7 @@ void Start_Profiler(void) {
       TIME_PERIODIC);
 }
 
-void Stop_Profiler(void) {
+void Stop_Profiler() {
   if (ProfilerEvent) {
     timeKillEvent(ProfilerEvent);
     ProfilerEvent = NULL;

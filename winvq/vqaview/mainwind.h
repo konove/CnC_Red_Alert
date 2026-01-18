@@ -44,13 +44,13 @@ class MainWindowClass {
   // Public functions
   //==========================================================================
 
-  MainWindowClass(void);
+  MainWindowClass();
   void Create_Main_Window(InstanceHandle instance_handle);
-  WindowHandle Get_Window_Handle(void);
-  void Display_Window(void);
-  BOOL Update_Windows_Messages(void);
-  int Get_Message_Queue_wParam(void);
-  InstanceHandle Get_Instance_Handle(void);
+  WindowHandle Get_Window_Handle();
+  void Display_Window();
+  BOOL Update_Windows_Messages();
+  int Get_Message_Queue_wParam();
+  InstanceHandle Get_Instance_Handle();
 
  private:
   //==========================================================================

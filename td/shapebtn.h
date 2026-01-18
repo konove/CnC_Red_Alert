@@ -45,7 +45,7 @@
 
 class ShapeButtonClass : public ToggleClass {
  public:
-  ShapeButtonClass(void);
+  ShapeButtonClass();
   ShapeButtonClass(unsigned id, void const* shapes, int x, int y);
   virtual int Draw_Me(int forced = false);
   virtual void Set_Shape(void const* data);

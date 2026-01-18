@@ -179,45 +179,45 @@ class CellClass {
   } Flag;
 
   //----------------------------------------------------------------
-  CellClass(void);
-  ~CellClass(void) {};
+  CellClass();
+  ~CellClass() {};
 
   // Resets the cell to its default initial state.
-  void Reset(void);
+  void Reset();
 
   int operator==(CellClass const& cell) const { return &cell == this; };
 
   /*
   **	Query functions.
   */
-  ObjectClass* Cell_Occupier(void) const;
+  ObjectClass* Cell_Occupier() const;
   static int Spot_Index(COORDINATE coord);
   bool Is_Spot_Free(int spot_index) const {
     return (!(Flag.Composite & (1 << spot_index)));
   }
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
-  COORDINATE Free_Spot(void) const { return Closest_Free_Spot(Cell_Coord()); };
-  bool Is_Generally_Clear(void) const;
-  TARGET As_Target(void) const { return ::As_Target(Cell_Number()); };
-  BuildingClass* Cell_Building(void) const;
+  COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); };
+  bool Is_Generally_Clear() const;
+  TARGET As_Target() const { return ::As_Target(Cell_Number()); };
+  BuildingClass* Cell_Building() const;
   CellClass const& Adjacent_Cell(FacingType face) const;
   CellClass& Adjacent_Cell(FacingType face) {
     return (CellClass&)((*((CellClass const*)this)).Adjacent_Cell(face));
   };
-  COORDINATE Cell_Coord(void) const;
+  COORDINATE Cell_Coord() const;
   int Cell_Color(bool override = false) const;
-  CELL Cell_Number(void) const;
-  LandType Land_Type(void) const { return Land; };
+  CELL Cell_Number() const;
+  LandType Land_Type() const { return Land; };
   ObjectClass* Cell_Find_Object(RTTIType rtti) const;
   ObjectClass* Cell_Object(int x = 0, int y = 0) const;
   TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
-  TerrainClass* Cell_Terrain(void) const;
-  UnitClass* Cell_Unit(void) const;
-  InfantryClass* Cell_Infantry(void) const;
-  TriggerClass* Get_Trigger(void) const;
-  int Clear_Icon(void) const;
+  TerrainClass* Cell_Terrain() const;
+  UnitClass* Cell_Unit() const;
+  InfantryClass* Cell_Infantry() const;
+  TriggerClass* Get_Trigger() const;
+  int Clear_Icon() const;
   bool Goodie_Check(FootClass* object);
-  ObjectClass* Fetch_Occupier(void) const;
+  ObjectClass* Fetch_Occupier() const;
 
   /*
   **	Object placement and removal flag operations.
@@ -227,31 +227,31 @@ class CellClass {
   void Overlap_Down(ObjectClass* object);
   void Overlap_Up(ObjectClass* object);
   bool Flag_Place(HousesType house);
-  bool Flag_Remove(void);
+  bool Flag_Remove();
 
   /*
   **	File I/O.
   */
-  bool Should_Save(void) const;
+  bool Should_Save() const;
   bool Save(FileClass& file);
   bool Load(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	Display and rendering controls.
   */
   void Draw_It(int x, int y, int draw_flags = 0) const;
   void Redraw_Objects(bool forced = false);
-  void Shimmer(void);
+  void Shimmer();
 
   /*
   **	Maintenance calculation support.
   */
   long Tiberium_Adjust(bool pregame = false);
-  void Wall_Update(void);
-  void Concrete_Calc(void);
-  void Recalc_Attributes(void);
+  void Wall_Update();
+  void Concrete_Calc();
+  void Recalc_Attributes();
   int Reduce_Tiberium(int levels);
   int Reduce_Wall(int damage);
   void Incoming(COORDINATE threat = 0, bool forced = false);
@@ -259,7 +259,7 @@ class CellClass {
 
   int operator!=(CellClass const&) const { return 0; };
 
-  int Validate(void) const;
+  int Validate() const;
 
  private:
   CellClass(CellClass const&) {};

@@ -437,7 +437,7 @@ CellClass* BlubCell;
  * HISTORY: * 05/31/1994 JLB : Created. * 12/01/1994 BR : Added CellTriggers
  *initialization                                         *
  *=============================================================================================*/
-void MapClass::One_Time(void) {
+void MapClass::One_Time() {
   GScreenClass::One_Time();
 
   XSize = MAP_CELL_W;
@@ -461,7 +461,7 @@ void MapClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Init_Clear(void) {
+void MapClass::Init_Clear() {
   GScreenClass::Init_Clear();
   Init_Cells();
   TiberiumScan = 0;
@@ -488,7 +488,7 @@ void MapClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Alloc_Cells(void) {
+void MapClass::Alloc_Cells() {
   /*
   **	Assume that whatever the contents of the VectorClass are is garbage
   **	(it may have been loaded from a save-game file), so zero it out first.
@@ -512,7 +512,7 @@ void MapClass::Alloc_Cells(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Free_Cells(void) { Array.Clear(); }
+void MapClass::Free_Cells() { Array.Clear(); }
 
 /***********************************************************************************************
  * MapClass::Init_Cells -- Initializes the cell array to a fresh state. *
@@ -530,7 +530,7 @@ void MapClass::Free_Cells(void) { Array.Clear(); }
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Init_Cells(void) {
+void MapClass::Init_Cells() {
   TotalValue = 0;
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
     new (&Array[index]) CellClass;
@@ -1155,7 +1155,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
  *tiberium worth.                                            * 02/15/1995 JLB :
  *Optimal scan.                                                            *
  *=============================================================================================*/
-long MapClass::Overpass(void) {
+long MapClass::Overpass() {
   long value = 0;
 
   /*
@@ -1277,7 +1277,7 @@ bool MapClass::Read_Binary(Straw& straw) {
  *directional scan.                                            * 08/01/1995 JLB
  *: Gives stronger weight to blossom trees.                                  *
  *=============================================================================================*/
-void MapClass::Logic(void) {
+void MapClass::Logic() {
   /*
   **	Crate regeneration is handled here.
   */
@@ -1444,7 +1444,7 @@ int MapClass::Cell_Threat(CELL cell, HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool MapClass::Place_Random_Crate(void) {
+bool MapClass::Place_Random_Crate() {
   /*
   **	Find a crate index that is free for assignment. If there are
   **	no free slots, then return with failure to place crate.
@@ -1529,7 +1529,7 @@ bool MapClass::Remove_Crate(CELL cell) {
  * HISTORY:                                                                *
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MapClass::Validate(void) {
+int MapClass::Validate() {
   CELL cell;
   TemplateType ttype;
   unsigned char ticon;
@@ -2324,7 +2324,7 @@ void MapClass::Detach(TARGET target, bool) {
  *                                                                                             *
  * HISTORY: * 07/28/1996 JLB : Created. *
  *=============================================================================================*/
-int MapClass::Intact_Bridge_Count(void) const {
+int MapClass::Intact_Bridge_Count() const {
   /*
   **	Count all non-destroyed bridges on the map.
   */
@@ -2367,7 +2367,7 @@ int MapClass::Intact_Bridge_Count(void) const {
  *                                                                                             *
  * HISTORY: * 09/25/1996 JLB : Created. *
  *=============================================================================================*/
-CELL MapClass::Pick_Random_Location(void) const {
+CELL MapClass::Pick_Random_Location() const {
   int x = Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1);
   int y = Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1);
 
@@ -2386,7 +2386,7 @@ CELL MapClass::Pick_Random_Location(void) const {
  *                                                                                             *
  * HISTORY: * 10/19/1996 BWG : Created. *
  *=============================================================================================*/
-void MapClass::Shroud_The_Map(void) {
+void MapClass::Shroud_The_Map() {
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     CellClass* cellptr = &Map[cell];
     if (cellptr->IsMapped || cellptr->IsVisible) {

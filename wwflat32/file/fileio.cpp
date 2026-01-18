@@ -52,7 +52,7 @@
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
-WORD ibm_getdisk(VOID) {
+WORD ibm_getdisk() {
   unsigned disk;
 
   CallingDOSInt++;

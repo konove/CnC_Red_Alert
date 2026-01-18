@@ -54,25 +54,25 @@
 
 class MapClass : public GScreenClass {
  public:
-  MapClass(void) {};
+  MapClass() {};
   MapClass(NoInitClass const& x) : GScreenClass(x), Array(x) {};
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);     // Theater-specific inits
-  virtual void Init_Clear(void);   // Clears all to known state
-  virtual void Alloc_Cells(void);  // Allocates buffers
-  virtual void Free_Cells(void);   // Frees buffers
-  virtual void Init_Cells(void);   // Frees buffers
+  virtual void One_Time();     // Theater-specific inits
+  virtual void Init_Clear();   // Clears all to known state
+  virtual void Alloc_Cells();  // Allocates buffers
+  virtual void Free_Cells();   // Frees buffers
+  virtual void Init_Cells();   // Frees buffers
 
   /*--------------------------------------------------------
   ** Main functions that deal with groupings of cells within the map or deals
   *with the cell
   ** as it relates to the map - not what the cell contains.
   */
-  CELL Pick_Random_Location(void) const;
-  int Intact_Bridge_Count(void) const;
+  CELL Pick_Random_Location() const;
+  int Intact_Bridge_Count() const;
   bool Base_Region(CELL cell, HousesType& house, ZoneType& zone) const;
   CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
                        MZoneType check = MZONE_NORMAL) const;
@@ -92,30 +92,30 @@ class MapClass : public GScreenClass {
   void Overlap_Up(CELL cell, ObjectClass* object);
   bool Read_Binary(Straw& straw);
   int Write_Binary(Pipe& pipe);
-  bool Place_Random_Crate(void);
+  bool Place_Random_Crate();
   bool Remove_Crate(CELL cell);
   bool Zone_Reset(int method);
   bool Zone_Cell(CELL cell, int zone);
   int Zone_Span(CELL cell, int zone, MZoneType check);
   bool Destroy_Bridge_At(CELL cell);
   void Detach(TARGET target, bool all = true);
-  void Shroud_The_Map(void);
+  void Shroud_The_Map();
 
-  long Overpass(void);
+  long Overpass();
 
-  virtual void Logic(void);
+  virtual void Logic();
   virtual void Set_Map_Dimensions(int x, int y, int w, int h);
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   ** Debug routine
   */
-  int Validate(void);
+  int Validate();
 
   /*
   **	This is the dimensions and position of the sub section of the global

@@ -274,7 +274,7 @@ HousesType HouseTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 05/21/1994 JLB : Converted to member function. *
  *=============================================================================================*/
-void HouseTypeClass::One_Time(void) {
+void HouseTypeClass::One_Time() {
   /*
   ** Change the radar color for special units; otherwise, they'll be the same
   ** color as the player!

@@ -58,9 +58,9 @@ class TCountDownTimerClass {
   TCountDownTimerClass(NoInitClass const& x) {}
 
   // No destructor.
-  ~TCountDownTimerClass(void) {}
+  ~TCountDownTimerClass() {}
 
-  operator long(void) const { return Time(); };
+  operator long() const { return Time(); };
 
   // Public functions
   void Set(long set) {
@@ -68,15 +68,15 @@ class TCountDownTimerClass {
     DelayTime = set;
   };  // Set count down value.
 
-  void Clear(void) {
+  void Clear() {
     Started = -1;
     DelayTime = 0;
   };
-  long Get_Start(void) const { return (Started); };
-  long Get_Delay(void) const { return (DelayTime); };
-  bool Active(void) const { return (Started != -1); };
-  int Expired(void) const { return (Time() == 0); };
-  long Time(void) const {
+  long Get_Start() const { return (Started); };
+  long Get_Delay() const { return (DelayTime); };
+  bool Active() const { return (Started != -1); };
+  int Expired() const { return (Time() == 0); };
+  long Time() const {
     long remain = DelayTime - (Frame - Started);
     if (remain < 0) remain = 0;
     return (remain);

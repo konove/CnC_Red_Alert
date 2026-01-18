@@ -154,7 +154,7 @@ void BulletTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void BulletTypeClass::Init_Heap(void) {
+void BulletTypeClass::Init_Heap() {
   /*
   **	These bullet type class objects must be allocated in the exact order
   *that they *	are specified in the BulletType enumeration. This is necessary
@@ -196,7 +196,7 @@ void BulletTypeClass::Init_Heap(void) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletTypeClass::One_Time(void) {
+void BulletTypeClass::One_Time() {
   /*
   **	Load the bullet shapes.
   */

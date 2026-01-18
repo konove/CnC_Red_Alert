@@ -54,22 +54,22 @@
 class BufferIOFileClass : public RawFileClass {
  public:
   BufferIOFileClass(char const* filename);
-  BufferIOFileClass(void);
-  virtual ~BufferIOFileClass(void);
+  BufferIOFileClass();
+  virtual ~BufferIOFileClass();
 
   bool Cache(long size = 0, void* ptr = nullptr);
-  void Free(void);
-  bool Commit(void);
+  void Free();
+  bool Commit();
   virtual char const* Set_Name(char const* filename);
   virtual int Is_Available(int forced = false);
-  virtual int Is_Open(void) const;
+  virtual int Is_Open() const;
   virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);
   virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size(void);
+  virtual long Size();
   virtual long Write(void const* buffer, long size);
-  virtual void Close(void);
+  virtual void Close();
 
   enum { MINIMUM_BUFFER_SIZE = 1024 };
 

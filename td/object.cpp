@@ -129,7 +129,7 @@ void const* ObjectTypeClass::SelectShapes = nullptr;
 
 void const* ObjectTypeClass::PipShapes = nullptr;
 
-bool ObjectClass::Is_Infantry(void) const { return (false); }
+bool ObjectClass::Is_Infantry() const { return (false); }
 
 /***********************************************************************************************
  * ObjectTypeClass::ObjectTypeClass -- Normal constructor for object type class
@@ -186,7 +186,7 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Max_Pips(void) const { return (0); }
+int ObjectTypeClass::Max_Pips() const { return (0); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Dimensions -- Gets the dimensions of the object in pixels. *
@@ -228,7 +228,7 @@ void ObjectTypeClass::Dimensions(int& width, int& height) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectTypeClass::Cost_Of(void) const { return (0); }
+int ObjectTypeClass::Cost_Of() const { return (0); }
 
 /***********************************************************************************************
  * ObjectTypeClass::Time_To_Build -- Fetches the time to construct this object.
@@ -285,7 +285,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool, bool, HousesType) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-void const* ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
+void const* ObjectTypeClass::Get_Cameo_Data() const { return (nullptr); }
 
 /***********************************************************************************************
  * ObjectClass::ObjectClass -- Default constructor for objects. *
@@ -304,7 +304,7 @@ void const* ObjectTypeClass::Get_Cameo_Data(void) const { return (nullptr); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass::ObjectClass(void) {
+ObjectClass::ObjectClass() {
   Coord = 0xFFFFFFFFL;  // Some bogus illegal value.
   Next = nullptr;       // Not part of any object list.
   Trigger = nullptr;    // No associated trigger.
@@ -332,7 +332,7 @@ ObjectClass::ObjectClass(void) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-RTTIType ObjectClass::What_Am_I(void) const { return (RTTI_OBJECT); }
+RTTIType ObjectClass::What_Am_I() const { return (RTTI_OBJECT); }
 
 /***********************************************************************************************
  * ObjectClass::What_Action -- Determines what action to perform on specified
@@ -395,7 +395,7 @@ ActionType ObjectClass::What_Action(CELL) const { return (ACTION_NONE); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-LayerType ObjectClass::In_Which_Layer(void) const { return (LAYER_GROUND); }
+LayerType ObjectClass::In_Which_Layer() const { return (LAYER_GROUND); }
 
 /***********************************************************************************************
  * ObjectClass::Is_Techno -- Checks to see if this object is a techno type. *
@@ -414,7 +414,7 @@ LayerType ObjectClass::In_Which_Layer(void) const { return (LAYER_GROUND); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Is_Techno(void) const { return (false); }
+bool ObjectClass::Is_Techno() const { return (false); }
 
 /***********************************************************************************************
  * ObjectClass::Get_Ownable -- Fetches the house owner legality options for this
@@ -433,7 +433,7 @@ bool ObjectClass::Is_Techno(void) const { return (false); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-unsigned char ObjectClass::Get_Ownable(void) const { return (0xff); }
+unsigned char ObjectClass::Get_Ownable() const { return (0xff); }
 
 /***********************************************************************************************
  * ObjectClass::Can_Repair -- Queries whether this object can be repaired. *
@@ -450,7 +450,7 @@ unsigned char ObjectClass::Get_Ownable(void) const { return (0xff); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Repair(void) const { return (false); }
+bool ObjectClass::Can_Repair() const { return (false); }
 
 /***********************************************************************************************
  * ObjectClass::Can_Demolish -- Queries whether this object can be sold back. *
@@ -467,7 +467,7 @@ bool ObjectClass::Can_Repair(void) const { return (false); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Demolish(void) const { return (false); }
+bool ObjectClass::Can_Demolish() const { return (false); }
 
 /***********************************************************************************************
  * ObjectClass::Can_Player_Fire -- Can the player give this object an attack
@@ -485,7 +485,7 @@ bool ObjectClass::Can_Demolish(void) const { return (false); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Player_Fire(void) const { return (false); }
+bool ObjectClass::Can_Player_Fire() const { return (false); }
 
 /***********************************************************************************************
  * ObjectClass::Can_Player_Move -- Can the player give this object a movement
@@ -503,7 +503,7 @@ bool ObjectClass::Can_Player_Fire(void) const { return (false); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Can_Player_Move(void) const { return (false); }
+bool ObjectClass::Can_Player_Move() const { return (false); }
 
 /***********************************************************************************************
  * ObjectClass::Target_Coord -- Fetches the coordinate if this object is a
@@ -522,26 +522,26 @@ bool ObjectClass::Can_Player_Move(void) const { return (false); }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Target_Coord(void) const { return (Center_Coord()); }
+COORDINATE ObjectClass::Target_Coord() const { return (Center_Coord()); }
 
-COORDINATE ObjectClass::Center_Coord(void) const { return Coord; };
-COORDINATE ObjectClass::Render_Coord(void) const { return (Center_Coord()); }
-COORDINATE ObjectClass::Docking_Coord(void) const { return (Center_Coord()); }
-COORDINATE ObjectClass::Sort_Y(void) const { return Coord; };
+COORDINATE ObjectClass::Center_Coord() const { return Coord; };
+COORDINATE ObjectClass::Render_Coord() const { return (Center_Coord()); }
+COORDINATE ObjectClass::Docking_Coord() const { return (Center_Coord()); }
+COORDINATE ObjectClass::Sort_Y() const { return Coord; };
 COORDINATE ObjectClass::Fire_Coord(int) const { return Coord; };
 void ObjectClass::Record_The_Kill(TechnoClass*) {};
-void ObjectClass::Do_Shimmer(void) {};
+void ObjectClass::Do_Shimmer() {};
 int ObjectClass::Exit_Object(TechnoClass*) { return 0; };
-void ObjectClass::Hidden(void) {};
+void ObjectClass::Hidden() {};
 void ObjectClass::Look(bool) {};
 void ObjectClass::Active_Click_With(ActionType, ObjectClass*) {};
 void ObjectClass::Active_Click_With(ActionType, CELL){};
 void ObjectClass::Clicked_As_Target(int) {};
 bool ObjectClass::In_Range(COORDINATE, int) const { return false; };
 int ObjectClass::Weapon_Range(int) const { return 0x0000; };
-TARGET ObjectClass::As_Target(void) const { return TARGET_NONE; };
+TARGET ObjectClass::As_Target() const { return TARGET_NONE; };
 void ObjectClass::Scatter(COORDINATE, bool) {};
-bool ObjectClass::Catch_Fire(void) { return false; };
+bool ObjectClass::Catch_Fire() { return false; };
 
 /***********************************************************************************************
  * ObjectClass::Fire_Out -- Informs object that attached animation has finished.
@@ -559,7 +559,7 @@ bool ObjectClass::Catch_Fire(void) { return false; };
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Fire_Out(void) {}
+void ObjectClass::Fire_Out() {}
 
 /***********************************************************************************************
  * ObjectClass::Value -- Fetches the target value of this object. *
@@ -580,7 +580,7 @@ void ObjectClass::Fire_Out(void) {}
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-int ObjectClass::Value(void) const { return (0); }
+int ObjectClass::Value() const { return (0); }
 
 /***********************************************************************************************
  * ObjectClass::Get_Mission -- Fetches the current mission of this object. *
@@ -598,7 +598,7 @@ int ObjectClass::Value(void) const { return (0); }
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-MissionType ObjectClass::Get_Mission(void) const { return (MISSION_NONE); }
+MissionType ObjectClass::Get_Mission() const { return (MISSION_NONE); }
 
 /***********************************************************************************************
  * ObjectClass::Repair -- Handles object repair control. *
@@ -680,7 +680,7 @@ void ObjectClass::Move(FacingType facing) {
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Unselect(void) {
+void ObjectClass::Unselect() {
   if (IsSelected) {
     CurrentObject.Delete(this);
 
@@ -713,7 +713,7 @@ void ObjectClass::Unselect(void) {
  *loaner object.                                           * 07/23/1995 JLB :
  *Adds to head or tail depending on leader type flag.                      *
  *=============================================================================================*/
-bool ObjectClass::Select(void) {
+bool ObjectClass::Select() {
   if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) return (false);
 
   if (Can_Player_Move() && Is_Techno() && ((TechnoClass*)this)->IsALoaner)
@@ -900,7 +900,7 @@ short const* ObjectTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-short const* ObjectTypeClass::Overlap_List(void) const {
+short const* ObjectTypeClass::Overlap_List() const {
   static short const _list[] = {REFRESH_EOL};
   return (_list);
 }
@@ -920,7 +920,7 @@ short const* ObjectTypeClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 11/01/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectTypeClass::One_Time(void) {
+void ObjectTypeClass::One_Time() {
   SelectShapes = MixFileClass::Retrieve("SELECT.SHP");
 #if (FRENCH)
   PipShapes = Hires_Retrieve("PIPS_F.SHP");
@@ -953,7 +953,7 @@ void ObjectTypeClass::One_Time(void) {
  * HISTORY: * 05/08/1994 JLB : Created. * 12/23/1994 JLB : Flags map and flags
  *unit only.                                           *
  *=============================================================================================*/
-void ObjectClass::Mark_For_Redraw(void) {
+void ObjectClass::Mark_For_Redraw() {
   if (!IsToDisplay) {
     IsToDisplay = true;
 
@@ -982,7 +982,7 @@ void ObjectClass::Mark_For_Redraw(void) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Limbo(void) {
+bool ObjectClass::Limbo() {
   if (GameActive && !IsInLimbo) {
     Unselect();
     Detach_All();
@@ -1392,7 +1392,7 @@ bool ObjectClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Init(void) { CurrentObject.Clear(); }
+void ObjectClass::Init() { CurrentObject.Clear(); }
 
 /***********************************************************************************************
  * ObjectClass::Revealed -- Reveals this object to the house specified. *
@@ -1416,13 +1416,13 @@ bool ObjectClass::Revealed(HouseClass* house) { return (house != nullptr); }
 short const* ObjectClass::Occupy_List(bool placement) const {
   return (Class_Of().Occupy_List(placement));
 };
-short const* ObjectClass::Overlap_List(void) const {
+short const* ObjectClass::Overlap_List() const {
   return (Class_Of().Overlap_List());
 };
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return (Class_Of().Who_Can_Build_Me(intheory, legal, Owner()));
 };
-unsigned ObjectClass::Health_Ratio(void) const {
+unsigned ObjectClass::Health_Ratio() const {
   return (Cardinal_To_Fixed(Class_Of().MaxStrength, Strength));
 };
-int ObjectClass::Full_Name(void) const { return Class_Of().Full_Name(); };
+int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };

@@ -41,13 +41,13 @@
 
 #define IP_ADDRESS_MAX 40
 
-void Register_Game_Start_Time(void);
-void Register_Game_End_Time(void);
-void Send_Statistics_Packet(void);
+void Register_Game_Start_Time();
+void Register_Game_End_Time();
+void Send_Statistics_Packet();
 void Check_From_WChat(char* wchat_name);
-bool Do_The_Internet_Menu_Thang(void);
-bool Server_Remote_Connect(void);
-bool Client_Remote_Connect(void);
+bool Do_The_Internet_Menu_Thang();
+bool Server_Remote_Connect();
+bool Client_Remote_Connect();
 int Read_Game_Options(char* name);
 
 extern char PlanetWestwoodIPAddress[IP_ADDRESS_MAX];

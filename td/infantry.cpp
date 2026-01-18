@@ -210,7 +210,7 @@ DoStruct const InfantryClass::MasterDoControls[DO_COUNT] = {
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int InfantryClass::Validate(void) const {
+int InfantryClass::Validate() const {
   int num;
 
   num = Infantry.ID(this);
@@ -296,7 +296,7 @@ void InfantryClass::Debug_Dump(MonoClass* mono) const {
 }
 #endif
 
-InfantryClass::InfantryClass(void)
+InfantryClass::InfantryClass()
     : Class(nullptr) {};  // Default constructor does nothing.
 
 /***********************************************************************************************
@@ -365,7 +365,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryClass::~InfantryClass(void) {
+InfantryClass::~InfantryClass() {
   if (GameActive && Class) {
     Limbo();
   }
@@ -864,7 +864,7 @@ void InfantryClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET InfantryClass::As_Target(void) const {
+TARGET InfantryClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_INFANTRY, Infantry.ID(this)));
 }
@@ -884,7 +884,7 @@ TARGET InfantryClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Init(void) {
+void InfantryClass::Init() {
   InfantryClass* ptr;
 
   Infantry.Free_All();
@@ -1055,7 +1055,7 @@ void InfantryClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::AI(void) {
+void InfantryClass::AI() {
   Validate();
   FootClass::AI();
 
@@ -1789,7 +1789,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-short const* InfantryClass::Overlap_List(void) const {
+short const* InfantryClass::Overlap_List() const {
   Validate();
   // return(Coord_Spillage_List(Coord, 24 + ((IsSelected || Doing >
   // DO_WALK)?12:0)));
@@ -1924,7 +1924,7 @@ void InfantryClass::Enter_Idle_Mode(bool) {
  *change.                                               * 07/02/1995 JLB :
  *Nikoomba special effects.                                                *
  *=============================================================================================*/
-void InfantryClass::Random_Animate(void) {
+void InfantryClass::Random_Animate() {
   Validate();
   if (!IsDriving && !IsProne &&
       (Doing == DO_STAND_GUARD || Doing == DO_STAND_READY) && !IsFiring) {
@@ -2190,7 +2190,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Stop_Driver(void) {
+bool InfantryClass::Stop_Driver() {
   Validate();
   if (Head_To_Coord()) {
     /*
@@ -2305,7 +2305,7 @@ void InfantryClass::Set_Primary_Facing(DirType facing, bool) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Limbo(void) {
+bool InfantryClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
     Stop_Driver();
@@ -2523,7 +2523,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const {
  * HISTORY: * 01/01/1995 JLB : Created. * 05/05/1995 JLB : Rambo response types
  *added.                                              *
  *=============================================================================================*/
-void InfantryClass::Response_Select(void) {
+void InfantryClass::Response_Select() {
   Validate();
   VocType response;
   if (*this == INFANTRY_RAMBO) {
@@ -2572,7 +2572,7 @@ void InfantryClass::Response_Select(void) {
  * HISTORY: * 01/01/1995 JLB : Created. * 05/05/1995 JLB : Rambo response types
  *added.                                              *
  *=============================================================================================*/
-void InfantryClass::Response_Move(void) {
+void InfantryClass::Response_Move() {
   Validate();
   VocType response;
   if (*this == INFANTRY_RAMBO) {
@@ -2622,7 +2622,7 @@ void InfantryClass::Response_Move(void) {
  * HISTORY: * 01/01/1995 JLB : Created. * 05/05/1995 JLB : Rambo response types
  *added.                                              *
  *=============================================================================================*/
-void InfantryClass::Response_Attack(void) {
+void InfantryClass::Response_Attack() {
   Validate();
   VocType response;
   if (*this == INFANTRY_RAMBO) {
@@ -3090,7 +3090,7 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-int InfantryClass::Made_A_Kill(void) {
+int InfantryClass::Made_A_Kill() {
   Validate();
   if (*this == INFANTRY_RAMBO || Random_Pick(0, 5) < Kills) {
     IsStoked = true;
@@ -3168,7 +3168,7 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
  *                                                                                             *
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
-int InfantryClass::Full_Name(void) const {
+int InfantryClass::Full_Name() const {
   Validate();
   if (IsTechnician) {
     return (TXT_TECHNICIAN);
@@ -3194,7 +3194,7 @@ int InfantryClass::Full_Name(void) const {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-int InfantryClass::Mission_Attack(void) {
+int InfantryClass::Mission_Attack() {
   Validate();
   if (*this == INFANTRY_E7 && As_Building(TarCom)) {
     Assign_Destination(TarCom);
@@ -3204,7 +3204,7 @@ int InfantryClass::Mission_Attack(void) {
   return (FootClass::Mission_Attack());
 }
 
-RTTIType InfantryClass::What_Am_I(void) const {
+RTTIType InfantryClass::What_Am_I() const {
   Validate();
   return (RTTI_INFANTRY);
 }
@@ -3214,12 +3214,12 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   return FootClass::What_Action(cell);
 }
 
-ObjectTypeClass const& InfantryClass::Class_Of(void) const {
+ObjectTypeClass const& InfantryClass::Class_Of() const {
   Validate();
   return (*Class);
 }
 
-bool InfantryClass::Is_Infantry(void) const {
+bool InfantryClass::Is_Infantry() const {
   Validate();
   return (true);
 }

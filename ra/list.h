@@ -61,25 +61,25 @@ class ListClass : public ControlClass {
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             void const* up, void const* down);
   ListClass(ListClass const& list);
-  virtual ~ListClass(void);
+  virtual ~ListClass();
 
   virtual int Add_Item(char const* text);
   virtual int Add_Item(int text);
-  virtual int Add_Scroll_Bar(void);
+  virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
-  virtual int Count(void) const { return List.Count(); };
-  virtual int Current_Index(void) const;
-  virtual char const* Current_Item(void) const;
+  virtual int Count() const { return List.Count(); };
+  virtual int Current_Index() const;
+  virtual char const* Current_Item() const;
   virtual int Draw_Me(int forced);
   virtual char const* Get_Item(size_t index) const;
   virtual int Step_Selected_Index(int forward);
-  virtual void Flag_To_Redraw(void);
+  virtual void Flag_To_Redraw();
 
   virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
                             ControlClass& whom);
   virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int);
-  virtual int Remove_Scroll_Bar(void);
+  virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(char const* text);
   virtual void Set_Tabs(int const* tabs);
@@ -94,7 +94,7 @@ class ListClass : public ControlClass {
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual GadgetClass* Remove(void);
+  virtual GadgetClass* Remove();
 
  protected:
   virtual int Action(unsigned flags, KeyNumType& key);
@@ -158,27 +158,27 @@ class TListClass : public ControlClass {
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              void const* up, void const* down);
   TListClass(TListClass<T> const& list);
-  virtual ~TListClass(void);
+  virtual ~TListClass();
   T operator[](int index) const { return (List[index]); };
   T& operator[](int index) { return (List[index]); };
 
   virtual int Add_Item(T text);
-  virtual int Add_Scroll_Bar(void);
+  virtual int Add_Scroll_Bar();
   virtual void Insert_Item(T item);
   virtual void Bump(int up);
-  virtual int Count(void) const { return List.Count(); };
-  virtual int Current_Index(void) const;
-  virtual T Current_Item(void) const;
+  virtual int Count() const { return List.Count(); };
+  virtual int Current_Index() const;
+  virtual T Current_Item() const;
   virtual int Draw_Me(int forced);
   virtual int Step_Selected_Index(int forward);
-  virtual void Flag_To_Redraw(void);
+  virtual void Flag_To_Redraw();
   virtual T Get_Item(int index) const { return (List[index]); };
 
   virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
                             ControlClass& whom);
   virtual void Remove_Item(T);
   virtual void Remove_Index(int);
-  virtual int Remove_Scroll_Bar(void);
+  virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T item);
   virtual void Set_Tabs(int const* tabs);
@@ -193,7 +193,7 @@ class TListClass : public ControlClass {
   virtual LinkClass& Add(LinkClass& object);
   virtual LinkClass& Add_Tail(LinkClass& object);
   virtual LinkClass& Add_Head(LinkClass& object);
-  virtual GadgetClass* Remove(void);
+  virtual GadgetClass* Remove();
 
  protected:
   virtual int Action(unsigned flags, KeyNumType& key);
@@ -312,7 +312,7 @@ void TListClass<T>::Set_Position(int x, int y) {
 }
 
 template <class T>
-TListClass<T>::~TListClass(void) {
+TListClass<T>::~TListClass() {
   Remove_Scroll_Bar();
 }
 
@@ -518,7 +518,7 @@ T TListClass<T>::Get_Item(int index) const {
 #endif
 
 template <class T>
-T TListClass<T>::Current_Item(void) const {
+T TListClass<T>::Current_Item() const {
   static T _temp;
   if (List.Count() <= SelectedIndex) {
     return (_temp);
@@ -527,7 +527,7 @@ T TListClass<T>::Current_Item(void) const {
 }
 
 template <class T>
-int TListClass<T>::Current_Index(void) const {
+int TListClass<T>::Current_Index() const {
   return (SelectedIndex);
 }
 
@@ -567,7 +567,7 @@ int TListClass<T>::Set_View_Index(int index) {
 }
 
 template <class T>
-int TListClass<T>::Add_Scroll_Bar(void) {
+int TListClass<T>::Add_Scroll_Bar() {
   if (!IsScrollActive) {
     IsScrollActive = true;
 
@@ -620,7 +620,7 @@ int TListClass<T>::Add_Scroll_Bar(void) {
 }
 
 template <class T>
-int TListClass<T>::Remove_Scroll_Bar(void) {
+int TListClass<T>::Remove_Scroll_Bar() {
   if (IsScrollActive) {
     IsScrollActive = false;
     Width += ScrollGadget.Width;
@@ -719,7 +719,7 @@ LinkClass& TListClass<T>::Add_Tail(LinkClass& list) {
 }
 
 template <class T>
-GadgetClass* TListClass<T>::Remove(void) {
+GadgetClass* TListClass<T>::Remove() {
   /*
   **	Remove the scroll bar if it's active
   */
@@ -758,7 +758,7 @@ int TListClass<T>::Step_Selected_Index(int step) {
 }
 
 template <class T>
-void TListClass<T>::Flag_To_Redraw(void) {
+void TListClass<T>::Flag_To_Redraw() {
   if (IsScrollActive) {
     UpGadget.Flag_To_Redraw();
     DownGadget.Flag_To_Redraw();

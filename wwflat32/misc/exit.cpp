@@ -73,7 +73,7 @@ VOID cdecl Exit(INT errorval, const BYTE* message, ...) {
   ::exit(errorval);
 }
 
-void randomize(void) { srand(time(nullptr)); }
+void randomize() { srand(time(nullptr)); }
 
 #if (0)
 ULONG random(ULONG mod) { return rand() * mod / RAND_MAX; }

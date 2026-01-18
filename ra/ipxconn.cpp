@@ -177,7 +177,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXConnClass::Init(void) {
+void IPXConnClass::Init() {
   /*------------------------------------------------------------------------
   Invoke the parent's Init routine
   ------------------------------------------------------------------------*/
@@ -271,7 +271,7 @@ void IPXConnClass::Configure(unsigned short socket, int conn_num,
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Start_Listening(void) {
+int IPXConnClass::Start_Listening() {
 #ifdef WIN32
 
 #ifdef WINSOCK_IPX
@@ -391,7 +391,7 @@ int IPXConnClass::Start_Listening(void) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Stop_Listening(void) {
+int IPXConnClass::Stop_Listening() {
 #ifdef WINSOCK_IPX
   if (PacketTransport) PacketTransport->Stop_Listening();
   Listening = 0;

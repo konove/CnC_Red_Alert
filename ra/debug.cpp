@@ -476,7 +476,7 @@ static void Benchmarks(MonoClass* mono) {
  *monochrome system.                                           *
  *=============================================================================================*/
 #define UPDATE_INTERVAL TIMER_SECOND
-void Self_Regulate(void) {
+void Self_Regulate() {
   static ObjectClass* _lastobject = 0;
   static bool _first = true;
 

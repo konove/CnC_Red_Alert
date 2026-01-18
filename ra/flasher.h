@@ -58,17 +58,17 @@ class FlasherClass {
   */
   unsigned IsBlushing : 1;
 
-  FlasherClass(void) {
+  FlasherClass() {
     FlashCount = 0;
     IsBlushing = false;
   };
   FlasherClass(NoInitClass const&) {};
-  ~FlasherClass(void) {};
+  ~FlasherClass() {};
 
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif
-  bool Process(void);
+  bool Process();
 };
 
 #endif

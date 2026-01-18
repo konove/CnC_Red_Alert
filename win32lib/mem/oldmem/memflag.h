@@ -89,7 +89,7 @@ inline void* Add_Long_To_Pointer(void const* ptr, long size) {
   return ((void*)((char const*)ptr + size));
 }
 
-extern void (*Memory_Error)(void);
+extern void (*Memory_Error)();
 
 extern unsigned long MinRam;  // Record of least memory at worst case.
 extern unsigned long MaxRam;  // Record of total allocated at worst case.

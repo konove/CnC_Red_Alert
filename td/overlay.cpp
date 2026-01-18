@@ -72,7 +72,7 @@ void* OverlayClass::VTable;
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
-OverlayClass::OverlayClass(void) : Class(nullptr) { ToOwn = HOUSE_NONE; };
+OverlayClass::OverlayClass() : Class(nullptr) { ToOwn = HOUSE_NONE; };
 
 /***********************************************************************************************
  * OverlayClass::Validate -- validates overlay
@@ -90,7 +90,7 @@ OverlayClass::OverlayClass(void) : Class(nullptr) { ToOwn = HOUSE_NONE; };
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int OverlayClass::Validate(void) const {
+int OverlayClass::Validate() const {
   int num;
 
   num = Overlays.ID(this);
@@ -118,7 +118,7 @@ int OverlayClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Init(void) {
+void OverlayClass::Init() {
   OverlayClass* ptr;
 
   Overlays.Free_All();

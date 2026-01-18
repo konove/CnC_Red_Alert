@@ -96,7 +96,7 @@ CCFileClass::CCFileClass(char const* filename) : Position(0) {
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-CCFileClass::CCFileClass(void) : Position(0) {}
+CCFileClass::CCFileClass() : Position(0) {}
 
 /***********************************************************************************************
  * CCFileClass::Error -- Handles displaying a file error message. *
@@ -285,7 +285,7 @@ long CCFileClass::Seek(long pos, int dir) {
  * HISTORY: * 08/08/1994 JLB : Created. * 08/05/1996 JLB : Handles returning
  *size of embedded file.                                 *
  *=============================================================================================*/
-long CCFileClass::Size(void) {
+long CCFileClass::Size() {
   /*
   **	If the file is resident, the the size is already known. Just return the
   *size in this *	case.
@@ -355,7 +355,7 @@ int CCFileClass::Is_Available(int) {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-int CCFileClass::Is_Open(void) const {
+int CCFileClass::Is_Open() const {
   /*
   **	If the file is part of a cached file, then return that it is opened. A
   *closed file *	doesn't have a valid pointer.
@@ -381,7 +381,7 @@ int CCFileClass::Is_Open(void) const {
  *                                                                                             *
  * HISTORY: * 08/08/1994 JLB : Created. *
  *=============================================================================================*/
-void CCFileClass::Close(void) {
+void CCFileClass::Close() {
   new (&Data)::Buffer;
   Position = 0;  // Starts at beginning offset.
   CDFileClass::Close();
@@ -475,7 +475,7 @@ int CCFileClass::Open(int rights) {
  *                                                                                             *
  * HISTORY: * 11/14/1995 DRD : Created. *
  *=============================================================================================*/
-unsigned long CCFileClass::Get_Date_Time(void) {
+unsigned long CCFileClass::Get_Date_Time() {
   unsigned long datetime = CDFileClass::Get_Date_Time();
 
   if (!datetime) {
@@ -610,9 +610,9 @@ bool __cdecl Multi_Drive_Search(bool on) {
   return (on);
 }
 
-void __cdecl WWDOS_Init(void) {}
+void __cdecl WWDOS_Init() {}
 
-void __cdecl WWDOS_Shutdown(void) {}
+void __cdecl WWDOS_Shutdown() {}
 
 int __cdecl Find_Disk_Number(char const*) { return (0); }
 #endif
@@ -633,4 +633,4 @@ char CallingDOSInt;
 }
 #endif
 
-void Unfragment_File_Cache(void) {}
+void Unfragment_File_Cache() {}

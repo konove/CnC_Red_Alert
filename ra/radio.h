@@ -79,14 +79,14 @@ class RadioClass : public MissionClass {
   */
   RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {};
   RadioClass(NoInitClass const& x) : MissionClass(x) {};
-  virtual ~RadioClass(void) { Radio = nullptr; };
+  virtual ~RadioClass() { Radio = nullptr; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool In_Radio_Contact(void) const { return (Radio != nullptr); };
-  void Radio_Off(void) { Radio = nullptr; };
-  TechnoClass* Contact_With_Whom(void) const { return (TechnoClass*)Radio; };
+  bool In_Radio_Contact() const { return (Radio != nullptr); };
+  void Radio_Off() { Radio = nullptr; };
+  TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; };
 
   // Inherited from base class(es).
   virtual RadioMessageType Receive_Message(RadioClass* from,
@@ -100,13 +100,13 @@ class RadioClass : public MissionClass {
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
-  virtual bool Limbo(void);
+  virtual bool Limbo();
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 };
 
 #endif

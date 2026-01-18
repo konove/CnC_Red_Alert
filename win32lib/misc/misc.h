@@ -55,22 +55,22 @@ extern LPDIRECTDRAWSURFACE PaletteSurface;
 /*=========================================================================*/
 void Process_DD_Result(HRESULT result, int display_ok_msg);
 BOOL Set_Video_Mode(HWND hwnd, int w, int h, int bits_per_pixel);
-void Reset_Video_Mode(void);
-unsigned Get_Free_Video_Memory(void);
-void Wait_Blit(void);
-unsigned Get_Video_Hardware_Capabilities(void);
+void Reset_Video_Mode();
+unsigned Get_Free_Video_Memory();
+void Wait_Blit();
+unsigned Get_Video_Hardware_Capabilities();
 
-extern "C" void Wait_Vert_Blank(void);
+extern "C" void Wait_Vert_Blank();
 extern "C" void Set_DD_Palette(void* palette);
 
 /*
 ** Pointer to function to call if we detect a focus loss
 */
-extern void (*Misc_Focus_Loss_Function)(void);
+extern void (*Misc_Focus_Loss_Function)();
 /*
 ** Pointer to function to call if we detect a surface restore
 */
-extern void (*Misc_Focus_Restore_Function)(void);
+extern void (*Misc_Focus_Restore_Function)();
 
 /*
  *  Flags returned by Get_Video_Hardware_Capabilities
@@ -109,9 +109,9 @@ class SurfaceMonitorClass {
   void Add_DD_Surface(LPDIRECTDRAWSURFACE);
   void Remove_DD_Surface(LPDIRECTDRAWSURFACE);
   BOOL Got_Surface_Already(LPDIRECTDRAWSURFACE);
-  void Restore_Surfaces(void);
+  void Restore_Surfaces();
   void Set_Surface_Focus(BOOL in_focus);
-  void Release(void);
+  void Release();
 
   BOOL SurfacesRestored;
 
@@ -140,7 +140,7 @@ extern BOOL OverlappedVideoBlits;  // Can video driver blit overlapped regions?
 /* Prog_End Must be supplied by the user program in startup.cpp
  */
 /*=========================================================================*/
-VOID __cdecl Prog_End(VOID);
+VOID __cdecl Prog_End();
 VOID __cdecl Exit(INT errorval, const BYTE* message, ...);
 
 /*=========================================================================*/
@@ -148,7 +148,7 @@ VOID __cdecl Exit(INT errorval, const BYTE* message, ...);
  */
 /*=========================================================================*/
 void Delay(int duration);
-void Vsync(void);
+void Vsync();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: FINDARGV.CPP
@@ -173,7 +173,7 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
  */
 /*=========================================================================*/
 
-BYTE __cdecl Version(VOID);
+BYTE __cdecl Version();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: IRANDOM.CPP
@@ -192,7 +192,7 @@ extern "C" {
  */
 /*=========================================================================*/
 
-unsigned char __cdecl Random(void);
+unsigned char __cdecl Random();
 int __cdecl Get_Random_Mask(int maxval);
 
 /*=========================================================================*/
@@ -252,8 +252,8 @@ long __cdecl Calculate_CRC(void* buffer, long length);
  */
 /*=========================================================================*/
 
-extern WORD __cdecl Processor(void);
-extern WORD __cdecl Operating_System(void);
+extern WORD __cdecl Processor();
+extern WORD __cdecl Operating_System();
 extern unsigned long random(unsigned long mod);
 // extern void  randomize ( void ) ;
 

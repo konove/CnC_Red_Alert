@@ -67,17 +67,17 @@
 
 class IconCacheClass {
  public:
-  IconCacheClass(void);   // class constructor
-  ~IconCacheClass(void);  // class destructor
+  IconCacheClass();   // class constructor
+  ~IconCacheClass();  // class destructor
 
-  void Restore(void);             // restore the surface
+  void Restore();                 // restore the surface
   BOOL Cache_It(void* icon_ptr);  // Cache the icon to video memory
   void Uncache_It(
       void);  // Restore the video memory and flag the icon as uncached
   void Draw_It(LPDIRECTDRAWSURFACE dest_surface, int x_pixel, int y_pixel,
                int window_left, int window_top, int window_width,
                int window_height);
-  inline BOOL Get_Is_Cached(void);  // Return the IsCached member
+  inline BOOL Get_Is_Cached();  // Return the IsCached member
 
   int TimesDrawn;   // counter of times cached icon has been drawn
   int TimesFailed;  // counter of times cached icon has failed to draw
@@ -103,20 +103,20 @@ typedef struct tIconSetType {
 
 extern IconCacheClass CachedIcons[MAX_CACHED_ICONS];
 
-extern void Invalidate_Cached_Icons(void);
-extern void Restore_Cached_Icons(void);
+extern void Invalidate_Cached_Icons();
+extern void Restore_Cached_Icons();
 extern void Register_Icon_Set(void* icon_data, BOOL pre_cache);
 
 //
 // Prototypes for assembly language procedures in STMPCACH.ASM
 //
-extern "C" void Clear_Icon_Pointers(void);
+extern "C" void Clear_Icon_Pointers();
 extern "C" void Cache_Copy_Icon(void const* icon_ptr, void*, int);
 extern "C" int Is_Icon_Cached(void const* icon_data, int icon);
 extern "C" int Get_Icon_Index(void* icon_ptr);
-extern "C" int Get_Free_Index(void);
+extern "C" int Get_Free_Index();
 extern "C" BOOL Cache_New_Icon(int icon_index, void* icon_ptr);
-extern "C" int Get_Free_Cache_Slot(void);
+extern "C" int Get_Free_Cache_Slot();
 
 extern int CachedIconsDrawn;
 extern int UnCachedIconsDrawn;
@@ -134,6 +134,6 @@ extern int UnCachedIconsDrawn;
  *                                                                                             *
  * HISTORY: * 11/13/95 9:42AM ST : Created *
  *=============================================================================================*/
-inline BOOL IconCacheClass::Get_Is_Cached(void) { return (IsCached); }
+inline BOOL IconCacheClass::Get_Is_Cached() { return (IsCached); }
 
 #endif  // ICONCACH_H

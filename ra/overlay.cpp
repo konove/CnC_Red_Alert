@@ -80,7 +80,7 @@ HousesType OverlayClass::ToOwn = HOUSE_NONE;
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Init(void) { Overlays.Free_All(); }
+void OverlayClass::Init() { Overlays.Free_All(); }
 
 /***********************************************************************************************
  * OverlayClass::new -- Allocates a overlay object from pool *

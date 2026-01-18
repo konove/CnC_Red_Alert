@@ -106,7 +106,7 @@ ProgressBarClass::ProgressBarClass(int x, int y, int width, int height,
  *                                                                                             *
  * HISTORY: * 08/16/1996 JLB : Created. *
  *=============================================================================================*/
-bool ProgressBarClass::Is_Horizontal(void) const {
+bool ProgressBarClass::Is_Horizontal() const {
   if (Width > Height) return (true);
   return (false);
 }
@@ -151,7 +151,7 @@ bool ProgressBarClass::Update(fixed value) {
  *                                                                                             *
  * HISTORY: * 08/16/1996 JLB : Created. *
  *=============================================================================================*/
-void ProgressBarClass::Outline(void) const {
+void ProgressBarClass::Outline() const {
   if (Is_Outlined()) {
     LogicPage->Draw_Line(X, Y, X + Width, Y, BorderColor);
     LogicPage->Draw_Line(X, Y, X, Y + Height, BorderColor);
@@ -173,7 +173,7 @@ void ProgressBarClass::Outline(void) const {
  *                                                                                             *
  * HISTORY: * 08/16/1996 JLB : Created. *
  *=============================================================================================*/
-void ProgressBarClass::Redraw(void) const {
+void ProgressBarClass::Redraw() const {
   Hide_Mouse();
 
   Outline();

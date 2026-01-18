@@ -324,7 +324,7 @@ RawFileClass::RawFileClass(char const* filename)
       Allocated(false) {
 }
 
-RawFileClass::~RawFileClass(void) {
+RawFileClass::~RawFileClass() {
   if (Allocated && Filename) {
     free((char*)Filename);
   }
@@ -636,7 +636,7 @@ int RawFileClass::Is_Available(int forced) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-void RawFileClass::Close(void) {
+void RawFileClass::Close() {
   /*
   **	If the file is open, then close it. If the file is already closed, then
   *just return. This *	isn't considered an error condition.
@@ -979,7 +979,7 @@ long RawFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-long RawFileClass::Size(void) {
+long RawFileClass::Size() {
   long size = 0;
 
   /*
@@ -1047,7 +1047,7 @@ long RawFileClass::Size(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Create(void) {
+int RawFileClass::Create() {
   Close();
   if (Open(WRITE)) {
     Close();
@@ -1072,7 +1072,7 @@ int RawFileClass::Create(void) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-int RawFileClass::Delete(void) {
+int RawFileClass::Delete() {
   /*
   **	If the file was open, then it must be closed first.
   */

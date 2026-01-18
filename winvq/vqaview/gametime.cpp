@@ -59,7 +59,7 @@ GameTimeClass Game_Time;
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-GameTimeClass::GameTimeClass(void) { game_start_time = timeGetTime(); }
+GameTimeClass::GameTimeClass() { game_start_time = timeGetTime(); }
 
 /***************************************************************************
  * Get_Time - returns the time in ms elapsed since game was started        *
@@ -74,7 +74,7 @@ GameTimeClass::GameTimeClass(void) { game_start_time = timeGetTime(); }
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-unsigned long GameTimeClass::Get_Time(void) {
+unsigned long GameTimeClass::Get_Time() {
   unsigned long curr_windows_time;
   unsigned long game_time;
 
@@ -101,4 +101,4 @@ unsigned long GameTimeClass::Get_Time(void) {
  * HISTORY:                                                                *
  *   11/22/1995  MG : Created.                                             *
  *=========================================================================*/
-unsigned long Get_Game_Time(void) { return (Game_Time.Get_Time()); }
+unsigned long Get_Game_Time() { return (Game_Time.Get_Time()); }

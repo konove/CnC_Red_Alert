@@ -35,7 +35,7 @@
 ;* Functions:                                                              *
 ;*                                                                         *
 ; VOID Init_Device_Table(BYTE *table);                                     *
-; WORD Max_Device(VOID);						   *
+; WORD Max_Device();						   *
 ;*                                                                         *
 ;* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
 
@@ -59,14 +59,14 @@ CODESEG
 ; Here are prototypes for the routines defined within this module:
 ;
 ; VOID Init_Device_Table(BYTE *table);
-; WORD Max_Device(VOID);
+; WORD Max_Device();
 ;
 ; ----------------------------------------------------------------
 
 
 ;----------------------------------------------------------------------------
 ;
-; WORD Max_Device(VOID);
+; WORD Max_Device();
 ;
 
 PROC	Max_Device C NEAR

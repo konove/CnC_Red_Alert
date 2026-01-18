@@ -178,7 +178,7 @@ ConnectionClass::~ConnectionClass() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void ConnectionClass::Init(void) {
+void ConnectionClass::Init() {
   NumRecNoAck = 0;
   NumRecAck = 0;
   NumSendNoAck = 0;
@@ -553,7 +553,7 @@ int ConnectionClass::Get_Packet(void* buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int ConnectionClass::Service(void) {
+int ConnectionClass::Service() {
   /*------------------------------------------------------------------------
   Service the Send Queue:  This [re]sends packets in the Send Queue which
   haven't been ACK'd yet, and if their retry timeout has expired, and
@@ -591,7 +591,7 @@ int ConnectionClass::Service(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int ConnectionClass::Service_Send_Queue(void) {
+int ConnectionClass::Service_Send_Queue() {
   int i;
   int num_entries;
   SendQueueType* send_entry;   // ptr to send queue entry
@@ -721,7 +721,7 @@ int ConnectionClass::Service_Send_Queue(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int ConnectionClass::Service_Receive_Queue(void) {
+int ConnectionClass::Service_Receive_Queue() {
   ReceiveQueueType* rec_entry;  // ptr to receive entry header
   CommHeaderType* packet_hdr;   // packet header
   int i;
@@ -770,7 +770,7 @@ int ConnectionClass::Service_Receive_Queue(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-unsigned long ConnectionClass::Time(void) {
+unsigned long ConnectionClass::Time() {
   static struct timeb mytime;  // DOS time
   unsigned long msec;
 

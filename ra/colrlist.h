@@ -63,7 +63,7 @@ class ColorListClass : public ListClass {
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  void const* up, void const* down);
-  virtual ~ColorListClass(void);
+  virtual ~ColorListClass();
 
   virtual int Add_Item(char const* text, RemapControlType* color = nullptr);
   virtual int Add_Item(int text, RemapControlType* color = nullptr);

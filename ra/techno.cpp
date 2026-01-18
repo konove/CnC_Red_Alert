@@ -315,7 +315,7 @@ int const TechnoClass::BodyShape[32] = {
  *                                                                                             *
  * HISTORY: * 09/23/1996 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Is_Players_Army(void) const {
+bool TechnoClass::Is_Players_Army() const {
   /*
   **	An object that is dead (or about to be) is not considered part of
   **	the player's army.
@@ -503,7 +503,7 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
  *                                                                                             *
  * HISTORY: * 08/04/1996 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::How_Many_Survivors(void) const {
+int TechnoClass::How_Many_Survivors() const {
   if (Techno_Type_Class()->IsCrew) {
     return (1);
   }
@@ -569,7 +569,7 @@ int TechnoClass::Combat_Damage(int which) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Is_Allowed_To_Recloak(void) const { return (true); }
+bool TechnoClass::Is_Allowed_To_Recloak() const { return (true); }
 
 /***********************************************************************************************
  * TechnoClass::Fire_Coord -- Determine the coordinate where bullets appear. *
@@ -772,7 +772,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
 // #define UNIT_BUILD_BIAS fixed(1, 1)
 // #define UNIT_BUILD_BIAS fixed(5,1)
 
-int TechnoClass::Time_To_Build(void) const {
+int TechnoClass::Time_To_Build() const {
   int val = Class_Of().Time_To_Build();
 
   if (Session.Type == GAME_NORMAL) {
@@ -829,7 +829,7 @@ int TechnoClass::Time_To_Build(void) const {
  *                                                                                             *
  * HISTORY: * 05/27/1996 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Is_Visible_On_Radar(void) const {
+bool TechnoClass::Is_Visible_On_Radar() const {
   /*
   ** Hack: MRJ is invisible to radar, unless it's allied with the player.
   */
@@ -929,7 +929,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
  *                                                                                             *
  * HISTORY: * 06/02/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Hidden(void) {
+void TechnoClass::Hidden() {
   assert(IsActive);
 
   if (!IsDiscoveredByPlayer) return;
@@ -2415,7 +2415,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 12/09/1994 JLB : Created. *
    *=============================================================================================*/
-  HousesType TechnoClass::Owner(void) const {
+  HousesType TechnoClass::Owner() const {
     assert(IsActive);
 
     return (House->Class->House);
@@ -2459,7 +2459,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 12/09/1994 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::AI(void) {
+  void TechnoClass::AI() {
     assert(IsActive);
 
     /*
@@ -2559,7 +2559,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 09/09/1996 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Cloaking_AI(void) {
+  void TechnoClass::Cloaking_AI() {
     /*
     ** Handle decision to re-cloak here. Process the cloaking/decloaking
     *operation.
@@ -2685,7 +2685,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 09/09/1996 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Is_Ready_To_Cloak(void) const {
+  bool TechnoClass::Is_Ready_To_Cloak() const {
     /*
     **	If it is already cloaked or in the process of cloaking, then it can't
     *start cloaking.
@@ -2754,7 +2754,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 12/11/1994 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Select(void) {
+  bool TechnoClass::Select() {
     assert(IsActive);
 
     if (!IsDiscoveredByPlayer && !House->IsPlayerControl && !Debug_Unshroud) {
@@ -2901,7 +2901,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 12/23/1994 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Stun(void) {
+  void TechnoClass::Stun() {
     assert(IsActive);
 
     Assign_Target(TARGET_NONE);
@@ -3628,7 +3628,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 01/19/1995 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Can_Player_Move(void) const {
+  bool TechnoClass::Can_Player_Move() const {
     assert(IsActive);
 
     return (House->IsPlayerControl);
@@ -3650,7 +3650,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 01/23/1995 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Can_Player_Fire(void) const {
+  bool TechnoClass::Can_Player_Fire() const {
     assert(IsActive);
 
     if (House->IsPlayerControl && Is_Techno() &&
@@ -3676,7 +3676,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 01/23/1995 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Is_Weapon_Equipped(void) const {
+  bool TechnoClass::Is_Weapon_Equipped() const {
     assert(IsActive);
 
     return (Techno_Type_Class()->PrimaryWeapon != nullptr);
@@ -3701,7 +3701,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 01/23/1995 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Can_Repair(void) const {
+  bool TechnoClass::Can_Repair() const {
     assert(IsActive);
 
     /*
@@ -3789,7 +3789,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    * HISTORY:                                                                *
    *   04/28/1995 PWG : Created.                                             *
    *=========================================================================*/
-  bool TechnoClass::Restore_Mission(void) {
+  bool TechnoClass::Restore_Mission() {
     assert(IsActive);
 
     if (RadioClass::Restore_Mission()) {
@@ -3811,7 +3811,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 04/15/1996 BWG : Created. *
    *=============================================================================================*/
-  void TechnoClass::Renovate(void) {
+  void TechnoClass::Renovate() {
     assert(IsActive);
 
     Mark(MARK_CHANGE);
@@ -4171,7 +4171,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 05/08/1995 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Do_Uncloak(void) {
+  void TechnoClass::Do_Uncloak() {
     assert(IsActive);
 
     if (IsCloakable && (Cloak == CLOAKED || Cloak == CLOAKING)) {
@@ -4202,7 +4202,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/08/1995 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Do_Cloak(void) {
+  void TechnoClass::Do_Cloak() {
     assert(IsActive);
 
     if (IsCloakable && (Cloak == UNCLOAKED || Cloak == UNCLOAKING)) {
@@ -4239,7 +4239,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Do_Shimmer(void) {
+  void TechnoClass::Do_Shimmer() {
     assert(IsActive);
 #if (0)
     if (IsCloakable && Cloak == CLOAKED) {
@@ -4470,7 +4470,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/08/1995 JLB : Created. *
    *=============================================================================================*/
-  void const* TechnoClass::Remap_Table(void) const {
+  void const* TechnoClass::Remap_Table() const {
     assert(IsActive);
 
     if (Techno_Type_Class()->IsRemappable) {
@@ -4569,7 +4569,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  InfantryType TechnoClass::Crew_Type(void) const {
+  InfantryType TechnoClass::Crew_Type() const {
     assert(IsActive);
 
     /*
@@ -4615,7 +4615,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    * HISTORY: * 07/29/1995 JLB : Created. * 08/16/1995 JLB : Adjusted for early
    *mission lame-out.                                     *
    *=============================================================================================*/
-  int TechnoClass::Value(void) const {
+  int TechnoClass::Value() const {
     assert(IsActive);
 
     int value = 0;
@@ -5195,7 +5195,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Get_Ownable(void) const {
+  int TechnoClass::Get_Ownable() const {
     assert(IsActive);
 
     return ((TechnoTypeClass const&)Class_Of()).Get_Ownable();
@@ -5216,7 +5216,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Risk(void) const {
+  int TechnoClass::Risk() const {
     assert(IsActive);
 
     return (Techno_Type_Class()->Risk);
@@ -5242,7 +5242,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  fixed TechnoClass::Tiberium_Load(void) const {
+  fixed TechnoClass::Tiberium_Load() const {
     assert(IsActive);
 
     return (0);
@@ -5296,7 +5296,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Pip_Count(void) const {
+  int TechnoClass::Pip_Count() const {
     assert(IsActive);
 
     return (0);
@@ -5319,7 +5319,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  DirType TechnoClass::Fire_Direction(void) const {
+  DirType TechnoClass::Fire_Direction() const {
     assert(IsActive);
 
     return (Turret_Facing());
@@ -5340,7 +5340,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Response_Select(void) { assert(IsActive); }
+  void TechnoClass::Response_Select() { assert(IsActive); }
 
   /***********************************************************************************************
    * TechnoClass::Response_Move -- Handles the voice response to a movement
@@ -5358,7 +5358,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Response_Move(void) { assert(IsActive); }
+  void TechnoClass::Response_Move() { assert(IsActive); }
 
   /***********************************************************************************************
    * TechnoClass::Response_Attack -- Handles the voice response when given
@@ -5376,7 +5376,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  void TechnoClass::Response_Attack(void) { assert(IsActive); }
+  void TechnoClass::Response_Attack() { assert(IsActive); }
 
   /***********************************************************************************************
    * TechnoClass::Target_Something_Nearby -- Handles finding and assigning a
@@ -5464,7 +5464,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 10/19/1996 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoClass::Is_Ready_To_Random_Animate(void) const {
+  bool TechnoClass::Is_Ready_To_Random_Animate() const {
     assert(IsActive);
     return (IdleTimer == 0);
   }
@@ -5888,7 +5888,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 08/13/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Refund_Amount(void) const {
+  int TechnoClass::Refund_Amount() const {
     assert(IsActive);
 
     int cost = Techno_Type_Class()->Raw_Cost() * House->CostBias;
@@ -5918,7 +5918,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 10/02/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Anti_Air(void) const {
+  int TechnoClass::Anti_Air() const {
     assert(IsActive);
 
     if (Is_Weapon_Equipped()) {
@@ -5958,7 +5958,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 10/02/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Anti_Armor(void) const {
+  int TechnoClass::Anti_Armor() const {
     assert(IsActive);
 
     if (Is_Weapon_Equipped()) {
@@ -6001,7 +6001,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 10/02/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoClass::Anti_Infantry(void) const {
+  int TechnoClass::Anti_Infantry() const {
     assert(IsActive);
 
     if (Is_Weapon_Equipped()) {
@@ -6140,7 +6140,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 08/13/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoTypeClass::Raw_Cost(void) const { return (Cost); }
+  int TechnoTypeClass::Raw_Cost() const { return (Cost); }
 
   /***********************************************************************************************
    * TechnoTypeClass::Get_Ownable -- Fetches the ownable bits for this object
@@ -6158,7 +6158,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoTypeClass::Get_Ownable(void) const {
+  int TechnoTypeClass::Get_Ownable() const {
     if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
       return (Ownable | HOUSEF_SOVIET | HOUSEF_ALLIES);
     }
@@ -6180,7 +6180,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoTypeClass::Time_To_Build(void) const {
+  int TechnoTypeClass::Time_To_Build() const {
     return (Cost * Rule.BuildSpeedBias * fixed(TICKS_PER_MINUTE, 1000));
   }
 
@@ -6197,7 +6197,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoTypeClass::Cost_Of(void) const { return (Cost); }
+  int TechnoTypeClass::Cost_Of() const { return (Cost); }
 
   /***********************************************************************************************
    * TechnoTypeClass::Get_Cameo_Data -- Fetches the cameo image for this object
@@ -6216,7 +6216,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  void const* TechnoTypeClass::Get_Cameo_Data(void) const {
+  void const* TechnoTypeClass::Get_Cameo_Data() const {
     return (CameoData);
   }
 
@@ -6236,7 +6236,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoTypeClass::Repair_Cost(void) const {
+  int TechnoTypeClass::Repair_Cost() const {
     if (Is_Foot()) {
       return ((Raw_Cost() / (MaxStrength / Rule.URepairStep)) *
               Rule.URepairPercent);
@@ -6260,7 +6260,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  int TechnoTypeClass::Repair_Step(void) const {
+  int TechnoTypeClass::Repair_Step() const {
     if (Is_Foot()) {
       return (Rule.URepairStep);
     }
@@ -6282,7 +6282,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1996 JLB : Created. *
    *=============================================================================================*/
-  bool TechnoTypeClass::Is_Two_Shooter(void) const {
+  bool TechnoTypeClass::Is_Two_Shooter() const {
     if (PrimaryWeapon != nullptr &&
         (PrimaryWeapon == SecondaryWeapon || PrimaryWeapon->Burst > 1)) {
       return (true);

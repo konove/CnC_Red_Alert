@@ -659,7 +659,7 @@ LABEL	LockedCodeEnd	BYTE
 ;*                                                                         *
 ;* OUTPUT:      BOOL true is lock sucessful, false otherwise		   *
 ;*                                                                         *
-;* PROTO:       BOOL sosCODEC_Lock(void);                         	   *
+;* PROTO:       BOOL sosCODEC_Lock();                         	   *
 ;*                                                                         *
 ;* HISTORY:								   *
 ;*   06/26/1995 PWG : Created.                                             *
@@ -708,7 +708,7 @@ LABEL	LockedCodeEnd	BYTE
 ;*                                                                         *
 ;* OUTPUT:      BOOL true is unlock sucessful, false otherwise		   *
 ;*                                                                         *
-;* PROTO:	BOOL sosCODEC_Unlock(void);                        	   *
+;* PROTO:	BOOL sosCODEC_Unlock();                        	   *
 ;*                                                                         *
 ;* HISTORY:								   *
 ;*   06/26/1995 PWG : Created.                                             *

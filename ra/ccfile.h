@@ -55,14 +55,14 @@
 class CCFileClass : public CDFileClass {
  public:
   CCFileClass(char const* filename);
-  CCFileClass(void);
-  virtual ~CCFileClass(void) { Position = 0; };
+  CCFileClass();
+  virtual ~CCFileClass() { Position = 0; };
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  bool Is_Resident(void) const { return (Data.Get_Buffer() != nullptr); }
+  bool Is_Resident() const { return (Data.Get_Buffer() != nullptr); }
   virtual int Is_Available(int forced = false);
-  virtual int Is_Open(void) const;
+  virtual int Is_Open() const;
   virtual int Open(char const* filename, int rights = READ) {
     Set_Name(filename);
     return Open(rights);
@@ -70,10 +70,10 @@ class CCFileClass : public CDFileClass {
   virtual int Open(int rights = READ);
   virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size(void);
+  virtual long Size();
   virtual long Write(void const* buffer, long size);
-  virtual void Close(void);
-  virtual unsigned long Get_Date_Time(void);
+  virtual void Close();
+  virtual unsigned long Get_Date_Time();
   virtual bool Set_Date_Time(unsigned long datetime);
   virtual void Error(int error, int canretry = false,
                      char const* filename = nullptr);

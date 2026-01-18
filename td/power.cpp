@@ -84,7 +84,7 @@ PowerClass::PowerButtonClass PowerClass::PowerButton;
  *                                                                                             *
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
-PowerClass::PowerClass(void) {
+PowerClass::PowerClass() {
   IsToRedraw = false;
   RecordedDrain = -1;
   RecordedPower = -1;
@@ -114,7 +114,7 @@ PowerClass::PowerClass(void) {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Init_Clear(void) {
+void PowerClass::Init_Clear() {
   RadarClass::Init_Clear();
   RecordedDrain = -1;
   RecordedPower = -1;
@@ -142,7 +142,7 @@ void PowerClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::One_Time(void) {
+void PowerClass::One_Time() {
   RadarClass::One_Time();
 
   int factor = Get_Resolution_Factor();

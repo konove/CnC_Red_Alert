@@ -212,40 +212,40 @@ class CellClass {
   } Flag;
 
   //----------------------------------------------------------------
-  CellClass(void);
+  CellClass();
   CellClass(NoInitClass const& x) : Trigger(x) {}
-  ~CellClass(void) { OccupierPtr = nullptr; }
+  ~CellClass() { OccupierPtr = nullptr; }
 
   int operator==(CellClass const& cell) const { return &cell == this; }
 
   /*
   **	Query functions.
   */
-  bool Can_Tiberium_Germinate(void) const;
-  bool Can_Tiberium_Grow(void) const;
-  bool Can_Tiberium_Spread(void) const;
-  bool Is_Bridge_Here(void) const;
-  RTTIType What_Am_I(void) const { return (RTTI_CELL); }
-  BuildingClass* Cell_Building(void) const;
-  CELL Cell_Number(void) const { return (ID); }
-  COORDINATE Cell_Coord(void) const;
+  bool Can_Tiberium_Germinate() const;
+  bool Can_Tiberium_Grow() const;
+  bool Can_Tiberium_Spread() const;
+  bool Is_Bridge_Here() const;
+  RTTIType What_Am_I() const { return (RTTI_CELL); }
+  BuildingClass* Cell_Building() const;
+  CELL Cell_Number() const { return (ID); }
+  COORDINATE Cell_Coord() const;
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
-  COORDINATE Free_Spot(void) const { return Closest_Free_Spot(Cell_Coord()); }
+  COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
   CellClass& Adjacent_Cell(FacingType face) {
     return (CellClass&)((*((CellClass const*)this)).Adjacent_Cell(face));
   }
   CellClass const& Adjacent_Cell(FacingType face) const;
-  InfantryClass* Cell_Infantry(void) const;
-  LandType Land_Type(void) const { return (Land); }
+  InfantryClass* Cell_Infantry() const;
+  LandType Land_Type() const { return (Land); }
   ObjectClass* Cell_Find_Object(RTTIType rtti) const;
   ObjectClass* Cell_Object(int x = 0, int y = 0) const;
-  ObjectClass* Cell_Occupier(void) const { return (OccupierPtr); }
-  ObjectClass* Fetch_Occupier(void) const;
-  TARGET As_Target(void) const { return ::As_Target(Cell_Number()); }
+  ObjectClass* Cell_Occupier() const { return (OccupierPtr); }
+  ObjectClass* Fetch_Occupier() const;
+  TARGET As_Target() const { return ::As_Target(Cell_Number()); }
   TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
-  TerrainClass* Cell_Terrain(void) const;
-  UnitClass* Cell_Unit(void) const;
-  VesselClass* Cell_Vessel(void) const;
+  TerrainClass* Cell_Terrain() const;
+  UnitClass* Cell_Unit() const;
+  VesselClass* Cell_Vessel() const;
   bool Goodie_Check(FootClass* object);
   bool Is_Clear_To_Build(SpeedType loco = SPEED_TRACK) const;
   bool Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
@@ -255,7 +255,7 @@ class CellClass {
     return (!(Flag.Composite & (1 << spot_index)));
   }
   int Cell_Color(bool override = false) const;
-  int Clear_Icon(void) const;
+  int Clear_Icon() const;
   static int Spot_Index(COORDINATE coord);
 
   /*
@@ -266,33 +266,33 @@ class CellClass {
   void Overlap_Down(ObjectClass* object);
   void Overlap_Up(ObjectClass* object);
   bool Flag_Place(HousesType house);
-  bool Flag_Remove(void);
+  bool Flag_Remove();
 
   /*
   **	File I/O.
   */
-  bool Should_Save(void) const;
+  bool Should_Save() const;
   bool Save(Pipe& file) const;
   bool Load(Straw& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	Display and rendering controls.
   */
   void Draw_It(int x, int y, bool objects = false) const;
   void Redraw_Objects(bool forced = false);
-  void Shimmer(void);
+  void Shimmer();
 
   /*
   **	Maintenance calculation support.
   */
-  bool Grow_Tiberium(void);
+  bool Grow_Tiberium();
   bool Spread_Tiberium(bool forced = false);
   long Tiberium_Adjust(bool pregame = false);
-  void Wall_Update(void);
-  void Concrete_Calc(void);
-  void Recalc_Attributes(void);
+  void Wall_Update();
+  void Concrete_Calc();
+  void Recalc_Attributes();
   int Reduce_Tiberium(int levels);
   int Reduce_Wall(int damage);
   void Incoming(COORDINATE threat = 0, bool forced = false,

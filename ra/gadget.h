@@ -109,33 +109,33 @@ class GadgetClass : public LinkClass {
   GadgetClass(NoInitClass const& x) : LinkClass(x) {};
   GadgetClass() {};
   GadgetClass(GadgetClass const& gadget) = default;
-  virtual ~GadgetClass(void);
+  virtual ~GadgetClass();
 
   /*
   **	Gadget list management functions.
   */
-  virtual KeyNumType Input(void);
+  virtual KeyNumType Input();
   virtual void Draw_All(bool forced = true);
-  virtual void Delete_List(void);
+  virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
-  virtual void Flag_List_To_Redraw(void) { LastList = nullptr; };
-  virtual GadgetClass* Remove(void);
-  virtual GadgetClass* Get_Next(void) const;
-  virtual GadgetClass* Get_Prev(void) const;
+  virtual void Flag_List_To_Redraw() { LastList = nullptr; };
+  virtual GadgetClass* Remove();
+  virtual GadgetClass* Get_Next() const;
+  virtual GadgetClass* Get_Prev() const;
 
   /*
   **	Manages individual gadget states and actions.
   */
-  virtual void Disable(void);
-  virtual void Enable(void);
-  virtual unsigned Get_ID(void) const { return 0; };
-  virtual void Flag_To_Redraw(void);
+  virtual void Disable();
+  virtual void Enable();
+  virtual unsigned Get_ID() const { return 0; };
+  virtual void Flag_To_Redraw();
   virtual void Peer_To_Peer(unsigned, KeyNumType&, ControlClass&) {};
-  virtual void Set_Focus(void);
-  virtual void Clear_Focus(void);
-  virtual bool Has_Focus(void);
-  virtual int Is_List_To_Redraw(void);
-  virtual bool Is_To_Redraw(void) { return (IsToRepaint); }
+  virtual void Set_Focus();
+  virtual void Clear_Focus();
+  virtual bool Has_Focus();
+  virtual int Is_List_To_Redraw();
+  virtual bool Is_To_Redraw() { return (IsToRepaint); }
   virtual void Set_Position(int x, int y);
 
   /*
@@ -150,7 +150,7 @@ class GadgetClass : public LinkClass {
     ColorScheme = scheme;
   }
 
-  static RemapControlType* Get_Color_Scheme(void) { return (ColorScheme); }
+  static RemapControlType* Get_Color_Scheme() { return (ColorScheme); }
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are

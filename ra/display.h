@@ -133,7 +133,7 @@ class DisplayClass : public MapClass {
   static unsigned char SpecialGhost[2 * 256];
 
   //-------------------------------------------------------------------------
-  DisplayClass(void);
+  DisplayClass();
   DisplayClass(NoInitClass const& x) : MapClass(x) {};
 
   virtual void Read_INI(CCINIClass& ini);
@@ -142,9 +142,9 @@ class DisplayClass : public MapClass {
   /*
   ** Initialization
   */
-  virtual void One_Time(void);                     // One-time inits
-  virtual void Init_Clear(void);                   // Clears all to known state
-  virtual void Init_IO(void);                      // Inits button list
+  virtual void One_Time();                         // One-time inits
+  virtual void Init_Clear();                       // Clears all to known state
+  virtual void Init_IO();                          // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
 
   /*
@@ -159,13 +159,13 @@ class DisplayClass : public MapClass {
   void All_To_Look(bool units_only = false);
   void Constrained_Look(COORDINATE coord, LEPTON distance);
   void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
-  void Encroach_Shadow(void);
+  void Encroach_Shadow();
   void Center_Map(COORDINATE center = 0L);
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   virtual CELL Click_Cell_Calc(int x, int y) const;
   virtual void Help_Text(int, int = -1, int = -1, int = YELLOW, bool = false) {
   };
-  virtual MouseType Get_Mouse_Shape(void) const = 0;
+  virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
   virtual void Refresh_Cells(CELL cell, short const* list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
@@ -184,7 +184,7 @@ class DisplayClass : public MapClass {
   **	Tactical map only functionality.
   */
   virtual void Set_Tactical_Position(COORDINATE coord);
-  void Refresh_Band(void);
+  void Refresh_Band();
   void Select_These(COORDINATE coord1, COORDINATE coord2);
   COORDINATE Pixel_To_Coord(int x, int y) const;
   bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
@@ -213,16 +213,16 @@ class DisplayClass : public MapClass {
   /*
   ** Computes starting position based on player's units' Coords.
   */
-  void Compute_Start_Pos(void);
+  void Compute_Start_Pos();
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
  protected:
-  virtual void Mouse_Right_Press(void);
+  virtual void Mouse_Right_Press();
   virtual void Mouse_Left_Press(int x, int y);
   virtual void Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
                              ActionType action, bool wsmall = false);
@@ -292,7 +292,7 @@ class DisplayClass : public MapClass {
   */
   class TacticalClass : public GadgetClass {
    public:
-    TacticalClass(void)
+    TacticalClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
                       true) {};
@@ -328,9 +328,9 @@ class DisplayClass : public MapClass {
   static void const* ShadowShapes;
   static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
-  void Redraw_Icons(void);
-  void Redraw_OIcons(void);
-  void Redraw_Shadow(void);
+  void Redraw_Icons();
+  void Redraw_OIcons();
+  void Redraw_Shadow();
 
   /*
   **	This bit array is used to flag cells to be redrawn. If the icon needs to

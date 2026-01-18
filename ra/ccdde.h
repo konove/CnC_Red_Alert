@@ -46,17 +46,17 @@
 
 class DDEServerClass {
  public:
-  DDEServerClass(void);
-  ~DDEServerClass(void);
+  DDEServerClass();
+  ~DDEServerClass();
 
-  char* Get_MPlayer_Game_Info(void);  // Returns pointer to game info
+  char* Get_MPlayer_Game_Info();  // Returns pointer to game info
   int Get_MPlayer_Game_Info_Length() {
     return (MPlayerGameInfoLength);
   };  // Len of game info
   BOOL Callback(unsigned char* data, long length);  // DDE callback function
-  void Delete_MPlayer_Game_Info(void);  // release the game info memory
-  void Enable(void);                    // Enable the DDE callback
-  void Disable(void);                   // Disable the DDE callback
+  void Delete_MPlayer_Game_Info();  // release the game info memory
+  void Enable();                    // Enable the DDE callback
+  void Disable();                   // Disable the DDE callback
   int Time_Since_Heartbeat(
       void);  // Returns the time since the last hearbeat from WChat
 

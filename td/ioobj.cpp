@@ -227,7 +227,7 @@ bool TeamTypeClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Code_Pointers(void) {
+void TeamTypeClass::Code_Pointers() {
   /*
   -------------------------- Code the Class array --------------------------
   */
@@ -250,7 +250,7 @@ void TeamTypeClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Decode_Pointers(void) {
+void TeamTypeClass::Decode_Pointers() {
   /*
   ------------------------- Decode the Class array -------------------------
   */
@@ -307,7 +307,7 @@ bool TeamClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TeamClass::Code_Pointers(void) {
+void TeamClass::Code_Pointers() {
   TeamTypeClass const* cls;
 
   /*
@@ -339,7 +339,7 @@ void TeamClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TeamClass::Decode_Pointers(void) {
+void TeamClass::Decode_Pointers() {
   /*
   ------------------- Decode Class & House for this team -------------------
   */
@@ -431,7 +431,7 @@ bool TriggerClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Code_Pointers(void) {
+void TriggerClass::Code_Pointers() {
   if (Team) {
     Team = (TeamTypeClass*)Team->As_Target();
   }
@@ -451,7 +451,7 @@ void TriggerClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Decode_Pointers(void) {
+void TriggerClass::Decode_Pointers() {
   if (Team) {
     Team = As_TeamType((TARGET)(uintptr_t)Team);
     Check_Ptr((void*)Team, __FILE__, __LINE__);
@@ -505,7 +505,7 @@ bool AircraftClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void AircraftClass::Code_Pointers(void) {
+void AircraftClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -532,7 +532,7 @@ void AircraftClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void AircraftClass::Decode_Pointers(void) {
+void AircraftClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -594,7 +594,7 @@ bool AnimClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void AnimClass::Code_Pointers(void) {
+void AnimClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -628,7 +628,7 @@ void AnimClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void AnimClass::Decode_Pointers(void) {
+void AnimClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -698,7 +698,7 @@ bool BuildingClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void BuildingClass::Code_Pointers(void) {
+void BuildingClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -733,7 +733,7 @@ void BuildingClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void BuildingClass::Decode_Pointers(void) {
+void BuildingClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -802,7 +802,7 @@ bool BulletClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void BulletClass::Code_Pointers(void) {
+void BulletClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -835,7 +835,7 @@ void BulletClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void BulletClass::Decode_Pointers(void) {
+void BulletClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -906,7 +906,7 @@ bool InfantryClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void InfantryClass::Code_Pointers(void) {
+void InfantryClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -932,7 +932,7 @@ void InfantryClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void InfantryClass::Decode_Pointers(void) {
+void InfantryClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -993,7 +993,7 @@ bool OverlayClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void OverlayClass::Code_Pointers(void) {
+void OverlayClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -1019,7 +1019,7 @@ void OverlayClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void OverlayClass::Decode_Pointers(void) {
+void OverlayClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -1080,7 +1080,7 @@ bool SmudgeClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void SmudgeClass::Code_Pointers(void) {
+void SmudgeClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -1106,7 +1106,7 @@ void SmudgeClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void SmudgeClass::Decode_Pointers(void) {
+void SmudgeClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -1167,7 +1167,7 @@ bool TemplateClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TemplateClass::Code_Pointers(void) {
+void TemplateClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -1193,7 +1193,7 @@ void TemplateClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TemplateClass::Decode_Pointers(void) {
+void TemplateClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -1254,7 +1254,7 @@ bool TerrainClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TerrainClass::Code_Pointers(void) {
+void TerrainClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -1281,7 +1281,7 @@ void TerrainClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TerrainClass::Decode_Pointers(void) {
+void TerrainClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -1343,7 +1343,7 @@ bool UnitClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void UnitClass::Code_Pointers(void) { TarComClass::Code_Pointers(); }
+void UnitClass::Code_Pointers() { TarComClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * UnitClass::Decode_Pointers -- decodes pointers for load/save *
@@ -1359,7 +1359,7 @@ void UnitClass::Code_Pointers(void) { TarComClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void UnitClass::Decode_Pointers(void) { TarComClass::Decode_Pointers(); }
+void UnitClass::Decode_Pointers() { TarComClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * FactoryClass::Load -- Loads from a save game file. *
@@ -1407,7 +1407,7 @@ bool FactoryClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FactoryClass::Code_Pointers(void) {
+void FactoryClass::Code_Pointers() {
   if (Object) {
     Object = (TechnoClass*)Object->As_Target();
   }
@@ -1431,7 +1431,7 @@ void FactoryClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FactoryClass::Decode_Pointers(void) {
+void FactoryClass::Decode_Pointers() {
   if (Object) {
     Object = As_Techno((TARGET)(uintptr_t)Object);
     Check_Ptr((void*)Object, __FILE__, __LINE__);
@@ -1534,7 +1534,7 @@ bool LayerClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void LayerClass::Code_Pointers(void) {
+void LayerClass::Code_Pointers() {
   ObjectClass* obj;
 
   for (int i = 0; i < Count(); i++) {
@@ -1557,7 +1557,7 @@ void LayerClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void LayerClass::Decode_Pointers(void) {
+void LayerClass::Decode_Pointers() {
   TARGET target;
 
   for (int i = 0; i < Count(); i++) {
@@ -1613,7 +1613,7 @@ bool HouseClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void HouseClass::Code_Pointers(void) {
+void HouseClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -1634,7 +1634,7 @@ void HouseClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void HouseClass::Decode_Pointers(void) {
+void HouseClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -1684,7 +1684,7 @@ bool ScoreClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void ScoreClass::Code_Pointers(void) {}
+void ScoreClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * ScoreClass::Decode_Pointers -- decodes pointers for load/save *
@@ -1697,7 +1697,7 @@ void ScoreClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void ScoreClass::Decode_Pointers(void) {}
+void ScoreClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * FlyClass::Code_Pointers -- codes class's pointers for load/save *
@@ -1715,7 +1715,7 @@ void ScoreClass::Decode_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FlyClass::Code_Pointers(void) {}
+void FlyClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * FlyClass::Decode_Pointers -- decodes pointers for load/save *
@@ -1731,7 +1731,7 @@ void FlyClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FlyClass::Decode_Pointers(void) {}
+void FlyClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * FuseClass::Code_Pointers -- codes class's pointers for load/save *
@@ -1749,7 +1749,7 @@ void FlyClass::Decode_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FuseClass::Code_Pointers(void) {}
+void FuseClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * FuseClass::Decode_Pointers -- decodes pointers for load/save *
@@ -1765,7 +1765,7 @@ void FuseClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FuseClass::Decode_Pointers(void) {}
+void FuseClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * TarComClass::Code_Pointers -- codes class's pointers for load/save *
@@ -1783,7 +1783,7 @@ void FuseClass::Decode_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TarComClass::Code_Pointers(void) { TurretClass::Code_Pointers(); }
+void TarComClass::Code_Pointers() { TurretClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * TarComClass::Decode_Pointers -- decodes pointers for load/save *
@@ -1799,7 +1799,7 @@ void TarComClass::Code_Pointers(void) { TurretClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TarComClass::Decode_Pointers(void) { TurretClass::Decode_Pointers(); }
+void TarComClass::Decode_Pointers() { TurretClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * TurretClass::Code_Pointers -- codes class's pointers for load/save *
@@ -1817,7 +1817,7 @@ void TarComClass::Decode_Pointers(void) { TurretClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TurretClass::Code_Pointers(void) { DriveClass::Code_Pointers(); }
+void TurretClass::Code_Pointers() { DriveClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * TurretClass::Decode_Pointers -- decodes pointers for load/save *
@@ -1833,7 +1833,7 @@ void TurretClass::Code_Pointers(void) { DriveClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TurretClass::Decode_Pointers(void) { DriveClass::Decode_Pointers(); }
+void TurretClass::Decode_Pointers() { DriveClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * DriveClass::Code_Pointers -- codes class's pointers for load/save *
@@ -1851,7 +1851,7 @@ void TurretClass::Decode_Pointers(void) { DriveClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void DriveClass::Code_Pointers(void) {
+void DriveClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Class' ------------------------------
   */
@@ -1877,7 +1877,7 @@ void DriveClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void DriveClass::Decode_Pointers(void) {
+void DriveClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Class' -----------------------------
   */
@@ -1907,7 +1907,7 @@ void DriveClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FootClass::Code_Pointers(void) {
+void FootClass::Code_Pointers() {
   if (Team) Team = (TeamClass*)Team->As_Target();
 
   if (Member) {
@@ -1931,7 +1931,7 @@ void FootClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FootClass::Decode_Pointers(void) {
+void FootClass::Decode_Pointers() {
   if (Team) {
     Team = As_Team((TARGET)(uintptr_t)Team);
     Check_Ptr((void*)Team, __FILE__, __LINE__);
@@ -1961,7 +1961,7 @@ void FootClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void RadioClass::Code_Pointers(void) {
+void RadioClass::Code_Pointers() {
   /*
   ------------------------------ Code 'Radio' ------------------------------
   */
@@ -1986,7 +1986,7 @@ void RadioClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void RadioClass::Decode_Pointers(void) {
+void RadioClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'Radio' -----------------------------
   */
@@ -2014,7 +2014,7 @@ void RadioClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TechnoClass::Code_Pointers(void) {
+void TechnoClass::Code_Pointers() {
   /*
   ------------------------------ Code 'House' ------------------------------
   */
@@ -2042,7 +2042,7 @@ void TechnoClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TechnoClass::Decode_Pointers(void) {
+void TechnoClass::Decode_Pointers() {
   /*
   ----------------------------- Decode 'House' -----------------------------
   */
@@ -2073,7 +2073,7 @@ void TechnoClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FlasherClass::Code_Pointers(void) {}
+void FlasherClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * FlasherClass::Decode_Pointers -- decodes pointers for load/save *
@@ -2089,7 +2089,7 @@ void FlasherClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void FlasherClass::Decode_Pointers(void) {}
+void FlasherClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * CargoClass::Code_Pointers -- codes class's pointers for load/save *
@@ -2107,7 +2107,7 @@ void FlasherClass::Decode_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void CargoClass::Code_Pointers(void) {
+void CargoClass::Code_Pointers() {
   /*
   ---------------------------- Code 'CargoHold' ----------------------------
   */
@@ -2130,7 +2130,7 @@ void CargoClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void CargoClass::Decode_Pointers(void) {
+void CargoClass::Decode_Pointers() {
   /*
   --------------------------- Decode 'CargoHold' ---------------------------
   */
@@ -2156,7 +2156,7 @@ void CargoClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MissionClass::Code_Pointers(void) { ObjectClass::Code_Pointers(); }
+void MissionClass::Code_Pointers() { ObjectClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * MissionClass::Decode_Pointers -- decodes pointers for load/save *
@@ -2172,7 +2172,7 @@ void MissionClass::Code_Pointers(void) { ObjectClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MissionClass::Decode_Pointers(void) { ObjectClass::Decode_Pointers(); }
+void MissionClass::Decode_Pointers() { ObjectClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * ObjectClass::Code_Pointers -- codes class's pointers for load/save *
@@ -2190,7 +2190,7 @@ void MissionClass::Decode_Pointers(void) { ObjectClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void ObjectClass::Code_Pointers(void) {
+void ObjectClass::Code_Pointers() {
   if (Next) {
     Next = (ObjectClass*)Next->As_Target();
   }
@@ -2214,7 +2214,7 @@ void ObjectClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void ObjectClass::Decode_Pointers(void) {
+void ObjectClass::Decode_Pointers() {
   if (Next) {
     Next = As_Object((TARGET)(uintptr_t)Next);
     Check_Ptr((void*)Next, __FILE__, __LINE__);

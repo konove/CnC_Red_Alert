@@ -63,11 +63,11 @@ class CheckListClass : public ListClass {
   */
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  void const* up, void const* down);
-  ~CheckListClass(void);
+  ~CheckListClass();
 
   virtual int Add_Item(int text) { return ListClass::Add_Item(text); }
   virtual int Add_Item(char const* text);
-  virtual char const* Current_Item(void) const;
+  virtual char const* Current_Item() const;
   virtual char const* Get_Item(int index) const;
   virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int text) { ListClass::Remove_Item(text); }

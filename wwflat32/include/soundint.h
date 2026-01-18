@@ -229,26 +229,26 @@ typedef struct LockedData {
 extern LockedDataType LockedData;
 #pragma pack(4);
 
-void Init_Locked_Data(void);
-void Unlock_Locked_Data(void);
+void Init_Locked_Data();
+void Unlock_Locked_Data();
 long Simple_Copy(void** source, long* ssize, void** alternate, long* altsize,
                  void** dest, long size);
 long Sample_Copy(SampleTrackerType* st, void** source, long* ssize,
                  void** alternate, long* altsize, void* dest, long size,
                  SCompressType scomp, void* trailer, WORD* trailersize);
-VOID far cdecl maintenance_callback(VOID);
+VOID far cdecl maintenance_callback();
 VOID cdecl far DigiCallback(unsigned int driverhandle, unsigned int callsource,
                             unsigned int sampleid);
-void far HMI_TimerCallback(void);
+void far HMI_TimerCallback();
 void* Audio_Add_Long_To_Pointer(void const* ptr, long size);
 void DPMI_Unlock(VOID const* ptr, long const size);
 extern "C" {
 void Audio_Mem_Set(void const* ptr, unsigned char value, long size);
 void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy);
 long Decompress_Frame(void* source, void* dest, long size);
-int Decompress_Frame_Lock(void);
-int Decompress_Frame_Unlock(void);
-int sosCODEC_Lock(void);
-int sosCODEC_Unlock(void);
-void __GETDS(void);
+int Decompress_Frame_Lock();
+int Decompress_Frame_Unlock();
+int sosCODEC_Lock();
+int sosCODEC_Unlock();
+void __GETDS();
 }

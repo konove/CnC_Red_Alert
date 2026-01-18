@@ -86,7 +86,7 @@ bool LayerClass::Submit(ObjectClass const* object, bool sort) {
  * HISTORY: * 10/17/1994 JLB : Created. * 03/10/1995 JLB : Uses comparison
  *operator.                                                *
  *=============================================================================================*/
-void LayerClass::Sort(void) {
+void LayerClass::Sort() {
   for (int index = 0; index < Count() - 1; index++) {
     if (*(*this)[index + 1] < *(*this)[index]) {
       ObjectClass* temp;

@@ -265,7 +265,7 @@ void UnitClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-UnitClass::~UnitClass(void) {
+UnitClass::~UnitClass() {
   if (GameActive && Class.Is_Valid()) {
     /*
     **	Remove this member from any team it may be associated with. This must
@@ -398,7 +398,7 @@ void UnitClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE UnitClass::Sort_Y(void) const {
+COORDINATE UnitClass::Sort_Y() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -419,7 +419,7 @@ COORDINATE UnitClass::Sort_Y(void) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::AI(void) {
+void UnitClass::AI() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
   /*
@@ -529,7 +529,7 @@ void UnitClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Rotation_AI(void) {
+void UnitClass::Rotation_AI() {
   if (Target_Legal(TarCom) && !IsRotating) {
     DirType dir = Direction(TarCom);
 
@@ -604,7 +604,7 @@ void UnitClass::Rotation_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Edge_Of_World_AI(void) {
+bool UnitClass::Edge_Of_World_AI() {
   if (Mission == MISSION_GUARD && !Map.In_Radar(Coord_Cell(Coord)) &&
       IsLocked) {
     if (Team.Is_Valid()) Team->IsLeaveMap = true;
@@ -629,7 +629,7 @@ bool UnitClass::Edge_Of_World_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Reload_AI(void) {
+void UnitClass::Reload_AI() {
   if (*this == UNIT_V2_LAUNCHER && Ammo < Class->MaxAmmo) {
     if (IsDriving) {
       Reload = Reload + 1;
@@ -659,7 +659,7 @@ void UnitClass::Reload_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Firing_AI(void) {
+void UnitClass::Firing_AI() {
   if (Target_Legal(TarCom) && Class->PrimaryWeapon != nullptr) {
     /*
     **	Determine which weapon can fire. First check for the primary weapon. If
@@ -1367,7 +1367,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
  *                                                                                             *
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Goto_Clear_Spot(void) {
+bool UnitClass::Goto_Clear_Spot() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -1448,7 +1448,7 @@ bool UnitClass::Goto_Clear_Spot(void) {
  *                                                                                             *
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Try_To_Deploy(void) {
+bool UnitClass::Try_To_Deploy() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -1878,7 +1878,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Shape_Number(void) const {
+int UnitClass::Shape_Number() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -2224,7 +2224,7 @@ bool UnitClass::Goto_Tiberium(int rad) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Harvesting(void) {
+bool UnitClass::Harvesting() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -2310,7 +2310,7 @@ bool UnitClass::Harvesting(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Unload(void) {
+int UnitClass::Mission_Unload() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -2707,7 +2707,7 @@ int UnitClass::Mission_Unload(void) {
  *no Tiberium found.                                   * 09/28/1995 JLB : Aborts
  *harvesting if there are no more refineries.                       *
  *=============================================================================================*/
-int UnitClass::Mission_Harvest(void) {
+int UnitClass::Mission_Harvest() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -2900,7 +2900,7 @@ int UnitClass::Mission_Harvest(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Hunt(void) {
+int UnitClass::Mission_Hunt() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3297,7 +3297,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Init(void) { Units.Free_All(); }
+void UnitClass::Init() { Units.Free_All(); }
 
 /***********************************************************************************************
  * UnitClass::Start_Driver -- Starts driving and reserves destination cell. *
@@ -3535,7 +3535,7 @@ ActionType UnitClass::What_Action(CELL cell) const {
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
 #define XYCELL(x, y) (y * MAP_CELL_W + x)
-void UnitClass::Exit_Repair(void) {
+void UnitClass::Exit_Repair() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3581,7 +3581,7 @@ void UnitClass::Exit_Repair(void) {
  * HISTORY: * 05/08/1995 JLB : Created. * 05/08/1995 JLB : Fixes gunboat
  *problems.                                                  *
  *=============================================================================================*/
-int UnitClass::Mission_Guard(void) {
+int UnitClass::Mission_Guard() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
   if (/*House->IsBaseBuilding &&*/ !House->IsHuman && Class->IsToHarvest &&
@@ -3616,7 +3616,7 @@ int UnitClass::Mission_Guard(void) {
  * HISTORY: * 05/09/1995 JLB : Created. * 09/28/1995 JLB : Harvester stick in
  *guard mode if no more refineries.                     *
  *=============================================================================================*/
-int UnitClass::Mission_Move(void) {
+int UnitClass::Mission_Move() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3783,7 +3783,7 @@ bool UnitClass::Flag_Attach(HousesType house) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Flag_Remove(void) {
+bool UnitClass::Flag_Remove() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3810,7 +3810,7 @@ bool UnitClass::Flag_Remove(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Pip_Count(void) const {
+int UnitClass::Pip_Count() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3851,7 +3851,7 @@ int UnitClass::Pip_Count(void) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::APC_Close_Door(void) {
+void UnitClass::APC_Close_Door() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3871,7 +3871,7 @@ void UnitClass::APC_Close_Door(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::APC_Open_Door(void) {
+void UnitClass::APC_Open_Door() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3900,7 +3900,7 @@ void UnitClass::APC_Open_Door(void) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryType UnitClass::Crew_Type(void) const {
+InfantryType UnitClass::Crew_Type() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3932,7 +3932,7 @@ InfantryType UnitClass::Crew_Type(void) const {
  *                                                                                             *
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Repair(void) {
+int UnitClass::Mission_Repair() {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -3984,7 +3984,7 @@ int UnitClass::Mission_Repair(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-DirType UnitClass::Fire_Direction(void) const {
+DirType UnitClass::Fire_Direction() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -4173,7 +4173,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& UnitClass::Class_Of(void) const {
+ObjectTypeClass const& UnitClass::Class_Of() const {
   assert(Units.ID(this) == ID);
   assert(IsActive);
 
@@ -4194,7 +4194,7 @@ ObjectTypeClass const& UnitClass::Class_Of(void) const {
  *                                                                                             *
  * HISTORY: * 03/17/1995 JLB : Created. *
  *=============================================================================================*/
-fixed UnitClass::Tiberium_Load(void) const {
+fixed UnitClass::Tiberium_Load() const {
   assert(IsActive);
 
   if (*this == UNIT_HARVESTER) {
@@ -4220,7 +4220,7 @@ fixed UnitClass::Tiberium_Load(void) const {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Offload_Tiberium_Bail(void) {
+int UnitClass::Offload_Tiberium_Bail() {
   assert(IsActive);
 
   if (Tiberium) {
@@ -4255,7 +4255,7 @@ int UnitClass::Offload_Tiberium_Bail(void) {
  * HISTORY: * 03/17/1995 JLB : Created. * 07/12/1995 JLB : Flamethrower tanks
  *don't overrun -- their weapon is better.              *
  *=============================================================================================*/
-void UnitClass::Approach_Target(void) {
+void UnitClass::Approach_Target() {
   assert(IsActive);
 
   /*
@@ -4700,7 +4700,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Credit_Load(void) const {
+int UnitClass::Credit_Load() const {
   return ((Gold * Rule.GoldValue) + (Gems * Rule.GemValue));
 }
 
@@ -4834,7 +4834,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
  *                                                                                             *
  * HISTORY: * 10/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Limbo(void) {
+bool UnitClass::Limbo() {
   if (DriveClass::Limbo()) {
     if (Flagged != HOUSE_NONE) {
       HouseClass::As_Pointer(Flagged)->Flag_Attach(Coord_Cell(Coord));
@@ -4845,7 +4845,7 @@ bool UnitClass::Limbo(void) {
   return (false);
 }
 
-void UnitClass::Shroud_Regen(void) {
+void UnitClass::Shroud_Regen() {
   if (Class->IsGapper /*KO && !House->IsPlayerControl*/) {
     static int _xtab[] = {-1, 0,  1,  -2, -1, 0, 1,  2,  -2, -1, 0,
                           1,  2,  -2, -1, 0,  1, 2,  -2, -1, 0,  1,
@@ -4917,7 +4917,7 @@ void UnitClass::Shroud_Regen(void) {
  *                                                                                             *
  * HISTORY: * 11/03/1996 JLB : Created. *
  *=============================================================================================*/
-int UnitClass::Mission_Guard_Area(void) {
+int UnitClass::Mission_Guard_Area() {
   assert(IsActive);
 
   /*

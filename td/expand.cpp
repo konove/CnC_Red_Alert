@@ -79,7 +79,7 @@ static char* CreateIndexedListItem(int index, const std::string& str) {
 
 #ifdef NEWMENU
 
-bool Expansion_Present(void) {
+bool Expansion_Present() {
   CCFileClass file("EXPAND.DAT");
 
   return (file.Is_Available());
@@ -119,7 +119,7 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected) {
   }
 }
 
-bool Expansion_Dialog(void) {
+bool Expansion_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   int option_width = 236 * factor;
@@ -287,7 +287,7 @@ bool Expansion_Dialog(void) {
  *                                                                                             *
  * HISTORY: * 3/26/97 11:07AM ST : Created *
  *=============================================================================================*/
-bool Bonus_Dialog(void) {
+bool Bonus_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   int option_width = 236 * factor;

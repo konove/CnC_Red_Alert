@@ -173,7 +173,7 @@ class TeamClass : public AbstractClass {
   TCountDownTimerClass SuspendTimer;
 
   //------------------------------------------------------------
-  TeamClass(void) : Class(nullptr), House(nullptr) {
+  TeamClass() : Class(nullptr), House(nullptr) {
     IsActive = false;
     Member = nullptr;
     IsAltered = true;
@@ -185,31 +185,31 @@ class TeamClass : public AbstractClass {
         House(House),
         SuspendTimer(x),
         TimeOut(x) {};
-  virtual ~TeamClass(void);
-  virtual RTTIType What_Am_I(void) const { return RTTI_TEAM; };
+  virtual ~TeamClass();
+  virtual RTTIType What_Am_I() const { return RTTI_TEAM; };
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
-  static void Init(void);
+  static void Init();
   static void Suspend_Teams(int priority);
 
-  TARGET As_Target(void) const;
+  TARGET As_Target() const;
 
   /*
   **	File I/O.
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
-  void Force_Active(void) {
+  void Force_Active() {
     IsForcedActive = true;
     IsUnderStrength = false;
   };
   bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
-  void AI(void);
+  void AI();
   void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
   bool Add(FootClass*, int typeindex = -1);
   void Assign_Mission_Target(TARGET new_target);
@@ -217,7 +217,7 @@ class TeamClass : public AbstractClass {
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	This is a record of the current number of active teams of each
@@ -237,16 +237,16 @@ class TeamClass : public AbstractClass {
   */
   TCountDownTimerClass TimeOut;
 
-  void Coordinate_Unload(void);
-  bool Coordinate_Regroup(void);
-  void Coordinate_Attack(void);
-  void Coordinate_Move(void);
+  void Coordinate_Unload();
+  bool Coordinate_Regroup();
+  void Coordinate_Attack();
+  void Coordinate_Move();
   void Coordinate_Conscript(FootClass* unit);
   //		void Control(FootClass *, bool initial=false);
   void Calc_Center(CELL& center, CELL& obj_center) const;
   int Recruit(int typeindex);
   bool Is_A_Member(void const* who) const;
-  bool Lagging_Units(void);
+  bool Lagging_Units();
 
   /*
   **	Points to the first member in the list of members for this team.

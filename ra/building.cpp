@@ -657,7 +657,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Shape_Number(void) const {
+int BuildingClass::Shape_Number() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -915,7 +915,7 @@ bool BuildingClass::Mark(MarkType mark) {
  * HISTORY: * 05/31/1994 JLB : Created. * 12/26/1994 JLB : Handles production. *
  *   06/11/1995 JLB : Revamped. *
  *=============================================================================================*/
-void BuildingClass::AI(void) {
+void BuildingClass::AI() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -1731,7 +1731,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
  *                                                                                             *
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
-BuildingClass::~BuildingClass(void) {
+BuildingClass::~BuildingClass() {
   if (GameActive && Class) {
     if (House) {
       House->Tracking_Remove(this);
@@ -1959,7 +1959,7 @@ void BuildingClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Init(void) { Buildings.Free_All(); }
+void BuildingClass::Init() { Buildings.Free_All(); }
 
 /***********************************************************************************************
  * BuildingClass::Exit_Object -- Initiates an object to leave the building. *
@@ -2247,7 +2247,7 @@ int BuildingClass::Exit_Object(TechnoClass *base) {
  * HISTORY: * 11/11/1994 JLB : Created. * 12/23/1994 JLB : Only updates for
  *PLAYER buildings.                                       *
  *=============================================================================================*/
-void BuildingClass::Update_Buildables(void) {
+void BuildingClass::Update_Buildables() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -2333,7 +2333,7 @@ void BuildingClass::Update_Buildables(void) {
  *                                                                                             *
  * HISTORY: * 11/30/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Fire_Out(void) {
+void BuildingClass::Fire_Out() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 }
@@ -2354,7 +2354,7 @@ void BuildingClass::Fire_Out(void) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Limbo(void) {
+bool BuildingClass::Limbo() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -2411,7 +2411,7 @@ bool BuildingClass::Limbo(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-DirType BuildingClass::Turret_Facing(void) const {
+DirType BuildingClass::Turret_Facing() const {
   if (!Class->IsTurretEquipped && Target_Legal(TarCom)) {
     return (::Direction(Center_Coord(), As_Coord(TarCom)));
   }
@@ -2853,7 +2853,7 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Center_Coord(void) const {
+COORDINATE BuildingClass::Center_Coord() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -2878,7 +2878,7 @@ COORDINATE BuildingClass::Center_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Docking_Coord(void) const {
+COORDINATE BuildingClass::Docking_Coord() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -2971,7 +2971,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Toggle_Primary(void) {
+bool BuildingClass::Toggle_Primary() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3204,7 +3204,7 @@ bool BuildingClass::Captured(HouseClass *newowner) {
  * HISTORY: * 05/23/1995 JLB : Created. * 06/19/1995 JLB : Handles buildings
  *that come with bibs built-in.                          *
  *=============================================================================================*/
-COORDINATE BuildingClass::Sort_Y(void) const {
+COORDINATE BuildingClass::Sort_Y() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3279,7 +3279,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *buildup data, then the building can't be sold.            * 07/17/1995 JLB :
  *Cannot sell a refinery that has a harvester attached.                    *
  *=============================================================================================*/
-bool BuildingClass::Can_Demolish(void) const {
+bool BuildingClass::Can_Demolish() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3310,7 +3310,7 @@ bool BuildingClass::Can_Demolish(void) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Guard(void) {
+int BuildingClass::Mission_Guard() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3397,7 +3397,7 @@ int BuildingClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Construction(void) {
+int BuildingClass::Mission_Construction() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3452,7 +3452,7 @@ int BuildingClass::Mission_Construction(void) {
  *units on a repair bay.                                 * 08/20/1995 JLB :
  *Scatters infantry from scattered starting points.                        *
  *=============================================================================================*/
-int BuildingClass::Mission_Deconstruction(void) {
+int BuildingClass::Mission_Deconstruction() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3667,7 +3667,7 @@ int BuildingClass::Mission_Deconstruction(void) {
  * HISTORY: * 06/25/1995 JLB : Created. * 02/22/1996 JLB : SAM doesn't lower
  *back into ground.                                      *
  *=============================================================================================*/
-int BuildingClass::Mission_Attack(void) {
+int BuildingClass::Mission_Attack() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3794,7 +3794,7 @@ int BuildingClass::Mission_Attack(void) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Harvest(void) {
+int BuildingClass::Mission_Harvest() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -3875,7 +3875,7 @@ int BuildingClass::Mission_Harvest(void) {
  *facility                                                  * 07/29/1995 JLB :
  *Repair rate is controlled by power rating.                               *
  *=============================================================================================*/
-int BuildingClass::Mission_Repair(void) {
+int BuildingClass::Mission_Repair() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4107,7 +4107,7 @@ int BuildingClass::Mission_Repair(void) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
-int BuildingClass::Mission_Missile(void) {
+int BuildingClass::Mission_Missile() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4397,7 +4397,7 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
  *                                                                                             *
  * HISTORY: * 06/28/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Pip_Count(void) const {
+int BuildingClass::Pip_Count() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4445,7 +4445,7 @@ void BuildingClass::Death_Announcement(TechnoClass const *source) const {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-DirType BuildingClass::Fire_Direction(void) const {
+DirType BuildingClass::Fire_Direction() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4471,7 +4471,7 @@ DirType BuildingClass::Fire_Direction(void) const {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void const *BuildingClass::Remap_Table(void) {
+void const *BuildingClass::Remap_Table() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4494,7 +4494,7 @@ void const *BuildingClass::Remap_Table(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Mission_Unload(void) {
+int BuildingClass::Mission_Unload() {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4621,7 +4621,7 @@ int BuildingClass::Mission_Unload(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Power_Output(void) const {
+int BuildingClass::Power_Output() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4678,7 +4678,7 @@ void BuildingClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryType BuildingClass::Crew_Type(void) const {
+InfantryType BuildingClass::Crew_Type() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4884,7 +4884,7 @@ CELL BuildingClass::Find_Exit_Cell(TechnoClass const *techno) const {
  *                                                                                             *
  * HISTORY: * 10/04/1995 JLB : Created. *
  *=============================================================================================*/
-bool BuildingClass::Can_Player_Move(void) const {
+bool BuildingClass::Can_Player_Move() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4906,7 +4906,7 @@ bool BuildingClass::Can_Player_Move(void) const {
  *                                                                                             *
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Exit_Coord(void) const {
+COORDINATE BuildingClass::Exit_Coord() const {
   assert(Buildings.ID(this) == ID);
   assert(IsActive);
 
@@ -4980,7 +4980,7 @@ CELL BuildingClass::Check_Point(CheckPointType cp) const {
  *                                                                                             *
  * HISTORY: * 03/22/1996 BWG : Created. *
  *=============================================================================================*/
-void BuildingClass::Update_Radar_Spied(void) {
+void BuildingClass::Update_Radar_Spied() {
   House->RadarSpied = 0;
   for (int index = 0; index < Buildings.Count(); index++) {
     BuildingClass *obj = Buildings.Ptr(index);
@@ -5167,7 +5167,7 @@ void BuildingClass::Write_INI(CCINIClass &ini) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Target_Coord(void) const {
+COORDINATE BuildingClass::Target_Coord() const {
   COORDINATE coord = Center_Coord();
 
   if (Class->FoundationFace != FACING_NONE) {
@@ -5192,7 +5192,7 @@ COORDINATE BuildingClass::Target_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Factory_AI(void) {
+void BuildingClass::Factory_AI() {
   /*
   **	Handle any production tied to this building. Only computer controlled
   *buildings have *	production attached to the building itself. The player
@@ -5338,7 +5338,7 @@ void BuildingClass::Factory_AI(void) {
  * HISTORY: * 07/29/1996 JLB : Created. * 10/27/1996 JLB : Rotation does not
  *occur if power and no power avail.                     *
  *=============================================================================================*/
-void BuildingClass::Rotation_AI(void) {
+void BuildingClass::Rotation_AI() {
   if (Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION &&
       (!Class->IsPowered || House->Power_Fraction() >= 1)) {
@@ -5369,7 +5369,7 @@ void BuildingClass::Rotation_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Charging_AI(void) {
+void BuildingClass::Charging_AI() {
   if (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsElectric &&
       BState != BSTATE_CONSTRUCTION) {
     if (Target_Legal(TarCom) && House->Power_Fraction() >= 1) {
@@ -5419,7 +5419,7 @@ void BuildingClass::Charging_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Repair_AI(void) {
+void BuildingClass::Repair_AI() {
   if (House->IQ >= Rule.IQRepairSell && Mission != MISSION_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION) {
     /*
@@ -5496,7 +5496,7 @@ void BuildingClass::Repair_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Animation_AI(void) {
+void BuildingClass::Animation_AI() {
   bool stagechange = Graphic_Logic();
   bool toloop = false;
 
@@ -5588,7 +5588,7 @@ void BuildingClass::Animation_AI(void) {
  *                                                                                             *
  * HISTORY: * 08/04/1996 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::How_Many_Survivors(void) const {
+int BuildingClass::How_Many_Survivors() const {
   if (IsSurvivorless || !Class->IsCrew) return (0);
 
   int divisor = InfantryTypeClass::As_Reference(INFANTRY_E1).Raw_Cost();
@@ -5613,7 +5613,7 @@ int BuildingClass::How_Many_Survivors(void) const {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const *BuildingClass::Get_Image_Data(void) const {
+void const *BuildingClass::Get_Image_Data() const {
   if (BState == BSTATE_CONSTRUCTION) {
     return (Class->Get_Buildup_Data());
   }
@@ -5636,7 +5636,7 @@ void const *BuildingClass::Get_Image_Data(void) const {
  *                                                                                             *
  * HISTORY: * 09/16/1996 JLB : Created. *
  *=============================================================================================*/
-int BuildingClass::Value(void) const {
+int BuildingClass::Value() const {
   if (Class->IsFake) {
     switch (Class->Type) {
       case STRUCT_FAKEWEAP:
@@ -5680,7 +5680,7 @@ int BuildingClass::Value(void) const {
  *                                                                                             *
  * HISTORY: * 09/20/1996 BWG : Created. *
  *=============================================================================================*/
-void BuildingClass::Remove_Gap_Effect(void) {
+void BuildingClass::Remove_Gap_Effect() {
   // unjam this one's field...
   Map.UnJam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, House);
   if (!House->IsPlayerControl && PlayerPtr->IsGPSActive) {

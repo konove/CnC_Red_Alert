@@ -294,7 +294,7 @@ void VesselTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Init_Heap(void) {
+void VesselTypeClass::Init_Heap() {
   /*
   **	These vessel type class objects must be allocated in the exact order
   *that they *	are specified in the VesselType enumeration. This is necessary
@@ -429,7 +429,7 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Prep_For_Add(void) {
+void VesselTypeClass::Prep_For_Add() {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data() != NULL) {
       Map.Add_To_List(&As_Reference(index));
@@ -524,7 +524,7 @@ void VesselTypeClass::Dimensions(int& width, int& height) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::One_Time(void) {
+void VesselTypeClass::One_Time() {
   for (VesselType index = VESSEL_FIRST; index < VESSEL_COUNT; index++) {
     VesselTypeClass& uclass = As_Reference(index);
     if (uclass.Level != -1 || index == VESSEL_CARRIER) {
@@ -609,7 +609,7 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-short const* VesselTypeClass::Overlap_List(void) const {
+short const* VesselTypeClass::Overlap_List() const {
   static short const _ship[] = {-3,
                                 -2,
                                 -1,
@@ -680,4 +680,4 @@ VesselType VesselTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
-int VesselTypeClass::Max_Pips(void) const { return (Max_Passengers()); }
+int VesselTypeClass::Max_Pips() const { return (Max_Passengers()); }

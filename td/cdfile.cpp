@@ -79,7 +79,7 @@ CDFileClass::CDFileClass(char const* filename) : IsDisabled(false) {
   memset(RawPath, 0, sizeof(RawPath));
 }
 
-CDFileClass::CDFileClass(void) : IsDisabled(false) {}
+CDFileClass::CDFileClass() : IsDisabled(false) {}
 
 /***********************************************************************************************
  * CDFileClass::Open -- Opens the file object -- with path search. *
@@ -113,7 +113,7 @@ int CDFileClass::Open(int rights) { return (RawFileClass::Open(rights)); }
  *                                                                                             *
  * HISTORY: * 5/22/96 9:01AM ST : Created *
  *=============================================================================================*/
-void CDFileClass::Refresh_Search_Drives(void) {
+void CDFileClass::Refresh_Search_Drives() {
   Clear_Search_Drives();
   Set_Search_Drives(RawPath);
 }
@@ -309,7 +309,7 @@ void CDFileClass::Add_Search_Drive(char* path) {
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-void CDFileClass::Clear_Search_Drives(void) {
+void CDFileClass::Clear_Search_Drives() {
   SearchDriveType* chain;  // Working pointer to path chain.
 
   chain = First;
@@ -455,7 +455,7 @@ int CDFileClass::Open(char const* filename, int rights) {
 
 #ifdef NEVER
 /* Get the drive letters if the CD's online */
-WORD __cdecl GetCDDrive(VOID) {
+WORD __cdecl GetCDDrive() {
   _ES = FP_SEG(&cdDrive[0]);
   _BX = FP_OFF(&cdDrive[0]);
   _AX = 0x150d;
@@ -464,7 +464,7 @@ WORD __cdecl GetCDDrive(VOID) {
 }
 #endif
 
-int Get_CD_Drive(void) {
+int Get_CD_Drive() {
 #ifdef NEVER
   for (int index = 0; index < 26; index++) {
     union REGS regs;

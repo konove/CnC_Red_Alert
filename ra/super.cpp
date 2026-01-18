@@ -174,7 +174,7 @@ bool SuperClass::Enable(bool onetime, bool player, bool quiet) {
  *                                                                                             *
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
-bool SuperClass::Remove(void) {
+bool SuperClass::Remove() {
   if (IsPresent && !IsOneTime) {
     IsReady = false;
     IsPresent = false;
@@ -297,7 +297,7 @@ bool SuperClass::AI(const bool player) {
  * HISTORY: * 07/28/1995 JLB : Created. * 10/11/1996 JLB : Doesn't show complete
  *until really complete.                             *
  *=============================================================================================*/
-int SuperClass::Anim_Stage(void) const {
+int SuperClass::Anim_Stage() const {
   if (IsPresent) {
     if (IsReady) {
       return (ANIMATION_STAGES);
@@ -331,7 +331,7 @@ int SuperClass::Anim_Stage(void) const {
  *                                                                                             *
  * HISTORY: * 07/28/1995 JLB : Created. *
  *=============================================================================================*/
-void SuperClass::Impatient_Click(void) const {
+void SuperClass::Impatient_Click() const {
   if (!Control.Is_Active()) {
     Speak(VoxSuspend);
   } else {

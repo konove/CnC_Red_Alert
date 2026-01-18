@@ -88,7 +88,7 @@
 #include "td/techno.h"
 #include "td/type.h"
 #ifdef CHEAT_KEYS
-int FactoryClass::Validate(void) const {
+int FactoryClass::Validate() const {
   int num;
 
   num = Factories.ID(this);
@@ -116,7 +116,7 @@ int FactoryClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass(void) {
+FactoryClass::FactoryClass() {
   IsSuspended = false;
   IsDifferent = false;
   Balance = 0;
@@ -142,7 +142,7 @@ FactoryClass::FactoryClass(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::~FactoryClass(void) {
+FactoryClass::~FactoryClass() {
   if (GameActive) {
     Abandon();
   }
@@ -163,7 +163,7 @@ FactoryClass::~FactoryClass(void) {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Init(void) { Factories.Free_All(); }
+void FactoryClass::Init() { Factories.Free_All(); }
 
 /***********************************************************************************************
  * FactoryClass::operator new -- Allocates a factory object from the free
@@ -228,7 +228,7 @@ void FactoryClass::operator delete(void* ptr) {
  * HISTORY: * 12/26/1994 JLB : Created. * 01/04/1995 JLB : Uses exact
  *installment payment method.                                   *
  *=============================================================================================*/
-void FactoryClass::AI(void) {
+void FactoryClass::AI() {
   Validate();
   if (!IsSuspended && (Object != nullptr || SpecialItem)) {
     int stages = 1;
@@ -315,7 +315,7 @@ void FactoryClass::AI(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Has_Changed(void) {
+bool FactoryClass::Has_Changed() {
   Validate();
   bool changed = IsDifferent;
   IsDifferent = false;
@@ -468,7 +468,7 @@ void FactoryClass::Set(TechnoClass& object) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Suspend(void) {
+bool FactoryClass::Suspend() {
   Validate();
   if (!IsSuspended) {
     IsSuspended = true;
@@ -495,7 +495,7 @@ bool FactoryClass::Suspend(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Start(void) {
+bool FactoryClass::Start() {
   Validate();
   if ((Object || SpecialItem) && IsSuspended && !Has_Completed()) {
     if (House->Available_Money() >= Cost_Per_Tick()) {
@@ -539,7 +539,7 @@ bool FactoryClass::Start(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Abandon(void) {
+bool FactoryClass::Abandon() {
   Validate();
   if (Object) {
     if (Object) {
@@ -590,7 +590,7 @@ bool FactoryClass::Abandon(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-int FactoryClass::Completion(void) {
+int FactoryClass::Completion() {
   Validate();
   return (Fetch_Stage());
 }
@@ -612,7 +612,7 @@ int FactoryClass::Completion(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Has_Completed(void) {
+bool FactoryClass::Has_Completed() {
   Validate();
   if (Object && Fetch_Stage() == STEP_COUNT) {
     return (true);
@@ -636,7 +636,7 @@ bool FactoryClass::Has_Completed(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-TechnoClass* FactoryClass::Get_Object(void) const {
+TechnoClass* FactoryClass::Get_Object() const {
   Validate();
   return (Object);
 }
@@ -651,7 +651,7 @@ TechnoClass* FactoryClass::Get_Object(void) const {
  * HISTORY:                                                                *
  *   05/05/1995 PWG : Created.                                             *
  *=========================================================================*/
-int FactoryClass::Get_Special_Item(void) const {
+int FactoryClass::Get_Special_Item() const {
   Validate();
   return (SpecialItem);
 }
@@ -672,7 +672,7 @@ int FactoryClass::Get_Special_Item(void) const {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-int FactoryClass::Cost_Per_Tick(void) {
+int FactoryClass::Cost_Per_Tick() {
   Validate();
   if (Object) {
     int steps = STEP_COUNT - Fetch_Stage();
@@ -702,7 +702,7 @@ int FactoryClass::Cost_Per_Tick(void) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool FactoryClass::Completed(void) {
+bool FactoryClass::Completed() {
   Validate();
   if (Object && Fetch_Stage() == STEP_COUNT) {
     Object = nullptr;

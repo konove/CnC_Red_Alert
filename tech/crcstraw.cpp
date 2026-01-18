@@ -91,4 +91,4 @@ int CRCStraw::Get(void* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long CRCStraw::Result(void) const { return crc_.Value(); }
+long CRCStraw::Result() const { return crc_.Value(); }

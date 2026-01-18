@@ -208,7 +208,7 @@ DisplayClass::TacticalClass DisplayClass::TacButton;
  *                                                                                             *
  * HISTORY: * 12/06/1994 JLB : Created. *
  *=============================================================================================*/
-DisplayClass::DisplayClass(void)
+DisplayClass::DisplayClass()
     : TacticalCoord(0),
       TacLeptonWidth(0),
       TacLeptonHeight(0),
@@ -256,7 +256,7 @@ DisplayClass::DisplayClass(void)
  *now.                                                * 06/02/1994 JLB : Takes
  *care of misc display tables and data allocation.                   *
  *=============================================================================================*/
-void DisplayClass::One_Time(void) {
+void DisplayClass::One_Time() {
   MapClass::One_Time();
 
   // Sized here rather than in constructor to follow one-time init pattern.
@@ -296,7 +296,7 @@ void DisplayClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Init_Clear(void) {
+void DisplayClass::Init_Clear() {
   MapClass::Init_Clear();
 
   /*
@@ -331,7 +331,7 @@ void DisplayClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void DisplayClass::Init_IO(void) {
+void DisplayClass::Init_IO() {
   MapClass::Init_IO();
   /*
   ** Re-attach our buttons to the main map button list, only in non-edit mode.
@@ -2135,7 +2135,7 @@ void DisplayClass::Draw_It(bool forced) {
  *   12/24/1994 JLB : Uses the cell bit flag array to determine what to redraw.
  **
  *=============================================================================================*/
-void DisplayClass::Redraw_Icons(void) {
+void DisplayClass::Redraw_Icons() {
   IsShadowPresent = false;
   for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
        y += CELL_LEPTON_H) {
@@ -2178,7 +2178,7 @@ void DisplayClass::Redraw_Icons(void) {
 }
 
 #ifdef SORTDRAW
-void DisplayClass::Redraw_OIcons(void) {
+void DisplayClass::Redraw_OIcons() {
   for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
        y += CELL_LEPTON_H) {
     for (int x = -Coord_XLepton(TacticalCoord); x <= TacLeptonWidth;
@@ -2226,7 +2226,7 @@ void DisplayClass::Redraw_OIcons(void) {
  * HISTORY: * 01/01/1995 JLB : Created. * 08/06/1995 JLB : Clips the fill rect
  *if necessary.                                        *
  *=============================================================================================*/
-void DisplayClass::Redraw_Shadow(void) {
+void DisplayClass::Redraw_Shadow() {
   if (IsShadowPresent) {
     for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
          y += CELL_LEPTON_H) {
@@ -2736,7 +2736,7 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Band(void) {
+void DisplayClass::Refresh_Band() {
   if (IsRubberBand) {
     /*
     **	In rubber band mode, mark all cells under the "rubber band" to be
@@ -3047,7 +3047,7 @@ int DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 02/24/1995 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Mouse_Right_Press(void) {
+void DisplayClass::Mouse_Right_Press() {
   if (PendingObjectPtr && PendingObjectPtr->Is_Techno()) {
     // PendingObjectPtr->Transmit_Message(RADIO_OVER_OUT);
     PendingObjectPtr = nullptr;
@@ -3808,7 +3808,7 @@ void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
  *loop.                                                     * 10/20/1996 JLB :
  *Doesn't wrap.                                                            *
  *=============================================================================================*/
-void DisplayClass::Compute_Start_Pos(void) {
+void DisplayClass::Compute_Start_Pos() {
   /*
   **	Find the summation cell-x & cell-y for all the player's units, infantry,
   **	and buildings.  Buildings are weighted so that they count 16 times more
@@ -4131,7 +4131,7 @@ void DisplayClass::Center_Map(COORDINATE center) {
  *                                                                                             *
  * HISTORY: * 10/16/1995 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Encroach_Shadow(void) {
+void DisplayClass::Encroach_Shadow() {
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (!In_Radar(cell)) continue;
 

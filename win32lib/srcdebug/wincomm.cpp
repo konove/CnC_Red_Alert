@@ -82,7 +82,7 @@ WinModemClass* SerialPort = NULL;
  * HISTORY: * 1/10/96 2:14PM ST : Created *
  *=============================================================================================*/
 
-WinModemClass::WinModemClass(void) {
+WinModemClass::WinModemClass() {
   /*
   ** Allocate memory for our internal circular serial input buffer
   */
@@ -136,7 +136,7 @@ WinModemClass::WinModemClass(void) {
  * HISTORY: * 1/10/96 2:15PM ST : Created *
  *=============================================================================================*/
 
-WinModemClass::~WinModemClass(void) {
+WinModemClass::~WinModemClass() {
   /*
   ** Close the port
   */
@@ -632,7 +632,7 @@ void WinModemClass::Set_Modem_Dial_Type(WinCommDialMethodType method) {
  * HISTORY: * 1/10/96 2:24PM ST : Created *
  *=============================================================================================*/
 
-unsigned WinModemClass::Get_Modem_Status(void) {
+unsigned WinModemClass::Get_Modem_Status() {
   DWORD modem_stat = 0;
   unsigned long return_stat = 0;
 
@@ -687,7 +687,7 @@ void WinModemClass::Set_Serial_DTR(BOOL state) {
  * HISTORY: * 1/10/96 2:26PM ST : Created *
  *=============================================================================================*/
 
-void WinModemClass::Serial_Port_Close(void) {
+void WinModemClass::Serial_Port_Close() {
   if (PortHandle) {
     CloseHandle(PortHandle);
     PortHandle = 0;
@@ -710,7 +710,7 @@ void WinModemClass::Serial_Port_Close(void) {
  *=============================================================================================*/
 
 void Smart_Printf(char* format, ...);
-BOOL WinModemClass::Read_Serial_Chars(void) {
+BOOL WinModemClass::Read_Serial_Chars() {
   DWORD bytes_read;            // amount of data read this time
   BOOL read_result;            // result of ReadFile
   BOOL overlap_result;         // result of GetOverlappedResult
@@ -1330,9 +1330,7 @@ void WinModemClass::Set_Echo_Function(void (*func)(char c)) {
  *                                                                                             *
  * HISTORY: * 1/10/96 2:35PM ST : Created *
  *=============================================================================================*/
-void WinModemClass::Set_Abort_Function(int (*func)(void)) {
-  AbortFunction = func;
-}
+void WinModemClass::Set_Abort_Function(int (*func)()) { AbortFunction = func; }
 
 /***********************************************************************************************
  * WMC::Get_Port_Handle -- returns a handle to the communications port *
@@ -1347,4 +1345,4 @@ void WinModemClass::Set_Abort_Function(int (*func)(void)) {
  *                                                                                             *
  * HISTORY: * 5/23/96 1:25PM ST : Created *
  *=============================================================================================*/
-HANDLE WinModemClass::Get_Port_Handle(void) { return (PortHandle); }
+HANDLE WinModemClass::Get_Port_Handle() { return (PortHandle); }

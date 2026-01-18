@@ -52,7 +52,7 @@ HANDLE ThreadHandle;
 BOOL MessageLoopThread = FALSE;
 #define MODE_WIDTH 640   // Width in pixels of required video mode
 #define MODE_HEIGHT 400  // Height in pixels of required video mode
-void Message_Loop(void);
+void Message_Loop();
 HANDLE ActiveEvent;
 WWKeyboardClass Kbd;
 #if (0)
@@ -610,7 +610,7 @@ long FAR PASCAL _export WndProc(HWND hwnd, UINT message, UINT wParam,
   return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
-void Message_Loop(void) {
+void Message_Loop() {
   int key, shift, ctrl, alt, rls, dbl;
   char buffer[255];
   HDC hdc;

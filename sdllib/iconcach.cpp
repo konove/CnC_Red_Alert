@@ -183,6 +183,6 @@ void Buffer_Draw_Stamp_Clip(void const* thisptr, void const* icondata, int icon,
   }
 }
 
-void Restore_Cached_Icons(void) { printf("%s\n", __func__); }
+void Restore_Cached_Icons() { printf("%s\n", __func__); }
 
 void Register_Icon_Set(const void* /*icon_data*/, bool /*pre_cache*/) {}

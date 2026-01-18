@@ -188,13 +188,13 @@ class MapEditClass : public MouseClass {
   /*
   **	mapedit.cpp
   */
-  MapEditClass(void);
+  MapEditClass();
   MapEditClass(NoInitClass const& x) : MouseClass(x) {};
   bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_index);
 
-  virtual void One_Time(void);  // One-time init
-  virtual void Init_IO(void);   // Inits button list
+  virtual void One_Time();  // One-time init
+  virtual void Init_IO();   // Inits button list
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool forced = true);
   virtual bool Scroll_Map(DirType facing, int& distance, bool really = true);
@@ -204,11 +204,11 @@ class MapEditClass : public MouseClass {
   void Detach(TARGET target, bool all = true) {
     MouseClass::Detach(target, all);
   }
-  void Clear_List(void);
+  void Clear_List();
   bool Add_To_List(ObjectTypeClass const* object);
-  void Main_Menu(void);
-  void AI_Menu(void);
-  bool Mouse_Moved(void);
+  void Main_Menu();
+  void AI_Menu();
+  bool Mouse_Moved();
   bool Verify_House(HousesType house, ObjectTypeClass const* objtype);
   HousesType Cycle_House(HousesType curhouse, ObjectTypeClass const* objtype);
   //		int Trigger_Needs_Team(TriggerClass *trigger);
@@ -217,46 +217,46 @@ class MapEditClass : public MouseClass {
   /*
   **	mapeddlg.cpp
   */
-  int New_Scenario(void);
-  int Load_Scenario(void);
-  int Save_Scenario(void);
+  int New_Scenario();
+  int Load_Scenario();
+  int Save_Scenario();
   int Pick_Scenario(char const* caption, int& scen_nump,
                     ScenarioPlayerType& playerp, ScenarioDirType& dirp,
                     ScenarioVarType& varp);
   int Size_Map(int x, int y, int w, int h);
-  int Scenario_Dialog(void);
-  void Handle_Triggers(void);
-  int Select_Trigger(void);
+  int Scenario_Dialog();
+  void Handle_Triggers();
+  int Select_Trigger();
 
   /*
   **	mapedplc.cpp
   */
-  int Placement_Dialog(void);
-  void Start_Placement(void);
-  int Place_Object(void);
-  void Cancel_Placement(void);
-  void Place_Next(void);
-  void Place_Prev(void);
-  void Place_Next_Category(void);
-  void Place_Prev_Category(void);
-  void Place_Home(void);
-  void Toggle_House(void);
+  int Placement_Dialog();
+  void Start_Placement();
+  int Place_Object();
+  void Cancel_Placement();
+  void Place_Next();
+  void Place_Prev();
+  void Place_Next_Category();
+  void Place_Prev_Category();
+  void Place_Home();
+  void Toggle_House();
   void Set_House_Buttons(HousesType house, GadgetClass* btnlist, int base_id);
-  void Start_Trigger_Placement(void);
-  void Stop_Trigger_Placement(void);
-  void Place_Trigger(void);
-  void Start_Base_Building(void);
-  void Cancel_Base_Building(void);
+  void Start_Trigger_Placement();
+  void Stop_Trigger_Placement();
+  void Place_Trigger();
+  void Start_Base_Building();
+  void Cancel_Base_Building();
   void Build_Base_To(int percent);
 
   /*
   **	mapedsel.cpp
   */
-  int Select_Object(void);
-  void Select_Next(void);
-  void Popup_Controls(void);
-  void Grab_Object(void);
-  int Move_Grabbed_Object(void);
+  int Select_Object();
+  void Select_Next();
+  void Popup_Controls();
+  void Grab_Object();
+  int Move_Grabbed_Object();
   bool Change_House(HousesType newhouse);
 
   /*

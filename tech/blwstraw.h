@@ -55,7 +55,7 @@ class BlowStraw : public Straw {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   BlowStraw(CryptControl control) : BF(nullptr), Counter(0), Control(control) {}
-  virtual ~BlowStraw(void) {
+  virtual ~BlowStraw() {
     delete BF;
     BF = nullptr;
   }

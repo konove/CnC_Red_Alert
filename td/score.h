@@ -62,31 +62,31 @@ class ScoreClass {
   int CHarvested;
   unsigned long ElapsedTime;
 
-  void Init(void) { memset(this, 0, sizeof(ScoreClass)); };
-  void Presentation(void);
+  void Init() { memset(this, 0, sizeof(ScoreClass)); };
+  void Presentation();
 
   /*
   **	File I/O.
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
  protected:
  private:
   unsigned char* ChangingGun;
 
   void ScoreDelay(int ticks);
-  void Pulse_Bar_Graph(void);
+  void Pulse_Bar_Graph();
   void Print_Graph_Title(int, int);
   void Print_Minutes(int minutes);
   void Count_Up_Print(char* str, int percent, int max, int xpos, int ypos);
   void Show_Credits(int house, unsigned char const pal[]);
   void Do_GDI_Graph(void const* yellowptr, void const* redptr, int gdikilled,
                     int nodkilled, int ypos);
-  void Do_Nod_Casualties_Graph(void);
-  void Do_Nod_Buildings_Graph(void);
+  void Do_Nod_Casualties_Graph();
+  void Do_Nod_Buildings_Graph();
   void Input_Name(char str[], int xpos, int ypos, unsigned char const pal[]);
 };
 
@@ -97,8 +97,8 @@ class ScoreAnimClass {
   int YPos;
   CountDownTimerClass Timer;
   void const* DataPtr;
-  virtual void Update(void) {};
-  virtual ~ScoreAnimClass(void) {};
+  virtual void Update() {};
+  virtual ~ScoreAnimClass() {};
 };
 
 class ScoreCredsClass : public ScoreAnimClass {
@@ -109,9 +109,9 @@ class ScoreCredsClass : public ScoreAnimClass {
   void const* CashTurn;
   void const* Clock1;
 
-  virtual void Update(void);
+  virtual void Update();
   ScoreCredsClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreCredsClass(void) {};
+  virtual ~ScoreCredsClass() {};
 };
 
 class ScoreTimeClass : public ScoreAnimClass {
@@ -119,9 +119,9 @@ class ScoreTimeClass : public ScoreAnimClass {
   int Stage;
   int MaxStage;
   int TimerReset;
-  virtual void Update(void);
+  virtual void Update();
   ScoreTimeClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreTimeClass(void) {};
+  virtual ~ScoreTimeClass() {};
 };
 
 class ScorePrintClass : public ScoreAnimClass {
@@ -129,12 +129,12 @@ class ScorePrintClass : public ScoreAnimClass {
   int Background;
   int Stage;
   void const* PrimaryPalette;
-  virtual void Update(void);
+  virtual void Update();
   ScorePrintClass(void const* string, int xpos, int ypos, void const* palette,
                   int background = TBLACK);
   ScorePrintClass(int string, int xpos, int ypos, void const* palette,
                   int background = TBLACK);
-  virtual ~ScorePrintClass(void) {};
+  virtual ~ScorePrintClass() {};
 };
 
 class MultiStagePrintClass : public ScoreAnimClass {
@@ -142,30 +142,30 @@ class MultiStagePrintClass : public ScoreAnimClass {
   int Background;
   int Stage;
   void const* PrimaryPalette;
-  virtual void Update(void);
+  virtual void Update();
   MultiStagePrintClass(void const* string, int xpos, int ypos,
                        void const* palette, int background = TBLACK);
   MultiStagePrintClass(int string, int xpos, int ypos, void const* palette,
                        int background = TBLACK);
-  virtual ~MultiStagePrintClass(void) {};
+  virtual ~MultiStagePrintClass() {};
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
  public:
   int Stage;
   unsigned char const* Palette;
-  virtual void Update(void);
+  virtual void Update();
   ScoreScaleClass(void const* data, int xpos, int ypos,
                   unsigned char const pal[]);
-  virtual ~ScoreScaleClass(void) {};
+  virtual ~ScoreScaleClass() {};
 };
 
 #define MAXSCOREOBJS 8
 extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
-void Multi_Score_Presentation(void);
+void Multi_Score_Presentation();
 
-void Map_Selection(void);
+void Map_Selection();
 void Bit_It_In_Scale(int x, int y, int w, int h, GraphicBufferClass* src,
                      GraphicBufferClass* dest, GraphicViewPortClass* seen,
                      int delay = 0, int dagger = 0);

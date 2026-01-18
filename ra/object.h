@@ -151,51 +151,51 @@ class ObjectClass : public AbstractClass {
   /*
   **	Object selection control.
   */
-  static void Init(void);
+  static void Init();
 
   /*
   **	Query functions.
   */
-  virtual bool Is_Players_Army(void) const { return (false); }
-  virtual void const* Get_Image_Data(void) const;
+  virtual bool Is_Players_Army() const { return (false); }
+  virtual void const* Get_Image_Data() const;
   virtual ActionType What_Action(ObjectClass const*) const;
   virtual ActionType What_Action(CELL) const;
-  virtual LayerType In_Which_Layer(void) const;
-  bool Is_Infantry(void) const { return (RTTI == RTTI_INFANTRY); };
-  bool Is_Foot(void) const {
+  virtual LayerType In_Which_Layer() const;
+  bool Is_Infantry() const { return (RTTI == RTTI_INFANTRY); };
+  bool Is_Foot() const {
     return (RTTI == RTTI_INFANTRY || RTTI == RTTI_UNIT || RTTI == RTTI_VESSEL ||
             RTTI == RTTI_AIRCRAFT);
   };
-  bool Is_Techno(void) const {
+  bool Is_Techno() const {
     return (RTTI == RTTI_BUILDING || RTTI == RTTI_UNIT ||
             RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
             RTTI == RTTI_AIRCRAFT);
   };
-  virtual int Get_Ownable(void) const;
-  virtual ObjectTypeClass const& Class_Of(void) const = 0;
-  virtual char const* Name(void) const;
-  virtual int Full_Name(void) const;
-  virtual bool Can_Repair(void) const;
-  virtual bool Can_Demolish(void) const;
-  virtual bool Can_Player_Fire(void) const;
-  virtual bool Can_Player_Move(void) const;
+  virtual int Get_Ownable() const;
+  virtual ObjectTypeClass const& Class_Of() const = 0;
+  virtual char const* Name() const;
+  virtual int Full_Name() const;
+  virtual bool Can_Repair() const;
+  virtual bool Can_Demolish() const;
+  virtual bool Can_Player_Fire() const;
+  virtual bool Can_Player_Move() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Docking_Coord(void) const;
-  virtual COORDINATE Target_Coord(void) const;
-  virtual COORDINATE Center_Coord(void) const;
-  virtual COORDINATE Render_Coord(void) const;
-  virtual COORDINATE Sort_Y(void) const;
+  virtual COORDINATE Docking_Coord() const;
+  virtual COORDINATE Target_Coord() const;
+  virtual COORDINATE Center_Coord() const;
+  virtual COORDINATE Render_Coord() const;
+  virtual COORDINATE Sort_Y() const;
   virtual COORDINATE Fire_Coord(int which) const;
-  virtual COORDINATE Exit_Coord(void) const;
+  virtual COORDINATE Exit_Coord() const;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
   virtual void Detach(TARGET target, bool all = true);
   virtual void Detach_All(bool all = true);
@@ -207,19 +207,19 @@ class ObjectClass : public AbstractClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void Do_Shimmer(void);
+  virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass*);
   virtual bool Render(bool forced);  // const;
   virtual short const* Occupy_List(bool placement = false) const;
   virtual short const* Overlap_List(bool redraw = false) const;
-  virtual fixed Health_Ratio(void) const;
+  virtual fixed Health_Ratio() const;
   virtual void Draw_It(int x, int y, WindowNumberType) const = 0;
-  virtual void Hidden(void);
+  virtual void Hidden();
   virtual void Look(bool incremental = false);
   virtual bool Mark(MarkType = MARK_CHANGE);
 
  private:
-  virtual void Mark_For_Redraw(void);
+  virtual void Mark_For_Redraw();
 
  public:
   /*
@@ -228,8 +228,8 @@ class ObjectClass : public AbstractClass {
   virtual void Active_Click_With(ActionType, ObjectClass*);
   virtual void Active_Click_With(ActionType, CELL);
   virtual void Clicked_As_Target(int = 7);
-  virtual bool Select(void);
-  virtual void Unselect(void);
+  virtual bool Select();
+  virtual void Unselect();
 
   /*
   **	Combat related.
@@ -240,10 +240,10 @@ class ObjectClass : public AbstractClass {
                                  TechnoClass* source = nullptr,
                                  bool forced = false);
   virtual void Scatter(COORDINATE, bool forced = false, bool nokidding = false);
-  virtual bool Catch_Fire(void);
-  virtual void Fire_Out(void);
-  virtual int Value(void) const;
-  virtual MissionType Get_Mission(void) const;
+  virtual bool Catch_Fire();
+  virtual void Fire_Out();
+  virtual int Value() const;
+  virtual MissionType Get_Mission() const;
 
   /*
   **	AI.
@@ -256,13 +256,13 @@ class ObjectClass : public AbstractClass {
   virtual bool Revealed(HouseClass* house);
   virtual void Repair(int);
   virtual void Sell_Back(int);
-  virtual void AI(void);
+  virtual void AI();
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
 /*
 **	Scenario and debug support.

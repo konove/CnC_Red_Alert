@@ -52,7 +52,7 @@
 #include "wwmem.h"
 #endif
 
-extern "C" unsigned long Largest_Mem_Block(void);
+extern "C" unsigned long Largest_Mem_Block();
 
 /*
 ** Define the equates necessary to call a DPMI interrupt.
@@ -72,7 +72,7 @@ unsigned long MaxRam = 0L;  // Record of total allocated at worst case.
 static unsigned long TotalRam = 0L;
 static unsigned long Memory_Calls = 0L;
 
-void (*Memory_Error)(void) = NULL;
+void (*Memory_Error)() = NULL;
 
 /***************************************************************************
  * DPMI_LOCK -- handles locking a block of DPMI memory                     *

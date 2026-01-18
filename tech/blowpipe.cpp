@@ -59,7 +59,7 @@
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int BlowPipe::Flush(void) {
+int BlowPipe::Flush() {
   int total = 0;
   if (Counter > 0 && BF != nullptr) {
     total += Pipe::Put(Buffer, Counter);

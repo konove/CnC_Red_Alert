@@ -93,7 +93,7 @@ bool RedrawOptionsMenu;
  *the mission objective.                                 * 07/27/1995 JLB :
  *Adjusts menu for multiplay mode.                                         *
  *=============================================================================================*/
-void GameOptionsClass::Process(void) {
+void GameOptionsClass::Process() {
   static struct {
     int ID;          // Button ID to use.
     int Text;        // Text number to use for this button.
@@ -590,7 +590,7 @@ void GameOptionsClass::Process(void) {
   Map.Render();
 }
 
-void GameOptionsClass::Adjust_Variables_For_Resolution(void) {
+void GameOptionsClass::Adjust_Variables_For_Resolution() {
   OptionWidth = (216 + 8) * RESFACTOR;
   OptionHeight = 111 * RESFACTOR;
   OptionX = ((SeenBuff.Get_Width() - OptionWidth) / 2);

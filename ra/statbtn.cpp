@@ -118,7 +118,7 @@ StaticButtonClass::StaticButtonClass(unsigned, char const* text,
  *                                                                                             *
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
-StaticButtonClass::StaticButtonClass(void)
+StaticButtonClass::StaticButtonClass()
     : GadgetClass(0, 0, 0, 0, FlagEnum(0)),
       String(nullptr),
       PrintFlags(TPF_8POINT) {}
@@ -217,7 +217,7 @@ void StaticButtonClass::Set_Text(char const* text, bool resize) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Draw_Background(void) {
+void StaticButtonClass::Draw_Background() {
   /*
   **	If the background hasn't been recorded from the buffer, then
   **	allocate and record the background image now.

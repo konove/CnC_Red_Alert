@@ -185,10 +185,10 @@ class MsgManager {
   static void enableWarn(int flag);
   static void enableError(int flag);
 
-  static ostream* debugStream(void);
-  static ostream* infoStream(void);
-  static ostream* warnStream(void);
-  static ostream* errorStream(void);
+  static ostream* debugStream();
+  static ostream* infoStream();
+  static ostream* warnStream();
+  static ostream* errorStream();
 };
 
 #endif

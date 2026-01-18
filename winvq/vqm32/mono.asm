@@ -94,7 +94,7 @@ PageMap	DD	0,1,2,3,4,5,6,7
 ;* SYNOPSIS
 ;*     Mono_Enable()
 ;*
-;*     void Mono_Enable(void);
+;*     void Mono_Enable();
 ;*
 ;* FUNCTION
 ;*     Turn on the MonoEnabled flag.
@@ -124,7 +124,7 @@ PageMap	DD	0,1,2,3,4,5,6,7
 ;* SYNOPSIS
 ;*     Mono_Disable()
 ;*
-;*     void Mono_Disable(void);
+;*     void Mono_Disable();
 ;*
 ;* FUNCTION
 ;*     Turn off the MonoEnabled flag.
@@ -154,7 +154,7 @@ PageMap	DD	0,1,2,3,4,5,6,7
 ;* SYNOPSIS
 ;*     X = Mono_X()
 ;*
-;*     long Mono_X(void);
+;*     long Mono_X();
 ;*
 ;* FUNCTION
 ;*     Return the X position of the mono screen cursor.
@@ -184,7 +184,7 @@ PageMap	DD	0,1,2,3,4,5,6,7
 ;* SYNOPSIS
 ;*     Y = Mono_Y()
 ;*
-;*     long Mono_Y(void);
+;*     long Mono_Y();
 ;*
 ;* FUNCTION
 ;*     Return the Y position of the mono screen cursor.
@@ -281,7 +281,7 @@ PageMap	DD	0,1,2,3,4,5,6,7
 ;* SYNOPSIS
 ;*     Mono_Clear_Screen()
 ;*
-;*     void Mono_Clear_Screen(void);
+;*     void Mono_Clear_Screen();
 ;*
 ;* FUNCTION
 ;*     Clear the mono screen and set the mono cursor to the upperleft corner

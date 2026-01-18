@@ -69,7 +69,7 @@ class MessageListClass {
   /*
   **	Constructor/Destructor
   */
-  MessageListClass(void);
+  MessageListClass();
   ~MessageListClass();
 
   /*
@@ -84,15 +84,15 @@ class MessageListClass {
   **	Message-editing routines
   */
   TextLabelClass* Add_Edit(int color, TextPrintType style, char* to, int width);
-  char* Get_Edit_Buf(void);
+  char* Get_Edit_Buf();
 
   /*
   **	Maintenance routines
   */
-  int Manage(void);
+  int Manage();
   int Input(KeyNumType& input);
-  void Draw(void);
-  int Num_Messages(void);
+  void Draw();
+  int Num_Messages();
   void Set_Width(int width);
 
  private:

@@ -100,7 +100,7 @@
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-INIClass::~INIClass(void) { Clear(); }
+INIClass::~INIClass() { Clear(); }
 
 /***********************************************************************************************
  * INIClass::Clear -- Clears out a section (or all sections) of the INI data. *
@@ -400,7 +400,7 @@ INIClass::INISection* INIClass::Find_Section(char const* section) const {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index manager. *
  *=============================================================================================*/
-int INIClass::Section_Count(void) const { return (SectionIndex.Count()); }
+int INIClass::Section_Count() const { return (SectionIndex.Count()); }
 
 /***********************************************************************************************
  * INIClass::Entry_Count -- Fetches the number of entries in a specified

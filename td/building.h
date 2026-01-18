@@ -68,7 +68,7 @@
 class BuildingClass : public TechnoClass {
  public:
   BuildingTypeClass const *const Class;
-  operator StructType(void) const { return Class->Type; };
+  operator StructType() const { return Class->Type; };
 
   /*
   **	If this building is in the process of producing something, then this
@@ -175,20 +175,20 @@ class BuildingClass : public TechnoClass {
   static void *operator new(size_t size) throw();
   static void *operator new(size_t, void *ptr) throw() { return (ptr); };
   static void operator delete(void *ptr);
-  BuildingClass(void) : Class(nullptr) {};
+  BuildingClass() : Class(nullptr) {};
   BuildingClass(StructType type, HousesType house);
   BuildingClass(NoInitClass const &x)
       : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {};
-  virtual ~BuildingClass(void);
-  virtual RTTIType What_Am_I(void) const { return RTTI_BUILDING; };
+  virtual ~BuildingClass();
+  virtual RTTIType What_Am_I() const { return RTTI_BUILDING; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
-  TARGET Target_Scan(void);
-  BuildingTypeClass::AnimControlType const *Fetch_Anim_Control(void) {
+  TARGET Target_Scan();
+  BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
     return (&Class->Anims[BState]);
   };
 
@@ -196,26 +196,26 @@ class BuildingClass : public TechnoClass {
   **	Query functions.
   */
   virtual CELL Find_Exit_Cell(TechnoClass const *techno) const;
-  virtual InfantryType Crew_Type(void) const;
-  virtual int Pip_Count(void) const;
-  virtual bool Can_Player_Move(void) const { return (false); };
+  virtual InfantryType Crew_Type() const;
+  virtual int Pip_Count() const;
+  virtual bool Can_Player_Move() const { return (false); };
   virtual ActionType What_Action(ObjectClass *target) const;
   virtual ActionType What_Action(CELL cell) const;
-  virtual bool Can_Demolish(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
-  virtual int Refund_Amount(void) const;
-  virtual DirType Fire_Direction(void) const;
-  int Power_Output(void) const;
+  virtual bool Can_Demolish() const;
+  virtual ObjectTypeClass const &Class_Of() const { return *Class; };
+  virtual int Refund_Amount() const;
+  virtual DirType Fire_Direction() const;
+  int Power_Output() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Docking_Coord(void) const;
+  virtual COORDINATE Docking_Coord() const;
   virtual COORDINATE Fire_Coord(int which) const;
-  virtual COORDINATE Center_Coord(void) const;
-  virtual COORDINATE Sort_Y(void) const;
-  virtual COORDINATE Target_Coord(void) const { return Center_Coord(); };
+  virtual COORDINATE Center_Coord() const;
+  virtual COORDINATE Sort_Y() const;
+  virtual COORDINATE Target_Coord() const { return Center_Coord(); };
 
   /*
   **	Object entry and exit from the game system.
@@ -223,22 +223,22 @@ class BuildingClass : public TechnoClass {
   virtual void Detach(TARGET target, bool all);
   virtual void Detach_All(bool all = true);
   virtual void Grand_Opening(bool captured = false);
-  virtual void Update_Buildables(void);
+  virtual void Update_Buildables();
   virtual MoveType Can_Enter_Cell(CELL cell, FacingType = FACING_NONE) const;
   virtual bool Unlimbo(COORDINATE, DirType dir = DIR_N);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   bool Passes_Proximity_Check(CELL homecell);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table(void);
+  virtual void const *Remap_Table();
   virtual int Exit_Object(TechnoClass *base);
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual bool Mark(MarkType mark);
   virtual void Look(bool incremental = false);
-  virtual void Fire_Out(void);
+  virtual void Fire_Out();
   void Begin_Mode(BStateType bstate);
 
   /*
@@ -255,32 +255,32 @@ class BuildingClass : public TechnoClass {
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
                                  TechnoClass *source = nullptr);
-  virtual TARGET As_Target(void) const;
+  virtual TARGET As_Target() const;
   virtual bool Captured(HouseClass *newowner);
 
   /*
   **	AI.
   */
-  virtual void Hidden(void);
+  virtual void Hidden();
   virtual bool Revealed(HouseClass *house);
   virtual void Repair(int control);
   virtual void Sell_Back(int control);
   virtual RadioMessageType Receive_Message(RadioClass *from,
                                            RadioMessageType message,
                                            long &param);
-  virtual void AI(void);
+  virtual void AI();
   virtual void Assign_Target(TARGET target);
-  virtual bool Toggle_Primary(void);
+  virtual bool Toggle_Primary();
   bool Flush_For_Placement(TechnoClass *techno, CELL cell);
 
-  virtual int Mission_Unload(void);
-  virtual int Mission_Repair(void);
-  virtual int Mission_Attack(void);
-  virtual int Mission_Harvest(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Construction(void);
-  virtual int Mission_Deconstruction(void);
-  virtual int Mission_Missile(void);
+  virtual int Mission_Unload();
+  virtual int Mission_Repair();
+  virtual int Mission_Attack();
+  virtual int Mission_Harvest();
+  virtual int Mission_Guard();
+  virtual int Mission_Construction();
+  virtual int Mission_Deconstruction();
+  virtual int Mission_Missile();
   virtual void Enter_Idle_Mode(bool initial = false);
 
 /*
@@ -295,17 +295,17 @@ class BuildingClass : public TechnoClass {
   */
   static void Read_INI(char *buffer);
   static void Write_INI(char *buffer);
-  static char const *INI_Name(void) { return "STRUCTURES"; };
+  static char const *INI_Name() { return "STRUCTURES"; };
   bool Load(FileClass &file);
   bool Save(FileClass &file);
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
-  void Update_Specials(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
+  void Update_Specials();
 
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
  private:
   void Drop_Debris(TARGET source = TARGET_NONE);

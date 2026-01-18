@@ -152,7 +152,7 @@ char PaletteLUT[256];
 #define CHUNK_HEIGHT RESFACTOR * 50
 
 #ifndef WIN32
-extern void Vsync(void);
+extern void Vsync();
 #pragma aux Vsync modify[edx ebx eax] =            \
                              "mov	edx,03DAh"       \
                              "mov	ebx,[VertBlank]" \
@@ -205,7 +205,7 @@ EgoClass::EgoClass(int x, int y, char* text, TextPrintType flags) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:54PM ST : Created *
  *=============================================================================================*/
-EgoClass::~EgoClass(void) { delete[] Text; }
+EgoClass::~EgoClass() { delete[] Text; }
 
 /***********************************************************************************************
  * EC::Scroll -- Apply the given distance to the y position of the text. * A
@@ -242,7 +242,7 @@ bool EgoClass::Scroll(int distance) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:57PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Render(void) {
+void EgoClass::Render() {
   if (YPos < LogicPage->Get_Height() && YPos > -16) {
     Fancy_Text_Print(Text, XPos, YPos, GadgetClass::Get_Color_Scheme(), TBLACK,
                      Flags);
@@ -420,7 +420,7 @@ void Slide_Show(int slide, int frame) {
  *                                                                                             *
  * HISTORY: * 9/10/96 0:20AM ST : Created *
  *=============================================================================================*/
-void Show_Who_Was_Responsible(void) {
+void Show_Who_Was_Responsible() {
   int i;
   int key;
 

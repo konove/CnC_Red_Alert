@@ -118,13 +118,13 @@ struct InfantryAnim {
   char delay;
   InfantryTypeClass const* Class;
 } InfantryMan[NUMINFANTRYMEN];
-void Draw_InfantryMen(void);
+void Draw_InfantryMen();
 void Draw_InfantryMan(int index);
 void New_Infantry_Anim(int index, int anim);
 void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled);
 void Animate_Cursor(int pos, int ypos);
-void Animate_Score_Objs(void);
-void Cycle_Wait_Click(void);
+void Animate_Score_Objs();
+void Cycle_Wait_Click();
 int ScorePass;
 
 void const* Beepy6;
@@ -312,7 +312,7 @@ ScoreTimeClass::ScoreTimeClass(int xpos, int ypos, void const* data, int max,
   TimerReset = timer;
 }
 
-void ScoreTimeClass::Update(void) {
+void ScoreTimeClass::Update() {
   GraphicViewPortClass* oldpage;
   if (!Timer.Time()) {
     Timer.Set(TimerReset);
@@ -335,7 +335,7 @@ ScoreCredsClass::ScoreCredsClass(int xpos, int ypos, void const* data, int max,
   CashTurn = MixFileClass::Retrieve("CASHTURN.AUD");
 }
 
-void ScoreCredsClass::Update(void) {
+void ScoreCredsClass::Update() {
   GraphicViewPortClass* oldpage;
   if (!Timer.Time()) {
     Timer.Set(TimerReset);
@@ -371,7 +371,7 @@ ScorePrintClass::ScorePrintClass(void const* string, int xpos, int ypos,
   Stage = 0;
 }
 
-void ScorePrintClass::Update(void) {
+void ScorePrintClass::Update() {
   static char localstr[2] = {0, 0};
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
@@ -446,7 +446,7 @@ MultiStagePrintClass::MultiStagePrintClass(void const* string, int xpos,
   Stage = 0;
 }
 
-void MultiStagePrintClass::Update(void) {
+void MultiStagePrintClass::Update() {
   static char localstr[2] = {0, 0};
   static char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
                              0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
@@ -518,7 +518,7 @@ ScoreScaleClass::ScoreScaleClass(void const* string, int xpos, int ypos,
   Stage = 5;
 }
 
-void ScoreScaleClass::Update(void) {
+void ScoreScaleClass::Update() {
   static int _destx[] = {0, 80, 107, 134, 180, 228};
   static int _destw[] = {6, 20, 30, 40, 60, 80};
 
@@ -581,7 +581,7 @@ int Alloc_Object(ScoreAnimClass* obj) {
   return (ret);
 }
 
-TextBlitClass::TextBlitClass(void) { Clear(); }
+TextBlitClass::TextBlitClass() { Clear(); }
 
 void TextBlitClass::Add(int x, int y, int dx, int dy, int w, int h) {
   if (Count < MAX_ENTRIES) {
@@ -596,9 +596,9 @@ void TextBlitClass::Add(int x, int y, int dx, int dy, int w, int h) {
   }
 }
 
-void TextBlitClass::Clear(void) { Count = 0; }
+void TextBlitClass::Clear() { Count = 0; }
 
-void TextBlitClass::Update(void) {
+void TextBlitClass::Update() {
   if (TextPrintBuffer) {
     if (HidPage.Lock()) {
       for (int i = 0; i < Count; i++) {
@@ -613,8 +613,8 @@ void TextBlitClass::Update(void) {
   }
 }
 
-void Disable_Uncompressed_Shapes(void);
-void Enable_Uncompressed_Shapes(void);
+void Disable_Uncompressed_Shapes();
+void Enable_Uncompressed_Shapes();
 
 /***********************************************************************************************
  * ScoreClass::Presentation -- Main routine to display score screen. *
@@ -631,7 +631,7 @@ void Enable_Uncompressed_Shapes(void);
  *                                                                                             *
  * HISTORY: * 05/02/1994     : Created. *
  *=============================================================================================*/
-void ScoreClass::Presentation(void) {
+void ScoreClass::Presentation() {
   // static char const
   // _redpal[]={0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x21,0x2F};
   static unsigned char const _redpal[] = {0x20, 0x22, 0x24, 0x26, 0x28, 0x28,
@@ -1086,7 +1086,7 @@ void ScoreClass::Presentation(void) {
   Enable_Uncompressed_Shapes();
 }
 
-void Cycle_Wait_Click(void) {
+void Cycle_Wait_Click() {
   int counter = 0;
   int minclicks = 20;
   unsigned long timingtime = TickCount.Time();
@@ -1148,7 +1148,7 @@ void Cycle_Wait_Click(void) {
   Keyboard::Clear();
 }
 
-void ScoreClass::Do_Nod_Buildings_Graph(void) {
+void ScoreClass::Do_Nod_Buildings_Graph() {
   int shapenum;
   InfantryTypeClass const* ramboclass;
 
@@ -1359,7 +1359,7 @@ void ScoreClass::Do_GDI_Graph(void const* yellowptr, void const* redptr,
   if (!Check_Key()) Call_Back_Delay(40);
 }
 
-void ScoreClass::Do_Nod_Casualties_Graph(void) {
+void ScoreClass::Do_Nod_Casualties_Graph() {
   int i, gdikilled, nodkilled, civkilled, max;
 
   void const* e1ptr = MixFileClass::Retrieve("E1.SHP");
@@ -2016,7 +2016,7 @@ char* Int_Print(int a) {
  *                                                                                             *
  * HISTORY: * 06/11/1995  BWG: Created. *
  *=============================================================================================*/
-void Multi_Score_Presentation(void) {
+void Multi_Score_Presentation() {
   static unsigned char const _cycleyellowpal[] = {
       0x0,  0xec, 0xEb, 0xea, 0xE9, 0xe9, 0xE9, 0x0,
       0xE9, 0x0,  0x0,  0x0,  0x0,  0x0,  0xED, 0x0};

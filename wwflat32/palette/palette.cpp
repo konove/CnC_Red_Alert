@@ -172,7 +172,7 @@ VOID Fade_Palette_To(VOID* palette1, UWORD delay, VOID (*callback)()) {
   ULONG timer;    // Tick count timer used for timing.
   WORD ticksper;  // The ticks (fixed point) per bit jump.
   WORD tickaccum;
-  VOID (*cb_ptr)(VOID);  // callback function pointer
+  VOID (*cb_ptr)();  // callback function pointer
 
   //	(VOID *)cb_ptr = callback;
   cb_ptr = callback;

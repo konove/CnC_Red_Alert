@@ -140,26 +140,26 @@ EZERO,                 // Non-error.
   int Rights;
 
   RawFileClass(char const* filename);
-  RawFileClass(void);
+  RawFileClass();
   RawFileClass(RawFileClass const& f);
   RawFileClass& operator=(RawFileClass const& f);
-  virtual ~RawFileClass(void) {
+  virtual ~RawFileClass() {
     if (Allocated && Filename) free((char*)Filename);
   };
 
-  virtual char const* File_Name(void) const;
+  virtual char const* File_Name() const;
   virtual char const* Set_Name(char const* filename);
-  virtual int Create(void);
-  virtual int Delete(void);
+  virtual int Create();
+  virtual int Delete();
   virtual int Is_Available(int forced = false);
-  virtual int Is_Open(void) const;
+  virtual int Is_Open() const;
   virtual int Open(char const* filename, int rights = READ);
   virtual int Open(int rights = READ);
   virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size(void);
+  virtual long Size();
   virtual long Write(void const* buffer, long size);
-  virtual void Close(void);
+  virtual void Close();
   virtual void Error(int error, int canretry = false,
                      char const* filename = NULL);
   virtual void Set_Buffer_Size(int size);
@@ -170,7 +170,7 @@ EZERO,                 // Non-error.
   **	perform. Larger file transfers are performed in chunks of this size or
   *less.
   */
-  long Transfer_Block_Size(void) { return (long)((unsigned)UINT_MAX) - 16L; };
+  long Transfer_Block_Size() { return (long)((unsigned)UINT_MAX) - 16L; };
 
  private:
   /*
@@ -214,7 +214,7 @@ object or NULL   *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline char const* RawFileClass::File_Name(void) const { return Filename; }
+inline char const* RawFileClass::File_Name() const { return Filename; }
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *
@@ -234,7 +234,7 @@ it must be     *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline RawFileClass::RawFileClass(void) : Filename(0) {
+inline RawFileClass::RawFileClass() : Filename(0) {
   Handle = -1;
   Allocated = false;
 }
@@ -255,6 +255,6 @@ is.             *
  * HISTORY: *
 ;*   10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline int RawFileClass::Is_Open(void) const { return (Handle != -1); }
+inline int RawFileClass::Is_Open() const { return (Handle != -1); }
 
 #endif

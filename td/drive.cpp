@@ -91,7 +91,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-DriveClass::DriveClass(void) : Class(nullptr) {};
+DriveClass::DriveClass() : Class(nullptr) {};
 
 /***********************************************************************************************
  * DriveClass::Do_Turn -- Tries to turn the vehicle to the specified direction.
@@ -180,7 +180,7 @@ void DriveClass::Force_Track(int track, COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 JLB : Created. *
  *=============================================================================================*/
-int DriveClass::Tiberium_Load(void) const {
+int DriveClass::Tiberium_Load() const {
   if (*this == UNIT_HARVESTER) {
     return (Cardinal_To_Fixed(UnitTypeClass::STEP_COUNT, Tiberium));
   }
@@ -206,7 +206,7 @@ int DriveClass::Tiberium_Load(void) const {
  * HISTORY: * 03/17/1995 JLB : Created. * 07/12/1995 JLB : Flamethrower tanks
  *don't overrun -- their weapon is better.              *
  *=============================================================================================*/
-void DriveClass::Approach_Target(void) {
+void DriveClass::Approach_Target() {
   /*
   **	Only if there is a legal target should the approach check occur.
   */
@@ -384,7 +384,7 @@ void DriveClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Exit_Map(void) {
+void DriveClass::Exit_Map() {
   CELL cell;  // Map exit cell number.
 
   if (*this == UNIT_HOVER && !Target_Legal(NavCom)) {
@@ -600,7 +600,7 @@ void DriveClass::Assign_Destination(TARGET target) {
  * HISTORY: * 02/02/1992 JLB : Created. * 04/15/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-bool DriveClass::While_Moving(void) {
+bool DriveClass::While_Moving() {
   int actual;  // Working movement addition value.
 
   /*
@@ -840,7 +840,7 @@ void DriveClass::Per_Cell_Process(bool center) {
  *fire on ground unnecessarily.                     * 07/13/1995 JLB : Handles
  *bumping into cloaked objects.                                    *
  *=============================================================================================*/
-bool DriveClass::Start_Of_Move(void) {
+bool DriveClass::Start_Of_Move() {
   FacingType facing;  // Direction movement will commence.
   DirType dir;        // Desired actual facing toward destination.
   int facediff;       // Difference between current and desired facing.
@@ -1236,7 +1236,7 @@ bool DriveClass::Start_Of_Move(void) {
  * HISTORY: * 09/26/1993 JLB : Created. * 04/15/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void DriveClass::AI(void) {
+void DriveClass::AI() {
   FootClass::AI();
 
   /*
@@ -1491,7 +1491,7 @@ void DriveClass::Fixup_Path(PathType* path) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Lay_Track(void) {
+void DriveClass::Lay_Track() {
 #ifdef NEVER
   static IconCommandType* _trackdirs[8] = {TrackN_S,   TrackNE_SW, TrackE_W,
                                            TrackNW_SE, TrackN_S,   TrackNE_SW,
@@ -1570,7 +1570,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int DriveClass::Offload_Tiberium_Bail(void) {
+int DriveClass::Offload_Tiberium_Bail() {
   if (Tiberium) {
     Tiberium--;
     if (House->IsHuman) {
@@ -1613,7 +1613,7 @@ bool DriveClass::Ok_To_Move(DirType) const { return true; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& DriveClass::Class_Of(void) const { return *Class; }
+ObjectTypeClass const& DriveClass::Class_Of() const { return *Class; }
 
 /***************************************************************************
 **	Smooth turn track tables. These are coordinate offsets from the center

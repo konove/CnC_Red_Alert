@@ -74,7 +74,7 @@ class FactoryClass;
 */
 class HouseStaticClass {
  public:
-  HouseStaticClass(void);
+  HouseStaticClass();
   HouseStaticClass(NoInitClass const&) {};
 
   /*
@@ -644,17 +644,17 @@ class HouseClass {
         SpeakPowerDelay(x),
         SpeakMoneyDelay(x),
         SpeakMaxedDelay(x) {};
-  ~HouseClass(void);
-  operator HousesType(void) const;
+  ~HouseClass();
+  operator HousesType() const;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
   CELL Random_Cell_In_Zone(ZoneType zone) const;
-  static void Computer_Paranoid(void);
+  static void Computer_Paranoid();
   bool Is_Allowed_To_Ally(HousesType house) const;
-  void Do_All_To_Hunt(void) const;
-  void Super_Weapon_Handler(void);
+  void Do_All_To_Hunt() const;
+  void Super_Weapon_Handler();
   int* Factory_Counter(RTTIType rtti);
   int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
@@ -680,17 +680,17 @@ class HouseClass {
   COORDINATE Find_Build_Location(BuildingClass* building) const;
   BuildingClass* Find_Building(StructType type,
                                ZoneType zone = ZONE_NONE) const;
-  char const* Name(void) const { return (Class->Name()); }
+  char const* Name() const { return (Class->Name()); }
 
-  bool Fire_Sale(void);
+  bool Fire_Sale();
   bool Is_Hack_Prevented(RTTIType rtti, int value) const;
-  bool Is_No_YakMig(void) const;
-  int Expert_AI(void);
+  bool Is_No_YakMig() const;
+  int Expert_AI();
   void Production_Begun(TechnoClass const* rtti);
   void Sell_Wall(CELL cell);
-  bool Flag_To_Die(void);
-  bool Flag_To_Win(void);
-  bool Flag_To_Lose(void);
+  bool Flag_To_Die();
+  bool Flag_To_Win();
+  bool Flag_To_Lose();
   void Make_Ally(HousesType house);
   void Make_Ally(ObjectClass* object) {
     if (object) Make_Ally(object->Owner());
@@ -705,7 +705,7 @@ class HouseClass {
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif
-  void AI(void);
+  void AI();
   bool Can_Build(RTTIType rtti, int type, HousesType house) const;
 
   // Factory controls.
@@ -721,22 +721,22 @@ class HouseClass {
 
   TechnoTypeClass const* Suggest_New_Object(RTTIType objectype,
                                             bool kennel = false) const;
-  BuildingTypeClass const* Suggest_New_Building(void) const;
-  void Recalc_Center(void);
+  BuildingTypeClass const* Suggest_New_Building() const;
+  void Recalc_Center();
   bool Does_Enemy_Building_Exist(StructType) const;
   void Harvested(unsigned tiberium);
   void Stole(unsigned worth);
-  long Available_Money(void) const;
+  long Available_Money() const;
   void Spend_Money(unsigned money);
   void Refund_Money(unsigned money);
-  void Attacked(void);
+  void Attacked();
   void Adjust_Power(int adjust);
   void Adjust_Drain(int adjust);
-  void Update_Spied_Power_Plants(void);
+  void Update_Spied_Power_Plants();
   int Adjust_Capacity(int adjust, bool inanger = false);
-  fixed Power_Fraction(void) const;
-  fixed Tiberium_Fraction(void) const;
-  void Begin_Production(void) { IsStarted = true; };
+  fixed Power_Fraction() const;
+  fixed Tiberium_Fraction() const;
+  void Begin_Production() { IsStarted = true; };
   TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
   void Tracking_Remove(TechnoClass const* techno);
@@ -744,16 +744,16 @@ class HouseClass {
   void Active_Remove(TechnoClass const* techno);
   void Active_Add(TechnoClass const* techno);
 
-  UrgencyType Check_Attack(void) const;
-  UrgencyType Check_Build_Power(void) const;
-  UrgencyType Check_Build_Defense(void) const;
-  UrgencyType Check_Build_Offense(void) const;
-  UrgencyType Check_Build_Income(void) const;
-  UrgencyType Check_Fire_Sale(void) const;
-  UrgencyType Check_Build_Engineer(void) const;
-  UrgencyType Check_Raise_Money(void) const;
-  UrgencyType Check_Raise_Power(void) const;
-  UrgencyType Check_Lower_Power(void) const;
+  UrgencyType Check_Attack() const;
+  UrgencyType Check_Build_Power() const;
+  UrgencyType Check_Build_Defense() const;
+  UrgencyType Check_Build_Offense() const;
+  UrgencyType Check_Build_Income() const;
+  UrgencyType Check_Fire_Sale() const;
+  UrgencyType Check_Build_Engineer() const;
+  UrgencyType Check_Raise_Money() const;
+  UrgencyType Check_Raise_Power() const;
+  UrgencyType Check_Lower_Power() const;
 
   bool AI_Attack(UrgencyType urgency);
   bool AI_Build_Power(UrgencyType urgency) const;
@@ -766,14 +766,14 @@ class HouseClass {
   bool AI_Raise_Power(UrgencyType urgency) const;
   bool AI_Lower_Power(UrgencyType urgency) const;
 
-  bool Can_Make_Money(void) const {
+  bool Can_Make_Money() const {
     return (Available_Money() > 300 || (BScan & STRUCTF_REFINERY));
   };
 
-  static void Init(void);
-  static void One_Time(void);
+  static void Init();
+  static void One_Time();
   static HouseClass* As_Pointer(HousesType house);
-  static void Recalc_Attributes(void);
+  static void Recalc_Attributes();
 
   /*
   **	File I/O.
@@ -784,8 +784,8 @@ class HouseClass {
   static void Write_Flag_INI(char* buffer);
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	Special house actions.
@@ -807,33 +807,33 @@ class HouseClass {
   /*
   ** This routine completely removes this house & all its objects from the game.
   */
-  void Clobber_All(void);
+  void Clobber_All();
 
   /*
   ** This routine blows up everything in this house.  Fun!
   */
-  void Blowup_All(void);
+  void Blowup_All();
 
   /*
   ** This routine gets called in multiplayer games when every unit, building,
   ** and infantry for a house is destroyed.
   */
-  void MPlayer_Defeated(void);
+  void MPlayer_Defeated();
 
   /*
   ** When the game's over, this routine assigns everyone their score.
   */
-  void Tally_Score(void);
+  void Tally_Score();
 
   friend class MapEditClass;
 
  private:
   void Silo_Redraw_Check(long oldtib, long oldcap);
-  int AI_Building(void);
-  int AI_Unit(void);
-  int AI_Vessel(void);
-  int AI_Infantry(void);
-  int AI_Aircraft(void);
+  int AI_Building();
+  int AI_Unit();
+  int AI_Vessel();
+  int AI_Infantry();
+  int AI_Aircraft();
 
   /*
   **	This is a bit field record of all the other houses that are allies with
@@ -881,8 +881,8 @@ class HouseClass {
     BuildChoiceClass(NoInitClass const&) {};
     int Save(Pipe&) const { return (true); };
     int Load(Straw&) { return (true); };
-    void Code_Pointers(void) {};
-    void Decode_Pointers(void) {};
+    void Code_Pointers() {};
+    void Decode_Pointers() {};
   };
 
   static TFixedIHeapClass<BuildChoiceClass> BuildChoice;

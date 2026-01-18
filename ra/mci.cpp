@@ -49,7 +49,7 @@
  *
  ****************************************************************************/
 
-unsigned int MCI::GetDeviceCount(void) {
+unsigned int MCI::GetDeviceCount() {
   MCIERROR rc;
   MCI_SYSINFO_PARMS sysInfo;
   unsigned int count;

@@ -32,14 +32,14 @@
 
 typedef union REGS REGISTERS;
 
-void Yield(void) {
+void Yield() {
   REGISTERS regs;
 
   regs.w.ax = 0x1680;
   int386(0x2f, &regs, &regs);
 }
 
-void PostWindowsMessage(void) {
+void PostWindowsMessage() {
   REGISTERS regs;
 
   regs.x.eax = DPMIAPI_POST_WINDOWS_ORD << 16 | MGENVXD_DEVICE_ID;
@@ -111,7 +111,7 @@ int MGenMCount(unsigned lowerOrderBits, unsigned upperOrderBits) {
   return regs.x.eax;
 }
 
-int MGenSanityCheck(void) {
+int MGenSanityCheck() {
   REGISTERS regs;
 
   regs.x.eax = MGENVXD_SANITYCHECK_ORD << 16 | MGENVXD_DEVICE_ID;

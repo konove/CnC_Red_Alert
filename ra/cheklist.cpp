@@ -101,7 +101,7 @@ CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-CheckListClass::~CheckListClass(void) {
+CheckListClass::~CheckListClass() {
   while (CheckListClass::Count()) {
     CheckObject* obj = (CheckObject*)ListClass::Get_Item(0);
 
@@ -128,7 +128,7 @@ int CheckListClass::Add_Item(char const* text) {
   return (ListClass::Add_Item((char const*)obj));
 }
 
-char const* CheckListClass::Current_Item(void) const {
+char const* CheckListClass::Current_Item() const {
   CheckObject* obj = (CheckObject*)ListClass::Current_Item();
   if (obj) {
     return (obj->Text);

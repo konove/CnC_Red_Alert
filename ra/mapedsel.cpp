@@ -60,7 +60,7 @@
  * HISTORY:                                                                *
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Select_Object(void) {
+int MapEditClass::Select_Object() {
   ObjectClass* object = NULL;  // Generic object clicked on.
   int x, y;
   CELL cell;  // Cell that was selected.
@@ -153,7 +153,7 @@ int MapEditClass::Select_Object(void) {
  * HISTORY:                                                                *
  *   11/22/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Select_Next(void) {
+void MapEditClass::Select_Next() {
   ObjectClass* obj;
   CELL obj_cell;
   int smap_w;   // screen map width in icons
@@ -261,7 +261,7 @@ void MapEditClass::Select_Next(void) {
  *   11/22/1994 BR : Created.                                              *
  *   04/30/1996 JLB : Revamped for new buttons and stuff.                  *
  *=========================================================================*/
-void MapEditClass::Popup_Controls(void) {
+void MapEditClass::Popup_Controls() {
   const TechnoTypeClass* objtype = NULL;
   HousesType owner;   // object's current owner
   int mission_index;  // object's current mission
@@ -397,7 +397,7 @@ void MapEditClass::Popup_Controls(void) {
  * HISTORY:                                                                *
  *   11/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Grab_Object(void) {
+void MapEditClass::Grab_Object() {
   CELL cell;
 
   if (CurrentObject.Count()) {
@@ -427,7 +427,7 @@ void MapEditClass::Grab_Object(void) {
  * HISTORY:                                                                *
  *   11/07/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Move_Grabbed_Object(void) {
+int MapEditClass::Move_Grabbed_Object() {
   COORDINATE new_coord = 0;
   int retval = -1;
 

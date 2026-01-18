@@ -59,7 +59,7 @@ class DescriptionClass {
   };
 
  public:
-  DescriptionClass(void) {};
+  DescriptionClass() {};
   void Process(char* string);
 };
 

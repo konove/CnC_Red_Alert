@@ -188,9 +188,9 @@ extern unsigned long RMVesaRegs;
  */
 /*=========================================================================*/
 
-int Get_Video_Mode(void);
+int Get_Video_Mode();
 int Set_Video_Mode(int mode);
-void Vesa_Info(void);
+void Vesa_Info();
 void Vesa_Set_Window(long grain_num);
 
 /*=========================================================================*/
@@ -198,7 +198,7 @@ void Vesa_Set_Window(long grain_num);
  */
 /*=========================================================================*/
 
-extern VOID Init_Delay(VOID);
+extern VOID Init_Delay();
 extern BOOL VertBlank;
 
 /*=========================================================================*/
@@ -207,7 +207,7 @@ extern BOOL VertBlank;
 /*=========================================================================*/
 
 extern "C" {
-extern WORD Get_Vert_Blank(VOID);
+extern WORD Get_Vert_Blank();
 extern VOID Wait_Vert_Blank(BOOL blank);
 }
 

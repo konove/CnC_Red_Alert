@@ -117,7 +117,7 @@ struct TDEventClass {
   */
   CDTimerClass<FrameTimerClass> Timer;
 
-  TDEventClass(void) : IsTripped(false), Timer(0) {};
+  TDEventClass() : IsTripped(false), Timer(0) {};
   TDEventClass(NoInitClass const& x) : Timer(x) {};
 };
 
@@ -148,16 +148,16 @@ struct TEventClass {
     long Value;             // Used for other events that need data.
   } Data;
 
-  TEventClass(void) : Event(TEVENT_NONE) { Data.Value = 0; };
+  TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; };
   TEventClass(TEventType event) : Event(event) { Data.Value = 0; };
   TEventClass(NoInitClass const& x) : Team(x) {};
 
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
   void Reset(TDEventClass& td) const;
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
                   ObjectClass const* object, bool forced);
-  void Read_INI(void);
+  void Read_INI();
   void Build_INI_Entry(std::string& buffer) const;
 };
 
@@ -180,7 +180,7 @@ class EventChoiceClass {
  public:
   EventChoiceClass(TEventType event = TEVENT_NONE) : Event(event) {}
 
-  operator TEventType(void) const { return (Event); }
+  operator TEventType() const { return (Event); }
   bool operator==(EventChoiceClass const& rvalue) const {
     return (Event == rvalue.Event);
   }
@@ -201,7 +201,7 @@ class EventChoiceClass {
     return (Event == rvalue.Event ||
             stricmp(Description(), rvalue.Description()) > 0);
   }
-  char const* Description(void) const { return (Name_From_Event(Event)); }
+  char const* Description() const { return (Name_From_Event(Event)); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

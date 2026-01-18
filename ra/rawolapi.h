@@ -261,12 +261,12 @@ class RADownloadEventSink :
   STDMETHOD_(ULONG, Release)();
 
   // IDownloadEvent
-  STDMETHOD(OnEnd)(void);
+  STDMETHOD(OnEnd)();
   STDMETHOD(OnError)(int error);
   STDMETHOD(OnProgressUpdate)
   (int bytesread, int totalsize, int timetaken, int timeleft);
   STDMETHOD(OnStatusUpdate)(int status);
-  STDMETHOD(OnQueryResume)(void);
+  STDMETHOD(OnQueryResume)();
 
  public:
   bool bFlagEnd;

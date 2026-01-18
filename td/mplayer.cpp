@@ -89,10 +89,10 @@
 
 static void Garble_Message(char* buf);
 
-int Choose_Internet_Game(void);
-int Get_Internet_Host_Or_Join(void);
-int Get_IP_Address(void);
-void Show_Internet_Connection_Progress(void);
+int Choose_Internet_Game();
+int Get_Internet_Host_Or_Join();
+int Get_IP_Address();
+void Show_Internet_Connection_Progress();
 
 /***********************************************************************************************
  * Select_MPlayer_Game -- prompts user for NULL-Modem, Modem, or Network game *
@@ -105,7 +105,7 @@ void Show_Internet_Connection_Progress(void);
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-GameType Select_MPlayer_Game(void) {
+GameType Select_MPlayer_Game() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   bool ipx_avail = false;
   int number_of_buttons;
@@ -517,7 +517,7 @@ GameType Select_MPlayer_Game(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void Read_MultiPlayer_Settings(void) {
+void Read_MultiPlayer_Settings() {
   char* buffer;            // INI staging buffer pointer.
   char* tbuffer;           // Accumulation buffer of trigger IDs.
   int len;                 // Length of data in buffer.
@@ -874,7 +874,7 @@ void Read_MultiPlayer_Settings(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void Write_MultiPlayer_Settings(void) {
+void Write_MultiPlayer_Settings() {
   char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
   int i;
@@ -994,7 +994,7 @@ void Write_MultiPlayer_Settings(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void Read_Scenario_Descriptions(void) {
+void Read_Scenario_Descriptions() {
   char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
   int i;
@@ -1063,7 +1063,7 @@ void Read_Scenario_Descriptions(void) {
  *                                                                                             *
  * HISTORY: * 06/05/1995 BRR : Created. *
  *=============================================================================================*/
-void Free_Scenario_Descriptions(void) {
+void Free_Scenario_Descriptions() {
   int i;
 
   /*------------------------------------------------------------------------
@@ -1104,7 +1104,7 @@ void Free_Scenario_Descriptions(void) {
  * HISTORY:                                                                *
  *   06/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Computer_Message(void) {
+void Computer_Message() {
   int color;
   char txt[160];
   HousesType house;
@@ -1254,7 +1254,7 @@ static void Garble_Message(char* buf) {
  * HISTORY:                                                                *
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Surrender_Dialog(void) {
+int Surrender_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions

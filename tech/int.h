@@ -59,7 +59,7 @@ class Int {
   /*
   **	Constructors and initializers.
   */
-  Int(void) { XMP_Init(&reg[0], 0, PRECISION); }
+  Int() { XMP_Init(&reg[0], 0, PRECISION); }
   Int(unsigned long value) { XMP_Init(&reg[0], value, PRECISION); }
 
   void Randomize(Straw& rng, int bitcount) {
@@ -86,20 +86,20 @@ class Int {
   /*
   **	Unary operators.
   */
-  Int& operator++(void) {
+  Int& operator++() {
     XMP_Inc(&reg[0], PRECISION);
     return (*this);
   }
-  Int& operator--(void) {
+  Int& operator--() {
     XMP_Dec(&reg[0], PRECISION);
     return (*this);
   }
-  int operator!(void) const { return (XMP_Test_Eq_Int(&reg[0], 0, PRECISION)); }
-  Int operator~(void) {
+  int operator!() const { return (XMP_Test_Eq_Int(&reg[0], 0, PRECISION)); }
+  Int operator~() {
     XMP_Not(&reg[0], PRECISION);
     return (*this);
   }
-  Int operator-(void) const {
+  Int operator-() const {
     Int a = *this;
     a.Negate();
     return (a);
@@ -108,22 +108,20 @@ class Int {
   /*
   **	Attribute query functions.
   */
-  int ByteCount(void) const { return (XMP_Count_Bytes(&reg[0], PRECISION)); }
-  int BitCount(void) const { return (XMP_Count_Bits(&reg[0], PRECISION)); }
-  bool Is_Negative(void) const { return (XMP_Is_Negative(&reg[0], PRECISION)); }
+  int ByteCount() const { return (XMP_Count_Bytes(&reg[0], PRECISION)); }
+  int BitCount() const { return (XMP_Count_Bits(&reg[0], PRECISION)); }
+  bool Is_Negative() const { return (XMP_Is_Negative(&reg[0], PRECISION)); }
   unsigned MaxBitPrecision() const {
     return PRECISION * (sizeof(uint32_t) * CHAR_BIT);
   }
-  bool IsSmallPrime(void) const {
-    return (XMP_Is_Small_Prime(&reg[0], PRECISION));
-  }
-  bool SmallDivisorsTest(void) const {
+  bool IsSmallPrime() const { return (XMP_Is_Small_Prime(&reg[0], PRECISION)); }
+  bool SmallDivisorsTest() const {
     return (XMP_Small_Divisors_Test(&reg[0], PRECISION));
   }
   bool FermatTest(unsigned rounds) const {
     return (XMP_Fermat_Test(&reg[0], rounds, PRECISION));
   }
-  bool IsPrime(void) const { return (XMP_Is_Prime(&reg[0], PRECISION)); }
+  bool IsPrime() const { return (XMP_Is_Prime(&reg[0], PRECISION)); }
   bool RabinMillerTest(Straw& rng, unsigned int rounds) const {
     return (XMP_Rabin_Miller_Test(rng, &reg[0], rounds, PRECISION));
   }
@@ -262,8 +260,8 @@ class Int {
   /*
   **	Misc. mathematical and logical functions.
   */
-  void Negate(void) { XMP_Neg(&reg[0], PRECISION); }
-  Int Abs(void) {
+  void Negate() { XMP_Neg(&reg[0], PRECISION); }
+  Int Abs() {
     XMP_Abs(&reg[0], PRECISION);
     return (*this);
   }

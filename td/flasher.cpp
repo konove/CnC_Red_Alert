@@ -80,7 +80,7 @@ void FlasherClass::Debug_Dump(MonoClass* mono) const {
  * HISTORY: * 05/28/1994 JLB : Created. * 06/20/1994 JLB : Is now independent of
  *object it represents.                              *
  *=============================================================================================*/
-bool FlasherClass::Process(void) {
+bool FlasherClass::Process() {
   if (FlashCount) {
     FlashCount--;
     IsBlushing = false;

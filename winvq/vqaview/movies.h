@@ -41,12 +41,12 @@
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-extern int Initialize_Movie_System(void);
-extern void Free_Movie_System(void);
+extern int Initialize_Movie_System();
+extern void Free_Movie_System();
 extern void Choose_Movie(WindowHandle window_handle);
 extern long Draw_To_Video_Callback(unsigned char* buffer, long frame_number);
 extern long Draw_To_Buffer_Callback(unsigned char* buffer, long frame_number);
-extern void Create_Palette_Interpolation_Table(void);
+extern void Create_Palette_Interpolation_Table();
 
 //==========================================================================
 // PRIVATE DEFINES

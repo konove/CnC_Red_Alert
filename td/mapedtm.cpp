@@ -508,7 +508,7 @@ int MapEditClass::Select_Team(char const* caption) {
  * HISTORY:                                                                *
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Edit_Team(void) {
+int MapEditClass::Edit_Team() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/

@@ -69,20 +69,20 @@ class AbstractClass {
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
   */
-  AbstractClass(void) { Coord = 0L; };
+  AbstractClass() { Coord = 0L; };
   AbstractClass(NoInitClass const& x) { x(); };
-  virtual ~AbstractClass(void) {};
+  virtual ~AbstractClass() {};
 
   /*
   **	Query functions.
   */
-  virtual HousesType Owner(void) const { return HOUSE_NONE; };
+  virtual HousesType Owner() const { return HOUSE_NONE; };
 
   /*
   **	Coordinate query support functions.
   */
-  virtual COORDINATE Center_Coord(void) const { return Coord; };
-  virtual COORDINATE Target_Coord(void) const { return Coord; };
+  virtual COORDINATE Center_Coord() const { return Coord; };
+  virtual COORDINATE Target_Coord() const { return Coord; };
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -121,7 +121,7 @@ class AbstractClass {
   /*
   **	AI.
   */
-  virtual void AI(void) {};
+  virtual void AI() {};
 };
 
 #endif

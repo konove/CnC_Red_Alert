@@ -49,7 +49,7 @@ class ConfirmationClass {
   };
 
  public:
-  ConfirmationClass(void) {};
+  ConfirmationClass() {};
   bool Process(char const* string);
   bool Process(int text);
 };

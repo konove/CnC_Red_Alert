@@ -50,16 +50,16 @@
  */
 /*=========================================================================*/
 bool Set_Video_Mode(void* hwnd, int w, int h, int bits_per_pixel);
-void Wait_Blit(void);
+void Wait_Blit();
 
 /*
 ** Pointer to function to call if we detect a focus loss
 */
-extern void (*Misc_Focus_Loss_Function)(void);
+extern void (*Misc_Focus_Loss_Function)();
 /*
 ** Pointer to function to call if we detect a surface restore
 */
-extern void (*Misc_Focus_Restore_Function)(void);
+extern void (*Misc_Focus_Restore_Function)();
 
 class SurfaceMonitorClass {
  public:
@@ -76,7 +76,7 @@ extern bool OverlappedVideoBlits;  // Can video driver blit overlapped regions?
 /* Prog_End Must be supplied by the user program in startup.cpp
  */
 /*=========================================================================*/
-void Prog_End(void);
+void Prog_End();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: DELAY.CPP

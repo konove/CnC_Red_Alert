@@ -82,7 +82,7 @@ char MessageListClass::BufferAvail[MAX_NUM_MESSAGES];
  * HISTORY:                                                                *
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-MessageListClass::MessageListClass(void) {
+MessageListClass::MessageListClass() {
   int i;
 
   MessageList = nullptr;
@@ -508,7 +508,7 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
  * HISTORY:                                                                *
  *   05/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-char* MessageListClass::Get_Edit_Buf(void) {
+char* MessageListClass::Get_Edit_Buf() {
   if (!EditBuf) return (nullptr);
 
   return (EditBuf + EditInitPos);
@@ -531,7 +531,7 @@ char* MessageListClass::Get_Edit_Buf(void) {
  * HISTORY:                                                                *
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Manage(void) {
+int MessageListClass::Manage() {
   TextLabelClass* txtlabel;
   TextLabelClass* next;
   int changed = 0;
@@ -731,7 +731,7 @@ int MessageListClass::Input(KeyNumType& input) {
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MessageListClass::Draw(void) {
+void MessageListClass::Draw() {
   if (MessageList) {
     Hide_Mouse();
     MessageList->Draw_All();
@@ -754,7 +754,7 @@ void MessageListClass::Draw(void) {
  * HISTORY:                                                                *
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Num_Messages(void) {
+int MessageListClass::Num_Messages() {
   GadgetClass* gadg;
   int num;
 

@@ -52,7 +52,7 @@
 #include "wwmem.h"
 #endif
 
-extern "C" unsigned long Largest_Mem_Block(void);
+extern "C" unsigned long Largest_Mem_Block();
 
 //
 // use double-word alignment for allocs
@@ -79,7 +79,7 @@ static unsigned long Memory_Calls = 0L;
 static unsigned long RequestedSystemRam = 16 * 1024 * 1024;
 static unsigned long LargestRamBlock = 0L;
 
-void (*Memory_Error)(void) = NULL;
+void (*Memory_Error)() = NULL;
 void (*Memory_Error_Exit)(char* string) = NULL;
 
 /***************************************************************************

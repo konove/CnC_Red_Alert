@@ -87,7 +87,7 @@
  *                                                                                             *
  * HISTORY: * 06/10/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerTypeClass::TriggerTypeClass(void)
+TriggerTypeClass::TriggerTypeClass()
     : AbstractTypeClass(RTTI_TRIGGERTYPE, TriggerTypes.ID(this), TXT_NONE, "x"),
       IsPersistant(VOLATILE),
       EventControl(MULTI_ONLY),
@@ -157,7 +157,7 @@ void TriggerTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TARGET TriggerTypeClass::As_Target(void) const {
+TARGET TriggerTypeClass::As_Target() const {
   return (Build_Target(RTTI_TRIGGERTYPE, ID));
 }
 
@@ -202,7 +202,7 @@ void TriggerTypeClass::Detach(TARGET target, bool) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-bool TriggerTypeClass::Edit(void) {
+bool TriggerTypeClass::Edit() {
   enum {
     /*
     **	Dialog position and dimensions.
@@ -1691,7 +1691,7 @@ bool TriggerTypeClass::Edit(void) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-char const* TriggerTypeClass::Description(void) const {
+char const* TriggerTypeClass::Description() const {
   static char _buffer[128];
 
   char special;
@@ -1793,7 +1793,7 @@ char const* TriggerTypeClass::Description(void) const {
  *                                                                                             *
  * HISTORY: * 11/30/1995 JLB : Created. *
  *=============================================================================================*/
-AttachType TriggerTypeClass::Attaches_To(void) const {
+AttachType TriggerTypeClass::Attaches_To() const {
   AttachType attach = ::Attaches_To(Event1.Event);
 
   if (EventControl != MULTI_ONLY) {
@@ -2063,7 +2063,7 @@ void TriggerTypeClass::Draw_It(int, int x, int y, int width, int height,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Init(void) { TriggerTypes.Free_All(); }
+void TriggerTypeClass::Init() { TriggerTypes.Free_All(); }
 
 /***********************************************************************************************
  * TriggerTypeClass::From_Name -- Convert an ASCII name into a trigger type

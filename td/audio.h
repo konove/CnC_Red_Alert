@@ -53,23 +53,23 @@
 //   unsigned IsMIDI : 1;  // Is this a midi file?
 //
 //  public:
-//   AudioClass(void);
+//   AudioClass();
 //   AudioClass(char const *name, MemoryClass &mem);
-//   virtual ~AudioClass(void);
+//   virtual ~AudioClass();
 //
 //   bool Load(char const *name = nullptr);
-//   bool Free(void);
+//   bool Free();
 //   bool Play(int volume = 0xFF);
-//   bool Stop(void);
-//   bool Pause(void);
-//   bool Resume(void);
+//   bool Stop();
+//   bool Pause();
+//   bool Resume();
 //   bool Set_Name(char const *name);
-//   bool Is_Playing(void) const;
-//   bool Is_Loaded(void) const;
-//   bool Is_MIDI(void) const;
+//   bool Is_Playing() const;
+//   bool Is_Loaded() const;
+//   bool Is_MIDI() const;
 // };
 //
-// inline AudioClass::AudioClass(void) {
+// inline AudioClass::AudioClass() {
 //   Name = nullptr;
 //   Data = nullptr;
 //   Mem = 0;
@@ -87,7 +87,7 @@
 //   Handle = -1;
 // };
 //
-// inline AudioClass::~AudioClass(void) {
+// inline AudioClass::~AudioClass() {
 //   if (GameActive) {
 //     if (Name) free(Name);
 //     if (Data) Mem->Free(Data);
@@ -99,9 +99,9 @@
 int Sound_Effect(VocType voc, VolType volume, int variation = 1,
                  signed short panvalue = 0);
 void Speak(VoxType voice);
-void Speak_AI(void);
-void Stop_Speaking(void);
+void Speak_AI();
+void Stop_Speaking();
 void Sound_Effect(VocType voc, COORDINATE coord = 0, int variation = 1);
-bool Is_Speaking(void);
+bool Is_Speaking();
 
 #endif

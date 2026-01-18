@@ -103,10 +103,10 @@ int MsgManager::setErrorStream(OutputDevice* device) {
   return (0);
 }
 
-ostream* MsgManager::debugStream(void) { return (debug_ostream); }
+ostream* MsgManager::debugStream() { return (debug_ostream); }
 
-ostream* MsgManager::infoStream(void) { return (info_ostream); }
+ostream* MsgManager::infoStream() { return (info_ostream); }
 
-ostream* MsgManager::warnStream(void) { return (warn_ostream); }
+ostream* MsgManager::warnStream() { return (warn_ostream); }
 
-ostream* MsgManager::errorStream(void) { return (error_ostream); }
+ostream* MsgManager::errorStream() { return (error_ostream); }

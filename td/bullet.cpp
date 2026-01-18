@@ -103,7 +103,7 @@ void* BulletClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int BulletClass::Validate(void) const {
+int BulletClass::Validate() const {
   int num;
 
   num = Bullets.ID(this);
@@ -134,7 +134,7 @@ int BulletClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass::BulletClass(void) : Class(nullptr) {
+BulletClass::BulletClass() : Class(nullptr) {
   Payback = nullptr;
   IsToAnimate = false;
   Altitude = 0;
@@ -238,7 +238,7 @@ BulletClass::BulletClass(BulletType id)
  * HISTORY: * 06/20/1994 JLB : Created. * 01/05/1995 JLB : Handles projectiles
  *with altitude.                                       *
  *=============================================================================================*/
-short const* BulletClass::Occupy_List(void) const {
+short const* BulletClass::Occupy_List() const {
   Validate();
   switch (*this) {
     case BULLET_FLAME:
@@ -315,7 +315,7 @@ bool BulletClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::AI(void) {
+void BulletClass::AI() {
   Validate();
   COORDINATE coord;
 
@@ -574,7 +574,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init(void) {
+void BulletClass::Init() {
   BulletClass* ptr;
 
   Bullets.Free_All();
@@ -786,7 +786,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET BulletClass::As_Target(void) const {
+TARGET BulletClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_BULLET, Bullets.ID(this)));
 }

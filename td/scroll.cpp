@@ -74,7 +74,7 @@ CountDownTimerClass ScrollClass::Counter;
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-ScrollClass::ScrollClass(void) {
+ScrollClass::ScrollClass() {
   IsAutoScroll = true;
   Counter.Set(SCROLL_DELAY);
   Inertia = 0;

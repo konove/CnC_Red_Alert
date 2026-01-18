@@ -392,7 +392,7 @@ int IPXManagerClass::Init() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Is_IPX(void) { return (IPXStatus); } /* end of Is_IPX */
+int IPXManagerClass::Is_IPX() { return (IPXStatus); } /* end of Is_IPX */
 
 /***************************************************************************
  * IPXManagerClass::Set_Timing -- sets timing for all connections
@@ -588,7 +588,7 @@ int IPXManagerClass::Delete_Connection(int id) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Num_Connections(void) {
+int IPXManagerClass::Num_Connections() {
   return (NumConnections);
 
 } /* end of Num_Connections */
@@ -992,7 +992,7 @@ int IPXManagerClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Service(void) {
+int IPXManagerClass::Service() {
   int rc = 1;
   int i;
   CommHeaderType* packet;
@@ -1318,7 +1318,7 @@ int IPXManagerClass::Service(void) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-int IPXManagerClass::Get_Bad_Connection(void) {
+int IPXManagerClass::Get_Bad_Connection() {
   return (BadConnection);
 
 } /* end of Get_Bad_Connection */
@@ -1342,7 +1342,7 @@ int IPXManagerClass::Get_Bad_Connection(void) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Global_Num_Send(void) {
+int IPXManagerClass::Global_Num_Send() {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -1373,7 +1373,7 @@ int IPXManagerClass::Global_Num_Send(void) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Global_Num_Receive(void) {
+int IPXManagerClass::Global_Num_Receive() {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -1544,7 +1544,7 @@ void IPXManagerClass::Set_Socket(unsigned short socket) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long IPXManagerClass::Response_Time(void) {
+unsigned long IPXManagerClass::Response_Time() {
   unsigned long resp;
   unsigned long maxresp = 0;
   int i;
@@ -1578,7 +1578,7 @@ unsigned long IPXManagerClass::Response_Time(void) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long IPXManagerClass::Global_Response_Time(void) {
+unsigned long IPXManagerClass::Global_Response_Time() {
   if (GlobalChannel) {
     return (GlobalChannel->Queue->Avg_Response_Time());
   } else {
@@ -1606,7 +1606,7 @@ unsigned long IPXManagerClass::Global_Response_Time(void) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXManagerClass::Reset_Response_Time(void) {
+void IPXManagerClass::Reset_Response_Time() {
   int i;
 
   for (i = 0; i < NumConnections; i++) {
@@ -1635,7 +1635,7 @@ void IPXManagerClass::Reset_Response_Time(void) {
  * HISTORY:                                                                *
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-void* IPXManagerClass::Oldest_Send(void) {
+void* IPXManagerClass::Oldest_Send() {
   int i, j;
   unsigned long time;
   unsigned long mintime = 0xffffffff;
@@ -1845,7 +1845,7 @@ void IPXManagerClass::Mono_Debug_Print(int index, int refresh) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Alloc_RealMode_Mem(void) {
+int IPXManagerClass::Alloc_RealMode_Mem() {
 #ifdef WIN32
   return (1);
 #else
@@ -2039,7 +2039,7 @@ int IPXManagerClass::Alloc_RealMode_Mem(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Free_RealMode_Mem(void) {
+int IPXManagerClass::Free_RealMode_Mem() {
 #ifdef WIN32
 
   return (1);

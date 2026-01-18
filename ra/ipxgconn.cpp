@@ -475,7 +475,7 @@ int IPXGlobalConnClass::Send(char* buf, int buflen, void* extrabuf, int) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Service_Receive_Queue(void) {
+int IPXGlobalConnClass::Service_Receive_Queue() {
   int i;
   ReceiveQueueType* rec_entry;  // ptr to receive entry header
 

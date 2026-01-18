@@ -166,7 +166,7 @@ CommBufferClass::~CommBufferClass() {
  * HISTORY:                                                                *
  *   01/20/1995 BR : Created.                                              *
  *=========================================================================*/
-void CommBufferClass::Init(void) {
+void CommBufferClass::Init() {
   int i;
 
   /*------------------------------------------------------------------------
@@ -217,7 +217,7 @@ void CommBufferClass::Init(void) {
 
 } /* end of Init */
 
-void CommBufferClass::Init_Send_Queue(void) {
+void CommBufferClass::Init_Send_Queue() {
   int i;
 
   /*------------------------------------------------------------------------
@@ -647,7 +647,7 @@ void CommBufferClass::Add_Delay(unsigned long delay) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommBufferClass::Avg_Response_Time(void) {
+unsigned long CommBufferClass::Avg_Response_Time() {
   return (MeanDelay);
 
 } /* end of Avg_Response_Time */
@@ -670,7 +670,7 @@ unsigned long CommBufferClass::Avg_Response_Time(void) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-unsigned long CommBufferClass::Max_Response_Time(void) {
+unsigned long CommBufferClass::Max_Response_Time() {
   return (MaxDelay);
 
 } /* end of Max_Response_Time */
@@ -694,7 +694,7 @@ unsigned long CommBufferClass::Max_Response_Time(void) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-void CommBufferClass::Reset_Response_Time(void) {
+void CommBufferClass::Reset_Response_Time() {
   DelaySum = 0L;
   NumDelay = 0L;
   MeanDelay = 0L;

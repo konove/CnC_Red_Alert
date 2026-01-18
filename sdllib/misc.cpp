@@ -14,8 +14,8 @@ extern "C" {
 long RandNumb;
 }
 
-void (*Misc_Focus_Loss_Function)(void);
-void (*Misc_Focus_Restore_Function)(void);
+void (*Misc_Focus_Loss_Function)();
+void (*Misc_Focus_Restore_Function)();
 
 bool Set_Video_Mode(void* /*hwnd*/, int /*w*/, int /*h*/,
                     int /*bits_per_pixel*/) {
@@ -23,7 +23,7 @@ bool Set_Video_Mode(void* /*hwnd*/, int /*w*/, int /*h*/,
   return true;
 }
 
-void Wait_Blit(void) {
+void Wait_Blit() {
   // nothing to wait for
 }
 

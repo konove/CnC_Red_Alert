@@ -90,7 +90,7 @@ typedef struct {
  */
 /*=========================================================================*/
 
-WORD ibm_getdisk(VOID);
+WORD ibm_getdisk();
 WORD ibm_setdisk(WORD drive);
 WORD ibm_close(WORD handle);
 WORD ibm_unlink(BYTE const* name);
@@ -120,7 +120,7 @@ BOOL cdecl Cache_File(WORD index, WORD file_handle);
 extern "C" {
 #endif
 
-extern VOID Get_Devices(VOID);
+extern VOID Get_Devices();
 extern WORD Is_Device_Real(WORD device);
 
 #ifdef __cplusplus
@@ -137,7 +137,7 @@ extern "C" {
 #endif
 
 extern VOID Init_Device_Table(BYTE* table);
-extern WORD Max_Device(VOID);
+extern WORD Max_Device();
 
 #ifdef __cplusplus
 }
@@ -152,8 +152,8 @@ extern WORD Max_Device(VOID);
 extern "C" {
 #endif
 
-extern VOID Install_Hard_Error_Handler(VOID);
-extern VOID Remove_Hard_Error_Handler(VOID);
+extern VOID Install_Hard_Error_Handler();
+extern VOID Remove_Hard_Error_Handler();
 
 #ifdef __cplusplus
 }

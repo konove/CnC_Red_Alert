@@ -767,7 +767,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainTypeClass::Prep_For_Add(void) {
+void TerrainTypeClass::Prep_For_Add() {
   for (TerrainType index = TERRAIN_FIRST; index < TERRAIN_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -825,7 +825,7 @@ short const* TerrainTypeClass::Occupy_List(bool) const {
   return (&_simple[0]);
 }
 
-short const* TerrainTypeClass::Overlap_List(void) const {
+short const* TerrainTypeClass::Overlap_List() const {
   if (Overlap) return (Overlap);
 
   static short const _simple[1] = {REFRESH_EOL};

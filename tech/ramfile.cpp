@@ -106,7 +106,7 @@ RAMFileClass::RAMFileClass(void* buffer, int len)
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-RAMFileClass::~RAMFileClass(void) {
+RAMFileClass::~RAMFileClass() {
   Close();
   if (IsAllocated) {
     delete[] Buffer;
@@ -130,7 +130,7 @@ RAMFileClass::~RAMFileClass(void) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Create(void) {
+int RAMFileClass::Create() {
   if (!Is_Open()) {
     Length = 0;
     return (true);
@@ -153,7 +153,7 @@ int RAMFileClass::Create(void) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Delete(void) {
+int RAMFileClass::Delete() {
   if (!Is_Open()) {
     Length = 0;
     return (true);
@@ -189,7 +189,7 @@ int RAMFileClass::Is_Available(int) { return (true); }
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int RAMFileClass::Is_Open(void) const { return (IsOpen); }
+int RAMFileClass::Is_Open() const { return (IsOpen); }
 
 /***********************************************************************************************
  * RAMFileClass::Open -- Opens a RAM based file for read or write. *
@@ -370,7 +370,7 @@ long RAMFileClass::Seek(long pos, int dir) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-long RAMFileClass::Size(void) { return (Length); }
+long RAMFileClass::Size() { return (Length); }
 
 /***********************************************************************************************
  * RAMFileClass::Write -- Copies data to the ram file. *
@@ -435,4 +435,4 @@ long RAMFileClass::Write(void const* buffer, long size) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void RAMFileClass::Close(void) { IsOpen = false; }
+void RAMFileClass::Close() { IsOpen = false; }

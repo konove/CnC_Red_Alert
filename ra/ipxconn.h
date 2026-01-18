@@ -77,7 +77,7 @@ class IPXConnClass : public ConnectionClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  virtual void Init(void);
+  virtual void Init();
 
   /*.....................................................................
   The Configure function is for configuring all connections at once.
@@ -96,8 +96,8 @@ class IPXConnClass : public ConnectionClass {
   connections at once (there's no way to turn listening on for only one
   connection; it's all or nothing).
   .....................................................................*/
-  static int Start_Listening(void);
-  static int Stop_Listening(void);
+  static int Start_Listening();
+  static int Stop_Listening();
 
   /*.....................................................................
   The Destination IPX Address for this connection

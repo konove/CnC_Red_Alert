@@ -91,7 +91,7 @@ void* TemplateClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int TemplateClass::Validate(void) const {
+int TemplateClass::Validate() const {
   int num;
 
   num = Templates.ID(this);
@@ -206,7 +206,7 @@ void TemplateClass::Write_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-TemplateClass::TemplateClass(void) : Class(nullptr) {}
+TemplateClass::TemplateClass() : Class(nullptr) {}
 
 /***********************************************************************************************
  * TemplateClass::As_Target -- Converts a template object into a target number.
@@ -224,7 +224,7 @@ TemplateClass::TemplateClass(void) : Class(nullptr) {}
  *                                                                                             *
  * HISTORY: * 09/25/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TemplateClass::As_Target(void) const {
+TARGET TemplateClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_TEMPLATE, Templates.ID(this)));
 }
@@ -243,7 +243,7 @@ TARGET TemplateClass::As_Target(void) const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init(void) {
+void TemplateClass::Init() {
   TemplateClass* ptr;
 
   Templates.Free_All();

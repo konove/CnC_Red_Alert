@@ -490,7 +490,7 @@ ColorXlat	DB	000H,001H,002H,003H,004H,005H,006H,007H
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:	void *Get_Font_Palette_Ptr(void);                          *
+;* PROTO:	void *Get_Font_Palette_Ptr();                          *
 ;*                                                                         *
 ;* HISTORY:								   *
 ;*   08/18/1995 PWG : Created.                                             *

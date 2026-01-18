@@ -363,29 +363,29 @@ class SessionClass {
   //.....................................................................
   // Constructor/Destructor
   //.....................................................................
-  SessionClass(void);
-  ~SessionClass(void);
+  SessionClass();
+  ~SessionClass();
 
   //.....................................................................
   // Initialization
   //.....................................................................
-  void One_Time(void);
-  void Init(void);
+  void One_Time();
+  void Init();
 
   //.....................................................................
   // Reads/writes to the INI file
   //.....................................................................
-  void Read_MultiPlayer_Settings(void);
-  void Write_MultiPlayer_Settings(void);
-  void Read_Scenario_Descriptions(void);
-  void Free_Scenario_Descriptions(void);
+  void Read_MultiPlayer_Settings();
+  void Write_MultiPlayer_Settings();
+  void Read_Scenario_Descriptions();
+  void Free_Scenario_Descriptions();
 
   //.....................................................................
   // Utility functions
   //.....................................................................
-  int Create_Connections(void);
-  bool Am_I_Master(void);
-  unsigned long Compute_Unique_ID(void);
+  int Create_Connections();
+  bool Am_I_Master();
+  unsigned long Compute_Unique_ID();
 
   //.....................................................................
   // File I/O
@@ -396,7 +396,7 @@ class SessionClass {
   //.....................................................................
   // Debugging / Sync Bugs
   //.....................................................................
-  void Trap_Object(void);
+  void Trap_Object();
 
   //---------------------------------------------------------------------
   // Public Data

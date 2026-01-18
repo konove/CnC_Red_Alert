@@ -423,7 +423,7 @@ CellClass* BlubCell;
  * HISTORY: * 05/31/1994 JLB : Created. * 12/01/1994 BR : Added CellTriggers
  *initialization                                         *
  *=============================================================================================*/
-void MapClass::One_Time(void) {
+void MapClass::One_Time() {
   GScreenClass::One_Time();
 
   XSize = MAP_CELL_W;
@@ -452,7 +452,7 @@ void MapClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Init_Clear(void) {
+void MapClass::Init_Clear() {
   GScreenClass::Init_Clear();
   Init_Cells();
   TiberiumScan = 0;
@@ -475,7 +475,7 @@ void MapClass::Init_Clear(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Alloc_Cells(void) {
+void MapClass::Alloc_Cells() {
   /*
   **	Assume that whatever the contents of the VectorClass are is garbage
   **	(it may have been loaded from a save-game file), so zero it out first.
@@ -501,7 +501,7 @@ void MapClass::Alloc_Cells(void) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Free_Cells(void) { Clear(); }
+void MapClass::Free_Cells() { Clear(); }
 
 /***********************************************************************************************
  * MapClass::Init_Cells -- Initializes the cell array to a fresh state. *
@@ -519,7 +519,7 @@ void MapClass::Free_Cells(void) { Clear(); }
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Init_Cells(void) {
+void MapClass::Init_Cells() {
   TotalValue = 0;
 #ifdef NEVER
   Free_Cells();
@@ -861,7 +861,7 @@ void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
  *tiberium worth.                                            * 02/15/1995 JLB :
  *Optimal scan.                                                            *
  *=============================================================================================*/
-long MapClass::Overpass(void) {
+long MapClass::Overpass() {
   long value = 0;
 
   /*
@@ -1048,7 +1048,7 @@ bool MapClass::Write_Binary(char const* root) {
  *directional scan.                                            * 08/01/1995 JLB
  *: Gives stronger weight to blossom trees.                                  *
  *=============================================================================================*/
-void MapClass::Logic(void) {
+void MapClass::Logic() {
   /*
   **	Bail early if there is no allowed growth or spread of Tiberium.
   */
@@ -1222,7 +1222,7 @@ int MapClass::Cell_Threat(CELL cell, HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool MapClass::Place_Random_Crate(void) {
+bool MapClass::Place_Random_Crate() {
   int old = ScenarioInit;
   ScenarioInit = 0;
   for (int index = 0; index < 100; index++) {
@@ -1261,7 +1261,7 @@ bool MapClass::Place_Random_Crate(void) {
  * HISTORY:                                                                *
  *   07/08/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MapClass::Validate(void) {
+int MapClass::Validate() {
   CELL cell;
   TemplateType ttype;
   unsigned char ticon;

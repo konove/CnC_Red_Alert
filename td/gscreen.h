@@ -51,16 +51,16 @@
 
 class GScreenClass : public VectorClass<CellClass> {
  public:
-  GScreenClass(void);
+  GScreenClass();
   GScreenClass(NoInitClass const& x) : VectorClass<CellClass>(x) {};
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);                     // One-time initializations
+  virtual void One_Time();                         // One-time initializations
   virtual void Init(TheaterType = THEATER_NONE);   // Inits everything
-  virtual void Init_Clear(void);                   // Clears all to known state
-  virtual void Init_IO(void);                      // Inits button list
+  virtual void Init_Clear();                       // Clears all to known state
+  virtual void Init_IO();                          // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
 
   /*
@@ -80,7 +80,7 @@ class GScreenClass : public VectorClass<CellClass> {
   **	Render maintenance routine (call every game tick). Probably no need
   **	to override this in derived classes.
   */
-  virtual void Render(void);
+  virtual void Render();
 
   /*
   **	Is called when actual drawing is required. This is the function to
@@ -91,26 +91,26 @@ class GScreenClass : public VectorClass<CellClass> {
   /*
   **	This moves the hidpage up to the seenpage.
   */
-  static void Blit_Display(void);
+  static void Blit_Display();
 
   /*
   **	Changes the mouse shape as indicated.
   */
   virtual void Set_Default_Mouse(MouseType mouse, bool wwsmall) = 0;
   virtual bool Override_Mouse_Shape(MouseType mouse, bool wwsmall) = 0;
-  virtual void Revert_Mouse_Shape(void) = 0;
+  virtual void Revert_Mouse_Shape() = 0;
   virtual void Mouse_Small(bool wwsmall) = 0;
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   **	Misc routines.
   */
-  virtual void* Shadow_Address(void) { return (ShadowPage); };
+  virtual void* Shadow_Address() { return (ShadowPage); };
 
   /*
   **	This points to the buttons that are used for input. All of the derived

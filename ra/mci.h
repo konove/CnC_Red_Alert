@@ -82,7 +82,7 @@ class MCI {
 
   // Get number of MCI devices name in registry or [MCI] section
   // of system.ini
-  unsigned int GetDeviceCount(void);
+  unsigned int GetDeviceCount();
 
   // Get device name from registry or [MCI] section of system.ini
   bool GetDeviceName(unsigned int item, char* buffer);

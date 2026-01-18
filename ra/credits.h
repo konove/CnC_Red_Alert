@@ -52,7 +52,7 @@ class CreditClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  CreditClass(void);
+  CreditClass();
   CreditClass(NoInitClass const&) {};
 
   /*---------------------------------------------------------------------

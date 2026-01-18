@@ -56,7 +56,7 @@
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-Benchmark::Benchmark(void) : Average(0), Counter(0), TotalCount(0) {}
+Benchmark::Benchmark() : Average(0), Counter(0), TotalCount(0) {}
 
 /***********************************************************************************************
  * Benchmark::Reset -- Clear out the benchmark statistics. *
@@ -73,7 +73,7 @@ Benchmark::Benchmark(void) : Average(0), Counter(0), TotalCount(0) {}
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void Benchmark::Reset(void) {
+void Benchmark::Reset() {
   Average = 0;
   Counter = 0;
   TotalCount = 0;
@@ -115,7 +115,7 @@ void Benchmark::Begin(bool reset) {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void Benchmark::End(void) {
+void Benchmark::End() {
   unsigned long value = Clock;
 
   if (Counter == MAXIMUM_EVENT_COUNT) {
@@ -143,7 +143,7 @@ void Benchmark::End(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-unsigned long Benchmark::Value(void) const {
+unsigned long Benchmark::Value() const {
   if (Counter) {
     return (Average / Counter);
   }

@@ -73,7 +73,7 @@
 #include "td/mouse.h"
 #include "td/tab.h"
 
-CreditClass::CreditClass(void) {
+CreditClass::CreditClass() {
   IsToRedraw = false;
   IsUp = false;
   IsAudible = false;

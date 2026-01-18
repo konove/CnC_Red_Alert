@@ -55,7 +55,7 @@
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-WWKeyboardClass::WWKeyboardClass(void) {
+WWKeyboardClass::WWKeyboardClass() {
   //
   // Initialize the keyboard remap table for our system (note it would be bad if
   // someone switched keyboard modes after this happened.
@@ -112,7 +112,7 @@ WWKeyboardClass::WWKeyboardClass(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Buff_Get(void) {
+int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
   int temp = Buffer[Head];       // get key out of the buffer
@@ -145,7 +145,7 @@ BOOL WWKeyboardClass::Is_Mouse_Key(int key) {
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-BOOL WWKeyboardClass::Check(void) {
+BOOL WWKeyboardClass::Check() {
   unsigned short temp;               // store temp holding spot for key
   if (Head == Tail) return (FALSE);  // if no keys in buff then get out
   temp = Buffer[Head];               // get key out of the buffer
@@ -165,7 +165,7 @@ BOOL WWKeyboardClass::Check(void) {
  *                                                                                             *
  * HISTORY: * 10/16/1995 PWG : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Get(void) {
+int WWKeyboardClass::Get() {
   int temp, bits;  // store temp holding spot for key
 
   while (!Check()) {
@@ -352,12 +352,12 @@ void WWKeyboardClass::Message_Handler(HWND hwnd, UINT message, UINT wParam,
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Get_Mouse_X(void) {
+int WWKeyboardClass::Get_Mouse_X() {
   POINT pt;
   GetCursorPos(&pt);
   return (pt.x);
 }
-void WWKeyboardClass::Clear(void) { Head = Tail; }
+void WWKeyboardClass::Clear() { Head = Tail; }
 
 /***********************************************************************************************
  * WWKeyboardClass::Get_Mouse_Y -- returns the mouses current y position in
@@ -370,7 +370,7 @@ void WWKeyboardClass::Clear(void) { Head = Tail; }
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-int WWKeyboardClass::Get_Mouse_Y(void) {
+int WWKeyboardClass::Get_Mouse_Y() {
   POINT pt;
   GetCursorPos(&pt);
   return (pt.y);

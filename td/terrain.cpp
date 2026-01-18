@@ -117,7 +117,7 @@ void* TerrainClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int TerrainClass::Validate(void) const {
+int TerrainClass::Validate() const {
   int num;
 
   num = Terrains.ID(this);
@@ -147,7 +147,7 @@ int TerrainClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::~TerrainClass(void) {
+TerrainClass::~TerrainClass() {
   if (GameActive && Class) {
     TerrainClass::Limbo();
   }
@@ -231,7 +231,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TerrainClass::As_Target(void) const {
+TARGET TerrainClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_TERRAIN, Terrains.ID(this)));
 }
@@ -420,7 +420,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init(void) {
+void TerrainClass::Init() {
   TerrainClass* ptr;
 
   Terrains.Free_All();
@@ -477,7 +477,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
  * HISTORY: * 09/27/1994 JLB : Created. * 12/11/1994 JLB : Don't catch fire if
  *already on fire or crumbling.                        *
  *=============================================================================================*/
-bool TerrainClass::Catch_Fire(void) {
+bool TerrainClass::Catch_Fire() {
   Validate();
   if (!IsCrumbling && !IsOnFire && Class->IsFlammable) {
     AnimClass* anim =
@@ -511,7 +511,7 @@ bool TerrainClass::Catch_Fire(void) {
  *                                                                                             *
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Fire_Out(void) {
+void TerrainClass::Fire_Out() {
   Validate();
   if (IsOnFire) {
     IsOnFire = false;
@@ -539,7 +539,7 @@ void TerrainClass::Fire_Out(void) {
  * HISTORY: * 09/27/1994 JLB : Created. * 09/28/1994 JLB : Crumbling animation.
  **
  *=============================================================================================*/
-void TerrainClass::AI(void) {
+void TerrainClass::AI() {
   Validate();
   ObjectClass::AI();
 
@@ -666,7 +666,7 @@ bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Start_To_Crumble(void) {
+void TerrainClass::Start_To_Crumble() {
   Validate();
   if (!IsCrumbling) {
     IsCrumbling = true;
@@ -689,7 +689,7 @@ void TerrainClass::Start_To_Crumble(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainClass::Limbo(void) {
+bool TerrainClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
     CELL cell = Coord_Cell(Coord);
@@ -712,7 +712,7 @@ bool TerrainClass::Limbo(void) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TerrainClass::Center_Coord(void) const {
+COORDINATE TerrainClass::Center_Coord() const {
   Validate();
   return (Coord_Add(Coord, Class->CenterBase));
 }
@@ -731,7 +731,7 @@ COORDINATE TerrainClass::Center_Coord(void) const {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::TerrainClass(void) : Class(nullptr) {
+TerrainClass::TerrainClass() : Class(nullptr) {
   IsOnFire = false;
   IsCrumbling = false;
   IsBlossoming = false;

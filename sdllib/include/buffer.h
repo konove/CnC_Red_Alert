@@ -71,8 +71,8 @@ class BufferClass {
   /* define functions to get at the protected data members
    */
   /*===================================================================*/
-  void* Get_Buffer(void);
-  long Get_Size(void);
+  void* Get_Buffer();
+  long Get_Size();
 
  private:
   /*===================================================================*/
@@ -101,7 +101,7 @@ class BufferClass {
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline long BufferClass::Get_Size(void) { return (Size); }
+inline long BufferClass::Get_Size() { return (Size); }
 /***************************************************************************
  * BC::GET_BUFFER -- Returns pointer to buffer inherent to BufferClass *
  *                                                                         *
@@ -112,5 +112,5 @@ inline long BufferClass::Get_Size(void) { return (Size); }
  * HISTORY:                                                                *
  *   06/01/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline void* BufferClass::Get_Buffer(void) { return (Buffer); }
+inline void* BufferClass::Get_Buffer() { return (Buffer); }
 #endif

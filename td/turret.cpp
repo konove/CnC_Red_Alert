@@ -154,7 +154,7 @@ bool TurretClass::Ok_To_Move(DirType dir) {
  *                                                                                             *
  * HISTORY: * 06/21/1994 JLB : Created. *
  *=============================================================================================*/
-void TurretClass::AI(void) {
+void TurretClass::AI() {
   DriveClass::AI();
 
   /*
@@ -437,7 +437,7 @@ bool TurretClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TurretClass::Fire_Direction(void) const {
+DirType TurretClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_MSAM) {
       int diff1 = SecondaryFacing.Difference(DIR_E);

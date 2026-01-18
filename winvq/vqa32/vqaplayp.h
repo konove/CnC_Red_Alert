@@ -465,7 +465,7 @@ long VQA_StartTimerInt(VQAHandleP* vqap, long init);
 void VQA_StopTimerInt(VQAHandleP* vqap);
 void VQA_SetTimer(VQAHandleP* vqap, long time, long method);
 int64_t VQA_GetTime(VQAHandleP* vqap);
-long VQA_TimerMethod(void);
+long VQA_TimerMethod();
 
 /* Audio system. */
 long VQA_OpenAudio(VQAHandleP* vqap, void* window);

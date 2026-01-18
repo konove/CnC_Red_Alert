@@ -60,7 +60,7 @@ class AnimClass : public ObjectClass, private StageClass {
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
-  AnimClass(void) : Class(nullptr) {
+  AnimClass() : Class(nullptr) {
     Owner = HOUSE_NONE;
     Object = nullptr;
   };  // Default constructor does nothing.
@@ -68,30 +68,30 @@ class AnimClass : public ObjectClass, private StageClass {
             unsigned char loop = 1, bool alt = false);
   AnimClass(NoInitClass const& x)
       : ObjectClass(x), Class(Class), StageClass(x) {};
-  virtual ~AnimClass(void);
-  operator AnimType(void) const { return Class->Type; };
-  virtual RTTIType What_Am_I(void) const { return RTTI_ANIM; };
+  virtual ~AnimClass();
+  operator AnimType() const { return Class->Type; };
+  virtual RTTIType What_Am_I() const { return RTTI_ANIM; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
   void Attach_To(ObjectClass* obj);
-  void Make_Invisible(void) { IsInvisible = true; };
+  void Make_Invisible() { IsInvisible = true; };
 
   virtual bool Can_Place_Here(COORDINATE) const { return true; }
   virtual bool Mark(MarkType mark = MARK_CHANGE);
   virtual bool Render(bool forced);
-  virtual COORDINATE Center_Coord(void) const;
-  virtual COORDINATE Sort_Y(void) const;
-  virtual LayerType In_Which_Layer(void) const;
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
-  virtual short const* Occupy_List(void) const;
-  virtual short const* Overlap_List(void) const;
+  virtual COORDINATE Center_Coord() const;
+  virtual COORDINATE Sort_Y() const;
+  virtual LayerType In_Which_Layer() const;
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual short const* Occupy_List() const;
+  virtual short const* Overlap_List() const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
-  virtual void AI(void);
-  virtual TARGET As_Target(void) const;
+  virtual void AI();
+  virtual TARGET As_Target() const;
   virtual void Detach(TARGET target, bool all);
 
   /*
@@ -99,13 +99,13 @@ class AnimClass : public ObjectClass, private StageClass {
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	If this animation is attached to an object, then this points to that
@@ -128,8 +128,8 @@ class AnimClass : public ObjectClass, private StageClass {
   unsigned char Loops;
 
  protected:
-  void Middle(void);
-  void Start(void);
+  void Middle();
+  void Start();
 
  private:
   /*

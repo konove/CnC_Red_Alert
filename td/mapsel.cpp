@@ -473,7 +473,7 @@ struct nodstats {
  *                                                                                             *
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
-void Map_Selection(void) {
+void Map_Selection() {
   void *anim, *progress, *greyearth, *greyearth2;
   unsigned char localpalette[768];
   int scenario, lastscenario;

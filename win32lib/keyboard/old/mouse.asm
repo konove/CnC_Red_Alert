@@ -592,7 +592,7 @@ ENDIF
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:	VOID Remove_Mouse(VOID);				   *
+;* PROTO:	VOID Remove_Mouse();				   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   08/29/1994 PWG : Created.                                             *
@@ -680,7 +680,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      int - the mouse x position in pixels			   *
 ;*                                                                         *
-;* WARNINGS:    int Get_Mouse_X(void);                                     *
+;* WARNINGS:    int Get_Mouse_X();                                     *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   08/29/1994 PWG : Created.                                             *
@@ -704,7 +704,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      int - the mouse's current state				   *
 ;*                                                                         *
-;* WARNINGS:    int Get_Mouse_State(void);                                 *
+;* WARNINGS:    int Get_Mouse_State();                                 *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   08/29/1994 PWG : Created.                                             *
@@ -728,7 +728,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      int - the mouse x position in pixels			   *
 ;*                                                                         *
-;* WARNINGS:    int Get_Mouse_X(void);                                     *
+;* WARNINGS:    int Get_Mouse_X();                                     *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   08/29/1994 PWG : Created.                                             *
@@ -752,7 +752,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      int - the mouses y position in pixels                      *
 ;*                                                                         *
-;* PROTO:	int Get_Mouse_Y(void);					   *
+;* PROTO:	int Get_Mouse_Y();					   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   08/29/1994 PWG : Created.                                             *
@@ -1155,7 +1155,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:       void Hide_Mouse(void);					   *
+;* PROTO:       void Hide_Mouse();					   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   11/03/1994 PWG : Created.                                             *
@@ -1186,7 +1186,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:       void Show_Mouse(void)                                      *
+;* PROTO:       void Show_Mouse()                                      *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   11/03/1994 PWG : Created.                                             *
@@ -1369,7 +1369,7 @@ ENDP	Clear_RM_regs
 ;*                                                                         *
 ;* OUTPUT:      none                                                       *
 ;*                                                                         *
-;* PROTO:       void Conditional_Show_Mouse(void);                         *
+;* PROTO:       void Conditional_Show_Mouse();                         *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   11/03/1994 PWG : Created.                                             *

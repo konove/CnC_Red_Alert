@@ -94,7 +94,7 @@ class ConnManClass {
   /*.....................................................................
   Constructor/Destructor.  These currently do nothing.
   .....................................................................*/
-  ConnManClass(void) {};
+  ConnManClass() {};
   virtual ~ConnManClass() {};
 
   /*.....................................................................
@@ -104,7 +104,7 @@ class ConnManClass {
   - Invokes each connection's Service routine; returns an error if the
     connection's Service routine indicates an error.
   .....................................................................*/
-  virtual int Service(void) = 0;
+  virtual int Service() = 0;
 
   /*.....................................................................
   Sending & receiving data
@@ -116,23 +116,23 @@ class ConnManClass {
   /*.....................................................................
   Connection management
   .....................................................................*/
-  virtual int Num_Connections(void) = 0;
+  virtual int Num_Connections() = 0;
   virtual int Connection_ID(int index) = 0;
   virtual int Connection_Index(int id) = 0;
 
   /*.....................................................................
   Queue utility routines
   .....................................................................*/
-  virtual int Global_Num_Send(void) = 0;
-  virtual int Global_Num_Receive(void) = 0;
+  virtual int Global_Num_Send() = 0;
+  virtual int Global_Num_Receive() = 0;
   virtual int Private_Num_Send(int id = CONNECTION_NONE) = 0;
   virtual int Private_Num_Receive(int id = CONNECTION_NONE) = 0;
 
   /*.....................................................................
   Timing management
   .....................................................................*/
-  virtual void Reset_Response_Time(void) = 0;
-  virtual unsigned long Response_Time(void) = 0;
+  virtual void Reset_Response_Time() = 0;
+  virtual unsigned long Response_Time() = 0;
   virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                           unsigned long timeout) = 0;
 

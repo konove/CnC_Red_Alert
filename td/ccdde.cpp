@@ -103,7 +103,7 @@ BOOL CALLBACK DDE_Callback(unsigned char* data, long length) {
  *                                                                                             *
  * HISTORY: * 6/8/96 3:20PM ST : Created *
  *=============================================================================================*/
-DDEServerClass::DDEServerClass(void) {
+DDEServerClass::DDEServerClass() {
   MPlayerGameInfo =
       NULL;  // Flag that we havnt received a start game info packet yet
 
@@ -119,7 +119,7 @@ DDEServerClass::DDEServerClass(void) {
   }
 }
 
-void DDEServerClass::Enable(void) {
+void DDEServerClass::Enable() {
   if (!IsEnabled) {
     DDE_Class->Enable_Callback(true);
     IsEnabled = true;
@@ -139,7 +139,7 @@ void DDEServerClass::Enable(void) {
  *                                                                                             *
  * HISTORY: * 8/5/96 9:44PM ST : Created *
  *=============================================================================================*/
-void DDEServerClass::Disable(void) {
+void DDEServerClass::Disable() {
   if (IsEnabled) {
     DDE_Class->Enable_Callback(FALSE);
     IsEnabled = FALSE;
@@ -159,7 +159,7 @@ void DDEServerClass::Disable(void) {
  *                                                                                             *
  * HISTORY: * 6/8/96 3:20PM ST : Created *
  *=============================================================================================*/
-DDEServerClass::~DDEServerClass(void) {
+DDEServerClass::~DDEServerClass() {
   Delete_MPlayer_Game_Info();
   delete (DDE_Class);
 }
@@ -279,7 +279,7 @@ BOOL DDEServerClass::Callback(unsigned char* data, long length) {
  *                                                                                             *
  * HISTORY: * 6/8/96 3:23PM ST : Created *
  *=============================================================================================*/
-char* DDEServerClass::Get_MPlayer_Game_Info(void) { return (MPlayerGameInfo); }
+char* DDEServerClass::Get_MPlayer_Game_Info() { return (MPlayerGameInfo); }
 
 /***********************************************************************************************
  * DDESC::Delete_MPlayer_Game_Info -- clears out multi player game setup info *
@@ -294,7 +294,7 @@ char* DDEServerClass::Get_MPlayer_Game_Info(void) { return (MPlayerGameInfo); }
  *                                                                                             *
  * HISTORY: * 6/8/96 3:24PM ST : Created *
  *=============================================================================================*/
-void DDEServerClass::Delete_MPlayer_Game_Info(void) {
+void DDEServerClass::Delete_MPlayer_Game_Info() {
   if (MPlayerGameInfo) {
     delete[] MPlayerGameInfo;
     MPlayerGameInfo = NULL;
@@ -315,7 +315,7 @@ void DDEServerClass::Delete_MPlayer_Game_Info(void) {
  *                                                                                             *
  * HISTORY: * 6/9/96 11:05PM ST : Created *
  *=============================================================================================*/
-int DDEServerClass::Time_Since_Heartbeat(void) {
+int DDEServerClass::Time_Since_Heartbeat() {
   return (GameTimer.Time() - LastHeartbeat);
 }
 

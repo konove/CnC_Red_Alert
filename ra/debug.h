@@ -64,6 +64,6 @@
 
 void Log_Event(char const* text, ...);
 void Debug_Key(unsigned input);
-void Self_Regulate(void);
+void Self_Regulate();
 
 #endif  // CNC_RED_ALERT_RA_DEBUG_H_

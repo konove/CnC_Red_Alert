@@ -279,7 +279,7 @@ local_target_reply_buffer ends
 ;*                                                                                               *
 ;* OUTPUT:      true if IPX was initialised                                                      *
 ;*                                                                                               *
-;* 32bit PROTO:	extern BOOL __stdcall IPX_Initialise(void);                                      *
+;* 32bit PROTO:	extern BOOL __stdcall IPX_Initialise();                                      *
 ;*                                                                                               *
 ;* HISTORY:                                                                                      *
 ;*   01/29/96 ST: Created.                                                                       *
@@ -406,7 +406,7 @@ _IPX_Close_Socket95 endp
 ;*                                                                                               *
 ;* OUTPUT:      connection number. 0 if user isnt logged into novell                             *
 ;*                                                                                               *
-;* 32bit PROTO:	extern int  __stdcall IPX_Get_Connection_Number95(void);                         *
+;* 32bit PROTO:	extern int  __stdcall IPX_Get_Connection_Number95();                         *
 ;*                                                                                               *
 ;* HISTORY:                                                                                      *
 ;*   01/29/96 ST: Created.                                                                       *
@@ -1138,7 +1138,7 @@ Init_Receive_ECB endp
 ;*                                                                                               *
 ;* OUTPUT:      true if we started listening                                                     *
 ;*                                                                                               *
-;* 32bit PROTO:	extern BOOL __stdcall IPX_Start_Listening95(void);                               *
+;* 32bit PROTO:	extern BOOL __stdcall IPX_Start_Listening95();                               *
 ;*                                                                                               *
 ;* HISTORY:                                                                                      *
 ;*   01/29/96 ST: Created.                                                                       *
@@ -1219,7 +1219,7 @@ _IPX_Start_Listening95 endp
 ;*                                                                                               *
 ;* OUTPUT:      nothing                                                                          *
 ;*                                                                                               *
-;* 32bit PROTO:	extern void __stdcall IPX_Shut_Down95(void);                                     *
+;* 32bit PROTO:	extern void __stdcall IPX_Shut_Down95();                                     *
 ;*                                                                                               *
 ;* HISTORY:                                                                                      *
 ;*   01/29/96 ST: Created.                                                                       *

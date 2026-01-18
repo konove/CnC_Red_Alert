@@ -1424,7 +1424,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
  *templates now.                                         * 06/04/1994 JLB : Uses
  *map editing interface functions.                                    *
  *=============================================================================================*/
-void TemplateTypeClass::Prep_For_Add(void) {
+void TemplateTypeClass::Prep_For_Add() {
   for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -1488,4 +1488,4 @@ ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass*) const {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateTypeClass::One_Time(void) {}
+void TemplateTypeClass::One_Time() {}

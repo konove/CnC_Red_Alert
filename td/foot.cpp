@@ -134,7 +134,7 @@
  *                                                                                             *
  * HISTORY: * 11/23/1994 JLB : Created. *
  *=============================================================================================*/
-FootClass::FootClass(void) : Speed(0) {
+FootClass::FootClass() : Speed(0) {
   ArchiveTarget = TARGET_NONE;
   IsDriving = false;
   IsInitiated = false;
@@ -173,7 +173,7 @@ FootClass::FootClass(void) : Speed(0) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-FootClass::~FootClass(void) {
+FootClass::~FootClass() {
   if (GameActive && House) {
     House->CurUnits--;
   }
@@ -368,7 +368,7 @@ bool FootClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Basic_Path(void) {
+bool FootClass::Basic_Path() {
   PathType* path;  // Pointer to path control structure.
   CELL cell;
   int skip_path = false;
@@ -574,7 +574,7 @@ bool FootClass::Basic_Path(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Move(void) {
+int FootClass::Mission_Move() {
   if (!Target_Legal(NavCom) && !IsDriving && MissionQueue == MISSION_NONE) {
     Enter_Idle_Mode();
   }
@@ -601,7 +601,7 @@ int FootClass::Mission_Move(void) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Capture(void) {
+int FootClass::Mission_Capture() {
   if (!Target_Legal(NavCom) && !In_Radio_Contact()) {
     Enter_Idle_Mode();
     if (Map[Coord_Cell(Center_Coord())].Cell_Building()) {
@@ -627,7 +627,7 @@ int FootClass::Mission_Capture(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Attack(void) {
+int FootClass::Mission_Attack() {
   if (Target_Legal(TarCom)) {
     Approach_Target();
   } else {
@@ -650,7 +650,7 @@ int FootClass::Mission_Attack(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Guard(void) {
+int FootClass::Mission_Guard() {
   if (!Target_Something_Nearby(THREAT_RANGE)) {
     Random_Animate();
   }
@@ -673,7 +673,7 @@ int FootClass::Mission_Guard(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Hunt(void) {
+int FootClass::Mission_Hunt() {
   if (!Target_Something_Nearby(THREAT_NORMAL)) {
     Random_Animate();
   } else {
@@ -705,7 +705,7 @@ int FootClass::Mission_Hunt(void) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Timed_Hunt(void) {
+int FootClass::Mission_Timed_Hunt() {
   int rndmax;
   int changed = 0;  // has the unit changed into Hunt mode?
 
@@ -765,7 +765,7 @@ int FootClass::Mission_Timed_Hunt(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. * 12/12/1994 JLB : Greatly simplified. *
  *=============================================================================================*/
-bool FootClass::Stop_Driver(void) {
+bool FootClass::Stop_Driver() {
   if (HeadToCoord) {
     HeadToCoord = 0;
     Set_Speed(0);
@@ -829,7 +829,7 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 10/17/1994 JLB : Created. * 11/04/1994 JLB : Sort value is
  *different when unloading from aircraft.                    *
  *=============================================================================================*/
-COORDINATE FootClass::Sort_Y(void) const {
+COORDINATE FootClass::Sort_Y() const {
   if (IsUnloading) {
     return (Coord_Add(Coord, 0x01000000L));
   }
@@ -857,7 +857,7 @@ COORDINATE FootClass::Sort_Y(void) const {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Stun(void) {
+void FootClass::Stun() {
   Assign_Destination(TARGET_NONE);
   Path[0] = FACING_NONE;
   Stop_Driver();
@@ -883,7 +883,7 @@ void FootClass::Stun(void) {
  *Enhanced search algorithm.                                               *
  *   05/20/1995 JLB : Always approaches if the object is off the map. *
  *=============================================================================================*/
-void FootClass::Approach_Target(void) {
+void FootClass::Approach_Target() {
   /*
   **	Determine that if there is an existing target it is still legal
   **	and within range.
@@ -988,7 +988,7 @@ void FootClass::Approach_Target(void) {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. * 07/27/1995 JLB : Greatly simplified. *
  *=============================================================================================*/
-int FootClass::Mission_Guard_Area(void) {
+int FootClass::Mission_Guard_Area() {
   if (What_Am_I() == RTTI_UNIT && ((UnitClass*)this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
     return (1 + Random_Pick(1, 10));
@@ -1100,7 +1100,7 @@ void FootClass::Assign_Mission(MissionType order) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Limbo(void) {
+bool FootClass::Limbo() {
   if (!IsInLimbo) {
     if (Team) {
       Team->Remove(this);
@@ -1456,7 +1456,7 @@ void FootClass::Override_Mission(MissionType mission, TARGET tarcom,
  * HISTORY:                                                                *
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Restore_Mission(void) {
+bool FootClass::Restore_Mission() {
   if (TechnoClass::Restore_Mission()) {
     Assign_Destination(SuspendedNavCom);
     return (true);
@@ -1569,7 +1569,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
  *                                                                                             *
  * HISTORY: * 05/15/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Mission_Enter(void) {
+int FootClass::Mission_Enter() {
   /*
   **	If radio contact has not yet been established with the transport, try to
   **	establish contact now.
@@ -1885,7 +1885,7 @@ void FootClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Offload_Tiberium_Bail(void) { return (0); }
+int FootClass::Offload_Tiberium_Bail() { return (0); }
 
 /***********************************************************************************************
  * FootClass::Can_Enter_Cell -- Checks to see if the object can enter cell
@@ -1925,7 +1925,7 @@ MoveType FootClass::Can_Enter_Cell(CELL, FacingType) const { return MOVE_OK; }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Can_Demolish(void) const {
+bool FootClass::Can_Demolish() const {
   switch (What_Am_I()) {
     case RTTI_UNIT:
     case RTTI_AIRCRAFT:
@@ -1987,7 +1987,7 @@ void FootClass::Sell_Back(int control) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE FootClass::Likely_Coord(void) const {
+COORDINATE FootClass::Likely_Coord() const {
   if (Head_To_Coord()) {
     return (Head_To_Coord());
   }

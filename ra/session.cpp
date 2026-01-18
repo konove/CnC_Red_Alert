@@ -165,7 +165,7 @@ char* SessionClass::CallWaitStrings[CALL_WAIT_STRINGS_NUM] = {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-SessionClass::SessionClass(void) {
+SessionClass::SessionClass() {
   Type = GAME_NORMAL;
   CommProtocol = DEFAULT_COMM_PROTOCOL;
 
@@ -269,7 +269,7 @@ SessionClass::SessionClass(void) {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-SessionClass::~SessionClass(void) {
+SessionClass::~SessionClass() {
   Free_Scenario_Descriptions();
 }  // end of ~SessionClass
 
@@ -291,7 +291,7 @@ SessionClass::~SessionClass(void) {
  * HISTORY:                                                                *
  *   12/01/1995 BRR : Created.                                             *
  *=========================================================================*/
-void SessionClass::One_Time(void) {
+void SessionClass::One_Time() {
   Read_MultiPlayer_Settings();
   Read_Scenario_Descriptions();
 
@@ -321,7 +321,7 @@ void SessionClass::One_Time(void) {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-void SessionClass::Init(void) {}  // end of Init
+void SessionClass::Init() {}  // end of Init
 
 /***************************************************************************
  * SessionClass::Create_Connections -- forms connections to other players  *
@@ -346,7 +346,7 @@ void SessionClass::Init(void) {}  // end of Init
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Create_Connections(void) {
+int SessionClass::Create_Connections() {
   int i;
 
   if (Session.Type != GAME_IPX && Session.Type != GAME_INTERNET) {
@@ -399,7 +399,7 @@ int SessionClass::Create_Connections(void) {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Create_TEN_Connections(void) {
+int SessionClass::Create_TEN_Connections() {
   int i;
 
   if (Session.Type != GAME_TEN) {
@@ -454,7 +454,7 @@ int SessionClass::Create_TEN_Connections(void) {
  * HISTORY:                                                                *
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-int SessionClass::Create_MPATH_Connections(void) {
+int SessionClass::Create_MPATH_Connections() {
   int i;
 
   if (Session.Type != GAME_MPATH) {
@@ -503,7 +503,7 @@ int SessionClass::Create_MPATH_Connections(void) {
  * HISTORY:                                                                *
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool SessionClass::Am_I_Master(void) {
+bool SessionClass::Am_I_Master() {
   int i;
   HousesType house;
   HouseClass* hptr;
@@ -734,7 +734,7 @@ int SessionClass::Load(CCFileClass& file) {
  * HISTORY:                                                                *
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
-void SessionClass::Read_MultiPlayer_Settings(void) {
+void SessionClass::Read_MultiPlayer_Settings() {
   char* tokenptr;          // ptr to token
   PhoneEntryClass* phone;  // a phone book entry
   char* entry;             // a phone book entry
@@ -1040,7 +1040,7 @@ void SessionClass::Read_MultiPlayer_Settings(void) {
  * HISTORY:                                                                *
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
-void SessionClass::Write_MultiPlayer_Settings(void) {
+void SessionClass::Write_MultiPlayer_Settings() {
 #ifdef NEVER
   char* buffer;  // INI staging buffer pointer.
   CCFileClass file;
@@ -1273,7 +1273,7 @@ bool Is_Mission_126x126(char* file_name)  //	This is no longer used. ajw
  *   02/14/1995 BR : Created.                                              *
  *   09/10/1996 JLB : Searches using different method.                     *
  *=========================================================================*/
-void SessionClass::Read_Scenario_Descriptions(void) {
+void SessionClass::Read_Scenario_Descriptions() {
   //	Clear the scenario description lists
   Scenarios.Clear();
 
@@ -1506,7 +1506,7 @@ void SessionClass::Read_Scenario_Descriptions(void) {
  * HISTORY:                                                                *
  *   06/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-void SessionClass::Free_Scenario_Descriptions(void) {
+void SessionClass::Free_Scenario_Descriptions() {
   int i;
 
   //------------------------------------------------------------------------
@@ -1554,7 +1554,7 @@ void SessionClass::Free_Scenario_Descriptions(void) {
  * HISTORY:                                                                *
  *   06/02/1995 BRR : Created.                                             *
  *=========================================================================*/
-void SessionClass::Trap_Object(void) {
+void SessionClass::Trap_Object() {
   int i;
 
   //------------------------------------------------------------------------
@@ -1703,7 +1703,7 @@ void SessionClass::Trap_Object(void) {
  * HISTORY:                                                                *
  *   12/07/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long SessionClass::Compute_Unique_ID(void) {
+unsigned long SessionClass::Compute_Unique_ID() {
   time_t tm;
   uint32_t id;
   char* path;

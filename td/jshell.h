@@ -57,16 +57,16 @@
 */
 class Keyboard {
  public:
-  static KeyNumType Get(void) { return (KeyNumType)Get_Key_Num(); };
-  static KeyNumType Check(void) { return (KeyNumType)Check_Key_Num(); };
+  static KeyNumType Get() { return (KeyNumType)Get_Key_Num(); };
+  static KeyNumType Check() { return (KeyNumType)Check_Key_Num(); };
   static KeyASCIIType To_ASCII(KeyNumType key) {
     return (KeyASCIIType)KN_To_KA(key);
   };
-  static void Clear(void) { Clear_KeyBuffer(); };
+  static void Clear() { Clear_KeyBuffer(); };
   static void Stuff(KeyNumType key) { Stuff_Key_Num(key); };
   static int Down(KeyNumType key) { return Key_Down(key); };
-  static int Mouse_X(void) { return Get_Mouse_X(); };
-  static int Mouse_Y(void) { return Get_Mouse_Y(); };
+  static int Mouse_X() { return Get_Mouse_X(); };
+  static int Mouse_Y() { return Get_Mouse_Y(); };
 };
 
 #ifdef NEVER

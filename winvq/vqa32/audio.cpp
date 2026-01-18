@@ -74,7 +74,7 @@
  * PROTOTYPES
  *-------------------------------------------------------------------------*/
 
-extern unsigned long Get_Game_Time(void);
+extern unsigned long Get_Game_Time();
 
 #undef WIN32
 #include <SDL_audio.h>
@@ -210,7 +210,7 @@ long VQA_StartTimerInt(VQAHandleP* vqap, long /*init*/) {
  * SYNOPSIS
  *     VQA_StopTimerInt()
  *
- *     void VQA_StopTimerInt(void);
+ *     void VQA_StopTimerInt();
  *
  * FUNCTION
  *     Remove our timer event from the HMI timer system. Uninitialize the
@@ -323,7 +323,7 @@ long VQA_OpenAudio(VQAHandleP* vqap, void* /*window*/) {
  * SYNOPSIS
  *     VQA_CloseAudio()
  *
- *     void VQA_CloseAudio(void);
+ *     void VQA_CloseAudio();
  *
  * FUNCTION
  *     Removes VQA's involvement in the audio system.
@@ -577,7 +577,7 @@ long CopyAudio(VQAHandleP* vqap) {
   }
 }
 
-void VQA_PauseAudio(void) {
+void VQA_PauseAudio() {
   if (VQAP && VQAP->VQABuf) {
     if (AudioFlags & VQAAUDF_ISPLAYING && !VQAAudioPaused) {
       VQAAudioPaused = true;
@@ -585,7 +585,7 @@ void VQA_PauseAudio(void) {
   }
 }
 
-void VQA_ResumeAudio(void) {
+void VQA_ResumeAudio() {
   if (VQAP && VQAP->VQABuf) {
     if (AudioFlags & VQAAUDF_ISPLAYING && VQAAudioPaused) {
       // TODO: resume
@@ -671,7 +671,7 @@ void VQA_SetTimer(VQAHandleP* vqap, long time, long method) {
  * SYNOPSIS
  *     Time = VQA_GetTime()
  *
- *     unsigned long VQA_GetTime(void);
+ *     unsigned long VQA_GetTime();
  *
  * FUNCTION
  *     This routine returns timer ticks computed one of 3 ways:
@@ -790,7 +790,7 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
  * SYNOPSIS
  *     Method = VQA_TimerMethod()
  *
- *     long VQA_TimerMethod(void);
+ *     long VQA_TimerMethod();
  *
  * FUNCTION
  *     Returns the ID of the current timer method being used.
@@ -803,4 +803,4 @@ int64_t VQA_GetTime(VQAHandleP* vqap) {
  *
  ****************************************************************************/
 
-long VQA_TimerMethod(void) { return (TimerMethod); }
+long VQA_TimerMethod() { return (TimerMethod); }

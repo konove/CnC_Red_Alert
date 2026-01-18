@@ -48,34 +48,34 @@ class OptionsClass {
  public:
   enum { MAX_SCROLL_SETTING = 7, MAX_SPEED_SETTING = 7 };
 
-  OptionsClass(void);
+  OptionsClass();
 
-  void One_Time(void);
-  void Process(void);
+  void One_Time();
+  void Process();
 
-  void Fixup_Palette(void) const;
+  void Fixup_Palette() const;
   void Set_Shuffle(int on);
   void Set_Repeat(int on);
   void Set_Score_Volume(fixed volume, bool feedback);
   void Set_Sound_Volume(fixed volume, bool feedback);
   void Set_Brightness(fixed brightness);
-  fixed Get_Brightness(void) const;
+  fixed Get_Brightness() const;
   void Set_Saturation(fixed color);
-  fixed Get_Saturation(void) const;
+  fixed Get_Saturation() const;
   void Set_Contrast(fixed contrast);
-  fixed Get_Contrast(void) const;
+  fixed Get_Contrast() const;
   void Set_Tint(fixed tint);
-  fixed Get_Tint(void) const;
+  fixed Get_Tint() const;
   int Normalize_Delay(int delay) const;
   int Normalize_Volume(int volume) const;
 
   /*
   ** File I/O routines
   */
-  void Load_Settings(void);
-  void Save_Settings(void);
+  void Load_Settings();
+  void Save_Settings();
 
-  void Set(void);
+  void Set();
 
   /*
   **	This is actually the delay between game frames expressed as 1/60 of

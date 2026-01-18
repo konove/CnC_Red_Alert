@@ -65,7 +65,7 @@ class SliderClass : public GaugeClass {
  public:
   SliderClass(unsigned id, int x, int y, int w, int h,
               int belong_to_list = false);
-  virtual ~SliderClass(void);
+  virtual ~SliderClass();
   //		static SliderClass * Create_One_Of(unsigned id, int x, int y,
   // int w, int h, int belong_to_list=false);
 
@@ -78,7 +78,7 @@ class SliderClass : public GaugeClass {
   virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
                             ControlClass& whom);
 
-  virtual int Thumb_Pixels(void) { return (ThumbSize); }
+  virtual int Thumb_Pixels() { return (ThumbSize); }
 
  protected:
   /*
@@ -108,10 +108,10 @@ class SliderClass : public GaugeClass {
   int ThumbStart;  // x or y position for the thumb
 
   virtual int Action(unsigned flags, KeyNumType& key);
-  virtual void Draw_Thumb(void);
+  virtual void Draw_Thumb();
 
  private:
-  void Recalc_Thumb(void);
+  void Recalc_Thumb();
 };
 
 #endif

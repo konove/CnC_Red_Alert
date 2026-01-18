@@ -101,12 +101,12 @@ extern bool RA95AlreadyRunning;
 #ifdef _WIN32
 HINSTANCE ProgramInstance;
 #endif
-void Check_Use_Compressed_Shapes(void);
+void Check_Use_Compressed_Shapes();
 void Read_Setup_Options(RawFileClass* config_file);
 bool VideoBackBufferAllowed = true;
 #else
 BOOL Init_Timer_System(unsigned int freq, int partial = false);
-BOOL Remove_Timer_System(VOID);
+BOOL Remove_Timer_System();
 #endif  // WIN32
 
 const char* Game_Registry_Key();
@@ -718,7 +718,7 @@ int main(int argc, char* argv[])
 }
 
 /* Initialize DirectDraw and surfaces */
-bool InitDDraw(void) {
+bool InitDDraw() {
 #ifndef PORTABLE
   DDSCAPS surface_capabilities;
 #endif
@@ -847,7 +847,7 @@ bool InitDDraw(void) {
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
 #ifdef WIN32
-void __cdecl Prog_End(void) {
+void __cdecl Prog_End() {
   Sound_End();
   if (WWMouse) {
     delete WWMouse;
@@ -860,7 +860,7 @@ void __cdecl Prog_End(void) {
 }
 #else   // WIN32
 
-void Prog_End(void) {
+void Prog_End() {
   if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
     NullModem.Change_IRQ_Priority(0);
   }
@@ -1026,7 +1026,7 @@ void Read_Setup_Options(RawFileClass* config_file) {
 }
 
 #ifndef WINSOCK_IPX  // this is only used by ipx95
-void Get_OS_Version(void) {
+void Get_OS_Version() {
 #ifdef _WIN32
   WindowsNT = ((GetVersion() & 0x80000000) == 0) ? true : false;
 #endif

@@ -49,7 +49,7 @@
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-void Set_Movie_Frame_Rate(void);
+void Set_Movie_Frame_Rate();
 
 //==========================================================================
 // PRIVATE DEFINES
@@ -135,16 +135,16 @@ class VQAClass {
  public:
   VQAClass(char* filename, char* buffer, short media_src,
            long (*callback)(unsigned char*, long));
-  ~VQAClass(void);
+  ~VQAClass();
   BOOL VQAClass::Update_Palette(unsigned char* newpalette);
-  BOOL Open_And_Load_Buffers(void);
+  BOOL Open_And_Load_Buffers();
   void Seek_To_Frame(unsigned long frame);
   int Play_VQA(int last_frame_to_play);
   void Play_VQA_Frame(int frame_number);
-  void Pause_VQA(void);
-  void Close_And_Free_VQA(void);
-  void VQAClass::Read_Palettes(void);
-  void VQAClass::Write_Palettes(void);
+  void Pause_VQA();
+  void Close_And_Free_VQA();
+  void VQAClass::Read_Palettes();
+  void VQAClass::Write_Palettes();
 }; /* VQAClass */
 
 //==========================================================================

@@ -3031,7 +3031,7 @@ void BuildingTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void BuildingTypeClass::Init_Heap(void) {
+void BuildingTypeClass::Init_Heap() {
   /*
   **	These building type class objects must be allocated in the exact order
   *that they *	are specified in the StructType enumeration. This is necessary
@@ -3327,7 +3327,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 05/23/1994 JLB : Created. * 06/04/1994 JLB : Uses map editing
  *interface routines.                                     *
  *=============================================================================================*/
-void BuildingTypeClass::Prep_For_Add(void) {
+void BuildingTypeClass::Prep_For_Add() {
   for (StructType index = STRUCT_FIRST; index < STRUCT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -3583,7 +3583,7 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-short const* BuildingTypeClass::Overlap_List(void) const {
+short const* BuildingTypeClass::Overlap_List() const {
   if (OverlapList != nullptr) {
     return (OverlapList);
   }
@@ -3605,7 +3605,7 @@ short const* BuildingTypeClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Width(void) const {
+int BuildingTypeClass::Width() const {
   static int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
   return (width[Size]);
 }
@@ -3699,7 +3699,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
  *                                                                                             *
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Max_Pips(void) const {
+int BuildingTypeClass::Max_Pips() const {
   int maxpips = (Width() * ICON_PIXEL_W) / 4;
   return (Bound((int)(Capacity / 100), 0, maxpips));
 }
@@ -3723,7 +3723,7 @@ int BuildingTypeClass::Max_Pips(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Raw_Cost(void) const {
+int BuildingTypeClass::Raw_Cost() const {
   int cost = TechnoTypeClass::Raw_Cost();
 
   if (Type == STRUCT_HELIPAD && !Rule.IsSeparate) {
@@ -3750,7 +3750,7 @@ int BuildingTypeClass::Raw_Cost(void) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Cost_Of(void) const {
+int BuildingTypeClass::Cost_Of() const {
   if (Rule.IsSeparate && Type == STRUCT_HELIPAD) {
     return (Raw_Cost());
   }
@@ -3879,7 +3879,7 @@ COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
  *                                                                                             *
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Full_Name(void) const {
+int BuildingTypeClass::Full_Name() const {
   if (Debug_Map || Rule.IsNamed || *this < STRUCT_V01 || *this > STRUCT_V37) {
     return (TechnoTypeClass::Full_Name());
   }

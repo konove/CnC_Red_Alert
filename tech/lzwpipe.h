@@ -53,9 +53,9 @@ class LZWPipe : public Pipe {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   LZWPipe(CompControl, int blocksize = 1024 * 8);
-  virtual ~LZWPipe(void);
+  virtual ~LZWPipe();
 
-  virtual int Flush(void);
+  virtual int Flush();
   virtual int Put(void const* source, int slen);
 
  private:

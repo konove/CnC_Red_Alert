@@ -64,7 +64,7 @@
 #define OPTION_X ((320 - OPTION_WIDTH) / 2)
 #define OPTION_Y (200 - OPTION_HEIGHT) / 2
 
-void Special_Dialog(void) {
+void Special_Dialog() {
   SpecialClass oldspecial = Special;
   GadgetClass* buttons = nullptr;
   static struct {

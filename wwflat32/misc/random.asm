@@ -31,7 +31,7 @@
 ;*-------------------------------------------------------------------------*
 ;* Functions:                                                              *
 ;*                                                                         *
-;*  UBYTE Random(VOID);                                                    *
+;*  UBYTE Random();                                                    *
 ;*                                                                         *
 ;* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
 
@@ -53,7 +53,7 @@ RandNumb	DD	12349876H
 ;
 ; Here are prototypes for the routines defined within this module:
 ;
-; UBYTE Random(VOID);
+; UBYTE Random();
 ; int Get_Random_Mask(int maxval);
 ;
 ; ----------------------------------------------------------------
@@ -61,7 +61,7 @@ RandNumb	DD	12349876H
 ;-----------------------------------------------------------------
 ; RANDOM
 ;
-; UBYTE Random(VOID);
+; UBYTE Random();
 ;
 ;*
 

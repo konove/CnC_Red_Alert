@@ -50,39 +50,39 @@
 
 extern "C" {
 void Install_Keyboard_Interrupt(void* addr, long size);
-void* Get_RM_Keyboard_Address(void);
-long Get_RM_Keyboard_Size(void);
-void Remove_Keyboard_Interrupt(void);
-int Check_Key_Num(void);
-int Check_Key_Bits(void);
-int Check_Key(void);
-short Get_Key_Num(void);
-short Get_Key_Bits(void);
-int Get_Key(void);
+void* Get_RM_Keyboard_Address();
+long Get_RM_Keyboard_Size();
+void Remove_Keyboard_Interrupt();
+int Check_Key_Num();
+int Check_Key_Bits();
+int Check_Key();
+short Get_Key_Num();
+short Get_Key_Bits();
+int Get_Key();
 int KN_To_KA(int keynum);
 int Keyboard_Attributes_On(int key_flags);
 int Keyboard_Attributes_Off(int key_flags);
-void Clear_KeyBuffer(void);
+void Clear_KeyBuffer();
 int Key_Down(int key);
 int Key_Satisfied(int key);
 void Stuff_Key_WORD(int code);
 void Stuff_Key_Num(int key);
 void Install_Mouse(int max_width, int max_height, int scr_width,
                    int scr_height);
-void Reset_Mouse(void);
-void Remove_Mouse(void);
-int Get_Mouse_State(void);
-int Get_Mouse_X(void);
-int Get_Mouse_Y(void);
-int Get_Mouse_Disabled(void);
+void Reset_Mouse();
+void Remove_Mouse();
+int Get_Mouse_State();
+int Get_Mouse_X();
+int Get_Mouse_Y();
+int Get_Mouse_Disabled();
 void* Set_Mouse_Cursor(int xhotspot, int yhotspot, void* cursor);
-void Hide_Mouse(void);
-void Show_Mouse(void);
+void Hide_Mouse();
+void Show_Mouse();
 void Conditional_Hide_Mouse(int sx_pixel, int sy_pixel, int dx_pixel,
                             int dy_pixel);
-void Conditional_Show_Mouse(void);
+void Conditional_Show_Mouse();
 
-void __interrupt far Keyboard_Interrupt(void);
+void __interrupt far Keyboard_Interrupt();
 extern int MouseQX;
 extern int MouseQY;
 }

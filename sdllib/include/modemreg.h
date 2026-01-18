@@ -21,27 +21,25 @@
 class ModemRegistryEntryClass {
  public:
   ModemRegistryEntryClass(int modem_number);
-  ~ModemRegistryEntryClass(void);
+  ~ModemRegistryEntryClass();
 
-  char* Get_Modem_Name(void) { return (ModemName); }
+  char* Get_Modem_Name() { return (ModemName); }
 
-  char* Get_Modem_Device_Name(void) { return (ModemDeviceName); }
+  char* Get_Modem_Device_Name() { return (ModemDeviceName); }
 
-  char* Get_Modem_Error_Correction_Enable(void) {
-    return (ErrorCorrectionEnable);
-  }
+  char* Get_Modem_Error_Correction_Enable() { return (ErrorCorrectionEnable); }
 
-  char* Get_Modem_Error_Correction_Disable(void) {
+  char* Get_Modem_Error_Correction_Disable() {
     return (ErrorCorrectionDisable);
   }
 
-  char* Get_Modem_Compression_Enable(void) { return (CompressionEnable); }
+  char* Get_Modem_Compression_Enable() { return (CompressionEnable); }
 
-  char* Get_Modem_Compression_Disable(void) { return (CompressionDisable); }
+  char* Get_Modem_Compression_Disable() { return (CompressionDisable); }
 
-  char* Get_Modem_Hardware_Flow_Control(void) { return (HardwareFlowControl); }
+  char* Get_Modem_Hardware_Flow_Control() { return (HardwareFlowControl); }
 
-  char* Get_Modem_No_Flow_Control(void) { return (HardwareFlowControl); }
+  char* Get_Modem_No_Flow_Control() { return (HardwareFlowControl); }
 
  private:
   char* ModemName;

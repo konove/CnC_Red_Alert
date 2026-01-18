@@ -89,7 +89,7 @@
 #endif
 
 bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
-void Delete_Swap_Files(void);
+void Delete_Swap_Files();
 void Print_Error_End_Exit(char* string);
 void Print_Error_Exit(char* string);
 WinTimerClass* WinTimer;
@@ -104,14 +104,14 @@ void Check_From_WChat(char* wchat_name);
 bool SpawnedFromWChat = false;
 
 extern "C" {
-bool __cdecl Detect_MMX_Availability(void);
-void __cdecl Init_MMX(void);
+bool __cdecl Detect_MMX_Availability();
+void __cdecl Init_MMX();
 }
 
 #if (0)
 char WibbleBuffer[1024 * 1024];
 
-void CD_Test(void) {
+void CD_Test() {
   HANDLE handle;
   DWORD size;
 
@@ -157,7 +157,7 @@ HINSTANCE ProgramInstance;
 extern bool CC95AlreadyRunning;
 void Move_Point(short& x, short& y, DirType dir, unsigned short distance);
 
-void Check_Use_Compressed_Shapes(void);
+void Check_Use_Compressed_Shapes();
 
 #ifdef _WIN32
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
@@ -708,7 +708,7 @@ int main(int argc, char* argv[])
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-void __cdecl Prog_End(void) {
+void __cdecl Prog_End() {
 #ifndef DEMO
   if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
     NullModem.Change_IRQ_Priority(0);
@@ -753,7 +753,7 @@ void __cdecl Prog_End(void) {
  *                                                                                             *
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
-void Delete_Swap_Files(void) {
+void Delete_Swap_Files() {
   struct find_t ff;  // for _dos_findfirst
 
   if (!_dos_findfirst("*.SWP", _A_NORMAL, &ff)) {

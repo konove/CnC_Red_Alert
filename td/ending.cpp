@@ -61,7 +61,7 @@
 #include "td/text.h"
 #include "td/textblit.h"
 
-void GDI_Ending(void) {
+void GDI_Ending() {
 #ifdef DEMO
   Fade_Palette_To(BlackPalette, FADE_PALETTE_MEDIUM, Call_Back);
   Load_Title_Screen("DEMOPIC.PCX", &HidPage, Palette);
@@ -133,7 +133,7 @@ void GDI_Ending(void) {
  *                                                                                             *
  * HISTORY: * 7/10/1995 BWG : Created. *
  *=============================================================================================*/
-void Nod_Ending(void) {
+void Nod_Ending() {
   static unsigned char const _tanpal[] = {0x0,  0xED, 0xED, 0x2C, 0x2C, 0xFB,
                                           0xFB, 0xFD, 0xFD, 0x0,  0x0,  0x0,
                                           0x0,  0x0,  0x52, 0x0};

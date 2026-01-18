@@ -223,7 +223,7 @@ ENDP    Mono_Set_Cursor
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*=========================================================================*
-; void Mono_Clear_Screen(void);
+; void Mono_Clear_Screen();
 
 PROC Mono_Clear_Screen  C near 
         

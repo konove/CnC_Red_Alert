@@ -91,9 +91,9 @@ void* Get_Shape_Header_Data(void* ptr) {
   }
 }
 
-int Get_Last_Frame_Length(void) { return (Length); }
+int Get_Last_Frame_Length() { return (Length); }
 
-void Reallocate_Big_Shape_Buffer(void) {
+void Reallocate_Big_Shape_Buffer() {
   if (ReallocShapeBufferFlag) {
     BigShapeBufferLength += 2000000;  // Extra 2 Mb of uncompressed shape space
     BigShapeBufferPtr -= (unsigned)BigShapeBufferStart;
@@ -104,7 +104,7 @@ void Reallocate_Big_Shape_Buffer(void) {
   }
 }
 
-void Check_Use_Compressed_Shapes(void) {
+void Check_Use_Compressed_Shapes() {
   MEMORYSTATUS mem_info;
 
   mem_info.dwLength = sizeof(mem_info);

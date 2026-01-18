@@ -127,7 +127,7 @@ struct point {
  *                                                                                             *
  * HISTORY: * 07/18/1996 BWG : Created. *
  *=============================================================================================*/
-char const* Map_Selection(void) {
+char const* Map_Selection() {
   static char scenarioname[_MAX_FNAME + _MAX_EXT];
 
   if (AntsEnabled) {

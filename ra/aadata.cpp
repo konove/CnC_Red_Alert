@@ -330,7 +330,7 @@ void AircraftTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void AircraftTypeClass::Init_Heap(void) {
+void AircraftTypeClass::Init_Heap() {
   /*
   **	These aircraft type class objects must be allocated in the exact order
   *that they *	are specified in the AircraftSmen enumeration. This is necessary
@@ -434,7 +434,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftTypeClass::Prep_For_Add(void) {
+void AircraftTypeClass::Prep_For_Add() {
   for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -510,7 +510,7 @@ short const* AircraftTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftTypeClass::Overlap_List(void) const {
+short const* AircraftTypeClass::Overlap_List() const {
   static short const _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
@@ -531,7 +531,7 @@ short const* AircraftTypeClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftTypeClass::Max_Pips(void) const {
+int AircraftTypeClass::Max_Pips() const {
   if (PrimaryWeapon != nullptr) {
     return (5);
   }

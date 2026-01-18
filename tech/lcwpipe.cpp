@@ -88,7 +88,7 @@ LCWPipe::LCWPipe(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LCWPipe::~LCWPipe(void) {
+LCWPipe::~LCWPipe() {
   delete[] Buffer;
   Buffer = nullptr;
 
@@ -253,7 +253,7 @@ int LCWPipe::Put(void const* source, int slen) {
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-int LCWPipe::Flush(void) {
+int LCWPipe::Flush() {
   assert(Buffer != nullptr);
 
   int total = 0;

@@ -70,7 +70,7 @@
  *                                                                                             *
  * HISTORY: * 06/18/1995 JLB : Created. *
  *=============================================================================================*/
-void VisualControlsClass::Process(void) {
+void VisualControlsClass::Process() {
   static int _titles[4] = {TXT_BRIGHTNESS, TXT_COLOR, TXT_CONTRAST, TXT_TINT};
 
   enum {

@@ -61,7 +61,7 @@
  *   01/21/1994  jaw: Created.                                             *
  *========================================================================*/
 
-int Initialize_Mono_Screen(void) {
+int Initialize_Mono_Screen() {
   // get a valid selector to mono screen.
   //	Map_Segment_To_Address(0x0b0000UL, 0x8000UL);
 

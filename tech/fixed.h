@@ -78,7 +78,7 @@
 class fixed {
  public:
   // The default constructor must not touch the data members in any way.
-  fixed(void) {}
+  fixed() {}
 
   // Convenient constructor if numerator and denominator components are known.
   fixed(int numerator, int denominator);
@@ -93,9 +93,7 @@ class fixed {
   fixed(char const* ascii);
 
   // Convert to integer when implicitly required.
-  operator unsigned(void) const {
-    return (((unsigned)Data.Raw + (256 / 2)) / 256);
-  }
+  operator unsigned() const { return (((unsigned)Data.Raw + (256 / 2)) / 256); }
 
   /*
   **	The standard operators as they apply to in-place operation.
@@ -226,7 +224,7 @@ class fixed {
   bool operator>=(fixed const& rvalue) const {
     return (Data.Raw >= rvalue.Data.Raw);
   }
-  bool operator!(void) const { return (Data.Raw == 0); }
+  bool operator!() const { return (Data.Raw == 0); }
 
   /*
   **	Comparison to integers requires consideration of fractional component.
@@ -299,12 +297,12 @@ class fixed {
   **	Helper functions to handle simple and common operations on fixed point
   *numbers.
   */
-  void Round_Up(void) {
+  void Round_Up() {
     Data.Raw += (unsigned short)(256 - 1);
     Data.Composite.Fraction = 0;
   }
-  void Round_Down(void) { Data.Composite.Fraction = 0; }
-  void Round(void) {
+  void Round_Down() { Data.Composite.Fraction = 0; }
+  void Round() {
     if (Data.Composite.Fraction >= 256 / 2) Round_Up();
     Round_Down();
   }
@@ -322,7 +320,7 @@ class fixed {
   void Sub_Saturate(fixed const& capvalue) {
     if (*this >= capvalue) Data.Raw = (unsigned short)(capvalue.Data.Raw - 1);
   }
-  void Inverse(void) { *this = fixed(1) / *this; }
+  void Inverse() { *this = fixed(1) / *this; }
 
   /*
   **	Friend helper functions that work in the typical C fashion of passing
@@ -373,7 +371,7 @@ class fixed {
   **	Conversion of the fixed point number into an ASCII string.
   */
   int To_ASCII(char* buffer, int maxlen = -1) const;
-  char const* As_ASCII(void) const;
+  char const* As_ASCII() const;
 
   /*
   **	Helper constants that provide some convenient fixed point values.

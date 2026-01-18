@@ -103,18 +103,18 @@ class MonoClass {
     COUNT
   } BoxStyleType;
 
-  MonoClass(void);
-  ~MonoClass(void);
+  MonoClass();
+  ~MonoClass();
 
-  static void Enable(void) { Enabled = 1; };
-  static void Disable(void) { Enabled = 0; };
-  static int Is_Enabled(void) { return Enabled; };
-  static MonoClass* Get_Current(void) { return PageUsage[0]; };
+  static void Enable() { Enabled = 1; };
+  static void Disable() { Enabled = 0; };
+  static int Is_Enabled() { return Enabled; };
+  static MonoClass* Get_Current() { return PageUsage[0]; };
 
   void Draw_Box(int x, int y, int w, int h, char attrib = DEFAULT_ATTRIBUTE,
                 BoxStyleType thick = SINGLE);
   void Set_Default_Attribute(char attrib) { Attrib = attrib; };
-  void Clear(void);
+  void Clear();
   void Set_Cursor(int x, int y);
   void Print(char const* text);
   void Print(int text);
@@ -123,9 +123,9 @@ class MonoClass {
   void Text_Print(char const* text, int x, int y,
                   char attrib = DEFAULT_ATTRIBUTE);
   void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
-  void View(void);
-  int Get_X(void) const { return X; };
-  int Get_Y(void) const { return Y; };
+  void View();
+  int Get_X() const { return X; };
+  int Get_Y() const { return Y; };
 
   /*
   **	Handles deep copies for the mono class objects. This performs what is
@@ -186,11 +186,11 @@ class MonoClass {
 
 void Mono_Set_Cursor(int x, int y);
 int Mono_Printf(char const* string, ...);
-void Mono_Clear_Screen(void);
+void Mono_Clear_Screen();
 void Mono_Text_Print(void const* text, int x, int y, int attrib);
 void Mono_Draw_Rect(int x, int y, int w, int h, int attrib, int thick);
 void Mono_Print(void const* text);
-int Mono_X(void);
-int Mono_Y(void);
+int Mono_X();
+int Mono_Y();
 
 #endif

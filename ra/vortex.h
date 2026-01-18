@@ -57,8 +57,8 @@ class ChronalVortexClass {
   /*
   ** Constructor and destructor.
   */
-  ChronalVortexClass(void);
-  ~ChronalVortexClass(void);
+  ChronalVortexClass();
+  ~ChronalVortexClass();
 
   void Detach(TARGET target);
 
@@ -70,22 +70,22 @@ class ChronalVortexClass {
   /*
   ** Makes the vortex go away.
   */
-  void Disappear(void);
+  void Disappear();
 
   /*
   ** Call this every frame.
   */
-  void AI(void);
+  void AI();
 
   /*
   ** Render the vortex
   */
-  void Render(void);
+  void Render();
 
   /*
   ** Flags cells under the vortex to be redrawn
   */
-  void Set_Redraw(void);
+  void Set_Redraw();
 
   /*
   ** Call whenever the theater changes to recalculate the shading lookup tables
@@ -101,7 +101,7 @@ class ChronalVortexClass {
   /*
   ** Returns true of vortex is currently active.
   */
-  bool Is_Active(void) { return (Active); };
+  bool Is_Active() { return (Active); };
 
   /*
   ** Makes the vortex attack the specified target. Target must be in range of
@@ -112,14 +112,14 @@ class ChronalVortexClass {
   /*
   ** Disables the vortex.
   */
-  void Stop(void);
+  void Stop();
 
   /*
   ** Members to allow read access to private data
   */
-  int Get_Range(void) { return (Range); };
-  int Get_Speed(void) { return (Speed); };
-  int Get_Damage(void) { return (Damage); };
+  int Get_Range() { return (Range); };
+  int Get_Speed() { return (Speed); };
+  int Get_Damage() { return (Damage); };
 
   /*
   ** Members to allow write access to private data.
@@ -149,11 +149,11 @@ class ChronalVortexClass {
   /*
   ** Misc internal functions
   */
-  void Attack(void);
-  void Zap_Target(void);
-  void Movement(void);
-  void Hide(void);
-  void Show(void);
+  void Attack();
+  void Zap_Target();
+  void Movement();
+  void Hide();
+  void Show();
 
   /*
   ** Position of the top left of the vortex

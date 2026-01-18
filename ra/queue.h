@@ -80,7 +80,7 @@ class QueueClass {
   const int Count;
 
   //-------------- Functions --------------------
-  QueueClass(void);  // Default constructor.
+  QueueClass();  // Default constructor.
 
   /*
   **	The bracket subscript operator functions similarly to the way a normal
@@ -93,19 +93,19 @@ class QueueClass {
   /*
   **	This function will return a reference to the "head of the line" object.
   */
-  T& First(void);
+  T& First();
 
   /*
   **	This function clears the list of objects.
   */
-  void Init(void);
+  void Init();
 
   /*
   **	This function discards the head-of-the-line object and advances all the
   *remaining *	objects up by one. Mnemonic: Imagine a broadway audition and the
   *director yells *	"NEXT!"
   */
-  int Next(void);
+  int Next();
 
   /*
   **	This will add an object to the tail of the line. If there is no more
@@ -113,9 +113,9 @@ class QueueClass {
   */
   int Add(T const&);
 
-  int Get_Head(void);
-  int Get_Tail(void);
-  T* Get_Array(void);
+  int Get_Head();
+  int Get_Tail();
+  T* Get_Array();
 
  private:
   int Head;  // Index of element in list the longest.
@@ -140,7 +140,7 @@ class QueueClass {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline QueueClass<T, size>::QueueClass(void) : Count(0) {
+inline QueueClass<T, size>::QueueClass() : Count(0) {
   Init();
 }
 
@@ -158,7 +158,7 @@ inline QueueClass<T, size>::QueueClass(void) : Count(0) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline void QueueClass<T, size>::Init(void) {
+inline void QueueClass<T, size>::Init() {
   ((int&)Count) = 0;
   Head = 0;
   Tail = 0;
@@ -209,7 +209,7 @@ inline int QueueClass<T, size>::Add(T const& q) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline int QueueClass<T, size>::Next(void) {
+inline int QueueClass<T, size>::Next() {
   if (Count) {
     Head = (Head + 1) & (size - 1);
     ((int&)Count) = Count - 1;
@@ -264,22 +264,22 @@ inline T& QueueClass<T, size>::operator[](int index) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 template <class T, int size>
-inline T& QueueClass<T, size>::First(void) {
+inline T& QueueClass<T, size>::First() {
   return Array[Head];
 }
 
 template <class T, int size>
-inline int QueueClass<T, size>::Get_Head(void) {
+inline int QueueClass<T, size>::Get_Head() {
   return Head;
 }
 
 template <class T, int size>
-inline int QueueClass<T, size>::Get_Tail(void) {
+inline int QueueClass<T, size>::Get_Tail() {
   return Tail;
 }
 
 template <class T, int size>
-inline T* QueueClass<T, size>::Get_Array(void) {
+inline T* QueueClass<T, size>::Get_Array() {
   return Array;
 }
 
@@ -290,9 +290,9 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
                    TARGET destination);
 bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
                    TARGET destination, SpeedType speed, MPHType maxspeed);
-bool Queue_Options(void);
-bool Queue_Exit(void);
-void Queue_AI(void);
+bool Queue_Options();
+bool Queue_Exit();
+void Queue_AI();
 void Add_CRC(uint32_t* crc, uint32_t val);
 
 #endif

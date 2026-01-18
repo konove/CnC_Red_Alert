@@ -97,37 +97,37 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  DriveClass(void);
+  DriveClass();
   DriveClass(UnitType classid, HousesType house);
   DriveClass(NoInitClass const& x) : FootClass(x), Class(Class) {};
-  virtual ~DriveClass(void) {};
-  operator UnitType(void) const { return Class->Type; };
+  virtual ~DriveClass() {};
+  operator UnitType() const { return Class->Type; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual int Offload_Tiberium_Bail(void);
+  virtual int Offload_Tiberium_Bail();
   void Do_Turn(DirType dir);
-  virtual void Approach_Target(void);
-  virtual ObjectTypeClass const& Class_Of(void) const;
+  virtual void Approach_Target();
+  virtual ObjectTypeClass const& Class_Of() const;
   virtual void Overrun_Square(CELL cell, bool threaten = true);
   virtual void Assign_Destination(TARGET target);
   virtual void Per_Cell_Process(bool center);
   virtual bool Ok_To_Move(DirType) const;
-  virtual void AI(void);
+  virtual void AI();
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   void Force_Track(int track, COORDINATE coord);
-  virtual int Tiberium_Load(void) const;
+  virtual int Tiberium_Load() const;
 
-  void Exit_Map(void);
+  void Exit_Map();
   void Mark_Track(COORDINATE headto, MarkType type);
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /**********************************************************************
   **	These enumerations are used as working constants that exist only
@@ -192,9 +192,9 @@ class DriveClass : public FootClass {
   **	Member function prototypes.
   */
   virtual void Fixup_Path(PathType* path);
-  bool While_Moving(void);
-  bool Start_Of_Move(void);
-  void Lay_Track(void);
+  bool While_Moving();
+  bool Start_Of_Move();
+  void Lay_Track();
   COORDINATE Smooth_Turn(COORDINATE adj, DirType* dir);
 
   static TurnTrackType const TrackControl[67];

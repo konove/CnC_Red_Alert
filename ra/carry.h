@@ -50,7 +50,7 @@ class CarryoverClass : public LinkClass {
   CarryoverClass(TechnoClass* techno = nullptr);
   CarryoverClass(NoInitClass const& x) : LinkClass(x) {}
 
-  bool Create(void) const;
+  bool Create() const;
 
  protected:
   /*

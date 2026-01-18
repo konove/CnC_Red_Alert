@@ -32,9 +32,9 @@
 ;*-------------------------------------------------------------------------*
 ;* Functions:                                                              *
 ;*                                                                         *
-; WORD Get_Vert_Blank(VOID);                                               *
-; VOID Wait_Vert_Blank(VOID);						   *
-; WORD get_vga_state (VOID) ;
+; WORD Get_Vert_Blank();                                               *
+; VOID Wait_Vert_Blank();						   *
+; WORD get_vga_state () ;
 ; VOID set_vga_mode (WORD) ;
 ;*                                                                         *
 ;* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *
@@ -57,9 +57,9 @@ CODESEG
 ;
 ; Here are prototypes for the routines defined within this module:
 ;
-; WORD Get_Vert_Blank(VOID);
-; VOID Wait_Vert_Blank(VOID);
-; WORD get_vga_state (VOID) ;
+; WORD Get_Vert_Blank();
+; VOID Wait_Vert_Blank();
+; WORD get_vga_state () ;
 ; VOID set_vga_mode (WORD) ;
 
 ;
@@ -110,7 +110,7 @@ ENDP	Wait_Vert_Blank
 
 ;----------------------------------------------------------------------------
 
-; WORD get_vga_state (VOID) ;
+; WORD get_vga_state () ;
 
 PROC	get_vga_state C near
 	USES  ebx

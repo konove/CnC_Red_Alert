@@ -30,7 +30,7 @@ class BMP8 {
   ~BMP8();
 
   bool Init(const char* szFile, HWND hWnd);
-  bool Draw(void);  // call this from your WM_PAINT message
+  bool Draw();  // call this from your WM_PAINT message
 
  private:
   HBITMAP hBMP;

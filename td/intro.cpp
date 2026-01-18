@@ -98,7 +98,7 @@ VQAHandle* Open_Movie(char* name) {
  *                                                                                             *
  * HISTORY: * 5/08/1995 BWG : Created. *
  *=============================================================================================*/
-void Choose_Side(void) {
+void Choose_Side() {
   static unsigned char const _yellowpal[] = {0x0,  0xC9, 0xBA, 0x93, 0x61, 0xEE,
                                              0xee, 0x0,  0x0,  0x0,  0x0,  0x0,
                                              0x0,  0x0,  0x0,  0x0};

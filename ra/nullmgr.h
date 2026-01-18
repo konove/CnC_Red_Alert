@@ -101,12 +101,12 @@ class NullModemClass : public ConnManClass {
   */
   int Init(int port, int irq, char* dev_name, int baud, char parity,
            int wordlength, int stopbits, int flowcontrol);
-  int Delete_Connection(void);
-  virtual int Num_Connections(void);
+  int Delete_Connection();
+  virtual int Num_Connections();
   virtual int Connection_ID(int) { return (0); }
   virtual int Connection_Index(int) { return (0); }
-  int Init_Send_Queue(void);
-  void Shutdown(void);
+  int Init_Send_Queue();
+  void Shutdown();
 
   virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                           unsigned long timeout);
@@ -131,18 +131,18 @@ class NullModemClass : public ConnManClass {
   /*
   **	The main polling routine; should be called as often as possible.
   */
-  virtual int Service(void);
+  virtual int Service();
 
   /*
   **	Queue utility routines.  The application can determine how many
   **	messages are in the send/receive queues, and the queue's average
   **	response time (in clock ticks).
   */
-  int Num_Send(void);
-  int Num_Receive(void);
-  virtual unsigned long Response_Time(void);
-  virtual void Reset_Response_Time(void);
-  void* Oldest_Send(void);
+  int Num_Send();
+  int Num_Receive();
+  virtual unsigned long Response_Time();
+  virtual void Reset_Response_Time();
+  void* Oldest_Send();
   virtual void Configure_Debug(int index, int type_offset, int type_size,
                                char** names, int namestart, int namecount);
 #ifdef CHEAT_KEYS
@@ -152,8 +152,8 @@ class NullModemClass : public ConnManClass {
   /*
   ** These are for compatibility
   */
-  virtual int Global_Num_Send(void) { return (Num_Send()); }
-  virtual int Global_Num_Receive(void) { return (Num_Receive()); }
+  virtual int Global_Num_Send() { return (Num_Send()); }
+  virtual int Global_Num_Receive() { return (Num_Receive()); }
   virtual int Private_Num_Send(int = CONNECTION_NONE) { return (Num_Send()); }
   virtual int Private_Num_Receive(int = CONNECTION_NONE) {
     return (Num_Receive());
@@ -164,17 +164,17 @@ class NullModemClass : public ConnManClass {
   DialStatusType Dial_Modem(const char* string, DialMethodType method,
                             bool reconnect = 0);
   DialStatusType Answer_Modem(bool reconnect = 0);
-  bool Hangup_Modem(void);
+  bool Hangup_Modem();
   void Setup_Modem_Echo(void (*func)(char c));
-  void Remove_Modem_Echo(void);
-  void Print_EchoBuf(void);
-  void Reset_EchoBuf(void);
+  void Remove_Modem_Echo();
+  void Print_EchoBuf();
+  void Reset_EchoBuf();
   static int Abort_Modem();
-  void Setup_Abort_Modem(void);
-  void Remove_Abort_Modem(void);
+  void Setup_Abort_Modem();
+  void Remove_Abort_Modem();
 
   int Change_IRQ_Priority(int irq);
-  int Get_Modem_Status(void);
+  int Get_Modem_Status();
   int Send_Modem_Command(const char* command, char terminator, char* buffer,
                          int buflen, int delay, int retries);
   int Verify_And_Convert_To_Int(char* buffer);

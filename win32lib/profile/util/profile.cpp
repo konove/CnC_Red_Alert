@@ -64,17 +64,17 @@
 /*
 ** Function prototypes
 */
-void Print_My_Name(void);
-void Print_Usage(void);
+void Print_My_Name();
+void Print_Usage();
 int Load_File(char* file_name, unsigned* file_ptr, unsigned mode);
-bool Extract_Function_Addresses(void);
+bool Extract_Function_Addresses();
 unsigned Get_Hex(char string[], int length);
 char* Search_For_Char(char character, char buffer_ptr[], int buffer_length);
 char* Search_For_String(char* string, char* buffer_ptr, int buffer_length);
-void Map_Profiler_Hits(void);
-void Sort_Functions(void);
-void Sort_Functions_Again(void);
-void Output_Profile(void);
+void Map_Profiler_Hits();
+void Sort_Functions();
+void Sort_Functions_Again();
+void Output_Profile();
 
 char* SampleFile;            // Ptr to sample file name
 char* MapFile;               // Ptr to map file name
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
  * HISTORY: * 11/20/95 5:25PM ST : Created *
  *=============================================================================================*/
 
-void Print_My_Name(void) {
+void Print_My_Name() {
   cprintf("Westwood profile data analyzer.\n");
   cprintf("V 1.0 - 11/17/95\n");
   cprintf("Programmer - Steve Tall.\n\n");
@@ -233,9 +233,7 @@ void Print_My_Name(void) {
  * HISTORY: * 11/20/95 5:26PM ST : Created *
  *=============================================================================================*/
 
-void Print_Usage(void) {
-  cprintf("Usage: PROFILE <sample_file> <map_file)\n\n");
-}
+void Print_Usage() { cprintf("Usage: PROFILE <sample_file> <map_file)\n\n"); }
 
 /***********************************************************************************************
  * File_Error -- display a file error message *
@@ -268,7 +266,7 @@ void File_Error(char* file_name) {
  * HISTORY: * 11/20/95 5:27PM ST : Created *
  *=============================================================================================*/
 
-void Memory_Error(void) { cprintf("Error - insufficient memory - aborting\n"); }
+void Memory_Error() { cprintf("Error - insufficient memory - aborting\n"); }
 
 /***********************************************************************************************
  * Load_File -- load an entire file into memory *
@@ -333,7 +331,7 @@ int Load_File(char* file_name, unsigned* load_addr, unsigned mode) {
  * HISTORY: * 11/20/95 5:28PM ST : Created *
  *=============================================================================================*/
 
-void Map_Profiler_Hits(void) {
+void Map_Profiler_Hits() {
   unsigned* samples = (unsigned*)SampleFileBuffer;
   unsigned function_hit;
 
@@ -365,7 +363,7 @@ void Map_Profiler_Hits(void) {
  * HISTORY: * 11/20/95 5:29PM ST : Created *
  *=============================================================================================*/
 
-void Sort_Functions(void) {
+void Sort_Functions() {
   Function address_swap;
 
   if (TotalFunctions > 1) {
@@ -404,7 +402,7 @@ void Sort_Functions(void) {
  * HISTORY: * 11/20/95 5:29PM ST : Created *
  *=============================================================================================*/
 
-void Sort_Functions_Again(void) {
+void Sort_Functions_Again() {
   Function address_swap;
 
   if (TotalFunctions > 1) {
@@ -442,7 +440,7 @@ void Sort_Functions_Again(void) {
  * HISTORY: * 11/20/95 5:31PM ST : Created *
  *=============================================================================================*/
 
-void Output_Profile(void) {
+void Output_Profile() {
   double period =
       (((double)SampleFileLength / (double)4) - (double)SAMPLE_START) /
       (double)SampleRate;
@@ -485,7 +483,7 @@ void Output_Profile(void) {
  * HISTORY: * 11/20/95 5:31PM ST : Created *
  *=============================================================================================*/
 
-bool Extract_Function_Addresses(void) {
+bool Extract_Function_Addresses() {
   char* map_ptr;
   char* segment_ptr;
   char* end_str_ptr;

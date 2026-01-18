@@ -37,10 +37,10 @@
 
 #pragma pack(4)
 
-WORD sosDIGILockMemory(VOID);
-WORD sosDIGIUnLockMemory(VOID);
+WORD sosDIGILockMemory();
+WORD sosDIGIUnLockMemory();
 WORD sosDIGIInitSystem(LPSTR, WORD);
-WORD sosDIGIUnInitSystem(VOID);
+WORD sosDIGIUnInitSystem();
 WORD sosDIGIInitDriver(WORD, _SOS_HARDWARE far*, _SOS_INIT_DRIVER far*,
                        WORD far*);
 WORD sosDIGIUnInitDriver(WORD, BOOL, BOOL);
@@ -62,7 +62,7 @@ WORD sosDIGIStartSample(WORD, _SOS_START_SAMPLE far*);
 WORD sosDIGIContinueSample(WORD, WORD, _SOS_START_SAMPLE far*);
 
 WORD sosDIGIDetectInit(LPSTR);
-WORD sosDIGIDetectUnInit(VOID);
+WORD sosDIGIDetectUnInit();
 WORD sosDIGIDetectFindHardware(WORD, _SOS_CAPABILITIES far*, WORD far*);
 WORD sosDIGIDetectFindFirst(_SOS_CAPABILITIES far*, WORD far*);
 WORD sosDIGIDetectFindNext(_SOS_CAPABILITIES far*, WORD far*);
@@ -74,7 +74,7 @@ PSTR sosGetErrorString(WORD);
 WORD sosDIGILoadTimer(WORD, LPSTR far*, LPSTR far*, PSTR, PSTR, WORD*);
 WORD sosDIGIUnLoadTimer(WORD);
 
-WORD sosTIMERRegisterEvent(WORD wCallRate, VOID(far* lpTimerEvent)(VOID),
+WORD sosTIMERRegisterEvent(WORD wCallRate, VOID(far* lpTimerEvent)(),
                            WORD far* lpTimerHandle);
 WORD sosTIMERInitSystem(WORD, WORD);
 WORD sosTIMERUnInitSystem(WORD);
@@ -82,8 +82,8 @@ WORD sosTIMERSetRate(WORD);
 WORD sosTIMERRemoveEvent(WORD);
 WORD sosTIMERAlterEventRate(WORD, WORD);
 WORD sosTIMERGetEventRate(WORD);
-VOID far sosTIMEROldHandler(VOID);
-VOID far sosTIMERHandler(VOID);
+VOID far sosTIMEROldHandler();
+VOID far sosTIMERHandler();
 
 // functions in soscntl.c
 WORD sosDIGISetSampleVolume(WORD, WORD, WORD);
@@ -119,8 +119,8 @@ extern int __cdecl sosRealFree(int);
 extern BOOL __cdecl _sos_read(WORD, LPSTR, WORD, WORD*);
 extern int __cdecl sosRealAlloc(int, int*, int*);
 extern void __cdecl sosDRVFarMemCopy(LPSTR, LPSTR, WORD);
-extern int __cdecl sosGetCS(VOID);
-extern int __cdecl sosGetES(VOID);
+extern int __cdecl sosGetCS();
+extern int __cdecl sosGetES();
 #else
 extern int __cdecl sosRealAlloc(int, int*, int*);
 extern int __cdecl sosRealFree(int);
@@ -154,28 +154,28 @@ extern VOID __cdecl sosDetDRVSetEnvString(DWORD, PSTR);
 extern PSTR __cdecl sosDetDRVGetEnvString(DWORD);
 extern VOID __cdecl sosDetDRVEnvStringInit(LPSTR, LPSTR);
 extern VOID __cdecl sosDRVSetupCallFunctions(LPSTR, LPSTR, LPSTR, LPSTR);
-extern WORD __cdecl sosDRVGetFreeMemory(VOID);
+extern WORD __cdecl sosDRVGetFreeMemory();
 extern WORD __cdecl sosDRVAllocVDSStruct(WORD, WORD*, WORD*);
 extern WORD __cdecl sosDRVFreeVDSStruct(WORD, WORD);
-extern WORD __cdecl sosDRVIsWindowsActive(VOID);
+extern WORD __cdecl sosDRVIsWindowsActive();
 extern WORD __cdecl sosDRVVDSGetBuffer(WORD);
 extern WORD __cdecl sosDRVVDSFreeBuffer(WORD);
-extern WORD __cdecl getDS(VOID);
+extern WORD __cdecl getDS();
 extern WORD __cdecl sosDRVMakeDMASelector(WORD);
 extern WORD __cdecl sosDRVFreeDMASelector(WORD);
 
-extern void __cdecl sosTIMERDRVInit(int wRate, void(far*)(void));
-extern void __cdecl sosTIMERDRVUnInit(void);
-extern void __cdecl sosTIMERDRVHandler(void);
-extern void __cdecl sosTIMERDRVFHandler(void);
-extern void __cdecl sosTIMERDRVEnable(void);
-extern void __cdecl sosTIMERDRVDisable(void);
-extern void __cdecl sosTIMERDRVCallOld(void);
+extern void __cdecl sosTIMERDRVInit(int wRate, void(far*)());
+extern void __cdecl sosTIMERDRVUnInit();
+extern void __cdecl sosTIMERDRVHandler();
+extern void __cdecl sosTIMERDRVFHandler();
+extern void __cdecl sosTIMERDRVEnable();
+extern void __cdecl sosTIMERDRVDisable();
+extern void __cdecl sosTIMERDRVCallOld();
 extern void __cdecl sosTIMERDRVSetRate(WORD);
-extern void __cdecl sosDIGITimer_Start(void);
-extern void __cdecl sosDIGITimer_End(void);
-extern void __cdecl sosDIGIDrv_Start(void);
-extern void __cdecl sosDIGIDrv_End(void);
+extern void __cdecl sosDIGITimer_Start();
+extern void __cdecl sosDIGITimer_End();
+extern void __cdecl sosDIGIDrv_Start();
+extern void __cdecl sosDIGIDrv_End();
 #ifdef __cplusplus
 }
 #endif
@@ -183,34 +183,34 @@ extern void __cdecl sosDIGIDrv_End(void);
 // external functions for handling system initialization and
 // uninitialization
 WORD sosEXDIGInitDriver(WORD, WORD, WORD, LPSTR, _SOS_HARDWARE far*, WORD*);
-WORD sosEXDIGIUnInitDriver(VOID);
+WORD sosEXDIGIUnInitDriver();
 
 WORD sosEXDETFindDriver(WORD, LPSTR, _SOS_HARDWARE far*,
                         _SOS_CAPABILITIES far*);
 
 // memory locking prototypes
-VOID sosDIGICaps_Start(VOID);
-VOID sosDIGICaps_End(VOID);
-VOID sosDIGIErr_Start(VOID);
-VOID sosDIGIErr_End(VOID);
-VOID sosDIGITmr_Start(VOID);
-VOID sosDIGITmr_End(VOID);
-VOID sosDIGIStart_Start(VOID);
-VOID sosDIGIStart_End(VOID);
-VOID sosDIGIPlyng_Start(VOID);
-VOID sosDIGIPlyng_End(VOID);
-VOID sosDIGIRate_Start(VOID);
-VOID sosDIGIRate_End(VOID);
-VOID sosDIGIDone_Start(VOID);
-VOID sosDIGIDone_End(VOID);
-VOID sosDIGIDetec_Start(VOID);
-VOID sosDIGIDetec_End(VOID);
-VOID sosDIGIInit_Start(VOID);
-VOID sosDIGIInit_End(VOID);
-VOID sosDIGILoad_Start(VOID);
-VOID sosDIGILoad_End(VOID);
-VOID sosDIGICntl_Start(VOID);
-VOID sosDIGICntl_End(VOID);
+VOID sosDIGICaps_Start();
+VOID sosDIGICaps_End();
+VOID sosDIGIErr_Start();
+VOID sosDIGIErr_End();
+VOID sosDIGITmr_Start();
+VOID sosDIGITmr_End();
+VOID sosDIGIStart_Start();
+VOID sosDIGIStart_End();
+VOID sosDIGIPlyng_Start();
+VOID sosDIGIPlyng_End();
+VOID sosDIGIRate_Start();
+VOID sosDIGIRate_End();
+VOID sosDIGIDone_Start();
+VOID sosDIGIDone_End();
+VOID sosDIGIDetec_Start();
+VOID sosDIGIDetec_End();
+VOID sosDIGIInit_Start();
+VOID sosDIGIInit_End();
+VOID sosDIGILoad_Start();
+VOID sosDIGILoad_End();
+VOID sosDIGICntl_Start();
+VOID sosDIGICntl_End();
 
 #pragma pack()
 

@@ -115,9 +115,9 @@ void* Get_Shape_Header_Data(void* ptr) {
   }
 }
 
-int Get_Last_Frame_Length(void) { return (Length); }
+int Get_Last_Frame_Length() { return (Length); }
 
-void Reset_Theater_Shapes(void) {
+void Reset_Theater_Shapes() {
   /*
   ** Delete any previously allocated slots
   */
@@ -130,7 +130,7 @@ void Reset_Theater_Shapes(void) {
   TheaterSlotsUsed = THEATER_SLOT_START;
 }
 
-void Reallocate_Big_Shape_Buffer(void) {
+void Reallocate_Big_Shape_Buffer() {
   if (ReallocShapeBufferFlag) {
     BigShapeBufferLength +=
         200 * 1024;  // Extra 2 Mb of uncompressed shape space
@@ -152,7 +152,7 @@ void Reallocate_Big_Shape_Buffer(void) {
   }
 }
 
-void Check_Use_Compressed_Shapes(void) {
+void Check_Use_Compressed_Shapes() {
 #ifdef PORTABLE
   UseBigShapeBuffer =
       false;  // haven't implemented the draw code that uses this
@@ -182,7 +182,7 @@ void Check_Use_Compressed_Shapes(void) {
  *                                                                                             *
  * HISTORY: * 11/19/96 2:37PM ST : Created *
  *=============================================================================================*/
-void Disable_Uncompressed_Shapes(void) { UseBigShapeBuffer = false; }
+void Disable_Uncompressed_Shapes() { UseBigShapeBuffer = false; }
 
 /***********************************************************************************************
  * Enable_Uncompressed_Shapes -- Restores state of shape decompression before it
@@ -198,7 +198,7 @@ void Disable_Uncompressed_Shapes(void) { UseBigShapeBuffer = false; }
  *                                                                                             *
  * HISTORY: * 11/19/96 2:37PM ST : Created *
  *=============================================================================================*/
-void Enable_Uncompressed_Shapes(void) {
+void Enable_Uncompressed_Shapes() {
   UseBigShapeBuffer = OriginalUseBigShapeBuffer;
 }
 

@@ -198,8 +198,8 @@ class FootClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FootClass(void);
-  virtual ~FootClass(void);
+  FootClass();
+  virtual ~FootClass();
   FootClass(NoInitClass const& x)
       : TechnoClass(x), PathDelay(x), BaseAttackTimer(x) {};
   FootClass(HousesType house);
@@ -207,27 +207,27 @@ class FootClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool Basic_Path(void);
+  bool Basic_Path();
 
   virtual RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
                                            long& param);
-  virtual bool Can_Demolish(void) const;
+  virtual bool Can_Demolish() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y(void) const;
-  virtual COORDINATE Likely_Coord(void) const;
+  virtual COORDINATE Sort_Y() const;
+  virtual COORDINATE Likely_Coord() const;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  COORDINATE Head_To_Coord(void) const { return (HeadToCoord); };
+  COORDINATE Head_To_Coord() const { return (HeadToCoord); };
   virtual bool Start_Driver(COORDINATE& headto);
-  virtual bool Stop_Driver(void);
+  virtual bool Stop_Driver();
   virtual void Assign_Destination(TARGET target);
 
   /*
@@ -235,7 +235,7 @@ class FootClass : public TechnoClass {
   **	object interacts with the map and thus indirectly controls rendering.
   */
   virtual bool Unlimbo(COORDINATE, DirType dir = DIR_N);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   virtual bool Mark(MarkType mark);
 
   /*
@@ -247,7 +247,7 @@ class FootClass : public TechnoClass {
   /*
   **	Combat related.
   */
-  virtual void Stun(void);
+  virtual void Stun();
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr);
   virtual void Death_Announcement(TechnoClass const* source = nullptr) const;
@@ -256,19 +256,19 @@ class FootClass : public TechnoClass {
   **	AI.
   */
   virtual void Sell_Back(int control);
-  virtual int Offload_Tiberium_Bail(void);
+  virtual int Offload_Tiberium_Bail();
   virtual TARGET Greatest_Threat(ThreatType method) const;
   virtual void Detach(TARGET target, bool all);
   virtual void Detach_All(bool all = true);
   virtual void Assign_Mission(MissionType order);
-  virtual int Mission_Enter(void);
-  virtual int Mission_Move(void);
-  virtual int Mission_Capture(void);
-  virtual int Mission_Attack(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Hunt(void);
-  virtual int Mission_Timed_Hunt(void);
-  virtual int Mission_Guard_Area(void);
+  virtual int Mission_Enter();
+  virtual int Mission_Move();
+  virtual int Mission_Capture();
+  virtual int Mission_Attack();
+  virtual int Mission_Guard();
+  virtual int Mission_Hunt();
+  virtual int Mission_Timed_Hunt();
+  virtual int Mission_Guard_Area();
 
 /*
 **	Scenario and debug support.
@@ -281,20 +281,20 @@ class FootClass : public TechnoClass {
   **	Movement and animation.
   */
   virtual void Per_Cell_Process(bool center);
-  virtual void Approach_Target(void);
+  virtual void Approach_Target();
   virtual void Fixup_Path(PathType*) {};
   virtual void Set_Speed(int speed);
   virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const;
   int Optimize_Moves(PathType* path, MoveType threshhold);
   virtual void Override_Mission(MissionType mission, TARGET tarcom,
                                 TARGET navcom);
-  virtual bool Restore_Mission(void);
+  virtual bool Restore_Mission();
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   CELL Safety_Point(CELL src, CELL dst, int start, int max);
   int Rescue_Mission(TARGET tarcom);

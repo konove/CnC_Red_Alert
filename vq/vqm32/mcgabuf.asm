@@ -59,7 +59,7 @@
 ;* SYNOPSIS
 ;*     ClearVRAM()
 ;*
-;*     void ClearVRAM(void);
+;*     void ClearVRAM();
 ;*
 ;* FUNCTION
 ;*

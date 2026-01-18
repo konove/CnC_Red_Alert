@@ -361,7 +361,7 @@ AircraftType AircraftTypeClass::From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftTypeClass::One_Time(void) {
+void AircraftTypeClass::One_Time() {
   AircraftType index;
 
   for (index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
@@ -432,7 +432,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftTypeClass::Prep_For_Add(void) {
+void AircraftTypeClass::Prep_For_Add() {
   for (AircraftType index = AIRCRAFT_FIRST; index < AIRCRAFT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -510,7 +510,7 @@ short const* AircraftTypeClass::Occupy_List(bool) const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-short const* AircraftTypeClass::Overlap_List(void) const {
+short const* AircraftTypeClass::Overlap_List() const {
   static short const _list[] = {
       -(MAP_CELL_W - 1), -MAP_CELL_W, -(MAP_CELL_W + 1), -1,         1,
       (MAP_CELL_W - 1),  MAP_CELL_W,  (MAP_CELL_W + 1),  REFRESH_EOL};
@@ -573,7 +573,7 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool, bool legal,
  *                                                                                             *
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftTypeClass::Repair_Cost(void) const {
+int AircraftTypeClass::Repair_Cost() const {
   return (
       Fixed_To_Cardinal(Cost / (MaxStrength / REPAIR_STEP), REPAIR_PERCENT));
 }
@@ -594,7 +594,7 @@ int AircraftTypeClass::Repair_Cost(void) const {
  *                                                                                             *
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftTypeClass::Repair_Step(void) const { return (REPAIR_STEP); }
+int AircraftTypeClass::Repair_Step() const { return (REPAIR_STEP); }
 
 /***********************************************************************************************
  * AircraftTypeClass::Max_Pips -- Fetches the maximum number of pips allowed. *
@@ -610,7 +610,7 @@ int AircraftTypeClass::Repair_Step(void) const { return (REPAIR_STEP); }
  *                                                                                             *
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
-int AircraftTypeClass::Max_Pips(void) const {
+int AircraftTypeClass::Max_Pips() const {
   if (IsTransporter) {
     return (Max_Passengers());
   } else {
@@ -705,4 +705,4 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
   height = 20;
 }
 
-RTTIType AircraftTypeClass::What_Am_I(void) const { return RTTI_AIRCRAFTTYPE; };
+RTTIType AircraftTypeClass::What_Am_I() const { return RTTI_AIRCRAFTTYPE; };

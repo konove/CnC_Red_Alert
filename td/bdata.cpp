@@ -3719,7 +3719,7 @@ BuildingTypeClass::BuildingTypeClass(
  * HISTORY: * 05/28/1994 JLB : Created. * 06/11/1994 JLB : Updated construction
  *time and frame count logic.                         *
  *=============================================================================================*/
-void BuildingTypeClass::One_Time(void) {
+void BuildingTypeClass::One_Time() {
   static const struct {
     StructType Class;  // Building class number.
     BStateType Stage;  // Animation sequence to assign animation range to.
@@ -3894,7 +3894,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 05/23/1994 JLB : Created. * 06/04/1994 JLB : Uses map editing
  *interface routines.                                     *
  *=============================================================================================*/
-void BuildingTypeClass::Prep_For_Add(void) {
+void BuildingTypeClass::Prep_For_Add() {
   for (StructType index = STRUCT_FIRST; index < STRUCT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -4289,7 +4289,7 @@ short const* BuildingTypeClass::Occupy_List(bool placement) const {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-short const* BuildingTypeClass::Overlap_List(void) const {
+short const* BuildingTypeClass::Overlap_List() const {
   if (OverlapList) {
     return (OverlapList);
   }
@@ -4311,7 +4311,7 @@ short const* BuildingTypeClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Width(void) const {
+int BuildingTypeClass::Width() const {
   static int width[BSIZE_COUNT] = {1, 2, 1, 2, 2, 3, 3, 4, 5};
   return (width[Size]);
 }
@@ -4329,7 +4329,7 @@ int BuildingTypeClass::Width(void) const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Height(void) const {
+int BuildingTypeClass::Height() const {
   static int height[BSIZE_COUNT] = {1, 1, 2, 2, 3, 2, 3, 2, 5};
   return (height[Size]);
 }
@@ -4349,7 +4349,7 @@ int BuildingTypeClass::Height(void) const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Repair_Cost(void) const {
+int BuildingTypeClass::Repair_Cost() const {
   int cost = (Raw_Cost() * REPAIR_STEP) / MaxStrength;
   cost /= 2;
   cost = std::max(cost, 1);
@@ -4372,7 +4372,7 @@ int BuildingTypeClass::Repair_Cost(void) const {
  *                                                                                             *
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Repair_Step(void) const { return (REPAIR_STEP); }
+int BuildingTypeClass::Repair_Step() const { return (REPAIR_STEP); }
 
 /***********************************************************************************************
  * BuildingTypeClass::Bib_And_Offset -- Determines the bib and appropriate cell
@@ -4440,7 +4440,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
  *                                                                                             *
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Max_Pips(void) const {
+int BuildingTypeClass::Max_Pips() const {
   return (Bound(Capacity / 100, 0, 10));
 }
 
@@ -4460,7 +4460,7 @@ int BuildingTypeClass::Max_Pips(void) const {
  * HISTORY: * 06/29/1995 JLB : Created. * 07/17/1995 JLB : Village wells will
  *always have their name displayed.                     *
  *=============================================================================================*/
-int BuildingTypeClass::Full_Name(void) const {
+int BuildingTypeClass::Full_Name() const {
   if (::Scenario == 3 && Type == STRUCT_MISSION) {
     return (TXT_PRISON);
   }
@@ -4472,7 +4472,7 @@ int BuildingTypeClass::Full_Name(void) const {
   return (TXT_CIVILIAN_BUILDING);
 }
 
-int BuildingTypeClass::Raw_Cost(void) const {
+int BuildingTypeClass::Raw_Cost() const {
 #ifdef PATCH
   /*
   **	Forces the turret cost down to original 250 for old
@@ -4494,7 +4494,7 @@ int BuildingTypeClass::Raw_Cost(void) const {
   return (cost);
 }
 
-int BuildingTypeClass::Cost_Of(void) const {
+int BuildingTypeClass::Cost_Of() const {
   if (Special.IsSeparate && Type == STRUCT_HELIPAD) {
     return (Raw_Cost());
   }

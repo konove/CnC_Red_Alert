@@ -55,11 +55,11 @@
 extern "C" {
 #endif
 
-extern VOID* Get_RM_Timer_Address(VOID);
-extern ULONG Get_RM_Timer_Size(VOID);
+extern VOID* Get_RM_Timer_Address();
+extern ULONG Get_RM_Timer_Size();
 extern BOOL Install_Timer_Interrupt(VOID* bin_ptr, UINT rm_size, UINT freq,
                                     BOOL partial);
-extern BOOL Remove_Timer_Interrupt(VOID);
+extern BOOL Remove_Timer_Interrupt();
 
 #ifdef __cplusplus
 }
@@ -157,7 +157,7 @@ BOOL Init_Timer_System(UINT freq, BOOL partial) {
  * HISTORY:                                                                *
  *   07/06/1994 SKB : Created.                                             *
  *=========================================================================*/
-BOOL Remove_Timer_System(VOID) {
+BOOL Remove_Timer_System() {
   TimerSystemOn = FALSE;
   return (Remove_Timer_Interrupt());
 }

@@ -52,13 +52,13 @@ void output(short, short) {}
  * HISTORY: * 2/1/96 2:10PM ST : Created *
  *=============================================================================================*/
 
-void Focus_Loss(void) {
+void Focus_Loss() {
   Theme.Suspend();
   Stop_Primary_Sound_Buffer();
   if (WWMouse) WWMouse->Clear_Cursor_Clip();
 }
 
-void Focus_Restore(void) {
+void Focus_Restore() {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
   Start_Primary_Sound_Buffer(true);
@@ -87,7 +87,7 @@ void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
   VQPaletteChange = true;
 }
 
-void Check_VQ_Palette_Set(void) {
+void Check_VQ_Palette_Set() {
   if (VQPaletteChange) {
     SetPalette(VQPalette, VQNumBytes, VQSlowpal);
     VQPaletteChange = false;

@@ -81,7 +81,7 @@
  * HISTORY:                                                                *
  *   12/14/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPX_SPX_Installed(void) {
+int IPX_SPX_Installed() {
 #ifdef WIN32
 
 #if defined(TIBERIAN_SUN) || defined(PORTABLE)
@@ -325,7 +325,7 @@ int IPX_Close_Socket(unsigned short socket) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-int IPX_Get_Connection_Number(void) {
+int IPX_Get_Connection_Number() {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -1158,7 +1158,7 @@ int IPX_Cancel_Event(struct ECB* ecb_ptr) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifndef WIN32  // WIN32 version is in IPX95.CPP
-void Let_IPX_Breath(void) {
+void Let_IPX_Breath() {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;

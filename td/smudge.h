@@ -67,27 +67,27 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
   SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
-  SmudgeClass(void) : Class(nullptr) {};
-  operator SmudgeType(void) const { return Class->Type; };
-  virtual ~SmudgeClass(void) {
+  SmudgeClass() : Class(nullptr) {};
+  operator SmudgeType() const { return Class->Type; };
+  virtual ~SmudgeClass() {
     if (GameActive) SmudgeClass::Limbo();
   };
-  virtual RTTIType What_Am_I(void) const { return RTTI_SMUDGE; };
+  virtual RTTIType What_Am_I() const { return RTTI_SMUDGE; };
 
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O.
   */
   static void Read_INI(char*);
   static void Write_INI(char*);
-  static char const* INI_Name(void) { return "SMUDGE"; };
+  static char const* INI_Name() { return "SMUDGE"; };
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   virtual bool Mark(MarkType);
   virtual void Draw_It(int, int, WindowNumberType) {};
 
@@ -96,7 +96,7 @@ class SmudgeClass : public ObjectClass {
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
  private:
   static HousesType ToOwn;

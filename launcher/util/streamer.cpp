@@ -68,7 +68,7 @@ int Streamer::overflow(int c) {
 }
 
 // This is a write only stream, this should never happen
-int Streamer::underflow(void) { return (EOF); }
+int Streamer::underflow() { return (EOF); }
 
 int Streamer::doallocate() {
   if (base() == NULL) {

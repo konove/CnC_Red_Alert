@@ -62,7 +62,7 @@
 #include "td/inline.h"
 #include "tech/wwfile.h"
 
-FuseClass::FuseClass(void) {
+FuseClass::FuseClass() {
   Timer = 0;
   Arming = 0;
   HeadTo = 0;

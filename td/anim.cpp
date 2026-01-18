@@ -112,7 +112,7 @@ void* AnimClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int AnimClass::Validate(void) const {
+int AnimClass::Validate() const {
   int num;
 
   num = Anims.ID(this);
@@ -174,7 +174,7 @@ void Shorten_Attached_Anims(ObjectClass* obj) {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/15/1994 JLB : Handles flat anims
  *(infantry decay anims).                               *
  *=============================================================================================*/
-COORDINATE AnimClass::Sort_Y(void) const {
+COORDINATE AnimClass::Sort_Y() const {
   Validate();
   if (Object && Object->IsActive) {
     return (Coord_Add(Object->Sort_Y(), 0x00010000L));
@@ -206,7 +206,7 @@ COORDINATE AnimClass::Sort_Y(void) const {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AnimClass::Center_Coord(void) const {
+COORDINATE AnimClass::Center_Coord() const {
   Validate();
   if (Object) {
     return (Coord_Add(Coord, Object->Center_Coord()));
@@ -347,7 +347,7 @@ bool AnimClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Overlap_List(void) const {
+short const* AnimClass::Overlap_List() const {
   Validate();
   static short const OverlapN[] = {0,
                                    -MAP_CELL_W,
@@ -497,7 +497,7 @@ short const* AnimClass::Overlap_List(void) const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-short const* AnimClass::Occupy_List(void) const {
+short const* AnimClass::Occupy_List() const {
   Validate();
   static short _simple[] = {REFRESH_EOL};
 
@@ -519,7 +519,7 @@ short const* AnimClass::Occupy_List(void) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Init(void) {
+void AnimClass::Init() {
   AnimClass* ptr;
 
   Anims.Free_All();
@@ -664,7 +664,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created. *
  *=============================================================================================*/
-AnimClass::~AnimClass(void) {
+AnimClass::~AnimClass() {
   Validate();
   if (GameActive) {
     /*
@@ -719,7 +719,7 @@ AnimClass::~AnimClass(void) {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::AI(void) {
+void AnimClass::AI() {
   Validate();
   /*
   **	For ground level based animations (ones that can run slowly as well as
@@ -898,7 +898,7 @@ void AnimClass::Attach_To(ObjectClass* obj) {
  *                                                                                             *
  * HISTORY: * 12/25/1994 JLB : Created. *
  *=============================================================================================*/
-LayerType AnimClass::In_Which_Layer(void) const {
+LayerType AnimClass::In_Which_Layer() const {
   Validate();
   if (Object || Class->IsGroundLayer) {
     return (LAYER_GROUND);
@@ -923,7 +923,7 @@ LayerType AnimClass::In_Which_Layer(void) const {
  *                                                                                             *
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Start(void) {
+void AnimClass::Start() {
   Validate();
   CELL cell = Coord_Cell(Coord);
 
@@ -972,7 +972,7 @@ void AnimClass::Start(void) {
  *                                                                                             *
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Middle(void) {
+void AnimClass::Middle() {
   Validate();
   CELL cell = Coord_Cell(Center_Coord());
   CellClass* cellptr = &Map[cell];
@@ -1176,7 +1176,7 @@ void AnimClass::Middle(void) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET AnimClass::As_Target(void) const {
+TARGET AnimClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_ANIMATION, Anims.ID(this)));
 }

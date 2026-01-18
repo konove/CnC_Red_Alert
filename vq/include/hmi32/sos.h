@@ -400,7 +400,7 @@ typedef struct {
   WORD wSampleRate;
   WORD wParam;
   LONG dwParam;
-  VOID(far* lpFillHandler)(VOID);
+  VOID(far* lpFillHandler)();
   LPSTR lpDriverMemory;
   LPSTR lpDriverMemoryCS;
   LPSTR lpTimerMemory;

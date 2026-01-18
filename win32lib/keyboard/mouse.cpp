@@ -142,7 +142,7 @@ void WWMouseClass::Unblock_Mouse(GraphicBufferClass* buffer) {
   }
 }
 
-void WWMouseClass::Set_Cursor_Clip(void) {
+void WWMouseClass::Set_Cursor_Clip() {
   if (Screen) {
     RECT region;
 
@@ -155,9 +155,9 @@ void WWMouseClass::Set_Cursor_Clip(void) {
   }
 }
 
-void WWMouseClass::Clear_Cursor_Clip(void) { ClipCursor(NULL); }
+void WWMouseClass::Clear_Cursor_Clip() { ClipCursor(NULL); }
 
-void WWMouseClass::Process_Mouse(void) {
+void WWMouseClass::Process_Mouse() {
   POINT pt;  // define a structure to hold current cursor pos
 
   //
@@ -397,7 +397,7 @@ void WWMouseClass::Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {
   MCCount++;
   MouseUpdate--;
 }
-void WWMouseClass::Conditional_Show_Mouse(void) {
+void WWMouseClass::Conditional_Show_Mouse() {
   MouseUpdate++;
 
   //
@@ -524,7 +524,7 @@ void WWMouseClass::Erase_Mouse(GraphicViewPortClass* scr, int forced) {
   EraseFlags = FALSE;
 }
 
-int WWMouseClass::Get_Mouse_State(void) { return (State); }
+int WWMouseClass::Get_Mouse_State() { return (State); }
 /***********************************************************************************************
  * WWKeyboardClass::Get_Mouse_X -- Returns the mouses current x position in
  *pixels             *
@@ -536,7 +536,7 @@ int WWMouseClass::Get_Mouse_State(void) { return (State); }
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-int WWMouseClass::Get_Mouse_X(void) {
+int WWMouseClass::Get_Mouse_X() {
   POINT pt;
   GetCursorPos(&pt);
   return (pt.x);
@@ -553,7 +553,7 @@ int WWMouseClass::Get_Mouse_X(void) {
  *                                                                                             *
  * HISTORY: * 10/17/1995 PWG : Created. *
  *=============================================================================================*/
-int WWMouseClass::Get_Mouse_Y(void) {
+int WWMouseClass::Get_Mouse_Y() {
   POINT pt;
   GetCursorPos(&pt);
   return (pt.y);
@@ -593,12 +593,12 @@ void CALLBACK Process_Mouse(UINT event_id, UINT res1, DWORD user, DWORD res2,
 }
 #pragma on(unreferenced)
 
-void Hide_Mouse(void) {
+void Hide_Mouse() {
   if (!_Mouse) return;
   _Mouse->Hide_Mouse();
 }
 
-void Show_Mouse(void) {
+void Show_Mouse() {
   if (!_Mouse) return;
   _Mouse->Show_Mouse();
 }
@@ -608,12 +608,12 @@ void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {
   _Mouse->Conditional_Hide_Mouse(x1, y1, x2, y2);
 }
 
-void Conditional_Show_Mouse(void) {
+void Conditional_Show_Mouse() {
   if (!_Mouse) return;
   _Mouse->Conditional_Show_Mouse();
 }
 
-int Get_Mouse_State(void) {
+int Get_Mouse_State() {
   if (!_Mouse) return (0);
   return (_Mouse->Get_Mouse_State());
 }
@@ -623,12 +623,12 @@ void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
   return (_Mouse->Set_Cursor(hotx, hoty, cursor));
 }
 
-int Get_Mouse_X(void) {
+int Get_Mouse_X() {
   if (!_Mouse) return (0);
   return (_Mouse->Get_Mouse_X());
 }
 
-int Get_Mouse_Y(void) {
+int Get_Mouse_Y() {
   if (!_Mouse) return (0);
   return (_Mouse->Get_Mouse_Y());
 }

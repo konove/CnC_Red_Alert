@@ -27,12 +27,12 @@ class MPGSettings {
  public:
   MPGSettings(const char* deviceName);
   MPGSettings(FileClass& file);
-  virtual ~MPGSettings(void);
+  virtual ~MPGSettings();
 
   void SetDeviceName(const char* device);
-  const char* GetDeviceName(void) const { return mDeviceName; }
+  const char* GetDeviceName() const { return mDeviceName; }
   bool Save(FileClass& file);
-  void Dialog(void);
+  void Dialog();
 
   char* mDeviceName;
 

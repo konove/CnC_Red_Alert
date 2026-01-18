@@ -86,7 +86,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame);
  * INPUT:   none * OUTPUT:  none * WARNINGS:   none * HISTORY: * 12/31/1994 MML
  *: Created.                                                                 *
  *=============================================================================================*/
-void GameControlsClass::Process(void) {
+void GameControlsClass::Process() {
   /*
   **	Dialog & button dimensions
   */

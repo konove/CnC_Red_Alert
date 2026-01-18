@@ -42,7 +42,7 @@
  */
 /*=========================================================================*/
 void Window_Hide_Mouse(int window);
-void Window_Show_Mouse(void);
+void Window_Show_Mouse();
 
 /*=========================================================================*/
 /* The following prototypes are for the file: WINDOWS.CPP
@@ -51,11 +51,11 @@ void Window_Show_Mouse(void);
 void Standard_More_Prompt(char const* prompt, int space, int fcolor,
                           int bcolor);
 void Set_More_Prompt(char const* prompt, int space, int fcolor, int bcolor);
-void Set_More_On(void);
-void Set_More_Off(void);
+void Set_More_On();
+void Set_More_Off();
 int Change_Window(int windnum);
 int Change_New_Window(int windnum);
-void New_Window(void);
+void New_Window();
 void Window_Int_Print(int num);
 void Window_Print(char const string[], ...);
 

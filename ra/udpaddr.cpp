@@ -41,7 +41,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
-bool Get_Broadcast_Addresses(void) {
+bool Get_Broadcast_Addresses() {
   int d_dialog_w = 320 * RESFACTOR;                       // dialog width
   int d_dialog_h = 160 * RESFACTOR;                       // dialog height
   int d_dialog_x = ((320 * RESFACTOR - d_dialog_w) / 2);  // dialog x-coord

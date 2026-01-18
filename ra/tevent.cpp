@@ -529,7 +529,7 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
-void TEventClass::Read_INI(void) {
+void TEventClass::Read_INI() {
   char const* token;
   switch (NewINIFormat) {
     default:

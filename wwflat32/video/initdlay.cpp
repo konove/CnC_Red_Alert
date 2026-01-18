@@ -53,7 +53,7 @@ BOOL VertBlank;
  * HISTORY:                                                                *
  *   08/03/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID Init_Delay(VOID) {
+VOID Init_Delay() {
   WORD nz, nnz;
 
   nz = nnz = 0;

@@ -44,10 +44,10 @@
 extern "C" {
 #endif
 
-void cdecl Mono_Enable(void);
-void cdecl Mono_Disable(void);
+void cdecl Mono_Enable();
+void cdecl Mono_Disable();
 void cdecl Mono_Set_Cursor(long x, long y);
-void cdecl Mono_Clear_Screen(void);
+void cdecl Mono_Clear_Screen();
 void cdecl Mono_Scroll(long lines);
 void cdecl Mono_Put_Char(long character, long attrib);
 void cdecl Mono_Draw_Rect(long x, long y, long w, long h, long attrib,
@@ -56,8 +56,8 @@ void cdecl Mono_Draw_Rect(long x, long y, long w, long h, long attrib,
 void cdecl Mono_Text_Print(void const* text, long x, long y, long attrib);
 void cdecl Mono_Print(void const* text);
 short cdecl Mono_View_Page(long page);
-short cdecl Mono_X(void);
-short cdecl Mono_Y(void);
+short cdecl Mono_X();
+short cdecl Mono_Y();
 
 #ifdef __cplusplus
 }

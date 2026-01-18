@@ -56,7 +56,7 @@ CODESEG
 ;*                                                                         *
 ;* OUTPUT:      edi - adjusted offset for window                           *
 ;*                                                                         *
-;* PROTO:	void Vesa_Asm_Set_Win(void);				   *
+;* PROTO:	void Vesa_Asm_Set_Win();				   *
 ;*                                                                         *
 ;* HISTORY:                                                                *
 ;*   12/08/1994 PWG : Created.                                             *

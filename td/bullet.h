@@ -61,7 +61,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *this variable.
   */
   BulletTypeClass const* const Class;
-  operator BulletType(void) const { return Class->Type; };
+  operator BulletType() const { return Class->Type; };
 
   /*
   **	Records who sent this "present" so that an appropriate "thank you" can
@@ -80,7 +80,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
-  BulletClass(void);
+  BulletClass();
   BulletClass(BulletType id);
   BulletClass(NoInitClass const& x)
       : ObjectClass(x),
@@ -88,40 +88,40 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
         FlyClass(x),
         FuseClass(x),
         PrimaryFacing(x) {};
-  virtual ~BulletClass(void) {
+  virtual ~BulletClass() {
     if (GameActive) BulletClass::Limbo();
   };
-  virtual RTTIType What_Am_I(void) const { return RTTI_BULLET; };
+  virtual RTTIType What_Am_I() const { return RTTI_BULLET; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
   virtual void Assign_Target(TARGET target) { TarCom = target; };
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual LayerType In_Which_Layer(void) const { return LAYER_TOP; };
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual LayerType In_Which_Layer() const { return LAYER_TOP; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   virtual void Detach(TARGET target, bool all);
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual void AI(void);
-  virtual short const* Occupy_List(void) const;
-  virtual short const* Overlap_List(void) const { return Occupy_List(); };
-  virtual TARGET As_Target(void) const;
+  virtual void AI();
+  virtual short const* Occupy_List() const;
+  virtual short const* Overlap_List() const { return Occupy_List(); };
+  virtual TARGET As_Target() const;
 
   /*
   **	File I/O.
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	If this bullet is forced to be inaccurate because of some outside means.

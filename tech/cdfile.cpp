@@ -123,7 +123,7 @@ int CDFileClass::Open(int rights) { return BufferIOFileClass::Open(rights); }
  *                                                                                             *
  * HISTORY: * 5/22/96 9:01AM ST : Created *
  *=============================================================================================*/
-void CDFileClass::Refresh_Search_Drives(void) {
+void CDFileClass::Refresh_Search_Drives() {
   Clear_Search_Drives();
   Process_Path_Tokens(raw_path_);
 }

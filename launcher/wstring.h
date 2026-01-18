@@ -41,7 +41,7 @@ class Wstring {
   Wstring(IN char* string);
   ~Wstring();
 
-  void clear(void);
+  void clear();
 
   bit8 cat(IN char* string);
   bit8 cat(uint32 size, IN char* string);
@@ -50,10 +50,10 @@ class Wstring {
   void cellCopy(OUT char* dest, uint32 len);
   char remove(sint32 pos, sint32 count);
   bit8 removeChar(char c);
-  void removeSpaces(void);
-  char* get(void);
+  void removeSpaces();
+  char* get();
   char get(uint32 index);
-  uint32 length(void);
+  uint32 length();
   bit8 insert(char c, uint32 pos);
   bit8 insert(char* instring, uint32 pos);
   bit8 replace(IN char* replaceThis, IN char* withThis);
@@ -61,8 +61,8 @@ class Wstring {
   char set(uint32 size, IN char* str);
   bit8 set(char c, uint32 index);
   void setSize(sint32 bytes);  // create an empty string
-  void toLower(void);
-  void toUpper(void);
+  void toLower();
+  void toUpper();
   bit8 truncate(uint32 len);
   bit8 truncate(char c);  // trunc after char c
   sint32 getToken(int offset, char* delim, Wstring& out);

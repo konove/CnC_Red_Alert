@@ -81,7 +81,7 @@
 #include "td/textbtn.h"
 #include "td/theme.h"
 
-void GameOptionsClass::Adjust_Variables_For_Resolution(void) {
+void GameOptionsClass::Adjust_Variables_For_Resolution() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   OptionWidth = (216 + 8) * factor;
@@ -113,7 +113,7 @@ void GameOptionsClass::Adjust_Variables_For_Resolution(void) {
  *the mission objective.                                 * 07/27/1995 JLB :
  *Adjusts menu for multiplay mode.                                         *
  *=============================================================================================*/
-void GameOptionsClass::Process(void) {
+void GameOptionsClass::Process() {
   static struct {
     int ID;          // Button ID to use.
     int Text;        // Text number to use for this button.

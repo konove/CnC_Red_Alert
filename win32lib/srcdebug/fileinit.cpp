@@ -67,9 +67,9 @@
 PRIVATE FileInitErrorType cdecl Init_File_Cache(ULONG cachesize);
 PRIVATE FileInitErrorType cdecl Init_FileData_Table(BYTE const* filename);
 PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE* cdpath);
-PRIVATE FileInitErrorType cdecl Preload_Files(VOID);
+PRIVATE FileInitErrorType cdecl Preload_Files();
 PRIVATE int QSort_Comp_Func(const void* p1, const void* p2);
-PRIVATE VOID Sort_FileData_Table(VOID);
+PRIVATE VOID Sort_FileData_Table();
 
 /*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -131,7 +131,7 @@ FileInitErrorType cdecl WWDOS_Init(ULONG cachesize, BYTE* filedata,
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-VOID cdecl WWDOS_Shutdown(VOID) {
+VOID cdecl WWDOS_Shutdown() {
   FileDataType* filedata;  // Pointer to the current FileData.
   WORD file_handle;
   FileHandleType* filehandletable;  // Pointer to the current file handle.
@@ -406,7 +406,7 @@ PRIVATE FileInitErrorType cdecl Set_Search_Drives(BYTE* cdpath) {
  * HISTORY:                                                                *
  *   04/19/1994 SKB : Created.                                             *
  *=========================================================================*/
-PRIVATE FileInitErrorType cdecl Preload_Files(VOID) {
+PRIVATE FileInitErrorType cdecl Preload_Files() {
   FileDataType* filedata;  // Working file data table pointer.
   BOOL oldflag;            // Previous file flag.
 
@@ -456,7 +456,7 @@ PRIVATE FileInitErrorType cdecl Preload_Files(VOID) {
 PRIVATE int QSort_Comp_Func(const void* p1, const void* p2) {
   return (strcmp(((FileDataType*)p1)->Name, ((FileDataType*)p2)->Name));
 }
-PRIVATE VOID Sort_FileData_Table(VOID) {
+PRIVATE VOID Sort_FileData_Table() {
   /*
   **	Sort the filetable it but keep the pack file indexes correct.
   */

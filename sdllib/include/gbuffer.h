@@ -201,15 +201,15 @@ class GraphicViewPortClass {
   /* define functions to get at the private data members
    */
   /*===================================================================*/
-  std::uint8_t* Get_Offset(void);
-  int Get_Height(void);
-  int Get_Width(void);
-  int Get_XAdd(void);
-  int Get_XPos(void);
-  int Get_YPos(void);
-  int Get_Pitch(void);
-  inline bool Get_IsDirectDraw(void);
-  GraphicBufferClass* Get_Graphic_Buffer(void);
+  std::uint8_t* Get_Offset();
+  int Get_Height();
+  int Get_Width();
+  int Get_XAdd();
+  int Get_XPos();
+  int Get_YPos();
+  int Get_Pitch();
+  inline bool Get_IsDirectDraw();
+  GraphicBufferClass* Get_Graphic_Buffer();
 
   /*===================================================================*/
   /* Define a function which allows us to change a video viewport on	*/
@@ -323,14 +323,14 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
  public:
   GraphicBufferClass(int w, int h, void* buffer, long size);
   GraphicBufferClass(int w, int h, void* buffer = nullptr);
-  GraphicBufferClass(void);
+  GraphicBufferClass();
   ~GraphicBufferClass();
 
   void Init(int w, int h, void* buffer, long size, GBC_Enum flags);
-  void Un_Init(void);
+  void Un_Init();
 
-  bool Lock(void);
-  bool Unlock(void);
+  bool Lock();
+  bool Unlock();
 
   void Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt, long scale,
                     unsigned char angle);
@@ -354,7 +354,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void* VQATexture = nullptr;  // SDL_Texture* for low-res content scaling
   int VQATextureWidth = 0;
   int VQATextureHeight = 0;
-  bool VQAFrameRendered = false;   // Set when Render_Scaled_Frame presents
+  bool VQAFrameRendered = false;       // Set when Render_Scaled_Frame presents
   std::uint32_t VQALastFrameTime = 0;  // SDL tick when last VQA frame rendered
 };
 
@@ -362,7 +362,7 @@ extern GraphicBufferClass* WindowBuffer;
 
 void Do_Set_Palette(void* palette);
 
-inline int GraphicViewPortClass::Get_LockCount(void) { return (LockCount); }
+inline int GraphicViewPortClass::Get_LockCount() { return (LockCount); }
 
 /***********************************************************************************************
  * GVPC::Get_IsDirectDraw -- provide read access to the IsDirectDraw flag *
@@ -377,7 +377,7 @@ inline int GraphicViewPortClass::Get_LockCount(void) { return (LockCount); }
  *                                                                                             *
  * HISTORY: * 11/29/95 1:02PM ST : Created *
  *=============================================================================================*/
-inline bool GraphicViewPortClass::Get_IsDirectDraw(void) {
+inline bool GraphicViewPortClass::Get_IsDirectDraw() {
   // this flag is used as "do we need to lock" in a few places
   return GraphicBuff && GraphicBuff->Is_Window_Surface();
 }
@@ -396,7 +396,7 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw(void) {
  * HISTORY: * 09-19-95 12:33pm ST : Created * 10/09/1995     : Moved actually
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
-inline bool GraphicViewPortClass::Lock(void) {
+inline bool GraphicViewPortClass::Lock() {
   bool lock = GraphicBuff->Lock();
   if (!lock) return (false);
 
@@ -420,7 +420,7 @@ inline bool GraphicViewPortClass::Lock(void) {
  * HISTORY: * 09-19-95 02:20pm ST : Created * 10/09/1995     : Moved actually
  *functionality to GraphicBuffer                            *
  *=============================================================================================*/
-inline bool GraphicViewPortClass::Unlock(void) {
+inline bool GraphicViewPortClass::Unlock() {
   bool unlock = GraphicBuff->Unlock();
   if (!unlock) return (false);
 
@@ -437,7 +437,7 @@ inline bool GraphicViewPortClass::Unlock(void) {
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline std::uint8_t* GraphicViewPortClass::Get_Offset(void) { return (Offset); }
+inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return (Offset); }
 
 /***************************************************************************
  * GVPC::GET_HEIGHT -- Gets the height of a virtual viewport instance      *
@@ -449,7 +449,7 @@ inline std::uint8_t* GraphicViewPortClass::Get_Offset(void) { return (Offset); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Height(void) { return (Height); }
+inline int GraphicViewPortClass::Get_Height() { return (Height); }
 
 /***************************************************************************
  * GVPC::GET_WIDTH -- Get the width of a virtual viewport instance
@@ -462,7 +462,7 @@ inline int GraphicViewPortClass::Get_Height(void) { return (Height); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_Width(void) { return (Width); }
+inline int GraphicViewPortClass::Get_Width() { return (Width); }
 
 /***************************************************************************
  * GVPC::GET_XADD -- Get the X add offset for virtual viewport instance    *
@@ -474,7 +474,7 @@ inline int GraphicViewPortClass::Get_Width(void) { return (Width); }
  * HISTORY:                                                                *
  *   06/07/1994 PWG : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XAdd(void) { return (XAdd); }
+inline int GraphicViewPortClass::Get_XAdd() { return (XAdd); }
 /***************************************************************************
  * GVPC::GET_XPOS -- Get the x pos of the VP on the Video                  *
  *                                                                         *
@@ -486,7 +486,7 @@ inline int GraphicViewPortClass::Get_XAdd(void) { return (XAdd); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_XPos(void) { return (XPos); }
+inline int GraphicViewPortClass::Get_XPos() { return (XPos); }
 
 /***************************************************************************
  * GVPC::GET_YPOS -- Get the y pos of the VP on the video                  *
@@ -501,7 +501,7 @@ inline int GraphicViewPortClass::Get_XPos(void) { return (XPos); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline int GraphicViewPortClass::Get_YPos(void) { return (YPos); }
+inline int GraphicViewPortClass::Get_YPos() { return (YPos); }
 
 /***************************************************************************
  * GVPC::GET_GRAPHIC_BUFFER -- Get the graphic buffer of the VP.            *
@@ -513,7 +513,7 @@ inline int GraphicViewPortClass::Get_YPos(void) { return (YPos); }
  * HISTORY:                                                                *
  *   08/22/1994 SKB : Created.                                             *
  *=========================================================================*/
-inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer(void) {
+inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
   return (GraphicBuff);
 }
 
@@ -698,7 +698,7 @@ inline void GraphicViewPortClass::Remap(void* remap) {
   return Remap(0, 0, Width, Height, remap);
 }
 
-inline int GraphicViewPortClass::Get_Pitch(void) { return (Pitch); }
+inline int GraphicViewPortClass::Get_Pitch() { return (Pitch); }
 /*=========================================================================*/
 /* The following BufferClass functions are defined here because they act
  */

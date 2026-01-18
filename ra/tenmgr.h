@@ -35,18 +35,18 @@ class TenConnManClass : public ConnManClass {
   //
   // Constructor / Destructor
   //
-  TenConnManClass(void);
+  TenConnManClass();
   virtual ~TenConnManClass();
 
   //
   // Initialization
   //
-  int Init(void);
+  int Init();
 
   //
   // Service routine
   //
-  virtual int Service(void);
+  virtual int Service();
 
   //
   // Sending & receiving data
@@ -62,7 +62,7 @@ class TenConnManClass : public ConnManClass {
   //
   // Connection management
   //
-  virtual int Num_Connections(void);
+  virtual int Num_Connections();
   virtual int Connection_ID(int index);
   virtual int Connection_Index(int id);
 
@@ -74,18 +74,18 @@ class TenConnManClass : public ConnManClass {
   //
   // Queue utility routines
   //
-  virtual int Global_Num_Send(void);
-  virtual int Global_Num_Receive(void);
+  virtual int Global_Num_Send();
+  virtual int Global_Num_Receive();
   virtual int Private_Num_Send(int id = CONNECTION_NONE);
   virtual int Private_Num_Receive(int id = CONNECTION_NONE);
 
-  void Flush_All(void);
+  void Flush_All();
 
   //
   // Timing management
   //
-  virtual void Reset_Response_Time(void);
-  virtual unsigned long Response_Time(void);
+  virtual void Reset_Response_Time();
+  virtual unsigned long Response_Time();
   virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
                           unsigned long timeout);
 

@@ -127,16 +127,16 @@ struct TActionClass {
     int Value;
   } Data;
 
-  TActionClass(void) : Action(TACTION_NONE) {
+  TActionClass() : Action(TACTION_NONE) {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
   };
   TActionClass(NoInitClass const& x) : Team(x), Trigger(x) {};
 
   void Detach(TARGET target);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
-  void Read_INI(void);
+  void Code_Pointers();
+  void Decode_Pointers();
+  void Read_INI();
   void Build_INI_Entry(std::string& buffer) const;
 
   bool operator()(HousesType house, ObjectClass* object, int id, CELL cell);
@@ -146,7 +146,7 @@ class ActionChoiceClass {
  public:
   ActionChoiceClass(TActionType event = TACTION_NONE) : Action(event) {}
 
-  operator TActionType(void) const { return (Action); }
+  operator TActionType() const { return (Action); }
   bool operator==(ActionChoiceClass const& rvalue) const {
     return (Action == rvalue.Action);
   }
@@ -167,7 +167,7 @@ class ActionChoiceClass {
     return (Action == rvalue.Action ||
             stricmp(Description(), rvalue.Description()) > 0);
   }
-  char const* Description(void) const { return (Name_From_Action(Action)); }
+  char const* Description() const { return (Name_From_Action(Action)); }
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
 

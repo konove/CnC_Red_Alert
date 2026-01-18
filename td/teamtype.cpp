@@ -110,7 +110,7 @@ void* TeamTypeClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int TeamTypeClass::Validate(void) const {
+int TeamTypeClass::Validate() const {
   int num;
 
   num = TeamTypes.ID(this);
@@ -136,7 +136,7 @@ int TeamTypeClass::Validate(void) const {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass::TeamTypeClass(void) {
+TeamTypeClass::TeamTypeClass() {
   IsPrebuilt = true;
   IsReinforcable = true;
   IsRoundAbout = false;
@@ -171,7 +171,7 @@ TeamTypeClass::TeamTypeClass(void) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Init(void) {
+void TeamTypeClass::Init() {
   TeamTypeClass* ptr;
 
   TeamTypes.Free_All();
@@ -737,7 +737,7 @@ TeamTypeClass* TeamTypeClass::As_Pointer(char* name) {
  * HISTORY:                                                                *
  *   12/09/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Remove(void) {
+void TeamTypeClass::Remove() {
   Validate();
   int i;
   TriggerClass* trigger;
@@ -855,19 +855,19 @@ void TeamTypeClass::operator delete(void* ptr) {
   TeamTypes.Free((TeamTypeClass*)ptr);
 }
 
-TeamClass* TeamTypeClass::Create_One_Of(void) const {
+TeamClass* TeamTypeClass::Create_One_Of() const {
   if (ScenarioInit || TeamClass::Number[TeamTypes.ID(this)] < MaxAllowed) {
     return (new TeamClass(this, HouseClass::As_Pointer(House)));
   }
   return (nullptr);
 }
 
-TARGET TeamTypeClass::As_Target(void) const {
+TARGET TeamTypeClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_TEAMTYPE, TeamTypes.ID(this)));
 }
 
-void TeamTypeClass::Destroy_All_Of(void) const {
+void TeamTypeClass::Destroy_All_Of() const {
   for (int index = 0; index < Teams.Count(); index++) {
     TeamClass* team = Teams.Ptr(index);
 

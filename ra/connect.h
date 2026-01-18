@@ -164,7 +164,7 @@ class ConnectionClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  virtual void Init(void);
+  virtual void Init();
 
   /*.....................................................................
   Send/Receive routines.
@@ -177,25 +177,25 @@ class ConnectionClass {
   The main polling routine for the connection.  Should be called as often
   as possible.
   .....................................................................*/
-  virtual int Service(void);
+  virtual int Service();
 
   /*.....................................................................
   This routine is used by the retry logic; returns the current time in
   60ths of a second.
   .....................................................................*/
-  static unsigned long Time(void);
+  static unsigned long Time();
 
   /*.....................................................................
   Utility routines.
   .....................................................................*/
-  unsigned short Magic_Num(void) { return (MagicNum); }
-  unsigned long Retry_Delta(void) { return (RetryDelta); }
+  unsigned short Magic_Num() { return (MagicNum); }
+  unsigned long Retry_Delta() { return (RetryDelta); }
   void Set_Retry_Delta(unsigned long delta) { RetryDelta = delta; }
-  unsigned long Max_Retries(void) { return (MaxRetries); }
+  unsigned long Max_Retries() { return (MaxRetries); }
   void Set_Max_Retries(unsigned long retries) { MaxRetries = retries; }
-  unsigned long Time_Out(void) { return (Timeout); }
+  unsigned long Time_Out() { return (Timeout); }
   void Set_TimeOut(unsigned long t) { Timeout = t; }
-  unsigned long Max_Packet_Len(void) { return (MaxPacketLen); }
+  unsigned long Max_Packet_Len() { return (MaxPacketLen); }
   static char* Command_Name(int command);
 
   /*.....................................................................
@@ -211,8 +211,8 @@ class ConnectionClass {
   /*.....................................................................
   Routines to service the Send & Receive queues.
   .....................................................................*/
-  virtual int Service_Send_Queue(void);
-  virtual int Service_Receive_Queue(void);
+  virtual int Service_Send_Queue();
+  virtual int Service_Receive_Queue();
 
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.  It's

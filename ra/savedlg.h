@@ -61,8 +61,8 @@ class SaveOptionsClass {
   };
 
  public:
-  SaveOptionsClass(void) {};
-  void Process(void);
+  SaveOptionsClass() {};
+  void Process();
 };
 
 #endif

@@ -50,8 +50,8 @@
 class GenericList;
 class GenericNode {
  public:
-  GenericNode(void) : NextNode(nullptr), PrevNode(nullptr) {}
-  virtual ~GenericNode(void) { Unlink(); }
+  GenericNode() : NextNode(nullptr), PrevNode(nullptr) {}
+  virtual ~GenericNode() { Unlink(); }
   GenericNode(GenericNode& node) { node.Link(this); }
   GenericNode& operator=(GenericNode& node) {
     if (&node != this) {
@@ -60,7 +60,7 @@ class GenericNode {
     return (*this);
   }
 
-  void Unlink(void) {
+  void Unlink() {
     if (Is_Valid()) {
       assert(PrevNode != nullptr);
       assert(NextNode != nullptr);
@@ -72,7 +72,7 @@ class GenericNode {
     }
   }
 
-  GenericList* Main_List(void) const {
+  GenericList* Main_List() const {
     GenericNode const* node = this;
     while (node->PrevNode) {
       node = PrevNode;
@@ -88,8 +88,8 @@ class GenericNode {
     NextNode = node;
   }
 
-  GenericNode* Next(void) const { return (NextNode); }
-  GenericNode* Prev(void) const { return (PrevNode); }
+  GenericNode* Next() const { return (NextNode); }
+  GenericNode* Prev() const { return (PrevNode); }
   bool Is_Valid() const { return NextNode != nullptr && PrevNode != nullptr; }
 
  protected:
@@ -103,14 +103,14 @@ class GenericNode {
 */
 class GenericList {
  public:
-  GenericList(void) { FirstNode.Link(&LastNode); }
+  GenericList() { FirstNode.Link(&LastNode); }
 
-  GenericNode* First(void) const { return (FirstNode.Next()); }
-  GenericNode* Last(void) const { return (LastNode.Prev()); }
-  bool Is_Empty(void) const { return (!FirstNode.Next()->Is_Valid()); }
+  GenericNode* First() const { return (FirstNode.Next()); }
+  GenericNode* Last() const { return (LastNode.Prev()); }
+  bool Is_Empty() const { return (!FirstNode.Next()->Is_Valid()); }
   void Add_Head(GenericNode* node) { FirstNode.Link(node); }
   void Add_Tail(GenericNode* node) { LastNode.Prev()->Link(node); }
-  void Delete(void) {
+  void Delete() {
     GenericNode* node = FirstNode.Next();
     while (node->Is_Valid()) {
       GenericNode* next = node->Next();
@@ -141,11 +141,9 @@ class List;
 template <class T>
 class Node : public GenericNode {
  public:
-  List<T>* Main_List(void) const {
-    return ((List<T>*)GenericNode::Main_List());
-  }
-  T* Next(void) const { return ((T*)GenericNode::Next()); }
-  T* Prev(void) const { return ((T*)GenericNode::Prev()); }
+  List<T>* Main_List() const { return ((List<T>*)GenericNode::Main_List()); }
+  T* Next() const { return ((T*)GenericNode::Next()); }
+  T* Prev() const { return ((T*)GenericNode::Prev()); }
 };
 
 /*
@@ -156,8 +154,8 @@ class Node : public GenericNode {
 template <class T>
 class List : public GenericList {
  public:
-  T* First(void) const { return ((T*)GenericList::First()); }
-  T* Last(void) const { return ((T*)GenericList::Last()); }
+  T* First() const { return ((T*)GenericList::First()); }
+  T* Last() const { return ((T*)GenericList::Last()); }
 };
 
 #endif

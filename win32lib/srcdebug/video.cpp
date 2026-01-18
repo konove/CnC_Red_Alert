@@ -52,12 +52,12 @@
 #include "wwmem.h"
 
 extern "C" int MInstalled;
-extern "C" void Hide_Mouse(void);
-extern "C" void Show_Mouse(void);
+extern "C" void Hide_Mouse();
+extern "C" void Show_Mouse();
 
-extern "C" void Reset_Mouse(void);
+extern "C" void Reset_Mouse();
 extern "C" int Vesa_Hook(REALPTR function);
-extern "C" void Remove_Vesa(void);
+extern "C" void Remove_Vesa();
 extern "C" SEGSEL RMVesaVectorSel;
 extern "C" REALPTR VesaFunc;
 
@@ -97,15 +97,15 @@ PRIVATE VesaModeInfoType ModeInfo;
 /* The following PRIVATE functions are in this file:                       */
 /*=========================================================================*/
 
-PRIVATE long Install_Vesa(void);
+PRIVATE long Install_Vesa();
 PRIVATE long Vesa_Get_Mode_Info(long mode);
 PRIVATE long Vesa_Set_Mode(long mode);
-PRIVATE void Init_Bank_Table(void);
-PRIVATE VOID Set_LoRes_Function_Pointers(VOID);
-PRIVATE VOID Set_HiRes_Function_Pointers(VOID);
+PRIVATE void Init_Bank_Table();
+PRIVATE VOID Set_LoRes_Function_Pointers();
+PRIVATE VOID Set_HiRes_Function_Pointers();
 
-extern "C" long Vesa_XRes(void);
-extern "C" long Vesa_YRes(void);
+extern "C" long Vesa_XRes();
+extern "C" long Vesa_YRes();
 
 extern "C" char CurrentPalette[256 * 3];
 extern "C" char PaletteTable[1024];
@@ -124,7 +124,7 @@ extern "C" char PaletteTable[1024];
  * HISTORY:                                                                *
  *   01/25/1994     : Created.                                             *
  *=========================================================================*/
-int Get_Video_Mode(void) {
+int Get_Video_Mode() {
   union REGS regs;
 
   if (GraphicMode == UNINITIALIZED_MODE) {
@@ -149,7 +149,7 @@ int Get_Video_Mode(void) {
  * HISTORY:                                                                *
  *   11/21/1994 PWG : Created.                                             *
  *=========================================================================*/
-PRIVATE long Install_Vesa(void) {
+PRIVATE long Install_Vesa() {
   UINT paras;
   USHORT longest;
   union REGS regs;
@@ -285,7 +285,7 @@ PRIVATE long Vesa_Set_Mode(long mode) {
  * HISTORY:                                                                *
  *   11/21/1994 PWG : Created.                                             *
  *=========================================================================*/
-long Vesa_XRes(void) { return ((long)ModeInfo.XRes); }
+long Vesa_XRes() { return ((long)ModeInfo.XRes); }
 
 /***************************************************************************
  * VESA_YRES -- Returns vertical resolution of a vesa mode                 *
@@ -301,7 +301,7 @@ long Vesa_XRes(void) { return ((long)ModeInfo.XRes); }
  * HISTORY:                                                                *
  *   11/21/1994 PWG : Created.                                             *
  *=========================================================================*/
-long Vesa_YRes(void) { return ((long)ModeInfo.YRes); }
+long Vesa_YRes() { return ((long)ModeInfo.YRes); }
 
 /***************************************************************************
  * INIT_BANK_TABLE -- Initializes the values in the bank table             *
@@ -313,7 +313,7 @@ long Vesa_YRes(void) { return ((long)ModeInfo.YRes); }
  * HISTORY:                                                                *
  *   12/02/1994 PWG : Created.                                             *
  *=========================================================================*/
-PRIVATE void Init_Bank_Table(void) {
+PRIVATE void Init_Bank_Table() {
   long size, bankval;
   int num_banks, lp;
   union REGS regs;
@@ -450,7 +450,7 @@ int Set_Video_Mode(int mode) {
  * HISTORY:                                                                *
  *   11/22/1994 PWG : Created.                                             *
  *=========================================================================*/
-void Vesa_Info(void) {
+void Vesa_Info() {
   cout << "Attributes:                    " << (long)ModeInfo.Attributes << "\n"
        << "Win A Attributes:              " << (long)ModeInfo.WinA_Attributes
        << "\n"
@@ -512,7 +512,7 @@ void Vesa_Set_Window(long grain_num) {
  * HISTORY:                                                                *
  *   01/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-PRIVATE VOID Set_LoRes_Function_Pointers(VOID) {
+PRIVATE VOID Set_LoRes_Function_Pointers() {
   VVPC_Clear_Func = MCGA_Clear;
   VVPC_To_Buffer_Func = MCGA_To_Buffer;
   VVPC_Put_Pixel_Func = MCGA_Put_Pixel;
@@ -538,7 +538,7 @@ PRIVATE VOID Set_LoRes_Function_Pointers(VOID) {
  * HISTORY:                                                                *
  *   01/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-PRIVATE VOID Set_HiRes_Function_Pointers(VOID) {
+PRIVATE VOID Set_HiRes_Function_Pointers() {
   VVPC_Clear_Func = Vesa_Clear;
   VVPC_To_Buffer_Func = Vesa_To_Buffer;
   VVPC_Put_Pixel_Func = Vesa_Put_Pixel;
@@ -567,7 +567,7 @@ PRIVATE VOID Set_HiRes_Function_Pointers(VOID) {
  * HISTORY:                                                                *
  *   03/18/94 JRJ : Created.                                               *
  *=========================================================================*/
-void Update_Video_Mode(void) {
+void Update_Video_Mode() {
   union REGS inregs, outregs;
 
   /* clear color palette */
@@ -626,4 +626,4 @@ void Set_Original_Video_Mode(int mode) { _OriginalVideoMode = mode; }
  *   06/29/1995 PWG : Created.                                             *
  *=========================================================================*/
 
-int Get_Original_Video_Mode(void) { return (_OriginalVideoMode); }
+int Get_Original_Video_Mode() { return (_OriginalVideoMode); }

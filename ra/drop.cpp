@@ -60,7 +60,7 @@ DropListClass::DropListClass(int id, char* text, int max_len,
   DropButton.Make_Peer(*this);
 }
 
-void DropListClass::Zap(void) {
+void DropListClass::Zap() {
   Collapse();
   List.Zap();
   DropButton.Zap();
@@ -82,7 +82,7 @@ DropListClass& DropListClass::Add_Head(LinkClass& object) {
   return ((DropListClass&)EditClass::Add_Head(object));
 }
 
-DropListClass* DropListClass::Remove(void) {
+DropListClass* DropListClass::Remove() {
   if (IsDropped) {
     Collapse();
   }
@@ -96,9 +96,9 @@ int DropListClass::Add_Item(char const* text) {
   return (List.Add_Item(text));
 }
 
-char const* DropListClass::Current_Item(void) { return (List.Current_Item()); }
+char const* DropListClass::Current_Item() { return (List.Current_Item()); }
 
-int DropListClass::Current_Index(void) { return (List.Current_Index()); }
+int DropListClass::Current_Index() { return (List.Current_Index()); }
 
 void DropListClass::Set_Selected_Index(int index) {
   if ((unsigned)index < List.Count()) {
@@ -109,7 +109,7 @@ void DropListClass::Set_Selected_Index(int index) {
   }
 }
 
-void DropListClass::Clear_Focus(void) { Collapse(); }
+void DropListClass::Clear_Focus() { Collapse(); }
 
 void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
                                  ControlClass& whom) {
@@ -131,7 +131,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 }
 
-void DropListClass::Expand(void) {
+void DropListClass::Expand() {
   if (!IsDropped) {
     List.X = X;
     List.Y = Y + 9 * RESFACTOR;
@@ -143,7 +143,7 @@ void DropListClass::Expand(void) {
   }
 }
 
-void DropListClass::Collapse(void) {
+void DropListClass::Collapse() {
   if (IsDropped) {
     List.Remove();
     IsDropped = false;
@@ -190,7 +190,7 @@ void DropListClass::Set_Selected_Index(char const* text) {
 }
 
 #ifdef WOLAPI_INTEGRATION
-void DropListClass::Flag_To_Redraw(void) {
+void DropListClass::Flag_To_Redraw() {
   if (IsDropped) List.Flag_To_Redraw();
   EditClass::Flag_To_Redraw();
 }

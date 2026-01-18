@@ -74,7 +74,7 @@ long WINAPI Main_Window_Message_Handler(WindowHandle window_handle,
  *                                                                         *
  * HISTORY: See PVCS log                                                   *
  *=========================================================================*/
-MainWindowClass::MainWindowClass(void) {
+MainWindowClass::MainWindowClass() {
   // Much ado about nothing.
 }
 
@@ -120,7 +120,7 @@ void MainWindowClass::Create_Main_Window(InstanceHandle instance_handle) {
   global_instance_handle = instance_handle;
 }
 
-void MainWindowClass::Display_Window(void) {
+void MainWindowClass::Display_Window() {
   //
   // Bring up the window, force a paint, and make sure we are the foreground
   // window.
@@ -136,7 +136,7 @@ void MainWindowClass::Display_Window(void) {
                  VIDEO_MODE_BITS_PER_PIXEL);
 }
 
-BOOL MainWindowClass::Update_Windows_Messages(void) {
+BOOL MainWindowClass::Update_Windows_Messages() {
   if (PeekMessage(&message_queue, NULL, 0, 0, PM_NOREMOVE)) {
     if (GetMessage(&message_queue, NULL, 0, 0)) {
       TranslateMessage(&message_queue);
@@ -149,11 +149,11 @@ BOOL MainWindowClass::Update_Windows_Messages(void) {
   return (TRUE);
 }
 
-int MainWindowClass::Get_Message_Queue_wParam(void) {
+int MainWindowClass::Get_Message_Queue_wParam() {
   return (message_queue.wParam);
 }
 
-WindowHandle MainWindowClass::Get_Window_Handle(void) {
+WindowHandle MainWindowClass::Get_Window_Handle() {
   return (main_window_handle);
 }
 
@@ -179,6 +179,6 @@ long WINAPI Main_Window_Message_Handler(WindowHandle window_handle,
   return (DefWindowProc(window_handle, message, w_param, l_param));
 }
 
-InstanceHandle MainWindowClass::Get_Instance_Handle(void) {
+InstanceHandle MainWindowClass::Get_Instance_Handle() {
   return (global_instance_handle);
 }

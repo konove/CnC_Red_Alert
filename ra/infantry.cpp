@@ -278,7 +278,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-InfantryClass::~InfantryClass(void) {
+InfantryClass::~InfantryClass() {
   if (GameActive && Class.Is_Valid()) {
     /*
     **	Remove this member from any team it may be associated with. This must
@@ -528,7 +528,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-int InfantryClass::Shape_Number(void) const {
+int InfantryClass::Shape_Number() const {
   /*
   **	Fetch the shape pointer to use for the infantry. This is controlled by
   *what *	choreograph sequence the infantry is performing, it's facing,
@@ -1064,7 +1064,7 @@ void InfantryClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Init(void) { Infantry.Free_All(); }
+void InfantryClass::Init() { Infantry.Free_All(); }
 
 /***********************************************************************************************
  * InfantryClass::Assign_Destination -- Gives the infantry a movement
@@ -1202,7 +1202,7 @@ void InfantryClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. * 08/14/1996 JLB : Simplified. *
  *=============================================================================================*/
-void InfantryClass::AI(void) {
+void InfantryClass::AI() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -1788,7 +1788,7 @@ void InfantryClass::Enter_Idle_Mode(bool) {
  *change.                                               * 07/02/1995 JLB :
  *Nikoomba special effects.                                                *
  *=============================================================================================*/
-bool InfantryClass::Random_Animate(void) {
+bool InfantryClass::Random_Animate() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2070,7 +2070,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Stop_Driver(void) {
+bool InfantryClass::Stop_Driver() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2178,7 +2178,7 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Limbo(void) {
+bool InfantryClass::Limbo() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2401,7 +2401,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 01/01/1995 JLB : Created. * 05/05/1995 JLB : Rambo response types
  *added.                                              *
  *=============================================================================================*/
-void InfantryClass::Response_Select(void) {
+void InfantryClass::Response_Select() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2521,7 +2521,7 @@ void InfantryClass::Response_Select(void) {
  * HISTORY: * 01/01/1995 JLB : Created. * 05/05/1995 JLB : Rambo response types
  *added.                                              *
  *=============================================================================================*/
-void InfantryClass::Response_Move(void) {
+void InfantryClass::Response_Move() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -2649,7 +2649,7 @@ void InfantryClass::Response_Move(void) {
  * HISTORY: * 01/01/1995 JLB : Created. * 05/05/1995 JLB : Rambo response types
  *added.                                              *
  *=============================================================================================*/
-void InfantryClass::Response_Attack(void) {
+void InfantryClass::Response_Attack() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3107,7 +3107,7 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
  * HISTORY: * 06/30/1995 JLB : Created. * 10/28/1996 JLB : Spy returns "enemy
  *soldier" text name.                                   *
  *=============================================================================================*/
-int InfantryClass::Full_Name(void) const {
+int InfantryClass::Full_Name() const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3142,7 +3142,7 @@ int InfantryClass::Full_Name(void) const {
  *attack their own house's buildings now.               * 05/29/1996 JLB :
  *Engineers can now damage/capture enemy buildings.                        *
  *=============================================================================================*/
-int InfantryClass::Mission_Attack(void) {
+int InfantryClass::Mission_Attack() {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3290,7 +3290,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& InfantryClass::Class_Of(void) const {
+ObjectTypeClass const& InfantryClass::Class_Of() const {
   assert(Infantry.ID(this) == ID);
   assert(IsActive);
 
@@ -3479,7 +3479,7 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Fear_AI(void) {
+void InfantryClass::Fear_AI() {
   /*
   **	After a time, the infantry will gain courage.
   */
@@ -3538,7 +3538,7 @@ void InfantryClass::Fear_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Edge_Of_World_AI(void) {
+bool InfantryClass::Edge_Of_World_AI() {
   /*
   **	Delete this unit if it finds itself off the edge of the map and it is in
   **	guard or other static mission mode.
@@ -3569,7 +3569,7 @@ bool InfantryClass::Edge_Of_World_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Firing_AI(void) {
+void InfantryClass::Firing_AI() {
   if (Target_Legal(TarCom)) {
     int primary = What_Weapon_Should_I_Use(TarCom);
 
@@ -3682,7 +3682,7 @@ void InfantryClass::Firing_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Doing_AI(void) {
+void InfantryClass::Doing_AI() {
   if (Doing == DO_NOTHING || Fetch_Stage() >= Class->DoControls[Doing].Count) {
     switch (Doing) {
       default:
@@ -3765,7 +3765,7 @@ void InfantryClass::Doing_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Movement_AI(void) {
+void InfantryClass::Movement_AI() {
   /*
   **	Special hack check to ensure that infantry will never get stuck in a
   *movement order if *	there is no place to go.
@@ -4055,7 +4055,7 @@ void InfantryClass::Movement_AI(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-void const* InfantryClass::Get_Image_Data(void) const {
+void const* InfantryClass::Get_Image_Data() const {
   if (!IsOwnedByPlayer && *this == INFANTRY_SPY) {
     return (MFCD::Retrieve("E1.SHP"));
   }
@@ -4078,7 +4078,7 @@ void const* InfantryClass::Get_Image_Data(void) const {
  *                                                                                             *
  * HISTORY: * 10/01/1996 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Is_Ready_To_Random_Animate(void) const {
+bool InfantryClass::Is_Ready_To_Random_Animate() const {
   /*
   **	See if the base classes (more rudimentary checking) determines that idle
   *animations *	cannot occur. If they cannot, then return with the failure code.

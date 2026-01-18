@@ -181,7 +181,7 @@ VesselClass::VesselClass(VesselType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-VesselClass::~VesselClass(void) {
+VesselClass::~VesselClass() {
   if (GameActive && Class.Is_Valid()) {
     /*
     **	Remove this member from any team it may be associated with. This must
@@ -267,7 +267,7 @@ void VesselClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-ObjectTypeClass const& VesselClass::Class_Of(void) const {
+ObjectTypeClass const& VesselClass::Class_Of() const {
   assert(IsActive);
 
   return (*Class);
@@ -367,7 +367,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType) const {
  *                                                                                             *
  * HISTORY: * 07/31/1996 JLB : Created. *
  *=============================================================================================*/
-int VesselClass::Shape_Number(void) const {
+int VesselClass::Shape_Number() const {
   /*
   **	For eight facing units, adjust the facing number accordingly.
   */
@@ -596,7 +596,7 @@ short const* VesselClass::Overlap_List(bool redraw) const {
  * HISTORY: * 03/20/1996 JLB : Created. * 07/16/1996 JLB : Prefers anti-sub
  *weapons if firing on subs.                              *
  *=============================================================================================*/
-void VesselClass::AI(void) {
+void VesselClass::AI() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1213,7 +1213,7 @@ COORDINATE VesselClass::Fire_Coord(int which) const {
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Init(void) { Vessels.Free_All(); }
+void VesselClass::Init() { Vessels.Free_All(); }
 
 /***********************************************************************************************
  * VesselClass::Greatest_Threat -- Determines the greatest threat (best target)
@@ -1654,7 +1654,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
  *                                                                                             *
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
-void VesselClass::LST_Open_Door(void) {
+void VesselClass::LST_Open_Door() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1676,7 +1676,7 @@ void VesselClass::LST_Open_Door(void) {
  *                                                                                             *
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
-void VesselClass::LST_Close_Door(void) {
+void VesselClass::LST_Close_Door() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1697,7 +1697,7 @@ void VesselClass::LST_Close_Door(void) {
  *                                                                                             *
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
-int VesselClass::Mission_Unload(void) {
+int VesselClass::Mission_Unload() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1891,7 +1891,7 @@ void VesselClass::Assign_Destination(TARGET target) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-int VesselClass::Mission_Retreat(void) {
+int VesselClass::Mission_Retreat() {
   assert(Vessels.ID(this) == ID);
   assert(IsActive);
 
@@ -1941,7 +1941,7 @@ int VesselClass::Mission_Retreat(void) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 BWG : Created. *
  *=============================================================================================*/
-bool VesselClass::Is_Allowed_To_Recloak(void) const {
+bool VesselClass::Is_Allowed_To_Recloak() const {
   return (PulseCountDown == 0);
 }
 
@@ -2149,7 +2149,7 @@ ActionType VesselClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Rotation_AI(void) {
+void VesselClass::Rotation_AI() {
   if (Target_Legal(TarCom) && !IsRotating) {
     DirType dir = Direction(TarCom);
 
@@ -2192,7 +2192,7 @@ void VesselClass::Rotation_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Combat_AI(void) {
+void VesselClass::Combat_AI() {
   if (Target_Legal(TarCom) && Is_Weapon_Equipped()) {
     /*
     **	Determine which weapon can fire. First check for the primary weapon. If
@@ -2245,7 +2245,7 @@ void VesselClass::Combat_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-bool VesselClass::Edge_Of_World_AI(void) {
+bool VesselClass::Edge_Of_World_AI() {
   if (!IsDriving && !Map.In_Radar(Coord_Cell(Coord)) && IsLocked) {
     if (Team.Is_Valid()) Team->IsLeaveMap = true;
     Stun();
@@ -2270,7 +2270,7 @@ bool VesselClass::Edge_Of_World_AI(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 BWG : Created. *
  *=============================================================================================*/
-void VesselClass::Repair_AI(void) {
+void VesselClass::Repair_AI() {
   if (IsSelfRepairing) {
     if ((Frame % (TICKS_PER_MINUTE * Rule.RepairRate)) == 0) {
       Mark(MARK_CHANGE);

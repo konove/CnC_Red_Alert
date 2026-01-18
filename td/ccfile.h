@@ -65,13 +65,13 @@ class CCFileClass : public CDFileClass {
     return Open(rights);
   };
   virtual int Open(int rights = READ);
-  virtual int Is_Open(void) const;
+  virtual int Is_Open() const;
   virtual int Is_Available(int forced = false);
   virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size(void);
+  virtual long Size();
   virtual long Write(void const* buffer, long size);
-  virtual void Close(void);
+  virtual void Close();
   virtual void Error(int error, int canretry = false,
                      char const* filename = nullptr);
 
@@ -118,6 +118,6 @@ class CCFileClass : public CDFileClass {
   CCFileClass(CCFileClass const&) {};
 };
 
-void WWDOS_Shutdown(void);
+void WWDOS_Shutdown();
 
 #endif

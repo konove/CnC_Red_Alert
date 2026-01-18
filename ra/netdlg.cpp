@@ -905,7 +905,7 @@ char const* EngMisStr[] = {
 /*
 ******************************** Prototypes *********************************
 */
-static int Net_Join_Dialog(void);
+static int Net_Join_Dialog();
 static int Request_To_Join(char* playername, int join_index, HousesType house,
                            PlayerColorType color);
 static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
@@ -920,11 +920,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                         ColorListClass* playerlist,
                                         int join_index, char* my_name,
                                         RejectType* why);
-static int Net_New_Dialog(void);
+static int Net_New_Dialog();
 static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                                            int* color_used);
 void Start_WWChat(ColorListClass* playerlist);
-int Update_WWChat(void);
+int Update_WWChat();
 
 #define PCOLOR_BROWN PCOLOR_GREY
 
@@ -943,7 +943,7 @@ int Update_WWChat(void);
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-bool Init_Network(void) {
+bool Init_Network() {
   NetNumType net;
   NetNodeType node;
 #ifdef WINSOCK_IPX
@@ -987,7 +987,7 @@ bool Init_Network(void) {
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-void Shutdown_Network(void) {
+void Shutdown_Network() {
 //
 // Note: The thought behind this section of code was that if the program
 // terminates early, without an EventClass::EXIT event, it still needs to
@@ -1229,7 +1229,7 @@ void Destroy_Connection(int id, int error) {
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-bool Remote_Connect(void) {
+bool Remote_Connect() {
   int rc;
   int stealth;  // original state of Session.NetStealth flag
 
@@ -1368,7 +1368,7 @@ bool Remote_Connect(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-static int Net_Join_Dialog(void) {
+static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -4081,7 +4081,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-static int Net_New_Dialog(void) {
+static int Net_New_Dialog() {
   static constexpr int kNumMessages = 10;
 
   //------------------------------------------------------------------------
@@ -7359,7 +7359,7 @@ void Start_WWChat(ColorListClass* playerlist) {
 
 }  // end of Start_WWChat
 
-int Update_WWChat(void) {
+int Update_WWChat() {
   int i;
   int j;
 
@@ -7402,7 +7402,7 @@ int Update_WWChat(void) {
 
 #if (0)
 /*****************************************************************************/
-void Start_Logging(void) {
+void Start_Logging() {
   FILE* fp;
   static char* ColorNames[6] = {
       "Yellow", "Red", "BlueGreen", "Orange", "Green", "Blue",
@@ -7535,7 +7535,7 @@ extern bool Spawn_WChat(bool can_launch);
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-static int Net_Fake_New_Dialog(void) {
+static int Net_Fake_New_Dialog() {
 #ifdef WIN32
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
@@ -8326,7 +8326,7 @@ static int Net_Fake_New_Dialog(void) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-static int Net_Fake_Join_Dialog(void) {
+static int Net_Fake_Join_Dialog() {
 #ifdef WIN32
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
@@ -9100,7 +9100,7 @@ static int Net_Fake_Join_Dialog(void) {
 
 } /* end of Net_Join_Dialog */
 
-bool Server_Remote_Connect(void) {
+bool Server_Remote_Connect() {
   int stealth;  // original state of Session.NetStealth flag
 
   //------------------------------------------------------------------------
@@ -9139,7 +9139,7 @@ bool Server_Remote_Connect(void) {
 
 } /* end of Server_Remote_Connect */
 
-bool Client_Remote_Connect(void) {
+bool Client_Remote_Connect() {
   int rc;
   int stealth;  // original state of Session.NetStealth flag
 

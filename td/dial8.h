@@ -55,7 +55,7 @@ class Dial8Class : public ControlClass {
   /*
   ** Get/Set the direction the dial is currently pointing
   */
-  DirType Get_Direction(void) const;
+  DirType Get_Direction() const;
   void Set_Direction(DirType dir);
 
   /*

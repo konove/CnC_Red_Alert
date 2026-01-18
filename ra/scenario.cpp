@@ -147,7 +147,7 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/wwstd.h"
 
-static void Remove_AI_Players(void);
+static void Remove_AI_Players();
 static void Create_Units(bool official);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
@@ -183,7 +183,7 @@ bool Is_Mission_Aftermath(char* file_name);
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-ScenarioClass::ScenarioClass(void)
+ScenarioClass::ScenarioClass()
     : Difficulty(DIFF_NORMAL),
       CDifficulty(DIFF_NORMAL),
       Timer(0),
@@ -245,7 +245,7 @@ ScenarioClass::ScenarioClass(void)
  *                                                                                             *
  * HISTORY: * 10/21/1996 JLB : Created. *
  *=============================================================================================*/
-void ScenarioClass::Do_BW_Fade(void) {
+void ScenarioClass::Do_BW_Fade() {
   IsFadingBW = true;
   IsFadingColor = false;
   FadeTimer = GRAYFADETIME;
@@ -265,7 +265,7 @@ void ScenarioClass::Do_BW_Fade(void) {
  *                                                                                             *
  * HISTORY: * 10/21/1996 JLB : Created. *
  *=============================================================================================*/
-void ScenarioClass::Do_Fade_AI(void) {
+void ScenarioClass::Do_Fade_AI() {
   if (IsFadingColor) {
     if (FadeTimer == 0) {
       IsFadingColor = false;
@@ -547,7 +547,7 @@ bool Read_Scenario(char* name) {
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-void Fill_In_Data(void) {
+void Fill_In_Data() {
   /*
   **	The basic scenario data load does not contain the full set of
   **	game data. We now must fill in the missing pieces.
@@ -721,7 +721,7 @@ void Post_Load_Game(int load_multi) {
  *allocations, so changes memset code.                      * 07/13/1995 JLB :
  *End count down moved here.                                               *
  *=============================================================================================*/
-void Clear_Scenario(void) {
+void Clear_Scenario() {
   // TCTCTC -- possibly just use in-place new of scenario object?
 
   Scen.MissionTimer = 0;
@@ -820,7 +820,7 @@ void Clear_Scenario(void) {
  * HISTORY: * 08/05/1992 JLB : Created. * 01/01/1995 JLB : Carries money forward
  *into next scenario.                                *
  *=============================================================================================*/
-void Do_Win(void) {
+void Do_Win() {
   Map.Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
   Theme.Queue_Song(THEME_QUIET);
@@ -1090,7 +1090,7 @@ void Do_Win(void) {
  *                                                                                             *
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
-void Do_Lose(void) {
+void Do_Lose() {
   Map.Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
@@ -1182,7 +1182,7 @@ void Do_Lose(void) {
  * Do_Draw -- Parallels Do_Win and Do_Lose, for multiplayer games that end in a
  *draw.
  *=============================================================================================*/
-void Do_Draw(void) {
+void Do_Draw() {
   Map.Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
@@ -1247,7 +1247,7 @@ void Do_Draw(void) {
  *                                                                                             *
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
-void Do_Restart(void) {
+void Do_Restart() {
   /*
   ** Start a timer going, before we restart the scenario
   */
@@ -2528,7 +2528,7 @@ void Write_Scenario_INI(char* /*fname*/) {
  * HISTORY: * 06/09/1995 BRR : Created. * 07/14/1995 JLB : Records name of
  *player in house structure.                               *
  *=============================================================================================*/
-void Assign_Houses(void) {
+void Assign_Houses() {
   int assigned[MAX_PLAYERS];
   int color_used[8];
   int i, j;
@@ -2688,7 +2688,7 @@ void Assign_Houses(void) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-static void Remove_AI_Players(void) {
+static void Remove_AI_Players() {
   int i;
   int aicount = 0;
   HousesType house;

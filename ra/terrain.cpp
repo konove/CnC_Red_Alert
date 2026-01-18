@@ -101,7 +101,7 @@
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::~TerrainClass(void) {
+TerrainClass::~TerrainClass() {
   if (GameActive && Class) {
     TerrainClass::Limbo();
   }
@@ -360,7 +360,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init(void) { Terrains.Free_All(); }
+void TerrainClass::Init() { Terrains.Free_All(); }
 
 /***********************************************************************************************
  * TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist in
@@ -417,7 +417,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType) const {
  * HISTORY: * 09/27/1994 JLB : Created. * 12/11/1994 JLB : Don't catch fire if
  *already on fire or crumbling.                        *
  *=============================================================================================*/
-bool TerrainClass::Catch_Fire(void) {
+bool TerrainClass::Catch_Fire() {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -453,7 +453,7 @@ bool TerrainClass::Catch_Fire(void) {
  *                                                                                             *
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Fire_Out(void) {
+void TerrainClass::Fire_Out() {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -484,7 +484,7 @@ void TerrainClass::Fire_Out(void) {
  ** 08/12/1996 JLB : Reset map zone when terrain object destroyed. * 10/04/1996
  *JLB : Growth speed regulated by rules. *
  *=============================================================================================*/
-void TerrainClass::AI(void) {
+void TerrainClass::AI() {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -580,7 +580,7 @@ bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Start_To_Crumble(void) {
+void TerrainClass::Start_To_Crumble() {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -605,7 +605,7 @@ void TerrainClass::Start_To_Crumble(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainClass::Limbo(void) {
+bool TerrainClass::Limbo() {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -630,7 +630,7 @@ bool TerrainClass::Limbo(void) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TerrainClass::Center_Coord(void) const {
+COORDINATE TerrainClass::Center_Coord() const {
   assert(Terrains.ID(this) == ID);
   assert(IsActive);
 
@@ -694,7 +694,7 @@ unsigned char* TerrainClass::Radar_Icon(CELL cell) {
  *                                                                                             *
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TerrainClass::Target_Coord(void) const {
+COORDINATE TerrainClass::Target_Coord() const {
   return (Coord_Add(XY_Coord(0, -Height), Sort_Y()));
 }
 

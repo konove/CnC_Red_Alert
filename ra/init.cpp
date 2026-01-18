@@ -163,19 +163,19 @@ extern bool bNoMovies;
 **	Function prototypes for this module **
 *****************************************/
 static void Play_Intro(bool sequenced = false);
-static void Init_Color_Remaps(void);
-static void Init_Heaps(void);
-static void Init_Expansion_Files(void);
-static void Init_One_Time_Systems(void);
-static void Init_Fonts(void);
-static void Init_CDROM_Access(void);
-static void Init_Bootstrap_Mixfiles(void);
-static void Init_Secondary_Mixfiles(void);
-static void Init_Mouse(void);
-static void Bootstrap(void);
-// static void Init_Authorization(void);
-static void Init_Bulk_Data(void);
-static void Init_Keys(void);
+static void Init_Color_Remaps();
+static void Init_Heaps();
+static void Init_Expansion_Files();
+static void Init_One_Time_Systems();
+static void Init_Fonts();
+static void Init_CDROM_Access();
+static void Init_Bootstrap_Mixfiles();
+static void Init_Secondary_Mixfiles();
+static void Init_Mouse();
+static void Bootstrap();
+// static void Init_Authorization();
+static void Init_Bulk_Data();
+static void Init_Keys();
 
 extern "C" {
 extern long RandNumb;
@@ -184,7 +184,7 @@ extern long RandNumb;
 static int UsePageFaultHandler = 1;  // 1 = install PFH
 #endif                               // WIN32
 
-void Init_Random(void);
+void Init_Random();
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
@@ -217,7 +217,7 @@ extern bool Is_Mission_Counterstrike(char* file_name);
  *                                                                                             *
  * HISTORY: * 11/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Load_Prolog_Page(void) {
+static void Load_Prolog_Page() {
   Hide_Mouse();
   Load_Title_Screen("PROLOG.PCX", &HidPage, CCPalette);
   HidPage.Blit(SeenPage);
@@ -441,7 +441,7 @@ bool Init_Game(int, char*[]) {
 }
 
 #ifdef WINSOCK_IPX  //	Steve Tall missed this one - ajw
-extern bool Get_Broadcast_Addresses(void);
+extern bool Get_Broadcast_Addresses();
 #endif
 
 /***********************************************************************************************
@@ -1547,7 +1547,7 @@ static void Play_Intro(bool sequenced) {
 #ifdef MOVIE640
 GraphicBufferClass VQ640(640, 400, (void*)nullptr);
 #endif
-void Anim_Init(void) {
+void Anim_Init() {
   /* Configure player with INI file */
   VQA_DefaultConfig(&AnimControl);
   AnimControl.DrawFlags = VQACFGF_TOPLEFT;
@@ -2219,7 +2219,7 @@ long Obfuscate(char const* string) {
  * HISTORY:                                                                *
  *   12/04/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Init_Random(void) {
+void Init_Random() {
 #ifdef PORTABLE
   int ms = Get_Time_Ms();
   CryptRandom.Seed_Byte(ms);
@@ -2352,7 +2352,7 @@ void Load_Title_Page(bool visible) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Color_Remaps(void) {
+static void Init_Color_Remaps() {
   /*
   **	Setup the remap tables.  PALETTE.CPS contains a special set of pixels in
   ** the upper-left corner.  Each row of 16 pixels is one range of colors.  The
@@ -2488,7 +2488,7 @@ static void Init_Color_Remaps(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Heaps(void) {
+static void Init_Heaps() {
   /*
   **	Initialize the game object heaps.
   */
@@ -2543,7 +2543,7 @@ static void Init_Heaps(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Expansion_Files(void) {
+static void Init_Expansion_Files() {
   /*
   **	Before all else, cache any additional mixfiles.
   */
@@ -2589,7 +2589,7 @@ static void Init_Expansion_Files(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_One_Time_Systems(void) {
+static void Init_One_Time_Systems() {
   Call_Back();
   Map.One_Time();
   Logic.One_Time();
@@ -2628,7 +2628,7 @@ static void Init_One_Time_Systems(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Fonts(void) {
+static void Init_Fonts() {
   Metal12FontPtr = MFCD::Retrieve("12METFNT.FNT");
   MapFontPtr = MFCD::Retrieve("HELP.FNT");
   Font6Ptr = MFCD::Retrieve("6POINT.FNT");
@@ -2662,7 +2662,7 @@ static void Init_Fonts(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_CDROM_Access(void) {
+static void Init_CDROM_Access() {
   VisiblePage.Clear();
   HidPage.Clear();
 
@@ -2753,7 +2753,7 @@ static void Init_CDROM_Access(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Bootstrap_Mixfiles(void) {
+static void Init_Bootstrap_Mixfiles() {
   int temp = RequiredCD;
   RequiredCD = -2;
 
@@ -2842,7 +2842,7 @@ static void Init_Bootstrap_Mixfiles(void) {
 // #define DENZIL_MIXEXTRACT
 void Extract(char* filename, char* outfile);
 
-static void Init_Secondary_Mixfiles(void) {
+static void Init_Secondary_Mixfiles() {
   if (CCFileClass("MAIN1.MIX").Is_Available()) {
     // MAIN1-4 from steam
 
@@ -2965,7 +2965,7 @@ static void Init_Secondary_Mixfiles(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Bootstrap(void) {
+static void Bootstrap() {
   BlackPalette.Set();
 
   /*
@@ -3094,7 +3094,7 @@ static void Bootstrap(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Mouse(void) {
+static void Init_Mouse() {
   /*
   ** Since there is no mouse shape currently available we need
   ** to set one of our own.
@@ -3141,7 +3141,7 @@ static void Init_Mouse(void) {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Bulk_Data(void) {
+static void Init_Bulk_Data() {
   /*
   **	Cache the main game data. This operation can take a very long time.
   */
@@ -3206,7 +3206,7 @@ static void Init_Bulk_Data(void) {
  *                                                                                             *
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Keys(void) {
+static void Init_Keys() {
   RAMFileClass file((void*)Keys, strlen(Keys));
   INIClass ini;
   ini.Load(file);
@@ -3290,7 +3290,7 @@ bool Load_Recording_Values(CCFileClass& file) {
 }
 
 extern "C" {
-void __PRO(void) {
+void __PRO() {
   //	printf("_pro\n");
 }
 }

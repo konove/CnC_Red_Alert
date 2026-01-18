@@ -154,7 +154,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   Global Connection needs to ACK its packets differently from the
   other connections.
   .....................................................................*/
-  virtual int Service_Receive_Queue(void);
+  virtual int Service_Receive_Queue();
 };
 
 #endif

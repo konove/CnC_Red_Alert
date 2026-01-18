@@ -50,13 +50,13 @@
 
 class HelpClass : public TabClass {
  public:
-  HelpClass(void);
+  HelpClass();
   HelpClass(NoInitClass const& x) : TabClass(x) {};
 
   /*
   ** Initialization
   */
-  virtual void Init_Clear(void);  // Clears all to known state
+  virtual void Init_Clear();  // Clears all to known state
 
   virtual void Draw_It(bool complete = false);
   virtual void AI(KeyNumType& input, int x, int y);
@@ -66,13 +66,13 @@ class HelpClass : public TabClass {
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
                  bool quick = false, int cost = 0);
   void Set_Cost(int cost);
-  short const* Overlap_List(void) const;
+  short const* Overlap_List() const;
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
  private:
   static char const* HelpText;

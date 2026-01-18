@@ -95,7 +95,7 @@
 #include "td/unit.h"
 #include "td/vector.h"
 
-static void Do_All_To_Hunt(void);
+static void Do_All_To_Hunt();
 
 // #define FIXUP 0
 
@@ -145,7 +145,7 @@ static const char* ActionText[TriggerClass::ACTION_COUNT + 1] = {
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int TriggerClass::Validate(void) const {
+int TriggerClass::Validate() const {
   int num;
 
   num = Triggers.ID(this);
@@ -286,7 +286,7 @@ bool TriggerClass::Action_Need_Team(TriggerClass::ActionType action) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::TriggerClass(void) {
+TriggerClass::TriggerClass() {
   IsPersistant = VOLATILE;
   AttachCount = 0;
   Event = EVENT_NONE;
@@ -311,7 +311,7 @@ TriggerClass::TriggerClass(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-TriggerClass::~TriggerClass(void) {
+TriggerClass::~TriggerClass() {
   if (GameActive && House != HOUSE_NONE && Action == ACTION_ALLOWWIN) {
     if (Houses.Ptr(House)->Blockage) Houses.Ptr(House)->Blockage--;
     Houses.Ptr(House)->BorrowedTime = TICKS_PER_SECOND * 4;
@@ -329,7 +329,7 @@ TriggerClass::~TriggerClass(void) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Init(void) { Triggers.Free_All(); }
+void TriggerClass::Init() { Triggers.Free_All(); }
 
 /***********************************************************************************************
  * TriggerClass::Spring -- Trigger processing routine *
@@ -906,7 +906,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, long data) {
  *                                                                                             *
  * HISTORY: * 12/06/1994 BR : Created. *
  *=============================================================================================*/
-bool TriggerClass::Remove(void) {
+bool TriggerClass::Remove() {
   Validate();
   CELL cell;
   HousesType h;
@@ -1350,7 +1350,7 @@ char const* TriggerClass::Name_From_Action(ActionType action) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TriggerClass::As_Target(void) const {
+TARGET TriggerClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_TRIGGER, Triggers.ID(this)));
 }
@@ -1370,7 +1370,7 @@ TARGET TriggerClass::As_Target(void) const {
  * HISTORY: * 04/20/1995 JLB : Created. * 08/14/1995 JLB : Removes the member
  *from a team if necessary.                             *
  *=============================================================================================*/
-static void Do_All_To_Hunt(void) {
+static void Do_All_To_Hunt() {
   int index;
 
   for (index = 0; index < Units.Count(); index++) {

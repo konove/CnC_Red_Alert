@@ -4,7 +4,7 @@
 #include "sdllib/include/misc.h"
 
 int Sim_IRandom(int minval, int maxval);
-int Sim_Random(void);
+int Sim_Random();
 
 template <class T>
 inline T Random_Picky(T a, T b, const char* sfile, int line) {

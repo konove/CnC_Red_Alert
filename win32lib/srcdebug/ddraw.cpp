@@ -72,8 +72,8 @@ BOOL OverlappedVideoBlits = TRUE;  // Can video driver blit overlapped regions?
 /*
 ** Function to call if we detect focus loss
 */
-extern void (*Misc_Focus_Loss_Function)(void) = NULL;
-extern void (*Misc_Focus_Restore_Function)(void) = NULL;
+extern void (*Misc_Focus_Loss_Function)() = NULL;
+extern void (*Misc_Focus_Restore_Function)() = NULL;
 
 /***********************************************************************************************
  * Process_DD_Result -- Does a message box based on the result of a DD command *
@@ -383,9 +383,8 @@ void Process_DD_Result(HRESULT result, int display_ok_msg) {
                  "Note", MB_ICONEXCLAMATION | MB_OK);
       break;
     case DDERR_NOPALETTEATTACHED:
-      MessageBox(MainWindow,
-                 "No palette object attached to this surface.	", "Note",
-                 MB_ICONEXCLAMATION | MB_OK);
+      MessageBox(MainWindow, "No palette object attached to this surface.	",
+                 "Note", MB_ICONEXCLAMATION | MB_OK);
       break;
     case DDERR_NOPALETTEHW:
       MessageBox(MainWindow,
@@ -641,7 +640,7 @@ void Process_DD_Result(HRESULT result, int display_ok_msg) {
  *                                                                                             *
  * HISTORY: * 6/7/96 5:06PM ST : Created *
  *=============================================================================================*/
-void Check_Overlapped_Blit_Capability(void) {
+void Check_Overlapped_Blit_Capability() {
   /*
   ** Assume we can until we find out otherwise
   */
@@ -785,7 +784,7 @@ BOOL Set_Video_Mode(HWND hwnd, int w, int h, int bits_per_pixel) {
  *                                                                                             *
  * HISTORY: * 09/26/1995 PWG : Created. *
  *=============================================================================================*/
-void Reset_Video_Mode(void) {
+void Reset_Video_Mode() {
   HRESULT result;
 
   //
@@ -815,7 +814,7 @@ void Reset_Video_Mode(void) {
  *                                                                                             *
  * HISTORY: * 11/29/95 12:52PM ST : Created *
  *=============================================================================================*/
-unsigned int Get_Free_Video_Memory(void) {
+unsigned int Get_Free_Video_Memory() {
   DDCAPS video_capabilities;
 
   if (DirectDrawObject) {
@@ -851,7 +850,7 @@ unsigned int Get_Free_Video_Memory(void) {
  *                                                                                             *
  * HISTORY: * 1/12/96 9:14AM ST : Created *
  *=============================================================================================*/
-unsigned Get_Video_Hardware_Capabilities(void) {
+unsigned Get_Video_Hardware_Capabilities() {
   DDCAPS video_capabilities;
   unsigned video;
 
@@ -916,7 +915,7 @@ unsigned Get_Video_Hardware_Capabilities(void) {
  * HISTORY: *
  *=============================================================================================*/
 extern int ScreenWidth;
-void Wait_Vert_Blank(void) {
+void Wait_Vert_Blank() {
   if (ScreenWidth != 320 && CanVblankSync) {
     HRESULT result =
         DirectDrawObject->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, 0);
@@ -992,7 +991,7 @@ void Set_DD_Palette(void* palette) {
  * HISTORY: * 07-25-95 03:53pm ST : Created *
  *=============================================================================================*/
 
-void Wait_Blit(void) {
+void Wait_Blit() {
   HRESULT return_code;
 
   do {
@@ -1014,7 +1013,7 @@ void Wait_Blit(void) {
  * HISTORY: * 11/3/95 3:23PM ST : Created *
  *=============================================================================================*/
 
-SurfaceMonitorClass::SurfaceMonitorClass(void) {
+SurfaceMonitorClass::SurfaceMonitorClass() {
   for (int i = 0; i < MAX_SURFACES; i++) {
     Surface[i] = NULL;
   }
@@ -1107,7 +1106,7 @@ BOOL SurfaceMonitorClass::Got_Surface_Already(
  * HISTORY: * 11/3/95 3:26PM ST : Created *
  *=============================================================================================*/
 
-void SurfaceMonitorClass::Restore_Surfaces(void) {
+void SurfaceMonitorClass::Restore_Surfaces() {
   if (InFocus) {
     /*
     ** Call restore for each Direct Draw surface
@@ -1176,7 +1175,7 @@ void SurfaceMonitorClass::Set_Surface_Focus(BOOL in_focus) {
  * HISTORY: * 6/6/96 12:23PM ST : Created *
  *=============================================================================================*/
 
-void SurfaceMonitorClass::Release(void) {
+void SurfaceMonitorClass::Release() {
   /*
   ** Call release for each Direct Draw surface
   */

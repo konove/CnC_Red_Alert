@@ -95,28 +95,28 @@ typedef enum tProtocolEnum {
 */
 class WinsockInterfaceClass {
  public:
-  WinsockInterfaceClass(void);
-  virtual ~WinsockInterfaceClass(void);
+  WinsockInterfaceClass();
+  virtual ~WinsockInterfaceClass();
 
-  bool Init(void);
-  void Close(void);
+  bool Init();
+  void Close();
 
-  virtual void Close_Socket(void);
+  virtual void Close_Socket();
   virtual int Read(void* buffer, int& buffer_len, void* address,
                    int& address_len);
   virtual void WriteTo(void* buffer, int buffer_len, void* address);
   virtual void Broadcast(void* buffer, int buffer_len);
-  virtual void Discard_In_Buffers(void);
-  virtual void Discard_Out_Buffers(void);
-  virtual bool Start_Listening(void);
-  virtual void Stop_Listening(void);
+  virtual void Discard_In_Buffers();
+  virtual void Discard_Out_Buffers();
+  virtual bool Start_Listening();
+  virtual void Stop_Listening();
   virtual void Clear_Socket_Error(SOCKET socket);
-  virtual bool Set_Socket_Options(void);
+  virtual bool Set_Socket_Options();
   virtual void Set_Broadcast_Address(void*) {};
 
-  virtual ProtocolEnum Get_Protocol(void) { return (PROTOCOL_NONE); };
+  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_NONE); };
 
-  virtual int Protocol_Event_Message(void) { return (0); };
+  virtual int Protocol_Event_Message() { return (0); };
 
   virtual bool Open_Socket(SOCKET) { return (false); };
 
@@ -135,9 +135,7 @@ class WinsockInterfaceClass {
     CONNECTION_LOST
   } ConnectStatusEnum;
 
-  inline ConnectStatusEnum Get_Connection_Status(void) {
-    return (ConnectStatus);
-  }
+  inline ConnectStatusEnum Get_Connection_Status() { return (ConnectStatus); }
 
  protected:
   int Get_Last_Error();

@@ -75,7 +75,7 @@ const int kMaxPlayers = 8;
 //**************************************************************************
 // Functions
 //
-static void terminateApp(void);
+static void terminateApp();
 static void debugMessage(int msgLevel, char* msg);
 static void doAlert(int, int, char*);
 static void doPregameHook(char* joinType, char*, char*, char*, char*, char*);
@@ -105,7 +105,7 @@ static int IgnoreIncoming = 0;
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-TenConnManClass::TenConnManClass(void) {
+TenConnManClass::TenConnManClass() {
   int i;
 
   IsHost = 0;
@@ -166,7 +166,7 @@ TenConnManClass::~TenConnManClass() {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Init(void) {
+int TenConnManClass::Init() {
   //
   // set the debugging functions
   //
@@ -208,7 +208,7 @@ int TenConnManClass::Init(void) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Service(void) {
+int TenConnManClass::Service() {
   tenArIdleArena();
 
   return (1);
@@ -255,7 +255,7 @@ int TenConnManClass::Send_Private_Message(void* buf, int buflen, int reliable,
   //
   // Ensure the global channel flag isn't set on this outgoing packet
   //
-  (void)verify(!(ucbuf[0] & kGlobalChannelFlag));
+  () verify(!(ucbuf[0] & kGlobalChannelFlag));
 
   if (doBroadcast) {
     if (reliable) {
@@ -266,7 +266,7 @@ int TenConnManClass::Send_Private_Message(void* buf, int buflen, int reliable,
   } else {
     int pid = Connection_Address(conn_id);
 
-    (void)verify(pid >= 0 && pid < kMaxPlayers);
+    () verify(pid >= 0 && pid < kMaxPlayers);
     if (reliable) {
       verifyNoErr(tenArSendToPlayer(pid, buf, buflen));
     } else {
@@ -308,7 +308,7 @@ int TenConnManClass::Get_Private_Message(void* buf, int* buflen, int* conn_id) {
 
   if (PrivateQueue->Num_Receive() > 0) {
     PrivateQueue->UnQueue_Receive(buf, buflen, 0, &addr, &addrlen);
-    (void)verify(addrlen == 4);
+    () verify(addrlen == 4);
     (*conn_id) = CONNECTION_NONE;
     for (i = 0; i < NumConnections; i++) {
       if (addr == Connections[i]) {
@@ -352,7 +352,7 @@ int TenConnManClass::Send_Global_Message(void* buf, int buflen, int reliable,
   //
   // Ensure the global channel flag isn't set on this outgoing packet
   //
-  (void)verify(!(ucbuf[0] & kGlobalChannelFlag));
+  () verify(!(ucbuf[0] & kGlobalChannelFlag));
 
   //
   // Set the global channel flag for this packet
@@ -368,7 +368,7 @@ int TenConnManClass::Send_Global_Message(void* buf, int buflen, int reliable,
   } else {
     int pid = address;
 
-    (void)verify(pid >= 0 && pid < kMaxPlayers);
+    () verify(pid >= 0 && pid < kMaxPlayers);
     if (reliable) {
       verifyNoErr(tenArSendToPlayer(pid, buf, buflen));
     } else {
@@ -411,7 +411,7 @@ int TenConnManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
 
   if (GlobalQueue->Num_Receive() > 0) {
     GlobalQueue->UnQueue_Receive(buf, buflen, 0, address, &addrlen);
-    (void)verify(addrlen == 4);
+    () verify(addrlen == 4);
     return (1);
   }
 
@@ -436,7 +436,7 @@ int TenConnManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Num_Connections(void) {
+int TenConnManClass::Num_Connections() {
   return (NumConnections);
 
 }  // end of Num_Connections
@@ -644,7 +644,7 @@ int TenConnManClass::Connection_Address(int id) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Global_Num_Send(void) {
+int TenConnManClass::Global_Num_Send() {
   return (0);
 
 }  // end of Global_Num_Send
@@ -667,7 +667,7 @@ int TenConnManClass::Global_Num_Send(void) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-int TenConnManClass::Global_Num_Receive(void) {
+int TenConnManClass::Global_Num_Receive() {
   return (GlobalQueue->Num_Receive());
 
 }  // end of Global_Num_Receive
@@ -736,7 +736,7 @@ int TenConnManClass::Private_Num_Receive(int /*id*/) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-void TenConnManClass::Flush_All(void) {
+void TenConnManClass::Flush_All() {
   int i;
   int maxqueuesize;
   int rc;
@@ -789,7 +789,7 @@ void TenConnManClass::Flush_All(void) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-void TenConnManClass::Reset_Response_Time(void) {
+void TenConnManClass::Reset_Response_Time() {
   //
   // (This function intentionally left blank.)
   //
@@ -814,7 +814,7 @@ void TenConnManClass::Reset_Response_Time(void) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long TenConnManClass::Response_Time(void) {
+unsigned long TenConnManClass::Response_Time() {
   return ((Session.NetResponseTime * 60) / 1000);  // 300 milliseconds one way
 
 }  // end of Response_Time
@@ -916,7 +916,7 @@ void TenConnManClass::Mono_Debug_Print(int /*index*/, int /*refresh*/) {
  * HISTORY:                                                                *
  *   07/22/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void terminateApp(void) {
+static void terminateApp() {
   Prog_End();
   dprintf("Exiting due to a fatal error.\n");
   exit(0);
@@ -1086,12 +1086,12 @@ void doIncomingPacket(int addr, void* buf, size_t size) {
     byte[0] &= (~kGlobalChannelFlag);
     rc = Ten->GlobalQueue->Queue_Receive(buf, size, &addr, 4);
     if (!IgnoreIncoming) {
-      (void)verify(rc == 1);
+      () verify(rc == 1);
     }
   } else {
     rc = Ten->PrivateQueue->Queue_Receive(buf, size, &addr, 4);
     if (!IgnoreIncoming) {
-      (void)verify(rc == 1);
+      () verify(rc == 1);
     }
   }
 

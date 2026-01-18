@@ -103,7 +103,7 @@ WORD cdecl Get_DOS_Handle(WORD fh) {
  * HISTORY:                                                                *
  *   09/13/1993 SKB : Created.                                             *
  *=========================================================================*/
-WORD cdecl Free_Handles(VOID) {
+WORD cdecl Free_Handles() {
   WORD count;  // Count of the number of free file handles.
   WORD index;  // Working file handle index var.
 

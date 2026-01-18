@@ -191,15 +191,15 @@ class GetCDClass {
   int CDIndex;
 
  public:
-  GetCDClass(VOID);   // This is the default constructor
-  ~GetCDClass(VOID);  // This is the destructor
+  GetCDClass();   // This is the default constructor
+  ~GetCDClass();  // This is the destructor
 
-  inline int Get_First_CD_Drive(void);
-  inline int Get_Next_CD_Drive(void);
-  inline int Get_Number_Of_Drives(void) { return (CDCount); };
+  inline int Get_First_CD_Drive();
+  inline int Get_Next_CD_Drive();
+  inline int Get_Number_Of_Drives() { return (CDCount); };
 
  private:
-  VOID GetCDDrives(VOID);
+  VOID GetCDDrives();
 };
 
 /***********************************************************************************************
@@ -216,7 +216,7 @@ class GetCDClass {
  *                                                                                             *
  * HISTORY: * 5/21/96 3:50PM ST : Created *
  *=============================================================================================*/
-inline int GetCDClass::Get_Next_CD_Drive(void) {
+inline int GetCDClass::Get_Next_CD_Drive() {
   if (CDCount) {
     if (CDIndex == CDCount) CDIndex = 0;
     return (CDDrives[CDIndex++]);
@@ -240,7 +240,7 @@ inline int GetCDClass::Get_Next_CD_Drive(void) {
  *   05/26/1994 SW : Created.                                              *
  *   12/4/95    ST : fixed for Win95                                       *
  *=========================================================================*/
-inline int GetCDClass::Get_First_CD_Drive(void) {
+inline int GetCDClass::Get_First_CD_Drive() {
   CDIndex = 0;
   return (Get_Next_CD_Drive());
 }
@@ -273,8 +273,8 @@ class RedBookClass : public GetCDClass {
   TinfoType Tinfo;
 
  public:
-  RedBookClass(VOID);   // This is the default constructor
-  ~RedBookClass(VOID);  // This is the destructor
+  RedBookClass();   // This is the default constructor
+  ~RedBookClass();  // This is the destructor
 
   ULONG RedToHS(ULONG i);
   ULONG MSFtoRed(UBYTE m, UBYTE s, UBYTE f);
@@ -283,8 +283,8 @@ class RedBookClass : public GetCDClass {
   VOID Play_CD_MSL(UWORD min_sec, UWORD len);
   VOID PlayMSF(UBYTE startM, UBYTE startS, UBYTE startF, UBYTE endM, UBYTE endS,
                UBYTE endF, UBYTE chan);
-  UWORD CheckCDMusic(VOID);
-  VOID StopCDMusic(VOID);
+  UWORD CheckCDMusic();
+  VOID StopCDMusic();
 };
 
 /***************************** End of Playcd.h ****************************/

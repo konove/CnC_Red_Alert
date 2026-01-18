@@ -67,8 +67,8 @@ typedef MPG_RESPONSE(far __stdcall* LPMPGCALLBACK)(MPG_CMD cmd, LPVOID data,
 extern "C" {
 DLLCALL void __stdcall MpgPlay(const char* name, IDirectDraw* dd,
                                IDirectDrawSurface* surface, RECT* dstRect);
-DLLCALL void __stdcall MpgPause(void);
-DLLCALL void __stdcall MpgResume(void);
+DLLCALL void __stdcall MpgPause();
+DLLCALL void __stdcall MpgResume();
 DLLCALL void __stdcall MpgSetCallback(LPMPGCALLBACK callback, LPVOID user);
 }
 

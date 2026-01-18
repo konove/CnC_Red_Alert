@@ -147,9 +147,9 @@ extern char const* EngMisStr[];
 #define PACKET_RETRANS_TIME 30
 #define PACKET_REDRAW_TIME 60
 
-static int Reconnect_Null_Modem(void);
+static int Reconnect_Null_Modem();
 static int Com_Settings_Dialog(SerialSettingsType* settings);
-static int Phone_Dialog(void);
+static int Phone_Dialog();
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index);
 static int Init_String_Compare(const void* p1, const void* p2);
@@ -234,7 +234,7 @@ int Init_Null_Modem(SerialSettingsType* settings) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Shutdown_Modem(void) {
+void Shutdown_Modem() {
   if (!Session.Play) {
     if (Session.Type == GAME_MODEM) {
       NullModem.Hangup_Modem();
@@ -268,7 +268,7 @@ void Shutdown_Modem(void) {
  * HISTORY:                                                                *
  *   08/03/1995 DRD : Created.                                             *
  *=========================================================================*/
-void Modem_Signoff(void) {
+void Modem_Signoff() {
   unsigned long starttime;
   EventClass event;
 
@@ -304,7 +304,7 @@ void Modem_Signoff(void) {
  *   04/29/1995 BRR : Created.                                             *
  *   8/2/96      ST : Win32 support added                                  *
  *=========================================================================*/
-int Test_Null_Modem(void) {
+int Test_Null_Modem() {
   /*
   ** Get the resolution factor
   */
@@ -597,7 +597,7 @@ int Test_Null_Modem(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Reconnect_Modem(void) {
+int Reconnect_Modem() {
   int status;
   int modemstatus;
 
@@ -648,7 +648,7 @@ int Reconnect_Modem(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Reconnect_Null_Modem(void) {
+static int Reconnect_Null_Modem() {
   /*
   ** Button Enumerations
   */
@@ -944,7 +944,7 @@ void Destroy_Null_Connection(int id, int error) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-GameType Select_Serial_Dialog(void) {
+GameType Select_Serial_Dialog() {
   int rc;
 
   /*
@@ -4886,7 +4886,7 @@ bool Find_Local_Scenario(char* description, char* filename, unsigned int length,
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int Com_Show_Scenario_Dialog(void) {
+int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -6458,7 +6458,7 @@ int Com_Show_Scenario_Dialog(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Phone_Dialog(void) {
+static int Phone_Dialog() {
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/

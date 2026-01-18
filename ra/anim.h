@@ -67,9 +67,9 @@ class AnimClass : public ObjectClass, public StageClass {
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
   AnimClass(NoInitClass const& x) : ObjectClass(x), Class(x), StageClass(x) {};
-  virtual ~AnimClass(void);
+  virtual ~AnimClass();
 
-  operator AnimType(void) const { return Class->Type; };
+  operator AnimType() const { return Class->Type; };
 
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
@@ -78,23 +78,23 @@ class AnimClass : public ObjectClass, public StageClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
   void Attach_To(ObjectClass* obj);
-  void Make_Invisible(void) { IsInvisible = true; };
+  void Make_Invisible() { IsInvisible = true; };
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
   virtual bool Can_Place_Here(COORDINATE) const { return true; }
   virtual bool Mark(MarkType mark = MARK_CHANGE);
   virtual bool Render(bool forced);  // const;
-  virtual COORDINATE Center_Coord(void) const;
-  virtual COORDINATE Sort_Y(void) const;
-  virtual LayerType In_Which_Layer(void) const;
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual COORDINATE Center_Coord() const;
+  virtual COORDINATE Sort_Y() const;
+  virtual LayerType In_Which_Layer() const;
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   virtual short const* Occupy_List(bool = false) const;
-  virtual short const* Overlap_List(void) const;
+  virtual short const* Overlap_List() const;
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
-  virtual void AI(void);
+  virtual void AI();
   virtual void Detach(TARGET target, bool all);
 
   /*
@@ -124,8 +124,8 @@ class AnimClass : public ObjectClass, public StageClass {
   unsigned char Loops;
 
  protected:
-  void Middle(void);
-  void Start(void);
+  void Middle();
+  void Start();
 
  private:
   /*

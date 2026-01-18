@@ -242,7 +242,7 @@ void SmudgeTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void SmudgeTypeClass::Init_Heap(void) {
+void SmudgeTypeClass::Init_Heap() {
   /*
   **	These smudge type class objects must be allocated in the exact order
   *that they *	are specified in the SmudgeType enumeration. This is necessary
@@ -401,7 +401,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeTypeClass::Prep_For_Add(void) {
+void SmudgeTypeClass::Prep_For_Add() {
   for (SmudgeType index = SMUDGE_FIRST; index < SMUDGE_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data()) {
       Map.Add_To_List(&As_Reference(index));
@@ -493,7 +493,7 @@ void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeTypeClass::One_Time(void) {}
+void SmudgeTypeClass::One_Time() {}
 
 /***********************************************************************************************
  * SmudgeTypeClass::As_Reference -- Fetches a reference to the smudge type

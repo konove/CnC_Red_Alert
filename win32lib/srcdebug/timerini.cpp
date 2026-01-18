@@ -58,7 +58,7 @@ extern "C" {
 
 extern BOOL Install_Timer_Interrupt(VOID* bin_ptr, UINT rm_size, UINT freq,
                                     BOOL partial);
-extern BOOL Remove_Timer_Interrupt(VOID);
+extern BOOL Remove_Timer_Interrupt();
 
 #ifdef __cplusplus
 }
@@ -146,7 +146,7 @@ WinTimerClass::WinTimerClass(UINT freq, BOOL partial) {
  * HISTORY:                                                                *
  *   10/5/95 3:47PM : ST Created.                                          *
  *=========================================================================*/
-WinTimerClass::~WinTimerClass(void) {
+WinTimerClass::~WinTimerClass() {
   if (TimerHandle) {
     timeKillEvent(TimerHandle);
   }
@@ -202,7 +202,7 @@ void CALLBACK Timer_Callback(UINT, UINT, DWORD, DWORD, DWORD) {
  * HISTORY: * 10/5/95 3:58PM ST : Created *
  *=============================================================================================*/
 
-void WinTimerClass::Update_Tick_Count(void) {
+void WinTimerClass::Update_Tick_Count() {
   /*
    *
    *  Increment westwood timers
@@ -254,7 +254,7 @@ void WinTimerClass::Update_Tick_Count(void) {
  * HISTORY: * 10/5/95 4:02PM ST : Created *
  *=============================================================================================*/
 
-unsigned WinTimerClass::Get_System_Tick_Count(void) { return (SysTicks); }
+unsigned WinTimerClass::Get_System_Tick_Count() { return (SysTicks); }
 
 /***********************************************************************************************
  * WinTimerClass::Get_User_Tick_Count -- returns the user tick count *
@@ -268,4 +268,4 @@ unsigned WinTimerClass::Get_System_Tick_Count(void) { return (SysTicks); }
  * HISTORY: * 10/5/95 4:02PM ST : Created *
  *=============================================================================================*/
 
-unsigned WinTimerClass::Get_User_Tick_Count(void) { return (UserTicks); }
+unsigned WinTimerClass::Get_User_Tick_Count() { return (UserTicks); }

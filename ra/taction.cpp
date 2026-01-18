@@ -291,7 +291,7 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Read_INI(void) {
+void TActionClass::Read_INI() {
   switch (NewINIFormat) {
     default:
       Action = TActionType(atoi(strtok(nullptr, ",")));
@@ -335,7 +335,7 @@ void TActionClass::Read_INI(void) {
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Code_Pointers(void) {}
+void TActionClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * TActionClass::Decode_Pointers -- Converts coded pointers into usable format.
@@ -354,7 +354,7 @@ void TActionClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Decode_Pointers(void) {}
+void TActionClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * TActionClass::operator -- Performs the action that this object does. *

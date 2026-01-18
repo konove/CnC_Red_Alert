@@ -23,12 +23,12 @@
 
 class TextBlitClass {
  public:
-  TextBlitClass(void);
-  ~TextBlitClass(void) {};
+  TextBlitClass();
+  ~TextBlitClass() {};
 
   void Add(int x, int y, int dx, int dy, int w, int h);
-  void Clear(void);
-  void Update(void);
+  void Clear();
+  void Update();
 
  private:
   typedef struct {

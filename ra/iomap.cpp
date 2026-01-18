@@ -84,7 +84,7 @@
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Should_Save(void) const {
+bool CellClass::Should_Save() const {
   static CellClass const _identity_cell;
 
   return (memcmp(&_identity_cell, this, sizeof(*this)) != 0);
@@ -138,7 +138,7 @@ bool CellClass::Save(Pipe& file) const {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void CellClass::Code_Pointers(void) {
+void CellClass::Code_Pointers() {
   if (Cell_Occupier() != nullptr) {
     OccupierPtr = (ObjectClass*)OccupierPtr->As_Target();
   }
@@ -166,7 +166,7 @@ void CellClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
-void CellClass::Decode_Pointers(void) {
+void CellClass::Decode_Pointers() {
   if (OccupierPtr != nullptr) {
     OccupierPtr = As_Object((TARGET)(intptr_t)OccupierPtr);
     assert(OccupierPtr != nullptr);
@@ -373,7 +373,7 @@ bool MouseClass::Save(Pipe& file) const {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void DisplayClass::Code_Pointers(void) {
+void DisplayClass::Code_Pointers() {
   /*
   **	Code PendingObjectPtr.
   */
@@ -401,7 +401,7 @@ void DisplayClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void DisplayClass::Decode_Pointers(void) {
+void DisplayClass::Decode_Pointers() {
   /*
   **	Decode PendingObjectPtr.  We can't decode PendingObject here, because
   *we'd *	have to reference PendingObjectPtr->Class_Of(), and the object
@@ -436,7 +436,7 @@ void DisplayClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MapClass::Code_Pointers(void) {
+void MapClass::Code_Pointers() {
   CellClass* cellptr = &(*this)[(CELL)0];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     cellptr->Code_Pointers();
@@ -458,7 +458,7 @@ void MapClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MapClass::Decode_Pointers(void) {
+void MapClass::Decode_Pointers() {
   CellClass* cellptr = &(*this)[(CELL)0];
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     cellptr->Decode_Pointers();

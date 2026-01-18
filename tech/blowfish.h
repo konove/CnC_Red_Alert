@@ -54,8 +54,8 @@
 */
 class BlowfishEngine {
  public:
-  BlowfishEngine(void) : IsKeyed(false) {}
-  ~BlowfishEngine(void);
+  BlowfishEngine() : IsKeyed(false) {}
+  ~BlowfishEngine();
 
   void Submit_Key(void const* key, int length);
 
@@ -74,7 +74,7 @@ class BlowfishEngine {
 
   void Process_Block(void const* plaintext, void* cyphertext,
                      unsigned long const* ptable);
-  void Initialize_Tables(void);
+  void Initialize_Tables();
 
   enum {
     ROUNDS = 16,  // Feistal round count (16 is standard).

@@ -96,7 +96,7 @@ ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-ColorListClass::~ColorListClass(void) { Colors.Clear(); }
+ColorListClass::~ColorListClass() { Colors.Clear(); }
 
 /***************************************************************************
  * ColorListClass::Add_Item -- Adds an item to the list                    *

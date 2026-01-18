@@ -72,7 +72,7 @@ CDTimerClass<SystemTimerClass> ScrollClass::Counter;
  *                                                                                             *
  * HISTORY: * 08/10/1995 JLB : Created. *
  *=============================================================================================*/
-ScrollClass::ScrollClass(void) : IsAutoScroll(true) {
+ScrollClass::ScrollClass() : IsAutoScroll(true) {
   Counter = SCROLL_DELAY;
   Inertia = 0;
 }

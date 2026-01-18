@@ -55,11 +55,11 @@ class TarComClass : public TurretClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  TarComClass(void) {};
+  TarComClass() {};
   TarComClass(UnitType classid, HousesType house)
       : TurretClass(classid, house) {};
   TarComClass(NoInitClass const& x) : TurretClass(x) {}
-  virtual ~TarComClass(void);
+  virtual ~TarComClass();
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
@@ -67,15 +67,15 @@ class TarComClass : public TurretClass {
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
-  virtual void AI(void);
+  virtual void AI();
   //		virtual bool Target_Something_Nearby(ThreatType
   // rangmatters=THREAT_NORMAL);
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 };
 
 #endif

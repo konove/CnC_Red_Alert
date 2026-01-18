@@ -109,7 +109,7 @@ WeaponTypeClass::WeaponTypeClass(char const* name)
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponTypeClass::~WeaponTypeClass(void) {
+WeaponTypeClass::~WeaponTypeClass() {
   IniName = nullptr;
   Bullet = nullptr;
   WarheadPtr = nullptr;
@@ -309,7 +309,7 @@ ArmorType Armor_From_Name(char const* name) {
  *                                                                                             *
  * HISTORY: * 09/09/1996 JLB : Created. *
  *=============================================================================================*/
-ThreatType WeaponTypeClass::Allowed_Threats(void) const {
+ThreatType WeaponTypeClass::Allowed_Threats() const {
   ThreatType threat = THREAT_NORMAL;
   if (Bullet->IsAntiAircraft) {
     threat = threat | THREAT_AIR;
@@ -321,7 +321,7 @@ ThreatType WeaponTypeClass::Allowed_Threats(void) const {
   return (threat);
 }
 
-bool WeaponTypeClass::Is_Wall_Destroyer(void) const {
+bool WeaponTypeClass::Is_Wall_Destroyer() const {
   if (WarheadPtr != nullptr && WarheadPtr->IsWallDestroyer) {
     return (true);
   }

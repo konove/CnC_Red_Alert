@@ -72,7 +72,7 @@ void __cdecl Exit(INT errorval, const char* message, ...) {
   ::exit(errorval);
 }
 
-void randomize(void) { srand(time(nullptr)); }
+void randomize() { srand(time(nullptr)); }
 
 #if (0)
 unsigned long random(unsigned long mod) { return rand() * mod / RAND_MAX; }

@@ -153,7 +153,7 @@
  * HISTORY: * 08/09/1994 JLB : Created. * 02/20/1996 JLB : Uses initializer
  *list.                                                   *
  *=============================================================================================*/
-CellClass::CellClass(void)
+CellClass::CellClass()
     : ID(Map.ID(this)),
       IsPlot(false),
       IsCursorHere(false),
@@ -314,7 +314,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  * HISTORY: * 08/05/1992 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-BuildingClass* CellClass::Cell_Building(void) const {
+BuildingClass* CellClass::Cell_Building() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   return ((BuildingClass*)Cell_Find_Object(RTTI_BUILDING));
@@ -335,7 +335,7 @@ BuildingClass* CellClass::Cell_Building(void) const {
  *                                                                                             *
  * HISTORY: * 05/18/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainClass* CellClass::Cell_Terrain(void) const {
+TerrainClass* CellClass::Cell_Terrain() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   return ((TerrainClass*)Cell_Find_Object(RTTI_TERRAIN));
@@ -561,7 +561,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
  * HISTORY: * 05/29/1994 JLB : Created. * 06/20/1994 JLB : Knows about template
  *pointer in cell object.                             *
  *=============================================================================================*/
-void CellClass::Recalc_Attributes(void) {
+void CellClass::Recalc_Attributes() {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   /*
@@ -839,7 +839,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-UnitClass* CellClass::Cell_Unit(void) const {
+UnitClass* CellClass::Cell_Unit() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   return ((UnitClass*)Cell_Find_Object(RTTI_UNIT));
@@ -862,7 +862,7 @@ UnitClass* CellClass::Cell_Unit(void) const {
  *                                                                                             *
  * HISTORY: * 05/20/1996 JLB : Created. *
  *=============================================================================================*/
-VesselClass* CellClass::Cell_Vessel(void) const {
+VesselClass* CellClass::Cell_Vessel() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   return ((VesselClass*)Cell_Find_Object(RTTI_VESSEL));
@@ -885,7 +885,7 @@ VesselClass* CellClass::Cell_Vessel(void) const {
  *                                                                                             *
  * HISTORY: * 12/21/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryClass* CellClass::Cell_Infantry(void) const {
+InfantryClass* CellClass::Cell_Infantry() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   return ((InfantryClass*)Cell_Find_Object(RTTI_INFANTRY));
@@ -1350,7 +1350,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
  *                                                                                             *
  * HISTORY: * 08/01/1994 JLB : Created. *
  *=============================================================================================*/
-void CellClass::Concrete_Calc(void) {
+void CellClass::Concrete_Calc() {
 #ifdef OBSOLETE
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
@@ -1570,7 +1570,7 @@ void CellClass::Concrete_Calc(void) {
  * HISTORY: * 09/19/1994 JLB : Created. * 09/19/1994 BWG : Updated to handle
  *partially-damaged walls.                               *
  *=============================================================================================*/
-void CellClass::Wall_Update(void) {
+void CellClass::Wall_Update() {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   static FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
@@ -1650,7 +1650,7 @@ void CellClass::Wall_Update(void) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE CellClass::Cell_Coord(void) const {
+COORDINATE CellClass::Cell_Coord() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   return (::Cell_Coord(Cell_Number()));
@@ -1906,7 +1906,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
  * HISTORY: * 12/26/1994 JLB : Created. * 06/09/1995 JLB : Uses 16 entry
  *scramble algorithm.                                        *
  *=============================================================================================*/
-int CellClass::Clear_Icon(void) const {
+int CellClass::Clear_Icon() const {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   CELL cell = Cell_Number();
@@ -2704,7 +2704,7 @@ bool CellClass::Flag_Place(HousesType house) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Flag_Remove(void) {
+bool CellClass::Flag_Remove() {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   if (IsFlagged) {
@@ -2731,7 +2731,7 @@ bool CellClass::Flag_Remove(void) {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void CellClass::Shimmer(void) {
+void CellClass::Shimmer() {
   assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
   ObjectClass* object = Cell_Occupier();
@@ -2868,7 +2868,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Is_Bridge_Here(void) const {
+bool CellClass::Is_Bridge_Here() const {
   switch (TType) {
     case TEMPLATE_BRIDGE1:
     case TEMPLATE_BRIDGE1H:
@@ -2907,7 +2907,7 @@ bool CellClass::Is_Bridge_Here(void) const {
  *                                                                                             *
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Can_Tiberium_Grow(void) const {
+bool CellClass::Can_Tiberium_Grow() const {
   if (!Rule.IsTGrowth) return (false);
 
   if (Session.Type != GAME_NORMAL) {
@@ -2942,7 +2942,7 @@ bool CellClass::Can_Tiberium_Grow(void) const {
  *                                                                                             *
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Can_Tiberium_Spread(void) const {
+bool CellClass::Can_Tiberium_Spread() const {
   if (!Rule.IsTSpread) return (false);
 
   if (Session.Type != GAME_NORMAL) {
@@ -2973,7 +2973,7 @@ bool CellClass::Can_Tiberium_Spread(void) const {
  *                                                                                             *
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Grow_Tiberium(void) {
+bool CellClass::Grow_Tiberium() {
   if (Can_Tiberium_Grow()) {
     OverlayData++;
     Redraw_Objects();
@@ -3031,7 +3031,7 @@ bool CellClass::Spread_Tiberium(bool forced) {
  *                                                                                             *
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Can_Tiberium_Germinate(void) const {
+bool CellClass::Can_Tiberium_Germinate() const {
   if (!Map.In_Radar(Cell_Number())) return (false);
 
   if (Is_Bridge_Here()) return (false);

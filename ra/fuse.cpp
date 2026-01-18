@@ -59,7 +59,7 @@
  *                                                                                             *
  * HISTORY: * 06/27/1995 BRR : Created.  Gosh, what a lotta work. *
  *=============================================================================================*/
-FuseClass::FuseClass(void) {
+FuseClass::FuseClass() {
   Timer = 0;
   Arming = 0;
   HeadTo = 0;

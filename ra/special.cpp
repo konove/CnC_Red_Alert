@@ -101,7 +101,7 @@
  *                                                                                             *
  * HISTORY: * 08/20/1996 JLB : Created. *
  *=============================================================================================*/
-void SpecialClass::Init(void) {
+void SpecialClass::Init() {
   IsShadowGrow = false;
   IsSpeedBuild = false;
   IsFromInstall = false;

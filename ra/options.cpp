@@ -105,7 +105,7 @@ char const* const OptionsClass::HotkeyName = "DOSHotkeys";
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-OptionsClass::OptionsClass(void)
+OptionsClass::OptionsClass()
     : GameSpeed(3),
       ScrollRate(3),
 #ifdef WIN32
@@ -192,7 +192,7 @@ OptionsClass::OptionsClass(void)
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::One_Time(void) { Set_Score_Vol(ScoreVolume * 256); }
+void OptionsClass::One_Time() { Set_Score_Vol(ScoreVolume * 256); }
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
@@ -209,7 +209,7 @@ void OptionsClass::One_Time(void) { Set_Score_Vol(ScoreVolume * 256); }
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Process(void) {}
+void OptionsClass::Process() {}
 
 /***********************************************************************************************
  * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
@@ -331,7 +331,7 @@ void OptionsClass::Set_Brightness(fixed brightness) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Brightness(void) const {
+fixed OptionsClass::Get_Brightness() const {
   return ((Brightness - fixed::_1_4) / fixed::_1_2);
 }
 
@@ -372,7 +372,7 @@ void OptionsClass::Set_Saturation(fixed color) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Saturation(void) const { return (Saturation); }
+fixed OptionsClass::Get_Saturation() const { return (Saturation); }
 
 /***********************************************************************************************
  * OptionsClass::Set_Contrast -- Sets the contrast to the value specified. *
@@ -410,7 +410,7 @@ void OptionsClass::Set_Contrast(fixed contrast) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Contrast(void) const {
+fixed OptionsClass::Get_Contrast() const {
   return ((Contrast - fixed::_1_4) / fixed::_1_2);
 }
 
@@ -451,7 +451,7 @@ void OptionsClass::Set_Tint(fixed tint) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Tint(void) const { return (Tint); }
+fixed OptionsClass::Get_Tint() const { return (Tint); }
 
 /***********************************************************************************************
  * OptionsClass::Adjust_Palette -- Adjusts the palette according to the settings
@@ -540,7 +540,7 @@ void OptionsClass::Adjust_Palette(PaletteClass const& oldpal,
  *INI handler.                                         * 07/30/1996 JLB :
  *Handles hotkeys.                                                         *
  *=============================================================================================*/
-void OptionsClass::Load_Settings(void) {
+void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
@@ -702,7 +702,7 @@ void OptionsClass::Load_Settings(void) {
  *up.                                               * 07/30/1996 JLB : Handles
  *hotkeys.                                                         *
  *=============================================================================================*/
-void OptionsClass::Save_Settings(void) {
+void OptionsClass::Save_Settings() {
   CCFileClass file(CONFIG_FILE_NAME);
   INIClass ini;
 
@@ -805,7 +805,7 @@ void OptionsClass::Save_Settings(void) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-void OptionsClass::Set(void) {
+void OptionsClass::Set() {
   Set_Brightness(Brightness);
   Set_Contrast(Contrast);
   Set_Saturation(Saturation);
@@ -869,7 +869,7 @@ int OptionsClass::Normalize_Delay(int delay) const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Fixup_Palette(void) const {
+void OptionsClass::Fixup_Palette() const {
   Adjust_Palette(OriginalPalette, InGamePalette, Brightness, Saturation, Tint,
                  Contrast);
   CCPalette = InGamePalette;

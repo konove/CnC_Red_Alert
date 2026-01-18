@@ -119,28 +119,28 @@ class SidebarClass : public PowerClass {
   static void* SidebarMiddleShape;  // Only used in Win95 version
   static void* SidebarBottomShape;  // Only used in Win95 version
 
-  SidebarClass(void);
+  SidebarClass();
   SidebarClass(NoInitClass const& x);
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);                     // One-time inits
-  virtual void Init_Clear(void);                   // Clears all to known state
-  virtual void Init_IO(void);                      // Inits button list
+  virtual void One_Time();                         // One-time inits
+  virtual void Init_Clear();                       // Clears all to known state
+  virtual void Init_IO();                          // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
-  void Reload_Sidebar(void);  // Loads house-specific sidebar art
+  void Reload_Sidebar();  // Loads house-specific sidebar art
 
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete);
   virtual void Refresh_Cells(CELL cell, short const* list);
 
-  void Zoom_Mode_Control(void);
+  void Zoom_Mode_Control();
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);
   bool Add(RTTIType type, int ID);
   bool Sidebar_Click(KeyNumType& input, int x, int y);
-  void Recalc(void);
+  void Recalc();
   bool Factory_Link(int factory, RTTIType type, int id);
 
   /*
@@ -150,7 +150,7 @@ class SidebarClass : public PowerClass {
   class StripClass : public StageClass {
     class SelectClass : public ControlClass {
      public:
-      SelectClass(void);
+      SelectClass();
       SelectClass(NoInitClass const& x) : ControlClass(x) {};
 
       void Set_Owner(StripClass& strip, int index);
@@ -163,7 +163,7 @@ class SidebarClass : public PowerClass {
     };
 
    public:
-    StripClass(void) {}
+    StripClass() {}
     StripClass(InitClass const&);
     StripClass(NoInitClass const&) {};
 
@@ -173,14 +173,14 @@ class SidebarClass : public PowerClass {
     bool AI(KeyNumType& input, int x, int y);
     void Draw_It(bool complete);
     void One_Time(int id);
-    void Init_Clear(void);
+    void Init_Clear();
     void Init_IO(int id);
     void Init_Theater(TheaterType theater);
-    void Reload_LogoShapes(void);
-    bool Recalc(void);
-    void Activate(void);
-    void Deactivate(void);
-    void Flag_To_Redraw(void);
+    void Reload_LogoShapes();
+    bool Recalc();
+    void Activate();
+    void Deactivate();
+    void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
     void const* Get_Special_Cameo(SpecialWeaponType type);
 
@@ -376,13 +376,13 @@ class SidebarClass : public PowerClass {
   class SBGadgetClass : public GadgetClass {
    public:
     // #ifdef WIN32
-    SBGadgetClass(void)
+    SBGadgetClass()
         : GadgetClass((int)((int)SIDE_X + 8) * RESFACTOR,
                       (int)SIDE_Y * RESFACTOR,
                       (int)((int)SIDE_WIDTH - 1) * RESFACTOR - 1,
                       (int)((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {};
     // #else
-    //				SBGadgetClass(void) : GadgetClass((int)SIDE_X+8,
+    //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,
     //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

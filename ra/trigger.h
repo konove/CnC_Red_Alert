@@ -69,12 +69,12 @@ class TriggerClass {
   */
   TriggerClass(TriggerTypeClass* trigtype = nullptr);
   TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x) {};
-  ~TriggerClass(void);
+  ~TriggerClass();
 
   /*
   **	Initialization: clears all triggers in preparation for new scenario
   */
-  static void Init(void);
+  static void Init();
 
   /*
   **	Processing routines
@@ -88,17 +88,17 @@ class TriggerClass {
   */
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  void Code_Pointers(void) {};
-  void Decode_Pointers(void) {};
+  void Code_Pointers() {};
+  void Decode_Pointers() {};
 
   /*
   **	Utility routines
   */
-  TARGET As_Target(void) const;
-  char const* Description(void) const;
+  TARGET As_Target() const;
+  char const* Description() const;
   void Draw_It(int, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const* Name(void) const { return (Class->Name()); }
+  char const* Name() const { return (Class->Name()); }
 
   /*
   **	Overloaded operators

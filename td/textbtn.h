@@ -46,7 +46,7 @@
 
 class TextButtonClass : public ToggleClass {
  public:
-  TextButtonClass(void);
+  TextButtonClass();
   TextButtonClass(unsigned id, char const* text, TextPrintType style, int x,
                   int y, int w = -1, int h = -1, int blackborder = false);
   TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
@@ -57,7 +57,7 @@ class TextButtonClass : public ToggleClass {
   virtual void Set_Style(TextPrintType style) { PrintFlags = style; }
 
  protected:
-  virtual void Draw_Background(void);
+  virtual void Draw_Background();
   virtual void Draw_Text(char const* text);
 
   unsigned IsBlackBorder : 1;

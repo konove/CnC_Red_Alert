@@ -87,7 +87,7 @@
 #include "tech/rawfile.h"
 
 #ifndef WOLAPI_INTEGRATION
-int Read_Game_Options(void);
+int Read_Game_Options();
 #endif
 
 extern bool Is_Mission_126x126(char* file_name);
@@ -562,7 +562,7 @@ bool Is_User_WChat_Registered(char* /*buffer*/, int /*buffer_len*/) {
  * HISTORY: * 6/8/96 12:33PM ST : Created *
  *=============================================================================================*/
 #ifndef WOLAPI_INTEGRATION
-bool Poke_WChat(void);
+bool Poke_WChat();
 bool Spawn_WChat(bool /*can_launch*/) {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB, also MainWindow is not
                   // a HWND
@@ -714,7 +714,7 @@ bool Spawn_WChat(bool /*can_launch*/) {
  * HISTORY: * 6/8/96 12:33PM ST : Created *
  *=============================================================================================*/
 #ifndef WOLAPI_INTEGRATION
-bool Spawn_Registration_App(void) {
+bool Spawn_Registration_App() {
 #ifndef PORTABLE  // Get_Registry_Sub_Key is in WIN32LIB
   /*
   ** Find where inetreg was installed to
@@ -779,7 +779,7 @@ bool Spawn_Registration_App(void) {
  * HISTORY: * 6/7/96 8:30PM ST : Created *
  *=============================================================================================*/
 #ifndef WOLAPI_INTEGRATION
-bool Do_The_Internet_Menu_Thang(void) {
+bool Do_The_Internet_Menu_Thang() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
   /*

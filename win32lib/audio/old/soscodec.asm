@@ -166,8 +166,8 @@ LABEL	LockedCodeStart	BYTE
 ;*     486 and Pentium processors.  Changing, inserting, or moving any
 ;*     instructions will most likely slow down the code, in some cases by
 ;*     as much as 20%.  It can burst-decompress 16384 samples in about
-;*     1940æs on a Pentium 90Mhz, and about 3960æs on a 486 66Mhz.
-;*     Instruction reordering could bring this down to below 1870æs on
+;*     1940ï¿½s on a Pentium 90Mhz, and about 3960ï¿½s on a 486 66Mhz.
+;*     Instruction reordering could bring this down to below 1870ï¿½s on
 ;*     the Pentium, but this would cause a great degradation in 486
 ;*     performance.  Since slow 486's are the reason this code was
 ;*     written to be fast, it has been optimized for the Pentium only where
@@ -628,7 +628,7 @@ LABEL	LockedCodeEnd	BYTE
 ;*                                                                         *
 ;* OUTPUT:      BOOL true is lock sucessful, false otherwise		   *
 ;*                                                                         *
-;* PROTO:       BOOL sosCODEC_Lock(void);                         	   *
+;* PROTO:       BOOL sosCODEC_Lock();                         	   *
 ;*                                                                         *
 ;* HISTORY:								   *
 ;*   06/26/1995 PWG : Created.                                             *
@@ -677,7 +677,7 @@ LABEL	LockedCodeEnd	BYTE
 ;*                                                                         *
 ;* OUTPUT:      BOOL true is unlock sucessful, false otherwise		   *
 ;*                                                                         *
-;* PROTO:	BOOL sosCODEC_Unlock(void);                        	   *
+;* PROTO:	BOOL sosCODEC_Unlock();                        	   *
 ;*                                                                         *
 ;* HISTORY:								   *
 ;*   06/26/1995 PWG : Created.                                             *

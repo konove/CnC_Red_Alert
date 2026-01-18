@@ -32,7 +32,7 @@
 ;* Functions:                                                              *
 ;
 ; Here are prototypes for the routines defined within this module:
-; VOID Install_Page_Fault_Handle (void) ;
+; VOID Install_Page_Fault_Handle () ;
 ;
 ; ----------------------------------------------------------------
 

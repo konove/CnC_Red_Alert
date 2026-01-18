@@ -40,8 +40,8 @@ extern "C" {
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
-typedef void __cdecl (*MPlayerInit_Type)(void);
-typedef void __cdecl (*MPlayerDestroy_Type)(void);
+typedef void __cdecl (*MPlayerInit_Type)();
+typedef void __cdecl (*MPlayerDestroy_Type)();
 typedef int __cdecl (*Send_Private_Message_Type)(void* buf, int buflen,
                                                  int ack_req, int conn_id);
 typedef int __cdecl (*Get_Private_Message_Type)(void* buf, int* buflen,
@@ -54,11 +54,11 @@ typedef int __cdecl (*Create_Connection_Type)(int id, char* name, int address);
 typedef int __cdecl (*Delete_Connection_Type)(int id);
 typedef char* __cdecl (*Connection_Name_Type)(int id);
 typedef int __cdecl (*Connection_Address_Type)(int id);
-typedef int __cdecl (*Num_Connections_Type)(void);
+typedef int __cdecl (*Num_Connections_Type)();
 typedef int __cdecl (*Connection_ID_Type)(int id);
 typedef int __cdecl (*Connection_Index_Type)(int id);
-typedef int __cdecl (*Init_Type)(void);
-typedef int __cdecl (*Find_Num_Connections_Type)(void);
+typedef int __cdecl (*Init_Type)();
+typedef int __cdecl (*Find_Num_Connections_Type)();
 
 MPlayerInit_Type MPlayerManCreate;
 MPlayerDestroy_Type MPlayerManDestroy;
@@ -87,7 +87,7 @@ FARPROC MPGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
   return ret;
 }
 
-MPlayerManClass::MPlayerManClass(void) : ConnManClass() {
+MPlayerManClass::MPlayerManClass() : ConnManClass() {
   HMODULE lib;
 
   lib = LoadLibrary("ra95mp.dll");
@@ -154,7 +154,7 @@ int MPlayerManClass::Get_Global_Message(void* buf, int* buflen, int* address) {
   return Get_Global_Message_DLL(buf, buflen, address);
 }
 
-int MPlayerManClass::Service(void) { return STATUS_OK; }
+int MPlayerManClass::Service() { return STATUS_OK; }
 
 int MPlayerManClass::Create_Connection(int id, char* name, int address) {
   return Create_Connection_DLL(id, name, address);
@@ -172,7 +172,7 @@ int MPlayerManClass::Connection_Address(int id) {
   return Connection_Address_DLL(id);
 }
 
-int MPlayerManClass::Num_Connections(void) { return Num_Connections_DLL(); }
+int MPlayerManClass::Num_Connections() { return Num_Connections_DLL(); }
 
 int MPlayerManClass::Connection_ID(int index) {
   return Connection_ID_DLL(index);
@@ -182,9 +182,9 @@ int MPlayerManClass::Connection_Index(int id) {
   return Connection_Index_DLL(id);
 }
 
-int MPlayerManClass::Global_Num_Send(void) { return 0; }
+int MPlayerManClass::Global_Num_Send() { return 0; }
 
-int MPlayerManClass::Global_Num_Receive(void) {
+int MPlayerManClass::Global_Num_Receive() {
   return 0;
   //   return MGenGetQueueCtr(GDOSPENDINGQUEUE);
 }
@@ -193,11 +193,11 @@ int MPlayerManClass::Private_Num_Send(int /*id*/) { return 0; }
 
 int MPlayerManClass::Private_Num_Receive(int /*id*/) { return 0; }
 
-void MPlayerManClass::Reset_Response_Time(void) {
+void MPlayerManClass::Reset_Response_Time() {
   // unsupported
 }
 
-unsigned long MPlayerManClass::Response_Time(void) {
+unsigned long MPlayerManClass::Response_Time() {
   return (160 * 60) / 1000;  // 160 microseconds one way (9 ticks)
 }
 
@@ -217,10 +217,10 @@ void MPlayerManClass::Mono_Debug_Print(int /*index*/, int /*refresh*/) {
   // unsupported
 }
 
-int MPlayerManClass::Init(void) { return Init_DLL(); }
+int MPlayerManClass::Init() { return Init_DLL(); }
 
-int MPlayerManClass::Find_Num_Connections(void) {
+int MPlayerManClass::Find_Num_Connections() {
   return Find_Num_Connections_DLL();
 }
 
-void MPlayerManClass::Flush_All(void) {}
+void MPlayerManClass::Flush_All() {}

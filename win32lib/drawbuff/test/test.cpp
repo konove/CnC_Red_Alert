@@ -68,7 +68,7 @@
 #define NAME "DRAWBUFF test"
 #define TITLE "DRAWBUFF library test"
 
-void Test_All(void);
+void Test_All();
 
 //
 // Misc globals for testing
@@ -131,8 +131,8 @@ extern LPDIRECTDRAWPALETTE PalettePtr;  // Pointer to direct draw palette object
 //
 long FAR PASCAL _export WndProc(HWND, UINT, UINT, LONG);
 BOOL Set_Video_Mode(HWND hwnd, int w, int h, int bits_per_pixel);
-void Reset_Video_Mode(void);
-extern "C" void Wait_Vert_Blank(void);
+void Reset_Video_Mode();
+extern "C" void Wait_Vert_Blank();
 void Block_Mouse(GraphicBufferClass* ptr) {}
 void Unblock_Mouse(GraphicBufferClass* ptr) {}
 
@@ -429,7 +429,7 @@ long FAR PASCAL _export WndProc(HWND hwnd, UINT message, UINT wParam,
  *                                                                                             *
  * HISTORY: * 9/27/95 3:29PM ST : Created *
  *=============================================================================================*/
-void Font_Test(void) {
+void Font_Test() {
   const char font_name[] = {"font.fnt"};
 
   if (!FontPtr) {
@@ -504,7 +504,7 @@ void Rect_Test(GraphicBufferClass* screen_buffer) {
  * HISTORY: * 9/25/95 3:05PM ST : Created *
  *=============================================================================================*/
 
-void Clear_Test(void) {
+void Clear_Test() {
   x1 = 0;
   y1 = 0;
   x2 = 319;
@@ -529,7 +529,7 @@ void Clear_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/28/95 6:02PM ST : Created *
  *=============================================================================================*/
-void Stamp_Test(void) {
+void Stamp_Test() {
   int x;
   int y;
   int icon = 0;
@@ -577,7 +577,7 @@ void Stamp_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/28/95 6:02PM ST : Created *
  *=============================================================================================*/
-void Stamp_Test2(void) {
+void Stamp_Test2() {
   int x;
   int y;
   int icon = 0;
@@ -624,7 +624,7 @@ void Stamp_Test2(void) {
  *                                                                                             *
  * HISTORY: * 9/25/95 5:29PM ST : Created *
  *=============================================================================================*/
-void Pixel_Test(void) {
+void Pixel_Test() {
   ScreenBuffer->Put_Pixel(rand() & 511, rand() & 255, rand() & 255);
 }
 
@@ -641,7 +641,7 @@ void Pixel_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/26/95 4:51PM ST : Created *
  *=============================================================================================*/
-void Read_Pixel_Test(void) {
+void Read_Pixel_Test() {
   int i;
   int colour;
   int pixel_x;
@@ -697,7 +697,7 @@ void Read_Pixel_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/26/95 10:27AM ST : Created *
  *=============================================================================================*/
-void Scale_Test(void) {
+void Scale_Test() {
   int i;
 
   if (!BackBuffer) {
@@ -749,7 +749,7 @@ void Scale_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/25/95 5:39PM ST : Created *
  *=============================================================================================*/
-void Blit_Test1(void) {
+void Blit_Test1() {
   int i;
 
   if (!BackBuffer) {
@@ -802,7 +802,7 @@ void Blit_Test1(void) {
  *                                                                                             *
  * HISTORY: * 9/27/95 9:36AM ST : Created *
  *=============================================================================================*/
-void Blit_Test2(void) {
+void Blit_Test2() {
   int i;
 
   if (!BackBuffer) {
@@ -854,7 +854,7 @@ void Blit_Test2(void) {
  *                                                                                             *
  * HISTORY: * 9/26/95 5:23PM ST : Created *
  *=============================================================================================*/
-void Fill_Rect_Test(void) {
+void Fill_Rect_Test() {
   int x1;
   int y1;
   int x2;
@@ -882,7 +882,7 @@ void Fill_Rect_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/26/95 6:26PM ST : Created *
  *=============================================================================================*/
-void Remap_Test(void) { ScreenBuffer->Remap(0, 0, 640, 400, &RemapTable[0]); }
+void Remap_Test() { ScreenBuffer->Remap(0, 0, 640, 400, &RemapTable[0]); }
 
 /***********************************************************************************************
  * Quad_Test -- test the quad fill member of GraphicBufferClass *
@@ -898,7 +898,7 @@ void Remap_Test(void) { ScreenBuffer->Remap(0, 0, 640, 400, &RemapTable[0]); }
  * HISTORY: * 9/27/95 11:12AM ST : Created *
  *=============================================================================================*/
 
-void Quad_Test(void) {
+void Quad_Test() {
   int colour;
   int x0;
   int x1;
@@ -937,7 +937,7 @@ void Quad_Test(void) {
  *                                                                                             *
  * HISTORY: * 9/27/95 11:36AM ST : Created *
  *=============================================================================================*/
-void Copy_Test(void) {
+void Copy_Test() {
   BufferClass* buffer;
   char* buffer_ptr;
 
@@ -967,7 +967,7 @@ void Copy_Test(void) {
  * HISTORY: * 9/25/95 2:53PM ST : Created *
  *=============================================================================================*/
 
-void Test_All(void)
+void Test_All()
 
 {
   switch (Test) {

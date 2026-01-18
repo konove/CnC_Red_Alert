@@ -94,7 +94,7 @@ class MusicListClass : public ListClass {
  *                                                                                             *
  * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
-void SoundControlsClass::Process(void) {
+void SoundControlsClass::Process() {
   /*
   ** Adjust dialog controls for resolution
   */

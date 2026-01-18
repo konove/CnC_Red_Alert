@@ -231,7 +231,7 @@ void LogicClass::Debug_Dump(MonoClass* mono) const {
  *complete pass rather than bailing early.                * 12/23/1994 JLB :
  *Ensures that no object gets skipped if it was deleted.                   *
  *=============================================================================================*/
-void LogicClass::AI(void) {
+void LogicClass::AI() {
   int index;
 
   FramesPerSecond++;

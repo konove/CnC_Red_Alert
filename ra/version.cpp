@@ -95,7 +95,7 @@ static VersionProtocolType VersionProtocol[] = {
  *   10/26/1995 BRR : Created.                                             *
  *   09/17/1996 JLB : Converted to used initializer list.                  *
  *=========================================================================*/
-VersionClass::VersionClass(void)
+VersionClass::VersionClass()
     : Version(0),
       MajorVer(0),
       MinorVer(0),
@@ -165,7 +165,7 @@ VersionClass::VersionClass(void)
 // commented out. 	Version number used is now GAME_VERSION. 	Note
 // also that VERSION_RA_300 is wrong, but not used.
 
-unsigned long VersionClass::Version_Number(void) {
+unsigned long VersionClass::Version_Number() {
   //------------------------------------------------------------------------
   // Read the text description, if there is one
   //------------------------------------------------------------------------
@@ -209,7 +209,7 @@ unsigned long VersionClass::Version_Number(void) {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned short VersionClass::Major_Version(void) {
+unsigned short VersionClass::Major_Version() {
 #ifdef DEV_VERSION
   static char* date = __DATE__;  // format: Mmm dd yyyy
   static char const* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
@@ -308,7 +308,7 @@ unsigned short VersionClass::Major_Version(void) {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned short VersionClass::Minor_Version(void) {
+unsigned short VersionClass::Minor_Version() {
 #ifdef DEV_VERSION
   static char* time = __TIME__;  // format: hh:mm:ss
   char* tok;
@@ -405,7 +405,7 @@ unsigned short VersionClass::Minor_Version(void) {
  * HISTORY:                                                                *
  *   10/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-char* VersionClass::Version_Name(void) {
+char* VersionClass::Version_Name() {
   //------------------------------------------------------------------------
   // For developmental versions, just use the major & minor version #'s
   //------------------------------------------------------------------------
@@ -452,7 +452,7 @@ char* VersionClass::Version_Name(void) {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-void VersionClass::Read_Text_String(void) {
+void VersionClass::Read_Text_String() {
   RawFileClass file("VERSION.TXT");
 
   if (file.Is_Available()) {
@@ -537,7 +537,7 @@ CommProtocolType VersionClass::Version_Protocol(unsigned long version) {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-void VersionClass::Init_Clipping(void) {
+void VersionClass::Init_Clipping() {
   MinClipVer = Min_Version();
   MaxClipVer = Max_Version();
 
@@ -634,7 +634,7 @@ unsigned long VersionClass::Clip_Version(unsigned long minver,
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long VersionClass::Min_Version(void) {
+unsigned long VersionClass::Min_Version() {
 #ifdef DEV_VERSION
   return (Version_Number());
 #else
@@ -685,7 +685,7 @@ unsigned long VersionClass::Min_Version(void) {
  * HISTORY:                                                                *
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
-unsigned long VersionClass::Max_Version(void) {
+unsigned long VersionClass::Max_Version() {
 #ifdef DEV_VERSION
   return (Version_Number());
 #else  // DEV_VERSION
@@ -702,7 +702,7 @@ unsigned long VersionClass::Max_Version(void) {
 #endif  // DEV_VERSION
 }
 
-char const* Version_Name(void) {
+char const* Version_Name() {
   static std::string version;
 
   version = "3.03";

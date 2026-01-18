@@ -54,4 +54,4 @@ PRIVATE BYTE* version =
  * HISTORY:                                                                *
  *   07/26/1991 JLB : Created.                                             *
  *=========================================================================*/
-BYTE* cdecl Version(VOID) { return (version); }
+BYTE* cdecl Version() { return (version); }

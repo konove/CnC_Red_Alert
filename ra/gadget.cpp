@@ -141,7 +141,7 @@ GadgetClass::GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky)
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass::~GadgetClass(void) {
+GadgetClass::~GadgetClass() {
   if (Has_Focus()) {
     Clear_Focus();
   }
@@ -211,7 +211,7 @@ int GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void GadgetClass::Enable(void) {
+void GadgetClass::Enable() {
   IsDisabled = false;
   IsToRepaint = true;
   Clear_Focus();
@@ -231,7 +231,7 @@ void GadgetClass::Enable(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void GadgetClass::Disable(void) {
+void GadgetClass::Disable() {
   IsDisabled = true;
   IsToRepaint = true;
   Clear_Focus();
@@ -252,7 +252,7 @@ void GadgetClass::Disable(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* GadgetClass::Remove(void) {
+GadgetClass* GadgetClass::Remove() {
   Clear_Focus();
   return (GadgetClass*)LinkClass::Remove();
 }
@@ -271,7 +271,7 @@ GadgetClass* GadgetClass::Remove(void) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* GadgetClass::Get_Next(void) const {
+GadgetClass* GadgetClass::Get_Next() const {
   return (GadgetClass*)LinkClass::Get_Next();
 }
 
@@ -290,7 +290,7 @@ GadgetClass* GadgetClass::Get_Next(void) const {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* GadgetClass::Get_Prev(void) const {
+GadgetClass* GadgetClass::Get_Prev() const {
   return (GadgetClass*)LinkClass::Get_Prev();
 }
 
@@ -309,7 +309,7 @@ GadgetClass* GadgetClass::Get_Prev(void) const {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-void GadgetClass::Delete_List(void) {
+void GadgetClass::Delete_List() {
   GadgetClass* g = this;
 
   /*
@@ -425,7 +425,7 @@ void GadgetClass::Draw_All(bool forced) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-KeyNumType GadgetClass::Input(void) {
+KeyNumType GadgetClass::Input() {
   int mousex, mousey;
   KeyNumType key;
   unsigned flags;
@@ -661,7 +661,7 @@ ControlClass* GadgetClass::Extract_Gadget(unsigned id) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void GadgetClass::Flag_To_Redraw(void) { IsToRepaint = true; }
+void GadgetClass::Flag_To_Redraw() { IsToRepaint = true; }
 
 /***********************************************************************************************
  * GadgetClass::Sticky_Process -- Handles the sticky flag processing. *
@@ -704,7 +704,7 @@ void GadgetClass::Sticky_Process(unsigned flags) {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-void GadgetClass::Set_Focus(void) {
+void GadgetClass::Set_Focus() {
   if (Focused) {
     Focused->Flag_To_Redraw();
     Focused->Clear_Focus();
@@ -729,7 +729,7 @@ void GadgetClass::Set_Focus(void) {
  *                                                                                             *
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
-void GadgetClass::Clear_Focus(void) {
+void GadgetClass::Clear_Focus() {
   if (Focused == this) {
     Flags &= ~KEYBOARD;
     Focused = nullptr;
@@ -752,7 +752,7 @@ void GadgetClass::Clear_Focus(void) {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Has_Focus(void) { return (this == Focused); }
+bool GadgetClass::Has_Focus() { return (this == Focused); }
 
 /***********************************************************************************************
  * GadgetClass::Is_List_To_Redraw -- tells if any gadget in the list needs
@@ -770,7 +770,7 @@ bool GadgetClass::Has_Focus(void) { return (this == Focused); }
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
-int GadgetClass::Is_List_To_Redraw(void) {
+int GadgetClass::Is_List_To_Redraw() {
   GadgetClass* gadget = this;
 
   while (gadget != nullptr) {

@@ -117,15 +117,15 @@ class SidebarClass : public PowerClass {
     COLUMNS = 2,  // Number of side strips on sidebar.
   };
 
-  SidebarClass(void);
+  SidebarClass();
   SidebarClass(NoInitClass const& x) : PowerClass(x) {}
 
   /*
   ** Initialization
   */
-  virtual void One_Time(void);                     // One-time inits
-  virtual void Init_Clear(void);                   // Clears all to known state
-  virtual void Init_IO(void);                      // Inits button list
+  virtual void One_Time();                         // One-time inits
+  virtual void Init_Clear();                       // Clears all to known state
+  virtual void Init_IO();                          // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
 
   virtual void AI(KeyNumType& input, int x, int y);
@@ -136,14 +136,14 @@ class SidebarClass : public PowerClass {
   bool Activate(int control);
   bool Add(RTTIType type, int ID);
   bool Sidebar_Click(KeyNumType& input, int x, int y);
-  void Recalc(void);
+  void Recalc();
   bool Factory_Link(int factory, RTTIType type, int id);
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   **	Each side strip is managed by this class. It handles all strip specific
@@ -152,7 +152,7 @@ class SidebarClass : public PowerClass {
   class StripClass : public StageClass {
     class SelectClass : public ControlClass {
      public:
-      SelectClass(void);
+      SelectClass();
 
       void Set_Owner(StripClass& strip, int index);
       StripClass* Strip;
@@ -169,7 +169,7 @@ class SidebarClass : public PowerClass {
     int LeftEdgeOffset;
     int ButtonSpacingOffset;
 
-    StripClass(void) {}
+    StripClass() {}
     StripClass(InitClass const&);
 
     bool Add(RTTIType type, int ID);
@@ -178,13 +178,13 @@ class SidebarClass : public PowerClass {
     bool AI(KeyNumType& input, int x, int y);
     void Draw_It(bool complete);
     void One_Time(int id);
-    void Init_Clear(void);
+    void Init_Clear();
     void Init_IO(int id);
     void Init_Theater(TheaterType theater);
-    bool Recalc(void);
-    void Activate(void);
-    void Deactivate(void);
-    void Flag_To_Redraw(void);
+    bool Recalc();
+    void Activate();
+    void Deactivate();
+    void Flag_To_Redraw();
     bool Factory_Link(int factory, RTTIType type, int id);
     void const* Get_Special_Cameo(int type);
 
@@ -193,8 +193,8 @@ class SidebarClass : public PowerClass {
     */
     bool Load(FileClass& file);
     bool Save(FileClass& file);
-    void Code_Pointers(void);
-    void Decode_Pointers(void);
+    void Code_Pointers();
+    void Decode_Pointers();
 
     /*
     **	Working numbers used when rendering and processing the side strip.
@@ -374,9 +374,9 @@ class SidebarClass : public PowerClass {
 
   class SBGadgetClass : public GadgetClass {
    public:
-    //				SBGadgetClass(void) : GadgetClass(SIDE_X+8,
+    //				SBGadgetClass() : GadgetClass(SIDE_X+8,
     // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, LEFTUP) {};
-    SBGadgetClass(void) : GadgetClass(0, 0, 0, 0, LEFTUP) {};
+    SBGadgetClass() : GadgetClass(0, 0, 0, 0, LEFTUP) {};
 
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

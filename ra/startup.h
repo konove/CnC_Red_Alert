@@ -3,6 +3,6 @@
 
 void Print_Error_End_Exit(char* string);
 void Emergency_Exit(int code);
-bool InitDDraw(void);
+bool InitDDraw();
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_H_

@@ -37,7 +37,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-void GDI_Ending(void) {
+void GDI_Ending() {
 #ifdef NEVER
   if (TempleIoned) {
     Play_Movie("GDIFINB");
@@ -67,7 +67,7 @@ void GDI_Ending(void) {
  *                                                                                             *
  * HISTORY: * 7/10/1995 BWG : Created. *
  *=============================================================================================*/
-void Nod_Ending(void) {
+void Nod_Ending() {
 #ifdef NEVER
   static char const _tanpal[] = {0x0,  0x0, 0xED, 0x0, 0x2C, 0x0, 0xFB, 0x0,
                                  0xFD, 0x0, 0x0,  0x0, 0x0,  0x0, 0x52, 0x0};

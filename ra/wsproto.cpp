@@ -108,7 +108,7 @@ static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
  *                                                                                             *
  * HISTORY: * 3/20/96 2:51PM ST : Created *
  *=============================================================================================*/
-WinsockInterfaceClass::WinsockInterfaceClass(void) {
+WinsockInterfaceClass::WinsockInterfaceClass() {
   WinsockInitialised = false;
   ASync = nullptr;
   Socket = INVALID_SOCKET;
@@ -127,7 +127,7 @@ WinsockInterfaceClass::WinsockInterfaceClass(void) {
  *                                                                                             *
  * HISTORY: * 3/20/96 2:52PM ST : Created *
  *=============================================================================================*/
-WinsockInterfaceClass::~WinsockInterfaceClass(void) { Close(); }
+WinsockInterfaceClass::~WinsockInterfaceClass() { Close(); }
 
 /***********************************************************************************************
  * WIC::Close -- Releases any currently in use Winsock resources. *
@@ -142,7 +142,7 @@ WinsockInterfaceClass::~WinsockInterfaceClass(void) { Close(); }
  *                                                                                             *
  * HISTORY: * 3/20/96 2:52PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Close(void) {
+void WinsockInterfaceClass::Close() {
   /*
   ** If we never initialised the class in the first place then just return
   */
@@ -181,7 +181,7 @@ void WinsockInterfaceClass::Close(void) {
  *                                                                                             *
  * HISTORY: * 8/5/97 11:53AM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Close_Socket(void) {
+void WinsockInterfaceClass::Close_Socket() {
   if (Socket != INVALID_SOCKET) {
     closesocket(Socket);
     Socket = INVALID_SOCKET;
@@ -202,7 +202,7 @@ void WinsockInterfaceClass::Close_Socket(void) {
  *                                                                                             *
  * HISTORY: * 8/5/97 11:54AM ST : Created *
  *=============================================================================================*/
-bool WinsockInterfaceClass::Start_Listening(void) {
+bool WinsockInterfaceClass::Start_Listening() {
 #ifdef PORTABLE
   return Socket_Register_Select(Socket, Socket_Event_Handler, this);
 #else
@@ -234,7 +234,7 @@ bool WinsockInterfaceClass::Start_Listening(void) {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:06PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Stop_Listening(void) {
+void WinsockInterfaceClass::Stop_Listening() {
 #ifdef PORTABLE
   Socket_Unregister_Select(Socket);
 #else
@@ -259,7 +259,7 @@ void WinsockInterfaceClass::Stop_Listening(void) {
  *                                                                                             *
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Discard_In_Buffers(void) {
+void WinsockInterfaceClass::Discard_In_Buffers() {
   WinsockBufferType* packet;
 
   while (InBuffers.Count()) {
@@ -283,7 +283,7 @@ void WinsockInterfaceClass::Discard_In_Buffers(void) {
  *                                                                                             *
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Discard_Out_Buffers(void) {
+void WinsockInterfaceClass::Discard_Out_Buffers() {
   WinsockBufferType* packet;
 
   while (OutBuffers.Count()) {
@@ -306,7 +306,7 @@ void WinsockInterfaceClass::Discard_Out_Buffers(void) {
  *                                                                                             *
  * HISTORY: * 3/20/96 2:54PM ST : Created *
  *=============================================================================================*/
-bool WinsockInterfaceClass::Init(void) {
+bool WinsockInterfaceClass::Init() {
   /*
   ** Just return true if we are already set up
   */
@@ -571,7 +571,7 @@ void WinsockInterfaceClass::Clear_Socket_Error(SOCKET socket) {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:07PM ST : Created *
  *=============================================================================================*/
-bool WinsockInterfaceClass::Set_Socket_Options(void) {
+bool WinsockInterfaceClass::Set_Socket_Options() {
   static int socket_transmit_buffer_size = SOCKET_BUFFER_SIZE;
   static int socket_receive_buffer_size = SOCKET_BUFFER_SIZE;
 

@@ -71,18 +71,18 @@ class TemplateClass : public ObjectClass {
   static void operator delete(void* ptr);
   TemplateClass(TemplateType type, CELL pos = -1);
   TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(x) {};
-  virtual ~TemplateClass(void) {
+  virtual ~TemplateClass() {
     if (GameActive) TemplateClass::Limbo();
     Class = nullptr;
   };
-  operator TemplateType(void) const { return Class->Type; };
+  operator TemplateType() const { return Class->Type; };
 
-  static void Init(void);
+  static void Init();
 
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of(void) const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
   int Icon_Number(CELL cell);
 
   /*

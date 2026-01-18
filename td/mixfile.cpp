@@ -51,7 +51,7 @@ bool MixFileClass::Free(char const* filename) {
   return (false);
 }
 
-void MixFileClass::Free_All(void) {
+void MixFileClass::Free_All() {
   while (First) {
     delete First;
   }
@@ -59,7 +59,7 @@ void MixFileClass::Free_All(void) {
 
 // Frees all allocated memory (filename, data, index buffer) and removes this
 // mixfile from the global linked list.
-MixFileClass::~MixFileClass(void) {
+MixFileClass::~MixFileClass() {
   // Deallocate any allocated memory.
   if (Filename) {
     free((char*)Filename);
@@ -194,7 +194,7 @@ bool MixFileClass::Cache(char const* filename) {
 // Allocates the Data buffer and reads the raw data section from disk.
 // Seeks past the FileHeader and SubBlock index to reach the data. Returns
 // immediately if already cached.
-bool MixFileClass::Cache(void) {
+bool MixFileClass::Cache() {
   if (Data) return (true);
 
   Data = new char[DataSize];
@@ -239,7 +239,7 @@ bool MixFileClass::Cache(void) {
 
 // Frees only the raw data buffer, keeping the SubBlock index. This allows
 // re-caching later without re-reading the index from disk.
-void MixFileClass::Free(void) {
+void MixFileClass::Free() {
   if (Data) {
     delete[] static_cast<char*>(Data);
     Data = nullptr;

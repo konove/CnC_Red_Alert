@@ -135,7 +135,7 @@ SequencedConnClass::~SequencedConnClass() { delete Queue; }
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void SequencedConnClass::Init(void) { Queue->Init(); } /* end of Init */
+void SequencedConnClass::Init() { Queue->Init(); } /* end of Init */
 
 /***************************************************************************
  * SequencedConnClass::Send_Packet -- adds a packet to the send queue *
@@ -406,7 +406,7 @@ int SequencedConnClass::Get_Packet(void* buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int SequencedConnClass::Service_Send_Queue(void) {
+int SequencedConnClass::Service_Send_Queue() {
   SendQueueType* send_entry;   // ptr to send queue entry
   CommHeaderType* packet_hdr;  // packet header
   unsigned long curtime;       // current time
@@ -515,7 +515,7 @@ int SequencedConnClass::Service_Send_Queue(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int SequencedConnClass::Service_Receive_Queue(void) {
+int SequencedConnClass::Service_Receive_Queue() {
   CommHeaderType ackpacket;     // ACK packet to send
   ReceiveQueueType* rec_entry;  // ptr to receive entry header
   CommHeaderType* packet_hdr;   // packet header

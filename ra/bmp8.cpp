@@ -132,7 +132,7 @@ bool BMP8::Init(const char* szFile, HWND hWnd) {
   return true;
 }
 
-bit8 BMP8::drawBmp(void) {
+bit8 BMP8::drawBmp() {
   // Paint the window (and draw the bitmap).
 
   PAINTSTRUCT ps;

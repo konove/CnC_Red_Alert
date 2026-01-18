@@ -109,7 +109,7 @@ unsigned ProfilePtr;
 }
 
 extern "C" void Old_Profiler_Callback(UINT, UINT, DWORD, DWORD, DWORD);
-extern "C" void New_Profiler_Callback(void);
+extern "C" void New_Profiler_Callback();
 extern "C" {
 extern unsigned ProfileFunctionAddress;
 }
@@ -161,7 +161,7 @@ void CALLBACK Thread_Callback(UINT, UINT, DWORD, DWORD, DWORD) {
  *                                                                                             *
  * HISTORY: * 1/2/96 6:39AM ST : Created *
  *=============================================================================================*/
-void Profile_Thread(void) {
+void Profile_Thread() {
   MSG msg;
   ProfilerEvent =
       timeSetEvent(1000 / PROFILE_RATE, 1, Thread_Callback, 0, TIME_PERIODIC);
@@ -189,7 +189,7 @@ void Profile_Thread(void) {
  * HISTORY: * 11/20/95 5:12PM ST : Created *
  *=============================================================================================*/
 
-void __cdecl Start_Profiler(void) {
+void __cdecl Start_Profiler() {
 #ifdef PROFILE
   if (!ProfilerEvent) {
     memset(&ProfileList[0], -1, PROFILE_RATE * MAX_PROFILE_TIME * 4);
@@ -244,7 +244,7 @@ void __cdecl Start_Profiler(void) {
  * HISTORY: * 11/20/95 5:13PM ST : Created *
  *=============================================================================================*/
 
-void __cdecl Stop_Profiler(void) {
+void __cdecl Stop_Profiler() {
   if (ProfilerEvent) {
 #if (PROFILE_SYSTEM == OLD_PROFILE_SYSTEM)
     //

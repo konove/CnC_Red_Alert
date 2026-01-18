@@ -120,9 +120,9 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Constructor/Destructor
   */
-  TeamTypeClass(void);
+  TeamTypeClass();
   TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x), Trigger(x) {};
-  virtual ~TeamTypeClass(void) {};
+  virtual ~TeamTypeClass() {};
 
   static void* operator new(size_t);
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
@@ -131,7 +131,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Initialization: clears all team types in preparation for new scenario
   */
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O routines
@@ -140,11 +140,11 @@ class TeamTypeClass : public AbstractTypeClass {
   static void Read_INI(CCINIClass& ini);
   void Fill_In(char* name, char* entry);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name(void) { return "TeamTypes"; };
+  static char const* INI_Name() { return "TeamTypes"; };
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
@@ -154,8 +154,8 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Processing routines
   */
-  TeamClass* Create_One_Of(void) const;
-  void Destroy_All_Of(void) const;
+  TeamClass* Create_One_Of() const;
+  void Destroy_All_Of() const;
   void Detach(TARGET target, bool all = true);
 
   /*
@@ -169,11 +169,11 @@ class TeamTypeClass : public AbstractTypeClass {
                                                  long utypes, long itypes,
                                                  long vtypes, bool alerted);
   static TeamTypeClass* From_Name(char const* name);
-  bool Edit(void);
+  bool Edit();
 #if defined(CHEAT_KEYS) || defined(SCENARIO_EDITOR)
-  char const* Member_Description(void) const;
-  char const* Description(void) const;
-  operator const char*(void) const { return (Description()); };
+  char const* Member_Description() const;
+  char const* Description() const;
+  operator const char*() const { return (Description()); };
 #endif
 
   /*

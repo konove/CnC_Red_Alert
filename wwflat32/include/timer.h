@@ -60,21 +60,21 @@ class TimerClass {
   TimerClass(BaseTimerEnum timer = BT_SYSTEM, BOOL start = FALSE);
 
   // No destructor.
-  ~TimerClass(void) {}
+  ~TimerClass() {}
 
   //
   long Set(long value, BOOL start = TRUE);  // Set initial timer value.
-  long Stop(void);                          // Pause timer.
-  long Start(void);                         // Resume timer.
+  long Stop();                              // Pause timer.
+  long Start();                             // Resume timer.
   long Reset(BOOL start = TRUE);            // Reset timer to zero.
-  long Time(void);                          // Fetch current timer value.
+  long Time();                              // Fetch current timer value.
 
  protected:
   long Started;      // Time last started (0 == not paused).
   long Accumulated;  //	Total accumulated ticks.
 
  private:
-  long (*Get_Ticks)(void);  // System timer fetch.
+  long (*Get_Ticks)();  // System timer fetch.
 };
 
 inline long TimerClass::Reset(BOOL start) { return (Set(0, start)); }
@@ -88,25 +88,25 @@ class CountDownTimerClass : private TimerClass {
   CountDownTimerClass(BaseTimerEnum timer = BT_SYSTEM, int on = FALSE);
 
   // No destructor.
-  ~CountDownTimerClass(void) {}
+  ~CountDownTimerClass() {}
 
   // Public functions
   long Set(long set, BOOL start = TRUE);  // Set count down value.
   long Reset(BOOL start = TRUE);          // Reset timer to zero.
-  long Stop(void);                        // Pause timer.
-  long Start(void);                       // Resume timer.
-  long Time(void);                        // Fetch current count down value.
+  long Stop();                            // Pause timer.
+  long Start();                           // Resume timer.
+  long Time();                            // Fetch current count down value.
 
  protected:
   long DelayTime;  // Ticks remaining before countdown timer expires.
 };
 
-inline long CountDownTimerClass::Stop(void) {
+inline long CountDownTimerClass::Stop() {
   TimerClass::Stop();
   return (Time());
 }
 
-inline long CountDownTimerClass::Start(void) {
+inline long CountDownTimerClass::Start() {
   TimerClass::Start();
   return (Time());
 }
@@ -127,12 +127,12 @@ extern CountDownTimerClass CountDown;
 /////////////////////////////////////////////
 
 extern "C" {
-long Get_System_Tick_Count(void);
-long Get_User_Tick_Count(void);
-void far Timer_Interrupt_Func(void);
+long Get_System_Tick_Count();
+long Get_User_Tick_Count();
+void far Timer_Interrupt_Func();
 //	long Get_Num_Interrupts(unsigned int realmode);
-void Disable_Timer_Interrupt(void);
-void Enable_Timer_Interrupt(void);
+void Disable_Timer_Interrupt();
+void Enable_Timer_Interrupt();
 }
 
 /*=========================================================================*/
@@ -140,6 +140,6 @@ void Enable_Timer_Interrupt(void);
  */
 /*=========================================================================*/
 BOOL Init_Timer_System(unsigned int freq, int partial = FALSE);
-BOOL Remove_Timer_System(VOID);
+BOOL Remove_Timer_System();
 
 #endif  // TIMER_H

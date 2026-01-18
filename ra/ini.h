@@ -59,8 +59,8 @@
 */
 class INIClass {
  public:
-  INIClass(void) {}
-  ~INIClass(void);
+  INIClass() {}
+  ~INIClass();
 
   /*
   **	Fetch and store INI data.
@@ -76,8 +76,8 @@ class INIClass {
   bool Clear(char const* section = nullptr, char const* entry = nullptr);
 
   int Line_Count(char const* section) const;
-  bool Is_Loaded(void) const { return (!SectionList.Is_Empty()); }
-  int Size(void) const;
+  bool Is_Loaded() const { return (!SectionList.Is_Empty()); }
+  int Size() const;
   bool Is_Present(char const* section, char const* entry = nullptr) const {
     if (entry == nullptr) return (Find_Section(section) != nullptr);
     return (Find_Entry(section, entry) != nullptr);
@@ -87,7 +87,7 @@ class INIClass {
   **	Fetch the number of sections in the INI file or verify if a specific
   **	section is present.
   */
-  int Section_Count(void) const;
+  int Section_Count() const;
   bool Section_Present(char const* section) const {
     return (Find_Section(section) != nullptr);
   }
@@ -136,13 +136,13 @@ class INIClass {
   struct INIEntry : Node<INIEntry> {
     INIEntry(char* entry = nullptr, char* value = nullptr)
         : Entry(entry), Value(value) {}
-    ~INIEntry(void) {
+    ~INIEntry() {
       free(Entry);
       Entry = nullptr;
       free(Value);
       Value = nullptr;
     }
-    int Index_ID(void) const { return CrcEngine::Compute(Entry); };
+    int Index_ID() const { return CrcEngine::Compute(Entry); };
 
     char* Entry;
     char* Value;
@@ -154,13 +154,13 @@ class INIClass {
   */
   struct INISection : Node<INISection> {
     INISection(char* section) : Section(section) {}
-    ~INISection(void) {
+    ~INISection() {
       free(Section);
       Section = nullptr;
       EntryList.Delete();
     }
     INIEntry* Find_Entry(char const* entry) const;
-    int Index_ID(void) const { return CrcEngine::Compute(Section); };
+    int Index_ID() const { return CrcEngine::Compute(Section); };
 
     char* Section;
     List<INIEntry> EntryList;
@@ -185,6 +185,6 @@ class INIClass {
 void Write_Scenario_INI(char* root);
 bool Read_Scenario_INI(char* root, bool fresh = true);
 int Scan_Place_Object(ObjectClass* obj, CELL cell);
-void Assign_Houses(void);
+void Assign_Houses();
 
 #endif

@@ -22,7 +22,7 @@ WWKeyboardClass::WWKeyboardClass() : MouseQX(0), MouseQY(0), Head(0), Tail(0) {
   memset(Buffer, 0, 256);
 }
 
-bool WWKeyboardClass::Check(void) {
+bool WWKeyboardClass::Check() {
   // poll for events, return key if any pressed
   SDL_Event_Loop();
 
@@ -31,7 +31,7 @@ bool WWKeyboardClass::Check(void) {
   return Buffer[Head];
 }
 
-int WWKeyboardClass::Get(void) {
+int WWKeyboardClass::Get() {
   while (!Check()) {
   }  // wait for key in buffer
   return Buff_Get();
@@ -89,7 +89,7 @@ int WWKeyboardClass::To_ASCII(int num) {
   return 0;
 }
 
-void WWKeyboardClass::Clear(void) { Head = Tail; }
+void WWKeyboardClass::Clear() { Head = Tail; }
 
 int WWKeyboardClass::Down(int key) {
   // gadget uses this to poll mouse buttons
@@ -162,7 +162,7 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
   return false;
 }
 
-int WWKeyboardClass::Buff_Get(void) {
+int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
   int temp = Buffer[Head];               // get key out of the buffer

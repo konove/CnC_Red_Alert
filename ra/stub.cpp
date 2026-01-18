@@ -19,4 +19,4 @@
 #include <cstdio>
 #include <cstdlib>
 
-void main(void) { printf("Run C&C.COM.\n"); }
+void main() { printf("Run C&C.COM.\n"); }

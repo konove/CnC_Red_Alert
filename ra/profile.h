@@ -13,7 +13,7 @@ char* WWGetPrivateProfileString(char const* section, char const* entry,
 unsigned WWGetPrivateProfileHex(char const* section, char const* entry,
                                 char* profile);
 
-char* Read_Bin_Buffer(void);
+char* Read_Bin_Buffer();
 bool Read_Bin_Init(char* buffer, int length);
 int Read_Bin_Length(char* buffer);
 bool Read_Bin_Num(void* num, int length, char* buffer);
@@ -21,7 +21,7 @@ int Read_Bin_Pos(char* buffer);
 int Read_Bin_PosSet(unsigned int pos, char* buffer);
 bool Read_Bin_String(char* string, char* buffer);
 
-char* Write_Bin_Buffer(void);
+char* Write_Bin_Buffer();
 bool Write_Bin_Init(char* buffer, int length);
 int Write_Bin_Length(char* buffer);
 bool Write_Bin_Num(void* num, int length, char* buffer);

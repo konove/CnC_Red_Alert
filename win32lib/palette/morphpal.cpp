@@ -80,10 +80,10 @@ PRIVATE int __cdecl Palette_To_Palette(void* src_palette, void* dst_palette,
  *   05/02/1994 BR : Created.                                              *
  *=========================================================================*/
 void cdecl Morph_Palette(void* src_pal, void* dst_pal, unsigned int delay,
-                         void (*callback)(void)) {
+                         void (*callback)()) {
   int result;
   unsigned long pal_start = TickCount.Time();
-  extern void (*cb_ptr)(void);  // callback function pointer
+  extern void (*cb_ptr)();  // callback function pointer
 
   //	(void *)cb_ptr = callback;
   cb_ptr = callback;

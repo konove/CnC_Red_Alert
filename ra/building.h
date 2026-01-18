@@ -234,49 +234,49 @@ class BuildingClass : public TechnoClass {
   BuildingClass(NoInitClass const &x)
       : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {
         };
-  virtual ~BuildingClass(void);
-  operator StructType(void) const { return Class->Type; };
+  virtual ~BuildingClass();
+  operator StructType() const { return Class->Type; };
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
-  TARGET Target_Scan(void);
-  BuildingTypeClass::AnimControlType const *Fetch_Anim_Control(void) {
+  TARGET Target_Scan();
+  BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
     return (&Class->Anims[BState]);
   };
 
   /*
   **	Query functions.
   */
-  virtual int Value(void) const;
-  virtual void const *Get_Image_Data(void) const;
-  virtual int How_Many_Survivors(void) const;
-  virtual DirType Turret_Facing(void) const;
+  virtual int Value() const;
+  virtual void const *Get_Image_Data() const;
+  virtual int How_Many_Survivors() const;
+  virtual DirType Turret_Facing() const;
   virtual CELL Find_Exit_Cell(TechnoClass const *techno) const;
-  virtual InfantryType Crew_Type(void) const;
-  virtual int Pip_Count(void) const;
-  virtual bool Can_Player_Move(void) const;
+  virtual InfantryType Crew_Type() const;
+  virtual int Pip_Count() const;
+  virtual bool Can_Player_Move() const;
   virtual ActionType What_Action(ObjectClass const *target) const;
   virtual ActionType What_Action(CELL cell) const;
-  virtual bool Can_Demolish(void) const;
-  virtual ObjectTypeClass const &Class_Of(void) const { return *Class; };
-  virtual DirType Fire_Direction(void) const;
+  virtual bool Can_Demolish() const;
+  virtual ObjectTypeClass const &Class_Of() const { return *Class; };
+  virtual DirType Fire_Direction() const;
   virtual short const *Overlap_List(bool redraw = false) const;
-  int Shape_Number(void) const;
-  int Power_Output(void) const;
+  int Shape_Number() const;
+  int Power_Output() const;
   CELL Check_Point(CheckPointType cp) const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Target_Coord(void) const;
-  virtual COORDINATE Docking_Coord(void) const;
-  virtual COORDINATE Center_Coord(void) const;
-  virtual COORDINATE Sort_Y(void) const;
-  virtual COORDINATE Exit_Coord(void) const;
+  virtual COORDINATE Target_Coord() const;
+  virtual COORDINATE Docking_Coord() const;
+  virtual COORDINATE Center_Coord() const;
+  virtual COORDINATE Sort_Y() const;
+  virtual COORDINATE Exit_Coord() const;
 
   /*
   **	Object entry and exit from the game system.
@@ -284,20 +284,20 @@ class BuildingClass : public TechnoClass {
   virtual void Detach(TARGET target, bool all);
   virtual void Detach_All(bool all = true);
   virtual void Grand_Opening(bool captured = false);
-  virtual void Update_Buildables(void);
+  virtual void Update_Buildables();
   virtual MoveType Can_Enter_Cell(CELL cell, FacingType = FACING_NONE) const;
   virtual bool Unlimbo(COORDINATE, DirType dir = DIR_N);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table(void);
+  virtual void const *Remap_Table();
   virtual int Exit_Object(TechnoClass *base);
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual void Fire_Out(void);
+  virtual void Fire_Out();
   void Begin_Mode(BStateType bstate);
 
   /*
@@ -316,37 +316,37 @@ class BuildingClass : public TechnoClass {
                                  TechnoClass *source = nullptr,
                                  bool forced = false);
   virtual bool Captured(HouseClass *newowner);
-  void Update_Radar_Spied(void);
+  void Update_Radar_Spied();
 
   /*
   **	AI.
   */
-  void Charging_AI(void);
-  void Rotation_AI(void);
-  void Factory_AI(void);
-  void Repair_AI(void);
-  void Animation_AI(void);
+  void Charging_AI();
+  void Rotation_AI();
+  void Factory_AI();
+  void Repair_AI();
+  void Animation_AI();
   virtual bool Revealed(HouseClass *house);
   virtual void Repair(int control);
   virtual void Sell_Back(int control);
   virtual RadioMessageType Receive_Message(RadioClass *from,
                                            RadioMessageType message,
                                            long &param);
-  virtual void AI(void);
+  virtual void AI();
   virtual void Assign_Target(TARGET target);
-  virtual bool Toggle_Primary(void);
+  virtual bool Toggle_Primary();
   bool Flush_For_Placement(TechnoClass *techno, CELL cell);
 
-  virtual int Mission_Unload(void);
-  virtual int Mission_Repair(void);
-  virtual int Mission_Attack(void);
-  virtual int Mission_Harvest(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Construction(void);
-  virtual int Mission_Deconstruction(void);
-  virtual int Mission_Missile(void);
+  virtual int Mission_Unload();
+  virtual int Mission_Repair();
+  virtual int Mission_Attack();
+  virtual int Mission_Harvest();
+  virtual int Mission_Guard();
+  virtual int Mission_Construction();
+  virtual int Mission_Deconstruction();
+  virtual int Mission_Missile();
   virtual void Enter_Idle_Mode(bool initial = false);
-  void Remove_Gap_Effect(void);
+  void Remove_Gap_Effect();
 
 /*
 **	Scenario and debug support.
@@ -360,7 +360,7 @@ class BuildingClass : public TechnoClass {
   */
   static void Read_INI(CCINIClass &ini);
   static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name(void) { return "STRUCTURES"; };
+  static char const *INI_Name() { return "STRUCTURES"; };
   bool Load(Straw &file);
   bool Save(Pipe &file) const;
 

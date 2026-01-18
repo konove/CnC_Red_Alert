@@ -58,7 +58,7 @@ class FlyClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FlyClass(void) {
+  FlyClass() {
     SpeedAdd = MPH_IMMOBILE;
     SpeedAccum = 0;
   };
@@ -69,13 +69,13 @@ class FlyClass {
   */
   void Fly_Speed(int speed, MPHType maximum);
   ImpactType Physics(COORDINATE& coord, DirType facing);
-  MPHType Get_Speed(void) const { return (SpeedAdd); };
+  MPHType Get_Speed() const { return (SpeedAdd); };
 
   /*
   **	File I/O.
   */
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
  private:
   /*

@@ -472,7 +472,7 @@ EventClass::EventClass(EventType type, void* ptr, unsigned long size) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-void EventClass::Execute(void) {
+void EventClass::Execute() {
   TechnoClass* techno;
   AnimClass* anim = nullptr;
   HouseClass* house = nullptr;

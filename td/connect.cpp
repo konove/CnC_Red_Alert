@@ -165,7 +165,7 @@ ConnectionClass::~ConnectionClass() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int ConnectionClass::Service(void) {
+int ConnectionClass::Service() {
   /*------------------------------------------------------------------------
   Service the Send Queue.  This [re]sends packets in the Send Queue which
   haven't been ACK'd yet, and if their retry timeout has expired, and
@@ -210,7 +210,7 @@ int ConnectionClass::Service(void) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-unsigned long ConnectionClass::Time(void) {
+unsigned long ConnectionClass::Time() {
 #ifdef WWLIB32_H
   return (TickCount.Time());  // Westwood Library time
 #else

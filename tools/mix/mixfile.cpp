@@ -71,12 +71,12 @@ class DataClass {
   static int AltPathCount;
 
   DataClass(char const* filename);
-  ~DataClass(void);
+  ~DataClass();
   static void Process_Input(char const* infile, int quiet, int paths);
   static void Process_Output(char const* outfile);
 
-  char const* Output_Filename(void);
-  char const* Input_Filename(void);
+  char const* Output_Filename();
+  char const* Input_Filename();
 
  private:
   DataClass* Next;  // Pointer to next file in chain.
@@ -406,7 +406,7 @@ DataClass::DataClass(char const* filename) {
  *                                                                                             *
  * HISTORY: * 08/06/1994 JLB : Created. *
  *=============================================================================================*/
-DataClass::~DataClass(void) {
+DataClass::~DataClass() {
   if (Filename) {
     free(Filename);
     Filename = 0;
@@ -625,7 +625,7 @@ long Calc_CRC(void const* data, long size) {
   return (crc);
 }
 
-char const* DataClass::Output_Filename(void) {
+char const* DataClass::Output_Filename() {
   char file[MAXFILE];
   char ext[MAXEXT];
   char path[MAXPATH];
@@ -658,4 +658,4 @@ char const* DataClass::Output_Filename(void) {
   return (&filename[0]);
 }
 
-char const* DataClass::Input_Filename(void) { return (Filename); }
+char const* DataClass::Input_Filename() { return (Filename); }

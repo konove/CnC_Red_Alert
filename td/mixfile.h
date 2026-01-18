@@ -38,7 +38,7 @@ class MixFileClass : public LinkClass {
  public:
   char const* Filename;  // Filename of mixfile.
 
-  ~MixFileClass(void);
+  ~MixFileClass();
 
   // Creates and registers a mixfile. Returns existing instance if already
   // registered, or nullptr on failure.
@@ -51,13 +51,13 @@ class MixFileClass : public LinkClass {
   static bool Free(char const* filename);
 
   // Frees all registered mixfiles.
-  static void Free_All(void);
+  static void Free_All();
 
   // Frees this mixfile's cached data. Keeps index for re-caching.
-  void Free(void);
+  void Free();
 
   // Loads this mixfile's raw data into RAM. Returns true on success.
-  bool Cache(void);
+  bool Cache();
 
   // Loads the named mixfile's raw data into RAM. Returns true on success.
   static bool Cache(char const* filename);

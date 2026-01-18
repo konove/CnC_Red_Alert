@@ -118,7 +118,7 @@ TargetClass::TargetClass(CellClass const* ptr) {
   }
 }
 
-CellClass* xTargetClass::As_Cell(void) const {
+CellClass* xTargetClass::As_Cell() const {
   if (Target.Sub.Exponent == RTTI_CELL) {
     return (&Map[(CELL)Target.Sub.Mantissa]);
   }
@@ -583,7 +583,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
  *                                                                                             *
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
-AbstractClass* xTargetClass::As_Abstract(void) const {
+AbstractClass* xTargetClass::As_Abstract() const {
   switch ((RTTIType) * this) {
     case RTTI_TEAM:
       return (Teams.Raw_Ptr(Value()));
@@ -624,7 +624,7 @@ AbstractClass* xTargetClass::As_Abstract(void) const {
   return (nullptr);
 }
 
-AbstractTypeClass* xTargetClass::As_TypeClass(void) const {
+AbstractTypeClass* xTargetClass::As_TypeClass() const {
   switch ((RTTIType) * this) {
     case RTTI_TEAMTYPE:
       return (TeamTypes.Raw_Ptr(Value()));
@@ -692,7 +692,7 @@ AbstractTypeClass* xTargetClass::As_TypeClass(void) const {
  *                                                                                             *
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
-TechnoClass* xTargetClass::As_Techno(void) const {
+TechnoClass* xTargetClass::As_Techno() const {
   switch ((RTTIType) * this) {
     case RTTI_UNIT:
       return (Units.Raw_Ptr(Value()));
@@ -715,7 +715,7 @@ TechnoClass* xTargetClass::As_Techno(void) const {
   return (nullptr);
 }
 
-ObjectClass* xTargetClass::As_Object(void) const {
+ObjectClass* xTargetClass::As_Object() const {
   switch ((RTTIType) * this) {
     case RTTI_TERRAIN:
       return (Terrains.Raw_Ptr(Value()));

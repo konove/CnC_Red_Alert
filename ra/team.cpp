@@ -268,7 +268,7 @@ void TeamClass::Debug_Dump(MonoClass* mono) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Init(void) { Teams.Free_All(); }
+void TeamClass::Init() { Teams.Free_All(); }
 
 /***********************************************************************************************
  * TeamClass::operator new -- Allocates a team object. *
@@ -327,7 +327,7 @@ void TeamClass::operator delete(void* ptr) {
  * HISTORY: * 09/21/1995 JLB : Created. * 07/04/1996 JLB : Keeps trigger if
  *trigger still attached to objects.                      *
  *=============================================================================================*/
-TeamClass::~TeamClass(void) {
+TeamClass::~TeamClass() {
   if (GameActive && Class.Is_Valid()) {
     while (Member != NULL) {
       Remove(Member);
@@ -497,7 +497,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
  * HISTORY: * 12/29/1994 JLB : Created. * 01/06/1995 JLB : Choreographed
  *gesture.                                                   *
  *=============================================================================================*/
-void TeamClass::AI(void) {
+void TeamClass::AI() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -1671,7 +1671,7 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Attack(void) {
+void TeamClass::Coordinate_Attack() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -1771,7 +1771,7 @@ void TeamClass::Coordinate_Attack(void) {
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Coordinate_Regroup(void) {
+bool TeamClass::Coordinate_Regroup() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -1837,7 +1837,7 @@ bool TeamClass::Coordinate_Regroup(void) {
  *                                                                                             *
  * HISTORY: * 05/11/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Do(void) {
+void TeamClass::Coordinate_Do() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -1896,7 +1896,7 @@ void TeamClass::Coordinate_Do(void) {
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Move(void) {
+void TeamClass::Coordinate_Move() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -2052,7 +2052,7 @@ void TeamClass::Coordinate_Move(void) {
  *                                                                                             *
  * HISTORY: * 08/01/1995 PWG : Created. * 04/11/1996 JLB : Modified. *
  *=============================================================================================*/
-bool TeamClass::Lagging_Units(void) {
+bool TeamClass::Lagging_Units() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -2131,7 +2131,7 @@ bool TeamClass::Lagging_Units(void) {
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Unload(void) {
+int TeamClass::TMission_Unload() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -2210,7 +2210,7 @@ int TeamClass::TMission_Unload(void) {
  *                                                                                             *
  * HISTORY: * 06/28/1996 BWG : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Load(void) {
+int TeamClass::TMission_Load() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -2393,7 +2393,7 @@ void TeamClass::Suspend_Teams(int priority, HouseClass const* house) {
  *                                                                                             *
  * HISTORY: * 04/30/1996 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Is_Leaving_Map(void) const {
+bool TeamClass::Is_Leaving_Map() const {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -2426,7 +2426,7 @@ bool TeamClass::Is_Leaving_Map(void) const {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Has_Entered_Map(void) const {
+bool TeamClass::Has_Entered_Map() const {
   bool ok = true;
   FootClass* foot = Member;
   while (foot != nullptr) {
@@ -2459,7 +2459,7 @@ bool TeamClass::Has_Entered_Map(void) const {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Scan_Limit(void) {
+void TeamClass::Scan_Limit() {
   Assign_Mission_Target(TARGET_NONE);
   FootClass* foot = Member;
   while (foot != nullptr) {
@@ -2488,7 +2488,7 @@ void TeamClass::Scan_Limit(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Formation(void) {
+int TeamClass::TMission_Formation() {
   FootClass* member = Member;
   TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
   Formation = mission->Data.Formation;
@@ -2691,7 +2691,7 @@ int TeamClass::TMission_Formation(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Attack(void) {
+int TeamClass::TMission_Attack() {
   if (!Target_Legal(MissionTarget) && Member != NULL) {
     TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
 
@@ -2772,7 +2772,7 @@ int TeamClass::TMission_Attack(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Spy(void) {
+int TeamClass::TMission_Spy() {
   if (Is_Target_Cell(MissionTarget)) {
     CELL cell = ::As_Cell(MissionTarget);
     CellClass* cellptr = &Map[cell];
@@ -2824,7 +2824,7 @@ int TeamClass::TMission_Spy(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Follow(void) {
+int TeamClass::TMission_Follow() {
   Calc_Center(Zone, ClosestMember);
   Target = Zone;
   Coordinate_Move();
@@ -2848,7 +2848,7 @@ int TeamClass::TMission_Follow(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Loop(void) {
+int TeamClass::TMission_Loop() {
   TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
   CurrentMission = mission->Data.Value - 1;
   IsNextMission = true;
@@ -2871,7 +2871,7 @@ int TeamClass::TMission_Loop(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Invulnerable(void) {
+int TeamClass::TMission_Invulnerable() {
   FootClass* foot = Member;
   while (foot != nullptr) {
     foot->IronCurtainCountDown = Rule.IronCurtainDuration * TICKS_PER_MINUTE;
@@ -2898,7 +2898,7 @@ int TeamClass::TMission_Invulnerable(void) {
  *                                                                                             *
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Set_Global(void) {
+int TeamClass::TMission_Set_Global() {
   TeamMissionClass const* mission = &Class->MissionList[CurrentMission];
   Scen.Set_Global_To(mission->Data.Value, true);
   IsNextMission = true;
@@ -2923,7 +2923,7 @@ int TeamClass::TMission_Set_Global(void) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-int TeamClass::TMission_Patrol(void) {
+int TeamClass::TMission_Patrol() {
   /*
   **	Reassign the movement destination if the target has been prematurely
   **	cleared (probably because the object has been destroyed).
@@ -2963,7 +2963,7 @@ int TeamClass::TMission_Patrol(void) {
   return (1);
 }
 
-int TeamClass::TMission_Deploy(void) {
+int TeamClass::TMission_Deploy() {
   assert(IsActive);
   assert(Teams.ID(this) == ID);
 
@@ -3026,7 +3026,7 @@ int TeamClass::TMission_Deploy(void) {
  *                                                                                             *
  * HISTORY: * 08/27/1996 JLB : Created. *
  *=============================================================================================*/
-FootClass* TeamClass::Fetch_A_Leader(void) const {
+FootClass* TeamClass::Fetch_A_Leader() const {
   FootClass* leader = Member;
 
   /*

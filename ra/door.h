@@ -72,20 +72,20 @@ class DoorClass {
   unsigned IsToRedraw : 1;
 
  public:
-  DoorClass(void);
+  DoorClass();
   DoorClass(NoInitClass const& x) : Control(x) {};
 
-  bool Time_To_Redraw(void) { return (IsToRedraw); };
-  void Clear_Redraw_Flag(void) { IsToRedraw = false; };
-  void AI(void);
-  int Door_Stage(void) const;
-  bool Is_Door_Opening(void) const { return (State == IS_OPENING); };
-  bool Is_Door_Closing(void) const { return (State == IS_CLOSING); };
+  bool Time_To_Redraw() { return (IsToRedraw); };
+  void Clear_Redraw_Flag() { IsToRedraw = false; };
+  void AI();
+  int Door_Stage() const;
+  bool Is_Door_Opening() const { return (State == IS_OPENING); };
+  bool Is_Door_Closing() const { return (State == IS_CLOSING); };
   bool Open_Door(int rate, int stages);
   bool Close_Door(int rate, int stages);
-  bool Is_Door_Open(void) const { return (State == IS_OPEN); };
-  bool Is_Door_Closed(void) const { return (State == IS_CLOSED); };
-  bool Is_Ready_To_Open(void) const;
+  bool Is_Door_Open() const { return (State == IS_OPEN); };
+  bool Is_Door_Closed() const { return (State == IS_CLOSED); };
+  bool Is_Ready_To_Open() const;
 };
 
 #endif

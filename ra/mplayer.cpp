@@ -86,7 +86,7 @@ extern bool Is_Mission_Counterstrike(char* file_name);
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-GameType Select_MPlayer_Game(void) {
+GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -540,7 +540,7 @@ void Clear_Vector(DynamicVectorClass<NodeNameType*>* vector) {
  * HISTORY:                                                                *
  *   06/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Computer_Message(void) {
+void Computer_Message() {
 #ifdef NEVER
   int color;
   HousesType house;
@@ -890,7 +890,7 @@ int Surrender_Dialog(const char* text) {
  * HISTORY:                                                                *
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Abort_Dialog(void) {
+int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Dialog & button dimensions
   //------------------------------------------------------------------------
@@ -1087,7 +1087,7 @@ int Abort_Dialog(void) {
  * HISTORY:                                                                *
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
-int Read_TEN_Game_Options(void) {
+int Read_TEN_Game_Options() {
   INIClass ini;
   if (!ini.Load(RawFileClass(Session.OptionsFile))) {
     return (0);
@@ -1183,7 +1183,7 @@ int Read_TEN_Game_Options(void) {
  * HISTORY:                                                                *
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
-int Read_MPATH_Game_Options(void) {
+int Read_MPATH_Game_Options() {
   INIClass ini;
   if (!ini.Load(RawFileClass(Session.OptionsFile))) {
     return (0);

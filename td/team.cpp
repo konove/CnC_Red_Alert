@@ -114,7 +114,7 @@ void* TeamClass::VTable;
  * HISTORY: * 08/09/1995 BRR : Created. *
  *=============================================================================================*/
 #ifdef CHEAT_KEYS
-int TeamClass::Validate(void) const {
+int TeamClass::Validate() const {
   int num;
 
   num = Teams.ID(this);
@@ -142,7 +142,7 @@ int TeamClass::Validate(void) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Init(void) {
+void TeamClass::Init() {
   TeamClass* ptr;
 
   Teams.Free_All();
@@ -169,7 +169,7 @@ void TeamClass::operator delete(void* ptr) {
   Teams.Free((TeamClass*)ptr);
 }
 
-TeamClass::~TeamClass(void) {
+TeamClass::~TeamClass() {
   if (GameActive && Class) {
     Number[TeamTypes.ID(Class)]--;
     while (Member) {
@@ -286,7 +286,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
  * HISTORY: * 12/29/1994 JLB : Created. * 01/06/1995 JLB : Choreographed
  *gesture.                                                   *
  *=============================================================================================*/
-void TeamClass::AI(void) {
+void TeamClass::AI() {
   Validate();
   int desired = 0;
   int old_under = IsUnderStrength;
@@ -992,7 +992,7 @@ void TeamClass::Detach(TARGET target, bool) {
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET TeamClass::As_Target(void) const {
+TARGET TeamClass::As_Target() const {
   Validate();
   return (Build_Target(KIND_TEAM, Teams.ID(this)));
 }
@@ -1115,7 +1115,7 @@ void TeamClass::Took_Damage(FootClass*, ResultType result,
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Attack(void) {
+void TeamClass::Coordinate_Attack() {
   Validate();
   if (!Target_Legal(Target)) {
     Target = MissionTarget;
@@ -1162,7 +1162,7 @@ void TeamClass::Coordinate_Attack(void) {
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-bool TeamClass::Coordinate_Regroup(void) {
+bool TeamClass::Coordinate_Regroup() {
   Validate();
   FootClass* unit = Member;
   bool retval = true;
@@ -1220,7 +1220,7 @@ bool TeamClass::Coordinate_Regroup(void) {
  *                                                                                             *
  * HISTORY: * 04/06/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Move(void) {
+void TeamClass::Coordinate_Move() {
   Validate();
   FootClass* unit = Member;
   bool finished = true;
@@ -1287,7 +1287,7 @@ void TeamClass::Coordinate_Move(void) {
  * HISTORY:                                                                *
  *   08/01/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool TeamClass::Lagging_Units(void) {
+bool TeamClass::Lagging_Units() {
   Validate();
   FootClass* unit = Member;
   bool lag = false;
@@ -1350,7 +1350,7 @@ bool TeamClass::Lagging_Units(void) {
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Coordinate_Unload(void) {
+void TeamClass::Coordinate_Unload() {
   Validate();
   FootClass* unit = Member;
   bool finished = true;

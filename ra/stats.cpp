@@ -199,7 +199,7 @@ extern bool bReconnectDialogCancelled;
  * HISTORY: * 5/29/96 12:38PM ST : Created *
  *=============================================================================================*/
 
-void Send_Statistics_Packet(void) {
+void Send_Statistics_Packet() {
 //	debugprint( "Stats: Send_Statistics_Packet() called.\n" );
 #ifndef INTERNET_OFF  // Denzil 5/4/98
 
@@ -913,12 +913,12 @@ void Send_Statistics_Packet(void) {
 #endif  // INTERNET_OFF
 }
 
-void Register_Game_Start_Time(void) {
+void Register_Game_Start_Time() {
   GameTimer.Set(0, true);
   GameTimerInUse = true;
 }
 
-extern void Register_Game_End_Time(void) {
+extern void Register_Game_End_Time() {
   GameEndTime = GameTimer.Time();
   GameTimerInUse = false;
 }

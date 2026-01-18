@@ -276,7 +276,7 @@ int NullModemConnClass::Compute_CRC(char* buf, int buflen) {
  * HISTORY:                                                                *
  *   04/20/1995 DRD : Created.                                             *
  *=========================================================================*/
-int NullModemConnClass::Packet_Overhead_Size(void) {
+int NullModemConnClass::Packet_Overhead_Size() {
   /*------------------------------------------------------------------------
   short for Null Modem Magic Number
   short for Null Modem length of packet

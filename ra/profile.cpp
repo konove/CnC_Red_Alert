@@ -679,7 +679,7 @@ bool WWWritePrivateProfileString(char const* section, char const* entry,
   return (true);
 }
 
-char* Read_Bin_Buffer(void) { return (ReadBinBuffer); }
+char* Read_Bin_Buffer() { return (ReadBinBuffer); }
 
 bool Read_Bin_Init(char* buffer, int length) {
   ReadBinBuffer = buffer;
@@ -757,7 +757,7 @@ bool Read_Bin_String(char* string, char* buffer) {
   }
 }
 
-char* Write_Bin_Buffer(void) { return (WriteBinBuffer); }
+char* Write_Bin_Buffer() { return (WriteBinBuffer); }
 
 bool Write_Bin_Init(char* buffer, int length) {
   WriteBinBuffer = buffer;

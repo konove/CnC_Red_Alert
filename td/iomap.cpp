@@ -111,7 +111,7 @@
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool CellClass::Should_Save(void) const {
+bool CellClass::Should_Save() const {
   return ((Smudge != SMUDGE_NONE) || (TType != TEMPLATE_NONE) ||
           (Overlay != OVERLAY_NONE) || IsMapped || IsVisible || IsTrigger ||
           Flag.Composite || OccupierPtr || Overlappers[0] || Overlappers[1] ||
@@ -200,7 +200,7 @@ bool CellClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void CellClass::Code_Pointers(void) {
+void CellClass::Code_Pointers() {
   if (Cell_Occupier()) {
     OccupierPtr = (ObjectClass*)OccupierPtr->As_Target();
   }
@@ -243,7 +243,7 @@ void CellClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void CellClass::Decode_Pointers(void) {
+void CellClass::Decode_Pointers() {
   if (OccupierPtr) {
     OccupierPtr = As_Object((TARGET)(uintptr_t)OccupierPtr);
     Check_Ptr((void*)OccupierPtr, __FILE__, __LINE__);
@@ -462,7 +462,7 @@ bool MouseClass::Save(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MouseClass::Code_Pointers(void) {
+void MouseClass::Code_Pointers() {
   //	Control.Code_Pointers();
 
   ScrollClass::Code_Pointers();
@@ -482,7 +482,7 @@ void MouseClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MouseClass::Decode_Pointers(void) {
+void MouseClass::Decode_Pointers() {
   //	Control.Decode_Pointers();
 
   ScrollClass::Decode_Pointers();
@@ -504,7 +504,7 @@ void MouseClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void ScrollClass::Code_Pointers(void) { HelpClass::Code_Pointers(); }
+void ScrollClass::Code_Pointers() { HelpClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * ScrollClass::Decode_Pointers -- decodes pointers for load/save *
@@ -520,7 +520,7 @@ void ScrollClass::Code_Pointers(void) { HelpClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void ScrollClass::Decode_Pointers(void) { HelpClass::Decode_Pointers(); }
+void ScrollClass::Decode_Pointers() { HelpClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * HelpClass::Code_Pointers -- codes class's pointers for load/save *
@@ -538,7 +538,7 @@ void ScrollClass::Decode_Pointers(void) { HelpClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void HelpClass::Code_Pointers(void) { TabClass::Code_Pointers(); }
+void HelpClass::Code_Pointers() { TabClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * HelpClass::Decode_Pointers -- decodes pointers for load/save *
@@ -554,7 +554,7 @@ void HelpClass::Code_Pointers(void) { TabClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void HelpClass::Decode_Pointers(void) { TabClass::Decode_Pointers(); }
+void HelpClass::Decode_Pointers() { TabClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * TabClass::Code_Pointers -- codes class's pointers for load/save *
@@ -572,7 +572,7 @@ void HelpClass::Decode_Pointers(void) { TabClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TabClass::Code_Pointers(void) { SidebarClass::Code_Pointers(); }
+void TabClass::Code_Pointers() { SidebarClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * TabClass::Decode_Pointers -- decodes pointers for load/save *
@@ -588,7 +588,7 @@ void TabClass::Code_Pointers(void) { SidebarClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void TabClass::Decode_Pointers(void) { SidebarClass::Decode_Pointers(); }
+void TabClass::Decode_Pointers() { SidebarClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * PowerClass::Code_Pointers -- codes class's pointers for load/save *
@@ -606,7 +606,7 @@ void TabClass::Decode_Pointers(void) { SidebarClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void PowerClass::Code_Pointers(void) { RadarClass::Code_Pointers(); }
+void PowerClass::Code_Pointers() { RadarClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * PowerClass::Decode_Pointers -- decodes pointers for load/save *
@@ -622,7 +622,7 @@ void PowerClass::Code_Pointers(void) { RadarClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void PowerClass::Decode_Pointers(void) { RadarClass::Decode_Pointers(); }
+void PowerClass::Decode_Pointers() { RadarClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * SidebarClass::Code_Pointers -- codes class's pointers for load/save *
@@ -640,7 +640,7 @@ void PowerClass::Decode_Pointers(void) { RadarClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void SidebarClass::Code_Pointers(void) {
+void SidebarClass::Code_Pointers() {
   for (int i = 0; i < COLUMNS; i++) {
     Column[i].Code_Pointers();
   }
@@ -662,7 +662,7 @@ void SidebarClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void SidebarClass::Decode_Pointers(void) {
+void SidebarClass::Decode_Pointers() {
   for (int i = 0; i < COLUMNS; i++) {
     Column[i].Decode_Pointers();
   }
@@ -687,7 +687,7 @@ void SidebarClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::Code_Pointers(void) {}
+void SidebarClass::StripClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * SidebarClass::StripClass::Decode_Pointers -- decodes pointers for load/save *
@@ -703,7 +703,7 @@ void SidebarClass::StripClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void SidebarClass::StripClass::Decode_Pointers(void) {}
+void SidebarClass::StripClass::Decode_Pointers() {}
 
 /***********************************************************************************************
  * RadarClass::Code_Pointers -- codes class's pointers for load/save *
@@ -721,7 +721,7 @@ void SidebarClass::StripClass::Decode_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void RadarClass::Code_Pointers(void) { DisplayClass::Code_Pointers(); }
+void RadarClass::Code_Pointers() { DisplayClass::Code_Pointers(); }
 
 /***********************************************************************************************
  * RadarClass::Decode_Pointers -- decodes pointers for load/save *
@@ -737,7 +737,7 @@ void RadarClass::Code_Pointers(void) { DisplayClass::Code_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void RadarClass::Decode_Pointers(void) { DisplayClass::Decode_Pointers(); }
+void RadarClass::Decode_Pointers() { DisplayClass::Decode_Pointers(); }
 
 /***********************************************************************************************
  * DisplayClass::Code_Pointers -- codes class's pointers for load/save *
@@ -755,7 +755,7 @@ void RadarClass::Decode_Pointers(void) { DisplayClass::Decode_Pointers(); }
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void DisplayClass::Code_Pointers(void) {
+void DisplayClass::Code_Pointers() {
   /*
   **	Code PendingObjectPtr.
   */
@@ -783,7 +783,7 @@ void DisplayClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void DisplayClass::Decode_Pointers(void) {
+void DisplayClass::Decode_Pointers() {
   /*
   **	Decode PendingObjectPtr.  We can't decode PendingObject here, because
   *we'd *	have to reference PendingObjectPtr->Class_Of(), and the object
@@ -818,7 +818,7 @@ void DisplayClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MapClass::Code_Pointers(void) {
+void MapClass::Code_Pointers() {
   CELL cell;
 
   /*
@@ -845,7 +845,7 @@ void MapClass::Code_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void MapClass::Decode_Pointers(void) {
+void MapClass::Decode_Pointers() {
   CELL cell;
 
   /*
@@ -874,7 +874,7 @@ void MapClass::Decode_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Code_Pointers(void) {}
+void GScreenClass::Code_Pointers() {}
 
 /***********************************************************************************************
  * GScreenClass::Decode_Pointers -- decodes pointers for load/save *
@@ -890,4 +890,4 @@ void GScreenClass::Code_Pointers(void) {}
  *                                                                                             *
  * HISTORY: * 01/02/1995 BR : Created. *
  *=============================================================================================*/
-void GScreenClass::Decode_Pointers(void) {}
+void GScreenClass::Decode_Pointers() {}

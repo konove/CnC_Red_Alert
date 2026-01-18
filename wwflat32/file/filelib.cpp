@@ -138,7 +138,7 @@ WORD cdecl Do_Open_Error(FileErrorType errormsgnum, BYTE const* file_name) {
 #pragma argsused
 VOID cdecl Do_IO_Error(FileErrorType errormsgnum, BYTE const* filename) {
 #if LIB_EXTERNS_RESOLVED
-  (VOID) IO_Error(errormsgnum, filename);
+  () IO_Error(errormsgnum, filename);
 #endif
 #if (TRUE)
   Prog_End();

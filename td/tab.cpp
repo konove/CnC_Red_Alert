@@ -76,7 +76,7 @@ void const* TabClass::TabShape = nullptr;
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-TabClass::TabClass(void) {
+TabClass::TabClass() {
   IsToRedraw = false;
   //	Select = -1;
 }
@@ -134,7 +134,7 @@ void TabClass::Draw_It(bool complete) {
   IsToRedraw = false;
 }
 
-void TabClass::Draw_Credits_Tab(void) {
+void TabClass::Draw_Credits_Tab() {
   CC_Draw_Shape(TabShape, 0, 160 * RESFACTOR, 0, WINDOW_MAIN, SHAPE_NORMAL);
 }
 
@@ -244,7 +244,7 @@ void TabClass::Set_Active(int select) {
   }
 }
 
-void TabClass::One_Time(void) {
+void TabClass::One_Time() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   Eva_Width = 80 * factor;
   Tab_Height = 8 * factor;

@@ -79,10 +79,10 @@ PRIVATE WORD cdecl Palette_To_Palette(VOID* src_palette, VOID* dst_palette,
  *   05/02/1994 BR : Created.                                              *
  *=========================================================================*/
 VOID cdecl Morph_Palette(VOID* src_pal, VOID* dst_pal, UWORD delay,
-                         VOID (*callback)(VOID)) {
+                         VOID (*callback)()) {
   WORD result;
   ULONG pal_start = TickCount.Time();
-  VOID (*cb_ptr)(VOID);  // callback function pointer
+  VOID (*cb_ptr)();  // callback function pointer
 
   //	(VOID *)cb_ptr = callback;
   cb_ptr = callback;

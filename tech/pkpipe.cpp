@@ -248,7 +248,7 @@ int PKPipe::Put(void const* source, int length) {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-int PKPipe::Encrypted_Key_Length(void) const {
+int PKPipe::Encrypted_Key_Length() const {
   if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Crypt_Block_Size());
@@ -273,7 +273,7 @@ int PKPipe::Encrypted_Key_Length(void) const {
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-int PKPipe::Plain_Key_Length(void) const {
+int PKPipe::Plain_Key_Length() const {
   if (CipherKey == nullptr) return (0);
   return (CipherKey->Block_Count(BLOWFISH_KEY_SIZE) *
           CipherKey->Plain_Block_Size());

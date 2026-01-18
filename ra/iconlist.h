@@ -87,7 +87,7 @@ class IconListClass : public ListClass {
                 bool bResponsibleForStringAlloc = false, int iSelectionType = 1,
                 int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
-  virtual ~IconListClass(void);
+  virtual ~IconListClass();
 
   virtual int Add_Item(char const* text);
   virtual int Add_Item(const char* text, const char* szHelp, void* pIcon0,
@@ -111,21 +111,21 @@ class IconListClass : public ListClass {
                        ICONKIND FixedIconKind = ICON_SHAPE, int iXFixedIcon = 0,
                        int iYFixedIcon = 0, int iFixedIconWidth = -1);
 
-  //		virtual int Add_Scroll_Bar(void);
+  //		virtual int Add_Scroll_Bar();
   //		virtual void Bump(int up);
-  //		virtual int Count(void) const {return List.Count();};
-  //		virtual int Current_Index(void) const;
-  //		virtual char const * Current_Item(void) const;
+  //		virtual int Count() const {return List.Count();};
+  //		virtual int Current_Index() const;
+  //		virtual char const * Current_Item() const;
   //		virtual int Draw_Me(int forced);
   //		virtual char const * Get_Item(int index) const;
   //		virtual int Step_Selected_Index(int forward);
-  //		virtual void Flag_To_Redraw(void);
+  //		virtual void Flag_To_Redraw();
 
   //		virtual void Peer_To_Peer(unsigned flags, KeyNumType & key,
   // ControlClass & whom);
   virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int);
-  //		virtual int  Remove_Scroll_Bar(void);
+  //		virtual int  Remove_Scroll_Bar();
   //		virtual void Set_Selected_Index(int index);
   //		virtual void Set_Selected_Index(char const * text);
   //		virtual void Set_Tabs(int const * tabs);
@@ -140,7 +140,7 @@ class IconListClass : public ListClass {
   //		virtual LinkClass & Add(LinkClass & object);
   //		virtual LinkClass & Add_Tail(LinkClass & object);
   //		virtual LinkClass & Add_Head(LinkClass & object);
-  //		virtual GadgetClass * Remove(void);
+  //		virtual GadgetClass * Remove();
 
   virtual void Show_Last_Item();
   virtual bool bItemIsMultiSelected(int index) const;

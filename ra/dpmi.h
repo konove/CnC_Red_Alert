@@ -64,15 +64,15 @@ class DOSSegmentClass {
   *especially useful in protected *	mode, but they are legal in real mode as
   *well.
   */
-  void Push_DS(void) { /*__emit__(0x1E);*/ };
-  void Pop_DS(void) { /*__emit__(0x1F);*/ };
+  void Push_DS() { /*__emit__(0x1E);*/ };
+  void Pop_DS() { /*__emit__(0x1F);*/ };
 
  public:
-  DOSSegmentClass(void);
-  ~DOSSegmentClass(void);
+  DOSSegmentClass();
+  ~DOSSegmentClass();
   DOSSegmentClass(unsigned short segment, long size = (1024L * 64L));
 
-  unsigned int Get_Selector(void);
+  unsigned int Get_Selector();
 
   /*
   **	This routine is used to assign where the descriptor actually points to
@@ -109,9 +109,9 @@ class DOSSegmentClass {
                    int doffset, int size);
 };
 
-inline DOSSegmentClass::DOSSegmentClass(void) { Selector = 0xB0000; }
+inline DOSSegmentClass::DOSSegmentClass() { Selector = 0xB0000; }
 
-inline DOSSegmentClass::~DOSSegmentClass(void) {}
+inline DOSSegmentClass::~DOSSegmentClass() {}
 
 inline void DOSSegmentClass::Copy_Word_To(short data, int dest) {
   *(short*)(Selector + dest) = data;
@@ -160,5 +160,5 @@ inline long DOSSegmentClass::Copy_DWord_From(int source) {
   return *(long*)(Selector + source);
 }
 
-inline unsigned int DOSSegmentClass::Get_Selector(void) { return Selector; }
+inline unsigned int DOSSegmentClass::Get_Selector() { return Selector; }
 #endif

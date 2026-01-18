@@ -126,7 +126,7 @@ class AircraftClass;
 #ifdef NEVER
 class TargetClass {
  public:
-  TargetClass(void) { Target.Raw = 0; };
+  TargetClass() { Target.Raw = 0; };
 
   /*
   **	This handles assignment from an integer and conversion
@@ -141,29 +141,25 @@ class TargetClass {
   // inline TargetClass & operator = (const int &val) {*((int*)this)=val; return
   // *this;};
 
-  inline bool Is_Filled(void) { return Target.Component.Kind != KIND_NONE; };
-  inline void Invalidate(void) { Target.Component.Kind = 0; };
-  inline bool Is_Cell(void) { return Target.Component.Kind == KIND_CELL; };
-  inline bool Is_Unit(void) { return Target.Component.Kind == KIND_UNIT; };
-  inline bool Is_Building(void) {
-    return Target.Component.Kind == KIND_BUILDING;
-  };
-  inline bool Is_Aircraft(void) {
-    return Target.Component.Kind == KIND_AIRCRAFT;
-  };
-  inline int As_Value(void) { return Target.Component.Value; };
-  inline KindType As_Kind(void) { return Target.Component.Kind; };
+  inline bool Is_Filled() { return Target.Component.Kind != KIND_NONE; };
+  inline void Invalidate() { Target.Component.Kind = 0; };
+  inline bool Is_Cell() { return Target.Component.Kind == KIND_CELL; };
+  inline bool Is_Unit() { return Target.Component.Kind == KIND_UNIT; };
+  inline bool Is_Building() { return Target.Component.Kind == KIND_BUILDING; };
+  inline bool Is_Aircraft() { return Target.Component.Kind == KIND_AIRCRAFT; };
+  inline int As_Value() { return Target.Component.Value; };
+  inline KindType As_Kind() { return Target.Component.Kind; };
 
   // Allows comparing one target to another (for equality).
   inline bool operator==(TargetClass t1) {
     return (Target.Raw == t1.Target.Raw);
   };
 
-  UnitClass* As_Unit(void);
-  BuildingClass* As_Building(void);
-  bool Legal(void);
-  CELL As_Cell(void);
-  COORDINATE As_Coord(void);
+  UnitClass* As_Unit();
+  BuildingClass* As_Building();
+  bool Legal();
+  CELL As_Cell();
+  COORDINATE As_Coord();
   int Distance(TechnoClass* base);
   static int As_Target(UnitClass* unit);
   static int As_Target(BuildingClass* building);

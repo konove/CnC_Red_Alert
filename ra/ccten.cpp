@@ -49,7 +49,7 @@
 #include "ten.h"
 #endif
 
-void Debug_Mono(void);
+void Debug_Mono();
 
 /***************************************************************************
  * Init_TEN -- Performs TEN-specific initialization                        *
@@ -69,7 +69,7 @@ void Debug_Mono(void);
  * HISTORY:                                                                *
  *   01/09/1996 BRR : Created.                                             *
  *=========================================================================*/
-int Init_TEN(void) {
+int Init_TEN() {
 #if (TEN)
   //------------------------------------------------------------------------
   // Allocate a packet buffer for TEN's use
@@ -128,7 +128,7 @@ int Init_TEN(void) {
  * HISTORY:                                                                *
  *   01/09/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Shutdown_TEN(void) {
+void Shutdown_TEN() {
 #if (TEN)
   CDTimerClass<SystemTimerClass> timer;
 
@@ -174,7 +174,7 @@ void Shutdown_TEN(void) {
  * HISTORY:                                                                *
  *   01/10/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Connect_TEN(void) {
+void Connect_TEN() {
 #if (TEN)
   typedef struct ConnectPacketTag {
     NetCommandType Dummy;         // packet type; set to PING
@@ -438,7 +438,7 @@ void Destroy_TEN_Connection(int /*id*/, int /*error*/) {
  * HISTORY:                                                                *
  *   11/27/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Debug_Mono(void) {
+void Debug_Mono() {
 #if (TEN)
   int i;
   int id;
@@ -472,7 +472,7 @@ void Debug_Mono(void) {
  * HISTORY:                                                                *
  *   11/27/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Send_TEN_Win_Packet(void) {
+void Send_TEN_Win_Packet() {
 #if (TEN)
   char winbuf[80];
   char idbuf[20];
@@ -555,7 +555,7 @@ void Send_TEN_Alliance(char* /*whom*/, int /*ally*/) {
  * HISTORY:                                                                *
  *   11/27/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Send_TEN_Out_Of_Sync(void) {
+void Send_TEN_Out_Of_Sync() {
 #if (TEN)
   tenArSetPlayerState("sync '1' ");
 #endif  // TEN
@@ -580,7 +580,7 @@ void Send_TEN_Out_Of_Sync(void) {
  * HISTORY:                                                                *
  *   11/27/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Send_TEN_Packet_Too_Late(void) {
+void Send_TEN_Packet_Too_Late() {
 #if (TEN)
   tenArSetPlayerState("toolate '1' ");
 #endif  // TEN

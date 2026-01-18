@@ -568,7 +568,7 @@ void Speak(VoxType voice) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-void Speak_AI(void) {
+void Speak_AI() {
   static VoxType _last = VOX_NONE;
   if (SampleType == 0) return;
 
@@ -606,7 +606,7 @@ void Speak_AI(void) {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-void Stop_Speaking(void) {
+void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   if (SampleType != 0) {
     Stop_Sample_Playing(SpeechBuffer);
@@ -628,7 +628,7 @@ void Stop_Speaking(void) {
  *                                                                                             *
  * HISTORY: * 03/12/1995 JLB : Created. *
  *=============================================================================================*/
-bool Is_Speaking(void) {
+bool Is_Speaking() {
   Speak_AI();
   if (SampleType != 0 &&
       (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer))) {

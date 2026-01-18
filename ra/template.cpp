@@ -71,7 +71,7 @@
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init(void) { Templates.Free_All(); }
+void TemplateClass::Init() { Templates.Free_All(); }
 
 /***********************************************************************************************
  * TemplateClass::Mark -- Lifts or drops a template object. *

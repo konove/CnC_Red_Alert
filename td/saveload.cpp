@@ -706,7 +706,7 @@ bool Load_Misc_Values(FileClass& file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-void Code_All_Pointers(void) {
+void Code_All_Pointers() {
   int i;
 
   /*
@@ -782,7 +782,7 @@ void Code_All_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-void Decode_All_Pointers(void) {
+void Decode_All_Pointers() {
   int i;
 
   /*
@@ -1197,7 +1197,7 @@ void Set_VTable(void* ptr, int base_size, void* vtable) {
 Dump routine: prints everything about everything related to the Save/Load
 process (OK, not exactly everything, but lots of stuff)
 ****************************************************************************/
-void Dump(void)
+void Dump()
 {
 	int i,j;
 	FILE *fp;

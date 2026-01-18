@@ -48,16 +48,16 @@
 
 class TabClass : public SidebarClass {
  public:
-  TabClass(void);
+  TabClass();
   TabClass(NoInitClass const& x) : SidebarClass(x), Credits(x) {};
 
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
 
-  virtual void One_Time(void);  // One-time inits
-  static void Draw_Credits_Tab(void);
+  virtual void One_Time();  // One-time inits
+  static void Draw_Credits_Tab();
   static void Hilite_Tab(int tab);
-  void Redraw_Tab(void) {
+  void Redraw_Tab() {
     IsToRedraw = true;
     Flag_To_Redraw(false);
   };
@@ -65,9 +65,9 @@ class TabClass : public SidebarClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
-  inline int Get_Tab_Height(void) { return (Tab_Height); };
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
+  inline int Get_Tab_Height() { return (Tab_Height); };
 
   CreditClass Credits;
 

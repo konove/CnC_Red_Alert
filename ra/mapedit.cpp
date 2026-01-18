@@ -94,7 +94,7 @@ char MapEditClass::HealthBuf[20];
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-MapEditClass::MapEditClass(void) {
+MapEditClass::MapEditClass() {
   /*
   **	Init data members.
   */
@@ -132,7 +132,7 @@ MapEditClass::MapEditClass(void) {
  * HISTORY:                                                                *
  *   02/02/1995 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::One_Time(void) {
+void MapEditClass::One_Time() {
   MouseClass::One_Time();
 
   /*
@@ -229,7 +229,7 @@ void MapEditClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void MapEditClass::Init_IO(void) {
+void MapEditClass::Init_IO() {
   /*
   **	For normal game mode, jump to the parent's Init routine.
   */
@@ -262,7 +262,7 @@ void MapEditClass::Init_IO(void) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Clear_List(void) {
+void MapEditClass::Clear_List() {
   /*
   **	Set # object type ptrs to 0, set NumType for each type to 0
   */
@@ -1430,7 +1430,7 @@ void MapEditClass::Draw_It(bool forced) {
  * HISTORY:                                                                *
  *   11/08/1994 BR : Created.                                              *
  *=========================================================================*/
-bool MapEditClass::Mouse_Moved(void) {
+bool MapEditClass::Mouse_Moved() {
   static int old_mx = 0;
   static int old_my = 0;
   static CELL old_zonecell = 0;
@@ -1497,7 +1497,7 @@ bool MapEditClass::Mouse_Moved(void) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Main_Menu(void) {
+void MapEditClass::Main_Menu() {
   char const* _menus[MAX_MAIN_MENU_NUM + 1];
   int selection;  // option the user picks
   bool process;   // menu stays up while true
@@ -1687,7 +1687,7 @@ void MapEditClass::Main_Menu(void) {
  * HISTORY:                                                                *
  *   11/29/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::AI_Menu(void) {
+void MapEditClass::AI_Menu() {
   int selection;  // option the user picks
   bool process;   // menu stays up while true
   char const* _menus[MAX_AI_MENU_NUM + 1];

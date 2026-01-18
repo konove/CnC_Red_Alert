@@ -172,7 +172,7 @@ void Fade_Palette_To(void* palette1, unsigned int delay, void (*callback)()) {
   short ticksper;       // The ticks (fixed point) per bit jump.
   int tickaccum;
 
-  extern void (*cb_ptr)(void);  // callback function pointer
+  extern void (*cb_ptr)();  // callback function pointer
 
   //	(void *)cb_ptr = callback;
   cb_ptr = callback;
@@ -379,7 +379,7 @@ PRIVATE BOOL __cdecl Bump_Palette(void* palette1, unsigned int step) {
 
 #endif
 
-void (*cb_ptr)(void);  // callback function pointer
+void (*cb_ptr)();  // callback function pointer
 
 /**************************** End of palette.cpp ***************************/
 

@@ -68,7 +68,7 @@
  *   05/26/1994 SW   : Created.                                            *
  *=========================================================================*/
 
-GetCDClass::GetCDClass(VOID) {
+GetCDClass::GetCDClass() {
   memset(this, 0, sizeof(GetCDClass));
 
   if (DPMI_real_alloc(2, &cdDrive_addrp, &largestp)) exit(1);
@@ -103,7 +103,7 @@ GetCDClass::GetCDClass(VOID) {
  *   05/26/1994 SW: Created.                                          	   *
  *=========================================================================*/
 
-GetCDClass::~GetCDClass(VOID) {
+GetCDClass::~GetCDClass() {
   if (cdDrive_addrp.seg)
     DPMI_real_free(cdDrive_addrp);  // free up those conventional buffers
 }
@@ -123,7 +123,7 @@ GetCDClass::~GetCDClass(VOID) {
  *   05/26/1994 SW : Created.                                              *
  *=========================================================================*/
 
-void GetCDClass::GetCDDrives(VOID)
+void GetCDClass::GetCDDrives()
 
 {
   for (int lp = 0; lp < 26; lp++) {

@@ -88,7 +88,7 @@ BOOL CacheMemoryExhausted;   // Flag set if we have run out of video RAM
  *                                                                                             *
  * HISTORY: * 11/29/95 12:47PM ST : Created *
  *=============================================================================================*/
-BOOL Optimize_Video_Memory_Cache(void) {
+BOOL Optimize_Video_Memory_Cache() {
   if (CacheMemoryExhausted && (UnCachedIconsDrawn + CachedIconsDrawn > 1000) &&
       UnCachedIconsDrawn > CachedIconsDrawn) {
     int cache_misses[MAX_CACHED_ICONS];
@@ -196,7 +196,7 @@ BOOL Cache_New_Icon(int icon_index, void* icon_ptr) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:37AM ST : Created *
  *=============================================================================================*/
-void Invalidate_Cached_Icons(void) {
+void Invalidate_Cached_Icons() {
   for (int i = 0; i < MAX_CACHED_ICONS; i++) {
     CachedIcons[i].Uncache_It();
   }
@@ -226,7 +226,7 @@ void Invalidate_Cached_Icons(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:38AM ST : Created *
  *=============================================================================================*/
-void Restore_Cached_Icons(void) {
+void Restore_Cached_Icons() {
   for (int i = 0; i < MAX_CACHED_ICONS; i++) {
     CachedIcons[i].Restore();
   }
@@ -286,7 +286,7 @@ void Register_Icon_Set(void* icon_data, BOOL pre_cache) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:40AM ST : Created *
  *=============================================================================================*/
-int Get_Free_Cache_Slot(void) {
+int Get_Free_Cache_Slot() {
   for (int i = 0; i < MAX_CACHED_ICONS; i++) {
     if (!CachedIcons[i].Get_Is_Cached()) {
       return (i);
@@ -308,7 +308,7 @@ int Get_Free_Cache_Slot(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:41AM ST : Created *
  *=============================================================================================*/
-IconCacheClass::IconCacheClass(void) {
+IconCacheClass::IconCacheClass() {
   IsCached = FALSE;
   SurfaceLost = FALSE;
   DrawFrequency = 0;
@@ -329,7 +329,7 @@ IconCacheClass::IconCacheClass(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:41AM ST : Created *
  *=============================================================================================*/
-IconCacheClass::~IconCacheClass(void) {
+IconCacheClass::~IconCacheClass() {
   if (IsCached && CacheSurface) {
     CacheSurface->Release();
   }
@@ -348,7 +348,7 @@ IconCacheClass::~IconCacheClass(void) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:43AM ST : Created *
  *=============================================================================================*/
-void IconCacheClass::Restore(void) {
+void IconCacheClass::Restore() {
   if (IsCached && CacheSurface) {
     CacheSurface->Restore();
     if (IconSource) {
@@ -447,7 +447,7 @@ BOOL IconCacheClass::Cache_It(void* icon_ptr) {
  *                                                                                             *
  * HISTORY: * 11/13/95 9:48AM ST : Created *
  *=============================================================================================*/
-void IconCacheClass::Uncache_It(void) {
+void IconCacheClass::Uncache_It() {
   if (IsCached && CacheSurface) {
     CacheSurface->Release();
     IsCached = FALSE;

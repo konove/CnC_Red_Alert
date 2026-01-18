@@ -54,12 +54,12 @@ class ProgressBarClass {
                    int backcolor, int bordercolor = 0);
 
   bool Update(fixed value);
-  void Redraw(void) const;
+  void Redraw() const;
 
  private:
-  void Outline(void) const;
-  bool Is_Horizontal(void) const;
-  bool Is_Outlined(void) const { return (BorderColor != 0); }
+  void Outline() const;
+  bool Is_Horizontal() const;
+  bool Is_Outlined() const { return (BorderColor != 0); }
 
   /*
   **	This is the upper left coordinates of the bargraph.

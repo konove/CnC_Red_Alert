@@ -130,8 +130,8 @@ typedef enum RateEnum {
 int File_Stream_Sample(char const* filename, BOOL real_time_start = FALSE);
 int File_Stream_Sample_Vol(char const* filename, int volume,
                            BOOL real_time_start = FALSE);
-void cdecl _saveregs Sound_Callback(void);
-void cdecl far __saveregs __loadds maintenance_callback(void);
+void cdecl _saveregs Sound_Callback();
+void cdecl far __saveregs __loadds maintenance_callback();
 void* Load_Sample(char const* filename);
 long Load_Sample_Into_Buffer(char const* filename, void* buffer, long size);
 long Sample_Read(int fh, void* buffer, long size);
@@ -141,7 +141,7 @@ BOOL Sound_Init(int sfx, int score, int sample, RateType rate,
 BOOL Audio_Init(int sample, int address, int inter, int dma, RateType rate,
                 int bits_per_sample, int max_samples,
                 int reverse_channels = FALSE);
-void Sound_End(void);
+void Sound_End();
 void Stop_Sample(int handle);
 BOOL Sample_Status(int handle);
 BOOL Is_Sample_Playing(void const* sample);
@@ -154,7 +154,7 @@ int Set_Sound_Vol(int volume);
 int Set_Score_Vol(int volume);
 void Fade_Sample(int handle, int ticks);
 int Get_Free_Sample_Handle(int priority);
-int Get_Digi_Handle(void);
+int Get_Digi_Handle();
 long Sample_Length(void const* sample);
 
 extern int Misc;

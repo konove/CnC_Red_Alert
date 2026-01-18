@@ -453,11 +453,11 @@ class MultiMission {
   void Set_Expansion(bool expansion);
   void Draw_It(int index, int x, int y, int width, int height, bool selected,
                TextPrintType flags) const;
-  char const* Description(void) const { return (ScenarioDescription); }
-  char const* Get_Filename(void) const { return (Filename); }
-  char const* Get_Digest(void) const { return (Digest); }
-  bool Get_Official(void) { return (IsOfficial); }
-  bool Get_Expansion(void) {
+  char const* Description() const { return (ScenarioDescription); }
+  char const* Get_Filename() const { return (Filename); }
+  char const* Get_Digest() const { return (Digest); }
+  bool Get_Official() { return (IsOfficial); }
+  bool Get_Expansion() {
     return (IsExpansion);
   }  //	Implied "IsCounterstrike". No longer used. -ajw
 
@@ -492,36 +492,36 @@ class SessionClass {
   //.....................................................................
   // Constructor/Destructor
   //.....................................................................
-  SessionClass(void);
-  ~SessionClass(void);
+  SessionClass();
+  ~SessionClass();
 
   //.....................................................................
   // Initialization
   //.....................................................................
-  void One_Time(void);
-  void Init(void);
+  void One_Time();
+  void Init();
 
   //.....................................................................
   // Reads/writes to the INI file
   //.....................................................................
-  void Read_MultiPlayer_Settings(void);
-  void Write_MultiPlayer_Settings(void);
-  void Read_Scenario_Descriptions(void);
-  void Free_Scenario_Descriptions(void);
+  void Read_MultiPlayer_Settings();
+  void Write_MultiPlayer_Settings();
+  void Read_Scenario_Descriptions();
+  void Free_Scenario_Descriptions();
 
   //.....................................................................
   // Utility functions
   //.....................................................................
-  int Create_Connections(void);
-  bool Am_I_Master(void);
-  unsigned long Compute_Unique_ID(void);
+  int Create_Connections();
+  bool Am_I_Master();
+  unsigned long Compute_Unique_ID();
 
 #if (TEN)
-  int Create_TEN_Connections(void);
+  int Create_TEN_Connections();
 #endif  // TEN
 
 #if (MPATH)
-  int Create_MPATH_Connections(void);
+  int Create_MPATH_Connections();
 #endif  // MPATH
 
   //.....................................................................
@@ -535,7 +535,7 @@ class SessionClass {
   //.....................................................................
   // Debugging / Sync Bugs
   //.....................................................................
-  void Trap_Object(void);
+  void Trap_Object();
 
   //---------------------------------------------------------------------
   // Public Data

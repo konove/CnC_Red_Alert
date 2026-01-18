@@ -46,14 +46,14 @@
 
 class StaticButtonClass : public GadgetClass {
  public:
-  StaticButtonClass(void);
+  StaticButtonClass();
   StaticButtonClass(unsigned id, char const* text, TextPrintType style, int x,
                     int y, int w = -1, int h = -1);
   virtual int Draw_Me(int forced = false);
   virtual void Set_Text(char const* text, bool resize = false);
 
  protected:
-  virtual void Draw_Background(void);
+  virtual void Draw_Background();
   virtual void Draw_Text(char const* text);
 
   /*

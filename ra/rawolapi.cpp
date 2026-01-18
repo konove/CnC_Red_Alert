@@ -1547,7 +1547,7 @@ ULONG __stdcall RADownloadEventSink::Release() {
 
 //***********************************************************************************************
 //***********************************************************************************************
-STDMETHODIMP RADownloadEventSink::OnEnd(void) {
+STDMETHODIMP RADownloadEventSink::OnEnd() {
   //	debugprint( ">>> OnEnd\n" );
   bFlagEnd = true;
   return S_OK;

@@ -70,7 +70,7 @@
  *tactical display position.   * RadarClass::Set_Tactical_Position -- Called
  *when setting the tactical display position.   *
  *   RadarClass::Set_Tactical_Position -- Sets the map's tactical position and
- *adjusts radar to* RadarClass::Zoom_Mode(void) -- Handles toggling zoom on the
+ *adjusts radar to* RadarClass::Zoom_Mode() -- Handles toggling zoom on the
  *map                           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -142,7 +142,7 @@ static GraphicBufferClass _TileStage(24, 24);
  *                                                                                             *
  * HISTORY: * 12/16/1994 JLB : Created. *
  *=============================================================================================*/
-RadarClass::RadarClass(void)
+RadarClass::RadarClass()
     : IsToRedraw(false),
       RadarCursorRedraw(false),
       IsPulseActive(false),
@@ -187,7 +187,7 @@ RadarClass::RadarClass(void)
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::One_Time(void) {
+void RadarClass::One_Time() {
   RadWidth = 80 * RESFACTOR;
   RadHeight = 70 * RESFACTOR;
   RadX = SeenBuff.Get_Width() - RadWidth;
@@ -236,7 +236,7 @@ void RadarClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Init_Clear(void) {
+void RadarClass::Init_Clear() {
   DisplayClass::Init_Clear();
   IsRadarActive = false;
   IsToRedraw = true;
@@ -986,7 +986,7 @@ void RadarClass::Zoom_Mode(CELL cell) {
  *                                                                                             *
  * HISTORY: * 09/16/1996 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Is_Zoomable(void) const {
+bool RadarClass::Is_Zoomable() const {
   CHECK_NE(MapCellWidth, 0);
   CHECK_NE(MapCellHeight, 0);
   int xfactor = RadIWidth / MapCellWidth;
@@ -1559,7 +1559,7 @@ void RadarClass::Radar_Cursor(int forced) {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Radar_Anim(void) {
+void RadarClass::Radar_Anim() {
   /*
   ** Do nothing if we're in player-name mode
   */
@@ -2133,7 +2133,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Radar_Position(void) { return (RadarCell); }
+CELL RadarClass::Radar_Position() { return (RadarCell); }
 
 /***********************************************************************************************
  * RadarClass::Set_Map_Dimensions -- Sets the tactical map dimensions. *
@@ -2237,7 +2237,7 @@ void RadarClass::Player_Names(bool on) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 BWG : Created. *
  *=============================================================================================*/
-bool RadarClass::Spy_Next_House(void) {
+bool RadarClass::Spy_Next_House() {
   bool tospy = false;
   int spiedby = (1 << (PlayerPtr->Class->House));
 
@@ -2294,7 +2294,7 @@ bool RadarClass::Spy_Next_House(void) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 BWG : Created. *
  *=============================================================================================*/
-bool RadarClass::Draw_House_Info(void) {
+bool RadarClass::Draw_House_Info() {
   int y;
   char txt[40];
   /*
@@ -2405,7 +2405,7 @@ bool RadarClass::Draw_House_Info(void) {
  *                                                                                             *
  * HISTORY: * 06/07/1995 BRR : Created. *
  *=============================================================================================*/
-void RadarClass::Draw_Names(void) {
+void RadarClass::Draw_Names() {
   PlayerColorType c_idx;
   HousesType house;
   HouseClass* ptr;
@@ -2504,7 +2504,7 @@ void RadarClass::Draw_Names(void) {
   Map.Zoom.Draw_Me(true);
 }
 
-void RadarClass::Activate_Pulse(void) {
+void RadarClass::Activate_Pulse() {
   if (IsRadarActive || PlayerPtr->IsGPSActive) {
     IsPulseActive = true;
     RadarPulseFrame = 0;
@@ -2525,7 +2525,7 @@ void RadarClass::Activate_Pulse(void) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Is_Radar_Active(void) {
+bool RadarClass::Is_Radar_Active() {
   return (IsRadarActive || PlayerPtr->IsGPSActive);
   //	return IsRadarActive || PlayerPtr->IsGPSActive;
 }
@@ -2544,7 +2544,7 @@ bool RadarClass::Is_Radar_Active(void) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Is_Radar_Existing(void) {
+bool RadarClass::Is_Radar_Existing() {
   return (DoesRadarExist || PlayerPtr->IsGPSActive);
 }
 
@@ -2562,7 +2562,7 @@ bool RadarClass::Is_Radar_Existing(void) {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Get_Jammed(void) {
+bool RadarClass::Get_Jammed() {
   if (PlayerPtr->IsGPSActive) return (false);
   return (IsRadarJammed);
 }

@@ -56,7 +56,7 @@ class FieldClass {
   // Define constructors to be able to create all the different kinds
   // of fields.
   //
-  FieldClass(void) {};
+  FieldClass() {};
   FieldClass(char const* id, char data);
   FieldClass(char const* id, unsigned char data);
   FieldClass(char const* id, short data);
@@ -66,8 +66,8 @@ class FieldClass {
   FieldClass(char const* id, char const* data);
   FieldClass(char const* id, void* data, int length);
 
-  void Host_To_Net(void);
-  void Net_To_Host(void);
+  void Host_To_Net();
+  void Net_To_Host();
 
  private:
   char ID[4];               // id value of this field

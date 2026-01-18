@@ -72,9 +72,9 @@ class MissionClass : public ObjectClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  MissionClass(void);
+  MissionClass();
   MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {};
-  virtual ~MissionClass(void) {};
+  virtual ~MissionClass() {};
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
@@ -83,45 +83,45 @@ class MissionClass : public ObjectClass {
   void Debug_Dump(MonoClass* mono) const;
 #endif
 
-  virtual MissionType Get_Mission(void) const;
+  virtual MissionType Get_Mission() const;
   virtual void Assign_Mission(MissionType mission);
-  virtual bool Commence(void);
-  virtual void AI(void);
+  virtual bool Commence();
+  virtual void AI();
 
   /*
   **	Support functions.
   */
-  virtual int Mission_Sleep(void);
-  virtual int Mission_Ambush(void);
-  virtual int Mission_Attack(void);
-  virtual int Mission_Capture(void);
-  virtual int Mission_Guard(void);
-  virtual int Mission_Guard_Area(void);
-  virtual int Mission_Harvest(void);
-  virtual int Mission_Hunt(void);
-  virtual int Mission_Timed_Hunt(void);
-  virtual int Mission_Move(void);
-  virtual int Mission_Retreat(void);
-  virtual int Mission_Return(void);
-  virtual int Mission_Stop(void);
-  virtual int Mission_Unload(void);
-  virtual int Mission_Enter(void);
-  virtual int Mission_Construction(void);
-  virtual int Mission_Deconstruction(void);
-  virtual int Mission_Repair(void);
-  virtual int Mission_Missile(void);
+  virtual int Mission_Sleep();
+  virtual int Mission_Ambush();
+  virtual int Mission_Attack();
+  virtual int Mission_Capture();
+  virtual int Mission_Guard();
+  virtual int Mission_Guard_Area();
+  virtual int Mission_Harvest();
+  virtual int Mission_Hunt();
+  virtual int Mission_Timed_Hunt();
+  virtual int Mission_Move();
+  virtual int Mission_Retreat();
+  virtual int Mission_Return();
+  virtual int Mission_Stop();
+  virtual int Mission_Unload();
+  virtual int Mission_Enter();
+  virtual int Mission_Construction();
+  virtual int Mission_Deconstruction();
+  virtual int Mission_Repair();
+  virtual int Mission_Missile();
   virtual void Set_Mission(MissionType mission);
 
   static char const* Mission_Name(MissionType order);
   static MissionType Mission_From_Name(char const* name);
   virtual void Override_Mission(MissionType mission, TARGET, TARGET);
-  virtual bool Restore_Mission(void);
+  virtual bool Restore_Mission();
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
  private:
   /*

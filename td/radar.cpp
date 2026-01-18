@@ -66,7 +66,7 @@
  *tactical display position.   * RadarClass::Set_Tactical_Position -- Called
  *when setting the tactical display position.   *
  *   RadarClass::TacticalClass::Action -- I/O function for the radar map. *
- *   RadarClass::Zoom_Mode(void) -- Handles toggling zoom on the map *
+ *   RadarClass::Zoom_Mode() -- Handles toggling zoom on the map *
  *   RadarClass::Set_Tactical_Position -- Sets the map's tactical position and
  *adjusts radar to* RadarClass::Coord_To_Radar_Pixel -- Converts a coordinate to
  *a radar pixel position       *
@@ -144,7 +144,7 @@ static GraphicBufferClass _TileStage(24, 24);
  *                                                                                             *
  * HISTORY: * 12/16/1994 JLB : Created. *
  *=============================================================================================*/
-RadarClass::RadarClass(void) {
+RadarClass::RadarClass() {
   IsZoomed = true;
   IsRadarActive = false;
   IsToRedraw = false;
@@ -171,7 +171,7 @@ RadarClass::RadarClass(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::One_Time(void) {
+void RadarClass::One_Time() {
   int factor = Get_Resolution_Factor();
   RadWidth = 80 << factor;
   RadHeight = 70 << factor;
@@ -214,7 +214,7 @@ void RadarClass::One_Time(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Init_Clear(void) {
+void RadarClass::Init_Clear() {
   DisplayClass::Init_Clear();
   IsRadarActive = false;
   IsToRedraw = true;
@@ -1260,7 +1260,7 @@ void RadarClass::Radar_Cursor(int forced) {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Radar_Anim(void) {
+void RadarClass::Radar_Anim() {
   /*
   ** Do nothing if we're in player-name mode
   */
@@ -1723,7 +1723,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Radar_Position(void) { return (RadarCell); }
+CELL RadarClass::Radar_Position() { return (RadarCell); }
 
 /***********************************************************************************************
  * RadarClass::Set_Map_Dimensions -- Sets the tactical map dimensions. *
@@ -1830,7 +1830,7 @@ void RadarClass::Player_Names(bool on) {
  *                                                                                             *
  * HISTORY: * 06/07/1995 BRR : Created. *
  *=============================================================================================*/
-void RadarClass::Draw_Names(void) {
+void RadarClass::Draw_Names() {
   int c_idx;
   HousesType house;
   HouseClass* ptr;

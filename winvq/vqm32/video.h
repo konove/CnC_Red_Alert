@@ -81,14 +81,14 @@ typedef struct _DisplayInfo {
  *-------------------------------------------------------------------------*/
 
 DisplayInfo* SetVideoMode(long mode);
-DisplayInfo* GetDisplayInfo(void);
-long TestVBIBit(void);
-long GetVBIBit(void);
+DisplayInfo* GetDisplayInfo();
+long TestVBIBit();
+long GetVBIBit();
 
-void SetupXPaging(void);
-void FlipXPage(void);
-unsigned char* GetXHidPage(void);
-unsigned char* GetXSeenPage(void);
+void SetupXPaging();
+void FlipXPage();
+unsigned char* GetXHidPage();
+unsigned char* GetXSeenPage();
 void DisplayXPage(long page);
 
 #ifdef __cplusplus
@@ -97,9 +97,9 @@ extern "C" {
 
 void __cdecl WaitNoVB(short vbibit);
 void __cdecl WaitVB(short vbibit);
-void __cdecl ClearVRAM(void);
+void __cdecl ClearVRAM();
 long __cdecl SetXMode(long mode);
-void __cdecl ClearXMode(void);
+void __cdecl ClearXMode();
 void __cdecl ShowXPage(unsigned long StartOffset);
 void __cdecl Xmode_BufferCopy_320x200(void* buff, void* screen);
 void __cdecl Xmode_Blit(void* buffer, void* screen, long imgwidth,

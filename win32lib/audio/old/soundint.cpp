@@ -265,7 +265,7 @@ long Sample_Copy(SampleTrackerType* st, void** source, long* ssize,
  * HISTORY: *
  *     ....Unknown * 10/17/95 10:15PM ST : tidied up a tad for direct sound *
  *=============================================================================================*/
-VOID far __cdecl maintenance_callback(VOID) {
+VOID far __cdecl maintenance_callback() {
   int index;              // index used in for loop
   SampleTrackerType* st;  // ptr to SampleTracker structure
   DWORD play_cursor;      // Position that direct sound is reading from

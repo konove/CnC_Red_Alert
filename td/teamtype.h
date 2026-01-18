@@ -93,14 +93,14 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Constructor/Destructor
   */
-  TeamTypeClass(void);
+  TeamTypeClass();
   TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {};
-  virtual ~TeamTypeClass(void) {};
+  virtual ~TeamTypeClass() {};
 
   /*
   **	Initialization: clears all team types in preparation for new scenario
   */
-  static void Init(void);
+  static void Init();
 
   /*
   **	File I/O routines
@@ -109,11 +109,11 @@ class TeamTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
-  static char const* INI_Name(void) { return "TeamTypes"; };
+  static char const* INI_Name() { return "TeamTypes"; };
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
@@ -123,9 +123,9 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Processing routines
   */
-  void Remove(void);
-  TeamClass* Create_One_Of(void) const;
-  void Destroy_All_Of(void) const;
+  void Remove();
+  TeamClass* Create_One_Of() const;
+  void Destroy_All_Of() const;
 
   /*
   **	Utility routines
@@ -135,7 +135,7 @@ class TeamTypeClass : public AbstractTypeClass {
   static TeamTypeClass const* Suggested_New_Team(HouseClass* house, long utypes,
                                                  long itypes, bool alerted);
 
-  TARGET As_Target(void) const;
+  TARGET As_Target() const;
 
   /*
   **	Overloaded operators
@@ -147,7 +147,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	If this teamtype object is active, then this flag will be true.

@@ -53,4 +53,4 @@ PRIVATE char* version =
  * HISTORY:                                                                *
  *   07/26/1991 JLB : Created.                                             *
  *=========================================================================*/
-char* __cdecl Version(void) { return (version); }
+char* __cdecl Version() { return (version); }

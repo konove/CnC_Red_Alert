@@ -74,7 +74,7 @@
 
 #include "td/ipx.h"
 
-IPXAddressClass::IPXAddressClass(void) {
+IPXAddressClass::IPXAddressClass() {
   NetworkNumber[0] = 0xff;
   NetworkNumber[1] = 0xff;
   NetworkNumber[2] = 0xff;
@@ -297,7 +297,7 @@ void IPXAddressClass::Get_Address(IPXHeaderType* header) {
  * HISTORY:                                                                *
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
-bool IPXAddressClass::Is_Broadcast(void) {
+bool IPXAddressClass::Is_Broadcast() {
   if (NetworkNumber[0] == 0xff && NetworkNumber[1] == 0xff &&
       NetworkNumber[2] == 0xff && NetworkNumber[3] == 0xff &&
       NodeAddress[0] == 0xff && NodeAddress[1] == 0xff &&

@@ -92,7 +92,7 @@ LCWStraw::LCWStraw(CompControl control, int blocksize)
  *                                                                                             *
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
-LCWStraw::~LCWStraw(void) {
+LCWStraw::~LCWStraw() {
   delete[] Buffer;
   Buffer = nullptr;
 

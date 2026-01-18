@@ -70,7 +70,7 @@ class VisualControlsClass {
 
  public:
   VisualControlsClass() = default;
-  void Process(void);
+  void Process();
 };
 
 #endif

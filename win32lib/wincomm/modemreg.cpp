@@ -372,7 +372,7 @@ ModemRegistryEntryClass::ModemRegistryEntryClass(int modem_number) {
  *                                                                                             *
  * HISTORY: * 10/18/96 11:39AM ST : Created *
  *=============================================================================================*/
-ModemRegistryEntryClass::~ModemRegistryEntryClass(void) {
+ModemRegistryEntryClass::~ModemRegistryEntryClass() {
   if (ModemName) delete[] ModemName;
   if (ModemDeviceName) delete[] ModemDeviceName;
 

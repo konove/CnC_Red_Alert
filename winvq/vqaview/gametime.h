@@ -55,8 +55,8 @@ class GameTimeClass {
   unsigned long game_start_time;
 
  public:
-  GameTimeClass(void);
-  unsigned long Get_Time(void);
+  GameTimeClass();
+  unsigned long Get_Time();
 
 }; /* VQAClass */
 

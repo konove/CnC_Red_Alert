@@ -142,7 +142,7 @@
     sizeof(VesselClass) + sizeof(ScenarioClass) + sizeof(ChronalVortexClass)))
 //										sizeof(Waypoint)))
 
-static int Reconcile_Players(void);
+static int Reconcile_Players();
 extern bool Is_Mission_Counterstrike(char* file_name);
 extern bool Is_Mission_Aftermath(char* file_name);
 
@@ -1164,7 +1164,7 @@ bool Load_MPlayer_Values(Straw& file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-void Code_All_Pointers(void) {
+void Code_All_Pointers() {
   int i;
 
   /*
@@ -1241,7 +1241,7 @@ void Code_All_Pointers(void) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
-void Decode_All_Pointers(void) {
+void Decode_All_Pointers() {
   /*
   **	The Map.
   */
@@ -1426,7 +1426,7 @@ bool Get_Savefile_Info(int id, char* buf, size_t buf_size, unsigned* scenp,
  * HISTORY:                                                                *
  *   09/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Reconcile_Players(void) {
+static int Reconcile_Players() {
   int i;
   int found;
   HousesType house;
@@ -1534,6 +1534,6 @@ static int Reconcile_Players(void) {
  * HISTORY:                                                                *
  *   10/30/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MPlayer_Save_Message(void) {
+void MPlayer_Save_Message() {
   // char *txt = Text_String(
 }

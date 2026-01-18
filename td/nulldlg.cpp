@@ -119,9 +119,9 @@ ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 #define PACKET_RETRANS_TIME 30
 #define PACKET_REDRAW_TIME 60
 
-static int Reconnect_Null_Modem(void);
+static int Reconnect_Null_Modem();
 static int Com_Settings_Dialog(SerialSettingsType* settings);
-static int Phone_Dialog(void);
+static int Phone_Dialog();
 static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
                                       char* buf, int* index);
 static int Init_String_Compare(const void* p1, const void* p2);
@@ -188,7 +188,7 @@ int Init_Null_Modem(SerialSettingsType* settings) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Shutdown_Modem(void) {
+void Shutdown_Modem() {
   if (!PlaybackGame) {
     if (GameToPlay == GAME_MODEM) {
       NullModem.Hangup_Modem();
@@ -220,7 +220,7 @@ void Shutdown_Modem(void) {
  * HISTORY:                                                                *
  *   08/03/1995 DRD : Created.                                             *
  *=========================================================================*/
-void Modem_Signoff(void) {
+void Modem_Signoff() {
   unsigned long starttime;
   EventClass event;
 
@@ -257,7 +257,7 @@ void Modem_Signoff(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Test_Null_Modem(void) {
+int Test_Null_Modem() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Button Enumerations
@@ -557,7 +557,7 @@ int Test_Null_Modem(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Reconnect_Modem(void) {
+int Reconnect_Modem() {
   int status;
   int modemstatus;
 
@@ -612,7 +612,7 @@ int Reconnect_Modem(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Reconnect_Null_Modem(void) {
+static int Reconnect_Null_Modem() {
   /*........................................................................
   Button Enumerations
   ........................................................................*/
@@ -905,7 +905,7 @@ void Destroy_Null_Connection(int id, int error) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-GameType Select_Serial_Dialog(void) {
+GameType Select_Serial_Dialog() {
   int rc;
 
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
@@ -3100,7 +3100,7 @@ static int Init_String_Compare(const void* p1, const void* p2) {
  *=============================================================================================*/
 #define TXT_HOST_INTERNET_GAME 4567 + 1
 #define TXT_JOIN_INTERNET_GAME 4567 + 2
-int Com_Scenario_Dialog(void) {
+int Com_Scenario_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
@@ -4588,7 +4588,7 @@ int Com_Scenario_Dialog(void) {
  *                                                                         						  *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-int Com_Show_Scenario_Dialog(void) {
+int Com_Show_Scenario_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
@@ -5738,7 +5738,7 @@ int Com_Show_Scenario_Dialog(void) {
  * HISTORY:                                                                *
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Phone_Dialog(void) {
+static int Phone_Dialog() {
   int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
@@ -7161,7 +7161,7 @@ void itoh(int i, char* s) {
 
 #if (0)
 
-int Com_Fake_Scenario_Dialog(void) {
+int Com_Fake_Scenario_Dialog() {
   bool display = true;  // redraw level
   bool process = true;  // process while true
 
@@ -7641,7 +7641,7 @@ int Com_Fake_Scenario_Dialog(void) {
 
 } /* end of Com_Scenario_Dialog */
 
-int Com_Show_Fake_Scenario_Dialog(void) {
+int Com_Show_Fake_Scenario_Dialog() {
   /*........................................................................
   Dialog variables
   ........................................................................*/

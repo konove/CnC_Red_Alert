@@ -175,7 +175,7 @@ interface DECLSPEC_UUID("925CDEDE-71B9-11D1-B1C5-006097176556") IRTPatcher
       /* [string][in] */ LPCSTR destpath,
       /* [string][in] */ LPCSTR filename) = 0;
 
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PumpMessages(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PumpMessages() = 0;
 };
 
 #else /* C style interface */
@@ -452,7 +452,7 @@ EXTERN_C const IID IID_IChat;
 interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
     : public IUnknown {
  public:
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PumpMessages(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PumpMessages() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestServerList(
       /* [in] */ unsigned long SKU,
@@ -488,7 +488,7 @@ interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
       /* [in] */ User __RPC_FAR * users,
       /* [in] */ LPCSTR message) = 0;
 
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestLogout(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestLogout() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE
   RequestPrivateGameOptions(
@@ -543,7 +543,7 @@ interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SetChannelFilter(
       int channelType) = 0;
 
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestGameEnd(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestGameEnd() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SetLangFilter(
       int onoff) = 0;
@@ -581,7 +581,7 @@ interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SetChannelExInfo(
       LPCSTR info) = 0;
 
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE StopAutoping(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE StopAutoping() = 0;
 };
 
 #else /* C style interface */
@@ -1925,7 +1925,7 @@ interface DECLSPEC_UUID("0BF5FCEB-9F03-11D1-9DC7-006097C54321") IDownload
       LPCSTR server, LPCSTR login, LPCSTR password, LPCSTR file,
       LPCSTR localfile, LPCSTR regkey) = 0;
 
-  virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE Abort(void) = 0;
+  virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE Abort() = 0;
 
   virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE PumpMessages(
       void) = 0;
@@ -2024,14 +2024,14 @@ EXTERN_C const IID IID_IDownloadEvent;
 interface DECLSPEC_UUID("6869E99D-9FB4-11D1-9DC8-006097C54321") IDownloadEvent
     : public IUnknown {
  public:
-  virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE OnEnd(void) = 0;
+  virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE OnEnd() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnError(int error) = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnProgressUpdate(
       int bytesread, int totalsize, int timetaken, int timeleft) = 0;
 
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnQueryResume(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnQueryResume() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnStatusUpdate(
       int status) = 0;
@@ -2447,7 +2447,7 @@ EXTERN_C const IID IID_IChat2;
 interface DECLSPEC_UUID("8B938190-EF3F-11D1-9808-00609706FA0C") IChat2
     : public IUnknown {
  public:
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PumpMessages(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PumpMessages() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestConnection(
       Server __RPC_FAR * server, int timeout) = 0;
@@ -2470,7 +2470,7 @@ interface DECLSPEC_UUID("8B938190-EF3F-11D1-9808-00609706FA0C") IChat2
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestUserList(
       Channel __RPC_FAR * chan) = 0;
 
-  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestLogout(void) = 0;
+  virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestLogout() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RequestChannelCreate(
       Channel __RPC_FAR * chan) = 0;

@@ -66,11 +66,11 @@ PRIVATE BOOL Debug_Rig_Roll_Dialog_Procedure(WindowHandle window_handle,
 VOID Get_And_Display_Windows_Debug_Info(BYTE* command_line_string);
 VOID Debug_Mono_Message(BYTE* message);
 // VOID Debug_Window_Message( BYTE *message );
-VOID Debug_Show_Palette(VOID);
-VOID Debug_Draw_Line_Test(VOID);
-VOID Debug_Put_Pixel_Test(VOID);
-VOID Debug_Shape_Test(VOID);
-VOID Debug_Print_Game_Stats(VOID);
+VOID Debug_Show_Palette();
+VOID Debug_Draw_Line_Test();
+VOID Debug_Put_Pixel_Test();
+VOID Debug_Shape_Test();
+VOID Debug_Print_Game_Stats();
 VOID Debug_Adjust_Players_Cash(WindowHandle window_handle);
 VOID Debug_Mono_Print_Whose_Turn(PlayerType player);
 VOID Build_Debug_Log_File_Name(BYTE* name_string);
@@ -84,7 +84,7 @@ PRIVATE BOOL Debug_Adjust_Cash_Dialog_Procedure(WindowHandle window_handle,
 #endif
 
 #if (DEBUG_CHECKSUM_ALL_SITES_DATA)
-PRIVATE VOID Give_To_The_Mikes(VOID);
+PRIVATE VOID Give_To_The_Mikes();
 #endif
 
 #if (DEBUG_CODE)
@@ -194,7 +194,7 @@ VOID Debug_Mono_Message(BYTE* message) {
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-VOID Debug_Show_Palette(VOID) {
+VOID Debug_Show_Palette() {
 #define PIXEL_SIZE 19
   INT i, j, x, y;
   UBYTE color;
@@ -243,7 +243,7 @@ VOID Debug_Show_Palette(VOID) {
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-VOID Debug_Draw_Line_Test(VOID) {
+VOID Debug_Draw_Line_Test() {
 #if (0)
   //	INT x1=0, y1=0, x2=638, y2=438;
   INT x1, y1 = 0, x2 = 638, y2 = 438;
@@ -278,7 +278,7 @@ VOID Debug_Draw_Line_Test(VOID) {
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-VOID Debug_Put_Pixel_Test(VOID) {
+VOID Debug_Put_Pixel_Test() {
 #if (0)
   INT x = random(640);
   INT y = random(440);
@@ -354,7 +354,7 @@ VOID Debug_Put_Pixel_Test(VOID) {
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-VOID Debug_Shape_Test(VOID) {
+VOID Debug_Shape_Test() {
 #if (0)
   BYTE *shapebuf, *shapes;
   LONG fsize;
@@ -463,7 +463,7 @@ VOID Debug_Shape_Test(VOID) {
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-VOID Debug_Print_Game_Stats(VOID) {
+VOID Debug_Print_Game_Stats() {
   INT i;
   INT x;
   INT y;
@@ -675,7 +675,7 @@ PRIVATE BOOL Debug_Adjust_Cash_Dialog_Procedure(WindowHandle window_handle,
 // TC
 extern BYTE* Debug_Chance_Card_Text[];
 
-VOID Debug_Show_Chance_Deck(VOID) {
+VOID Debug_Show_Chance_Deck() {
   ChanceCardType card;
   INT i;
 
@@ -694,7 +694,7 @@ VOID Debug_Show_Chance_Deck(VOID) {
 // TC
 extern BYTE* Debug_CC_Card_Text[];
 
-VOID Debug_Show_CC_Deck(VOID) {
+VOID Debug_Show_CC_Deck() {
   CommunityChestCardType card;
   INT i;
 
@@ -732,13 +732,13 @@ VOID Debug_Mono_Print_Whose_Turn(PlayerType player) {
       "--\r\n");
 }
 
-VOID Debug_Display_Bank_Status(VOID) {
+VOID Debug_Display_Bank_Status() {
   sprintf(Text_String, "Hotels in bank = %d, Houses in bank = %d",
           Bank.Get_Hotels(), Bank.Get_Houses());
   Standard_Window_Message(Text_String, "DEBUG");
 }
 
-VOID Debug_Show_Player_Info(VOID) {
+VOID Debug_Show_Player_Info() {
   BYTE* tokens[TOTAL_TOKENS] = {
       "CANNON ", "CAR    ", "DOG    ", "HAT    ", "IRON   ",
       "HORSE  ", "SHIP   ", "SHOE   ", "THIMBLE", "WBARROW",
@@ -793,7 +793,7 @@ VOID Debug_Give_All_Properties(PlayerType player) {
 
 #if (DEBUG_CHECKSUM_ALL_SITES_DATA)
 #if (COMPILE_WINSOCK)
-VOID Debug_Broadcast_Save_Game_Checksum_Other_Sites(VOID) {
+VOID Debug_Broadcast_Save_Game_Checksum_Other_Sites() {
   ULONG file_size;
   INT fh;
   INT i;
@@ -1004,7 +1004,7 @@ VOID Debug_Compare_Local_Checksum_With_Received_Checksum(INT received_file_size,
 #endif
 
 #if (DEBUG_CHECKSUM_ALL_SITES_DATA)
-PRIVATE VOID Give_To_The_Mikes(VOID) {
+PRIVATE VOID Give_To_The_Mikes() {
   Real_Error_Window_Message("Put TEMPSAVE.TMP from your system on a floppy...");
   Real_Error_Window_Message(
       "and put TEMPSEND.TMP from your oppenent systems on the floppy...");
@@ -1193,7 +1193,7 @@ VOID Build_Debug_Log_File_Name(BYTE* name_string_buffer,
 #endif
 
 #if (DEBUG_LOG_TO_FILE)
-VOID Debug_Print_Log_File_Name_On_Board_Hid(VOID) {
+VOID Debug_Print_Log_File_Name_On_Board_Hid() {
 #if (0)
   SetTextAlign(WinG_DC, TA_LEFT);
   SelectObject(WinG_DC, GetStockObject(ANSI_VAR_FONT));
@@ -1233,7 +1233,7 @@ VOID Debug_Print_Log_File_Name_On_Board_Hid(VOID) {
  *                                                                         *
  * HISTORY: see PVCS log                                                   *
  *=========================================================================*/
-BOOL Get_Windows_System_Info(VOID) {
+BOOL Get_Windows_System_Info() {
   OSVERSIONINFO version_info;
   DWORD major;
   DWORD minor;
@@ -1247,7 +1247,8 @@ BOOL Get_Windows_System_Info(VOID) {
   // "Debug info:\r\nflags = %d, options = %d, filter = %d, alloc module = %s,
   //\r\nalloc break = %ld, alloc count = %ld.\r\n",
   // current_windows_debug_info.flags,
-  // current_windows_debug_info.dwOptions, 				current_windows_debug_info.dwFilter,
+  // current_windows_debug_info.dwOptions,
+  // current_windows_debug_info.dwFilter,
   //				current_windows_debug_info.achAllocModule,
   //				current_windows_debug_info.dwAllocBreak,
   //				current_windows_debug_info.dwAllocCount );
@@ -1541,7 +1542,8 @@ BOOL Get_Windows_System_Info(VOID) {
 // Generic_Window_Message( Text_String, " "
 //); 			sprintf( Text_String,
 //"Compare %s (our system) and TEMPRECV.MNO (rec'd)!",
-//file_name ); 			Generic_Window_Message( Text_String, " " );
+// file_name ); 			Generic_Window_Message( Text_String, " "
+// );
 //	}
 //
 //	/*
@@ -1710,7 +1712,7 @@ BOOL Get_Windows_System_Info(VOID) {
 //}
 // #endif
 
-BYTE* Debug_Get_Time_String(VOID) {
+BYTE* Debug_Get_Time_String() {
   SYSTEMTIME data;
   static BYTE _time_string[20];
 
@@ -1742,7 +1744,7 @@ BYTE* Debug_Get_Time_String(VOID) {
   return (_time_string);
 }
 
-VOID Check_For_Duplicate_Tokens_Bug(VOID) {
+VOID Check_For_Duplicate_Tokens_Bug() {
 #if (DEBUG_CODE)
   INT i, j;
   GameTokenType token;

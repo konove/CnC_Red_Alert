@@ -92,7 +92,7 @@ static VESAModeInfo _ModeInfo;
  * SYNOPSIS
  *     Error = InitVESA()
  *
- *     long InitVESA(void);
+ *     long InitVESA();
  *
  * FUNCTION
  *     Initialize the VESA video system. Get the VESA information from the
@@ -106,7 +106,7 @@ static VESAModeInfo _ModeInfo;
  *
  ****************************************************************************/
 
-long InitVESA(void) {
+long InitVESA() {
 #ifdef __WATCOMC__
   union REGS r;
   struct SREGS sr;
@@ -216,7 +216,7 @@ long InitVESA(void) {
  * SYNOPSIS
  *     UninitVESA()
  *
- *     void UninitVESA(void);
+ *     void UninitVESA();
  *
  * FUNCTION
  *
@@ -228,7 +228,7 @@ long InitVESA(void) {
  *
  ****************************************************************************/
 
-void UninitVESA(void) {
+void UninitVESA() {
 #ifdef __WATCOMC__
   union REGS r;
 

@@ -63,7 +63,7 @@
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-FacingClass::FacingClass(void) {
+FacingClass::FacingClass() {
   CurrentFacing = DIR_N;
   DesiredFacing = DIR_N;
 }

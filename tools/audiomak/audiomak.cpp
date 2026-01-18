@@ -340,7 +340,7 @@ inline void Log_Compressed(long val) { compressed += val; }
 inline void Log_Original(long val) { original += val; }
 inline void Log_Rate(long val) { rate = val; }
 
-void Stat_Reset(void) {
+void Stat_Reset() {
   if (DoVerbose) {
     rawframes = 0;
     rate = 0;
@@ -355,7 +355,7 @@ void Stat_Reset(void) {
   }
 }
 
-void Stat_Dump(void) {
+void Stat_Dump() {
   if (DoVerbose) {
     printf("Compression efficiency = %ld%% (%ld bytes)\n",
            ((original - compressed) * 100) / original, original - compressed);

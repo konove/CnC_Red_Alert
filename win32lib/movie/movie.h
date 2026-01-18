@@ -43,14 +43,14 @@ class Movie {
 
   bool Open(const char* name);
   bool Play(IDirectDrawSurface* surface);
-  bool Update(void);
-  void Close(void);
+  bool Update();
+  void Close();
 
-  bool IsPlaying(void) const { return mPlaying; }
+  bool IsPlaying() const { return mPlaying; }
 
-  DWORD GetWidth(void) const { return mWidth; }
+  DWORD GetWidth() const { return mWidth; }
 
-  DWORD GetHeight(void) const { return mHeight; }
+  DWORD GetHeight() const { return mHeight; }
 
  protected:
   DWORD mWidth;

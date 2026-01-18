@@ -71,7 +71,7 @@ class LoadOptionsClass {
 
   LoadOptionsClass(LoadStyleType style = LoadOptionsClass::NONE);
   ~LoadOptionsClass();
-  int Process(void);
+  int Process();
 
  protected:
   /*

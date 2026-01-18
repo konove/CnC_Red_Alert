@@ -905,7 +905,7 @@ void UnitTypeClass::operator delete(void* pointer) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::Init_Heap(void) {
+void UnitTypeClass::Init_Heap() {
   /*
   **	These unit type class objects must be allocated in the exact order that
   *they *	are specified in the UnitType enumeration. This is necessary
@@ -1009,7 +1009,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
  * HISTORY: * 05/23/1994 JLB : Created. * 06/04/1994 JLB : Uses map editing
  *interface functions.                                    *
  *=============================================================================================*/
-void UnitTypeClass::Prep_For_Add(void) {
+void UnitTypeClass::Prep_For_Add() {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
     if (As_Reference(index).Get_Image_Data() != NULL) {
       Map.Add_To_List(&As_Reference(index));
@@ -1034,7 +1034,7 @@ void UnitTypeClass::Prep_For_Add(void) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::One_Time(void) {
+void UnitTypeClass::One_Time() {
   for (UnitType index = UNIT_FIRST; index < UNIT_COUNT; index++) {
     UnitTypeClass& uclass = As_Reference(index);
     CCFileClass file;
@@ -1215,7 +1215,7 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
  *                                                                                             *
  * HISTORY: * 06/26/1995 JLB : Created. *
  *=============================================================================================*/
-int UnitTypeClass::Max_Pips(void) const {
+int UnitTypeClass::Max_Pips() const {
   if (Type == UNIT_HARVESTER) {
     return (7);
   }

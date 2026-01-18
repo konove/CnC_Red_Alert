@@ -61,7 +61,7 @@
  * HISTORY:                                                               *
  *   04/24/1996 PWG : Created.                                            *
  *========================================================================*/
-PacketClass::~PacketClass(void) {
+PacketClass::~PacketClass() {
   FieldClass* current;
   FieldClass* next;
   //

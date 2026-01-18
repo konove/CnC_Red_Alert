@@ -59,8 +59,8 @@
 class CDFileClass : public RawFileClass {
  public:
   CDFileClass(char const* filename);
-  CDFileClass(void);
-  virtual ~CDFileClass(void) {};
+  CDFileClass();
+  virtual ~CDFileClass() {};
 
   virtual char const* Set_Name(char const* filename);
   virtual int Open(char const* filename, int rights = READ);
@@ -68,14 +68,14 @@ class CDFileClass : public RawFileClass {
 
   void Searching(int on) { IsDisabled = !on; };
 
-  static bool Is_There_Search_Drives(void) { return (First != nullptr); };
+  static bool Is_There_Search_Drives() { return (First != nullptr); };
   static int Set_Search_Drives(char* pathlist);
   static void Add_Search_Drive(char* path);
-  static void Clear_Search_Drives(void);
-  static void Refresh_Search_Drives(void);
+  static void Clear_Search_Drives();
+  static void Refresh_Search_Drives();
   static void Set_CD_Drive(int drive);
-  static int Get_CD_Drive(void) { return (current_cd_drive_); };
-  static int Get_Last_CD_Drive(void) { return (last_cd_drive_); };
+  static int Get_CD_Drive() { return (current_cd_drive_); };
+  static int Get_Last_CD_Drive() { return (last_cd_drive_); };
 
  private:
   /*
@@ -113,6 +113,6 @@ class CDFileClass : public RawFileClass {
   static int last_cd_drive_;
 };
 
-extern int Get_CD_Drive(void);
+extern int Get_CD_Drive();
 
 #endif

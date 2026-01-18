@@ -93,7 +93,7 @@
 #include "tech/fixed.h"
 
 #ifdef NEVER
-void test(void) {
+void test() {
   enum nums { one, two, three };
 
   nums x;
@@ -116,7 +116,7 @@ void test(void) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Response_Select(void) {
+void DriveClass::Response_Select() {
   assert(IsActive);
 
   static VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
@@ -141,7 +141,7 @@ void DriveClass::Response_Select(void) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Response_Move(void) {
+void DriveClass::Response_Move() {
   assert(IsActive);
 
   static VocType _response[] = {
@@ -168,7 +168,7 @@ void DriveClass::Response_Move(void) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Response_Attack(void) {
+void DriveClass::Response_Attack() {
   assert(IsActive);
 
   static VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
@@ -255,7 +255,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool DriveClass::Limbo(void) {
+bool DriveClass::Limbo() {
   if (!IsInLimbo) {
     Stop_Driver();
     TrackNumber = -1;
@@ -278,7 +278,7 @@ bool DriveClass::Limbo(void) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool DriveClass::Stop_Driver(void) {
+bool DriveClass::Stop_Driver() {
   assert(IsActive);
 
   /*
@@ -639,7 +639,7 @@ void DriveClass::Assign_Destination(TARGET target) {
  * HISTORY: * 02/02/1992 JLB : Created. * 04/15/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-bool DriveClass::While_Moving(void) {
+bool DriveClass::While_Moving() {
   assert(IsActive);
 
   /*
@@ -887,7 +887,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
  * of hopeless hunt mode. * 07/10/1996 JLB : Sets scan limit if necessary.
  *                                      *
  *=============================================================================================*/
-bool DriveClass::Start_Of_Move(void) {
+bool DriveClass::Start_Of_Move() {
   assert(IsActive);
 
   FacingType facing;  // Direction movement will commence.
@@ -1290,7 +1290,7 @@ bool DriveClass::Start_Of_Move(void) {
  * HISTORY: * 09/26/1993 JLB : Created. * 04/15/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void DriveClass::AI(void) {
+void DriveClass::AI() {
   assert(IsActive);
 
   FootClass::AI();
@@ -1595,7 +1595,7 @@ void DriveClass::Fixup_Path(PathType* path) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Lay_Track(void) {
+void DriveClass::Lay_Track() {
   assert(IsActive);
 
 #ifdef NEVER

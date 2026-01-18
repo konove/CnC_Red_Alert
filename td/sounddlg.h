@@ -109,9 +109,9 @@ class SoundControlsClass {
   };
 
  public:
-  SoundControlsClass(void) {}
-  void Process(void);
-  int Init(void);
+  SoundControlsClass() {}
+  void Process();
+  int Init();
 
  private:
   int Option_Width;

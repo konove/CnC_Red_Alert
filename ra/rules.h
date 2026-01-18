@@ -64,7 +64,7 @@ class DifficultyClass {
 
 class RulesClass {
  public:
-  RulesClass(void);
+  RulesClass();
 
   bool Process(CCINIClass& file);
   bool General(CCINIClass& ini);

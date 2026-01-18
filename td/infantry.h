@@ -69,7 +69,7 @@
 class InfantryClass : public FootClass {
  public:
   InfantryTypeClass const* const Class;
-  operator InfantryType(void) const { return Class->Type; };
+  operator InfantryType() const { return Class->Type; };
 
   /*
   **	If the infantry is undergoing some choreographed animation sequence,
@@ -128,26 +128,26 @@ class InfantryClass : public FootClass {
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); };
   static void operator delete(void* ptr);
-  InfantryClass(void);
+  InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
   InfantryClass(NoInitClass const& x)
       : FootClass(x), Class(Class), Comment(x) {};
-  virtual ~InfantryClass(void);
-  virtual RTTIType What_Am_I(void) const;
+  virtual ~InfantryClass();
+  virtual RTTIType What_Am_I() const;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  static void Init(void);
+  static void Init();
 
   virtual void Assign_Destination(TARGET);
 
   /*
   **	Query functions.
   */
-  virtual bool Is_Infantry(void) const;
-  virtual ObjectTypeClass const& Class_Of(void) const;
-  virtual int Full_Name(void) const;
+  virtual bool Is_Infantry() const;
+  virtual ObjectTypeClass const& Class_Of() const;
+  virtual int Full_Name() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -159,36 +159,36 @@ class InfantryClass : public FootClass {
   **	Object entry and exit from the game system.
   */
   virtual bool Unlimbo(COORDINATE coord, DirType facing);
-  virtual bool Limbo(void);
+  virtual bool Limbo();
   virtual void Detach(TARGET target, bool all);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual short const* Overlap_List(void) const;
+  virtual short const* Overlap_List() const;
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual void Look(bool incremental = false);
 
   /*
   **	User I/O.
   */
-  virtual void Response_Select(void);
-  virtual void Response_Move(void);
-  virtual void Response_Attack(void);
+  virtual void Response_Select();
+  virtual void Response_Move();
+  virtual void Response_Attack();
   virtual void Active_Click_With(ActionType action, ObjectClass* object);
 
   /*
   **	Combat related.
   */
-  virtual int Made_A_Kill(void);
+  virtual int Made_A_Kill();
   virtual ActionType What_Action(ObjectClass* object) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual void Assign_Mission(MissionType order);
   virtual BulletClass* Fire_At(TARGET target, int which);
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr);
-  virtual TARGET As_Target(void) const;
+  virtual TARGET As_Target() const;
   virtual FireErrorType Can_Fire(TARGET target, int which) const;
   virtual void Assign_Target(TARGET);
   virtual RadioMessageType Receive_Message(RadioClass* from,
@@ -208,15 +208,15 @@ class InfantryClass : public FootClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Stop_Driver(void);
+  virtual bool Stop_Driver();
   virtual bool Start_Driver(COORDINATE& coord);
 
   /*
   **	AI.
   */
-  virtual void AI(void);
+  virtual void AI();
   virtual TARGET Greatest_Threat(ThreatType threat) const;
-  virtual int Mission_Attack(void);
+  virtual int Mission_Attack();
 
 /*
 **	Scenario and debug support.
@@ -230,17 +230,17 @@ class InfantryClass : public FootClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name(void) { return "INFANTRY"; };
+  static char const* INI_Name() { return "INFANTRY"; };
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers(void);
-  virtual void Decode_Pointers(void);
+  virtual void Code_Pointers();
+  virtual void Decode_Pointers();
 
   /*
   **	Movement and animation.
   */
   virtual bool Do_Action(DoType todo, bool force = false);
-  virtual void Random_Animate(void);
+  virtual void Random_Animate();
   virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const;
   virtual void Per_Cell_Process(bool center);
   virtual void Enter_Idle_Mode(bool initial = false);
@@ -249,7 +249,7 @@ class InfantryClass : public FootClass {
   /*
   **	Dee-buggin' support.
   */
-  int Validate(void) const;
+  int Validate() const;
 
   /*
   **	Translation table to convert facing into infantry shape number. This

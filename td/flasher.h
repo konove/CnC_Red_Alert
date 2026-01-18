@@ -59,7 +59,7 @@ class FlasherClass {
   */
   unsigned IsBlushing : 1;
 
-  FlasherClass(void) {
+  FlasherClass() {
     FlashCount = 0;
     IsBlushing = false;
   };
@@ -67,13 +67,13 @@ class FlasherClass {
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif
-  bool Process(void);
+  bool Process();
 
   /*
   **	File I/O.
   */
-  void Code_Pointers(void);
-  void Decode_Pointers(void);
+  void Code_Pointers();
+  void Decode_Pointers();
 };
 
 #endif
