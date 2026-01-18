@@ -111,6 +111,10 @@ int dist = IsqrtFixed(dx * dx + dy * dy);
 // strcpy + strcat        →  Or: strncpy + null-terminate + strncat(dest, src, sizeof(dest)-strlen(dest)-1)
 ```
 
+## Testing
+
+All new code should have unit tests. Use the [Google Test](https://google.github.io/googletest/) framework.
+
 ## Abseil
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.
