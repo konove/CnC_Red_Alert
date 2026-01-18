@@ -275,16 +275,7 @@
 #define FOREIGN_VERSION_NUMBER 7
 #endif
 
-/**********************************************************************
-** This is the multiplier factor to convert low resution coordinates
-**	into their actual resolution counterparts.
-*/
-#if defined(WIN32) && !defined(LORES)
 #define RESFACTOR 2
-#else
-// #undef SCENARIO_EDITOR
-#define RESFACTOR 1
-#endif
 
 #define SIDEBAR_WID 80
 

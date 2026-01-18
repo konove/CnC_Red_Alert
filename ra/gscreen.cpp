@@ -446,27 +446,11 @@ void GScreenClass::Render(void) {
  * HISTORY: * 02/14/1994 JLB : Created. * 05/01/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-extern "C" {
-void ModeX_Blit(GraphicBufferClass* source);
-}
-
 void GScreenClass::Blit_Display(void) {
   BStart(BENCH_BLIT_DISPLAY);
-#ifdef WIN32
-#ifndef PORTABLE
-  if (SeenBuff.Get_Width() != 320) {
-#endif
-    WWMouse->Draw_Mouse(&HidPage);
-    HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(),
-                 HidPage.Get_Height(), false);
-    WWMouse->Erase_Mouse(&HidPage, false);
-#ifndef PORTABLE
-  } else {
-    ModeX_Blit(&HiddenPage);
-  }
-#endif
-#else
-  Shadow_Blit(0, 0, 320, 200, HidPage, SeenPage, ShadowPage->Get_Buffer());
-#endif
+  WWMouse->Draw_Mouse(&HidPage);
+  HidPage.Blit(SeenBuff, 0, 0, 0, 0, HidPage.Get_Width(), HidPage.Get_Height(),
+               false);
+  WWMouse->Erase_Mouse(&HidPage, false);
   BEnd(BENCH_BLIT_DISPLAY);
 }

@@ -1863,7 +1863,6 @@ char* Int_Print(int a) {
  *                                                                                             *
  * HISTORY: * 06/11/1995  BWG: Created. *
  *=============================================================================================*/
-extern int CopyType;
 
 void Multi_Score_Presentation(void) {
   char remap[16];
@@ -1899,7 +1898,6 @@ void Multi_Score_Presentation(void) {
   Animate_Frame(anim, *pseudoseenbuff, 1);
   for (int x = 0; x < 256; x++)
     memset(&PaletteInterpolationTable[x][0], x, 256);
-  CopyType = 1;
   Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
 #else
   Animate_Frame(anim, HidPage, 1);
@@ -1911,9 +1909,7 @@ void Multi_Score_Presentation(void) {
   while (frame < Get_Animation_Frame_Count(anim)) {
 #if RESFACTOR == 2
     Animate_Frame(anim, *pseudoseenbuff, frame++);
-    CopyType = 1;
     Interpolate_2X_Scale(pseudoseenbuff, &SeenBuff, nullptr);
-    CopyType = 0;
 #else
     Animate_Frame(anim, SeenPage, frame++);
 #endif
@@ -1922,9 +1918,7 @@ void Multi_Score_Presentation(void) {
   Close_Animation(anim);
 
 #if RESFACTOR == 2 && defined(SEENBUF_COPY)
-  CopyType = 1;
   Interpolate_2X_Scale(pseudoseenbuff, PseudoSeenBuff, NULL);
-  CopyType = 0;
 #endif
 
   /* Change to the six-point font for Text_Print */

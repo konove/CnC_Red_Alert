@@ -23,7 +23,7 @@
 ;*                                                                         *
 ;*                 Project Name : Command & Conquer                        *
 ;*                                                                         *
-;*                    File Name : WINSAM.ASM                               *
+;*                    File Name : WINASM.ASM                               *
 ;*                                                                         *
 ;*                   Programmer : Steve Tall                               *
 ;*                                                                         *
