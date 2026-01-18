@@ -82,6 +82,11 @@ class WWMouseClass {
   int MouseXHot;  // X hot spot of the current mouse cursor
   int MouseYHot;  // Y hot spot of the current mouse cursor
 
+  uint8_t* OriginalCursor = nullptr;  // Unscaled cursor pixels
+  int OriginalWidth = 0;
+  int OriginalHeight = 0;
+  int CurrentScale = 1;
+
   int MaxWidth;   // maximum width of mouse background buffer
   int MaxHeight;  // maximum height of mouse background buffer
 
