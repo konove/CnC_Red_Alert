@@ -1172,7 +1172,7 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
    *-----------------------------------------------------------------------*/
   if (config->ImageBuf == nullptr) {
     /* Allocate our own buffer. */
-    if (config->DrawFlags & VQACFGF_BUFFER != 0) {
+    if ((config->DrawFlags & VQACFGF_BUFFER) != 0) {
       vqa->Drawer.ImageBuf =
           (unsigned char*)malloc((header->ImageWidth * header->ImageHeight));
 
@@ -1203,8 +1203,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE AND INITIALIZE AUDIO BUFFERS AND STRUCTURES.
    *-----------------------------------------------------------------------*/
-  if ((header->Flags & VQAHDF_AUDIO != 0) &&
-      (config->OptionFlags & VQAOPTF_AUDIO != 0)) {
+  if ((header->Flags & VQAHDF_AUDIO) != 0 &&
+      (config->OptionFlags & VQAOPTF_AUDIO) != 0) {
     /* Dereference audio structure for quick access. */
     VQAAudio* audio = &vqa->Audio;
 
