@@ -60,8 +60,8 @@
 **	Release version -- no editor or cheat keys -- all debugging info
 *removed.
 */
-// #define	INTERNAL_VERSION
-// #define	PLAYTEST_VERSION
+// #define INTERNAL_VERSION
+// #define PLAYTEST_VERSION
 #define RELEASE_VERSION
 
 /**********************************************************************

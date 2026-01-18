@@ -52,7 +52,9 @@
 
 #include <algorithm>
 
+#include "ra/config.h"
 #include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
 
@@ -198,23 +200,22 @@ bool SuperClass::Remove(void) {
  *=============================================================================================*/
 bool SuperClass::Recharge(bool player) {
   if (IsPresent && !IsReady) {
-    //		IsSuspended = false;
     OldStage = -1;
     Control.Start();
     Control = RechargeTime;
 
-#ifdef CHEAT_KEYS
-    if (Special.IsSpeedBuild) {
-      Control = 1;
+    if constexpr (config::kCheatKeysEnabled) {
+      if (Special.IsSpeedBuild) {
+        Control = 1;
+      }
     }
-#endif
 
     if (player) {
       Speak(VoxCharging);
     }
-    return (true);
+    return true;
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************
@@ -248,31 +249,17 @@ bool SuperClass::Discharged(bool player) {
   return (false);
 }
 
-/***********************************************************************************************
- * SuperClass::AI -- Process the super weapon AI. *
- *                                                                                             *
- *    This routine will process the charge up AI for this super weapon object.
- *If the weapon   * has advanced far enough to change any sidebar graphic that
- *might represent it, then      * "true" will be returned. Use this return value
- *to intelligently update the sidebar.      *
- *                                                                                             *
- * INPUT:   player   -- Is this for the player? If it is and the weapon is now
- *fully charged,  * then this fully charged state will be announced to the
- *player.         *
- *                                                                                             *
- * OUTPUT:  Was the weapon's state changed such that a sidebar graphic update
- *will be          * necessary? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/28/1995 JLB : Created. *
- *=============================================================================================*/
-bool SuperClass::AI(bool player) {
+// Processes charge-up AI for this super weapon.
+//
+// Returns true if the weapon's state changed enough to require a sidebar
+// graphic update. When fully charged, announces this to the player if
+// `player` is true.
+bool SuperClass::AI(const bool player) {
   if (IsPresent && !IsReady) {
     if (!Control.Is_Active()) {
       if (OldStage != -1) {
         OldStage = -1;
-        return (true);
+        return true;
       }
     } else {
       if (Control == 0) {
@@ -280,16 +267,15 @@ bool SuperClass::AI(bool player) {
         if (player) {
           Speak(VoxRecharge);
         }
-        return (true);
-      } else {
-        if (Anim_Stage() != OldStage) {
-          OldStage = Anim_Stage();
-          return (true);
-        }
+        return true;
+      }
+      if (Anim_Stage() != OldStage) {
+        OldStage = Anim_Stage();
+        return true;
       }
     }
   }
-  return (false);
+  return false;
 }
 
 /***********************************************************************************************

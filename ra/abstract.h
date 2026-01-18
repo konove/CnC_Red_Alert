@@ -45,6 +45,10 @@
 #include "ra/face.h"
 #include "tech/noinit.h"
 
+#ifdef CHEAT_KEYS
+#include "ra/monoc.h"
+#endif  // CHEAT_KEYS
+
 DirType Direction(CELL cell1, CELL cell2);
 DirType Direction(COORDINATE coord1, COORDINATE coord2);
 int Distance(COORDINATE coord1, COORDINATE coord2);

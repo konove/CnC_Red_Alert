@@ -55,6 +55,11 @@
 #include "ra/jshell.h"
 #include "ra/target.h"
 #include "ra/type.h"
+
+#ifdef CHEAT_KEYS
+#include "ra/inline.h"
+#endif  // CHEAT_KEYS
+
 /***********************************************************************************************
  * AbstractClass::Debug_Dump -- Display debug information to mono screen. *
  *                                                                                             *

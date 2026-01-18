@@ -181,6 +181,10 @@
 #include "sdllib/include/shape.h"
 #include "tech/fixed.h"
 
+#ifdef CHEAT_KEYS
+#include "ra/debug.h"
+#endif  // CHEAT_KEYS
+
 enum SAMState {
   SAM_READY,  // Launcher can be facing any direction tracking targets.
   SAM_FIRING  // Stationary while missile is being fired.
