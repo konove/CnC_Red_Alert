@@ -41,6 +41,11 @@ inline constexpr bool kScenarioEditorEnabled = kInternalVersion;
 // Enabled for internal and playtest builds
 inline constexpr bool kCheatKeysEnabled = kInternalVersion || kPlaytestVersion;
 
+// Virgin cheat keys - limited cheat key set (migrated from VIRGIN_CHEAT_KEYS
+// in defines.h:225-232). This is a subset that only allows Alt+W to win.
+// Enabled only for playtest builds (internal builds have full cheat keys).
+inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
+
 // Network service providers (migrated from MPATH and TEN macros in
 // defines.h:249,255) IMPORTANT: Only one of these can be enabled (non-zero) at
 // a time

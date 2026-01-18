@@ -3198,7 +3198,7 @@ void BuildingTypeClass::One_Time() {
     **	Fetch the sidebar cameo image for this building.
     */
     if (building.Level != -1) {
-      std::string buffer = std::string(building.Graphic_Name()) + "{}ICON";
+      std::string buffer = std::string(building.Graphic_Name()) + "ICON";
 
       if (building.IsFake) {
         buffer[3] = 'F';

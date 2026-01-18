@@ -1678,11 +1678,11 @@ bool Parse_Command_Line(int argc, char* argv[]) {
     }
 
     switch (ob) {
-#ifdef VIRGIN_CHEAT_KEYS
       case PARM_PLAYTEST:
-        Debug_Playtest = true;
+        if constexpr (config::kVirginCheatKeysEnabled) {
+          Debug_Playtest = true;
+        }
         break;
-#endif
 
       /*
       ** Special flag - is C&C being run from the install program?

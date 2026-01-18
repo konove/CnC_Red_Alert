@@ -223,14 +223,7 @@
 #define CHEAT_KEYS
 #endif
 
-/**********************************************************************
-**	If this is defined, the special Virgin limited cheat keys
-**	are enabled. This allows the "cheat" parameter and then only
-**	allows the ALT-W to win the mission.
-*/
-#ifdef PLAYTEST_VERSION
-#define VIRGIN_CHEAT_KEYS
-#endif
+// VIRGIN_CHEAT_KEYS migrated to config::kVirginCheatKeysEnabled in config.h
 
 /**********************************************************************
 **	If this is defined, then the network code will be enabled.
@@ -283,23 +276,11 @@
 **	Optional parameter control for special options.
 */
 
-/*
-**	Enable the set of limited cheat key options.
-*/
-#ifdef VIRGIN_CHEAT_KEYS
+// Cheat key command line parameter. Always defined so switch cases compile, but
+// actual behavior is controlled by config::kVirginCheatKeysEnabled.
 #define PARM_PLAYTEST long(0xF7DDC227)  // "PLAYTEST"
-#endif
 
-/*
-**	Enable the full set of cheat key options.
-*/
-#ifdef CHEAT_KEYS
-#ifndef PARM_PLAYTEST
-#define PARM_PLAYTEST long(0xF7DDC227)  // "PLAYTEST"
-#endif
-#endif
-
-#define PARM_INSTALL long(0xD95C68A2)  //	"FROMINSTALL"
+#define PARM_INSTALL long(0xD95C68A2)  // "FROMINSTALL"
 
 //
 // Allow normal game play in the MPath version

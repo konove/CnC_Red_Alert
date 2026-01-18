@@ -90,6 +90,7 @@
 #include "ra/ccfile.h"
 #include "ra/ccptr.h"
 #include "ra/compat.h"
+#include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -614,12 +615,12 @@ void Keyboard_Process(KeyNumType& input) {
   }
 #endif
 
-#ifdef VIRGIN_CHEAT_KEYS
-  if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
-    PlayerPtr->Blockage = false;
-    PlayerPtr->Flag_To_Win();
+  if constexpr (config::kVirginCheatKeysEnabled) {
+    if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
+      PlayerPtr->Blockage = false;
+      PlayerPtr->Flag_To_Win();
+    }
   }
-#endif
 
 #ifdef CHEAT_KEYS
 #ifdef WIN32
