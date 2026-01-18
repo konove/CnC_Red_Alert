@@ -57,26 +57,9 @@
 #ifndef LORES
 
 bool InterpolationPaletteChanged = false;
-extern "C" {
-extern void __cdecl Asm_Interpolate(unsigned char* src_ptr,
-                                    unsigned char* dest_ptr, int lines,
-                                    int src_width, int dest_width);
 
-extern void __cdecl Asm_Interpolate_Line_Double(unsigned char* src_ptr,
-                                                unsigned char* dest_ptr,
-                                                int lines, int src_width,
-                                                int dest_width);
-
-extern void __cdecl Asm_Interpolate_Line_Interpolate(unsigned char* src_ptr,
-                                                     unsigned char* dest_ptr,
-                                                     int lines, int src_width,
-                                                     int dest_width);
-}
-
-extern "C" {
 unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
 unsigned char* InterpolationPalette;
-}
 
 /***********************************************************************************************
  * Read_Interpolatioin_Palette -- reads an interpolation palette table from disk
@@ -278,108 +261,29 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
   }
 }
 
-int CopyType = 1;
-
 #ifndef LORES
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *
- * INPUT:                                                                  *
+ * Renders a 320x200 paletted frame to the screen using SDL texture        *
+ * scaling with bilinear filtering.                                        *
  *                                                                         *
- * OUTPUT:                                                                 *
+ * INPUT:    source - GraphicBufferClass containing 320x200 paletted data  *
+ *           dest - unused (kept for API compatibility)                    *
+ *           palette_file_name - unused (kept for API compatibility)       *
  *                                                                         *
- * WARNINGS:                                                               *
+ * OUTPUT:   Nothing                                                       *
  *                                                                         *
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
+ *   01/2026     : Replaced with SDL texture scaling.                      *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source,
-                          GraphicViewPortClass* dest,
-                          char const* palette_file_name) {
-  unsigned char* src_ptr;
-  unsigned char* dest_ptr;
-  int src_width;
-  int dest_width;
-  bool source_locked = false;
-  bool dest_locked = false;
-
-  /*
-  **If a palette table exists on disk then read it in otherwise create it
-  */
-  if (InterpolationPaletteChanged) {
-    if (palette_file_name) {
-      Read_Interpolation_Palette(palette_file_name);
-    }
-    if (InterpolationPaletteChanged) {
-      Create_Palette_Interpolation_Table();
-    }
-  }
-
-  /*
-  ** Write the palette table to disk so we dont have to create it again next
-  *time
-  */
-  if (palette_file_name) {
-    Write_Interpolation_Palette(palette_file_name);
-  }
-  if (dest == &SeenBuff) Hide_Mouse();
-
-  Wait_Blit();
-  /*
-  ** Lock video surfaces if requred
-  */
-  if (source->Get_IsDirectDraw()) {
-    if (!source->Lock()) {
-      if (dest == &SeenBuff) Show_Mouse();
-      return;
-    }
-    source_locked = true;
-  }
-  if (dest->Get_IsDirectDraw()) {
-    if (!dest->Lock()) {
-      if (source_locked) {
-        source->Unlock();
-      }
-      if (dest == &SeenBuff) Show_Mouse();
-      return;
-    }
-    dest_locked = true;
-  }
-
-  //
-  // Get pointers to the source and destination buffers.
-  //
-  src_ptr = (unsigned char*)source->Get_Offset();
-  dest_ptr = (unsigned char*)dest->Get_Offset();
-
-  //
-  // Get width of source and dest buffers.
-  //
-  src_width = source->Get_Width();
-  dest_width = 2 * (dest->Get_Width() + dest->Get_XAdd() + dest->Get_Pitch());
-
-  /*
-  ** Call the appropriate assembly language copy routine
-  */
-  switch (CopyType) {
-    case 0:
-      Asm_Interpolate(src_ptr, dest_ptr, source->Get_Height(), src_width,
-                      dest_width);
-      break;
-
-    case 1:
-      Asm_Interpolate_Line_Double(src_ptr, dest_ptr, source->Get_Height(),
-                                  src_width, dest_width);
-      break;
-
-    case 2:
-      Asm_Interpolate_Line_Interpolate(src_ptr, dest_ptr, source->Get_Height(),
-                                       src_width, dest_width);
-      break;
-  }
-
-  if (source_locked) source->Unlock();
-  if (dest_locked) dest->Unlock();
-  if (dest == &SeenBuff) Show_Mouse();
+void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicViewPortClass*,
+                          char const*) {
+  // Render using SDL scaling - palette already set via Update_Palette
+  source->Lock();
+  WindowBuffer->Render_Scaled_Frame(source->Get_Offset(), source->Get_Width(),
+                                    source->Get_Height());
+  source->Unlock();
 }
 #endif

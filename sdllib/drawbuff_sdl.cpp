@@ -50,6 +50,37 @@ bool GraphicBufferClass::Unlock(void) {
 }
 
 void GraphicBufferClass::Update_Window_Surface(bool end_frame) {
+  // If VQA is active, check if it's still rendering frames
+  if (VQAFrameRendered) {
+    // If no VQA frame has been rendered in 100ms, assume VQA playback ended
+    Uint32 now = SDL_GetTicks();
+    if (now - VQALastFrameTime > 100) {
+      Destroy_VQA_Texture();  // This also clears VQAFrameRendered
+    } else {
+      if (RedrawTimer) {
+        SDL_RemoveTimer(RedrawTimer);
+        RedrawTimer = 0;
+      }
+
+      if (!end_frame) {
+        return;  // Just skip timer setup during VQA
+      }
+
+      // Present the VQA frame
+      SDL_RenderClear(SDLRenderer);
+      SDL_RenderCopy(SDLRenderer, static_cast<SDL_Texture*>(VQATexture),
+                     nullptr, nullptr);
+      SDL_RenderPresent(SDLRenderer);
+      SDL_Event_Loop();
+      return;
+    }
+  }
+
+  // VQA is done - clean up the texture if it exists
+  if (VQATexture) {
+    Destroy_VQA_Texture();
+  }
+
   auto window_tex = (SDL_Texture*)WindowTexture;
 
   if (!end_frame) {
@@ -106,11 +137,72 @@ void GraphicBufferClass::Update_Palette(uint8_t* palette) {
 }
 
 const void* GraphicBufferClass::Get_Palette() const {
-  return ((SDL_Surface*)PaletteSurface)->format->palette;
+  return static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
 }
 
 void GraphicBufferClass::Init_Display_Surface() {
   WindowTexture = SDL_CreateTexture(SDLRenderer, SDL_PIXELFORMAT_RGB888,
                                     SDL_TEXTUREACCESS_STREAMING, Width, Height);
   PaletteSurface = SDL_CreateRGBSurface(0, Width, Height, 8, 0, 0, 0, 0);
+}
+
+void GraphicBufferClass::Render_Scaled_Frame(const uint8_t* paletted_data,
+                                             int width, int height) {
+  // Cancel any pending redraw timer
+  if (RedrawTimer) {
+    SDL_RemoveTimer(RedrawTimer);
+    RedrawTimer = 0;
+  }
+
+  // Create intermediate texture on first use or if size changed
+  if (!VQATexture || VQATextureWidth != width || VQATextureHeight != height) {
+    if (VQATexture) {
+      SDL_DestroyTexture(static_cast<SDL_Texture*>(VQATexture));
+    }
+    VQATexture = SDL_CreateTexture(SDLRenderer, SDL_PIXELFORMAT_RGBA32,
+                                   SDL_TEXTUREACCESS_STREAMING, width, height);
+    SDL_SetTextureScaleMode(static_cast<SDL_Texture*>(VQATexture),
+                            SDL_ScaleModeBest);
+    VQATextureWidth = width;
+    VQATextureHeight = height;
+  }
+
+  // Get the palette already set via Update_Palette (already 8-bit RGB)
+  auto* sdl_pal = static_cast<SDL_Surface*>(PaletteSurface)->format->palette;
+
+  // Convert paletted pixels to RGBA and upload to intermediate texture
+  void* pixels;
+  int pitch;
+  SDL_LockTexture(static_cast<SDL_Texture*>(VQATexture), nullptr, &pixels,
+                  &pitch);
+
+  auto* dest = static_cast<uint32_t*>(pixels);
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      uint8_t idx = paletted_data[y * width + x];
+      // Use palette already converted to 8-bit by Update_Palette
+      uint8_t r = sdl_pal->colors[idx].r;
+      uint8_t g = sdl_pal->colors[idx].g;
+      uint8_t b = sdl_pal->colors[idx].b;
+      dest[y * (pitch / 4) + x] = (0xFFU << 24) | (b << 16) | (g << 8) | r;
+    }
+  }
+  SDL_UnlockTexture(static_cast<SDL_Texture*>(VQATexture));
+
+  // Mark VQA as active - Update_Window_Surface will present VQATexture
+  VQAFrameRendered = true;
+  VQALastFrameTime = SDL_GetTicks();
+
+  // Trigger immediate present via Update_Window_Surface
+  Update_Window_Surface(true);
+}
+
+void GraphicBufferClass::Destroy_VQA_Texture() {
+  if (VQATexture) {
+    SDL_DestroyTexture(static_cast<SDL_Texture*>(VQATexture));
+    VQATexture = nullptr;
+    VQATextureWidth = 0;
+    VQATextureHeight = 0;
+  }
+  VQAFrameRendered = false;
 }

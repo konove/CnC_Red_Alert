@@ -340,11 +340,22 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   void Update_Palette(std::uint8_t* palette);
   const void* Get_Palette() const;
 
+  // Render paletted frame data with SDL texture scaling (for VQA movies, etc.)
+  // Uses the palette already set via Update_Palette.
+  void Render_Scaled_Frame(const std::uint8_t* paletted_data, int width,
+                           int height);
+  void Destroy_VQA_Texture();
+
  protected:
   void Init_Display_Surface();
   void* WindowTexture = nullptr;
   void* PaletteSurface = nullptr;
   int RedrawTimer = 0;
+  void* VQATexture = nullptr;  // SDL_Texture* for low-res content scaling
+  int VQATextureWidth = 0;
+  int VQATextureHeight = 0;
+  bool VQAFrameRendered = false;   // Set when Render_Scaled_Frame presents
+  std::uint32_t VQALastFrameTime = 0;  // SDL tick when last VQA frame rendered
 };
 
 extern GraphicBufferClass* WindowBuffer;
