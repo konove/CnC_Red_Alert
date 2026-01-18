@@ -8,6 +8,7 @@
 #include <SDL_video.h>
 
 #include <cstdio>
+#include <cstring>
 
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/iff.h"
@@ -20,10 +21,17 @@ bool NoMouseGrab = false;
 static WWMouseClass* _Mouse = nullptr;
 
 // Scale cursor using nearest-neighbor interpolation.
+// Returns nullptr if dimensions would result in zero-size allocation.
 [[nodiscard]] static uint8_t* Scale_Cursor_Nearest(const uint8_t* src,
                                                    int src_w, int src_h,
                                                    int scale, int* out_w,
                                                    int* out_h) {
+  if (src_w <= 0 || src_h <= 0 || scale <= 0) {
+    *out_w = 0;
+    *out_h = 0;
+    return nullptr;
+  }
+
   int dst_w = src_w * scale;
   int dst_h = src_h * scale;
   auto dst = new uint8_t[dst_w * dst_h];
@@ -92,7 +100,8 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   auto cursor_shape = (Shape_Type*)cursor;
 
-  if (cursor_shape->Width > MaxWidth ||
+  if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
+      cursor_shape->Width > MaxWidth ||
       cursor_shape->OriginalHeight > MaxHeight)
     return PrevCursor;
 
@@ -112,6 +121,10 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   int remaining = cursor_shape->Width * cursor_shape->OriginalHeight;
   auto outptr = MouseCursor;
+
+  // Initialize cursor buffer to zero before RLE decoding to ensure no
+  // uninitialized memory if decoding exits early (e.g., zero-count runs).
+  memset(MouseCursor, 0, remaining);
 
   do {
     uint8_t pixel = *inptr++;
@@ -145,6 +158,9 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   uint8_t* scaled_cursor =
       Scale_Cursor_Nearest(OriginalCursor, OriginalWidth, OriginalHeight,
                            CurrentScale, &scaled_width, &scaled_height);
+  if (!scaled_cursor) {
+    return PrevCursor;
+  }
 
   // Scale hotspot coordinates
   int scaled_hotx = xhotspot * CurrentScale;

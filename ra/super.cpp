@@ -55,6 +55,7 @@
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/special.h"
 #include "ra/ww_audio.h"
 #include "tech/fixed.h"
 

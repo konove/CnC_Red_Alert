@@ -81,7 +81,6 @@
 #include <filesystem>
 #include <string>
 
-#include "absl/log/log.h"
 #include "jshell/rotbmp.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"

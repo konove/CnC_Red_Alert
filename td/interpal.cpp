@@ -48,11 +48,8 @@
 #include <algorithm>
 
 #include "sdllib/include/gbuffer.h"
-#include "sdllib/include/misc.h"
-#include "sdllib/include/ww_mouse.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
-#include "td/externs.h"
 
 bool InterpolationPaletteChanged = false;
 
