@@ -3722,7 +3722,6 @@ long VQ_Call_Back(unsigned char*, long) {
   int key = 0;
   if (Keyboard->Check()) {
     key = Keyboard->Get();
-    DLOG(INFO) << "[VQA] Key pressed: " << key << " (ESC=" << KN_ESC << ")";
     Keyboard->Clear();
   }
   Check_VQ_Palette_Set();
@@ -3740,8 +3739,7 @@ long VQ_Call_Back(unsigned char*, long) {
 #endif
   // Call_Back();
 
-  // Mask off modifier bits (shift, ctrl, alt, etc) to get base key code
-  if ((BreakoutAllowed || Debug_Flag) && (key & 0xFF) == KN_ESC) {
+  if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard->Clear();
     Brokeout = true;
     return (true);

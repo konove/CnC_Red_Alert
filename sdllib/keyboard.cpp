@@ -11,6 +11,12 @@
 #include "sdllib/include/ww_mouse.h"
 #include "sdllib/include/ww_win.h"
 
+// Mask for modifier keys that affect gameplay input.
+// Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
+// state doesn't interfere with keyboard handling.
+constexpr SDL_Keymod kInputModifierMask =
+    static_cast<SDL_Keymod>(KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI);
+
 WWKeyboardClass::WWKeyboardClass() : MouseQX(0), MouseQY(0), Head(0), Tail(0) {
   // clear buffer
   memset(Buffer, 0, 256);
@@ -44,19 +50,19 @@ bool WWKeyboardClass::Put(int key) {
 
 bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
   //
-  // Get the status of all of the different keyboard modifiers.  Note, only pay
-  // attention to numlock and caps lock if we are dealing with a key that is
-  // affected by them.  Note that we do not want to set the shift, ctrl and alt
+  // Get the status of keyboard modifiers, excluding toggle modifiers (Caps
+  // Lock, Num Lock). Note that we do not want to set the shift, ctrl and alt
   // bits for Mouse keypresses as this would be incompatible with the dos
   // version.
   //
   if (vk_key != VK_LBUTTON && vk_key != VK_MBUTTON && vk_key != VK_RBUTTON) {
-    auto keymod = SDL_GetModState();
+    auto keymod =
+        static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
 
     //
     // Set the proper bits for whatever the key we got is.
     //
-    if (keymod & (KMOD_SHIFT | KMOD_CAPS | KMOD_NUM)) vk_key |= WWKEY_SHIFT_BIT;
+    if (keymod & KMOD_SHIFT) vk_key |= WWKEY_SHIFT_BIT;
 
     if (keymod & KMOD_CTRL) vk_key |= WWKEY_CTRL_BIT;
 
@@ -99,12 +105,13 @@ int WWKeyboardClass::Down(int key) {
   }
 
   if (key == KN_LSHIFT || key == KN_LCTRL || key == KN_LALT) {
-    auto keymod = SDL_GetModState();
+    auto keymod =
+        static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
     switch (key) {
       case KN_LSHIFT:
         return keymod & KMOD_SHIFT;
       case KN_LCTRL:
-        return keymod & KMOD_SHIFT;
+        return keymod & KMOD_CTRL;
       case KN_LALT:
         return keymod & KMOD_ALT;
     }
