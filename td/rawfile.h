@@ -234,7 +234,7 @@ inline RawFileClass::RawFileClass()
 #else
 inline RawFileClass::RawFileClass()
     : Handle(-1),
-      Filename(0),
+      Filename(nullptr),
       Allocated(false)
 #endif
 {
