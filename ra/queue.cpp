@@ -478,7 +478,6 @@ static void Queue_AI_Normal() {
   while (OutList.Count) {
     OutList.First().IsExecuted = false;
     if (!DoList.Add(OutList.First())) {
-      ;
     }
 #ifdef MIRROR_QUEUE
     MirrorList.Add(OutList.First());

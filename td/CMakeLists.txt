@@ -50,7 +50,7 @@ target_compile_definitions(tdsdl PRIVATE
         PORTABLE=1 # to indicate not windows or dos sometimes
         TD=1
 )
-target_link_libraries(tdsdl PRIVATE tech port sdllib vqa32 absl::check absl::log)
+target_link_libraries(tdsdl PRIVATE tech port sdllib vqa32 absl::check absl::log absl::status absl::statusor)
 
 install(TARGETS tdsdl)
 

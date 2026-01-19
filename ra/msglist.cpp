@@ -641,7 +641,7 @@ int MessageListClass::Concat_Message(char const* name, int id, char const* txt,
       port::SafeAppend(concat_test, txt, MaxChars);
 
       width = String_Pixel_Width(concat_test) + name_width;
-    };
+    }
 
     delete[] concat_test;
 

@@ -18,9 +18,13 @@
 */
 
 #include <algorithm>
+#include <array>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "td/ccfile.h"
 #include "td/compat.h"
 #include "td/defines.h"
@@ -205,105 +209,130 @@ void Load_Title_Screen(char const* name, GraphicViewPortClass* video_page,
  *   04/30/1996 ST : Tidied up and modified to use CCFileClass             *
  *=========================================================================*/
 
-#define POOL_SIZE 2048
-#define READ_CHAR()                    \
-  *file_ptr++;                         \
-  if (file_ptr >= &pool[POOL_SIZE]) {  \
-    file_handle.Read(pool, POOL_SIZE); \
-    file_ptr = pool;                   \
+class BufferedFileReader {
+ public:
+  static constexpr size_t kBufferSize = 2048;
+
+  explicit BufferedFileReader(CCFileClass& file) : file_(file) {}
+
+  // Delete copy/move to prevent accidental state duplication.
+  BufferedFileReader(const BufferedFileReader&) = delete;
+  BufferedFileReader& operator=(const BufferedFileReader&) = delete;
+
+  // Returns the next byte, or an OutOfRange error on EOF.
+  absl::StatusOr<uint8_t> ReadByte() {
+    if (cursor_ >= bytes_in_buffer_) {
+      if (!RefillBuffer()) {
+        return absl::OutOfRangeError("End of file reached.");
+      }
+    }
+    return buffer_[cursor_++];
   }
+
+ private:
+  // Returns true if data was successfully read, false on EOF.
+  bool RefillBuffer() {
+    cursor_ = 0;
+    // Track exactly how many bytes were read.
+    bytes_in_buffer_ = file_.Read(buffer_.data(), kBufferSize);
+    return bytes_in_buffer_ > 0;
+  }
+
+  CCFileClass& file_;
+
+  // Use std::array for standard compliance and bounds awareness.
+  std::array<uint8_t, kBufferSize> buffer_{};
+
+  // cursor_ tracks current position; bytes_in_buffer_ tracks valid data range.
+  size_t cursor_ = 0;
+  size_t bytes_in_buffer_ = 0;
+};
 
 GraphicBufferClass* Read_PCX_File(char const* name, char* palette, void* Buff,
                                   long Size) {
-  int i = 0;
-  int j = 0;
-  unsigned rle = 0;
-  unsigned color = 0;
-  unsigned scan_pos;
-  char* file_ptr;
-  int width;
-  int height;
-  char* buffer;
-  PCX_HEADER header;
-  RGB* pal;
-  char pool[POOL_SIZE];
-  GraphicBufferClass* pic;
-
   CCFileClass file_handle(name);
 
-  if (!file_handle.Is_Available()) return (nullptr);
+  if (!file_handle.Is_Available()) {
+    return nullptr;
+  }
 
   file_handle.Open(READ);
 
+  PCX_HEADER header;
   file_handle.Read(&header, sizeof(PCX_HEADER));
 
-  if (header.id != 10 && header.version != 5 && header.pixelsize != 8)
+  if (header.id != 10 && header.version != 5 && header.pixelsize != 8) {
     return nullptr;
+  }
 
-  width = header.width - header.x + 1;
-  height = header.height - header.y + 1;
+  int width = header.width - header.x + 1;
+  int height = header.height - header.y + 1;
+
+  GraphicBufferClass* pic;
+  char* buffer;
 
   if (Buff) {
-    buffer = (char*)Buff;
-    i = Size / width;
-    height = std::min(i - 1, height);
+    buffer = static_cast<char*>(Buff);
+    int max_lines = Size / width;
+    height = std::min(max_lines - 1, height);
     pic = new GraphicBufferClass(width, height, buffer, Size);
-    if (pic->Get_Buffer() == nullptr) {
+    if (!pic->Get_Buffer()) {
       delete pic;
       return nullptr;
     }
   } else {
     pic = new GraphicBufferClass(width, height, nullptr, width * (height + 4));
-    if (pic->Get_Buffer() == nullptr) {
+    if (!pic->Get_Buffer()) {
       delete pic;
       return nullptr;
     }
   }
 
-  buffer = (char*)pic->Get_Buffer();
-  file_ptr = pool;
-  file_handle.Read(pool, POOL_SIZE);
+  buffer = static_cast<char*>(pic->Get_Buffer());
+  BufferedFileReader reader(file_handle);
 
   if (header.byte_per_line != width) {
-    for (scan_pos = j = 0; j < height; j++, scan_pos += width) {
-      for (i = 0; i < width;) {
-        rle = READ_CHAR();
+    for (unsigned scan_pos = 0, j = 0; j < static_cast<unsigned>(height);
+         j++, scan_pos += width) {
+      for (int i = 0; i < width;) {
+        unsigned rle = *reader.ReadByte();
         if (rle > 192) {
           rle -= 192;
-          color = READ_CHAR();
-          ;
+          unsigned color = *reader.ReadByte();
           memset(buffer + scan_pos + i, color, rle);
           i += rle;
         } else {
-          *(buffer + scan_pos + i++) = (char)rle;
+          buffer[scan_pos + i++] = static_cast<char>(rle);
         }
       }
     }
 
-    if (i == width) rle = READ_CHAR();
-    if (rle > 192) rle = READ_CHAR();
+    // Consume any trailing RLE data for the scanline
+    unsigned rle = *reader.ReadByte();
+    if (rle > 192) {
+      (void)reader.ReadByte();
+    }
 
   } else {
-    for (i = 0; i < width * height;) {
-      rle = READ_CHAR();
-      rle &= 0xff;
+    for (int i = 0; i < width * height;) {
+      unsigned rle = *reader.ReadByte() & 0xff;
       if (rle > 192) {
         rle -= 192;
-        color = READ_CHAR();
+        unsigned color = *reader.ReadByte();
         memset(buffer + i, color, rle);
         i += rle;
       } else {
-        *(buffer + i++) = (char)rle;
+        buffer[i++] = static_cast<char>(rle);
       }
     }
   }
 
   if (palette) {
-    file_handle.Seek(-(256 * sizeof(RGB)), SEEK_END);
+    file_handle.Seek(-static_cast<int>(256 * sizeof(RGB)), SEEK_END);
     file_handle.Read(palette, 256L * sizeof(RGB));
 
-    pal = (RGB*)palette;
-    for (i = 0; i < 256; i++) {
+    auto* pal = reinterpret_cast<RGB*>(palette);
+    for (int i = 0; i < 256; i++) {
       pal->red >>= 2;
       pal->green >>= 2;
       pal->blue >>= 2;

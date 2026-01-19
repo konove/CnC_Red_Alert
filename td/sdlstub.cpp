@@ -44,7 +44,7 @@ void Memory_Error_Handler() {
   Set_Palette(GamePalette);
   while (Get_Mouse_State()) {
     Show_Mouse();
-  };
+  }
   CCMessageBox().Process("Error - out of memory.", "Abort");
 
   exit(0);

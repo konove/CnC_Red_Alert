@@ -47,6 +47,7 @@
 #include "tech/pipe.h"
 #include "tech/straw.h"
 #include "tech/wwfile.h"
+
 class TriggerTypeClass;
 
 /*

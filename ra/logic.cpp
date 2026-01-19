@@ -396,7 +396,7 @@ void LogicClass::AI() {
       Sound_Effect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
-#define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40;
+#define AUTOSONAR_PERIOD TICKS_PER_SECOND * 40
     Scen.AutoSonarTimer = AUTOSONAR_PERIOD;
   }
 }

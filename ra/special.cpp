@@ -263,7 +263,7 @@ class PWEditClass : public EditClass {
  public:
   PWEditClass(int id, char* text, int max_len, TextPrintType flags, int x,
               int y, int w = -1, int h = -1)
-      : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC) {};
+      : EditClass(id, text, max_len, flags, x, y, w, h, ALPHANUMERIC) {}
 
  protected:
   void Draw_Text(char const* text) override;

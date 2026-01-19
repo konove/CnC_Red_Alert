@@ -161,22 +161,22 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
   if (f_deltay < 0) {
     f_deltay = -f_deltay;
     f_ystep = -Width;
-  };
+  }
 
   if (f_deltax < 0) {
     f_deltax = -f_deltax;
     f_xstep = -1;
-  };
+  }
 
   if (s_deltay < 0) {
     s_deltay = -s_deltay;
     s_ystep = -Width;
-  };
+  }
 
   if (s_deltax < 0) {
     s_deltax = -s_deltax;
     s_xstep = -1;
-  };
+  }
 
   scrpos = p0.x + Width * p0.y;  // address of initial screen pos.
   temp = scrpos;
@@ -210,15 +210,15 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
         while (pxerror > f_deltax) {
           pixpos++;
           pxerror -= f_deltax;
-        };
+        }
         scrpos += f_xstep;  // step to next screen pos
         f_error += f_deltay;
         if (f_error > f_deltax) {
           if (pixel) ((unsigned char*)Get_Buffer())[scrpos] = pixel;
           f_error -= f_deltax;
           scrpos += f_ystep;
-        };
-      };
+        }
+      }
       pxerror = 0;
       pixpos -= bmp.Width - 1;
       pyerror += bmp.Height;
@@ -226,7 +226,7 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
       while (pyerror > s_deltay) {
         pixpos += bmp.Width;
         pyerror -= s_deltay;
-      };
+      }
 
       f_error = 0;
       scrpos = temp;
@@ -236,7 +236,7 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
       if (s_error > s_deltay) {
         s_error -= s_deltay;
         scrpos += s_xstep;
-      };
+      }
     }
 
   } else {  // CASE 2, Step front line in X, side line in Y
@@ -255,7 +255,7 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
         while (pxerror > f_deltay) {
           pixpos++;
           pxerror -= f_deltay;
-        };
+        }
 
         scrpos += f_ystep;  // step to next screen pos
         f_error += f_deltax;
@@ -263,8 +263,8 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
           if (pixel) ((unsigned char*)Get_Buffer())[scrpos] = pixel;
           f_error -= f_deltay;
           scrpos += f_xstep;
-        };
-      };
+        }
+      }
 
       pxerror = 0;
       pixpos -= bmp.Width - 1;
@@ -272,7 +272,7 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
       while (pyerror > s_deltax) {
         pixpos += bmp.Width;
         pyerror -= s_deltax;
-      };
+      }
 
       scrpos = temp;
       scrpos += s_xstep;
@@ -281,7 +281,7 @@ void GraphicBufferClass::Scale_Rotate(BitmapClass& bmp, TPoint2D const& pt,
       if (s_error > s_deltax) {
         s_error -= s_deltax;
         scrpos += s_ystep;
-      };
+      }
     }
   }
 }

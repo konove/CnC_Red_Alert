@@ -4560,10 +4560,10 @@ oh_dear_its_a_label:
 
     if (!skirmish) {
       SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
-      if (theirresponsetime == 10000) {
-        ;
-      } else if (SendPacket.ScenarioInfo.ResponseTime < theirresponsetime) {
-        SendPacket.ScenarioInfo.ResponseTime = theirresponsetime;
+      if (theirresponsetime != 10000) {
+        if (SendPacket.ScenarioInfo.ResponseTime < theirresponsetime) {
+          SendPacket.ScenarioInfo.ResponseTime = theirresponsetime;
+        }
       }
     }
 

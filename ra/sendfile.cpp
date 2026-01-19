@@ -413,7 +413,6 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
               progress_meter.Set_Value((total_length * 100) / file_length);
               display = REDRAW_PROGRESS;
               update_time = 0;
-              ;
             }
 
             if (total_length >= file_length) {
@@ -450,7 +449,6 @@ bool Receive_Remote_File(char* file_name, unsigned int file_length,
               progress_meter.Set_Value((total_length * 100) / file_length);
               display = REDRAW_PROGRESS;
               update_time = 0;
-              ;
             }
 
             if (total_length >= file_length) {
@@ -753,7 +751,6 @@ bool Send_Remote_File(char* file_name, int gametype) {
             progress_meter.Set_Value((block_number * 100) / total_blocks);
             display = REDRAW_PROGRESS;
             update_time = 0;
-            ;
           }
         }
       } else {
@@ -794,7 +791,6 @@ bool Send_Remote_File(char* file_name, int gametype) {
             progress_meter.Set_Value((block_number * 100) / total_blocks);
             display = REDRAW_PROGRESS;
             update_time = 0;
-            ;
           }
         }
       } else {

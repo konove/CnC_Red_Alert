@@ -89,7 +89,7 @@ class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              void const* up, void const* down)
-      : ListClass(id, x, y, w, h, flags, up, down) {};
+      : ListClass(id, x, y, w, h, flags, up, down) {}
 
  protected:
   void Draw_Entry(int index, int x, int y, int width, int selected) override;

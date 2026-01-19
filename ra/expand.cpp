@@ -255,7 +255,7 @@ class EListClass : public ListClass {
  public:
   EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              void const* up, void const* down)
-      : ListClass(id, x, y, w, h, flags, up, down) {};
+      : ListClass(id, x, y, w, h, flags, up, down) {}
 
   virtual int Add_Object(EObjectClass* obj) {
     return (ListClass::Add_Item((char const*)obj));
@@ -273,14 +273,14 @@ class EListClass : public ListClass {
  private:
   int Add_Item(char const* text) override {
     return (ListClass::Add_Item(text));
-  };
-  int Add_Item(int text) override { return (ListClass::Add_Item(text)); };
+  }
+  int Add_Item(int text) override { return (ListClass::Add_Item(text)); }
   char const* Current_Item() const override {
     return (ListClass::Current_Item());
-  };
+  }
   virtual char const* Get_Item(int index) const {
     return (ListClass::Get_Item(index));
-  };
+  }
 };
 
 /***********************************************************************************************

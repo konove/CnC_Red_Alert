@@ -106,7 +106,7 @@ target_compile_definitions(rasdl PRIVATE
         ENGLISH=1  # TODO: also french/german
         PORTABLE=1 # to indicate not windows or dos sometimes
 )
-target_link_libraries(rasdl PRIVATE tech jshell port sdllib vqa32 absl::check absl::log) # mpgdll wwipx32
+target_link_libraries(rasdl PRIVATE tech jshell port sdllib vqa32 absl::check absl::log absl::status absl::statusor) # mpgdll wwipx32
 
 install(TARGETS rasdl)
 

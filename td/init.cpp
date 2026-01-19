@@ -1327,7 +1327,7 @@ bool Select_Game(bool fade) {
                     DLOG(INFO) << "C&C95 - Discarding a packet.";
                     ptimer.Set(30, true);
                     while (ptimer.Time()) {
-                    };
+                    }
                     DLOG(INFO) << "C&C95 - Ready to check for more packets.";
                   }
                   DLOG(INFO) << "C&C95 - About to delete scrap memory.";

@@ -420,7 +420,6 @@ static void Queue_AI_Normal() {
   while (OutList.Count) {
     OutList.First().IsExecuted = false;
     if (!DoList.Add(OutList.First())) {
-      ;
     }
     OutList.Next();
   }

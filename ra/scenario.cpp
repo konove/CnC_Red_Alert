@@ -864,7 +864,7 @@ void Do_Win() {
 #endif
     CountDownTimer = TIMER_SECOND * 3;
     while (Is_Speaking()) {
-    };
+    }
     Speak(VOX_ACCOMPLISHED);
     while (CountDownTimer || Is_Speaking()) {
       Call_Back();
@@ -1118,7 +1118,7 @@ void Do_Lose() {
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer = TIMER_SECOND * 3;
   while (Is_Speaking()) {
-  };
+  }
   Speak(VOX_FAIL);
   while (CountDownTimer || Is_Speaking()) {
     Call_Back();
@@ -1210,7 +1210,7 @@ void Do_Draw() {
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer = TIMER_SECOND * 3;
   while (Is_Speaking()) {
-  };
+  }
   Speak(VOX_CONTROL_EXIT);
   while (CountDownTimer || Is_Speaking()) {
     Call_Back();

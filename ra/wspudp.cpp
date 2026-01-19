@@ -169,8 +169,9 @@ bool UDPInterfaceClass::Open_Socket(SOCKET) {
   ** If Winsock is not initialised then do it now.
   */
   if (!WinsockInitialised) {
-    if (!Init()) return (false);
-    ;
+    if (!Init()) {
+      return false;
+    }
   }
 
   /*

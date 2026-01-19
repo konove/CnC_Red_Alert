@@ -1194,7 +1194,6 @@ int XMP_Unsigned_Mult_Int(uint32_t* prod, const uint32_t* multiplicand,
   unsigned long carry = 0;
   for (int i = 0; i < precision * 2; ++i) {
     unsigned long p = (((unsigned long)multiplier) * *m2) + carry;
-    ;
     *pr = (unsigned short)p;
     carry = p >> 16;
     m2++;
