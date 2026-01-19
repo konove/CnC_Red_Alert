@@ -60,20 +60,20 @@ class CCFileClass : public CDFileClass {
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
-  virtual int Open(char const* filename, int rights = READ) {
+  int Open(char const* filename, int rights = READ) override {
     Set_Name(filename);
     return Open(rights);
   }
-  virtual int Open(int rights = READ);
-  virtual int Is_Open() const;
-  virtual int Is_Available(int forced = false);
-  virtual long Read(void* buffer, long size);
-  virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size();
-  virtual long Write(void const* buffer, long size);
-  virtual void Close();
-  virtual void Error(int error, int canretry = false,
-                     char const* filename = nullptr);
+  int Open(int rights = READ) override;
+  int Is_Open() const override;
+  int Is_Available(int forced = false) override;
+  long Read(void* buffer, long size) override;
+  long Seek(long pos, int dir = SEEK_CUR) override;
+  long Size() override;
+  long Write(void const* buffer, long size) override;
+  void Close() override;
+  void Error(int error, int canretry = false,
+             char const* filename = nullptr) override;
 
  private:
   /*

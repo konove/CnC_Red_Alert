@@ -65,13 +65,13 @@ class TurretClass : public DriveClass {
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
  protected:
   TurretClass(UnitType classid, HousesType house);
@@ -80,13 +80,13 @@ class TurretClass : public DriveClass {
       : DriveClass(x), Reload(x), SecondaryFacing(x) {}
   ~TurretClass() override = default;
 
-  BulletClass* Fire_At(TARGET target, int which);
+  BulletClass* Fire_At(TARGET target, int which) override;
 
-  virtual DirType Fire_Direction() const;
-  virtual FireErrorType Can_Fire(TARGET target, int which) const;
+  DirType Fire_Direction() const override;
+  FireErrorType Can_Fire(TARGET target, int which) const override;
   virtual bool Ok_To_Move(DirType facing);
-  virtual void AI();
-  virtual COORDINATE Fire_Coord(int which) const;
+  void AI() override;
+  COORDINATE Fire_Coord(int which) const override;
 };
 
 #endif
