@@ -2352,6 +2352,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
     **	Create the effect requested.
     */
     bool tospeak = false;
+    auto give_crate_money = [&] {
+      if (force_money > 0) {
+        object->House->Refund_Money(force_money);
+      } else {
+        object->House->Refund_Money(
+            Random_Pick(CrateData[powerup], CrateData[powerup] + 900));
+      }
+    };
     switch (powerup) {
       case CRATE_TIMEQUAKE:
         TimeQuake = true;
@@ -2361,13 +2369,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	Give the player money.
       */
       case CRATE_MONEY:
-      crate_money:
-        if (force_money > 0) {
-          object->House->Refund_Money(force_money);
-        } else {
-          object->House->Refund_Money(
-              Random_Pick(CrateData[powerup], CrateData[powerup] + 900));
-        }
+        give_crate_money();
         break;
 
       /*
@@ -2458,7 +2460,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
               return (false);
             }
             delete goodie_unit;
-            goto crate_money;
+            give_crate_money();
+            break;
           }
         }
       } break;
@@ -2476,7 +2479,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
                    _inf[Random_Pick(0, ARRAY_SIZE(_inf) - 1)])
                    .Create_And_Place(Cell_Number(), object->Owner())) {
             if (index == 0) {
-              goto crate_money;
+              give_crate_money();
+              break;
             }
           }
         }

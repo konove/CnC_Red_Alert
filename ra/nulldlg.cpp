@@ -3517,1181 +3517,1195 @@ int Com_Scenario_Dialog(bool skirmish) {
   theirresponsetime = 10000;  // initialize to an invalid value
   timingtime = lastmsgtime = lastredrawtime = TickCount;
 
-  /*
-  ** Those easily offended should avert their eyes from the following line. And
-  *whatever
-  ** you do, dont search for 'goto'.
-  */
-oh_dear_its_a_label:
+  bool retry_setup = true;
+  while (retry_setup) {
+    retry_setup = false;
 
-  while (process) {
+    while (process) {
 #if (SHOW_MONO)
-    if (!skirmish) {
-      NullModem.Mono_Debug_Print(0);
-    }
+      if (!skirmish) {
+        NullModem.Mono_Debug_Print(0);
+      }
 #endif
 
-    if (!skirmish) {
-      if (!ok_button_added && gameoptions && kludge_timer == 0) {
-        okbtn.Add_Tail(*commands);
-        ok_button_added = true;
-        if (loadfile.Is_Available()) {
-          loadbtn.Add_Tail(*commands);
-        }
-        if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
-      }
-    }
-
-    /*
-    ** Kludge to make sure we redraw the message input line when it loses focus.
-    ** If we dont do this then the cursor doesnt disappear.
-    */
-    if (!skirmish) {
-      if (messages_have_focus) {
-        if (name_edt.Has_Focus()) {
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-          messages_have_focus = false;
-        }
-      } else {
-        if (!name_edt.Has_Focus()) {
-          messages_have_focus = true;
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-          Session.Messages.Set_Edit_Focus();
+      if (!skirmish) {
+        if (!ok_button_added && gameoptions && kludge_timer == 0) {
+          okbtn.Add_Tail(*commands);
+          ok_button_added = true;
+          if (loadfile.Is_Available()) {
+            loadbtn.Add_Tail(*commands);
+          }
+          if (display < REDRAW_BUTTONS) display = REDRAW_BUTTONS;
         }
       }
-    }
-
-    /*
-    ........................ Invoke game callback .........................
-    */
-    Call_Back();
-
-#ifdef WIN32
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
-#endif
-
-    /*
-    ...................... Refresh display if needed ......................
-    */
-    if (display) {
-      if (housebtn.IsDropped) {
-        housebtn.Collapse();
-        display = REDRAW_BACKGROUND;
-      }
-      Hide_Mouse();
 
       /*
-      .................. Redraw backgound & dialog box ...................
+      ** Kludge to make sure we redraw the message input line when it loses
+      * focus.
+      ** If we dont do this then the cursor doesnt disappear.
       */
-      if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-
-        // init font variables
-
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
-
-        /*...............................................................
-        Dialog & Field labels
-        ...............................................................*/
-        Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
-                         d_name_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
-#ifdef OLDWAY
-        Fancy_Text_Print(TXT_SIDE_COLON, d_gdi_x + d_gdi_w, d_gdi_y - d_txt6_h,
-                         scheme, TBLACK, TPF_CENTER | TPF_TEXT);
-#else
-        Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
-                         d_house_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
-#endif
-        Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + ((d_dialog_w / 4) * 3),
-                         d_color_y - d_txt6_h, scheme, TBLACK,
-                         TPF_CENTER | TPF_TEXT);
-        if (!skirmish) {
-          Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                           d_playerlist_y - d_txt6_h, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
+      if (!skirmish) {
+        if (messages_have_focus) {
+          if (name_edt.Has_Focus()) {
+            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            messages_have_focus = false;
+          }
         } else {
-          Fancy_Text_Print(TXT_EASY, difficulty.X, difficulty.Y - 8 * RESFACTOR,
-                           scheme, TBLACK, TPF_TEXT);
-          Fancy_Text_Print(TXT_HARD, difficulty.X + difficulty.Width,
-                           difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
-                           TPF_RIGHT | TPF_TEXT);
-          Fancy_Text_Print(TXT_NORMAL, difficulty.X + difficulty.Width / 2,
-                           difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
-                           TPF_CENTER | TPF_TEXT);
-        }
-        Fancy_Text_Print(
-            TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
-            d_scenariolist_y - d_txt6_h, scheme, TBLACK, TPF_CENTER | TPF_TEXT);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 2, d_count_y, scheme, TBLACK,
-                         TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 2, d_level_y, scheme, TBLACK,
-                         TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2, d_credits_y,
-                         scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
-                         d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
-      }
-
-      /*..................................................................
-      Draw the color boxes
-      ..................................................................*/
-      if (display >= REDRAW_COLORS) {
-        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
-              cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 2,
-              d_color_y + 1 + d_color_h - 2, ColorRemaps[i].Box);
-          //						(i ==
-          // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
-          // ColorRemaps[i].Box);
-
-          if (i == Session.ColorIdx) {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h, BOXSTYLE_DOWN,
-                     false);
-          } else {
-            Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_RAISED, false);
+          if (!name_edt.Has_Focus()) {
+            messages_have_focus = true;
+            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            Session.Messages.Set_Edit_Focus();
           }
         }
       }
 
-      /*..................................................................
-      Draw the message system; erase old messages first
-      ..................................................................*/
-      if (display >= REDRAW_MESSAGE && !skirmish) {
-        Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
-                 BOXSTYLE_BOX, true);
-        Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-        Session.Messages.Draw();
+      /*
+      ........................ Invoke game callback .........................
+      */
+      Call_Back();
+
+#ifdef WIN32
+      /*
+      ** If we have just received input focus again after running in the
+      *background then
+      ** we need to redraw.
+      */
+      if (AllSurfaces.SurfacesRestored) {
+        AllSurfaces.SurfacesRestored = false;
+        display = REDRAW_ALL;
       }
+#endif
 
-      //..................................................................
-      // Update game parameter labels
-      //..................................................................
-      if (display >= REDRAW_PARMS) {
-        //				LogicPage->Fill_Rect(d_count_x +
-        // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * RESFACTOR,
-        // d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
-
-        sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
-        staticcount.Set_Text(staticcountbuff);
-        staticcount.Draw_Me();
-        //				Fancy_Text_Print("%d ", d_count_x +
-        // d_count_w + 3 * RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT,
-        // Session.Options.UnitCount);
-
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          sprintf(staticlevelbuff, "%d ", BuildLevel);
-        } else {
-          sprintf(staticlevelbuff, "**");
+      /*
+      ...................... Refresh display if needed ......................
+      */
+      if (display) {
+        if (housebtn.IsDropped) {
+          housebtn.Collapse();
+          display = REDRAW_BACKGROUND;
         }
-        staticlevel.Set_Text(staticlevelbuff);
-        staticlevel.Draw_Me();
-        //				Fancy_Text_Print(txt, d_level_x +
-        // d_level_w + 3 * RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+        Hide_Mouse();
 
-        sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
-        staticcredits.Set_Text(staticcreditsbuff);
-        staticcredits.Draw_Me();
-        //				Fancy_Text_Print("%d", d_credits_x +
-        // d_credits_w + 2 * RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT,
-        // Session.Options.Credits);
+        /*
+        .................. Redraw backgound & dialog box ...................
+        */
+        if (display >= REDRAW_BACKGROUND) {
+          Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-        sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
-        staticai.Set_Text(staticaibuff);
-        staticai.Draw_Me();
-        //				Fancy_Text_Print("%d", d_aiplayers_x +
-        // d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK, TPF_TEXT,
-        // Session.Options.AIPlayers);
+          // init font variables
+
+          Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, TBLACK,
+                           TPF_CENTER | TPF_TEXT);
+
+          /*...............................................................
+          Dialog & Field labels
+          ...............................................................*/
+          Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
+                           d_name_y - d_txt6_h, scheme, TBLACK,
+                           TPF_CENTER | TPF_TEXT);
+#ifdef OLDWAY
+          Fancy_Text_Print(TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
+                           d_gdi_y - d_txt6_h, scheme, TBLACK,
+                           TPF_CENTER | TPF_TEXT);
+#else
+          Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
+                           d_house_y - d_txt6_h, scheme, TBLACK,
+                           TPF_CENTER | TPF_TEXT);
+#endif
+          Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + ((d_dialog_w / 4) * 3),
+                           d_color_y - d_txt6_h, scheme, TBLACK,
+                           TPF_CENTER | TPF_TEXT);
+          if (!skirmish) {
+            Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+                             d_playerlist_y - d_txt6_h, scheme, TBLACK,
+                             TPF_CENTER | TPF_TEXT);
+          } else {
+            Fancy_Text_Print(TXT_EASY, difficulty.X,
+                             difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
+                             TPF_TEXT);
+            Fancy_Text_Print(TXT_HARD, difficulty.X + difficulty.Width,
+                             difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
+                             TPF_RIGHT | TPF_TEXT);
+            Fancy_Text_Print(TXT_NORMAL, difficulty.X + difficulty.Width / 2,
+                             difficulty.Y - 8 * RESFACTOR, scheme, TBLACK,
+                             TPF_CENTER | TPF_TEXT);
+          }
+          Fancy_Text_Print(TXT_SCENARIOS,
+                           d_scenariolist_x + (d_scenariolist_w / 2),
+                           d_scenariolist_y - d_txt6_h, scheme, TBLACK,
+                           TPF_CENTER | TPF_TEXT);
+          Fancy_Text_Print(TXT_COUNT, d_count_x - 2, d_count_y, scheme, TBLACK,
+                           TPF_TEXT | TPF_RIGHT);
+          Fancy_Text_Print(TXT_LEVEL, d_level_x - 2, d_level_y, scheme, TBLACK,
+                           TPF_TEXT | TPF_RIGHT);
+          Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 2, d_credits_y,
+                           scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+          Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 2 * RESFACTOR,
+                           d_aiplayers_y, scheme, TBLACK, TPF_TEXT | TPF_RIGHT);
+        }
+
+        /*..................................................................
+        Draw the color boxes
+        ..................................................................*/
+        if (display >= REDRAW_COLORS) {
+          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
+            LogicPage->Fill_Rect(
+                cbox_x[i] + 1, d_color_y + 1, cbox_x[i] + 1 + d_color_w - 2,
+                d_color_y + 1 + d_color_h - 2, ColorRemaps[i].Box);
+            //						(i ==
+            // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
+            // ColorRemaps[i].Box);
+
+            if (i == Session.ColorIdx) {
+              Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+                       BOXSTYLE_DOWN, false);
+            } else {
+              Draw_Box(cbox_x[i], d_color_y, d_color_w, d_color_h,
+                       BOXSTYLE_RAISED, false);
+            }
+          }
+        }
+
+        /*..................................................................
+        Draw the message system; erase old messages first
+        ..................................................................*/
+        if (display >= REDRAW_MESSAGE && !skirmish) {
+          Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
+                   BOXSTYLE_BOX, true);
+          Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
+          Session.Messages.Draw();
+        }
+
+        //..................................................................
+        // Update game parameter labels
+        //..................................................................
+        if (display >= REDRAW_PARMS) {
+          //				LogicPage->Fill_Rect(d_count_x +
+          // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * RESFACTOR,
+          // d_aiplayers_y + d_aiplayers_h+RESFACTOR, BLACK);
+
+          sprintf(staticcountbuff, "%d", Session.Options.UnitCount);
+          staticcount.Set_Text(staticcountbuff);
+          staticcount.Draw_Me();
+          //				Fancy_Text_Print("%d ", d_count_x +
+          // d_count_w + 3 * RESFACTOR, d_count_y, scheme, BLACK, TPF_TEXT,
+          // Session.Options.UnitCount);
+
+          if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
+            sprintf(staticlevelbuff, "%d ", BuildLevel);
+          } else {
+            sprintf(staticlevelbuff, "**");
+          }
+          staticlevel.Set_Text(staticlevelbuff);
+          staticlevel.Draw_Me();
+          //				Fancy_Text_Print(txt, d_level_x +
+          // d_level_w + 3 * RESFACTOR, d_level_y, scheme, BLACK, TPF_TEXT);
+
+          sprintf(staticcreditsbuff, "%d", Session.Options.Credits);
+          staticcredits.Set_Text(staticcreditsbuff);
+          staticcredits.Draw_Me();
+          //				Fancy_Text_Print("%d", d_credits_x +
+          // d_credits_w + 2 * RESFACTOR, d_credits_y, scheme, BLACK, TPF_TEXT,
+          // Session.Options.Credits);
+
+          sprintf(staticaibuff, "%d", Session.Options.AIPlayers);
+          staticai.Set_Text(staticaibuff);
+          staticai.Draw_Me();
+          //				Fancy_Text_Print("%d", d_aiplayers_x +
+          // d_aiplayers_w + 2*RESFACTOR, d_aiplayers_y, scheme, BLACK,
+          // TPF_TEXT, Session.Options.AIPlayers);
+        }
+
+        /*
+        .......................... Redraw buttons ..........................
+        */
+        if (display >= REDRAW_BUTTONS) {
+          commands->Flag_List_To_Redraw();
+          commands->Draw_All();
+        }
+
+        Show_Mouse();
+        display = REDRAW_NONE;
       }
 
       /*
-      .......................... Redraw buttons ..........................
+      ........................... Get user input ............................
       */
-      if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
-        commands->Draw_All();
-      }
+      messages_have_focus = Session.Messages.Has_Edit_Focus();
+      bool droplist_is_dropped = housebtn.IsDropped;
+      input = commands->Input();
 
-      Show_Mouse();
-      display = REDRAW_NONE;
-    }
-
-    /*
-    ........................... Get user input ............................
-    */
-    messages_have_focus = Session.Messages.Has_Edit_Focus();
-    bool droplist_is_dropped = housebtn.IsDropped;
-    input = commands->Input();
-
-    /*
-    ** Sort out the input focus between the name edit box and the message system
-    */
-    if (!skirmish) {
-      if (messages_have_focus) {
-        if (!name_edt.Has_Focus()) {
-          Session.Messages.Set_Edit_Focus();
-        } else {
-          messages_have_focus = false;
-          display = REDRAW_MESSAGE;
+      /*
+      ** Sort out the input focus between the name edit box and the message
+      * system
+      */
+      if (!skirmish) {
+        if (messages_have_focus) {
+          if (!name_edt.Has_Focus()) {
+            Session.Messages.Set_Edit_Focus();
+          } else {
+            messages_have_focus = false;
+            display = REDRAW_MESSAGE;
+          }
         }
       }
-    }
 
-    /*
-    ** Redraw everything if the droplist collapsed
-    */
-    if (droplist_is_dropped && !housebtn.IsDropped) {
-      display = REDRAW_BACKGROUND;
-    }
-
-    if (input & KN_BUTTON) {
-      if (housebtn.IsDropped) {
-        housebtn.Collapse();
+      /*
+      ** Redraw everything if the droplist collapsed
+      */
+      if (droplist_is_dropped && !housebtn.IsDropped) {
         display = REDRAW_BACKGROUND;
       }
-    }
 
-    /*
-    ---------------------------- Process input ----------------------------
-    */
-    switch (input) {
-      /*------------------------------------------------------------------
-      User clicks on a color button
-      ------------------------------------------------------------------*/
-      case KN_LMOUSE:
-        if (Keyboard->MouseQX > cbox_x[0] &&
-            Keyboard->MouseQX < (cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w) &&
-            Keyboard->MouseQY > d_color_y &&
-            Keyboard->MouseQY < (d_color_y + d_color_h)) {
-          Session.PrefColor =
-              (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
-          Session.ColorIdx = Session.PrefColor;
-          if (display < REDRAW_COLORS) display = REDRAW_COLORS;
+      if (input & KN_BUTTON) {
+        if (housebtn.IsDropped) {
+          housebtn.Collapse();
+          display = REDRAW_BACKGROUND;
+        }
+      }
 
-          name_edt.Set_Color(
-              &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
-                               ? PCOLOR_REALLY_BLUE
-                               : Session.ColorIdx]);
-          name_edt.Flag_To_Redraw();
-          Session.Messages.Set_Edit_Color(
-              (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx);
-          port::SafeCopy(Session.Handle, namebuf);
-          transmit = true;
-          changed = true;
+      /*
+      ---------------------------- Process input ----------------------------
+      */
+      switch (input) {
+        /*------------------------------------------------------------------
+        User clicks on a color button
+        ------------------------------------------------------------------*/
+        case KN_LMOUSE:
+          if (Keyboard->MouseQX > cbox_x[0] &&
+              Keyboard->MouseQX <
+                  (cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w) &&
+              Keyboard->MouseQY > d_color_y &&
+              Keyboard->MouseQY < (d_color_y + d_color_h)) {
+            Session.PrefColor =
+                (PlayerColorType)((Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+            Session.ColorIdx = Session.PrefColor;
+            if (display < REDRAW_COLORS) display = REDRAW_COLORS;
+
+            name_edt.Set_Color(
+                &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+                                 ? PCOLOR_REALLY_BLUE
+                                 : Session.ColorIdx]);
+            name_edt.Flag_To_Redraw();
+            Session.Messages.Set_Edit_Color(
+                (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
+                                                         : Session.ColorIdx);
+            port::SafeCopy(Session.Handle, namebuf);
+            transmit = true;
+            changed = true;
+            if (housebtn.IsDropped) {
+              housebtn.Collapse();
+              display = REDRAW_BACKGROUND;
+            }
+          }
+          break;
+
+        /*------------------------------------------------------------------
+        User edits the name field; retransmit new game options
+        ------------------------------------------------------------------*/
+        case (BUTTON_NAME | KN_BUTTON):
           if (housebtn.IsDropped) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
           }
-        }
-        break;
+          port::SafeCopy(Session.Handle, namebuf);
+          transmit = true;
+          changed = true;
+          break;
 
-      /*------------------------------------------------------------------
-      User edits the name field; retransmit new game options
-      ------------------------------------------------------------------*/
-      case (BUTTON_NAME | KN_BUTTON):
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
+#ifdef OLDWAY
+        /*------------------------------------------------------------------
+        House Buttons: set the player's desired House
+        ------------------------------------------------------------------*/
+        case (BUTTON_GDI | KN_BUTTON):
+          Session.House = HOUSE_GOOD;
+          gdibtn.Turn_On();
+          nodbtn.Turn_Off();
+          port::SafeCopy(Session.Handle, namebuf);
+          transmit = true;
+          break;
+
+        case (BUTTON_NOD | KN_BUTTON):
+          Session.House = HOUSE_BAD;
+          gdibtn.Turn_Off();
+          nodbtn.Turn_On();
+          port::SafeCopy(Session.Handle, namebuf);
+          transmit = true;
+          break;
+#else
+        case (BUTTON_HOUSE | KN_BUTTON):
+          Session.House = HousesType(housebtn.Current_Index() + HOUSE_USSR);
+          port::SafeCopy(Session.Handle, namebuf);
           display = REDRAW_BACKGROUND;
+          transmit = true;
+          break;
+#endif
+
+          /*------------------------------------------------------------------
+          New Scenario selected.
+          ------------------------------------------------------------------*/
+          // All scenarios now allowable as downloads. ajw
+        case (BUTTON_SCENARIOLIST | KN_BUTTON):
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
+            Session.Options.ScenarioIndex = scenariolist.Current_Index();
+            port::SafeCopy(Session.Handle, namebuf);
+            transmit = true;
+          }
+          break;
+
+        /*------------------------------------------------------------------
+        User adjusts max # units
+        ------------------------------------------------------------------*/
+        case (BUTTON_COUNT | KN_BUTTON):
+          Session.Options.UnitCount =
+              countgauge.Get_Value() +
+              SessionClass::CountMin[Session.Options.Bases];
+          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          transmit = true;
+          break;
+
+        /*------------------------------------------------------------------
+        User adjusts build level
+        ------------------------------------------------------------------*/
+        case (BUTTON_LEVEL | KN_BUTTON):
+          BuildLevel = levelgauge.Get_Value() + 1;
+          if (BuildLevel >
+              MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
+            BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
+          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          transmit = true;
+          break;
+
+        /*------------------------------------------------------------------
+        User adjusts max # units
+        ------------------------------------------------------------------*/
+        case (BUTTON_CREDITS | KN_BUTTON):
+          Session.Options.Credits = creditsgauge.Get_Value();
+          Session.Options.Credits =
+              ((Session.Options.Credits + 250) / 500) * 500;
+          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          transmit = true;
+          break;
+
+        //..................................................................
+        //	User adjusts # of AI players
+        //..................................................................
+        case (BUTTON_AIPLAYERS | KN_BUTTON): {
+          Session.Options.AIPlayers = aiplayersgauge.Get_Value();
+          int humans = 2;  // Two humans.
+          if (skirmish) {
+            Session.Options.AIPlayers += 1;  // Always one forced AI player.
+            humans = 1;                      // One human.
+                                             //						if
+            //(Session.Options.AIPlayers == 0) {
+            // Session.Options.AIPlayers = 1;
+            // aiplayersgauge.Set_Value(0);
+            //						}
+          }
+          if (Session.Options.AIPlayers + humans >=
+              Rule.MaxPlayers) {  // if it's pegged, max it out
+            Session.Options.AIPlayers = Rule.MaxPlayers - humans;
+            aiplayersgauge.Set_Value(Session.Options.AIPlayers -
+                                     (skirmish ? 1 : 0));
+          }
+          transmit = true;
+          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+
+          break;
         }
+
+        //------------------------------------------------------------------
+        // Toggle-able options:
+        // If 'Bases' gets toggled, we have to change the range of the
+        // UnitCount slider.
+        // Also, if Tiberium gets toggled, we have to set the flags
+        // in SpecialClass.
+        //------------------------------------------------------------------
+        case (BUTTON_OPTIONS | KN_BUTTON):
+          if (!skirmish &&
+              Special.IsCaptureTheFlag != optionlist.Is_Checked(4) &&
+              !Special.IsCaptureTheFlag) {
+            optionlist.Check_Item(0, true);
+          }
+          if (Session.Options.Bases != optionlist.Is_Checked(0)) {
+            Session.Options.Bases = optionlist.Is_Checked(0);
+            if (Session.Options.Bases) {
+              Session.Options.UnitCount =
+                  Fixed_To_Cardinal(
+                      SessionClass::CountMax[1] - SessionClass::CountMin[1],
+                      Cardinal_To_Fixed(
+                          SessionClass::CountMax[0] - SessionClass::CountMin[0],
+                          Session.Options.UnitCount -
+                              SessionClass::CountMin[0])) +
+                  SessionClass::CountMin[1];
+            } else {
+              if (!skirmish) optionlist.Check_Item(4, false);
+              Session.Options.UnitCount =
+                  Fixed_To_Cardinal(
+                      SessionClass::CountMax[0] - SessionClass::CountMin[0],
+                      Cardinal_To_Fixed(
+                          SessionClass::CountMax[1] - SessionClass::CountMin[1],
+                          Session.Options.UnitCount -
+                              SessionClass::CountMin[1])) +
+                  SessionClass::CountMin[0];
+            }
+            countgauge.Set_Maximum(
+                SessionClass::CountMax[Session.Options.Bases] -
+                SessionClass::CountMin[Session.Options.Bases]);
+            countgauge.Set_Value(Session.Options.UnitCount -
+                                 SessionClass::CountMin[Session.Options.Bases]);
+          }
+          Session.Options.Tiberium = optionlist.Is_Checked(1);
+          Special.IsTGrowth = Session.Options.Tiberium;
+          Rule.IsTGrowth = Session.Options.Tiberium;
+          Special.IsTSpread = Session.Options.Tiberium;
+          Rule.IsTSpread = Session.Options.Tiberium;
+
+          Session.Options.Goodies = optionlist.Is_Checked(2);
+          Special.IsShadowGrow = optionlist.Is_Checked(3);
+          if (!skirmish) {
+            Special.IsCaptureTheFlag = optionlist.Is_Checked(4);
+          }
+
+          transmit = true;
+          if (display < REDRAW_PARMS) display = REDRAW_PARMS;
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          break;
+
+        /*------------------------------------------------------------------
+        OK: exit loop with true status
+        ------------------------------------------------------------------*/
+        case (BUTTON_LOAD | KN_BUTTON):
+        case (BUTTON_OK | KN_BUTTON):
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          //
+          // make sure we got a game options packet from the other player
+          //
+          if (gameoptions) {
+            rc = true;
+            process = false;
+
+            // force transmitting of game options packet one last time
+
+            transmit = true;
+            transmittime = 0;
+          } else {
+            WWMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
+            display = REDRAW_ALL;
+          }
+          if (input == (BUTTON_LOAD | KN_BUTTON)) load_game = true;
+          break;
+
+        /*------------------------------------------------------------------
+        CANCEL: send a SIGN_OFF, bail out with error code
+        ------------------------------------------------------------------*/
+        case (KN_ESC):
+        case (BUTTON_CANCEL | KN_BUTTON):
+          if (housebtn.IsDropped) {
+            housebtn.Collapse();
+            display = REDRAW_BACKGROUND;
+          }
+          process = false;
+          rc = false;
+          break;
+
+        /*------------------------------------------------------------------
+        Default: manage the inter-player messages
+        ------------------------------------------------------------------*/
+        default:
+          if (!skirmish) {
+            if (Session.Messages.Manage()) {
+              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            }
+
+            /*...............................................................
+            Service keyboard input for any message being edited.
+            ...............................................................*/
+            i = Session.Messages.Input(input);
+
+            /*...............................................................
+            If 'Input' returned 1, it means refresh the message display.
+            (We have to redraw the edit line, to erase the cursor.)
+            ...............................................................*/
+            if (i == 1) {
+              Hide_Mouse();
+              Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
+                       true);
+              Session.Messages.Draw();
+              Show_Mouse();
+            } else if (i == 2) {
+              /*...............................................................
+              If 'Input' returned 2, it means redraw the message display.
+              Rather than setting 'display', which would redraw all msgs,
+              we only need to erase & redraw the edit box here.
+              ...............................................................*/
+              Hide_Mouse();
+              Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
+                       true);
+              Session.Messages.Draw();
+              Show_Mouse();
+            } else if (i == 3 || i == 4) {
+              /*...............................................................
+              If 'input' returned 3, it means send the current message.
+              ...............................................................*/
+              memset(&SendPacket, 0, sizeof(SerialPacketType));
+              SendPacket.Command = SERIAL_MESSAGE;
+              port::SafeCopy(SendPacket.Name, namebuf);
+              SendPacket.ID = Session.ColorIdx;
+              if (i == 3) {
+                port::SafeCopy(SendPacket.Message.Message,
+                               Session.Messages.Get_Edit_Buf());
+              } else {
+                port::SafeCopy(SendPacket.Message.Message,
+                               Session.Messages.Get_Overflow_Buf());
+                Session.Messages.Clear_Overflow_Buf();
+              }
+
+              /*..................................................................
+              Send the message
+              ..................................................................*/
+              if (!skirmish) {
+                NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+                NullModem.Service();
+              }
+              /*..................................................................
+              Add the message to our own screen
+              ..................................................................*/
+              Session.Messages.Add_Message(
+                  SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
+                  (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
+                                                           : Session.ColorIdx,
+                  TPF_TEXT, -1);
+              Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+                                            ? PCOLOR_REALLY_BLUE
+                                            : Session.ColorIdx,
+                                        TPF_TEXT, nullptr, '_', d_message_w);
+
+              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+            } /* end of send message */
+          }
+          break;
+      }
+
+      /*---------------------------------------------------------------------
+      Detect editing of the name buffer, transmit new values to players
+      ---------------------------------------------------------------------*/
+      if (strcmp(namebuf, Session.Handle)) {
         port::SafeCopy(Session.Handle, namebuf);
         transmit = true;
         changed = true;
-        break;
-
-#ifdef OLDWAY
-      /*------------------------------------------------------------------
-      House Buttons: set the player's desired House
-      ------------------------------------------------------------------*/
-      case (BUTTON_GDI | KN_BUTTON):
-        Session.House = HOUSE_GOOD;
-        gdibtn.Turn_On();
-        nodbtn.Turn_Off();
-        port::SafeCopy(Session.Handle, namebuf);
-        transmit = true;
-        break;
-
-      case (BUTTON_NOD | KN_BUTTON):
-        Session.House = HOUSE_BAD;
-        gdibtn.Turn_Off();
-        nodbtn.Turn_On();
-        port::SafeCopy(Session.Handle, namebuf);
-        transmit = true;
-        break;
-#else
-      case (BUTTON_HOUSE | KN_BUTTON):
-        Session.House = HousesType(housebtn.Current_Index() + HOUSE_USSR);
-        port::SafeCopy(Session.Handle, namebuf);
-        display = REDRAW_BACKGROUND;
-        transmit = true;
-        break;
-#endif
-
-        /*------------------------------------------------------------------
-        New Scenario selected.
-        ------------------------------------------------------------------*/
-        // All scenarios now allowable as downloads. ajw
-      case (BUTTON_SCENARIOLIST | KN_BUTTON):
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
-          Session.Options.ScenarioIndex = scenariolist.Current_Index();
-          port::SafeCopy(Session.Handle, namebuf);
-          transmit = true;
-        }
-        break;
-
-      /*------------------------------------------------------------------
-      User adjusts max # units
-      ------------------------------------------------------------------*/
-      case (BUTTON_COUNT | KN_BUTTON):
-        Session.Options.UnitCount =
-            countgauge.Get_Value() +
-            SessionClass::CountMin[Session.Options.Bases];
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        transmit = true;
-        break;
-
-      /*------------------------------------------------------------------
-      User adjusts build level
-      ------------------------------------------------------------------*/
-      case (BUTTON_LEVEL | KN_BUTTON):
-        BuildLevel = levelgauge.Get_Value() + 1;
-        if (BuildLevel > MPLAYER_BUILD_LEVEL_MAX)  // if it's pegged, max it out
-          BuildLevel = MPLAYER_BUILD_LEVEL_MAX;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        transmit = true;
-        break;
-
-      /*------------------------------------------------------------------
-      User adjusts max # units
-      ------------------------------------------------------------------*/
-      case (BUTTON_CREDITS | KN_BUTTON):
-        Session.Options.Credits = creditsgauge.Get_Value();
-        Session.Options.Credits = ((Session.Options.Credits + 250) / 500) * 500;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        transmit = true;
-        break;
-
-      //..................................................................
-      //	User adjusts # of AI players
-      //..................................................................
-      case (BUTTON_AIPLAYERS | KN_BUTTON): {
-        Session.Options.AIPlayers = aiplayersgauge.Get_Value();
-        int humans = 2;  // Two humans.
-        if (skirmish) {
-          Session.Options.AIPlayers += 1;  // Always one forced AI player.
-          humans = 1;                      // One human.
-                                           //						if
-          //(Session.Options.AIPlayers == 0) {
-          // Session.Options.AIPlayers = 1;
-          // aiplayersgauge.Set_Value(0);
-          //						}
-        }
-        if (Session.Options.AIPlayers + humans >=
-            Rule.MaxPlayers) {  // if it's pegged, max it out
-          Session.Options.AIPlayers = Rule.MaxPlayers - humans;
-          aiplayersgauge.Set_Value(Session.Options.AIPlayers -
-                                   (skirmish ? 1 : 0));
-        }
-        transmit = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
-
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-
-        break;
       }
 
-      //------------------------------------------------------------------
-      // Toggle-able options:
-      // If 'Bases' gets toggled, we have to change the range of the
-      // UnitCount slider.
-      // Also, if Tiberium gets toggled, we have to set the flags
-      // in SpecialClass.
-      //------------------------------------------------------------------
-      case (BUTTON_OPTIONS | KN_BUTTON):
-        if (!skirmish && Special.IsCaptureTheFlag != optionlist.Is_Checked(4) &&
-            !Special.IsCaptureTheFlag) {
-          optionlist.Check_Item(0, true);
-        }
-        if (Session.Options.Bases != optionlist.Is_Checked(0)) {
-          Session.Options.Bases = optionlist.Is_Checked(0);
-          if (Session.Options.Bases) {
-            Session.Options.UnitCount =
-                Fixed_To_Cardinal(
-                    SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                    Cardinal_To_Fixed(
-                        SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                        Session.Options.UnitCount -
-                            SessionClass::CountMin[0])) +
-                SessionClass::CountMin[1];
-          } else {
-            if (!skirmish) optionlist.Check_Item(4, false);
-            Session.Options.UnitCount =
-                Fixed_To_Cardinal(
-                    SessionClass::CountMax[0] - SessionClass::CountMin[0],
-                    Cardinal_To_Fixed(
-                        SessionClass::CountMax[1] - SessionClass::CountMin[1],
-                        Session.Options.UnitCount -
-                            SessionClass::CountMin[1])) +
-                SessionClass::CountMin[0];
-          }
-          countgauge.Set_Maximum(SessionClass::CountMax[Session.Options.Bases] -
-                                 SessionClass::CountMin[Session.Options.Bases]);
-          countgauge.Set_Value(Session.Options.UnitCount -
-                               SessionClass::CountMin[Session.Options.Bases]);
-        }
-        Session.Options.Tiberium = optionlist.Is_Checked(1);
-        Special.IsTGrowth = Session.Options.Tiberium;
-        Rule.IsTGrowth = Session.Options.Tiberium;
-        Special.IsTSpread = Session.Options.Tiberium;
-        Rule.IsTSpread = Session.Options.Tiberium;
+      /*---------------------------------------------------------------------
+      If our Transmit flag is set, we need to send out a game option packet.
+      This message requires an ACK.  The first time through the loop, transmit
+      should be set, so we send out our default options; we'll then send
+      any changes we make to the defaults.
+      ---------------------------------------------------------------------*/
+      if (skirmish) {
+        transmit = false;
+      }
 
-        Session.Options.Goodies = optionlist.Is_Checked(2);
-        Special.IsShadowGrow = optionlist.Is_Checked(3);
-        if (!skirmish) {
-          Special.IsCaptureTheFlag = optionlist.Is_Checked(4);
-        }
+      if (transmit && (TickCount - transmittime) > PACKET_RETRANS_TIME) {
+        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        SendPacket.Command = SERIAL_GAME_OPTIONS;
+        port::SafeCopy(SendPacket.Name, namebuf);
+        SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
+        SendPacket.ScenarioInfo.MinVersion = VerNum.Min_Version();
+        SendPacket.ScenarioInfo.MaxVersion = VerNum.Max_Version();
+        SendPacket.ScenarioInfo.House = Session.House;
+        SendPacket.ScenarioInfo.Color = Session.ColorIdx;
+        SendPacket.ScenarioInfo.Credits = Session.Options.Credits;
+        SendPacket.ScenarioInfo.IsBases = Session.Options.Bases;
+        SendPacket.ScenarioInfo.IsTiberium = Session.Options.Tiberium;
+        SendPacket.ScenarioInfo.IsGoodies = Session.Options.Goodies;
+        SendPacket.ScenarioInfo.AIPlayers = Session.Options.AIPlayers;
+        SendPacket.ScenarioInfo.BuildLevel = BuildLevel;
+        SendPacket.ScenarioInfo.UnitCount = Session.Options.UnitCount;
+        SendPacket.ScenarioInfo.Seed = Seed;
+        SendPacket.ScenarioInfo.Special = Special;
+        SendPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
+        SendPacket.ID = Session.ModemType;
 
-        transmit = true;
-        if (display < REDRAW_PARMS) display = REDRAW_PARMS;
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        break;
+        /*
+        ** Set up the scenario info so the remote player can match the scenario
+        * on his machine
+        ** or request a download if it doesnt exist
+        */
+        port::SafeCopy(
+            SendPacket.ScenarioInfo.Scenario,
+            Session.Scenarios[Session.Options.ScenarioIndex]->Description());
+        CCFileClass file(
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 
-      /*------------------------------------------------------------------
-      OK: exit loop with true status
-      ------------------------------------------------------------------*/
-      case (BUTTON_LOAD | KN_BUTTON):
-      case (BUTTON_OK | KN_BUTTON):
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        //
-        // make sure we got a game options packet from the other player
-        //
-        if (gameoptions) {
-          rc = true;
-          process = false;
-
-          // force transmitting of game options packet one last time
-
-          transmit = true;
-          transmittime = 0;
-        } else {
-          WWMessageBox().Process(TXT_ONLY_ONE, TXT_OOPS, TXT_NONE);
-          display = REDRAW_ALL;
-        }
-        if (input == (BUTTON_LOAD | KN_BUTTON)) load_game = true;
-        break;
-
-      /*------------------------------------------------------------------
-      CANCEL: send a SIGN_OFF, bail out with error code
-      ------------------------------------------------------------------*/
-      case (KN_ESC):
-      case (BUTTON_CANCEL | KN_BUTTON):
-        if (housebtn.IsDropped) {
-          housebtn.Collapse();
-          display = REDRAW_BACKGROUND;
-        }
-        process = false;
-        rc = false;
-        break;
-
-      /*------------------------------------------------------------------
-      Default: manage the inter-player messages
-      ------------------------------------------------------------------*/
-      default:
-        if (!skirmish) {
-          if (Session.Messages.Manage()) {
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-          }
-
-          /*...............................................................
-          Service keyboard input for any message being edited.
-          ...............................................................*/
-          i = Session.Messages.Input(input);
-
-          /*...............................................................
-          If 'Input' returned 1, it means refresh the message display.
-          (We have to redraw the edit line, to erase the cursor.)
-          ...............................................................*/
-          if (i == 1) {
-            Hide_Mouse();
-            Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
-                     true);
-            Session.Messages.Draw();
-            Show_Mouse();
-          } else if (i == 2) {
-            /*...............................................................
-            If 'Input' returned 2, it means redraw the message display.
-            Rather than setting 'display', which would redraw all msgs,
-            we only need to erase & redraw the edit box here.
-            ...............................................................*/
-            Hide_Mouse();
-            Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
-                     true);
-            Session.Messages.Draw();
-            Show_Mouse();
-          } else if (i == 3 || i == 4) {
-            /*...............................................................
-            If 'input' returned 3, it means send the current message.
-            ...............................................................*/
-            memset(&SendPacket, 0, sizeof(SerialPacketType));
-            SendPacket.Command = SERIAL_MESSAGE;
-            port::SafeCopy(SendPacket.Name, namebuf);
-            SendPacket.ID = Session.ColorIdx;
-            if (i == 3) {
-              port::SafeCopy(SendPacket.Message.Message,
-                             Session.Messages.Get_Edit_Buf());
-            } else {
-              port::SafeCopy(SendPacket.Message.Message,
-                             Session.Messages.Get_Overflow_Buf());
-              Session.Messages.Clear_Overflow_Buf();
-            }
-
-            /*..................................................................
-            Send the message
-            ..................................................................*/
-            if (!skirmish) {
-              NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-              NullModem.Service();
-            }
-            /*..................................................................
-            Add the message to our own screen
-            ..................................................................*/
-            Session.Messages.Add_Message(
-                SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
-                (Session.ColorIdx == PCOLOR_DIALOG_BLUE) ? PCOLOR_REALLY_BLUE
-                                                         : Session.ColorIdx,
-                TPF_TEXT, -1);
-            Session.Messages.Add_Edit((Session.ColorIdx == PCOLOR_DIALOG_BLUE)
-                                          ? PCOLOR_REALLY_BLUE
-                                          : Session.ColorIdx,
-                                      TPF_TEXT, nullptr, '_', d_message_w);
-
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-          } /* end of send message */
-        }
-        break;
-    }
-
-    /*---------------------------------------------------------------------
-    Detect editing of the name buffer, transmit new values to players
-    ---------------------------------------------------------------------*/
-    if (strcmp(namebuf, Session.Handle)) {
-      port::SafeCopy(Session.Handle, namebuf);
-      transmit = true;
-      changed = true;
-    }
-
-    /*---------------------------------------------------------------------
-    If our Transmit flag is set, we need to send out a game option packet.
-    This message requires an ACK.  The first time through the loop, transmit
-    should be set, so we send out our default options; we'll then send
-    any changes we make to the defaults.
-    ---------------------------------------------------------------------*/
-    if (skirmish) {
-      transmit = false;
-    }
-
-    if (transmit && (TickCount - transmittime) > PACKET_RETRANS_TIME) {
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
-      SendPacket.Command = SERIAL_GAME_OPTIONS;
-      port::SafeCopy(SendPacket.Name, namebuf);
-      SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
-      SendPacket.ScenarioInfo.MinVersion = VerNum.Min_Version();
-      SendPacket.ScenarioInfo.MaxVersion = VerNum.Max_Version();
-      SendPacket.ScenarioInfo.House = Session.House;
-      SendPacket.ScenarioInfo.Color = Session.ColorIdx;
-      SendPacket.ScenarioInfo.Credits = Session.Options.Credits;
-      SendPacket.ScenarioInfo.IsBases = Session.Options.Bases;
-      SendPacket.ScenarioInfo.IsTiberium = Session.Options.Tiberium;
-      SendPacket.ScenarioInfo.IsGoodies = Session.Options.Goodies;
-      SendPacket.ScenarioInfo.AIPlayers = Session.Options.AIPlayers;
-      SendPacket.ScenarioInfo.BuildLevel = BuildLevel;
-      SendPacket.ScenarioInfo.UnitCount = Session.Options.UnitCount;
-      SendPacket.ScenarioInfo.Seed = Seed;
-      SendPacket.ScenarioInfo.Special = Special;
-      SendPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-      SendPacket.ID = Session.ModemType;
-
-      /*
-      ** Set up the scenario info so the remote player can match the scenario on
-      *his machine
-      ** or request a download if it doesnt exist
-      */
-      port::SafeCopy(
-          SendPacket.ScenarioInfo.Scenario,
-          Session.Scenarios[Session.Options.ScenarioIndex]->Description());
-      CCFileClass file(
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-
-      SendPacket.ScenarioInfo.FileLength = file.Size();
+        SendPacket.ScenarioInfo.FileLength = file.Size();
 
 #ifdef WOLAPI_INTEGRATION
-      port::SafeCopy(
-          SendPacket.ScenarioInfo.ShortFileName,
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+        port::SafeCopy(
+            SendPacket.ScenarioInfo.ShortFileName,
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #else
-      port::SafeCopy(
-          SendPacket.ScenarioInfo.ShortFileName,
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+        port::SafeCopy(
+            SendPacket.ScenarioInfo.ShortFileName,
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
 #endif
-      port::SafeCopy(
-          reinterpret_cast<char*>(SendPacket.ScenarioInfo.FileDigest),
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
-          sizeof(SendPacket.ScenarioInfo.FileDigest));
-      SendPacket.ScenarioInfo.OfficialScenario =
-          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+        port::SafeCopy(
+            reinterpret_cast<char*>(SendPacket.ScenarioInfo.FileDigest),
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Digest(),
+            sizeof(SendPacket.ScenarioInfo.FileDigest));
+        SendPacket.ScenarioInfo.OfficialScenario =
+            Session.Scenarios[Session.Options.ScenarioIndex]->Get_Official();
+        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
 
-      transmittime = TickCount;
-      transmit = false;
+        transmittime = TickCount;
+        transmit = false;
 
-      //..................................................................
-      // Keep the player list up to date
-      //..................................................................
-      if (playerlist.Count()) {
-        item = (char*)playerlist.Get_Item(0);
+        //..................................................................
+        // Keep the player list up to date
+        //..................................................................
+        if (playerlist.Count()) {
+          item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
-        if (Session.House == HOUSE_GOOD) {
-          sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
-        } else {
-          sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
-        }
+          if (Session.House == HOUSE_GOOD) {
+            sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+          } else {
+            sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+          }
 #else   // OLDWAY
-        sprintf(item, "%s\t%s", namebuf,
-                Text_String(
-                    HouseTypeClass::As_Reference(Session.House).Full_Name()));
+          sprintf(item, "%s\t%s", namebuf,
+                  Text_String(
+                      HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-        playerlist.Colors[0] =
-            &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
-                             ? PCOLOR_REALLY_BLUE
-                             : Session.ColorIdx];
-        playerlist.Flag_To_Redraw();
-      }
-
-      //..................................................................
-      // Play a little sound effect
-      //..................................................................
-      Sound_Effect(VOC_OPTIONS_CHANGED);
-    }
-
-    //
-    // send a timing packet if enough time has gone by.
-    //
-    if (!skirmish && (TickCount - timingtime) > PACKET_TIMING_TIMEOUT) {
-      memset(&SendPacket, 0, sizeof(SerialPacketType));
-      SendPacket.Command = SERIAL_TIMING;
-      SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
-      SendPacket.ID = Session.ModemType;
-
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
-      timingtime = TickCount;
-    }
-
-    /*---------------------------------------------------------------------
-    Check for an incoming message
-    ---------------------------------------------------------------------*/
-    if (!skirmish && NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-      lastmsgtime = TickCount;
-      msg_timeout = 600;  // reset timeout value to 10 seconds
-                          // (only the 1st time through is 20 seconds)
-
-      // are we getting our own packets back??
-
-      if (ReceivePacket.Command >= SERIAL_CONNECT &&
-          ReceivePacket.Command < SERIAL_LAST_COMMAND &&
-          ReceivePacket.Command != SERIAL_MESSAGE &&
-          ReceivePacket.ID == Session.ModemType) {
-        WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
-
-        // to skip the other system not responding msg
-        lastmsgtime = TickCount;
-
-        process = false;
-        rc = false;
-
-        // say we did receive sign off to keep from sending one
-        recsignedoff = true;
-        break;
-      }
-
-      event = (EventClass*)&ReceivePacket;
-      if (event->Type <= EventClass::FRAMEINFO) {
-        if ((TickCount - lastredrawtime) > PACKET_REDRAW_TIME) {
-          lastredrawtime = TickCount;
-          if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+          playerlist.Colors[0] =
+              &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+                               ? PCOLOR_REALLY_BLUE
+                               : Session.ColorIdx];
+          playerlist.Flag_To_Redraw();
         }
-      } else {
-        switch (ReceivePacket.Command) {
-          /*..................................................................
-          Sign-off: Give the other machine time to receive my ACK, display a
-          message, and exit.
-          ..................................................................*/
-          case (SERIAL_SIGN_OFF):
-            starttime = TickCount;
-            while (TickCount - starttime < 60) NullModem.Service();
-            WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
-            // to skip the other system not responding msg
-            lastmsgtime = TickCount;
+        //..................................................................
+        // Play a little sound effect
+        //..................................................................
+        Sound_Effect(VOC_OPTIONS_CHANGED);
+      }
 
-            process = false;
-            rc = false;
-            recsignedoff = true;
-            break;
+      //
+      // send a timing packet if enough time has gone by.
+      //
+      if (!skirmish && (TickCount - timingtime) > PACKET_TIMING_TIMEOUT) {
+        memset(&SendPacket, 0, sizeof(SerialPacketType));
+        SendPacket.Command = SERIAL_TIMING;
+        SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        SendPacket.ID = Session.ModemType;
 
-          /*..................................................................
-          Game Options:  Store the other machine's name, color & house;
-          If they've picked the same color as myself, re-transmit my settings
-          to force him to choose a different color.  (Com_Show_Scenario_Dialog
-          is responsible for ensuring the colors are different.)
-          ..................................................................*/
-          case (SERIAL_GAME_OPTIONS):
-            gameoptions = true;
-            kludge_timer = 2 * 60;
-            port::SafeCopy(TheirName, ReceivePacket.Name);
-            TheirColor = ReceivePacket.ScenarioInfo.Color;
-            TheirHouse = ReceivePacket.ScenarioInfo.House;
-            transmit = true;
+        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 0);
+        timingtime = TickCount;
+      }
 
+      /*---------------------------------------------------------------------
+      Check for an incoming message
+      ---------------------------------------------------------------------*/
+      if (!skirmish && NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+        lastmsgtime = TickCount;
+        msg_timeout = 600;  // reset timeout value to 10 seconds
+                            // (only the 1st time through is 20 seconds)
+
+        // are we getting our own packets back??
+
+        if (ReceivePacket.Command >= SERIAL_CONNECT &&
+            ReceivePacket.Command < SERIAL_LAST_COMMAND &&
+            ReceivePacket.Command != SERIAL_MESSAGE &&
+            ReceivePacket.ID == Session.ModemType) {
+          WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
+
+          // to skip the other system not responding msg
+          lastmsgtime = TickCount;
+
+          process = false;
+          rc = false;
+
+          // say we did receive sign off to keep from sending one
+          recsignedoff = true;
+          break;
+        }
+
+        event = (EventClass*)&ReceivePacket;
+        if (event->Type <= EventClass::FRAMEINFO) {
+          if ((TickCount - lastredrawtime) > PACKET_REDRAW_TIME) {
+            lastredrawtime = TickCount;
             if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-
-            //.........................................................
-            // "Clip" the other system's version range to our own
-            // ........................................................
-            version =
-                VerNum.Clip_Version(ReceivePacket.ScenarioInfo.MinVersion,
-                                    ReceivePacket.ScenarioInfo.MaxVersion);
-            // ........................................................
-            // If the greatest-common-version comes back 0, the other
-            // system's range is too low for ours
-            // ........................................................
-            if (version == 0) {
-              WWMessageBox().Process(TXT_DESTGAME_OUTDATED);
+          }
+        } else {
+          switch (ReceivePacket.Command) {
+            /*..................................................................
+            Sign-off: Give the other machine time to receive my ACK, display a
+            message, and exit.
+            ..................................................................*/
+            case (SERIAL_SIGN_OFF):
+              starttime = TickCount;
+              while (TickCount - starttime < 60) NullModem.Service();
+              WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
               // to skip the other system not responding msg
               lastmsgtime = TickCount;
 
               process = false;
               rc = false;
-            } else if (version == 0xffffffff) {
-              // ........................................................
-              // If the greatest-common-version comes back 0xffffffff,
-              // the other system's range is too high for ours
-              // ........................................................
-              WWMessageBox().Process(TXT_YOURGAME_OUTDATED);
+              recsignedoff = true;
+              break;
 
-              // to skip the other system not responding msg
-              lastmsgtime = TickCount;
+            /*..................................................................
+            Game Options:  Store the other machine's name, color & house;
+            If they've picked the same color as myself, re-transmit my settings
+            to force him to choose a different color.  (Com_Show_Scenario_Dialog
+            is responsible for ensuring the colors are different.)
+            ..................................................................*/
+            case (SERIAL_GAME_OPTIONS):
+              gameoptions = true;
+              kludge_timer = 2 * 60;
+              port::SafeCopy(TheirName, ReceivePacket.Name);
+              TheirColor = ReceivePacket.ScenarioInfo.Color;
+              TheirHouse = ReceivePacket.ScenarioInfo.House;
+              transmit = true;
 
-              process = false;
-              rc = false;
-            } else {
-              if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                  RuleINI.Get_Unique_ID()) {
-                WWMessageBox().Process(TXT_MISMATCH);
+              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+
+              //.........................................................
+              // "Clip" the other system's version range to our own
+              // ........................................................
+              version =
+                  VerNum.Clip_Version(ReceivePacket.ScenarioInfo.MinVersion,
+                                      ReceivePacket.ScenarioInfo.MaxVersion);
+              // ........................................................
+              // If the greatest-common-version comes back 0, the other
+              // system's range is too low for ours
+              // ........................................................
+              if (version == 0) {
+                WWMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
                 // to skip the other system not responding msg
                 lastmsgtime = TickCount;
 
                 process = false;
                 rc = false;
+              } else if (version == 0xffffffff) {
+                // ........................................................
+                // If the greatest-common-version comes back 0xffffffff,
+                // the other system's range is too high for ours
+                // ........................................................
+                WWMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
+                // to skip the other system not responding msg
+                lastmsgtime = TickCount;
+
+                process = false;
+                rc = false;
               } else {
-                // ........................................................
-                // Otherwise, 'version' is the highest version we have in
-                // common; look up the protocol that goes with this version.
-                // ........................................................
-                Session.CommProtocol = VerNum.Version_Protocol(version);
+                if (ReceivePacket.ScenarioInfo.CheatCheck !=
+                    RuleINI.Get_Unique_ID()) {
+                  WWMessageBox().Process(TXT_MISMATCH);
+
+                  // to skip the other system not responding msg
+                  lastmsgtime = TickCount;
+
+                  process = false;
+                  rc = false;
+
+                } else {
+                  // ........................................................
+                  // Otherwise, 'version' is the highest version we have in
+                  // common; look up the protocol that goes with this version.
+                  // ........................................................
+                  Session.CommProtocol = VerNum.Version_Protocol(version);
+                }
               }
-            }
-            /*.........................................................
-            If this is the first game-options packet we've received,
-            init the game & player lists
-            .........................................................*/
-            if (playerlist.Count() == 0) {
-              //......................................................
-              // Add two strings to the player list
-              //......................................................
-              item = new char[MPLAYER_NAME_MAX +
-                              64];  // Need room to display country name
-              playerlist.Add_Item(item, &ColorRemaps[Session.ColorIdx]);
-              item = new char[MPLAYER_NAME_MAX +
-                              64];  // Need room to display country name
-              playerlist.Add_Item(item, &ColorRemaps[TheirColor]);
-            }
+              /*.........................................................
+              If this is the first game-options packet we've received,
+              init the game & player lists
+              .........................................................*/
+              if (playerlist.Count() == 0) {
+                //......................................................
+                // Add two strings to the player list
+                //......................................................
+                item = new char[MPLAYER_NAME_MAX +
+                                64];  // Need room to display country name
+                playerlist.Add_Item(item, &ColorRemaps[Session.ColorIdx]);
+                item = new char[MPLAYER_NAME_MAX +
+                                64];  // Need room to display country name
+                playerlist.Add_Item(item, &ColorRemaps[TheirColor]);
+              }
 
-            //.........................................................
-            // Ensure the player list has the latest, greatest copy of
-            // our names & colors.  Do this every time we receive an
-            // options packet.
-            //.........................................................
-            item = (char*)playerlist.Get_Item(0);
+              //.........................................................
+              // Ensure the player list has the latest, greatest copy of
+              // our names & colors.  Do this every time we receive an
+              // options packet.
+              //.........................................................
+              item = (char*)playerlist.Get_Item(0);
 #ifdef OLDWAY
-            if (Session.House == HOUSE_GOOD) {
-              sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
-            } else {
-              sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
-            }
+              if (Session.House == HOUSE_GOOD) {
+                sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+              } else {
+                sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+              }
 #else   // OLDWAY
-            sprintf(
-                item, "%s\t%s", namebuf,
-                Text_String(
-                    HouseTypeClass::As_Reference(Session.House).Full_Name()));
+              sprintf(
+                  item, "%s\t%s", namebuf,
+                  Text_String(
+                      HouseTypeClass::As_Reference(Session.House).Full_Name()));
 #endif  // OLDWAY
-            playerlist.Colors[0] =
-                &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
-                                 ? PCOLOR_REALLY_BLUE
-                                 : Session.ColorIdx];
+              playerlist.Colors[0] =
+                  &ColorRemaps[(Session.ColorIdx == PCOLOR_DIALOG_BLUE)
+                                   ? PCOLOR_REALLY_BLUE
+                                   : Session.ColorIdx];
 
-            item = (char*)playerlist.Get_Item(1);
+              item = (char*)playerlist.Get_Item(1);
 #ifdef OLDWAY
-            if (TheirHouse == HOUSE_GOOD) {
-              sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
-            } else {
-              sprintf(item, "%s\t%s", TheirName, Text_String(TXT_SOVIET));
-            }
+              if (TheirHouse == HOUSE_GOOD) {
+                sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
+              } else {
+                sprintf(item, "%s\t%s", TheirName, Text_String(TXT_SOVIET));
+              }
 #else   // OLDWAY
-            sprintf(item, "%s\t%s", TheirName,
-                    Text_String(
-                        HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
+              sprintf(
+                  item, "%s\t%s", TheirName,
+                  Text_String(
+                      HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
-            playerlist.Colors[1] =
-                &ColorRemaps[(TheirColor == PCOLOR_DIALOG_BLUE)
-                                 ? PCOLOR_REALLY_BLUE
-                                 : TheirColor];
+              playerlist.Colors[1] =
+                  &ColorRemaps[(TheirColor == PCOLOR_DIALOG_BLUE)
+                                   ? PCOLOR_REALLY_BLUE
+                                   : TheirColor];
 
-            playerlist.Flag_To_Redraw();
+              playerlist.Flag_To_Redraw();
 
-            //.........................................................
-            // Play a little sound effect
-            //.........................................................
-            Sound_Effect(VOC_OPTIONS_CHANGED);
+              //.........................................................
+              // Play a little sound effect
+              //.........................................................
+              Sound_Effect(VOC_OPTIONS_CHANGED);
 
-            break;
+              break;
 
-          /*..................................................................
-          Incoming message: add to our list
-          ..................................................................*/
-          case (SERIAL_MESSAGE):
-            Session.Messages.Add_Message(
-                ReceivePacket.Name,
-                ((PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE)
-                    ? PCOLOR_REALLY_BLUE
-                    : (PlayerColorType)ReceivePacket.ID,
-                ReceivePacket.Message.Message,
-                ((PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE)
-                    ? PCOLOR_REALLY_BLUE
-                    : (PlayerColorType)ReceivePacket.ID,
-                TPF_TEXT, -1);
+            /*..................................................................
+            Incoming message: add to our list
+            ..................................................................*/
+            case (SERIAL_MESSAGE):
+              Session.Messages.Add_Message(
+                  ReceivePacket.Name,
+                  ((PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE)
+                      ? PCOLOR_REALLY_BLUE
+                      : (PlayerColorType)ReceivePacket.ID,
+                  ReceivePacket.Message.Message,
+                  ((PlayerColorType)ReceivePacket.ID == PCOLOR_DIALOG_BLUE)
+                      ? PCOLOR_REALLY_BLUE
+                      : (PlayerColorType)ReceivePacket.ID,
+                  TPF_TEXT, -1);
 
-            Sound_Effect(VOC_INCOMING_MESSAGE);
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              Sound_Effect(VOC_INCOMING_MESSAGE);
+              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
 
-            break;
+              break;
 
-          //
-          // get their response time
-          //
-          case (SERIAL_TIMING):
-            theirresponsetime = ReceivePacket.ScenarioInfo.ResponseTime;
+            //
+            // get their response time
+            //
+            case (SERIAL_TIMING):
+              theirresponsetime = ReceivePacket.ScenarioInfo.ResponseTime;
 
-            if (!gameoptions) {
-              // retransmit of game options packet again
-              transmit = true;
-            }
-            break;
+              if (!gameoptions) {
+                // retransmit of game options packet again
+                transmit = true;
+              }
+              break;
 
-          //
-          // print msg waiting for opponent
-          //
-          case (SERIAL_SCORE_SCREEN):
-            if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
-            break;
+            //
+            // print msg waiting for opponent
+            //
+            case (SERIAL_SCORE_SCREEN):
+              if (display < REDRAW_MESSAGE) display = REDRAW_MESSAGE;
+              break;
 
-          default:
-            break;
+            default:
+              break;
+          }
         }
       }
-    }
 
-    // if we haven't received a msg for 10 seconds exit
+      // if we haven't received a msg for 10 seconds exit
 
-    if (!skirmish && (TickCount - lastmsgtime) > msg_timeout) {
-      WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
-      process = false;
-      rc = false;
+      if (!skirmish && (TickCount - lastmsgtime) > msg_timeout) {
+        WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
+        process = false;
+        rc = false;
 
-      // say we did receive sign off to keep from sending one
-      recsignedoff = true;
-    }
-
-    /*---------------------------------------------------------------------
-    Service the connection
-    ---------------------------------------------------------------------*/
-    if (!skirmish) {
-      NullModem.Service();
-    }
-  }
-
-  /*------------------------------------------------------------------------
-  Prepare to load the scenario
-  ------------------------------------------------------------------------*/
-  if (rc) {
-    Session.NumPlayers = skirmish ? 1 : 2;
-
-    Scen.Scenario = Session.Options.ScenarioIndex;
-    port::SafeCopy(
-        Scen.ScenarioName,
-        Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
-
-    /*.....................................................................
-    Add both players to the Players vector; the local system is always
-    index 0.
-    .....................................................................*/
-    who = new NodeNameType;
-    port::SafeCopy(who->Name, namebuf);
-    who->Player.House = Session.House;
-    who->Player.Color = Session.ColorIdx;
-    who->Player.ProcessTime = -1;
-    Session.Players.Add(who);
-
-    /*
-    **	Fetch the difficulty setting when in skirmish mode.
-    */
-    if (skirmish) {
-      int diff = difficulty.Get_Value() * (Rule.IsFineDifficulty ? 1 : 2);
-      switch (diff) {
-        case 0:
-          Scen.CDifficulty = DIFF_HARD;
-          Scen.Difficulty = DIFF_EASY;
-          break;
-
-        case 1:
-          Scen.CDifficulty = DIFF_HARD;
-          Scen.Difficulty = DIFF_NORMAL;
-          break;
-
-        case 2:
-          Scen.CDifficulty = DIFF_NORMAL;
-          Scen.Difficulty = DIFF_NORMAL;
-          break;
-
-        case 3:
-          Scen.CDifficulty = DIFF_EASY;
-          Scen.Difficulty = DIFF_NORMAL;
-          break;
-
-        case 4:
-          Scen.CDifficulty = DIFF_EASY;
-          Scen.Difficulty = DIFF_HARD;
-          break;
+        // say we did receive sign off to keep from sending one
+        recsignedoff = true;
       }
-    } else {
-      Scen.CDifficulty = DIFF_NORMAL;
-      Scen.Difficulty = DIFF_NORMAL;
+
+      /*---------------------------------------------------------------------
+      Service the connection
+      ---------------------------------------------------------------------*/
+      if (!skirmish) {
+        NullModem.Service();
+      }
     }
 
-    if (!skirmish) {
+    /*------------------------------------------------------------------------
+    Prepare to load the scenario
+    ------------------------------------------------------------------------*/
+    if (rc) {
+      Session.NumPlayers = skirmish ? 1 : 2;
+
+      Scen.Scenario = Session.Options.ScenarioIndex;
+      port::SafeCopy(
+          Scen.ScenarioName,
+          Session.Scenarios[Session.Options.ScenarioIndex]->Get_Filename());
+
+      /*.....................................................................
+      Add both players to the Players vector; the local system is always
+      index 0.
+      .....................................................................*/
       who = new NodeNameType;
-
-      /* If the names of the players are the same then we MUST force them
-       * be be unique. This is necessary to prevent a crash after loading
-       * a modem save game.
-       */
-      if (strcmp(TheirName, namebuf) == 0) {
-        if (strlen(TheirName) == (MPLAYER_NAME_MAX - 1)) {
-          TheirName[MPLAYER_NAME_MAX - 1] = '\0';
-        } else {
-          port::SafeAppend(TheirName, "2");
-        }
-      }
-
-      port::SafeCopy(who->Name, TheirName);
-      who->Player.House = TheirHouse;
-      who->Player.Color = TheirColor;
+      port::SafeCopy(who->Name, namebuf);
+      who->Player.House = Session.House;
+      who->Player.Color = Session.ColorIdx;
       who->Player.ProcessTime = -1;
       Session.Players.Add(who);
-    }
-
-    /*.....................................................................
-    Send all players a GO packet.
-    .....................................................................*/
-    memset(&SendPacket, 0, sizeof(SerialPacketType));
-    if (load_game) {
-      SendPacket.Command = SERIAL_LOADGAME;
-    } else {
-      SendPacket.Command = SERIAL_GO;
-    }
-
-    if (!skirmish) {
-      SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
-      if (theirresponsetime != 10000) {
-        if (SendPacket.ScenarioInfo.ResponseTime < theirresponsetime) {
-          SendPacket.ScenarioInfo.ResponseTime = theirresponsetime;
-        }
-      }
-    }
-
-    //
-    // calculated one way delay for a packet and overall delay to execute
-    // a packet
-    //
-    if (!skirmish) {
-      if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-        Session.MaxAhead =
-            std::max(((((SendPacket.ScenarioInfo.ResponseTime / 8) +
-                        (Session.FrameSendRate - 1)) /
-                       Session.FrameSendRate) *
-                      Session.FrameSendRate),
-                     (Session.FrameSendRate * 2));
-      } else {
-        Session.MaxAhead =
-            std::max(unsigned(SendPacket.ScenarioInfo.ResponseTime / 8),
-                     MODEM_MIN_MAX_AHEAD);
-      }
-    }
-    SendPacket.ID = Session.ModemType;
-
-    if (!skirmish) {
-      NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
-      starttime = TickCount;
-      while ((NullModem.Num_Send() &&
-              ((TickCount - starttime) < PACKET_SENDING_TIMEOUT)) ||
-             ((TickCount - starttime) < 60)) {
-#if (SHOW_MONO)
-        NullModem.Mono_Debug_Print(0);
-#endif
-
-        NullModem.Service();
-      }
 
       /*
-      ** Wait for the go response. This will be either a 'GO' reply, a
-      ** request for the scenario to be sent or a reply to say that the scenario
-      ** cant be played.
+      **	Fetch the difficulty setting when in skirmish mode.
       */
-#ifdef WIN32
-      WWDebugString("RA95 - About to wait for 'GO' response.\n");
-#endif
-      do {
-        NullModem.Service();
-
-        if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-          if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
-            if (Session.Scenarios[Session.Options.ScenarioIndex]
-                    ->Get_Official()) {
-              if (!Force_Scenario_Available(Scen.ScenarioName))
-                Emergency_Exit(EXIT_FAILURE);
-            }
+      if (skirmish) {
+        int diff = difficulty.Get_Value() * (Rule.IsFineDifficulty ? 1 : 2);
+        switch (diff) {
+          case 0:
+            Scen.CDifficulty = DIFF_HARD;
+            Scen.Difficulty = DIFF_EASY;
             break;
-          }
 
-          if (ReceivePacket.Command == SERIAL_NO_SCENARIO) {
-            WWMessageBox().Process(TXT_NO_EXPANSION_SCENARIO, TXT_CANCEL);
-            /*
-            ** We have to recover from this somehow so....
-            */
-            process = true;
-            display = REDRAW_ALL;
-            lastmsgtime = TickCount;
-            goto oh_dear_its_a_label;
-          }
-
-          if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
-#ifdef WIN32
-            WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
-
-#endif
-
-            if (Session.Scenarios[Session.Options.ScenarioIndex]
-                    ->Get_Official()) {
-              if (!Force_Scenario_Available(Scen.ScenarioName))
-                Emergency_Exit(EXIT_FAILURE);
-            }
-
-            Send_Remote_File(Scen.ScenarioName, 0);
-
+          case 1:
+            Scen.CDifficulty = DIFF_HARD;
+            Scen.Difficulty = DIFF_NORMAL;
             break;
+
+          case 2:
+            Scen.CDifficulty = DIFF_NORMAL;
+            Scen.Difficulty = DIFF_NORMAL;
+            break;
+
+          case 3:
+            Scen.CDifficulty = DIFF_EASY;
+            Scen.Difficulty = DIFF_NORMAL;
+            break;
+
+          case 4:
+            Scen.CDifficulty = DIFF_EASY;
+            Scen.Difficulty = DIFF_HARD;
+            break;
+        }
+      } else {
+        Scen.CDifficulty = DIFF_NORMAL;
+        Scen.Difficulty = DIFF_NORMAL;
+      }
+
+      if (!skirmish) {
+        who = new NodeNameType;
+
+        /* If the names of the players are the same then we MUST force them
+         * be be unique. This is necessary to prevent a crash after loading
+         * a modem save game.
+         */
+        if (strcmp(TheirName, namebuf) == 0) {
+          if (strlen(TheirName) == (MPLAYER_NAME_MAX - 1)) {
+            TheirName[MPLAYER_NAME_MAX - 1] = '\0';
+          } else {
+            port::SafeAppend(TheirName, "2");
           }
         }
 
-      } while (!Keyboard->Check());
+        port::SafeCopy(who->Name, TheirName);
+        who->Player.House = TheirHouse;
+        who->Player.Color = TheirColor;
+        who->Player.ProcessTime = -1;
+        Session.Players.Add(who);
+      }
 
-      // clear queue to keep from doing any resends
-      NullModem.Init_Send_Queue();
-    }
-
-  } else {
-    if (!recsignedoff) {
       /*.....................................................................
-      Broadcast my sign-off over my network
+      Send all players a GO packet.
       .....................................................................*/
-      if (!skirmish) {
-        memset(&SendPacket, 0, sizeof(SerialPacketType));
-        SendPacket.Command = SERIAL_SIGN_OFF;
-        SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
-        SendPacket.ID = Session.ModemType;
-        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+      memset(&SendPacket, 0, sizeof(SerialPacketType));
+      if (load_game) {
+        SendPacket.Command = SERIAL_LOADGAME;
+      } else {
+        SendPacket.Command = SERIAL_GO;
+      }
 
+      if (!skirmish) {
+        SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        if (theirresponsetime != 10000) {
+          if (SendPacket.ScenarioInfo.ResponseTime < theirresponsetime) {
+            SendPacket.ScenarioInfo.ResponseTime = theirresponsetime;
+          }
+        }
+      }
+
+      //
+      // calculated one way delay for a packet and overall delay to execute
+      // a packet
+      //
+      if (!skirmish) {
+        if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+          Session.MaxAhead =
+              std::max(((((SendPacket.ScenarioInfo.ResponseTime / 8) +
+                          (Session.FrameSendRate - 1)) /
+                         Session.FrameSendRate) *
+                        Session.FrameSendRate),
+                       (Session.FrameSendRate * 2));
+        } else {
+          Session.MaxAhead =
+              std::max(unsigned(SendPacket.ScenarioInfo.ResponseTime / 8),
+                       MODEM_MIN_MAX_AHEAD);
+        }
+      }
+      SendPacket.ID = Session.ModemType;
+
+      if (!skirmish) {
+        NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
         starttime = TickCount;
         while ((NullModem.Num_Send() &&
-                ((TickCount - starttime) < PACKET_CANCEL_TIMEOUT)) ||
+                ((TickCount - starttime) < PACKET_SENDING_TIMEOUT)) ||
                ((TickCount - starttime) < 60)) {
 #if (SHOW_MONO)
           NullModem.Mono_Debug_Print(0);
 #endif
 
-          if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
-            // are we getting our own packets back??
+          NullModem.Service();
+        }
 
-            if (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-                ReceivePacket.ID == Session.ModemType) {
-              // exit while
+        /*
+        ** Wait for the go response. This will be either a 'GO' reply, a
+        ** request for the scenario to be sent or a reply to say that the
+        * scenario
+        ** cant be played.
+        */
+#ifdef WIN32
+        WWDebugString("RA95 - About to wait for 'GO' response.\n");
+#endif
+        do {
+          NullModem.Service();
+
+          if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+            if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
+              if (Session.Scenarios[Session.Options.ScenarioIndex]
+                      ->Get_Official()) {
+                if (!Force_Scenario_Available(Scen.ScenarioName))
+                  Emergency_Exit(EXIT_FAILURE);
+              }
+              break;
+            }
+
+            if (ReceivePacket.Command == SERIAL_NO_SCENARIO) {
+              WWMessageBox().Process(TXT_NO_EXPANSION_SCENARIO, TXT_CANCEL);
+              /*
+              ** We have to recover from this somehow so restart the session.
+              */
+              process = true;
+              display = REDRAW_ALL;
+              lastmsgtime = TickCount;
+              retry_setup = true;
+              break;
+            }
+
+            if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
+#ifdef WIN32
+              WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
+
+#endif
+
+              if (Session.Scenarios[Session.Options.ScenarioIndex]
+                      ->Get_Official()) {
+                if (!Force_Scenario_Available(Scen.ScenarioName))
+                  Emergency_Exit(EXIT_FAILURE);
+              }
+
+              Send_Remote_File(Scen.ScenarioName, 0);
+
               break;
             }
           }
 
-          NullModem.Service();
+        } while (!Keyboard->Check() && !retry_setup);
+
+        // clear queue to keep from doing any resends
+        NullModem.Init_Send_Queue();
+      }
+
+      if (retry_setup) continue;
+
+    } else {
+      if (!recsignedoff) {
+        /*.....................................................................
+        Broadcast my sign-off over my network
+        .....................................................................*/
+        if (!skirmish) {
+          memset(&SendPacket, 0, sizeof(SerialPacketType));
+          SendPacket.Command = SERIAL_SIGN_OFF;
+          SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
+          SendPacket.ID = Session.ModemType;
+          NullModem.Send_Message(&SendPacket, sizeof(SendPacket), 1);
+
+          starttime = TickCount;
+          while ((NullModem.Num_Send() &&
+                  ((TickCount - starttime) < PACKET_CANCEL_TIMEOUT)) ||
+                 ((TickCount - starttime) < 60)) {
+#if (SHOW_MONO)
+            NullModem.Mono_Debug_Print(0);
+#endif
+
+            if (NullModem.Get_Message(&ReceivePacket, &packetlen) > 0) {
+              // are we getting our own packets back??
+
+              if (ReceivePacket.Command == SERIAL_SIGN_OFF &&
+                  ReceivePacket.ID == Session.ModemType) {
+                // exit while
+                break;
+              }
+            }
+
+            NullModem.Service();
+          }
         }
       }
+
+      if (!skirmish) Shutdown_Modem();
     }
 
-    if (!skirmish) Shutdown_Modem();
   }
 
   /*------------------------------------------------------------------------

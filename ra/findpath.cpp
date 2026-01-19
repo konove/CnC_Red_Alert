@@ -538,7 +538,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
   **    step #1.
   */
   while (path.Length < maxlen) {
-  top_of_list:
+    bool restart_outer_loop = false;
+
     /*
     **	Have we reached the destination already?  If so abort any further
     **	command building.
@@ -619,11 +620,14 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                   threat = -1;
                   break;
               }
-              goto top_of_list;
+              restart_outer_loop = true;
+              break;
             }
             goto end_of_list;
           }
         }
+
+        if (restart_outer_loop) break;
 
         /*
         **	Try to find a path to the passable position by following
@@ -689,7 +693,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
                   threat = -1;
                   break;
               }
-              goto top_of_list;
+              restart_outer_loop = true;
+              break;
             }
             goto end_of_list;
           }
@@ -698,6 +703,8 @@ PathType* FootClass::Find_Path(CELL dest, FacingType* final_moves, int maxlen,
           next = Adjacent_Cell(next, newdir);
         } while (Passable_Cell(next, newdir, threat, threshhold));
       }
+
+      if (restart_outer_loop) continue;
 
       if (!left && !right) break;
 
