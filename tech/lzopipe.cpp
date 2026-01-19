@@ -45,7 +45,7 @@
 #include <cassert>
 #include <cstring>
 
-#include "tech/lzo.h"
+#include "lzo/lzo.h"
 
 /***********************************************************************************************
  * LZOPipe::LZOPipe -- Constructor for the LZO processor pipe. *

@@ -44,7 +44,7 @@
 #include <cassert>
 #include <cstring>
 
-#include "tech/lzo.h"
+#include "lzo/lzo.h"
 
 /***********************************************************************************************
  * LZOStraw::LZOStraw -- Constructor for LZO straw object. *

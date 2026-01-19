@@ -126,6 +126,7 @@ add_subdirectory(port)
 add_subdirectory(sdllib)
 add_subdirectory(winvq)
 add_subdirectory(jshell)
+add_subdirectory(third_party)
 add_subdirectory(tech)
 
 add_subdirectory(ra)

@@ -43,8 +43,8 @@
 
 #include <cassert>
 
-#include "tech/lzo1x.h"
-#include "tech/lzoconf.h"
+#include "lzo/lzo1x.h"
+#include "lzo/lzoconf.h"
 
 #if !defined(LZO1X) && !defined(LZO1Y)
 #define LZO1X

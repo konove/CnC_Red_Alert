@@ -44,7 +44,7 @@
 #ifndef __LZO1X_H
 #define __LZO1X_H
 
-#include "tech/lzoconf.h"
+#include "lzo/lzoconf.h"
 
 // #ifdef __cplusplus
 // extern "C" {
