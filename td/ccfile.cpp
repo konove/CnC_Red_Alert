@@ -50,7 +50,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
+#include <string>
 
 // #include	<direct.h>
 // #include	<fcntl.h>
@@ -438,12 +438,11 @@ int CCFileClass::Open(int rights) {
       *support however. Also *	note that the filename attached to this object
       *is NOT the same as the file *	attached to the file handle.
       */
-      char const* dupfile = strdup(File_Name());
+      std::string dupfile = File_Name();
       Open(mixfile->Filename, READ);
       Searching(false);  // Disable multi-drive search.
-      Set_Name(dupfile);
+      Set_Name(dupfile.c_str());
       Searching(true);
-      if (dupfile) free((void*)dupfile);
       Start = start;
       Length = length;
       FromDisk = true;

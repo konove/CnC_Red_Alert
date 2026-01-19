@@ -45,6 +45,7 @@
  *- - - - - - - */
 
 #include <cerrno>
+#include <cstring>
 
 #include "port/safe_string.h"
 #include "sdllib/include/file.h"
@@ -277,7 +278,10 @@ void CDFileClass::Add_Search_Drive(char* path) {
   /*
   **	Attach the path to this structure.
   */
-  srch->Path = strdup(path);
+  size_t len = strlen(path) + 1;
+  char* path_copy = new char[len];
+  memcpy(path_copy, path, len);
+  srch->Path = path_copy;
   srch->Next = nullptr;
 
   /*
@@ -317,9 +321,7 @@ void CDFileClass::Clear_Search_Drives() {
     SearchDriveType* next;
 
     next = (SearchDriveType*)chain->Next;
-    if (chain->Path) {
-      free((char*)chain->Path);
-    }
+    delete[] chain->Path;
     delete chain;
 
     chain = next;

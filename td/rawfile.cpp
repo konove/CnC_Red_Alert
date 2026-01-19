@@ -56,6 +56,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 #include "td/function.h"
 #ifndef PORTABLE
@@ -325,8 +326,8 @@ RawFileClass::RawFileClass(char const* filename)
 }
 
 RawFileClass::~RawFileClass() {
-  if (Allocated && Filename) {
-    free((char*)Filename);
+  if (Allocated) {
+    delete[] Filename;
   }
   Allocated = false;
   Filename = nullptr;
@@ -352,18 +353,22 @@ RawFileClass::~RawFileClass() {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 char const* RawFileClass::Set_Name(char const* filename) {
-  if (Filename && Allocated) {
-    free((char*)Filename);
+  if (Allocated) {
+    delete[] Filename;
     Filename = nullptr;
     Allocated = false;
   }
 
   if (!filename) return (nullptr);
 
-  Filename = strdup(filename);
-  if (!Filename) {
+  size_t len = strlen(filename) + 1;
+  char* name_copy = new (std::nothrow) char[len];
+  if (!name_copy) {
     Error(ENOMEM, false, filename);
+    return nullptr;
   }
+  memcpy(name_copy, filename, len);
+  Filename = name_copy;
   Allocated = true;
   return (Filename);
 }
@@ -547,16 +552,21 @@ int RawFileClass::Is_Available(int forced) {
     file = IO_Open_File(Filename, READ);
     if (!file) {
       // retry with lowercase name for case-sensitive fs
-      char* lower_name = strlwr(strdup(Filename));
+      size_t len = strlen(Filename) + 1;
+      char* lower_name = new char[len];
+      memcpy(lower_name, Filename, len);
+      strlwr(lower_name);
       file = IO_Open_File(lower_name, READ);
 
       if (file) {
         // if successful, replace the filename with the working one
-        if (Allocated) free((char*)Filename);
+        if (Allocated) delete[] Filename;
 
-        ((char*&)Filename) = lower_name;
-      } else
-        free(lower_name);
+        ((char const*&)Filename) = lower_name;
+        Allocated = true;
+      } else {
+        delete[] lower_name;
+      }
     }
 
     if (!file) return false;

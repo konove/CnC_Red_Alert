@@ -161,6 +161,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "port/safe_string.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -6216,9 +6217,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
    *                                                                                             *
    * HISTORY: * 07/29/1995 JLB : Created. *
    *=============================================================================================*/
-  void const* TechnoTypeClass::Get_Cameo_Data() const {
-    return (CameoData);
-  }
+  void const* TechnoTypeClass::Get_Cameo_Data() const { return (CameoData); }
 
   /***********************************************************************************************
    * TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step. *
@@ -6355,9 +6354,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         */
         for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
           if (NameIDOverride[index] == 0) {
-            NameOverride[index] = strdup(buffer);
+            NameOverride[index] = port::CloneString(buffer);
             NameIDOverride[index] = id;
-            //					FullName = -(index+1);
             break;
           }
         }

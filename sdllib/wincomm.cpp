@@ -1,7 +1,6 @@
 #include "sdllib/include/wincomm.h"
 
 #include <cstdio>
-#include <cstdlib>
 
 #include "sdllib/include/modemreg.h"
 
@@ -13,7 +12,7 @@ WinModemClass* SerialPort = nullptr;
 
 WinModemClass::WinModemClass() : PortHandle(nullptr) {}
 
-HANDLE WinModemClass::Serial_Port_Open(char* /*device_name*/, int /*baud*/,
+HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/, int /*baud*/,
                                        int /*parity*/, int /*wordlen*/,
                                        int /*stopbits*/, int /*flowcontrol*/) {
 #ifdef LIBSERIALPORT
@@ -168,15 +167,7 @@ void WinModemClass::Set_Abort_Function(int (* /*func*/)()) {
 
 HANDLE WinModemClass::Get_Port_Handle() const { return PortHandle; }
 
-ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/)
-    : ModemName(nullptr),
-      ModemDeviceName(nullptr),
-      ErrorCorrectionEnable(nullptr),
-      ErrorCorrectionDisable(nullptr),
-      CompressionEnable(nullptr),
-      CompressionDisable(nullptr),
-      HardwareFlowControl(nullptr),
-      NoFlowControl(nullptr) {
+ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/) {
 #ifdef LIBSERIALPORT
   struct sp_port** port_list;
 
@@ -185,7 +176,7 @@ ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/)
   if (result == SP_OK) {
     for (int i = 0; port_list[i]; i++) {
       if (i == modem_number) {
-        ModemName = ModemDeviceName = strdup(sp_get_port_name(port_list[i]));
+        ModemName_ = ModemDeviceName_ = sp_get_port_name(port_list[i]);
         break;
       }
     }
@@ -193,10 +184,4 @@ ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/)
     sp_free_port_list(port_list);
   }
 #endif
-}
-
-ModemRegistryEntryClass::~ModemRegistryEntryClass() {
-  if (ModemName) {
-    free(ModemName);
-  }
 }

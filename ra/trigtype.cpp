@@ -1866,15 +1866,15 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
       TriggerTypeClass* trigger = TriggerTypes.Ptr(trig_index);
 
       char* ptr = (char*)trigger->Action1.Trigger.Raw();
-      if (ptr /*&& trigger->Action1.Trigger.Raw() != -1*/) {
-        trigger->Action1.Trigger = TriggerTypeClass::From_Name(ptr);
-        free(ptr);
+      if (ptr) {
+        trigger->Action1.Trigger = From_Name(ptr);
+        delete[] ptr;
       }
 
       ptr = (char*)trigger->Action2.Trigger.Raw();
-      if (ptr /*&& trigger->Action2.Trigger.Raw() != -1*/) {
-        trigger->Action2.Trigger = TriggerTypeClass::From_Name(ptr);
-        free(ptr);
+      if (ptr) {
+        trigger->Action2.Trigger = From_Name(ptr);
+        delete[] ptr;
       }
     }
   }

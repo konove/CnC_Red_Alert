@@ -18,38 +18,47 @@
 #ifndef CNC_RED_ALERT_SDLLIB_MODEMREG_H_
 #define CNC_RED_ALERT_SDLLIB_MODEMREG_H_
 
+#include <string>
+
 class ModemRegistryEntryClass {
  public:
-  ModemRegistryEntryClass(int modem_number);
-  ~ModemRegistryEntryClass();
+  explicit ModemRegistryEntryClass(int modem_number);
 
-  char* Get_Modem_Name() { return (ModemName); }
+  const char* Get_Modem_Name() { return ModemName_.c_str(); }
 
-  char* Get_Modem_Device_Name() { return (ModemDeviceName); }
+  const char* Get_Modem_Device_Name() { return ModemDeviceName_.c_str(); }
 
-  char* Get_Modem_Error_Correction_Enable() { return (ErrorCorrectionEnable); }
-
-  char* Get_Modem_Error_Correction_Disable() {
-    return (ErrorCorrectionDisable);
+  const char* Get_Modem_Error_Correction_Enable() {
+    return ErrorCorrectionEnable_.c_str();
   }
 
-  char* Get_Modem_Compression_Enable() { return (CompressionEnable); }
+  const char* Get_Modem_Error_Correction_Disable() {
+    return ErrorCorrectionDisable_.c_str();
+  }
 
-  char* Get_Modem_Compression_Disable() { return (CompressionDisable); }
+  const char* Get_Modem_Compression_Enable() {
+    return CompressionEnable_.c_str();
+  }
 
-  char* Get_Modem_Hardware_Flow_Control() { return (HardwareFlowControl); }
+  const char* Get_Modem_Compression_Disable() {
+    return CompressionDisable_.c_str();
+  }
 
-  char* Get_Modem_No_Flow_Control() { return (HardwareFlowControl); }
+  const char* Get_Modem_Hardware_Flow_Control() {
+    return HardwareFlowControl_.c_str();
+  }
+
+  const char* Get_Modem_No_Flow_Control() { return NoFlowControl_.c_str(); }
 
  private:
-  char* ModemName;
-  char* ModemDeviceName;
-  char* ErrorCorrectionEnable;
-  char* ErrorCorrectionDisable;
-  char* CompressionEnable;
-  char* CompressionDisable;
-  char* HardwareFlowControl;
-  char* NoFlowControl;
+  std::string ModemName_;
+  std::string ModemDeviceName_;
+  std::string ErrorCorrectionEnable_;
+  std::string ErrorCorrectionDisable_;
+  std::string CompressionEnable_;
+  std::string CompressionDisable_;
+  std::string HardwareFlowControl_;
+  std::string NoFlowControl_;
 };
 
 #endif  // CNC_RED_ALERT_SDLLIB_MODEMREG_H_

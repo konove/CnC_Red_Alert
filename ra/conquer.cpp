@@ -76,7 +76,6 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <string>
@@ -2776,8 +2775,7 @@ int Load_Interpolated_Palettes(char const* filename, bool add) {
     file.Read(&num_palettes, 4);
 
     for (i = 0; i < num_palettes; i++) {
-      InterpolatedPalettes[i + start_palette] = (unsigned char*)malloc(65536);
-      memset(InterpolatedPalettes[i + start_palette], 0, 65536);
+      InterpolatedPalettes[i + start_palette] = new unsigned char[65536]();
       for (int y = 0; y < 256; y++) {
         file.Read(InterpolatedPalettes[i + start_palette] + y * 256, y + 1);
       }
@@ -2795,7 +2793,7 @@ int Load_Interpolated_Palettes(char const* filename, bool add) {
 void Free_Interpolated_Palettes() {
   for (int i = 0; i < ARRAY_SIZE(InterpolatedPalettes); i++) {
     if (InterpolatedPalettes[i]) {
-      free(InterpolatedPalettes[i]);
+      delete[] InterpolatedPalettes[i];
       InterpolatedPalettes[i] = nullptr;
     }
   }

@@ -2137,7 +2137,7 @@ bool Read_Scenario_INI(char* fname, bool) {
   **	Reset the rules values to their initial settings.
   */
   for (int index = 0; index < ARRAY_SIZE(NameOverride); index++) {
-    if (NameOverride[index] != nullptr) free((void*)NameOverride[index]);
+    delete[] NameOverride[index];
     NameOverride[index] = nullptr;
     NameIDOverride[index] = 0;
   }

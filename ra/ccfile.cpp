@@ -55,6 +55,7 @@
 #include <new>
 #include <optional>
 #include <span>
+#include <string>
 
 #include "ra/conquer.h"
 #include "ra/externs.h"
@@ -443,12 +444,11 @@ int CCFileClass::Open(int rights) {
     *support however. Also *	note that the filename attached to this object
     *is NOT the same as the file *	attached to the file handle.
     */
-    char* dupfile = strdup(File_Name());
+    std::string dupfile = File_Name();
     Open(loc->mixfile->Filename().c_str(), READ);
     Searching(false);  // Disable multi-drive search.
-    Set_Name(dupfile);
+    Set_Name(dupfile.c_str());
     Searching(true);
-    free(dupfile);
     Bias(0);
     Bias(loc->offset, loc->size);
     Seek(0, SEEK_SET);

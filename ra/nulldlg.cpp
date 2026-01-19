@@ -2181,18 +2181,15 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   cwaitstr_index = tempsettings.CallWaitStringIndex;
   for (i = 0; i < CALL_WAIT_STRINGS_NUM; i++) {
     if (i == CALL_WAIT_CUSTOM) {
-      item = strdup(Session.CallWaitStrings[i]);
-      temp = strchr(item, '-');
-      if (temp) {
-        pos = (int)(temp - item) + 2;
-        len = strlen(tempsettings.CallWaitString);
-        port::SafeCopy(item + pos, tempsettings.CallWaitString, len);
-        *(item + pos + len) = 0;
+      std::string item_str = Session.CallWaitStrings[i];
+      size_t dash_pos = item_str.find('-');
+      if (dash_pos != std::string::npos) {
+        pos = static_cast<int>(dash_pos) + 2;
+        item_str.replace(pos, std::string::npos, tempsettings.CallWaitString);
         if (i == cwaitstr_index) {
-          port::SafeCopy(cwaitstrbuf, item + pos, CWAITSTRBUF_MAX);
+          port::SafeCopy(cwaitstrbuf, item_str.c_str() + pos, CWAITSTRBUF_MAX);
         }
       }
-      free(item);
     } else if (i == cwaitstr_index) {
       port::SafeCopy(cwaitstrbuf, Session.CallWaitStrings[i], CWAITSTRBUF_MAX);
     }

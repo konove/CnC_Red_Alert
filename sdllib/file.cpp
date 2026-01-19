@@ -1,9 +1,9 @@
 #include "sdllib/include/file.h"
 
-#include <cctype>
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <string>
+
+#include "absl/strings/ascii.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -184,13 +184,10 @@ bool Find_First_File(const char* path_glob, FindFileState& state) {
 
   // also search for lowercase filenames
   if (ret == 0 || ret == GLOB_NOMATCH) {
-    auto lower_glob = strdup(path_glob);
-    for (auto c = lower_glob; *c; c++) *c = tolower(*c);
-
-    int ret2 = glob(lower_glob, GLOB_MARK | GLOB_APPEND, nullptr, glob_buf);
+    std::string lower_glob = absl::AsciiStrToLower(path_glob);
+    int ret2 =
+        glob(lower_glob.c_str(), GLOB_MARK | GLOB_APPEND, nullptr, glob_buf);
     if (ret2 != GLOB_NOMATCH) ret = ret2;
-
-    free(lower_glob);
   }
 
   if (ret) {

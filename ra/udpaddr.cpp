@@ -17,8 +17,7 @@
 */
 
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <string>
 
 #include "ra/_wsproto.h"
 #include "ra/ccfile.h"
@@ -237,12 +236,12 @@ bool Get_Broadcast_Addresses() {
   Show_Mouse();
 
   for (int i = 0; i < ip_address_list.Count(); i++) {
-    char const* temp = ip_address_list.Get_Item(i);
-    char* cut = strdup(temp);
-    cut = strchr(cut, '#');
-    if (cut) *cut = 0;
-    PacketTransport->Set_Broadcast_Address(cut);
-    free(cut);
+    std::string addr = ip_address_list.Get_Item(i);
+    size_t hash_pos = addr.find('#');
+    if (hash_pos != std::string::npos) {
+      addr.resize(hash_pos);
+    }
+    PacketTransport->Set_Broadcast_Address(addr.data());
   }
 
   return (true);

@@ -46,7 +46,7 @@
 
 #include <climits>
 #include <cstdio>
-#include <cstdlib>
+#include <string>
 
 #include "tech/wwfile.h"
 
@@ -188,11 +188,10 @@ EZERO,                 // Non-error.
   void* Handle;
 
   /*
-  **	This points to the filename as a NULL terminated string. It may point to
-  *either a *	constant or an allocated string as indicated by the "Allocated"
-  *flag.
+  **	This holds the filename string. Using std::string provides automatic
+  **	memory management (RAII).
   */
-  char const* const Filename;
+  std::string Filename_;
 
   //
   // file date and time are in the following formats:
@@ -207,15 +206,6 @@ EZERO,                 // Non-error.
   //
   unsigned short Date;
   unsigned short Time;
-
-  /*
-  **	Filenames that were assigned as part of the construction process
-  **	are not allocated. It is assumed that the filename string is a
-  **	constant in that case and thus making duplication unnecessary.
-  **	This value will be non-zero if the filename has be allocated
-  **	(using strdup()).
-  */
-  unsigned Allocated : 1;
 };
 
 /***********************************************************************************************
@@ -235,7 +225,9 @@ EZERO,                 // Non-error.
  *                                                                                             *
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
-inline char const* RawFileClass::File_Name() const { return (Filename); }
+inline char const* RawFileClass::File_Name() const {
+  return Filename_.empty() ? nullptr : Filename_.c_str();
+}
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object. *
@@ -257,10 +249,8 @@ inline RawFileClass::RawFileClass()
       BiasStart(0),
       BiasLength(-1),
       Handle(nullptr),
-      Filename(nullptr),
       Date(0),
-      Time(0),
-      Allocated(false) {}
+      Time(0) {}
 
 /***********************************************************************************************
  * RawFileClass::~RawFileClass -- Default deconstructor for a file object. *
@@ -279,11 +269,7 @@ inline RawFileClass::RawFileClass()
  *=============================================================================================*/
 inline RawFileClass::~RawFileClass() {
   Close();
-  if (Allocated && Filename) {
-    free((char*)Filename);
-    ((char*&)Filename) = nullptr;
-    Allocated = false;
-  }
+  // Filename_ (std::string) automatically cleans up via RAII
 }
 
 /***********************************************************************************************

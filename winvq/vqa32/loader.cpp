@@ -67,8 +67,10 @@
  ****************************************************************************/
 
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include "sdllib/include/ww_win.h"
 #include "winvq/vqa32/vqafile.h"
@@ -76,7 +78,6 @@
 #include "winvq/vqa32/vqaplayp.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/iff.h"
-#include "winvq/vqm32/mem.h"
 #include "winvq/vqm32/palette.h"
 #include "winvq/vqm32/soscomp.h"
 
@@ -1029,34 +1030,21 @@ long VQA_SeekFrame(VQAHandle* vqa, long framenum, long /*fromwhere*/) {
  ****************************************************************************/
 
 static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
-  VQAData* vqa;
-  VQACBNode* cbnode;
-  VQACBNode* this_cb;
-  VQAFrameNode* framenode;
-  VQAFrameNode* this_frame;
-
   /* Check the configuration for valid values. */
   if ((config->NumCBBufs == 0) || (config->NumFrameBufs == 0)) {
-    return (nullptr);
+    return nullptr;
   }
 
-  /* Allocate the master structure */
-  vqa = (VQAData*)malloc(sizeof(VQAData));
-  if (vqa == nullptr) {
-    return (nullptr);
-  }
+  /* Allocate the master structure using unique_ptr for RAII. */
+  auto vqa_ptr = std::make_unique<VQAData>();
+  VQAData* vqa = vqa_ptr.get();
 
   /*-------------------------------------------------------------------------
    * INITIALIZE THE VQA DATA STRUCTURES.
    *
-   * Pointers are set to NULL initially, and filled in as the buffers are
-   * allocated.  The Max buffer sizes are computed with 1K of padding,
-   * and'd with 0xFFFC to make the size divisible by 4, to ensure DWORD
-   * alignment.
+   * The Max buffer sizes are computed with 1K of padding, and'd with 0xFFFC
+   * to make the size divisible by 4, to ensure DWORD alignment.
    *-----------------------------------------------------------------------*/
-  DPMI_Lock(vqa, sizeof(VQAData));
-
-  memset(vqa, 0, sizeof(VQAData));
   vqa->MemUsed = sizeof(VQAData);
   vqa->Drawer.LastTime = (-VQA_TIMETICKS);
 
@@ -1082,87 +1070,65 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE THE CODEBOOK BUFFERS.
    *-----------------------------------------------------------------------*/
+  vqa->CBNodes.reserve(config->NumCBBufs);
+
   for (size_t i = 0; i < config->NumCBBufs; i++) {
-    /* Allocate a codebook node. */
-    cbnode = (VQACBNode*)malloc((sizeof(VQACBNode) + vqa->Max_CB_Size));
+    /* Allocate a codebook node using unique_ptr. */
+    auto cbnode = std::make_unique<VQACBNode>();
 
-    /* If failure then clean up and exit. */
-    if (cbnode == nullptr) {
-      FreeBuffers(vqa, config, header);
-      return (nullptr);
-    }
-
-    /* Lock the buffer to prevent page swapping. */
-    DPMI_Lock(cbnode, (sizeof(VQACBNode) + vqa->Max_CB_Size));
+    /* Allocate the buffer storage. */
+    cbnode->BufferStorage.resize(vqa->Max_CB_Size);
+    cbnode->Buffer = cbnode->BufferStorage.data();
 
     /* Keep count of the memory usage. */
     vqa->MemUsed += (long)(sizeof(VQACBNode) + vqa->Max_CB_Size);
 
-    /* Initialize the node */
-    memset(cbnode, 0, sizeof(VQACBNode));
-    cbnode->Buffer = (unsigned char*)cbnode + sizeof(VQACBNode);
-
-    /* Install the node */
-    if (i == 0) {
-      vqa->CBData = cbnode;
-      this_cb = cbnode;
-    } else {
-      this_cb->Next = cbnode;
-      this_cb = cbnode;
-    }
+    vqa->CBNodes.push_back(std::move(cbnode));
   }
 
-  /* Make the list circular */
-  cbnode->Next = vqa->CBData;
+  /* Set up the circular linked list */
+  for (size_t i = 0; i < vqa->CBNodes.size(); i++) {
+    size_t next_idx = (i + 1) % vqa->CBNodes.size();
+    vqa->CBNodes[i]->Next = vqa->CBNodes[next_idx].get();
+  }
 
   /* Install the Codebook list */
+  vqa->CBData = vqa->CBNodes[0].get();
   vqa->Loader.CurCB = vqa->CBData;
   vqa->Loader.FullCB = vqa->CBData;
 
   /*-------------------------------------------------------------------------
    * ALLOCATE THE FRAME BUFFERS.
    *-----------------------------------------------------------------------*/
+  vqa->FrameNodes.reserve(config->NumFrameBufs);
+
   for (size_t i = 0; i < config->NumFrameBufs; i++) {
-    /* Allocate a pointer node */
-    framenode = (VQAFrameNode*)malloc(
-        (sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size));
+    /* Allocate a frame node using unique_ptr. */
+    auto framenode = std::make_unique<VQAFrameNode>();
 
-    /* If failure then clean up and exit. */
-    if (framenode == nullptr) {
-      FreeBuffers(vqa, config, header);
-      return (nullptr);
-    }
+    /* Allocate the buffer storage. */
+    framenode->PointersStorage.resize(vqa->Max_Ptr_Size);
+    framenode->PaletteStorage.resize(vqa->Max_Pal_Size);
+    framenode->Pointers = framenode->PointersStorage.data();
+    framenode->Palette = framenode->PaletteStorage.data();
 
-    /* Lock the buffer to prevent page swapping. */
-    DPMI_Lock(framenode,
-              sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size);
+    framenode->Codebook = vqa->CBData;
 
     /* Keep count of the memory usage. */
     vqa->MemUsed +=
         (long)(sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size);
 
-    /* Initialize the node */
-    memset(framenode, 0, sizeof(VQAFrameNode));
-    framenode->Pointers = (unsigned char*)framenode + sizeof(VQAFrameNode);
-    framenode->Palette =
-        (unsigned char*)framenode + sizeof(VQAFrameNode) + vqa->Max_Ptr_Size;
-
-    framenode->Codebook = vqa->CBData;
-
-    /* Install the node */
-    if (i == 0) {
-      vqa->FrameData = framenode;
-      this_frame = framenode;
-    } else {
-      this_frame->Next = framenode;
-      this_frame = framenode;
-    }
+    vqa->FrameNodes.push_back(std::move(framenode));
   }
 
-  /* Make the list circular */
-  framenode->Next = vqa->FrameData;
+  /* Set up the circular linked list */
+  for (size_t i = 0; i < vqa->FrameNodes.size(); i++) {
+    size_t next_idx = (i + 1) % vqa->FrameNodes.size();
+    vqa->FrameNodes[i]->Next = vqa->FrameNodes[next_idx].get();
+  }
 
   /* Install the Frame Buffer list */
+  vqa->FrameData = vqa->FrameNodes[0].get();
   vqa->Loader.CurFrame = vqa->FrameData;
   vqa->Drawer.CurFrame = vqa->FrameData;
   vqa->Flipper.CurFrame = vqa->FrameData;
@@ -1173,17 +1139,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   if (config->ImageBuf == nullptr) {
     /* Allocate our own buffer. */
     if ((config->DrawFlags & VQACFGF_BUFFER) != 0) {
-      vqa->Drawer.ImageBuf =
-          (unsigned char*)malloc((header->ImageWidth * header->ImageHeight));
-
-      /* If the allocation failed we must free up and exit. */
-      if (vqa->Drawer.ImageBuf == nullptr) {
-        FreeBuffers(vqa, config, header);
-        return (nullptr);
-      }
-
-      /* Lock to prevent page swapping. */
-      DPMI_Lock(vqa->Drawer.ImageBuf, header->ImageWidth * header->ImageHeight);
+      vqa->ImageBufStorage.resize(header->ImageWidth * header->ImageHeight);
+      vqa->Drawer.ImageBuf = vqa->ImageBufStorage.data();
 
       /* Plugin image buffer information. */
       vqa->Drawer.ImageWidth = header->ImageWidth;
@@ -1248,15 +1205,8 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
        * Otherwise, use the user supplied buffer.
        */
       if (config->AudioBuf == nullptr) {
-        audio->Buffer = (unsigned char*)malloc(config->AudioBufSize);
-
-        /* If failure then clean up and exit. */
-        if (audio->Buffer == nullptr) {
-          FreeBuffers(vqa, config, header);
-          return (nullptr);
-        }
-
-        DPMI_Lock(audio->Buffer, config->AudioBufSize);
+        audio->BufferStorage.resize(config->AudioBufSize);
+        audio->Buffer = audio->BufferStorage.data();
 
         /* Add audio buffer size to memory usage. */
         vqa->MemUsed += config->AudioBufSize;
@@ -1266,34 +1216,16 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
 
       /* Allocate IsLoaded flags */
       audio->NumAudBlocks = (config->AudioBufSize / config->HMIBufSize);
-      audio->IsLoaded = (short*)malloc(audio->NumAudBlocks * sizeof(short));
-
-      /* If failure then clean up and exit. */
-      if (audio->IsLoaded == nullptr) {
-        FreeBuffers(vqa, config, header);
-        return (nullptr);
-      }
-
-      /* Lock to prevent page swapping. */
-      DPMI_Lock(audio->IsLoaded, audio->NumAudBlocks * sizeof(short));
+      audio->IsLoadedStorage.resize(audio->NumAudBlocks, 0);
+      audio->IsLoaded = audio->IsLoadedStorage.data();
 
       /* Add IsLoaded flags array to memory usage. */
       vqa->MemUsed += (audio->NumAudBlocks * sizeof(short));
 
-      /* Initialize audio IsLoaded flags to false. */
-      memset(audio->IsLoaded, 0, audio->NumAudBlocks * sizeof(short));
-
       /* Allocate temporary staging buffer for the audio frames. */
       audio->TempBufSize = ((audio->BytesPerSec / header->FPS) * 2) + 100;
-      audio->TempBuf = (unsigned char*)malloc(audio->TempBufSize);
-
-      if (audio->TempBuf == nullptr) {
-        FreeBuffers(vqa, config, header);
-        return (nullptr);
-      }
-
-      /* Lock to prevent page swapping. */
-      DPMI_Lock(audio->TempBuf, audio->TempBufSize);
+      audio->TempBufStorage.resize(audio->TempBufSize);
+      audio->TempBuf = audio->TempBufStorage.data();
 
       /* Add temporary buffer size to memory usage. */
       vqa->MemUsed += audio->TempBufSize;
@@ -1301,22 +1233,17 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
   }
 
   /*-------------------------------------------------------------------------
-   * ALLOCATE THE FRAME INFORMATION TABLE IF REQUESTED.
+   * ALLOCATE THE FRAME INFORMATION TABLE.
    *-----------------------------------------------------------------------*/
-  vqa->Foff = (long*)malloc(header->Frames * sizeof(long));
-
-  if (vqa->Foff == nullptr) {
-    FreeBuffers(vqa, config, header);
-    return (nullptr);
-  }
-
-  /* Lock to prevent page swapping. */
-  DPMI_Lock(vqa->Foff, header->Frames * sizeof(long));
+  vqa->FoffStorage.resize(header->Frames);
+  vqa->Foff = vqa->FoffStorage.data();
 
   /* Keep a running total of memory usage. */
   vqa->MemUsed += (header->Frames * sizeof(long));
 
-  return (vqa);
+  /* Release ownership - caller is responsible for the pointer now.
+   * VQAHandleP::VQABuf will own this pointer. */
+  return vqa_ptr.release();
 }
 
 /****************************************************************************
@@ -1342,86 +1269,19 @@ static VQAData* AllocBuffers(VQAHeader* header, VQAConfig* config) {
  *
  ****************************************************************************/
 
-static void FreeBuffers(VQAData* vqa, VQAConfig* config,
+static void FreeBuffers(VQAData* vqa, VQAConfig* /*config*/,
                         VQAHeader* /*header*/) {
-  VQACBNode *cb_this, *cb_next;
-  VQAFrameNode *frame_this, *frame_next;
-
-  /*-------------------------------------------------------------------------
-   * FREE THE FRAME INFORMATION TABLE.
-   *-----------------------------------------------------------------------*/
-  if (vqa->Foff) {
-    DPMI_Unlock(vqa->Foff, header->Frames * sizeof(long));
-    free(vqa->Foff);
-  }
-
-  /*-------------------------------------------------------------------------
-   * FREE THE AUDIO BUFFERS.
-   *-----------------------------------------------------------------------*/
-
-  if ((config->AudioBuf == nullptr) && (vqa->Audio.Buffer)) {
-    DPMI_Unlock(vqa->Audio.Buffer, config->AudioBufSize);
-    free(vqa->Audio.Buffer);
-  }
-
-  /* Free the audio segments loaded flag array. */
-  if (vqa->Audio.IsLoaded) {
-    DPMI_Unlock(vqa->Audio.IsLoaded, vqa->Audio.NumAudBlocks * sizeof(short));
-    free(vqa->Audio.IsLoaded);
-  }
-
-  /* Free the temporary audio buffer. */
-  if (vqa->Audio.TempBuf) {
-    DPMI_Unlock(vqa->Audio.TempBuf, vqa->Audio.TempBufSize);
-    free(vqa->Audio.TempBuf);
-  }
-
-  /*-------------------------------------------------------------------------
-   * FREE THE IMAGE BUFFER ONLY IF WE ALLOCATED IT.
-   *-----------------------------------------------------------------------*/
-  if ((config->ImageBuf == nullptr) && vqa->Drawer.ImageBuf) {
-    DPMI_Unlock(vqa->Drawer.ImageBuf, header->ImageWidth * header->ImageHeight);
-    free(vqa->Drawer.ImageBuf);
-  }
-
-  /*-------------------------------------------------------------------------
-   * FREE THE FRAME BUFFERS.
-   *-----------------------------------------------------------------------*/
-  frame_this = vqa->FrameData;
-
-  for (size_t i = 0; i < config->NumFrameBufs; i++) {
-    if (frame_this) {
-      frame_next = frame_this->Next;
-      DPMI_Unlock(frame_this,
-                  sizeof(VQAFrameNode) + vqa->Max_Ptr_Size + vqa->Max_Pal_Size);
-      free(frame_this);
-      frame_this = frame_next;
-    } else {
-      break;
-    }
-  }
-
-  /*-------------------------------------------------------------------------
-   * FREE THE CODEBOOK BUFFERS.
-   *-----------------------------------------------------------------------*/
-  cb_this = vqa->CBData;
-
-  for (size_t i = 0; i < config->NumCBBufs; i++) {
-    if (cb_this) {
-      cb_next = cb_this->Next;
-      DPMI_Unlock(cb_this, sizeof(VQACBNode) + vqa->Max_CB_Size);
-      free(cb_this);
-      cb_this = cb_next;
-    } else {
-      break;
-    }
-  }
-
-  /*-------------------------------------------------------------------------
-   * FREE THE VQA DATA STRUCTURES.
-   *-----------------------------------------------------------------------*/
-  DPMI_Unlock(vqa, sizeof(VQAData));
-  free(vqa);
+  /* With RAII, all we need to do is delete the VQAData structure.
+   * The vectors and unique_ptrs inside will automatically clean up:
+   * - FoffStorage (vector<long>)
+   * - Audio.BufferStorage, IsLoadedStorage, TempBufStorage (vectors)
+   * - ImageBufStorage (vector<unsigned char>)
+   * - FrameNodes (vector<unique_ptr<VQAFrameNode>>)
+   * - CBNodes (vector<unique_ptr<VQACBNode>>)
+   * Each node's BufferStorage/PointersStorage/PaletteStorage vectors
+   * are also automatically cleaned up.
+   */
+  delete vqa;
 }
 
 /****************************************************************************

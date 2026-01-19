@@ -60,10 +60,9 @@
 
 #include <cerrno>
 #include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <string>
 
-#include "port/ex_string.h"
+#include "absl/strings/ascii.h"
 #include "sdllib/include/file.h"
 
 /***********************************************************************************************
@@ -114,10 +113,9 @@ RawFileClass::RawFileClass(char const* filename)
       BiasStart(0),
       BiasLength(-1),
       Handle(nullptr),
-      Filename(filename),
+      Filename_(filename ? filename : ""),
       Date(0),
-      Time(0),
-      Allocated(false) {}
+      Time(0) {}
 
 /***********************************************************************************************
  * RawFileClass::Set_Name -- Manually sets the name for a file object. *
@@ -139,22 +137,15 @@ RawFileClass::RawFileClass(char const* filename)
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 char const* RawFileClass::Set_Name(char const* filename) {
-  if (Filename != nullptr && Allocated) {
-    free((char*)Filename);
-    ((char*&)Filename) = nullptr;
-    Allocated = false;
+  if (filename == nullptr) {
+    Filename_.clear();
+    return nullptr;
   }
-
-  if (filename == nullptr) return (nullptr);
 
   Bias(0);
 
-  ((char*&)Filename) = strdup(filename);
-  if (Filename == nullptr) {
-    Error(ENOMEM, false, filename);
-  }
-  Allocated = true;
-  return (Filename);
+  Filename_ = filename;
+  return Filename_.c_str();
 }
 
 /***********************************************************************************************
@@ -208,7 +199,7 @@ int RawFileClass::Open(int rights) {
   **	Verify that there is a filename associated with this file object. If
   *not, then this is a *	big error condition.
   */
-  if (Filename == nullptr) {
+  if (Filename_.empty()) {
     Error(ENOENT, false);
   }
 
@@ -227,7 +218,7 @@ int RawFileClass::Open(int rights) {
     **	Try to open the file according to the access rights specified.
     */
 
-    Handle = IO_Open_File(Filename, rights);
+    Handle = IO_Open_File(Filename_.c_str(), rights);
     /*
     **	Biased files must be positioned past the bias start position.
     */
@@ -269,11 +260,7 @@ int RawFileClass::Open(int rights) {
  * HISTORY: * 10/18/1994 JLB : Created. *
  *=============================================================================================*/
 int RawFileClass::Is_Available(int forced) {
-#ifndef WIN32
-  bool open_failed;
-#endif
-
-  if (Filename == nullptr) return (false);
+  if (Filename_.empty()) return (false);
 
   /*
   **	If the file is already open, then is must have already passed the
@@ -298,21 +285,15 @@ int RawFileClass::Is_Available(int forced) {
   *error recover channels.
   */
   for (;;) {
-    Handle = IO_Open_File(Filename, READ);
+    Handle = IO_Open_File(Filename_.c_str(), READ);
     if (!Handle) {
       // retry with lowercase name for case-sensitive fs
-      char* lower_name = strlwr(strdup(Filename));
-      Handle = IO_Open_File(lower_name, READ);
+      std::string lower_name = absl::AsciiStrToLower(Filename_);
+      Handle = IO_Open_File(lower_name.c_str(), READ);
 
       if (Handle) {
         // if successful, replace the filename with the working one
-        if (Allocated) {
-          free((char*)Filename);
-        }
-        ((char*&)Filename) = lower_name;
-        Allocated = true;
-      } else {
-        free(lower_name);
+        Filename_ = lower_name;
       }
     }
 
@@ -675,7 +656,7 @@ int RawFileClass::Delete() {
   **	If there is no filename associated with this object, then this indicates
   *a fatal error *	condition. Report this and abort.
   */
-  if (!Filename) {
+  if (Filename_.empty()) {
     Error(ENOENT, false);
   }
 
@@ -695,7 +676,7 @@ int RawFileClass::Delete() {
       return (false);
     }
 
-    if (!IO_Delete_File(Filename)) return false;
+    if (!IO_Delete_File(Filename_.c_str())) return false;
     break;
   }
 
@@ -815,7 +796,7 @@ long RawFileClass::Raw_Seek(long pos, int dir) {
   **	If the file isn't opened, then this is a fatal error condition.
   */
   if (!Is_Open()) {
-    Error(EBADF, false, Filename);
+    Error(EBADF, false, Filename_.c_str());
   }
 
   pos = IO_Seek_File(Handle, pos, dir);

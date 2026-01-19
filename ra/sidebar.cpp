@@ -91,7 +91,6 @@
 #include "ra/sidebar.h"
 
 #include <cassert>
-#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <new>
@@ -449,14 +448,13 @@ void SidebarClass::Reload_Sidebar() {
     houseloaded = PlayerPtr->ActLike;
   }
 
-  char* sidename = strdup(sidebarnames[houseloaded]);
-  *(sidename + 4) = '1';
+  std::string sidename = sidebarnames[houseloaded];
+  sidename[4] = '1';
   SidebarShape = (void*)MFCD::Retrieve(sidename);
-  *(sidename + 4) = '2';
+  sidename[4] = '2';
   SidebarMiddleShape = (void*)MFCD::Retrieve(sidename);
-  *(sidename + 4) = '3';
+  sidename[4] = '3';
   SidebarBottomShape = (void*)MFCD::Retrieve(sidename);
-  free(sidename);
 
   Column[0].Reload_LogoShapes();
   Column[1].Reload_LogoShapes();

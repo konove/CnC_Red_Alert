@@ -69,6 +69,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <memory>
 #include <string>
 
 #include "port/ex_string.h"
@@ -3302,19 +3303,15 @@ void Extract(char* filename, char* outname) {
   inFile.Open();
   outFile.Open(WRITE);
 
-  void* buffer = malloc(32768);
+  auto buffer = std::make_unique<char[]>(32768);
 
-  if (buffer) {
-    unsigned long size = inFile.Size();
-    unsigned long bytes;
+  unsigned long size = inFile.Size();
+  unsigned long bytes;
 
-    while (size > 0) {
-      bytes = inFile.Read(buffer, 32768);
-      outFile.Write(buffer, bytes);
-      size -= bytes;
-    }
-
-    free(buffer);
+  while (size > 0) {
+    bytes = inFile.Read(buffer.get(), 32768);
+    outFile.Write(buffer.get(), bytes);
+    size -= bytes;
   }
 }
 

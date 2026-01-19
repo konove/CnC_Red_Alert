@@ -293,7 +293,7 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
 
-  char* device;
+  const char* device;
 
   switch (port) {
     case 0x3f8:
@@ -479,7 +479,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   /*
   ** Translate the port address into a usable device name
   */
-  char* device;
+  const char* device;
 
   switch (settings->Port) {
     case 0x3f8:

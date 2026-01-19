@@ -27,6 +27,7 @@ void Mem_Copy(void const* source, void* dest, unsigned long bytes_to_copy) {
 }
 
 void* Resize_Alloc(void* original_ptr, unsigned long new_size_in_bytes) {
+  // NOLINTNEXTLINE(cppcoreguidelines-no-malloc) - Legacy memory allocation API
   void* ptr = realloc(original_ptr, new_size_in_bytes);
 
   if (!ptr && Memory_Error) Memory_Error();

@@ -20,8 +20,11 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
+#include "cmake-build-strict-ra/_deps/abseil-cpp-src/absl/strings/ascii.h"
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "sdllib/include/memflag.h"
 #include "sdllib/include/misc.h"
 #include "td/ccfile.h"
@@ -61,9 +64,7 @@ void MixFileClass::Free_All() {
 // mixfile from the global linked list.
 MixFileClass::~MixFileClass() {
   // Deallocate any allocated memory.
-  if (Filename) {
-    free((char*)Filename);
-  }
+  delete[] Filename;
   if (Data) {
     delete[] static_cast<char*>(Data);
   }
@@ -123,7 +124,7 @@ MixFileClass::MixFileClass(const char* filename) {
   Count = 0;
   Buffer = nullptr;
   file.Set_Name(filename);
-  Filename = strdup(file.File_Name());
+  Filename = port::CloneString(file.File_Name());
 
   if (!Force_CD_Available(RequiredCD)) {
     Prog_End();
@@ -264,9 +265,7 @@ bool MixFileClass::Offset(char const* filename, void** realptr,
   if (!filename) return (false);
 
   // Compute CRC of uppercase filename for index lookup.
-  char* upperFilename = strupr(strdup(filename));
-  long crc = CrcEngine::Compute(upperFilename);
-  free(upperFilename);
+  long crc = CrcEngine::Compute(absl::AsciiStrToUpper(filename));
   SubBlock key;
   key.CRC = crc;
 

@@ -42,6 +42,8 @@
  *
  ****************************************************************************/
 #include <cstdint>
+#include <memory>
+#include <vector>
 
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -105,7 +107,7 @@ typedef struct _ZAPHeader {
  *            is loaded into the start of the buffer.
  *            (Make sure this structure's size is always DWORD aligned.)
  *
- * Buffer   - Pointer to Codebook data.
+ * Buffer   - Codebook data buffer.
  * Next     - Pointer to next VQACBNode in the codebook list.
  * Flags    - Used by the drawer to tell if certain operations have been
  *            performed on this codebook, such as downloading to VRAM,
@@ -113,12 +115,13 @@ typedef struct _ZAPHeader {
  *            new codebook is loaded.
  * CBOffset - Offset into the buffer of the compressed data.
  */
-typedef struct _VQACBNode {
-  unsigned char* Buffer;
-  struct _VQACBNode* Next;
-  unsigned long Flags;
-  unsigned long CBOffset;
-} VQACBNode;
+struct VQACBNode {
+  std::vector<unsigned char> BufferStorage;
+  unsigned char* Buffer = nullptr;  // Points into BufferStorage for compatibility
+  VQACBNode* Next = nullptr;
+  unsigned long Flags = 0;
+  unsigned long CBOffset = 0;
+};
 
 /* VQACBNode flags */
 #define VQACBB_DOWNLOADED 0 /* Download codebook to VRAM (XMODE VRAM) */
@@ -132,9 +135,9 @@ typedef struct _VQACBNode {
  *               loaded into the start of the buffer.
  *               (Make sure this structure's size is always DWORD aligned.)
  *
- * Pointers    - Pointer to the vector pointer data.
+ * Pointers    - The vector pointer data buffer.
  * Codebook    - Pointer to VQACBNode list entry for this frame.
- * Palette     - Pointer to an array of palette colors (R,G,B).
+ * Palette     - The array of palette colors (R,G,B).
  * Next        - Pointer to the next entry in the Frame Buffer List.
  * Flags       - Inter-process communication flags for this frame (see below)
  *               set by Loader, cleared by Flipper.
@@ -143,17 +146,19 @@ typedef struct _VQACBNode {
  * PalOffset   - Offset into buffer of the compressed palette data.
  * PaletteSize - Size of the palette for this frame (in bytes).
  */
-typedef struct _VQAFrameNode {
-  unsigned char* Pointers;
-  VQACBNode* Codebook;
-  unsigned char* Palette;
-  struct _VQAFrameNode* Next;
-  unsigned long Flags;
-  long FrameNum;
-  long PtrOffset;
-  long PalOffset;
-  long PaletteSize;
-} VQAFrameNode;
+struct VQAFrameNode {
+  std::vector<unsigned char> PointersStorage;
+  std::vector<unsigned char> PaletteStorage;
+  unsigned char* Pointers = nullptr;  // Points into PointersStorage
+  VQACBNode* Codebook = nullptr;
+  unsigned char* Palette = nullptr;  // Points into PaletteStorage
+  VQAFrameNode* Next = nullptr;
+  unsigned long Flags = 0;
+  long FrameNum = 0;
+  long PtrOffset = 0;
+  long PalOffset = 0;
+  long PaletteSize = 0;
+};
 
 /* FrameNode flags */
 #define VQAFRMB_LOADED 0  /* Frame loaded */
@@ -315,27 +320,30 @@ typedef struct _VQAFlipper {
  * create our own direct sound object CreatedSoundBuffer - True if we had to
  * create out own direct sound primary buffer
  */
-typedef struct _VQAAudio {
-  unsigned char* Buffer;
-  unsigned long AudBufPos;
-  short* IsLoaded;
-  unsigned long NumAudBlocks;
-  unsigned long CurBlock;
-  unsigned long NextBlock;
-  unsigned char* TempBuf;
-  unsigned long TempBufLen;
-  unsigned long TempBufSize;
-  unsigned long Flags;
-  unsigned long PlayPosition;
-  unsigned long SamplesPlayed;
-  unsigned long NumSkipped;
-  unsigned short SampleRate;
-  unsigned char Channels;
-  unsigned char BitsPerSample;
-  unsigned long BytesPerSec;
-  SosCompressInfo ADPCM_Info;
-  unsigned ChunksMovedToAudioBuffer;
-} VQAAudio;
+struct VQAAudio {
+  std::vector<unsigned char> BufferStorage;
+  std::vector<short> IsLoadedStorage;
+  std::vector<unsigned char> TempBufStorage;
+  unsigned char* Buffer = nullptr;  // Points into BufferStorage
+  unsigned long AudBufPos = 0;
+  short* IsLoaded = nullptr;  // Points into IsLoadedStorage
+  unsigned long NumAudBlocks = 0;
+  unsigned long CurBlock = 0;
+  unsigned long NextBlock = 0;
+  unsigned char* TempBuf = nullptr;  // Points into TempBufStorage
+  unsigned long TempBufLen = 0;
+  unsigned long TempBufSize = 0;
+  unsigned long Flags = 0;
+  unsigned long PlayPosition = 0;
+  unsigned long SamplesPlayed = 0;
+  unsigned long NumSkipped = 0;
+  unsigned short SampleRate = 0;
+  unsigned char Channels = 0;
+  unsigned char BitsPerSample = 0;
+  unsigned long BytesPerSec = 0;
+  SosCompressInfo ADPCM_Info = {};
+  unsigned ChunksMovedToAudioBuffer = 0;
+};
 
 /* Audio flags. */
 #define VQAAUDB_DIGIINIT 0   /* HMI digital driver initialized (2 bits) */
@@ -380,31 +388,39 @@ typedef struct _VQAAudio {
  * EndTime      - Stop time in VQA time ticks
  * MemUsed      - Number of bytes allocated by VQA_AllocBuffers
  */
-typedef struct _VQAData {
-  long (*Draw_Frame)(VQAHandle* vqa);
+struct VQAData {
+  long (*Draw_Frame)(VQAHandle* vqa) = nullptr;
 
   void __cdecl (*UnVQ)(unsigned char* codebook, unsigned char* pointers,
                        unsigned char* buffer, unsigned long blocksperrow,
-                       unsigned long numrows, unsigned long bufwidth);
+                       unsigned long numrows, unsigned long bufwidth) = nullptr;
 
-  VQAFrameNode* FrameData;
-  VQACBNode* CBData;
+  // RAII storage for nodes - these vectors own the node objects
+  std::vector<std::unique_ptr<VQACBNode>> CBNodes;
+  std::vector<std::unique_ptr<VQAFrameNode>> FrameNodes;
+
+  // RAII storage for buffers
+  std::vector<unsigned char> ImageBufStorage;
+  std::vector<long> FoffStorage;
+
+  VQAFrameNode* FrameData = nullptr;  // Points to first node in FrameNodes
+  VQACBNode* CBData = nullptr;        // Points to first node in CBNodes
   VQAAudio Audio;
   VQALoader Loader;
   VQADrawer Drawer;
   VQAFlipper Flipper;
-  unsigned long Flags;
-  long* Foff;
-  long VBIBit;
-  long Max_CB_Size;
-  long Max_Pal_Size;
-  long Max_Ptr_Size;
-  long LoadedFrames;
-  long DrawnFrames;
-  long StartTime;
-  long EndTime;
-  long MemUsed;
-} VQAData;
+  unsigned long Flags = 0;
+  long* Foff = nullptr;  // Points into FoffStorage
+  long VBIBit = 0;
+  long Max_CB_Size = 0;
+  long Max_Pal_Size = 0;
+  long Max_Ptr_Size = 0;
+  long LoadedFrames = 0;
+  long DrawnFrames = 0;
+  long StartTime = 0;
+  long EndTime = 0;
+  long MemUsed = 0;
+};
 
 /* VQAData flags */
 #define VQADATB_UPDATE 0 /* Update the display. */

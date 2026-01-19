@@ -119,12 +119,16 @@ All new code should have unit tests. Use the [Google Test](https://google.github
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.
 
-| Header             | Usage                                                                  |
-|--------------------|------------------------------------------------------------------------|
-| `absl/log/log.h`   | `DLOG(INFO)`, `DLOG(WARNING)` (debug-only), `LOG(ERROR)`, `LOG(FATAL)` |
-| `absl/log/check.h` | `CHECK(x)`, `CHECK_EQ/NE/LT/GT`, `DCHECK` (debug-only)                 |
-| `absl/strings/`    | `StrCat`, `StrSplit`, `StrFormat`                                      |
-| `absl/container/`  | `flat_hash_map`, `flat_hash_set`                                       |
+| Header                 | Usage                                                                  |
+|------------------------|------------------------------------------------------------------------|
+| `absl/log/log.h`       | `DLOG(INFO)`, `DLOG(WARNING)` (debug-only), `LOG(ERROR)`, `LOG(FATAL)` |
+| `absl/log/check.h`     | `CHECK(x)`, `CHECK_EQ/NE/LT/GT`, `DCHECK` (debug-only)                 |
+| `absl/strings/`        | `StrCat`, `StrSplit`, `StrFormat`                                      |
+| `absl/strings/ascii.h` | `AsciiStrToLower`, `AsciiStrToUpper`                                   |
+| `absl/container/`      | `flat_hash_map`, `flat_hash_set`                                       |
+
+**String manipulation:** Never use `strdup`/`free` for temporary strings—use `std::string` with Abseil functions
+instead. Example: `std::string lower = absl::AsciiStrToLower(input);`
 
 **Logging rule:** Use `DLOG` for debug messages (compiled out in release). Original game excluded most logging from
 release builds—follow this pattern. Use `CHECK` for programmer errors/invariants, NOT for user input validation.

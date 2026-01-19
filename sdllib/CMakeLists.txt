@@ -19,7 +19,7 @@ target_compile_options(sdllib PRIVATE -UWIN32)
 
 
 find_package(SDL2 REQUIRED)
-target_link_libraries(sdllib SDL2::SDL2 absl::check absl::log)
+target_link_libraries(sdllib SDL2::SDL2 absl::check absl::log absl::strings)
 
 # optional serial port support
 find_library(LIBSERIALPORT_LIBRARIES serialport)

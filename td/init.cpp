@@ -461,21 +461,17 @@ bool Init_Game(int, char*[]) {
   */
   FindFileState state;
   if (Find_First_File("SC*.MIX", state)) {
-    char* ptr;
     do {
       // don't cache scores
       if (stricmp(state.name, "scores.mix") == 0) continue;
 
-      ptr = strdup(state.name);
-      MixFileClass::Register(ptr);
-      MixFileClass::Cache(ptr);
+      MixFileClass::Register(state.name);
+      MixFileClass::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
-    char* ptr;
     do {
-      ptr = strdup(state.name);
-      MixFileClass::Register(ptr);
+      MixFileClass::Register(state.name);
     } while (Find_Next_File(state));
   }
 #endif  // DEMO

@@ -82,7 +82,7 @@ class WinModemClass {
   */
   // virtual	HANDLE	Serial_Port_Open (int port, int baud, int parity, int
   // wordlen, int stopbits);
-  virtual HANDLE Serial_Port_Open(char* device_name, int baud, int parity,
+  virtual HANDLE Serial_Port_Open(const char* device_name, int baud, int parity,
                                   int wordlen, int stopbits, int flowcontrol);
 
   /*

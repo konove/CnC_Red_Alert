@@ -57,6 +57,7 @@
 #include <utility>
 
 #include "port/ex_string.h"
+#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -312,7 +313,9 @@ void TActionClass::Read_INI() {
       **	Since triggers refer to other triggers, only record a copy of
       *the trigger text *	name. This will be fixed up later.
       */
-      Trigger.Set_Raw((long)strdup(strtok(nullptr, ",")));
+      const char* trig_name = strtok(nullptr, ",");
+      char* trig_copy = port::CloneString(trig_name);
+      Trigger.Set_Raw((long)trig_copy);
 
       Data.Value = atoi(strtok(nullptr, ","));
       break;
