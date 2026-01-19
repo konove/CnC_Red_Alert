@@ -108,7 +108,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   .....................................................................*/
   IPXGlobalConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short product_id);
-  virtual ~IPXGlobalConnClass() {}
+  ~IPXGlobalConnClass() override {}
 
   /*.....................................................................
   Send/Receive routines.
@@ -147,14 +147,14 @@ class IPXGlobalConnClass : public IPXConnClass {
   used in SequencedConnClass.  This special version sends to the address
   embedded within the GlobalHeaderType.
   .....................................................................*/
-  virtual int Send(char* buf, int buflen);
+  int Send(char* buf, int buflen) override;
 
   /*.....................................................................
   This routine is overloaded from SequencedConnClass, because the
   Global Connection needs to ACK its packets differently from the
   other connections.
   .....................................................................*/
-  virtual int Service_Receive_Queue();
+  int Service_Receive_Queue() override;
 };
 
 #endif

@@ -60,11 +60,11 @@ class CDFileClass : public RawFileClass {
  public:
   CDFileClass(char const* filename);
   CDFileClass();
-  virtual ~CDFileClass() {}
+  ~CDFileClass() override {}
 
-  virtual char const* Set_Name(char const* filename);
-  virtual int Open(char const* filename, int rights = READ);
-  virtual int Open(int rights = READ);
+  char const* Set_Name(char const* filename) override;
+  int Open(char const* filename, int rights = READ) override;
+  int Open(int rights = READ) override;
 
   void Searching(int on) { IsDisabled = !on; }
 

@@ -100,8 +100,8 @@ class VesselClass : public DriveClass {
 
   static void Init();
 
-  virtual ~VesselClass();
-  virtual ObjectTypeClass const& Class_Of() const;
+  ~VesselClass() override;
+  ObjectTypeClass const& Class_Of() const override;
 
   virtual MZoneType Zone_Check_Type() const { return (MZONE_WATER); }
   int Shape_Number() const;
@@ -109,41 +109,41 @@ class VesselClass : public DriveClass {
   void Combat_AI();
   bool Edge_Of_World_AI();
   void Repair_AI();
-  virtual DirType Turret_Facing() const {
+  DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
     return (PrimaryFacing.Current());
   }
-  virtual bool Start_Driver(COORDINATE& headto);
-  virtual int Mission_Retreat();
-  virtual int Mission_Unload();
+  bool Start_Driver(COORDINATE& headto) override;
+  int Mission_Retreat() override;
+  int Mission_Unload() override;
   void LST_Open_Door();
   void LST_Close_Door();
-  virtual COORDINATE Fire_Coord(int which) const;
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType from = FACING_NONE) const;
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
-  virtual short const* Overlap_List(bool redraw = false) const;
-  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  COORDINATE Fire_Coord(int which) const override;
+  MoveType Can_Enter_Cell(CELL cell,
+                                  FacingType from = FACING_NONE) const override;
+  void Draw_It(int x, int y, WindowNumberType window) const override;
+  short const* Overlap_List(bool redraw = false) const override;
+  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
-  virtual void AI();
-  virtual void Per_Cell_Process(PCPType why);
-  virtual void Assign_Destination(TARGET target);
+                                           long& param) override;
+  void AI() override;
+  void Per_Cell_Process(PCPType why) override;
+  void Assign_Destination(TARGET target) override;
 
   virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr,
                                  int forced = false);
-  virtual FireErrorType Can_Fire(TARGET target, int which) const;
+  FireErrorType Can_Fire(TARGET target, int which) const override;
 
-  virtual void Enter_Idle_Mode(bool initial = false);
-  virtual ActionType What_Action(ObjectClass const* object) const;
-  virtual ActionType What_Action(CELL cell) const;
-  virtual void Active_Click_With(ActionType action, CELL cell);
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual TARGET Greatest_Threat(ThreatType threat);  // const;
-  virtual bool Is_Allowed_To_Recloak() const;
-  virtual BulletClass* Fire_At(TARGET target, int which = 0);
+  void Enter_Idle_Mode(bool initial = false) override;
+  ActionType What_Action(ObjectClass const* object) const override;
+  ActionType What_Action(CELL cell) const override;
+  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  bool Is_Allowed_To_Recloak() const override;
+  BulletClass* Fire_At(TARGET target, int which = 0) override;
   /*
   **	File I/O.
   */

@@ -185,7 +185,7 @@ class TeamClass : public AbstractClass {
         House(House),
         SuspendTimer(x),
         TimeOut(x) {}
-  virtual ~TeamClass();
+  ~TeamClass() override;
   virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
@@ -209,7 +209,7 @@ class TeamClass : public AbstractClass {
   }
   bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
-  void AI();
+  void AI() override;
   void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
   bool Add(FootClass*, int typeindex = -1);
   void Assign_Mission_Target(TARGET new_target);

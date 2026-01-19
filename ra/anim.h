@@ -67,7 +67,7 @@ class AnimClass : public ObjectClass, public StageClass {
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1);
   AnimClass(NoInitClass const& x) : ObjectClass(x), Class(x), StageClass(x) {}
-  virtual ~AnimClass();
+  ~AnimClass() override;
 
   operator AnimType() const { return Class->Type; }
 
@@ -85,17 +85,17 @@ class AnimClass : public ObjectClass, public StageClass {
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
   virtual bool Can_Place_Here(COORDINATE) const { return true; }
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual bool Render(bool forced);  // const;
-  virtual COORDINATE Center_Coord() const;
-  virtual COORDINATE Sort_Y() const;
-  virtual LayerType In_Which_Layer() const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual short const* Occupy_List(bool = false) const;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  bool Render(bool forced) override;  // const;
+  COORDINATE Center_Coord() const override;
+  COORDINATE Sort_Y() const override;
+  LayerType In_Which_Layer() const override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  short const* Occupy_List(bool = false) const override;
   virtual short const* Overlap_List() const;
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
-  virtual void AI();
-  virtual void Detach(TARGET target, bool all);
+  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void AI() override;
+  void Detach(TARGET target, bool all) override;
 
   /*
   **	File I/O.

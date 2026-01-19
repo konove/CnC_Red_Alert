@@ -55,12 +55,12 @@ class BlowStraw : public Straw {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   BlowStraw(CryptControl control) : BF(nullptr), Counter(0), Control(control) {}
-  virtual ~BlowStraw() {
+  ~BlowStraw() override {
     delete BF;
     BF = nullptr;
   }
 
-  virtual int Get(void* source, int slen);
+  int Get(void* source, int slen) override;
 
   // Submit key for blowfish engine.
   void Key(void const* key, int length);

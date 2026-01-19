@@ -50,7 +50,7 @@ class GaugeClass : public ControlClass {
   //		static GaugeClass * Create_One_Of(unsigned id, int x, int y, int
   // w, int h);
 
-  virtual int Draw_Me(int forced = false);
+  int Draw_Me(int forced = false) override;
   virtual int Set_Maximum(int value);
   virtual int Set_Value(int value);
   virtual int Get_Value() const { return (CurValue); }
@@ -88,7 +88,7 @@ class GaugeClass : public ControlClass {
 
  protected:
   virtual void Draw_Thumb();
-  virtual int Action(unsigned flags, KeyNumType& key);
+  int Action(unsigned flags, KeyNumType& key) override;
   virtual int Pixel_To_Value(int pixel);
   virtual int Value_To_Pixel(int value);
 };
@@ -98,7 +98,7 @@ class TriColorGaugeClass : public GaugeClass {
   TriColorGaugeClass(unsigned id, int x, int y, int w, int h);
   //		static TriColorGaugeClass * Create_One_Of(unsigned id, int x,
   // int y, int w, int h);
-  virtual int Draw_Me(int forced);
+  int Draw_Me(int forced) override;
   virtual int Set_Red_Limit(int value);
   virtual int Set_Yellow_Limit(int value);
 

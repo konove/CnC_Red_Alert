@@ -212,7 +212,7 @@ class TechnoClass : public RadioClass,
         DoorClass(x),
         CloakingDevice(x),
         PrimaryFacing(x) {}
-  virtual ~TechnoClass() {}
+  ~TechnoClass() override {}
 
   /*
   **	Query functions.
@@ -226,18 +226,18 @@ class TechnoClass : public RadioClass,
     return ((TechnoTypeClass const*)&Class_Of());
   }
   CELL Nearby_Location(TechnoClass const* from = nullptr) const;
-  virtual unsigned char Get_Ownable() const;
-  virtual bool Can_Player_Fire() const;
-  virtual bool Can_Player_Move() const;
+  unsigned char Get_Ownable() const override;
+  bool Can_Player_Fire() const override;
+  bool Can_Player_Move() const override;
   virtual bool Is_Weapon_Equipped() const;
-  virtual bool Can_Repair() const;
-  virtual bool Is_Techno() const;
-  virtual HousesType Owner() const;
+  bool Can_Repair() const override;
+  bool Is_Techno() const override;
+  HousesType Owner() const override;
   virtual int Risk() const;
-  virtual int Value() const;
+  int Value() const override;
   virtual int Rearm_Delay(bool second = true) const;
-  virtual ActionType What_Action(ObjectClass* target) const;
-  virtual ActionType What_Action(CELL cell) const;
+  ActionType What_Action(ObjectClass* target) const override;
+  ActionType What_Action(CELL cell) const override;
   virtual int Tiberium_Load() const;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
   virtual int Pip_Count() const;
@@ -246,8 +246,8 @@ class TechnoClass : public RadioClass,
   /*
   **	User I/O.
   */
-  virtual void Clicked_As_Target(int count = 7);
-  virtual bool Select();
+  void Clicked_As_Target(int count = 7) override;
+  bool Select() override;
   virtual void Response_Select();
   virtual void Response_Move();
   virtual void Response_Attack();
@@ -260,10 +260,10 @@ class TechnoClass : public RadioClass,
   */
   void Base_Is_Attacked(TechnoClass const* enemy);
   void Kill_Cargo(TechnoClass* source);
-  virtual void Record_The_Kill(TechnoClass* source);
+  void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
-  virtual bool In_Range(COORDINATE coord, int which = 0) const;
+  bool In_Range(COORDINATE coord, int which = 0) const override;
   virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(ObjectClass const* target, int which = 0) const;
   virtual void Death_Announcement(
@@ -271,14 +271,14 @@ class TechnoClass : public RadioClass,
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat) const;
   virtual void Assign_Target(TARGET target);
-  virtual void Override_Mission(MissionType mission, TARGET tarcom,
-                                TARGET navcom);
-  virtual bool Restore_Mission();
+  void Override_Mission(MissionType mission, TARGET tarcom,
+                                TARGET navcom) override;
+  bool Restore_Mission() override;
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
-  virtual int Weapon_Range(int which) const;
+  int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source);
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source) override;
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
                      TechnoClass const** object, int& value) const;
   bool Evaluate_Object(ThreatType method, int mask, int range,
@@ -287,11 +287,11 @@ class TechnoClass : public RadioClass,
   /*
   **	AI.
   */
-  virtual void AI();
-  virtual bool Revealed(HouseClass* house);
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  void AI() override;
+  bool Revealed(HouseClass* house) override;
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
+                                           long& param) override;
 
 /*
 **	Scenario and debug support.
@@ -303,8 +303,8 @@ class TechnoClass : public RadioClass,
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -314,29 +314,29 @@ class TechnoClass : public RadioClass,
   VisualType Visual_Character(bool raw = false);
   void Techno_Draw_Object(void const* shapefile, int shapenum, int x, int y,
                           WindowNumberType window);
-  virtual void Draw_It(int x, int y, WindowNumberType window);
+  void Draw_It(int x, int y, WindowNumberType window) override;
   virtual void Draw_Pips(int x, int y, WindowNumberType window);
-  virtual void Hidden();
-  virtual bool Mark(MarkType mark);
-  virtual int Exit_Object(TechnoClass*);
+  void Hidden() override;
+  bool Mark(MarkType mark) override;
+  int Exit_Object(TechnoClass*) override;
   virtual void Do_Uncloak();
   virtual void Do_Cloak();
-  virtual void Do_Shimmer();
+  void Do_Shimmer() override;
 
   /*
   **	Movement and animation.
   */
   virtual void Random_Animate();
   virtual void Assign_Destination(TARGET target);
-  virtual void Scatter(COORDINATE source = 0, bool forced = false);
+  void Scatter(COORDINATE source = 0, bool forced = false) override;
   virtual void Per_Cell_Process(bool);
   virtual void Enter_Idle_Mode(bool initial = false);
 
   /*
   **	Map entry and exit logic.
   */
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual void Detach(TARGET target, bool all);
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  void Detach(TARGET target, bool all) override;
 
   /*
   **	Facing translation tables that fix the flaw with 3D studio when

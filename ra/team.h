@@ -212,7 +212,7 @@ class TeamClass : public AbstractClass {
         Trigger(x),
         TimeOut(x),
         Member(x) {}
-  virtual ~TeamClass();
+  ~TeamClass() override;
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
   static void* operator new(size_t, void* ptr) throw() { return (ptr); }
@@ -236,7 +236,7 @@ class TeamClass : public AbstractClass {
   }
   bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
-  void AI();
+  void AI() override;
   void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
   bool Add(FootClass*);
   bool Can_Add(FootClass* obj, int& typeindex) const;

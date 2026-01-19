@@ -109,7 +109,7 @@ class GadgetClass : public LinkClass {
   GadgetClass(NoInitClass const& x) : LinkClass(x) {}
   GadgetClass() {}
   GadgetClass(GadgetClass const& gadget) = default;
-  virtual ~GadgetClass();
+  ~GadgetClass() override;
 
   /*
   **	Gadget list management functions.
@@ -119,9 +119,9 @@ class GadgetClass : public LinkClass {
   virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw() { LastList = nullptr; }
-  virtual GadgetClass* Remove();
-  virtual GadgetClass* Get_Next() const;
-  virtual GadgetClass* Get_Prev() const;
+  GadgetClass* Remove() override;
+  GadgetClass* Get_Next() const override;
+  GadgetClass* Get_Prev() const override;
 
   /*
   **	Manages individual gadget states and actions.

@@ -52,13 +52,13 @@ class BlowPipe : public Pipe {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   BlowPipe(CryptControl control) : BF(nullptr), Counter(0), Control(control) {}
-  virtual ~BlowPipe() {
+  ~BlowPipe() override {
     delete BF;
     BF = nullptr;
   }
-  virtual int Flush();
+  int Flush() override;
 
-  virtual int Put(void const* source, int slen);
+  int Put(void const* source, int slen) override;
 
   // Submit key for blowfish engine.
   void Key(void const* key, int length);

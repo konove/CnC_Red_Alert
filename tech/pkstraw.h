@@ -52,10 +52,10 @@ class PKStraw : public Straw {
 
   PKStraw(CryptControl control, RandomStraw& rnd);
 
-  virtual void Get_From(Straw* straw);
-  virtual void Get_From(Straw& straw) { Get_From(&straw); }
+  void Get_From(Straw* straw) override;
+  void Get_From(Straw& straw) override { Get_From(&straw); }
 
-  virtual int Get(void* source, int slen);
+  int Get(void* source, int slen) override;
 
   // Submit key to be used for encryption/decryption.
   void Key(PKey const* key);

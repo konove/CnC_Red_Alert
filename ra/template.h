@@ -71,7 +71,7 @@ class TemplateClass : public ObjectClass {
   static void operator delete(void* ptr);
   TemplateClass(TemplateType type, CELL pos = -1);
   TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(x) {}
-  virtual ~TemplateClass() {
+  ~TemplateClass() override {
     if (GameActive) TemplateClass::Limbo();
     Class = nullptr;
   }
@@ -82,15 +82,15 @@ class TemplateClass : public ObjectClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
   int Icon_Number(CELL cell);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void Draw_It(int, int, WindowNumberType) const {}
-  virtual bool Mark(MarkType mark);
+  void Draw_It(int, int, WindowNumberType) const override {}
+  bool Mark(MarkType mark) override;
 
   /*
   **	File I/O.

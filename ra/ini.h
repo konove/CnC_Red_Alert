@@ -136,7 +136,7 @@ class INIClass {
   struct INIEntry : Node<INIEntry> {
     INIEntry(char* entry = nullptr, char* value = nullptr)
         : Entry(entry), Value(value) {}
-    ~INIEntry() {
+    ~INIEntry() override {
       free(Entry);
       Entry = nullptr;
       free(Value);
@@ -154,7 +154,7 @@ class INIClass {
   */
   struct INISection : Node<INISection> {
     INISection(char* section) : Section(section) {}
-    ~INISection() {
+    ~INISection() override {
       free(Section);
       Section = nullptr;
       EntryList.Delete();

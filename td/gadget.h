@@ -106,7 +106,7 @@ class GadgetClass : public LinkClass {
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
   GadgetClass() {}
-  virtual ~GadgetClass();
+  ~GadgetClass() override;
   //		static GadgetClass * Create_One_Of(int x, int y, int w, int h,
   // unsigned flags, int sticky=false);
 
@@ -118,9 +118,9 @@ class GadgetClass : public LinkClass {
   virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw() { LastList = nullptr; }
-  virtual GadgetClass* Remove();
-  virtual GadgetClass* Get_Next() const;
-  virtual GadgetClass* Get_Prev() const;
+  GadgetClass* Remove() override;
+  GadgetClass* Get_Next() const override;
+  GadgetClass* Get_Prev() const override;
 
   /*
   **	Manages individual gadget states and actions.

@@ -193,14 +193,14 @@ class MapEditClass : public MouseClass {
   bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_index);
 
-  virtual void One_Time();  // One-time init
-  virtual void Init_IO();   // Inits button list
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool forced = true);
-  virtual bool Scroll_Map(DirType facing, int& distance, bool really = true);
-  virtual void Read_INI(CCINIClass& ini);
+  void One_Time() override;  // One-time init
+  void Init_IO() override;   // Inits button list
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool forced = true) override;
+  bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
+  void Read_INI(CCINIClass& ini) override;
   virtual void Write_INI(CCINIClass& ini);
-  virtual void Detach(ObjectClass* object);
+  void Detach(ObjectClass* object) override;
   void Detach(TARGET target, bool all = true) {
     MouseClass::Detach(target, all);
   }

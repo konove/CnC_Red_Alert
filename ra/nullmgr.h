@@ -94,7 +94,7 @@ class NullModemClass : public ConnManClass {
   */
   NullModemClass(int numsend, int numreceive, int maxlen,
                  unsigned short magicnum);
-  virtual ~NullModemClass();
+  ~NullModemClass() override;
 
   /*
   **	This is the main initialization routine.
@@ -102,14 +102,14 @@ class NullModemClass : public ConnManClass {
   int Init(int port, int irq, char* dev_name, int baud, char parity,
            int wordlength, int stopbits, int flowcontrol);
   int Delete_Connection();
-  virtual int Num_Connections();
-  virtual int Connection_ID(int) { return (0); }
-  virtual int Connection_Index(int) { return (0); }
+  int Num_Connections() override;
+  int Connection_ID(int) override { return (0); }
+  int Connection_Index(int) override { return (0); }
   int Init_Send_Queue();
   void Shutdown();
 
-  virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                          unsigned long timeout);
+  void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
+                          unsigned long timeout) override;
 
   /*
   **	This is how the application sends & receives messages.
@@ -120,18 +120,18 @@ class NullModemClass : public ConnManClass {
   /*
   ** These are for compatibility
   */
-  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                                   int = CONNECTION_NONE) {
+  int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
+                                   int = CONNECTION_NONE) override {
     return (Send_Message(buf, buflen, ack_req));
   }
-  virtual int Get_Private_Message(void* buf, int* buflen, int*) {
+  int Get_Private_Message(void* buf, int* buflen, int*) override {
     return (Get_Message(buf, buflen));
   }
 
   /*
   **	The main polling routine; should be called as often as possible.
   */
-  virtual int Service();
+  int Service() override;
 
   /*
   **	Queue utility routines.  The application can determine how many
@@ -140,11 +140,11 @@ class NullModemClass : public ConnManClass {
   */
   int Num_Send();
   int Num_Receive();
-  virtual unsigned long Response_Time();
-  virtual void Reset_Response_Time();
+  unsigned long Response_Time() override;
+  void Reset_Response_Time() override;
   void* Oldest_Send();
-  virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char** names, int namestart, int namecount);
+  void Configure_Debug(int index, int type_offset, int type_size,
+                               char** names, int namestart, int namecount) override;
 #ifdef CHEAT_KEYS
   virtual void Mono_Debug_Print(int index, int refresh = 0);
 #endif
@@ -152,10 +152,10 @@ class NullModemClass : public ConnManClass {
   /*
   ** These are for compatibility
   */
-  virtual int Global_Num_Send() { return (Num_Send()); }
-  virtual int Global_Num_Receive() { return (Num_Receive()); }
-  virtual int Private_Num_Send(int = CONNECTION_NONE) { return (Num_Send()); }
-  virtual int Private_Num_Receive(int = CONNECTION_NONE) {
+  int Global_Num_Send() override { return (Num_Send()); }
+  int Global_Num_Receive() override { return (Num_Receive()); }
+  int Private_Num_Send(int = CONNECTION_NONE) override { return (Num_Send()); }
+  int Private_Num_Receive(int = CONNECTION_NONE) override {
     return (Num_Receive());
   }
 

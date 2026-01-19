@@ -128,7 +128,7 @@ class InfantryClass : public FootClass {
   static void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
   InfantryClass(NoInitClass const& x) : FootClass(x), Class(x), Comment(x) {}
-  virtual ~InfantryClass();
+  ~InfantryClass() override;
   operator InfantryType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
@@ -136,54 +136,54 @@ class InfantryClass : public FootClass {
   */
   static void Init();
 
-  virtual void Assign_Destination(TARGET);
+  void Assign_Destination(TARGET) override;
 
   /*
   **	Query functions.
   */
-  virtual bool Is_Ready_To_Random_Animate() const;
-  void const* Get_Image_Data() const;
+  bool Is_Ready_To_Random_Animate() const override;
+  void const* Get_Image_Data() const override;
   int Shape_Number() const;
-  virtual ObjectTypeClass const& Class_Of() const;
-  virtual int Full_Name() const;
+  ObjectTypeClass const& Class_Of() const override;
+  int Full_Name() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Unlimbo(COORDINATE coord, DirType facing);
-  virtual bool Paradrop(COORDINATE coord);
-  virtual bool Limbo();
-  virtual void Detach(TARGET target, bool all);
+  bool Unlimbo(COORDINATE coord, DirType facing) override;
+  bool Paradrop(COORDINATE coord) override;
+  bool Limbo() override;
+  void Detach(TARGET target, bool all) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual short const* Overlap_List(bool redraw = false) const;
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
+  short const* Overlap_List(bool redraw = false) const override;
+  void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*
   **	User I/O.
   */
-  virtual void Response_Select();
-  virtual void Response_Move();
-  virtual void Response_Attack();
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual void Active_Click_With(ActionType action, CELL cell) {
+  void Response_Select() override;
+  void Response_Move() override;
+  void Response_Attack() override;
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  void Active_Click_With(ActionType action, CELL cell) override {
     FootClass::Active_Click_With(action, cell);
   }
 
   /*
   **	Combat related.
   */
-  virtual ActionType What_Action(ObjectClass const* object) const;
-  virtual ActionType What_Action(CELL cell) const;
-  virtual BulletClass* Fire_At(TARGET target, int which);
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr,
-                                 bool forced = false);
-  virtual FireErrorType Can_Fire(TARGET target, int which) const;
-  virtual void Assign_Target(TARGET);
+  ActionType What_Action(ObjectClass const* object) const override;
+  ActionType What_Action(CELL cell) const override;
+  BulletClass* Fire_At(TARGET target, int which) override;
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                         TechnoClass* source = nullptr,
+                         bool forced = false) override;
+  FireErrorType Can_Fire(TARGET target, int which) const override;
+  void Assign_Target(TARGET) override;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
   }
@@ -197,16 +197,16 @@ class InfantryClass : public FootClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Stop_Driver();
-  virtual bool Start_Driver(COORDINATE& coord);
+  bool Stop_Driver() override;
+  bool Start_Driver(COORDINATE& coord) override;
 
   /*
   **	AI.
   */
-  virtual void AI();
+  void AI() override;
   void Fear_AI();
-  virtual TARGET Greatest_Threat(ThreatType threat);  // const;
-  virtual int Mission_Attack();
+  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  int Mission_Attack() override;
   bool Edge_Of_World_AI();
   void Firing_AI();
   void Doing_AI();
@@ -232,12 +232,12 @@ class InfantryClass : public FootClass {
   **	Movement and animation.
   */
   virtual bool Do_Action(DoType todo, bool force = false);
-  virtual bool Random_Animate();
-  virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const;
-  virtual void Per_Cell_Process(PCPType why);
-  virtual void Enter_Idle_Mode(bool initial = false);
-  virtual void Scatter(COORDINATE threat, bool forced = false,
-                       bool nokidding = false);
+  bool Random_Animate() override;
+  MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const override;
+  void Per_Cell_Process(PCPType why) override;
+  void Enter_Idle_Mode(bool initial = false) override;
+  void Scatter(COORDINATE threat, bool forced = false,
+               bool nokidding = false) override;
 
   /*
   **	Translation table to convert facing into infantry shape number. This

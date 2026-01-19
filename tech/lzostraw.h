@@ -54,9 +54,9 @@ class LZOStraw : public Straw {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   LZOStraw(CompControl control, int blocksize = 1024 * 8);
-  virtual ~LZOStraw();
+  ~LZOStraw() override;
 
-  virtual int Get(void* source, int slen);
+  int Get(void* source, int slen) override;
 
  private:
   /*

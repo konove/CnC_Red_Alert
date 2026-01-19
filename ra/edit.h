@@ -55,10 +55,10 @@ class EditClass : public ControlClass {
 
   EditClass(int id, char* text, int max_len, TextPrintType flags, int x, int y,
             int w = -1, int h = -1, EditStyle style = ALPHANUMERIC);
-  virtual ~EditClass();
+  ~EditClass() override;
 
-  virtual void Set_Focus();
-  virtual int Draw_Me(int forced);
+  void Set_Focus() override;
+  int Draw_Me(int forced) override;
   virtual void Set_Text(char* text, int max_len);
   virtual char* Get_Text() { return (String); }
   void Set_Color(RemapControlType* color) { Color = color; }
@@ -95,7 +95,7 @@ class EditClass : public ControlClass {
   */
   RemapControlType* Color;
 
-  virtual int Action(unsigned flags, KeyNumType& key);
+  int Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Background();
   virtual void Draw_Text(char const* text);
   virtual bool Handle_Key(KeyASCIIType ascii);

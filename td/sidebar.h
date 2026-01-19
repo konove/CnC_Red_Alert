@@ -123,14 +123,14 @@ class SidebarClass : public PowerClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();                         // One-time inits
-  virtual void Init_Clear();                       // Clears all to known state
-  virtual void Init_IO();                          // Inits button list
-  virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
+  void One_Time() override;                         // One-time inits
+  void Init_Clear() override;                       // Clears all to known state
+  void Init_IO() override;                          // Inits button list
+  void Init_Theater(TheaterType theater) override;  // Theater-specific inits
 
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool complete);
-  virtual void Refresh_Cells(CELL cell, short const* list);
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool complete) override;
+  void Refresh_Cells(CELL cell, short const* list) override;
 
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);
@@ -142,8 +142,8 @@ class SidebarClass : public PowerClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Each side strip is managed by this class. It handles all strip specific
@@ -159,7 +159,7 @@ class SidebarClass : public PowerClass {
       int Index;
 
      protected:
-      virtual int Action(unsigned flags, KeyNumType& key);
+      int Action(unsigned flags, KeyNumType& key) override;
     };
 
    public:
@@ -379,7 +379,7 @@ class SidebarClass : public PowerClass {
     SBGadgetClass() : GadgetClass(0, 0, 0, 0, LEFTUP) {}
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType& key);
+    int Action(unsigned flags, KeyNumType& key) override;
   };
 
   /*

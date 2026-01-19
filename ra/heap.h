@@ -143,11 +143,13 @@ template <class T>
 class TFixedHeapClass : public FixedHeapClass {
  public:
   TFixedHeapClass() : FixedHeapClass(sizeof(T)) {}
-  virtual ~TFixedHeapClass() {}
+  ~TFixedHeapClass() override {}
 
-  virtual int ID(T const* pointer) const { return FixedHeapClass::ID(pointer); }
+  int ID(T const* pointer) const override {
+    return FixedHeapClass::ID(pointer);
+  }
   virtual T* Alloc() { return (T*)FixedHeapClass::Allocate(); }
-  virtual int Free(T* pointer) { return (FixedHeapClass::Free(pointer)); }
+  int Free(T* pointer) override { return (FixedHeapClass::Free(pointer)); }
 
   T& operator[](int index) { return *(T*)(((char*)Buffer) + (index * Size)); }
   T const& operator[](int index) const {
@@ -163,13 +165,13 @@ class TFixedHeapClass : public FixedHeapClass {
 class FixedIHeapClass : public FixedHeapClass {
  public:
   FixedIHeapClass(int size) : FixedHeapClass(size) {}
-  virtual ~FixedIHeapClass() {}
+  ~FixedIHeapClass() override {}
 
-  virtual int Set_Heap(int count, void* buffer = nullptr);
-  virtual void* Allocate();
-  virtual void Clear();
-  virtual int Free(void* pointer);
-  virtual int Free_All();
+  int Set_Heap(int count, void* buffer = nullptr) override;
+  void* Allocate() override;
+  void Clear() override;
+  int Free(void* pointer) override;
+  int Free_All() override;
   virtual int Logical_ID(void const* pointer) const;
   virtual int Logical_ID(int id) const { return (Logical_ID((*this)[id])); }
 
@@ -194,7 +196,7 @@ template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
   TFixedIHeapClass() : FixedIHeapClass(sizeof(T)) {}
-  virtual ~TFixedIHeapClass() {}
+  ~TFixedIHeapClass() override {}
 
   virtual int ID(T const* pointer) const {
     return FixedIHeapClass::ID(pointer);
@@ -202,12 +204,12 @@ class TFixedIHeapClass : public FixedIHeapClass {
   virtual int Logical_ID(T const* pointer) const {
     return (FixedIHeapClass::Logical_ID(pointer));
   }
-  virtual int Logical_ID(int id) const {
+  int Logical_ID(int id) const override {
     return (FixedIHeapClass::Logical_ID(id));
   }
   virtual T* Alloc() { return (T*)FixedIHeapClass::Allocate(); }
   virtual int Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
-  virtual int Free(void* pointer) { return FixedIHeapClass::Free(pointer); }
+  int Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
   virtual int Save(Pipe& file) const;
   virtual int Load(Straw& file);
   virtual void Code_Pointers();

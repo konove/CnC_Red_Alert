@@ -138,18 +138,18 @@ class UnitClass : public DriveClass {
   UnitClass(NoInitClass const& x)
       : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {}
   operator UnitType() const { return Class->Type; }
-  virtual ~UnitClass();
+  ~UnitClass() override;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual ObjectTypeClass const& Class_Of() const;
+  ObjectTypeClass const& Class_Of() const override;
   static void Init();
 
   bool Goto_Clear_Spot();
   bool Try_To_Deploy();
-  virtual void Scatter(COORDINATE threat, bool forced = false,
-                       bool nokidding = false);
+  void Scatter(COORDINATE threat, bool forced = false,
+                       bool nokidding = false) override;
 
   bool Tiberium_Check(CELL& center, int x, int y);
   bool Flag_Attach(HousesType house);
@@ -164,75 +164,75 @@ class UnitClass : public DriveClass {
   */
   bool Should_Crush_It(TechnoClass const* it) const;
   int Credit_Load() const;
-  virtual DirType Turret_Facing() const {
+  DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) return (SecondaryFacing.Current());
     return (PrimaryFacing.Current());
   }
   int Shape_Number() const;
-  virtual int Pip_Count() const;
-  virtual InfantryType Crew_Type() const;
-  virtual DirType Fire_Direction() const;
-  virtual bool Ok_To_Move(DirType facing) const;
-  virtual FireErrorType Can_Fire(TARGET target, int which) const;
-  virtual fixed Tiberium_Load() const;
+  int Pip_Count() const override;
+  InfantryType Crew_Type() const override;
+  DirType Fire_Direction() const override;
+  bool Ok_To_Move(DirType facing) const override;
+  FireErrorType Can_Fire(TARGET target, int which) const override;
+  fixed Tiberium_Load() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y() const;
+  COORDINATE Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Limbo();
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
+  bool Limbo() override;
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual short const* Overlap_List(bool redraw = false) const;
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
+  short const* Overlap_List(bool redraw = false) const override;
+  void Draw_It(int x, int y, WindowNumberType window) const override;
 
   /*
   **	User I/O.
   */
-  virtual ActionType What_Action(CELL cell) const;
-  virtual ActionType What_Action(ObjectClass const* object) const;
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual void Active_Click_With(ActionType action, CELL cell);
+  ActionType What_Action(CELL cell) const override;
+  ActionType What_Action(ObjectClass const* object) const override;
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  void Active_Click_With(ActionType action, CELL cell) override;
 
   /*
   **	Combat related.
   */
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                  TechnoClass* source = nullptr,
-                                 bool forced = false);
-  virtual BulletClass* Fire_At(TARGET target, int which = 0);
+                                 bool forced = false) override;
+  BulletClass* Fire_At(TARGET target, int which = 0) override;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Start_Driver(COORDINATE& coord);
+  bool Start_Driver(COORDINATE& coord) override;
 
   /*
   **	AI.
   */
-  virtual TARGET Greatest_Threat(ThreatType threat);  // const;
-  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
-  virtual void AI();
-  virtual int Mission_Guard_Area();
-  virtual int Mission_Unload();
-  virtual int Mission_Guard();
-  virtual int Mission_Harvest();
-  virtual int Mission_Hunt();
-  virtual int Mission_Repair();
-  virtual int Mission_Move();
+                                           long& param) override;
+  void AI() override;
+  int Mission_Guard_Area() override;
+  int Mission_Unload() override;
+  int Mission_Guard() override;
+  int Mission_Harvest() override;
+  int Mission_Hunt() override;
+  int Mission_Repair() override;
+  int Mission_Move() override;
   void Rotation_AI();
   void Firing_AI();
   void Reload_AI();
@@ -248,14 +248,14 @@ class UnitClass : public DriveClass {
   /*
   **	Movement and animation.
   */
-  virtual void Assign_Destination(TARGET target);
-  virtual void Overrun_Square(CELL cell, bool threaten = true);
-  virtual void Approach_Target();
-  virtual int Offload_Tiberium_Bail();
-  virtual void Enter_Idle_Mode(bool initial = false);
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const;
-  virtual void Per_Cell_Process(PCPType why);
+  void Assign_Destination(TARGET target) override;
+  void Overrun_Square(CELL cell, bool threaten = true) override;
+  void Approach_Target() override;
+  int Offload_Tiberium_Bail() override;
+  void Enter_Idle_Mode(bool initial = false) override;
+  MoveType Can_Enter_Cell(CELL cell,
+                                  FacingType facing = FACING_NONE) const override;
+  void Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();
 

@@ -56,8 +56,8 @@ class MapClass : public GScreenClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();     // Theater-specific inits
-  virtual void Init_Clear();   // Clears all to known state
+  void One_Time() override;     // Theater-specific inits
+  void Init_Clear() override;   // Clears all to known state
   virtual void Alloc_Cells();  // Allocates buffers
   virtual void Free_Cells();   // Frees buffers
   virtual void Init_Cells();   // Frees buffers
@@ -90,8 +90,8 @@ class MapClass : public GScreenClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   ** Debug routine

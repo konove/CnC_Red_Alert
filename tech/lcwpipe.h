@@ -53,10 +53,10 @@ class LCWPipe : public Pipe {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   LCWPipe(CompControl, int blocksize = 1024 * 8);
-  virtual ~LCWPipe();
+  ~LCWPipe() override;
 
-  virtual int Flush();
-  virtual int Put(void const* source, int slen);
+  int Flush() override;
+  int Put(void const* source, int slen) override;
 
  private:
   /*

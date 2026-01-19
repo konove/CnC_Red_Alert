@@ -51,7 +51,7 @@
 class SHAStraw : public Straw {
  public:
   SHAStraw() {}
-  virtual int Get(void* source, int slen);
+  int Get(void* source, int slen) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
   int Result(void* result) const;

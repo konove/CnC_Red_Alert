@@ -68,9 +68,9 @@ class AnimClass : public ObjectClass, private StageClass {
             unsigned char loop = 1, bool alt = false);
   AnimClass(NoInitClass const& x)
       : ObjectClass(x), Class(Class), StageClass(x) {}
-  virtual ~AnimClass();
+  ~AnimClass() override;
   operator AnimType() const { return Class->Type; }
-  virtual RTTIType What_Am_I() const { return RTTI_ANIM; }
+  RTTIType What_Am_I() const override { return RTTI_ANIM; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -81,26 +81,26 @@ class AnimClass : public ObjectClass, private StageClass {
   void Make_Invisible() { IsInvisible = true; }
 
   virtual bool Can_Place_Here(COORDINATE) const { return true; }
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual bool Render(bool forced);
-  virtual COORDINATE Center_Coord() const;
-  virtual COORDINATE Sort_Y() const;
-  virtual LayerType In_Which_Layer() const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  bool Render(bool forced) override;
+  COORDINATE Center_Coord() const override;
+  COORDINATE Sort_Y() const override;
+  LayerType In_Which_Layer() const override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
   virtual short const* Occupy_List() const;
-  virtual short const* Overlap_List() const;
-  virtual void Draw_It(int x, int y, WindowNumberType window);
-  virtual void AI();
-  virtual TARGET As_Target() const;
-  virtual void Detach(TARGET target, bool all);
+  short const* Overlap_List() const override;
+  void Draw_It(int x, int y, WindowNumberType window) override;
+  void AI() override;
+  TARGET As_Target() const override;
+  void Detach(TARGET target, bool all) override;
 
   /*
   **	File I/O.
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.

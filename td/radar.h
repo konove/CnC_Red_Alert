@@ -68,18 +68,18 @@ class RadarClass : public DisplayClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();    // One-time inits
-  virtual void Init_Clear();  // Clears all to known state
+  void One_Time() override;    // One-time inits
+  void Init_Clear() override;  // Clears all to known state
 
-  virtual bool Map_Cell(CELL cell, HouseClass* house);
-  virtual CELL Click_Cell_Calc(int x, int y);
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool complete = false);
-  virtual void Refresh_Cells(CELL cell, short const* list);
-  virtual void Set_Map_Dimensions(int x, int y, int w, int h);
+  bool Map_Cell(CELL cell, HouseClass* house) override;
+  CELL Click_Cell_Calc(int x, int y) override;
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool complete = false) override;
+  void Refresh_Cells(CELL cell, short const* list) override;
+  void Set_Map_Dimensions(int x, int y, int w, int h) override;
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
   // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
-  virtual void Set_Tactical_Position(COORDINATE coord);
+  void Set_Tactical_Position(COORDINATE coord) override;
   void Zoom_Mode(CELL cell);
   int Click_In_Radar(int& x, int& y, bool change = false);
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
@@ -104,8 +104,8 @@ class RadarClass : public DisplayClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   ** Toggles player names on & off
@@ -160,7 +160,7 @@ class RadarClass : public DisplayClass {
                       true) {}
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType& key);
+    int Action(unsigned flags, KeyNumType& key) override;
     friend class RadarClass;
   };
   friend class TacticalClass;

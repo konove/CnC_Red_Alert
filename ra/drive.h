@@ -99,29 +99,29 @@ class DriveClass : public FootClass {
   */
   DriveClass(RTTIType rtti, int id, HousesType house);
   DriveClass(NoInitClass const& x) : FootClass(x), MoebiusCountDown(x) {}
-  virtual ~DriveClass() {}
+  ~DriveClass() override {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
   bool Teleport_To(CELL cell);
-  virtual void Response_Select();
-  virtual void Response_Move();
-  virtual void Response_Attack();
-  virtual void Scatter(COORDINATE threat, bool forced = false,
-                       bool nokidding = false);
-  virtual bool Limbo();
+  void Response_Select() override;
+  void Response_Move() override;
+  void Response_Attack() override;
+  void Scatter(COORDINATE threat, bool forced = false,
+               bool nokidding = false) override;
+  bool Limbo() override;
   void Do_Turn(DirType dir);
   virtual void Overrun_Square(CELL, bool = true) {}
-  virtual void Assign_Destination(TARGET target);
-  virtual void Per_Cell_Process(PCPType why);
+  void Assign_Destination(TARGET target) override;
+  void Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(DirType) const;
-  virtual void AI();
+  void AI() override;
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   void Force_Track(int track, COORDINATE coord);
-  virtual bool Stop_Driver();
+  bool Stop_Driver() override;
 
   void Mark_Track(COORDINATE headto, MarkType type);
 
@@ -186,7 +186,7 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual void Fixup_Path(PathType* path);
+  void Fixup_Path(PathType* path) override;
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();

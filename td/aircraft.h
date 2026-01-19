@@ -76,20 +76,20 @@ class AircraftClass : public FootClass, public FlyClass {
         SecondaryFacing(x),
         SightTimer(x) {}
   AircraftClass(AircraftType classid, HousesType house);
-  virtual ~AircraftClass();
-  virtual RTTIType What_Am_I() const { return RTTI_AIRCRAFT; }
+  ~AircraftClass() override;
+  RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
 
   static void Init();
   enum { FLIGHT_LEVEL = 24 };
 
-  virtual int Mission_Attack();
-  virtual int Mission_Unload();
-  virtual int Mission_Hunt();
-  virtual int Mission_Retreat();
-  virtual int Mission_Move();
-  virtual int Mission_Enter();
-  virtual int Mission_Guard();
-  virtual int Mission_Guard_Area();
+  int Mission_Attack() override;
+  int Mission_Unload() override;
+  int Mission_Hunt() override;
+  int Mission_Retreat() override;
+  int Mission_Move() override;
+  int Mission_Enter() override;
+  int Mission_Guard() override;
+  int Mission_Guard_Area() override;
 
   /*
   **	State machine support routines.
@@ -101,21 +101,21 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Query functions.
   */
-  virtual int Threat_Range(int control) const;
-  virtual int Rearm_Delay(bool second) const;
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const;
-  virtual LayerType In_Which_Layer() const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual ActionType What_Action(ObjectClass* target) const;
-  virtual ActionType What_Action(CELL cell) const;
-  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
-  virtual int Pip_Count() const;
+  int Threat_Range(int control) const override;
+  int Rearm_Delay(bool second) const override;
+  MoveType Can_Enter_Cell(CELL cell,
+                                  FacingType facing = FACING_NONE) const override;
+  LayerType In_Which_Layer() const override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  ActionType What_Action(ObjectClass* target) const override;
+  ActionType What_Action(CELL cell) const override;
+  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  int Pip_Count() const override;
   TARGET Good_Fire_Location(TARGET target) const;
   bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
   DirType Pose_Dir() const;
   TARGET Good_LZ() const;
-  virtual DirType Fire_Direction() const;
+  DirType Fire_Direction() const override;
 
   /*
   **	Landing zone support functionality.
@@ -127,56 +127,56 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y() const;
-  virtual COORDINATE Fire_Coord(int which) const;
-  virtual COORDINATE Target_Coord() const;
+  COORDINATE Sort_Y() const override;
+  COORDINATE Fire_Coord(int which) const override;
+  COORDINATE Target_Coord() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual int Exit_Object(TechnoClass*);
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual short const* Overlap_List() const;
-  virtual void Draw_It(int x, int y, WindowNumberType window);
-  virtual void Set_Speed(int speed);
+  int Exit_Object(TechnoClass*) override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  short const* Overlap_List() const override;
+  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Set_Speed(int speed) override;
 
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual void Active_Click_With(ActionType action, CELL cell);
-  virtual void Player_Assign_Mission(MissionType mission,
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  void Active_Click_With(ActionType action, CELL cell) override;
+  void Player_Assign_Mission(MissionType mission,
                                      TARGET target = TARGET_NONE,
-                                     TARGET destination = TARGET_NONE);
-  virtual void Response_Select();
-  virtual void Response_Move();
-  virtual void Response_Attack();
+                                     TARGET destination = TARGET_NONE) override;
+  void Response_Select() override;
+  void Response_Move() override;
+  void Response_Attack() override;
 
   /*
   **	Combat related.
   */
   //		virtual bool Target_Something_Nearby(ThreatType
   // threat=THREAT_NORMAL);
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source);
-  virtual BulletClass* Fire_At(TARGET target, int which);
-  virtual TARGET As_Target() const;
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source) override;
+  BulletClass* Fire_At(TARGET target, int which) override;
+  TARGET As_Target() const override;
 
   /*
   **	AI.
   */
-  virtual void AI();
-  virtual void Enter_Idle_Mode(bool initial = false);
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  void AI() override;
+  void Enter_Idle_Mode(bool initial = false) override;
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
-  virtual void Scatter(COORDINATE threat, bool forced = false);
+                                           long& param) override;
+  void Scatter(COORDINATE threat, bool forced = false) override;
 
 /*
 **	Scenario and debug support.
@@ -193,8 +193,8 @@ class AircraftClass : public FootClass, public FlyClass {
   static char const* INI_Name() { return "AIRCRAFT"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.

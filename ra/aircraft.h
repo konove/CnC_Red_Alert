@@ -85,20 +85,20 @@ class AircraftClass : public FootClass, public FlyClass {
         Class(x),
         SecondaryFacing(x),
         SightTimer(x) {}
-  virtual ~AircraftClass();
+  ~AircraftClass() override;
 
   static void Init();
 
-  virtual int Mission_Attack();
-  virtual int Mission_Unload();
-  virtual int Mission_Hunt();
-  virtual int Mission_Retreat();
-  virtual int Mission_Move();
-  virtual int Mission_Enter();
-  virtual int Mission_Guard();
-  virtual int Mission_Guard_Area();
+  int Mission_Attack() override;
+  int Mission_Unload() override;
+  int Mission_Hunt() override;
+  int Mission_Retreat() override;
+  int Mission_Move() override;
+  int Mission_Enter() override;
+  int Mission_Guard() override;
+  int Mission_Guard_Area() override;
 
-  virtual void Assign_Destination(TARGET target);
+  void Assign_Destination(TARGET target) override;
   /*
   **	State machine support routines.
   */
@@ -109,27 +109,27 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Query functions.
   */
-  virtual LayerType In_Which_Layer() const;
-  virtual DirType Turret_Facing() const { return (SecondaryFacing.Current()); }
+  LayerType In_Which_Layer() const override;
+  DirType Turret_Facing() const override { return (SecondaryFacing.Current()); }
   int Shape_Number() const;
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual ActionType What_Action(ObjectClass const* target) const;
-  virtual ActionType What_Action(CELL cell) const;
-  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
-  virtual int Pip_Count() const;
+  MoveType Can_Enter_Cell(CELL cell,
+                                  FacingType facing = FACING_NONE) const override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  ActionType What_Action(ObjectClass const* target) const override;
+  ActionType What_Action(CELL cell) const override;
+  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  int Pip_Count() const override;
   TARGET Good_Fire_Location(TARGET target) const;
   bool Cell_Seems_Ok(CELL cell, bool landing = false) const;
   DirType Pose_Dir() const;
   TARGET Good_LZ() const;
-  virtual DirType Fire_Direction() const;
-  virtual FireErrorType Can_Fire(TARGET target, int which) const;
+  DirType Fire_Direction() const override;
+  FireErrorType Can_Fire(TARGET target, int which) const override;
 
   /*
   **	Landing zone support functionality.
   */
-  virtual void Per_Cell_Process(PCPType why);
+  void Per_Cell_Process(PCPType why) override;
   bool Is_LZ_Clear(TARGET target) const;
   TARGET New_LZ(TARGET oldlz) const;
 
@@ -137,42 +137,42 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y() const;
+  COORDINATE Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void Look(bool incremental = false);
+  void Look(bool incremental = false) override;
   void Draw_Rotors(int x, int y, WindowNumberType window) const;
-  virtual int Exit_Object(TechnoClass*);
-  virtual short const* Overlap_List(bool redraw = false) const;
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
-  virtual void Set_Speed(int speed);
+  int Exit_Object(TechnoClass*) override;
+  short const* Overlap_List(bool redraw = false) const override;
+  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Set_Speed(int speed) override;
 
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual void Active_Click_With(ActionType action, CELL cell);
-  virtual void Player_Assign_Mission(MissionType mission,
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  void Active_Click_With(ActionType action, CELL cell) override;
+  void Player_Assign_Mission(MissionType mission,
                                      TARGET target = TARGET_NONE,
-                                     TARGET destination = TARGET_NONE);
-  virtual void Response_Select();
-  virtual void Response_Move();
-  virtual void Response_Attack();
+                                     TARGET destination = TARGET_NONE) override;
+  void Response_Select() override;
+  void Response_Move() override;
+  void Response_Attack() override;
 
   /*
   **	Combat related.
   */
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source, bool forced = false);
-  virtual BulletClass* Fire_At(TARGET target, int which);
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source, bool forced = false) override;
+  BulletClass* Fire_At(TARGET target, int which) override;
 
   /*
   **	AI.
@@ -182,13 +182,13 @@ class AircraftClass : public FootClass, public FlyClass {
   void Movement_AI();
   void Rotation_AI();
   int Paradrop_Cargo();
-  virtual void AI();
-  virtual void Enter_Idle_Mode(bool initial = false);
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  void AI() override;
+  void Enter_Idle_Mode(bool initial = false) override;
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
-  virtual void Scatter(COORDINATE threat, bool forced = false,
-                       bool nokidding = false);
+                                           long& param) override;
+  void Scatter(COORDINATE threat, bool forced = false,
+                       bool nokidding = false) override;
 
 /*
 **	Scenario and debug support.

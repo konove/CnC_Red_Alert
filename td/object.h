@@ -135,7 +135,7 @@ class ObjectClass : public AbstractClass {
   */
   ObjectClass();
   ObjectClass(NoInitClass const& x) : AbstractClass(x) {}
-  virtual ~ObjectClass() {}
+  ~ObjectClass() override {}
   virtual RTTIType What_Am_I() const;
   int operator<(ObjectClass const& object) const {
     return Sort_Y() < object.Sort_Y();
@@ -170,8 +170,8 @@ class ObjectClass : public AbstractClass {
   **	combat purposes.
   */
   virtual COORDINATE Docking_Coord() const;
-  virtual COORDINATE Target_Coord() const;
-  virtual COORDINATE Center_Coord() const;
+  COORDINATE Target_Coord() const override;
+  COORDINATE Center_Coord() const override;
   virtual COORDINATE Render_Coord() const;
   virtual COORDINATE Sort_Y() const;
   virtual COORDINATE Fire_Coord(int) const;

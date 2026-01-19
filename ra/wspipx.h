@@ -66,11 +66,11 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
   virtual long Message_Handler(HWND window, UINT message, UINT wParam,
                                LONG lParam);
 #endif
-  virtual bool Open_Socket(SOCKET socketnum);
+  bool Open_Socket(SOCKET socketnum) override;
 
-  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_IPX); }
+  ProtocolEnum Get_Protocol() override { return (PROTOCOL_IPX); }
 
-  virtual int Protocol_Event_Message() { return (WM_IPXASYNCEVENT); }
+  int Protocol_Event_Message() override { return (WM_IPXASYNCEVENT); }
 
  private:
   /*

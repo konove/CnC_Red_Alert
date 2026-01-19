@@ -57,11 +57,11 @@ class PKPipe : public Pipe {
 
   PKPipe(CryptControl control, RandomStraw& rnd);
 
-  virtual void Put_To(Pipe* pipe);
+  void Put_To(Pipe* pipe) override;
   virtual void Put_To(Pipe& pipe) { Put_To(&pipe); }
 
   // Feed data through for processing.
-  virtual int Put(void const* source, int length);
+  int Put(void const* source, int length) override;
 
   // Submit key for encryption/decryption.
   void Key(PKey const* key);

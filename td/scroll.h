@@ -79,8 +79,8 @@ class ScrollClass : public HelpClass {
 
   bool Set_Autoscroll(int control);
 
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Init_IO() {
+  void AI(KeyNumType& input, int x, int y) override;
+  void Init_IO() override {
     Counter.Set(0);
     HelpClass::Init_IO();
   }
@@ -88,8 +88,8 @@ class ScrollClass : public HelpClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 };
 
 #endif

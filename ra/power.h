@@ -57,12 +57,12 @@ class PowerClass : public RadarClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();  // One-time inits
+  void One_Time() override;  // One-time inits
 
-  virtual void Init_Clear();  // Clears all to known state
-  virtual void Draw_It(bool complete = false);
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Refresh_Cells(CELL cell, short const* list);
+  void Init_Clear() override;  // Clears all to known state
+  void Draw_It(bool complete = false) override;
+  void AI(KeyNumType& input, int x, int y) override;
+  void Refresh_Cells(CELL cell, short const* list) override;
   void Flash_Power();
 
   unsigned IsToRedraw : 1;
@@ -79,7 +79,7 @@ class PowerClass : public RadarClass {
                       true) {}
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType& key);
+    int Action(unsigned flags, KeyNumType& key) override;
     friend class PowerClass;
   };
 

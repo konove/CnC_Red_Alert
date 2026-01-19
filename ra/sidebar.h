@@ -125,15 +125,15 @@ class SidebarClass : public PowerClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();                         // One-time inits
-  virtual void Init_Clear();                       // Clears all to known state
-  virtual void Init_IO();                          // Inits button list
-  virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
+  void One_Time() override;                         // One-time inits
+  void Init_Clear() override;                       // Clears all to known state
+  void Init_IO() override;                          // Inits button list
+  void Init_Theater(TheaterType theater) override;  // Theater-specific inits
   void Reload_Sidebar();  // Loads house-specific sidebar art
 
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool complete);
-  virtual void Refresh_Cells(CELL cell, short const* list);
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool complete) override;
+  void Refresh_Cells(CELL cell, short const* list) override;
 
   void Zoom_Mode_Control();
   bool Abandon_Production(RTTIType type, int factory);
@@ -159,7 +159,7 @@ class SidebarClass : public PowerClass {
       int Index;
 
      protected:
-      virtual int Action(unsigned flags, KeyNumType& key);
+      int Action(unsigned flags, KeyNumType& key) override;
     };
 
    public:
@@ -385,7 +385,7 @@ class SidebarClass : public PowerClass {
     //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,
     //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif
    protected:
-    virtual int Action(unsigned flags, KeyNumType& key);
+    int Action(unsigned flags, KeyNumType& key) override;
   };
 
   /*

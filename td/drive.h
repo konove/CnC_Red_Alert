@@ -100,34 +100,34 @@ class DriveClass : public FootClass {
   DriveClass();
   DriveClass(UnitType classid, HousesType house);
   DriveClass(NoInitClass const& x) : FootClass(x), Class(Class) {}
-  virtual ~DriveClass() {}
+  ~DriveClass() override {}
   operator UnitType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual int Offload_Tiberium_Bail();
+  int Offload_Tiberium_Bail() override;
   void Do_Turn(DirType dir);
-  virtual void Approach_Target();
-  virtual ObjectTypeClass const& Class_Of() const;
+  void Approach_Target() override;
+  ObjectTypeClass const& Class_Of() const override;
   virtual void Overrun_Square(CELL cell, bool threaten = true);
-  virtual void Assign_Destination(TARGET target);
-  virtual void Per_Cell_Process(bool center);
+  void Assign_Destination(TARGET target) override;
+  void Per_Cell_Process(bool center) override;
   virtual bool Ok_To_Move(DirType) const;
-  virtual void AI();
+  void AI() override;
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
   void Force_Track(int track, COORDINATE coord);
-  virtual int Tiberium_Load() const;
+  int Tiberium_Load() const override;
 
   void Exit_Map();
   void Mark_Track(COORDINATE headto, MarkType type);
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /**********************************************************************
   **	These enumerations are used as working constants that exist only
@@ -191,7 +191,7 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  virtual void Fixup_Path(PathType* path);
+  void Fixup_Path(PathType* path) override;
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();

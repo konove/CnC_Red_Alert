@@ -187,15 +187,15 @@ class MapEditClass : public MouseClass {
   ............................. mapedit.cpp .............................
   */
   MapEditClass();
-  virtual void One_Time();  // One-time init
-  virtual void Init_IO();   // Inits button list
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool forced = true);
-  virtual bool Scroll_Map(DirType facing, int& distance, bool really = true);
+  void One_Time() override;  // One-time init
+  void Init_IO() override;   // Inits button list
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool forced = true) override;
+  bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);
-  virtual void Read_INI(char* buffer);
+  void Read_INI(char* buffer) override;
   virtual void Write_INI(char* buffer);
-  virtual void Detach(ObjectClass* object);
+  void Detach(ObjectClass* object) override;
   void Clear_List();
   bool Add_To_List(ObjectTypeClass const* object);
   void Main_Menu();

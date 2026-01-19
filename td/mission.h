@@ -74,7 +74,7 @@ class MissionClass : public ObjectClass {
   */
   MissionClass();
   MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
-  virtual ~MissionClass() {}
+  ~MissionClass() override {}
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
@@ -83,10 +83,10 @@ class MissionClass : public ObjectClass {
   void Debug_Dump(MonoClass* mono) const;
 #endif
 
-  virtual MissionType Get_Mission() const;
+  MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType mission);
   virtual bool Commence();
-  virtual void AI();
+  void AI() override;
 
   /*
   **	Support functions.
@@ -120,8 +120,8 @@ class MissionClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
  private:
   /*

@@ -53,7 +53,7 @@ class Straw {
   virtual ~Straw();
 
   virtual void Get_From(Straw* pipe);
-  void Get_From(Straw& pipe) { Get_From(&pipe); }
+  virtual void Get_From(Straw& pipe) { Get_From(&pipe); }
   virtual int Get(void* buffer, int slen);
 
   /*

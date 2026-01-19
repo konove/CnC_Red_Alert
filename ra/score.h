@@ -112,9 +112,9 @@ class ScoreCredsClass : public ScoreAnimClass {
   void const* CashTurn;
   void const* Clock1;
 
-  virtual void Update();
+  void Update() override;
   ScoreCredsClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreCredsClass() {
+  ~ScoreCredsClass() override {
     CashTurn = nullptr;
     Clock1 = nullptr;
   }
@@ -125,9 +125,9 @@ class ScoreTimeClass : public ScoreAnimClass {
   int Stage;
   int MaxStage;
   int TimerReset;
-  virtual void Update();
+  void Update() override;
   ScoreTimeClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreTimeClass() {}
+  ~ScoreTimeClass() override {}
 };
 
 class ScorePrintClass : public ScoreAnimClass {
@@ -135,22 +135,22 @@ class ScorePrintClass : public ScoreAnimClass {
   int Background;
   int Stage;
   void const* PrimaryPalette;
-  virtual void Update();
+  void Update() override;
   ScorePrintClass(void const* string, int xpos, int ypos, void const* palette,
                   int background = TBLACK);
   ScorePrintClass(int string, int xpos, int ypos, void const* palette,
                   int background = TBLACK);
-  virtual ~ScorePrintClass() { PrimaryPalette = nullptr; }
+  ~ScorePrintClass() override { PrimaryPalette = nullptr; }
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
  public:
   int Stage;
   unsigned char const* Palette;
-  virtual void Update();
+  void Update() override;
   ScoreScaleClass(void const* data, int xpos, int ypos,
                   unsigned char const pal[]);
-  virtual ~ScoreScaleClass() { Palette = nullptr; }
+  ~ScoreScaleClass() override { Palette = nullptr; }
 };
 
 #define MAXSCOREOBJS 8

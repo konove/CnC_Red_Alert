@@ -46,7 +46,7 @@ class ShapeButtonClass : public ToggleClass {
  public:
   ShapeButtonClass();
   ShapeButtonClass(unsigned id, void const* shapes, int x, int y);
-  virtual int Draw_Me(int forced = false);
+  int Draw_Me(int forced = false) override;
   virtual void Set_Shape(void const* data);
   void const* Get_Shape_Data() { return (ShapeData); }
 

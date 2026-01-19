@@ -75,7 +75,7 @@ class SmudgeClass : public ObjectClass {
               HousesType house = HOUSE_NONE);
   SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(x) {}
   operator SmudgeType() const { return Class->Type; }
-  virtual ~SmudgeClass() {
+  ~SmudgeClass() override {
     if (GameActive) SmudgeClass::Limbo();
     Class = nullptr;
   }
@@ -91,9 +91,9 @@ class SmudgeClass : public ObjectClass {
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual bool Mark(MarkType);
-  virtual void Draw_It(int, int, WindowNumberType) const {}
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  bool Mark(MarkType) override;
+  void Draw_It(int, int, WindowNumberType) const override {}
 
   void Disown(CELL cell);
 

@@ -73,19 +73,19 @@ class NonSequencedConnClass : public ConnectionClass {
   NonSequencedConnClass(int numsend, int numrecieve, int maxlen,
                         unsigned short magicnum, unsigned long retry_delta,
                         unsigned long max_retries, unsigned long timeout);
-  virtual ~NonSequencedConnClass();
+  ~NonSequencedConnClass() override;
 
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  virtual void Init();
+  void Init() override;
 
   /*.....................................................................
   Send/Receive routines.
   .....................................................................*/
-  virtual int Send_Packet(void* buf, int buflen, int ack_req);
-  virtual int Receive_Packet(void* buf, int buflen);
-  virtual int Get_Packet(void* buf, int* buflen);
+  int Send_Packet(void* buf, int buflen, int ack_req) override;
+  int Receive_Packet(void* buf, int buflen) override;
+  int Get_Packet(void* buf, int* buflen) override;
 
   /*.....................................................................
   The packet "queue"; this non-sequenced version isn't really much of
@@ -100,8 +100,8 @@ class NonSequencedConnClass : public ConnectionClass {
   /*.....................................................................
   Routines to service the Send & Receive queues.
   .....................................................................*/
-  virtual int Service_Send_Queue();
-  virtual int Service_Receive_Queue();
+  int Service_Send_Queue() override;
+  int Service_Receive_Queue() override;
 
   /*.....................................................................
   Running totals of # of packets we send & receive which require an ACK,

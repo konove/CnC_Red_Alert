@@ -63,16 +63,16 @@ class CheckListClass : public ListClass {
   */
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  void const* up, void const* down);
-  ~CheckListClass();
+  ~CheckListClass() override;
 
-  virtual int Add_Item(int text) { return ListClass::Add_Item(text); }
-  virtual int Add_Item(char const* text);
-  virtual char const* Current_Item() const;
+  int Add_Item(int text) override { return ListClass::Add_Item(text); }
+  int Add_Item(char const* text) override;
+  char const* Current_Item() const override;
   virtual char const* Get_Item(int index) const;
-  virtual void Remove_Item(char const* text);
-  virtual void Remove_Item(int text) { ListClass::Remove_Item(text); }
-  virtual void Set_Selected_Index(char const* text);
-  virtual void Set_Selected_Index(int index) {
+  void Remove_Item(char const* text) override;
+  void Remove_Item(int text) override { ListClass::Remove_Item(text); }
+  void Set_Selected_Index(char const* text) override;
+  void Set_Selected_Index(int index) override {
     ListClass::Set_Selected_Index(index);
   }
 
@@ -94,8 +94,8 @@ class CheckListClass : public ListClass {
   } CheckListClassEnum;
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType& key);
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  int Action(unsigned flags, KeyNumType& key) override;
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
  private:
   bool IsReadOnly;

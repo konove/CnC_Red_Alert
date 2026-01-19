@@ -50,7 +50,7 @@
 class CRCPipe : public Pipe {
  public:
   CRCPipe() {}
-  virtual int Put(void const* source, int slen);
+  int Put(void const* source, int slen) override;
 
   // Fetch the CRC value.
   long Result() const;

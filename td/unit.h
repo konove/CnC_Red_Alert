@@ -74,8 +74,8 @@ class UnitClass : public TarComClass {
   UnitClass(UnitType classid, HousesType house);
   UnitClass(NoInitClass const& x) : TarComClass(x) {}
   operator UnitType() const { return Class->Type; }
-  virtual ~UnitClass();
-  virtual RTTIType What_Am_I() const;
+  ~UnitClass() override;
+  RTTIType What_Am_I() const override;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -98,73 +98,73 @@ class UnitClass : public TarComClass {
   /*
   **	Query functions.
   */
-  virtual bool Can_Player_Move() const;
-  virtual int Pip_Count() const;
-  virtual InfantryType Crew_Type() const;
+  bool Can_Player_Move() const override;
+  int Pip_Count() const override;
+  InfantryType Crew_Type() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y() const;
+  COORDINATE Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual bool Limbo();
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  bool Limbo() override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const* Remap_Table();
-  virtual void Look(bool incremental = false);
-  virtual short const* Overlap_List() const;
-  virtual void Draw_It(int x, int y, WindowNumberType window);
+  void const* Remap_Table() override;
+  void Look(bool incremental = false) override;
+  short const* Overlap_List() const override;
+  void Draw_It(int x, int y, WindowNumberType window) override;
 
   /*
   **	User I/O.
   */
-  virtual ActionType What_Action(CELL cell) const;
-  virtual ActionType What_Action(ObjectClass* object) const;
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual void Active_Click_With(ActionType action, CELL cell);
-  virtual void Response_Select();
-  virtual void Response_Move();
-  virtual void Response_Attack();
+  ActionType What_Action(CELL cell) const override;
+  ActionType What_Action(ObjectClass* object) const override;
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  void Active_Click_With(ActionType action, CELL cell) override;
+  void Response_Select() override;
+  void Response_Move() override;
+  void Response_Attack() override;
 
   /*
   **	Combat related.
   */
-  virtual COORDINATE Target_Coord() const;
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr);
-  virtual TARGET As_Target() const;
-  virtual void Stun();
+  COORDINATE Target_Coord() const override;
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr) override;
+  TARGET As_Target() const override;
+  void Stun() override;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  virtual bool Stop_Driver();
-  virtual bool Start_Driver(COORDINATE& coord);
+  bool Stop_Driver() override;
+  bool Start_Driver(COORDINATE& coord) override;
 
   /*
   **	AI.
   */
-  virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
-  virtual void AI();
-  virtual int Mission_Attack();
-  virtual int Mission_Unload();
-  virtual int Mission_Guard();
-  virtual int Mission_Harvest();
-  virtual int Mission_Hunt();
-  virtual int Mission_Move();
-  virtual FireErrorType Can_Fire(TARGET, int which) const;
+                                           long& param) override;
+  void AI() override;
+  int Mission_Attack() override;
+  int Mission_Unload() override;
+  int Mission_Guard() override;
+  int Mission_Harvest() override;
+  int Mission_Hunt() override;
+  int Mission_Move() override;
+  FireErrorType Can_Fire(TARGET, int which) const override;
 
 /*
 **	Scenario and debug support.
@@ -176,11 +176,11 @@ class UnitClass : public TarComClass {
   /*
   **	Movement and animation.
   */
-  virtual void Enter_Idle_Mode(bool initial = false);
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const;
-  virtual void Per_Cell_Process(bool center);
-  virtual void Scatter(COORDINATE threat, bool forced = false);
+  void Enter_Idle_Mode(bool initial = false) override;
+  MoveType Can_Enter_Cell(CELL cell,
+                                  FacingType facing = FACING_NONE) const override;
+  void Per_Cell_Process(bool center) override;
+  void Scatter(COORDINATE threat, bool forced = false) override;
   void Exit_Repair();
   //		MoveType Blocking_Object(TechnoClass const *techno, CELL cell)
   // const;
@@ -193,8 +193,8 @@ class UnitClass : public TarComClass {
   static char const* INI_Name() { return "UNITS"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.

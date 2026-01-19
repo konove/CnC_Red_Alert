@@ -53,10 +53,10 @@ class LZOPipe : public Pipe {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   LZOPipe(CompControl, int blocksize = 1024 * 8);
-  virtual ~LZOPipe();
+  ~LZOPipe() override;
 
-  virtual int Flush();
-  virtual int Put(void const* source, int slen);
+  int Flush() override;
+  int Put(void const* source, int slen) override;
 
  private:
   /*

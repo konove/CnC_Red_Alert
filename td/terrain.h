@@ -71,8 +71,8 @@ class TerrainClass : public ObjectClass, public StageClass {
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const& x)
       : ObjectClass(x), Class(Class), StageClass(x) {}
-  virtual ~TerrainClass();
-  virtual RTTIType What_Am_I() const { return RTTI_TERRAIN; }
+  ~TerrainClass() override;
+  RTTIType What_Am_I() const override { return RTTI_TERRAIN; }
 
   static void Init();
 
@@ -84,53 +84,53 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Center_Coord() const;
-  virtual COORDINATE Render_Coord() const { return Coord; }
-  virtual COORDINATE Sort_Y() const {
+  COORDINATE Center_Coord() const override;
+  COORDINATE Render_Coord() const override { return Coord; }
+  COORDINATE Sort_Y() const override {
     return Coord_Add(Coord, Class->CenterBase);
   }
-  virtual COORDINATE Target_Coord() const { return Sort_Y(); }
+  COORDINATE Target_Coord() const override { return Sort_Y(); }
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual bool Unlimbo(COORDINATE coord, DirType dir = DIR_N);
-  virtual bool Limbo();
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType facing = FACING_NONE) const;
+  bool Unlimbo(COORDINATE coord, DirType dir = DIR_N) override;
+  bool Limbo() override;
+  MoveType Can_Enter_Cell(CELL cell,
+                                  FacingType facing = FACING_NONE) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void Draw_It(int x, int y, WindowNumberType window);
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
+  void Draw_It(int x, int y, WindowNumberType window) override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
   unsigned char* Radar_Icon(CELL cell);
 
   /*
   **	User I/O.
   */
-  virtual void Clicked_As_Target(int) {}
+  void Clicked_As_Target(int) override {}
 
   /*
   **	Combat related.
   */
-  virtual void Fire_Out();
-  virtual bool Catch_Fire();
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source);
-  virtual TARGET As_Target() const;
+  void Fire_Out() override;
+  bool Catch_Fire() override;
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source) override;
+  TARGET As_Target() const override;
 
   /*
   **	AI.
   */
-  virtual void AI();
+  void AI() override;
 
 /*
 **	Scenario and debug support.
@@ -147,8 +147,8 @@ class TerrainClass : public ObjectClass, public StageClass {
   static char const* INI_Name() { return "TERRAIN"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.

@@ -54,9 +54,9 @@ class LCWStraw : public Straw {
   typedef enum CompControl { COMPRESS, DECOMPRESS } CompControl;
 
   LCWStraw(CompControl control, int blocksize = 1024 * 8);
-  virtual ~LCWStraw();
+  ~LCWStraw() override;
 
-  virtual int Get(void* source, int slen);
+  int Get(void* source, int slen) override;
 
  private:
   /*

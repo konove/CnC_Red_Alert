@@ -47,24 +47,24 @@
 class RAMFileClass : public FileClass {
  public:
   RAMFileClass(void* buffer, int len);
-  virtual ~RAMFileClass();
+  ~RAMFileClass() override;
 
-  virtual char const* File_Name() const { return ("UNKNOWN"); }
-  virtual char const* Set_Name(char const*) { return (File_Name()); }
-  virtual int Create();
-  virtual int Delete();
-  virtual int Is_Available(int forced = false);
-  virtual int Is_Open() const;
-  virtual int Open(char const* filename, int access = READ);
-  virtual int Open(int access = READ);
-  virtual long Read(void* buffer, long size);
-  virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size();
-  virtual long Write(void const* buffer, long size);
-  virtual void Close();
-  virtual unsigned long Get_Date_Time() { return (0); }
-  virtual bool Set_Date_Time(unsigned long) { return (true); }
-  virtual void Error(int, int = false, char const* = nullptr) {}
+  char const* File_Name() const override { return ("UNKNOWN"); }
+  char const* Set_Name(char const*) override { return (File_Name()); }
+  int Create() override;
+  int Delete() override;
+  int Is_Available(int forced = false) override;
+  int Is_Open() const override;
+  int Open(char const* filename, int access = READ) override;
+  int Open(int access = READ) override;
+  long Read(void* buffer, long size) override;
+  long Seek(long pos, int dir = SEEK_CUR) override;
+  long Size() override;
+  long Write(void const* buffer, long size) override;
+  void Close() override;
+  unsigned long Get_Date_Time() override { return (0); }
+  bool Set_Date_Time(unsigned long) override { return (true); }
+  void Error(int, int = false, char const* = nullptr) override {}
 
   operator char const*() { return File_Name(); }
 

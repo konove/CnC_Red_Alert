@@ -65,20 +65,20 @@ class SliderClass : public GaugeClass {
  public:
   SliderClass(unsigned id, int x, int y, int w, int h,
               int belong_to_list = false);
-  virtual ~SliderClass();
+  ~SliderClass() override;
   //		static SliderClass * Create_One_Of(unsigned id, int x, int y,
   // int w, int h, int belong_to_list=false);
 
   virtual void Set_Thumb_Size(int value);
-  virtual int Set_Maximum(int value);
-  virtual int Set_Value(int);
+  int Set_Maximum(int value) override;
+  int Set_Value(int) override;
   virtual int Bump(int up);
   virtual int Step(int up);
-  virtual int Draw_Me(int forced);
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
-                            ControlClass& whom);
+  int Draw_Me(int forced) override;
+  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                            ControlClass& whom) override;
 
-  virtual int Thumb_Pixels() { return (ThumbSize); }
+  int Thumb_Pixels() override { return (ThumbSize); }
 
  protected:
   /*
@@ -107,8 +107,8 @@ class SliderClass : public GaugeClass {
   int ThumbSize;
   int ThumbStart;  // x or y position for the thumb
 
-  virtual int Action(unsigned flags, KeyNumType& key);
-  virtual void Draw_Thumb();
+  int Action(unsigned flags, KeyNumType& key) override;
+  void Draw_Thumb() override;
 
  private:
   void Recalc_Thumb();

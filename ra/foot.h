@@ -275,10 +275,9 @@ class FootClass : public TechnoClass {
   */
   bool Basic_Path();
 
-  virtual RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param);
-  virtual bool Can_Demolish() const;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
+  bool Can_Demolish() const override;
   bool Is_Recruitable(HouseClass const* house = nullptr) const;
   bool Is_On_Priority_Mission() const;
 
@@ -286,7 +285,7 @@ class FootClass : public TechnoClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Sort_Y() const;
+  COORDINATE Sort_Y() const override;
   virtual COORDINATE Likely_Coord() const;
 
   /*
@@ -296,48 +295,48 @@ class FootClass : public TechnoClass {
   COORDINATE Head_To_Coord() const { return (HeadToCoord); }
   virtual bool Start_Driver(COORDINATE& headto);
   virtual bool Stop_Driver();
-  virtual void Assign_Destination(TARGET target);
+  void Assign_Destination(TARGET target) override;
   bool Is_Allowed_To_Leave_Map() const;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual bool Unlimbo(COORDINATE, DirType dir = DIR_N);
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
 
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass* object);
-  virtual void Active_Click_With(ActionType action, CELL cell);
+  void Active_Click_With(ActionType action, ObjectClass* object) override;
+  void Active_Click_With(ActionType action, CELL cell) override;
 
   /*
   **	Combat related.
   */
-  virtual void Stun();
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr,
-                                 bool forced = false);
-  virtual void Death_Announcement(TechnoClass const* source = nullptr) const;
+  void Stun() override;
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                         TechnoClass* source = nullptr,
+                         bool forced = false) override;
+  void Death_Announcement(TechnoClass const* source = nullptr) const override;
 
   /*
   **	AI.
   */
-  virtual void AI();
-  virtual void Sell_Back(int control);
+  void AI() override;
+  void Sell_Back(int control) override;
   virtual int Offload_Tiberium_Bail();
-  virtual TARGET Greatest_Threat(ThreatType method);  // const;
-  virtual void Detach(TARGET target, bool all);
-  virtual void Detach_All(bool all = true);
-  virtual int Mission_Retreat();
-  virtual int Mission_Enter();
-  virtual int Mission_Move();
-  virtual int Mission_Capture();
-  virtual int Mission_Attack();
-  virtual int Mission_Guard();
-  virtual int Mission_Hunt();
-  virtual int Mission_Guard_Area();
+  TARGET Greatest_Threat(ThreatType method) override;  // const;
+  void Detach(TARGET target, bool all) override;
+  void Detach_All(bool all = true) override;
+  int Mission_Retreat() override;
+  int Mission_Enter() override;
+  int Mission_Move() override;
+  int Mission_Capture() override;
+  int Mission_Attack() override;
+  int Mission_Guard() override;
+  int Mission_Hunt() override;
+  int Mission_Guard_Area() override;
 
 /*
 **	Scenario and debug support.
@@ -352,23 +351,23 @@ class FootClass : public TechnoClass {
   void Handle_Navigation_List();
   void Queue_Navigation_List(TARGET target);
   void Clear_Navigation_List();
-  virtual void Per_Cell_Process(PCPType why);
+  void Per_Cell_Process(PCPType why) override;
   virtual void Approach_Target();
   virtual void Fixup_Path(PathType*) {}
   virtual void Set_Speed(int speed);
-  virtual MoveType Can_Enter_Cell(CELL cell,
-                                  FacingType from = FACING_NONE) const;
+  MoveType Can_Enter_Cell(CELL cell,
+                          FacingType from = FACING_NONE) const override;
   int Optimize_Moves(PathType* path, MoveType threshhold);
-  virtual void Override_Mission(MissionType mission, TARGET tarcom,
-                                TARGET navcom);
-  virtual bool Restore_Mission();
+  void Override_Mission(MissionType mission, TARGET tarcom,
+                        TARGET navcom) override;
+  bool Restore_Mission() override;
   CELL Adjust_Dest(CELL cell) const;
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   CELL Safety_Point(CELL src, CELL dst, int start, int max);
   int Rescue_Mission(TARGET tarcom);

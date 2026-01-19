@@ -177,15 +177,15 @@ class IPXManagerClass : public ConnManClass {
   IPXManagerClass(int glb_maxlen, int pvt_maxlen, int glb_num_packets,
                   int pvt_num_packets, unsigned short socket,
                   unsigned short product_id);
-  virtual ~IPXManagerClass();  // stop listening
+  ~IPXManagerClass() override;  // stop listening
 
   /*.....................................................................
   Initialization routines.
   .....................................................................*/
   int Init();
   int Is_IPX();
-  virtual void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                          unsigned long timeout);
+  void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
+                          unsigned long timeout) override;
   void Set_Bridge(NetNumType bridge);
 
   /*.....................................................................
@@ -194,11 +194,11 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   int Create_Connection(int id, char* name, IPXAddressClass* address);
   int Delete_Connection(int id);
-  virtual int Num_Connections();
-  virtual int Connection_ID(int index);
+  int Num_Connections() override;
+  int Connection_ID(int index) override;
   char* Connection_Name(int id);
   IPXAddressClass* Connection_Address(int id);
-  virtual int Connection_Index(int id);
+  int Connection_Index(int id) override;
   void Set_Connection_Parms(int index, int id, char* name);
 
   /*.....................................................................
@@ -209,14 +209,14 @@ class IPXManagerClass : public ConnManClass {
   int Get_Global_Message(void* buf, int* buflen, IPXAddressClass* address,
                          unsigned short* product_id);
 
-  virtual int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                                   int conn_id = CONNECTION_NONE);
-  virtual int Get_Private_Message(void* buf, int* buflen, int* conn_id);
+  int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
+                                   int conn_id = CONNECTION_NONE) override;
+  int Get_Private_Message(void* buf, int* buflen, int* conn_id) override;
 
   /*.....................................................................
   The main polling routine; should be called as often as possible.
   .....................................................................*/
-  virtual int Service();
+  int Service() override;
 
   /*.....................................................................
   This routine reports which connection has an error on it.
@@ -227,10 +227,10 @@ class IPXManagerClass : public ConnManClass {
   Queue utility routines.  The application can determine how many
   messages are in the send/receive queues.
   .....................................................................*/
-  virtual int Global_Num_Send();
-  virtual int Global_Num_Receive();
-  virtual int Private_Num_Send(int id = CONNECTION_NONE);
-  virtual int Private_Num_Receive(int id = CONNECTION_NONE);
+  int Global_Num_Send() override;
+  int Global_Num_Receive() override;
+  int Private_Num_Send(int id = CONNECTION_NONE) override;
+  int Private_Num_Receive(int id = CONNECTION_NONE) override;
 
   /*.....................................................................
   This routine changes the socket ID assigned the IPX Manager when it
@@ -244,9 +244,9 @@ class IPXManagerClass : public ConnManClass {
   Routines to return the largest average queue response time, and to
   reset the response time for all queues.
   .....................................................................*/
-  virtual unsigned long Response_Time();
+  unsigned long Response_Time() override;
   unsigned long Global_Response_Time();
-  virtual void Reset_Response_Time();
+  void Reset_Response_Time() override;
 
   /*.....................................................................
   This routine returns a pointer to the oldest non-ACK'd buffer I've sent.
@@ -256,8 +256,8 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Debug routines
   .....................................................................*/
-  virtual void Configure_Debug(int index, int type_offset, int type_size,
-                               char** names, int namestart, int namecount);
+  void Configure_Debug(int index, int type_offset, int type_size,
+                               char** names, int namestart, int namecount) override;
   virtual void Mono_Debug_Print(int index, int refresh = 0);
 
   /*

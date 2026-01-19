@@ -51,7 +51,7 @@
 class CRCStraw : public Straw {
  public:
   CRCStraw() {}
-  virtual int Get(void* source, int slen);
+  int Get(void* source, int slen) override;
 
   // Calculate and return the CRC value.
   long Result() const;

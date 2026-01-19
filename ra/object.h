@@ -140,7 +140,7 @@ class ObjectClass : public AbstractClass {
   */
   ObjectClass(RTTIType rtti, int id);
   ObjectClass(NoInitClass const& x) : AbstractClass(x), Next(x), Trigger(x) {}
-  virtual ~ObjectClass() { Next = nullptr; }
+  ~ObjectClass() override { Next = nullptr; }
   int operator<(ObjectClass const& object) const {
     return Sort_Y() < object.Sort_Y();
   }
@@ -173,7 +173,7 @@ class ObjectClass : public AbstractClass {
   }
   virtual int Get_Ownable() const;
   virtual ObjectTypeClass const& Class_Of() const = 0;
-  virtual char const* Name() const;
+  char const* Name() const override;
   virtual int Full_Name() const;
   virtual bool Can_Repair() const;
   virtual bool Can_Demolish() const;
@@ -185,8 +185,8 @@ class ObjectClass : public AbstractClass {
   **	combat purposes.
   */
   virtual COORDINATE Docking_Coord() const;
-  virtual COORDINATE Target_Coord() const;
-  virtual COORDINATE Center_Coord() const;
+  COORDINATE Target_Coord() const override;
+  COORDINATE Center_Coord() const override;
   virtual COORDINATE Render_Coord() const;
   virtual COORDINATE Sort_Y() const;
   virtual COORDINATE Fire_Coord(int which) const;
@@ -256,7 +256,7 @@ class ObjectClass : public AbstractClass {
   virtual bool Revealed(HouseClass* house);
   virtual void Repair(int);
   virtual void Sell_Back(int);
-  virtual void AI();
+  void AI() override;
 
   /*
   **	File I/O.

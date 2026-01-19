@@ -52,21 +52,21 @@ class DropListClass : public EditClass {
  public:
   DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                 int y, int w, int h, void const* up, void const* down);
-  virtual ~DropListClass() {}
+  ~DropListClass() override {}
 
-  virtual DropListClass& Add(LinkClass& object);
-  virtual DropListClass& Add_Tail(LinkClass& object);
-  virtual DropListClass& Add_Head(LinkClass& object);
-  virtual DropListClass* Remove();
-  virtual void Zap();
+  DropListClass& Add(LinkClass& object) override;
+  DropListClass& Add_Tail(LinkClass& object) override;
+  DropListClass& Add_Head(LinkClass& object) override;
+  DropListClass* Remove() override;
+  void Zap() override;
 
   virtual int Add_Item(char const* text);
   virtual char const* Current_Item();
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(char const* text);
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom);
-  virtual void Clear_Focus();
+  void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom) override;
+  void Clear_Focus() override;
   virtual int Count() const { return (List.Count()); }
   virtual char const* Get_Item(int index) const {
     return (List.Get_Item(index));
@@ -79,7 +79,7 @@ class DropListClass : public EditClass {
   void Expand();
   void Collapse();
 
-  virtual void Set_Position(int x, int y);
+  void Set_Position(int x, int y) override;
 
   DropListClass& operator=(DropListClass const& list);
   DropListClass(DropListClass const& list);

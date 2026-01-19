@@ -88,10 +88,10 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
         FlyClass(x),
         FuseClass(x),
         PrimaryFacing(x) {}
-  virtual ~BulletClass() {
+  ~BulletClass() override {
     if (GameActive) BulletClass::Limbo();
   }
-  virtual RTTIType What_Am_I() const { return RTTI_BULLET; }
+  RTTIType What_Am_I() const override { return RTTI_BULLET; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -99,24 +99,24 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   static void Init();
 
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual LayerType In_Which_Layer() const { return LAYER_TOP; }
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual void Detach(TARGET target, bool all);
-  virtual void Draw_It(int x, int y, WindowNumberType window);
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual void AI();
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  LayerType In_Which_Layer() const override { return LAYER_TOP; }
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  void Detach(TARGET target, bool all) override;
+  void Draw_It(int x, int y, WindowNumberType window) override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  void AI() override;
   virtual short const* Occupy_List() const;
-  virtual short const* Overlap_List() const { return Occupy_List(); }
-  virtual TARGET As_Target() const;
+  short const* Overlap_List() const override { return Occupy_List(); }
+  TARGET As_Target() const override;
 
   /*
   **	File I/O.
   */
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.

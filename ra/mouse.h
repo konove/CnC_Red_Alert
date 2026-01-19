@@ -57,14 +57,14 @@ class MouseClass : public ScrollClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();    // One-time inits
-  virtual void Init_Clear();  // Clears all to known state
+  void One_Time() override;    // One-time inits
+  void Init_Clear() override;  // Clears all to known state
 
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false);
-  virtual void Revert_Mouse_Shape();
-  virtual MouseType Get_Mouse_Shape() const { return NormalMouseShape; }
-  virtual void Mouse_Small(bool wsmall);
+  void AI(KeyNumType& input, int x, int y) override;
+  bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false) override;
+  void Revert_Mouse_Shape() override;
+  MouseType Get_Mouse_Shape() const override { return NormalMouseShape; }
+  void Mouse_Small(bool wsmall) override;
 
   /*
   **	File I/O.
@@ -72,7 +72,7 @@ class MouseClass : public ScrollClass {
   virtual bool Load(Straw& file);
   virtual bool Save(Pipe& file) const;
 
-  virtual void Set_Default_Mouse(MouseType mouse, bool wsmall = false);
+  void Set_Default_Mouse(MouseType mouse, bool wsmall = false) override;
 
   /*
   **	This allows the tactical map input gadget access to change the

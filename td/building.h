@@ -179,8 +179,8 @@ class BuildingClass : public TechnoClass {
   BuildingClass(StructType type, HousesType house);
   BuildingClass(NoInitClass const &x)
       : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {}
-  virtual ~BuildingClass();
-  virtual RTTIType What_Am_I() const { return RTTI_BUILDING; }
+  ~BuildingClass() override;
+  RTTIType What_Am_I() const override { return RTTI_BUILDING; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -195,93 +195,92 @@ class BuildingClass : public TechnoClass {
   /*
   **	Query functions.
   */
-  virtual CELL Find_Exit_Cell(TechnoClass const *techno) const;
-  virtual InfantryType Crew_Type() const;
-  virtual int Pip_Count() const;
-  virtual bool Can_Player_Move() const { return (false); }
-  virtual ActionType What_Action(ObjectClass *target) const;
-  virtual ActionType What_Action(CELL cell) const;
-  virtual bool Can_Demolish() const;
-  virtual ObjectTypeClass const &Class_Of() const { return *Class; }
-  virtual int Refund_Amount() const;
-  virtual DirType Fire_Direction() const;
+  CELL Find_Exit_Cell(TechnoClass const *techno) const override;
+  InfantryType Crew_Type() const override;
+  int Pip_Count() const override;
+  bool Can_Player_Move() const override { return (false); }
+  ActionType What_Action(ObjectClass *target) const override;
+  ActionType What_Action(CELL cell) const override;
+  bool Can_Demolish() const override;
+  ObjectTypeClass const &Class_Of() const override { return *Class; }
+  int Refund_Amount() const override;
+  DirType Fire_Direction() const override;
   int Power_Output() const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  virtual COORDINATE Docking_Coord() const;
-  virtual COORDINATE Fire_Coord(int which) const;
-  virtual COORDINATE Center_Coord() const;
-  virtual COORDINATE Sort_Y() const;
-  virtual COORDINATE Target_Coord() const { return Center_Coord(); }
+  COORDINATE Docking_Coord() const override;
+  COORDINATE Fire_Coord(int which) const override;
+  COORDINATE Center_Coord() const override;
+  COORDINATE Sort_Y() const override;
+  COORDINATE Target_Coord() const override { return Center_Coord(); }
 
   /*
   **	Object entry and exit from the game system.
   */
-  virtual void Detach(TARGET target, bool all);
-  virtual void Detach_All(bool all = true);
+  void Detach(TARGET target, bool all) override;
+  void Detach_All(bool all = true) override;
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
-  virtual MoveType Can_Enter_Cell(CELL cell, FacingType = FACING_NONE) const;
-  virtual bool Unlimbo(COORDINATE, DirType dir = DIR_N);
-  virtual bool Limbo();
+  MoveType Can_Enter_Cell(CELL cell, FacingType = FACING_NONE) const override;
+  bool Unlimbo(COORDINATE, DirType dir = DIR_N) override;
+  bool Limbo() override;
   bool Passes_Proximity_Check(CELL homecell);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void const *Remap_Table();
-  virtual int Exit_Object(TechnoClass *base);
-  virtual void Draw_It(int x, int y, WindowNumberType window);
-  virtual bool Mark(MarkType mark);
-  virtual void Look(bool incremental = false);
-  virtual void Fire_Out();
+  void const *Remap_Table() override;
+  int Exit_Object(TechnoClass *base) override;
+  void Draw_It(int x, int y, WindowNumberType window) override;
+  bool Mark(MarkType mark) override;
+  void Look(bool incremental = false) override;
+  void Fire_Out() override;
   void Begin_Mode(BStateType bstate);
 
   /*
   **	User I/O.
   */
-  virtual void Active_Click_With(ActionType action, ObjectClass *object);
-  virtual void Active_Click_With(ActionType action, CELL cell);
+  void Active_Click_With(ActionType action, ObjectClass *object) override;
+  void Active_Click_With(ActionType action, CELL cell) override;
 
   /*
   **	Combat related.
   */
-  virtual void Death_Announcement(TechnoClass const *source = nullptr) const;
-  virtual FireErrorType Can_Fire(TARGET, int which) const;
-  virtual TARGET Greatest_Threat(ThreatType threat) const;
-  virtual ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
-                                 TechnoClass *source = nullptr);
-  virtual TARGET As_Target() const;
-  virtual bool Captured(HouseClass *newowner);
+  void Death_Announcement(TechnoClass const *source = nullptr) const override;
+  FireErrorType Can_Fire(TARGET, int which) const override;
+  TARGET Greatest_Threat(ThreatType threat) const override;
+  ResultType Take_Damage(int &damage, int distance, WarheadType warhead,
+                         TechnoClass *source = nullptr) override;
+  TARGET As_Target() const override;
+  bool Captured(HouseClass *newowner) override;
 
   /*
   **	AI.
   */
-  virtual void Hidden();
-  virtual bool Revealed(HouseClass *house);
-  virtual void Repair(int control);
-  virtual void Sell_Back(int control);
-  virtual RadioMessageType Receive_Message(RadioClass *from,
-                                           RadioMessageType message,
-                                           long &param);
-  virtual void AI();
-  virtual void Assign_Target(TARGET target);
+  void Hidden() override;
+  bool Revealed(HouseClass *house) override;
+  void Repair(int control) override;
+  void Sell_Back(int control) override;
+  RadioMessageType Receive_Message(RadioClass *from, RadioMessageType message,
+                                   long &param) override;
+  void AI() override;
+  void Assign_Target(TARGET target) override;
   virtual bool Toggle_Primary();
   bool Flush_For_Placement(TechnoClass *techno, CELL cell);
 
-  virtual int Mission_Unload();
-  virtual int Mission_Repair();
-  virtual int Mission_Attack();
-  virtual int Mission_Harvest();
-  virtual int Mission_Guard();
-  virtual int Mission_Construction();
-  virtual int Mission_Deconstruction();
-  virtual int Mission_Missile();
-  virtual void Enter_Idle_Mode(bool initial = false);
+  int Mission_Unload() override;
+  int Mission_Repair() override;
+  int Mission_Attack() override;
+  int Mission_Harvest() override;
+  int Mission_Guard() override;
+  int Mission_Construction() override;
+  int Mission_Deconstruction() override;
+  int Mission_Missile() override;
+  void Enter_Idle_Mode(bool initial = false) override;
 
 /*
 **	Scenario and debug support.
@@ -298,8 +297,8 @@ class BuildingClass : public TechnoClass {
   static char const *INI_Name() { return "STRUCTURES"; }
   bool Load(FileClass &file);
   bool Save(FileClass &file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
   void Update_Specials();
 
   /*
@@ -309,7 +308,7 @@ class BuildingClass : public TechnoClass {
 
  private:
   void Drop_Debris(TARGET source = TARGET_NONE);
-  virtual BulletClass *Fire_At(TARGET target, int which);
+  BulletClass *Fire_At(TARGET target, int which) override;
 
   static COORDINATE const CenterOffset[BSIZE_COUNT];
 

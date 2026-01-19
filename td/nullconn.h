@@ -85,7 +85,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   .....................................................................*/
   NullModemConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short magicnum);
-  virtual ~NullModemConnClass();
+  ~NullModemConnClass() override;
 
   /*.....................................................................
   Initialization.
@@ -118,7 +118,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.
   .....................................................................*/
-  int Send(char* buf, int buflen);
+  int Send(char* buf, int buflen) override;
 
   /*.....................................................................
   This is the PORT value used by the GreenLeaf calls.

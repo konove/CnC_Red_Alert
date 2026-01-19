@@ -53,13 +53,13 @@ class TabClass : public SidebarClass {
   TabClass(NoInitClass const& x)
       : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {}
 
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool complete = false);
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool complete = false) override;
   static void Draw_Credits_Tab();
   static void Hilite_Tab(int tab);
   void Flash_Money();
 
-  virtual void One_Time();  // One-time inits
+  void One_Time() override;  // One-time inits
   void Redraw_Tab() {
     IsToRedraw = true;
     Flag_To_Redraw(false);

@@ -61,7 +61,7 @@ class ListClass : public ControlClass {
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             void const* up, void const* down);
   ListClass(ListClass const& list);
-  virtual ~ListClass();
+  ~ListClass() override;
 
   virtual int Add_Item(char const* text);
   virtual int Add_Item(int text);
@@ -70,13 +70,13 @@ class ListClass : public ControlClass {
   virtual int Count() const { return List.Count(); }
   virtual int Current_Index() const;
   virtual char const* Current_Item() const;
-  virtual int Draw_Me(int forced);
+  int Draw_Me(int forced) override;
   virtual char const* Get_Item(size_t index) const;
   virtual int Step_Selected_Index(int forward);
-  virtual void Flag_To_Redraw();
+  void Flag_To_Redraw() override;
 
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
-                            ControlClass& whom);
+  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                    ControlClass& whom) override;
   virtual void Remove_Item(char const* text);
   virtual void Remove_Item(int);
   virtual int Remove_Scroll_Bar();
@@ -85,19 +85,19 @@ class ListClass : public ControlClass {
   virtual void Set_Tabs(int const* tabs);
   virtual int Set_View_Index(int index);
   virtual void Step(int up);
-  virtual void Set_Position(int x, int y);
+  void Set_Position(int x, int y) override;
 
   /*
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  virtual LinkClass& Add(LinkClass& object);
-  virtual LinkClass& Add_Tail(LinkClass& object);
-  virtual LinkClass& Add_Head(LinkClass& object);
-  virtual GadgetClass* Remove();
+  LinkClass& Add(LinkClass& object) override;
+  LinkClass& Add_Tail(LinkClass& object) override;
+  LinkClass& Add_Head(LinkClass& object) override;
+  GadgetClass* Remove() override;
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType& key);
+  int Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
 
   /*

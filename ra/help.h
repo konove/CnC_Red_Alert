@@ -59,15 +59,15 @@ class HelpClass : public TabClass {
   /*
   ** Initialization
   */
-  virtual void Init_Clear();  // Clears all to known state
+  void Init_Clear() override;  // Clears all to known state
 
-  virtual void Draw_It(bool complete = false);
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual bool Scroll_Map(DirType facing, int& distance, bool really);
-  virtual void Set_Tactical_Position(COORDINATE coord);
+  void Draw_It(bool complete = false) override;
+  void AI(KeyNumType& input, int x, int y) override;
+  bool Scroll_Map(DirType facing, int& distance, bool really) override;
+  void Set_Tactical_Position(COORDINATE coord) override;
 
   void Help_Text(int text, int x = -1, int y = -1, int color = LTGREY,
-                 bool quick = false);
+                 bool quick = false) override;
   void Set_Cost(int cost);
   short const* Overlap_List() const;
 

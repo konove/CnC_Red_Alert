@@ -54,7 +54,7 @@ class BufferPipe : public Pipe {
  public:
   BufferPipe(Buffer const& buffer) : BufferPtr(buffer), Index(0) {}
   BufferPipe(void* buffer, int length) : BufferPtr(buffer, length), Index(0) {}
-  virtual int Put(void const* source, int slen);
+  int Put(void const* source, int slen) override;
 
  private:
   Buffer BufferPtr;
@@ -77,10 +77,10 @@ class FilePipe : public Pipe {
  public:
   FilePipe(FileClass* file) : File(file), HasOpened(false) {}
   FilePipe(FileClass& file) : File(&file), HasOpened(false) {}
-  virtual ~FilePipe();
+  ~FilePipe() override;
 
-  virtual int Put(void const* source, int slen);
-  virtual int End();
+  int Put(void const* source, int slen) override;
+  int End() override;
 
  private:
   FileClass* File;

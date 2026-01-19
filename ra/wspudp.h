@@ -50,20 +50,20 @@
 class UDPInterfaceClass : public WinsockInterfaceClass {
  public:
   UDPInterfaceClass();
-  virtual ~UDPInterfaceClass();
+  ~UDPInterfaceClass() override;
 #ifdef PORTABLE
-  virtual void Event_Handler(int, SocketEvent);
+  void Event_Handler(int, SocketEvent) override;
 #else
   virtual long Message_Handler(HWND window, UINT message, UINT wParam,
                                LONG lParam);
 #endif
-  virtual bool Open_Socket(SOCKET socketnum);
-  virtual void Set_Broadcast_Address(void* address);
-  virtual void Broadcast(void* buffer, int buffer_len);
+  bool Open_Socket(SOCKET socketnum) override;
+  void Set_Broadcast_Address(void* address) override;
+  void Broadcast(void* buffer, int buffer_len) override;
 
-  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_UDP); }
+  ProtocolEnum Get_Protocol() override { return (PROTOCOL_UDP); }
 
-  virtual int Protocol_Event_Message() { return (WM_UDPASYNCEVENT); }
+  int Protocol_Event_Message() override { return (WM_UDPASYNCEVENT); }
 
  private:
   /*

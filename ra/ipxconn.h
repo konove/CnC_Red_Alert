@@ -72,12 +72,12 @@ class IPXConnClass : public ConnectionClass {
   .....................................................................*/
   IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
                IPXAddressClass* address, int id, char* name, int extralen = 0);
-  virtual ~IPXConnClass() {}
+  ~IPXConnClass() override {}
 
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  virtual void Init();
+  void Init() override;
 
   /*.....................................................................
   The Configure function is for configuring all connections at once.
@@ -125,7 +125,7 @@ class IPXConnClass : public ConnectionClass {
   This is the overloaded Send routine declared in ConnectionClass, and
   used in SequencedConnClass.
   .....................................................................*/
-  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen);
+  int Send(char* buf, int buflen, void* extrabuf, int extralen) override;
 
   /*.....................................................................
   These are the routines that access IPX.  Open_Socket & Close_Socket are

@@ -266,7 +266,7 @@ class TechnoClass : public RadioClass,
         CloakDelay(x),
         PrimaryFacing(x),
         Arm(x) {}
-  virtual ~TechnoClass() { House = nullptr; }
+  ~TechnoClass() override { House = nullptr; }
 
   /*
   **	Query functions.
@@ -274,7 +274,7 @@ class TechnoClass : public RadioClass,
   bool Is_Allowed_To_Retaliate(TechnoClass const* source) const;
   bool Can_Teleport_Here(CELL cell) const;
   bool Is_In_Same_Zone(CELL cell) const;
-  virtual bool Is_Players_Army() const;
+  bool Is_Players_Army() const override;
   int Combat_Damage(int which = -1) const;
   bool Is_Ready_To_Cloak() const;
   virtual int How_Many_Survivors() const;
@@ -289,19 +289,19 @@ class TechnoClass : public RadioClass,
   int Anti_Infantry() const;
   int Time_To_Build() const;
   int What_Weapon_Should_I_Use(TARGET target) const;
-  virtual ActionType What_Action(CELL cell) const;
-  virtual ActionType What_Action(ObjectClass const* target) const;
+  ActionType What_Action(CELL cell) const override;
+  ActionType What_Action(ObjectClass const* target) const override;
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const;
   virtual CELL Find_Exit_Cell(TechnoClass const* techno) const;
-  virtual COORDINATE Fire_Coord(int which) const;
+  COORDINATE Fire_Coord(int which) const override;
   virtual DirType Desired_Load_Dir(ObjectClass*, CELL& moveto) const;
   virtual DirType Fire_Direction() const;
-  virtual HousesType Owner() const;
+  HousesType Owner() const override;
   virtual InfantryType Crew_Type() const;
-  virtual bool Can_Player_Fire() const;
-  virtual bool Can_Player_Move() const;
+  bool Can_Player_Fire() const override;
+  bool Can_Player_Move() const override;
   virtual bool Is_Allowed_To_Recloak() const;
-  virtual bool Can_Repair() const;
+  bool Can_Repair() const override;
   virtual bool Is_Weapon_Equipped() const;
   virtual fixed Tiberium_Load() const;
   virtual int Pip_Count() const;
@@ -309,14 +309,14 @@ class TechnoClass : public RadioClass,
   virtual int Refund_Amount() const;
   virtual int Risk() const;
   virtual int Threat_Range(int control) const;
-  virtual int Value() const;
-  virtual int Get_Ownable() const;
+  int Value() const override;
+  int Get_Ownable() const override;
 
   /*
   **	User I/O.
   */
-  virtual void Clicked_As_Target(int count = 7);
-  virtual bool Select();
+  void Clicked_As_Target(int count = 7) override;
+  bool Select() override;
   virtual void Response_Select();
   virtual void Response_Move();
   virtual void Response_Attack();
@@ -331,10 +331,10 @@ class TechnoClass : public RadioClass,
   virtual int Made_A_Kill() { return (Crew.Made_A_Kill()); }
   void Base_Is_Attacked(TechnoClass const* enemy);
   void Kill_Cargo(TechnoClass* source);
-  virtual void Record_The_Kill(TechnoClass* source);
+  void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
-  virtual bool In_Range(COORDINATE coord, int which = 0) const;
+  bool In_Range(COORDINATE coord, int which = 0) const override;
   virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(ObjectClass const* target, int which = 0) const;
   virtual void Death_Announcement(
@@ -342,15 +342,15 @@ class TechnoClass : public RadioClass,
   virtual FireErrorType Can_Fire(TARGET target, int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType threat);  // const;
   virtual void Assign_Target(TARGET target);
-  virtual void Override_Mission(MissionType mission, TARGET tarcom,
-                                TARGET navcom);
-  virtual bool Restore_Mission();
+  void Override_Mission(MissionType mission, TARGET tarcom,
+                        TARGET navcom) override;
+  bool Restore_Mission() override;
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
-  virtual int Weapon_Range(int which) const;
+  int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr,
-                                 bool forced = false);
+  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                         TechnoClass* source = nullptr,
+                         bool forced = false) override;
   bool Evaluate_Cell(ThreatType method, int mask, CELL cell, int range,
                      TechnoClass const** object, int& value,
                      int zone = 0) const;
@@ -366,11 +366,10 @@ class TechnoClass : public RadioClass,
   **	AI.
   */
   virtual void Renovate();
-  virtual void AI();
-  virtual bool Revealed(HouseClass* house);
-  virtual RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param);
+  void AI() override;
+  bool Revealed(HouseClass* house) override;
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   void Cloaking_AI();
 
 /*
@@ -383,8 +382,8 @@ class TechnoClass : public RadioClass,
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -395,14 +394,14 @@ class TechnoClass : public RadioClass,
   void Techno_Draw_Object(void const* shapefile, int shapenum, int x, int y,
                           WindowNumberType window, DirType rotation = DIR_N,
                           int scale = 0x0100) const;
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
+  void Draw_It(int x, int y, WindowNumberType window) const override;
   virtual void Draw_Pips(int x, int y, WindowNumberType window) const;
-  virtual void Hidden();
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual int Exit_Object(TechnoClass*);
+  void Hidden() override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  int Exit_Object(TechnoClass*) override;
   virtual void Do_Uncloak();
   virtual void Do_Cloak();
-  virtual void Do_Shimmer();
+  void Do_Shimmer() override;
 
   /*
   **	Movement and animation.
@@ -410,15 +409,15 @@ class TechnoClass : public RadioClass,
   virtual bool Is_Ready_To_Random_Animate() const;
   virtual bool Random_Animate() { return (false); }
   virtual void Assign_Destination(TARGET target);
-  virtual void Per_Cell_Process(PCPType why);
+  void Per_Cell_Process(PCPType why) override;
   virtual void Enter_Idle_Mode(bool initial = false);
-  virtual void Look(bool incremental = false);
+  void Look(bool incremental = false) override;
 
   /*
   **	Map entry and exit logic.
   */
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual void Detach(TARGET target, bool all);
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  void Detach(TARGET target, bool all) override;
 
   /*
   **	Facing translation tables that fix the flaw with 3D studio when

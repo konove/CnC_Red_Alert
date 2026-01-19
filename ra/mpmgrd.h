@@ -30,7 +30,7 @@ class MPlayerManClass : public ConnManClass {
   MPlayerManClass();
 
   // queues up incoming packets appropriately
-  int Service();
+  int Service() override;
 
   // initialization
   int Init();
@@ -39,17 +39,17 @@ class MPlayerManClass : public ConnManClass {
 
   // send/receive data
   int Send_Private_Message(void* buf, int buflen, int ack_req = 1,
-                           int conn_id = CONNECTION_NONE);
-  int Get_Private_Message(void* buf, int* buflen, int* conn_id);
+                           int conn_id = CONNECTION_NONE) override;
+  int Get_Private_Message(void* buf, int* buflen, int* conn_id) override;
 
   int Send_Global_Message(void* buf, int buflen, int ack_req = 0,
                           int address = 0);
   int Get_Global_Message(void* buf, int* buflen, int* address = nullptr);
 
   // manage connections
-  int Num_Connections();
-  int Connection_ID(int index);
-  int Connection_Index(int id);
+  int Num_Connections() override;
+  int Connection_ID(int index) override;
+  int Connection_Index(int id) override;
   int Create_Connection(int id, char* name, int address);
   int Delete_Connection(int id);
   char* Connection_Name(int id);
@@ -57,20 +57,20 @@ class MPlayerManClass : public ConnManClass {
 
   // queueing routines
 
-  int Global_Num_Send();
-  int Global_Num_Receive();
-  int Private_Num_Send(int id = CONNECTION_NONE);
-  int Private_Num_Receive(int id = CONNECTION_NONE);
+  int Global_Num_Send() override;
+  int Global_Num_Receive() override;
+  int Private_Num_Send(int id = CONNECTION_NONE) override;
+  int Private_Num_Receive(int id = CONNECTION_NONE) override;
 
   // timing magnagement
-  void Reset_Response_Time();
-  unsigned long Response_Time();
+  void Reset_Response_Time() override;
+  unsigned long Response_Time() override;
   void Set_Timing(unsigned long retrydelta, unsigned long maxretries,
-                  unsigned long timeout);
+                  unsigned long timeout) override;
 
   // debug
   void Configure_Debug(int index, int type_offset, int type_size, char** names,
-                       int namestart, int namecount);
+                       int namestart, int namecount) override;
   void Mono_Debug_Print(int index, int refresh);
 
  private:

@@ -66,18 +66,18 @@ class TemplateClass : public ObjectClass {
   TemplateClass();
   TemplateClass(TemplateType type, CELL pos = -1);
   TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
-  virtual ~TemplateClass() {
+  ~TemplateClass() override {
     if (GameActive) TemplateClass::Limbo();
   }
   operator TemplateType() const { return Class->Type; }
-  virtual RTTIType What_Am_I() const { return RTTI_TEMPLATE; }
+  RTTIType What_Am_I() const override { return RTTI_TEMPLATE; }
 
   static void Init();
 
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
   int Icon_Number(CELL cell);
 
   /*
@@ -88,8 +88,8 @@ class TemplateClass : public ObjectClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void Draw_It(int, int, WindowNumberType) {}
-  virtual bool Mark(MarkType mark);
+  void Draw_It(int, int, WindowNumberType) override {}
+  bool Mark(MarkType mark) override;
 
   /*
   **	User I/O.
@@ -98,7 +98,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Combat related.
   */
-  virtual TARGET As_Target() const;
+  TARGET As_Target() const override;
 
   /*
   **	File I/O.
@@ -108,8 +108,8 @@ class TemplateClass : public ObjectClass {
   static char const* INI_Name() { return "TEMPLATE"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Dee-buggin' support.

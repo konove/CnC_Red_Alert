@@ -63,11 +63,11 @@ class ColorListClass : public ListClass {
 
   ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  void const* up, void const* down);
-  virtual ~ColorListClass();
+  ~ColorListClass() override;
 
   virtual int Add_Item(char const* text, RemapControlType* color = nullptr);
   virtual int Add_Item(int text, RemapControlType* color = nullptr);
-  virtual void Remove_Item(char const* text);
+  void Remove_Item(char const* text) override;
 
   virtual void Set_Selected_Style(SelectStyleType style,
                                   RemapControlType* color = nullptr);
@@ -78,7 +78,7 @@ class ColorListClass : public ListClass {
   DynamicVectorClass<RemapControlType*> Colors;
 
  protected:
-  virtual void Draw_Entry(int index, int x, int y, int width, int selected);
+  void Draw_Entry(int index, int x, int y, int width, int selected) override;
 
   /*
   **	This tells how to draw the selected item.

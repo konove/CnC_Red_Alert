@@ -83,7 +83,7 @@ class RadioClass : public MissionClass {
     LastMessage = RADIO_STATIC;
   }
   RadioClass(NoInitClass const& x) : MissionClass(x) {}
-  virtual ~RadioClass() {}
+  ~RadioClass() override {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -93,9 +93,9 @@ class RadioClass : public MissionClass {
   TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
 
   // Inherited from base class(es).
-  virtual RadioMessageType Receive_Message(RadioClass* from,
+  RadioMessageType Receive_Message(RadioClass* from,
                                            RadioMessageType message,
-                                           long& param);
+                                           long& param) override;
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             long& param = LParam,
                                             RadioClass* to = nullptr);
@@ -104,13 +104,13 @@ class RadioClass : public MissionClass {
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
-  virtual bool Limbo();
+  bool Limbo() override;
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 };
 
 #endif

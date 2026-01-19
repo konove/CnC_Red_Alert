@@ -86,7 +86,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
               WarheadType warhead, int speed);
   BulletClass(NoInitClass const& x)
       : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {}
-  virtual ~BulletClass();
+  ~BulletClass() override;
   operator BulletType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
@@ -97,26 +97,26 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   bool Is_Forced_To_Explode(COORDINATE& coord) const;
   void Bullet_Explodes(bool forced);
   int Shape_Number() const;
-  virtual LayerType In_Which_Layer() const;
-  virtual COORDINATE Sort_Y() const;
+  LayerType In_Which_Layer() const override;
+  COORDINATE Sort_Y() const override;
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual void Detach(TARGET target, bool all);
-  virtual void Draw_It(int x, int y, WindowNumberType window) const;
-  virtual bool Mark(MarkType mark = MARK_CHANGE);
-  virtual void AI();
-  virtual short const* Occupy_List(bool = false) const;
+  bool Unlimbo(COORDINATE, DirType facing = DIR_N) override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  void Detach(TARGET target, bool all) override;
+  void Draw_It(int x, int y, WindowNumberType window) const override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  void AI() override;
+  short const* Occupy_List(bool = false) const override;
   virtual short const* Overlap_List() const { return Occupy_List(false); }
-  virtual COORDINATE Target_Coord() const;
+  COORDINATE Target_Coord() const override;
 
   /*
   **	File I/O.
   */
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	If this bullet is forced to be inaccurate because of some outside means.

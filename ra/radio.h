@@ -79,7 +79,7 @@ class RadioClass : public MissionClass {
   */
   RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {}
   RadioClass(NoInitClass const& x) : MissionClass(x) {}
-  virtual ~RadioClass() { Radio = nullptr; }
+  ~RadioClass() override { Radio = nullptr; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -89,9 +89,8 @@ class RadioClass : public MissionClass {
   TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
 
   // Inherited from base class(es).
-  virtual RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           long& param);
+  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+                                   long& param) override;
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             long& param = LParam,
                                             RadioClass* to = nullptr);
@@ -100,13 +99,13 @@ class RadioClass : public MissionClass {
 #ifdef CHEAT_KEYS
   virtual void Debug_Dump(MonoClass* mono) const;
 #endif
-  virtual bool Limbo();
+  bool Limbo() override;
 
   /*
   **	File I/O.
   */
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 };
 
 #endif

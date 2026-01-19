@@ -56,7 +56,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Overloaded draw routine
   */
-  virtual int Draw_Me(int forced = false);
+  int Draw_Me(int forced = false) override;
 
   /*
   ** Sets the displayed text of the label

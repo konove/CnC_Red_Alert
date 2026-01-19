@@ -89,7 +89,7 @@ class NullModemConnClass : public ConnectionClass {
   .....................................................................*/
   NullModemConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short magicnum);
-  virtual ~NullModemConnClass();
+  ~NullModemConnClass() override;
 
   /*.....................................................................
   Initialization.
@@ -126,7 +126,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.
   .....................................................................*/
-  virtual int Send(char* buf, int buflen, void* extrabuf, int extralen);
+  int Send(char* buf, int buflen, void* extrabuf, int extralen) override;
 #ifdef WIN32
   /*
   ** This is the winsoze port handle

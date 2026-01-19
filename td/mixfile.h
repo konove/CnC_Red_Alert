@@ -38,7 +38,7 @@ class MixFileClass : public LinkClass {
  public:
   char const* Filename;  // Filename of mixfile.
 
-  ~MixFileClass();
+  ~MixFileClass() override;
 
   // Creates and registers a mixfile. Returns existing instance if already
   // registered, or nullptr on failure.

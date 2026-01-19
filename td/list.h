@@ -69,7 +69,7 @@ class ListClass : public ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             void const* up, void const* down);
-  virtual ~ListClass();
+  ~ListClass() override;
 
   //		static ListClass * Create_One_Of(int id, int x, int y, int w,
   // int h, TextPrintType flags, void const * up, void const * down);
@@ -80,12 +80,12 @@ class ListClass : public ControlClass {
   virtual int Count() { return List.Count(); }
   virtual int Current_Index();
   virtual char const* Current_Item();
-  virtual int Draw_Me(int forced);
+  int Draw_Me(int forced) override;
   virtual char const* Get_Item(int index) const;
   virtual int Step_Selected_Index(int forward);
 
-  virtual void Peer_To_Peer(unsigned flags, KeyNumType& key,
-                            ControlClass& whom);
+  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+                            ControlClass& whom) override;
   virtual void Remove_Item(char const* text);
   virtual int Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
@@ -97,13 +97,13 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  virtual LinkClass& Add(LinkClass& object);
-  virtual LinkClass& Add_Tail(LinkClass& object);
-  virtual LinkClass& Add_Head(LinkClass& object);
-  virtual GadgetClass* Remove();
+  LinkClass& Add(LinkClass& object) override;
+  LinkClass& Add_Tail(LinkClass& object) override;
+  LinkClass& Add_Head(LinkClass& object) override;
+  GadgetClass* Remove() override;
 
  protected:
-  virtual int Action(unsigned flags, KeyNumType& key);
+  int Action(unsigned flags, KeyNumType& key) override;
   virtual void Draw_Entry(int index, int x, int y, int width, int selected);
 
   /*

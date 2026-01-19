@@ -70,19 +70,19 @@ class RadarClass : public DisplayClass {
   /*
   ** Initialization
   */
-  virtual void One_Time();    // One-time inits
-  virtual void Init_Clear();  // Clears all to known state
+  void One_Time() override;    // One-time inits
+  void Init_Clear() override;  // Clears all to known state
 
-  virtual void Flag_Cell(CELL cell);
-  virtual bool Map_Cell(CELL cell, HouseClass* house);
+  void Flag_Cell(CELL cell) override;
+  bool Map_Cell(CELL cell, HouseClass* house) override;
   virtual bool Jam_Cell(CELL cell, HouseClass* house);
   virtual bool UnJam_Cell(CELL cell, HouseClass* house);
-  virtual CELL Click_Cell_Calc(int x, int y) const;
-  virtual void AI(KeyNumType& input, int x, int y);
-  virtual void Draw_It(bool complete = false);
-  virtual void Refresh_Cells(CELL cell, short const* list);
-  virtual void Set_Map_Dimensions(int x, int y, int w, int h);
-  virtual void Set_Tactical_Position(COORDINATE coord);
+  CELL Click_Cell_Calc(int x, int y) const override;
+  void AI(KeyNumType& input, int x, int y) override;
+  void Draw_It(bool complete = false) override;
+  void Refresh_Cells(CELL cell, short const* list) override;
+  void Set_Map_Dimensions(int x, int y, int w, int h) override;
+  void Set_Tactical_Position(COORDINATE coord) override;
   void Zoom_Mode(CELL cell);
   int Click_In_Radar(int& x, int& y, bool change = false) const;
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y);
@@ -173,7 +173,7 @@ class RadarClass : public DisplayClass {
                       true) {}
 
    protected:
-    virtual int Action(unsigned flags, KeyNumType& key);
+    int Action(unsigned flags, KeyNumType& key) override;
     friend class RadarClass;
   };
   friend class RTacticalClass;

@@ -76,7 +76,7 @@ class MissionClass : public ObjectClass {
   */
   MissionClass(RTTIType rtti, int id);
   MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
-  virtual ~MissionClass() {}
+  ~MissionClass() override {}
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.
@@ -86,10 +86,10 @@ class MissionClass : public ObjectClass {
 #endif
 
   void Shorten_Mission_Timer() { Timer = 0; }
-  virtual MissionType Get_Mission() const;
+  MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType mission);
   virtual bool Commence();
-  virtual void AI();
+  void AI() override;
 
   /*
   **	Support functions.

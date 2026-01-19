@@ -66,11 +66,11 @@ class OverlayClass : public ObjectClass {
   OverlayClass();
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
   OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
-  virtual ~OverlayClass() {
+  ~OverlayClass() override {
     if (GameActive) OverlayClass::Limbo();
   }
   operator OverlayType() const { return Class->Type; }
-  virtual RTTIType What_Am_I() const { return RTTI_OVERLAY; }
+  RTTIType What_Am_I() const override { return RTTI_OVERLAY; }
 
   static void Init();
 
@@ -82,15 +82,15 @@ class OverlayClass : public ObjectClass {
   static char const* INI_Name() { return "OVERLAY"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
   /*
   **	Virtual support functionality.
   */
-  virtual bool Mark(MarkType);
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual void Draw_It(int, int, WindowNumberType) {}
+  bool Mark(MarkType) override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  void Draw_It(int, int, WindowNumberType) override {}
 
   /*
   **	Dee-buggin' support.

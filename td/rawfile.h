@@ -135,23 +135,23 @@ EZERO,                 // Non-error.
   RawFileClass();
   RawFileClass(RawFileClass const& f);
   RawFileClass& operator=(RawFileClass const& f);
-  virtual ~RawFileClass();
+  ~RawFileClass() override;
 
-  virtual char const* File_Name() const;
-  virtual char const* Set_Name(char const* filename);
-  virtual int Create();
-  virtual int Delete();
-  virtual int Is_Available(int forced = false);
-  virtual int Is_Open() const;
-  virtual int Open(char const* filename, int rights = READ);
-  virtual int Open(int rights = READ);
-  virtual long Read(void* buffer, long size);
-  virtual long Seek(long pos, int dir = SEEK_CUR);
-  virtual long Size();
-  virtual long Write(void const* buffer, long size);
-  virtual void Close();
-  virtual void Error(int error, int canretry = false,
-                     char const* filename = nullptr);
+  char const* File_Name() const override;
+  char const* Set_Name(char const* filename) override;
+  int Create() override;
+  int Delete() override;
+  int Is_Available(int forced = false) override;
+  int Is_Open() const override;
+  int Open(char const* filename, int rights = READ) override;
+  int Open(int rights = READ) override;
+  long Read(void* buffer, long size) override;
+  long Seek(long pos, int dir = SEEK_CUR) override;
+  long Size() override;
+  long Write(void const* buffer, long size) override;
+  void Close() override;
+  void Error(int error, int canretry = false,
+                     char const* filename = nullptr) override;
 
  protected:
   /*

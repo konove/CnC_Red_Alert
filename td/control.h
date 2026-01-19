@@ -74,7 +74,7 @@ class ControlClass : public GadgetClass {
   /*
   **	Render support function.
   */
-  virtual int Draw_Me(int forced = false);
+  int Draw_Me(int forced = false) override;
 
   /*
   **	This is the ID number for this control gadget. This number is used to
@@ -83,8 +83,8 @@ class ControlClass : public GadgetClass {
   unsigned ID;
 
  protected:
-  virtual unsigned Get_ID() const;
-  virtual int Action(unsigned flags, KeyNumType& key);
+  unsigned Get_ID() const override;
+  int Action(unsigned flags, KeyNumType& key) override;
 
   /*
   **	This points to the peer button to inform when something happens to this

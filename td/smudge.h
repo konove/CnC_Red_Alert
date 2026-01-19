@@ -69,10 +69,10 @@ class SmudgeClass : public ObjectClass {
   SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
   SmudgeClass() : Class(nullptr) {}
   operator SmudgeType() const { return Class->Type; }
-  virtual ~SmudgeClass() {
+  ~SmudgeClass() override {
     if (GameActive) SmudgeClass::Limbo();
   }
-  virtual RTTIType What_Am_I() const { return RTTI_SMUDGE; }
+  RTTIType What_Am_I() const override { return RTTI_SMUDGE; }
 
   static void Init();
 
@@ -84,12 +84,12 @@ class SmudgeClass : public ObjectClass {
   static char const* INI_Name() { return "SMUDGE"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
-  virtual void Code_Pointers();
-  virtual void Decode_Pointers();
+  void Code_Pointers() override;
+  void Decode_Pointers() override;
 
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual bool Mark(MarkType);
-  virtual void Draw_It(int, int, WindowNumberType) {}
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  bool Mark(MarkType) override;
+  void Draw_It(int, int, WindowNumberType) override {}
 
   void Disown(CELL cell);
 

@@ -72,7 +72,7 @@ class OverlayClass : public ObjectClass {
   static void operator delete(void* ptr);
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
   OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(x) {}
-  virtual ~OverlayClass() {
+  ~OverlayClass() override {
     if (GameActive) OverlayClass::Limbo();
     Class = nullptr;
   }
@@ -92,9 +92,9 @@ class OverlayClass : public ObjectClass {
   /*
   **	Virtual support functionality.
   */
-  virtual bool Mark(MarkType);
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
-  virtual void Draw_It(int, int, WindowNumberType) const {}
+  bool Mark(MarkType) override;
+  ObjectTypeClass const& Class_Of() const override { return *Class; }
+  void Draw_It(int, int, WindowNumberType) const override {}
 
  private:
   /*
