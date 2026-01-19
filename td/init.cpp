@@ -740,7 +740,7 @@ bool Init_Game(int, char*[]) {
 
 void Uninit_Game() {
   delete Map.ShadowPage;
-  Map.ShadowPage = NULL;
+  Map.ShadowPage = nullptr;
   Map.Free_Cells();
 
   delete[] static_cast<char*>(SpeechBuffer);
@@ -765,7 +765,7 @@ void Uninit_Game() {
   Houses.Set_Heap(0);
 
   delete[] _ShapeBuffer;
-  Set_Shape_Buffer(NULL, 0);
+  Set_Shape_Buffer(nullptr, 0);
   delete[] BlackPalette;
   delete[] GamePalette;
   delete[] OriginalPalette;
