@@ -62,8 +62,8 @@ class FlasherClass {
   FlasherClass() {
     FlashCount = 0;
     IsBlushing = false;
-  };
-  FlasherClass(NoInitClass const&) {};
+  }
+  FlasherClass(NoInitClass const&) {}
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif

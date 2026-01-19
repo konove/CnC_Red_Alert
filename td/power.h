@@ -58,7 +58,7 @@ class PowerClass : public RadarClass {
   int PowLineWidth;
 
   PowerClass();
-  PowerClass(NoInitClass const& x) : RadarClass(x) {};
+  PowerClass(NoInitClass const& x) : RadarClass(x) {}
 
   /*
   ** Initialization
@@ -88,7 +88,7 @@ class PowerClass : public RadarClass {
     PowerButtonClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {};
+                      true) {}
 
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

@@ -81,16 +81,16 @@ class RadioClass : public MissionClass {
   RadioClass() {
     Radio = nullptr;
     LastMessage = RADIO_STATIC;
-  };
-  RadioClass(NoInitClass const& x) : MissionClass(x) {};
-  virtual ~RadioClass() {};
+  }
+  RadioClass(NoInitClass const& x) : MissionClass(x) {}
+  virtual ~RadioClass() {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool In_Radio_Contact() const { return (Radio != nullptr); };
-  void Radio_Off() { Radio = nullptr; };
-  TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; };
+  bool In_Radio_Contact() const { return (Radio != nullptr); }
+  void Radio_Off() { Radio = nullptr; }
+  TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
 
   // Inherited from base class(es).
   virtual RadioMessageType Receive_Message(RadioClass* from,

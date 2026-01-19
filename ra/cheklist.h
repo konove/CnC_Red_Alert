@@ -50,7 +50,7 @@
 class CheckObject {
  public:
   CheckObject(char const* text = nullptr, bool checked = false)
-      : Text(text), IsChecked(checked) {};
+      : Text(text), IsChecked(checked) {}
 
   char const* Text;
   bool IsChecked;
@@ -74,7 +74,7 @@ class CheckListClass : public ListClass {
   virtual void Set_Selected_Index(char const* text);
   virtual void Set_Selected_Index(int index) {
     ListClass::Set_Selected_Index(index);
-  };
+  }
 
   /*
   **	Checkmark utility functions

@@ -211,8 +211,8 @@ class TechnoClass : public RadioClass,
         CargoClass(x),
         DoorClass(x),
         CloakingDevice(x),
-        PrimaryFacing(x) {};
-  virtual ~TechnoClass() {};
+        PrimaryFacing(x) {}
+  virtual ~TechnoClass() {}
 
   /*
   **	Query functions.
@@ -224,7 +224,7 @@ class TechnoClass : public RadioClass,
   virtual InfantryType Crew_Type() const;
   TechnoTypeClass const* Techno_Type_Class() const {
     return ((TechnoTypeClass const*)&Class_Of());
-  };
+  }
   CELL Nearby_Location(TechnoClass const* from = nullptr) const;
   virtual unsigned char Get_Ownable() const;
   virtual bool Can_Player_Fire() const;

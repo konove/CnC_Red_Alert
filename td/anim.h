@@ -58,19 +58,19 @@
 class AnimClass : public ObjectClass, private StageClass {
  public:
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   AnimClass() : Class(nullptr) {
     Owner = HOUSE_NONE;
     Object = nullptr;
-  };  // Default constructor does nothing.
+  }  // Default constructor does nothing.
   AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
             unsigned char loop = 1, bool alt = false);
   AnimClass(NoInitClass const& x)
-      : ObjectClass(x), Class(Class), StageClass(x) {};
+      : ObjectClass(x), Class(Class), StageClass(x) {}
   virtual ~AnimClass();
-  operator AnimType() const { return Class->Type; };
-  virtual RTTIType What_Am_I() const { return RTTI_ANIM; };
+  operator AnimType() const { return Class->Type; }
+  virtual RTTIType What_Am_I() const { return RTTI_ANIM; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -78,7 +78,7 @@ class AnimClass : public ObjectClass, private StageClass {
   static void Init();
 
   void Attach_To(ObjectClass* obj);
-  void Make_Invisible() { IsInvisible = true; };
+  void Make_Invisible() { IsInvisible = true; }
 
   virtual bool Can_Place_Here(COORDINATE) const { return true; }
   virtual bool Mark(MarkType mark = MARK_CHANGE);
@@ -86,7 +86,7 @@ class AnimClass : public ObjectClass, private StageClass {
   virtual COORDINATE Center_Coord() const;
   virtual COORDINATE Sort_Y() const;
   virtual LayerType In_Which_Layer() const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual short const* Occupy_List() const;
   virtual short const* Overlap_List() const;
   virtual void Draw_It(int x, int y, WindowNumberType window);

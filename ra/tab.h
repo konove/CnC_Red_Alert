@@ -51,7 +51,7 @@ class TabClass : public SidebarClass {
  public:
   TabClass();
   TabClass(NoInitClass const& x)
-      : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {};
+      : SidebarClass(x), Credits(x), FlasherTimer(x), MoneyFlashTimer(x) {}
 
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
@@ -63,7 +63,7 @@ class TabClass : public SidebarClass {
   void Redraw_Tab() {
     IsToRedraw = true;
     Flag_To_Redraw(false);
-  };
+  }
 
   CreditClass Credits;
 

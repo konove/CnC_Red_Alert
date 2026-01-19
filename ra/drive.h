@@ -98,8 +98,8 @@ class DriveClass : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   DriveClass(RTTIType rtti, int id, HousesType house);
-  DriveClass(NoInitClass const& x) : FootClass(x), MoebiusCountDown(x) {};
-  virtual ~DriveClass() {};
+  DriveClass(NoInitClass const& x) : FootClass(x), MoebiusCountDown(x) {}
+  virtual ~DriveClass() {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -112,7 +112,7 @@ class DriveClass : public FootClass {
                        bool nokidding = false);
   virtual bool Limbo();
   void Do_Turn(DirType dir);
-  virtual void Overrun_Square(CELL, bool = true) {};
+  virtual void Overrun_Square(CELL, bool = true) {}
   virtual void Assign_Destination(TARGET target);
   virtual void Per_Cell_Process(PCPType why);
   virtual bool Ok_To_Move(DirType) const;

@@ -61,9 +61,9 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   virtual void Set_Broadcast_Address(void* address);
   virtual void Broadcast(void* buffer, int buffer_len);
 
-  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_UDP); };
+  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_UDP); }
 
-  virtual int Protocol_Event_Message() { return (WM_UDPASYNCEVENT); };
+  virtual int Protocol_Event_Message() { return (WM_UDPASYNCEVENT); }
 
  private:
   /*

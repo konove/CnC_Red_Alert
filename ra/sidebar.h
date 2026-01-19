@@ -151,7 +151,7 @@ class SidebarClass : public PowerClass {
     class SelectClass : public ControlClass {
      public:
       SelectClass();
-      SelectClass(NoInitClass const& x) : ControlClass(x) {};
+      SelectClass(NoInitClass const& x) : ControlClass(x) {}
 
       void Set_Owner(StripClass& strip, int index);
 
@@ -165,7 +165,7 @@ class SidebarClass : public PowerClass {
    public:
     StripClass() {}
     StripClass(InitClass const&);
-    StripClass(NoInitClass const&) {};
+    StripClass(NoInitClass const&) {}
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
@@ -380,7 +380,7 @@ class SidebarClass : public PowerClass {
         : GadgetClass((int)((int)SIDE_X + 8) * RESFACTOR,
                       (int)SIDE_Y * RESFACTOR,
                       (int)((int)SIDE_WIDTH - 1) * RESFACTOR - 1,
-                      (int)((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {};
+                      (int)((int)SIDE_HEIGHT - 1) * RESFACTOR, LEFTUP) {}
     // #else
     //				SBGadgetClass() : GadgetClass((int)SIDE_X+8,
     //(int)SIDE_Y, (int)SIDE_WIDTH-1, (int)SIDE_HEIGHT-1, LEFTUP) {}; #endif

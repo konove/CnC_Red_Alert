@@ -63,7 +63,7 @@ class GetCDClass {
 
   inline int Get_First_CD_Drive();
   inline int Get_Next_CD_Drive();
-  inline int Get_Number_Of_Drives() { return (CDCount); };
+  inline int Get_Number_Of_Drives() { return (CDCount); }
 };
 
 /***********************************************************************************************

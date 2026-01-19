@@ -208,7 +208,7 @@ class EventClass {
   } Data;
 
   //-------------- Functions ---------------------
-  EventClass() { Type = EMPTY; };
+  EventClass() { Type = EMPTY; }
   EventClass(SpecialClass data);
   EventClass(EventType type, TARGET target);
   EventClass(EventType type);
@@ -225,7 +225,7 @@ class EventClass {
   // Process the event.
   void Execute();
 
-  int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; };
+  int operator==(EventClass& q) { return memcmp(this, &q, sizeof(q)) == 0; }
 
   static unsigned char EventLength[LAST_EVENT];
   static char* EventNames[LAST_EVENT];

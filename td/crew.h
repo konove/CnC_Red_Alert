@@ -56,12 +56,12 @@ class CrewClass {
   /*
   **	Constructors, Destructors, and overloaded operators.
   */
-  CrewClass() { Kills = 0; };
+  CrewClass() { Kills = 0; }
 
   int Made_A_Kill() {
     Kills++;
     return (Kills);
-  };
+  }
 
  private:
 };

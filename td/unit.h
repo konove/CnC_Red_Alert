@@ -68,12 +68,12 @@ class UnitClass : public TarComClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
-  UnitClass() {};
+  UnitClass() {}
   UnitClass(UnitType classid, HousesType house);
-  UnitClass(NoInitClass const& x) : TarComClass(x) {};
-  operator UnitType() const { return Class->Type; };
+  UnitClass(NoInitClass const& x) : TarComClass(x) {}
+  operator UnitType() const { return Class->Type; }
   virtual ~UnitClass();
   virtual RTTIType What_Am_I() const;
 
@@ -190,7 +190,7 @@ class UnitClass : public TarComClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "UNITS"; };
+  static char const* INI_Name() { return "UNITS"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();

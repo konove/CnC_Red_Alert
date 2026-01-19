@@ -227,9 +227,9 @@ class AbstractTypeClass {
   */
   int Name;
 
-  AbstractTypeClass() {};
+  AbstractTypeClass() {}
   AbstractTypeClass(int name, char const* ini);
-  AbstractTypeClass(NoInitClass const&) {};
+  AbstractTypeClass(NoInitClass const&) {}
   virtual RTTIType What_Am_I() const;
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
@@ -237,7 +237,7 @@ class AbstractTypeClass {
   void Set_Name(char const* buf) const {
     strncpy((char*)IniName, buf, sizeof(IniName));
     ((char&)IniName[sizeof(IniName) - 1]) = '\0';
-  };
+  }
   virtual unsigned short Get_Ownable() const;
 };
 
@@ -347,11 +347,11 @@ class ObjectTypeClass : public AbstractTypeClass {
   virtual short const* Overlap_List() const;
   virtual BuildingClass* Who_Can_Build_Me(bool, bool, HousesType) const;
   virtual void const* Get_Cameo_Data() const;
-  void const* Get_Image_Data() const { return ImageData; };
-  void const* Get_Radar_Data() const { return RadarIcon; };
+  void const* Get_Image_Data() const { return ImageData; }
+  void const* Get_Radar_Data() const { return RadarIcon; }
 
 #ifdef SCENARIO_EDITOR
-  virtual void Display(int, int, WindowNumberType, HousesType) const {};
+  virtual void Display(int, int, WindowNumberType, HousesType) const {}
 #endif
 
   static void const* SelectShapes;
@@ -690,8 +690,8 @@ class BuildingTypeClass : public TechnoTypeClass {
                     unsigned long canenter, unsigned capacity, int power,
                     int drain, BSizeType size, short const* exitlist,
                     short const* sizelist, short const* overlap);
-  virtual RTTIType What_Am_I() const { return RTTI_BUILDINGTYPE; };
-  operator StructType() const { return (Type); };
+  virtual RTTIType What_Am_I() const { return RTTI_BUILDINGTYPE; }
+  operator StructType() const { return (Type); }
 
   static BuildingTypeClass const& As_Reference(StructType type);
   static StructType From_Name(char const* name);
@@ -716,7 +716,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   virtual short const* Overlap_List() const;
   virtual BuildingClass* Who_Can_Build_Me(bool intheory, bool legal,
                                           HousesType house) const;
-  virtual void const* Get_Buildup_Data() const { return (BuildupData); };
+  virtual void const* Get_Buildup_Data() const { return (BuildupData); }
 
   virtual int Raw_Cost() const;
   virtual int Repair_Cost() const;
@@ -904,7 +904,7 @@ class UnitTypeClass : public TechnoTypeClass {
                 int risk, int reward, int ownable, WeaponType primary,
                 WeaponType secondary, ArmorType armor, SpeedType speed,
                 MPHType maxSpeed, unsigned rot, int toffset, MissionType order);
-  virtual RTTIType What_Am_I() const { return RTTI_UNITTYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_UNITTYPE; }
 
   static UnitType From_Name(char const* name);
   static UnitTypeClass const& As_Reference(UnitType type);
@@ -1011,12 +1011,12 @@ class InfantryTypeClass : public TechnoTypeClass {
                     int pronelaunch, unsigned short strength, int sightrange,
                     int cost, int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary, MPHType maxSpeed);
-  virtual RTTIType What_Am_I() const { return RTTI_INFANTRYTYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_INFANTRYTYPE; }
 
   static InfantryType From_Name(char const* name);
   static InfantryTypeClass const& As_Reference(InfantryType type) {
     return *Pointers[type];
-  };
+  }
   static void Init(TheaterType);
   static void One_Time();
   static void Prep_For_Add();
@@ -1024,7 +1024,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   virtual void Dimensions(int& width, int& height) const {
     width = 12;
     height = 16;
-  };
+  }
   virtual bool Create_And_Place(CELL cell, HousesType house) const;
   virtual ObjectClass* Create_One_Of(HouseClass* house) const;
   virtual short const* Occupy_List(bool placement = false) const;
@@ -1175,18 +1175,18 @@ class BulletTypeClass : public ObjectTypeClass {
                   int arming, int range, MPHType maxspeed, unsigned rot,
                   WarheadType warhead, AnimType explosion);
 
-  virtual RTTIType What_Am_I() const { return RTTI_BULLETTYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_BULLETTYPE; }
 
   static BulletTypeClass const& As_Reference(BulletType type) {
     return *Pointers[type];
-  };
-  static void Init(TheaterType){};
+  }
+  static void Init(TheaterType) {}
   static void One_Time();
 
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const {
     return false;
-  };
-  virtual ObjectClass* Create_One_Of(HouseClass*) const { return nullptr; };
+  }
+  virtual ObjectClass* Create_One_Of(HouseClass*) const { return nullptr; }
 
  private:
   static BulletTypeClass const* const Pointers[BULLET_COUNT];
@@ -1247,14 +1247,14 @@ class TerrainTypeClass : public ObjectTypeClass {
                    bool is_legal_target, bool is_insignificant, bool is_immune,
                    char const* ininame, int fullname, unsigned short strength,
                    ArmorType armor, short const* occupy, short const* overlap);
-  virtual RTTIType What_Am_I() const { return RTTI_TERRAINTYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_TERRAINTYPE; }
 
   static TerrainType From_Name(char const* name);
   static TerrainTypeClass const& As_Reference(TerrainType type) {
     return *Pointers[type];
-  };
+  }
   static void Init(TheaterType theater = THEATER_TEMPERATE);
-  static void One_Time() {};
+  static void One_Time() {}
   static void Prep_For_Add();
 
   virtual COORDINATE Coord_Fixup(COORDINATE coord) const {
@@ -1320,12 +1320,12 @@ class TemplateTypeClass : public ObjectTypeClass {
   TemplateTypeClass(TemplateType iconset, int theater, char const* ininame,
                     int fullname, LandType land, int width, int height,
                     LandType altland, char const* alticons);
-  virtual RTTIType What_Am_I() const { return RTTI_TEMPLATETYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_TEMPLATETYPE; }
 
   static TemplateType From_Name(char const* name);
   static TemplateTypeClass const& As_Reference(TemplateType type) {
     return *Pointers[type];
-  };
+  }
   static void Init(TheaterType theater);
   static void One_Time();
   static void Prep_For_Add();
@@ -1494,18 +1494,18 @@ class AnimTypeClass : public ObjectTypeClass {
                 unsigned int damage, int delaytime, int start, int loopstart,
                 int loopend, int stages, int loops, VocType sound,
                 AnimType chainto);
-  virtual RTTIType What_Am_I() const { return RTTI_ANIMTYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_ANIMTYPE; }
 
   static AnimTypeClass const& As_Reference(AnimType type) {
     return *Pointers[type];
-  };
-  static void Init(TheaterType){};
+  }
+  static void Init(TheaterType) {}
   static void One_Time();
 
   virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const {
     return false;
-  };
-  virtual ObjectClass* Create_One_Of(HouseClass*) const { return nullptr; };
+  }
+  virtual ObjectClass* Create_One_Of(HouseClass*) const { return nullptr; }
 
  private:
   static AnimTypeClass const* const Pointers[ANIM_COUNT];
@@ -1565,7 +1565,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   static AircraftType From_Name(char const* name);
   static AircraftTypeClass const& As_Reference(AircraftType a) {
     return *Pointers[a];
-  };
+  }
   static void Init(TheaterType);
   static void One_Time();
   static void Prep_For_Add();
@@ -1678,12 +1678,12 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool isradarinvisible, bool iswooden, bool istarget,
                    bool iscrushable, bool istiberium, bool high, bool theater,
                    bool iswall, bool iscrate);
-  virtual RTTIType What_Am_I() const { return RTTI_OVERLAYTYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_OVERLAYTYPE; }
 
   static OverlayType From_Name(char const* name);
   static OverlayTypeClass const& As_Reference(OverlayType type) {
     return *Pointers[type];
-  };
+  }
   static void Init(TheaterType);
   static void One_Time();
   static void Prep_For_Add();
@@ -1747,12 +1747,12 @@ class SmudgeTypeClass : public ObjectTypeClass {
   //----------------------------------------------------------
   SmudgeTypeClass(SmudgeType smudge, char const* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater);
-  virtual RTTIType What_Am_I() const { return RTTI_SMUDGETYPE; };
+  virtual RTTIType What_Am_I() const { return RTTI_SMUDGETYPE; }
 
   static SmudgeType From_Name(char const* name);
   static SmudgeTypeClass const& As_Reference(SmudgeType type) {
     return *Pointers[type];
-  };
+  }
   static void Init(TheaterType);
   static void One_Time();
   static void Prep_For_Add();
@@ -1760,7 +1760,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   virtual bool Create_And_Place(CELL cell, HousesType house = HOUSE_NONE) const;
   virtual ObjectClass* Create_One_Of(HouseClass*) const;
   virtual short const* Occupy_List(bool placement = false) const;
-  virtual short const* Overlap_List() const { return Occupy_List(); };
+  virtual short const* Overlap_List() const { return Occupy_List(); }
   virtual void Draw_It(int x, int y, int data) const;
 
 #ifdef SCENARIO_EDITOR

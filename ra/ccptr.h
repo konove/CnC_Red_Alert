@@ -50,8 +50,8 @@
 template <class T>
 class CCPtr {
  public:
-  CCPtr() : ID(-1) {};
-  CCPtr(NoInitClass const&) {};
+  CCPtr() : ID(-1) {}
+  CCPtr(NoInitClass const&) {}
   CCPtr(T* ptr);
 
   operator T*() const {

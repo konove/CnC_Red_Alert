@@ -52,7 +52,7 @@ class DropListClass : public EditClass {
  public:
   DropListClass(int id, char* text, int max_len, TextPrintType flags, int x,
                 int y, int w, int h, void const* up, void const* down);
-  virtual ~DropListClass() {};
+  virtual ~DropListClass() {}
 
   virtual DropListClass& Add(LinkClass& object);
   virtual DropListClass& Add_Tail(LinkClass& object);
@@ -67,10 +67,10 @@ class DropListClass : public EditClass {
   virtual void Set_Selected_Index(char const* text);
   virtual void Peer_To_Peer(unsigned flags, KeyNumType&, ControlClass& whom);
   virtual void Clear_Focus();
-  virtual int Count() const { return (List.Count()); };
+  virtual int Count() const { return (List.Count()); }
   virtual char const* Get_Item(int index) const {
     return (List.Get_Item(index));
-  };
+  }
 
 #ifdef WOLAPI_INTEGRATION
   virtual void Flag_To_Redraw();

@@ -63,7 +63,7 @@ class RadarClass : public DisplayClass {
   int RadPHeight;
 
   RadarClass();
-  RadarClass(NoInitClass const& x) : DisplayClass(x) {};
+  RadarClass(NoInitClass const& x) : DisplayClass(x) {}
 
   /*
   ** Initialization
@@ -98,8 +98,8 @@ class RadarClass : public DisplayClass {
   void Render_Infantry(CELL cell, int x, int y, int size);
   void Render_Overlay(CELL cell, int x, int y, int size);
   void Radar_Anim();
-  bool Is_Radar_Active() { return IsRadarActive; };
-  bool Is_Radar_Existing() { return (DoesRadarExist); };
+  bool Is_Radar_Active() { return IsRadarActive; }
+  bool Is_Radar_Existing() { return (DoesRadarExist); }
 
   /*
   **	File I/O.
@@ -157,7 +157,7 @@ class RadarClass : public DisplayClass {
     TacticalClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {};
+                      true) {}
 
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

@@ -62,17 +62,17 @@ class SmudgeClass : public ObjectClass {
   **	Constructors and destructors.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = -1,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
-  SmudgeClass() : Class(nullptr) {};
-  operator SmudgeType() const { return Class->Type; };
+  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
+  SmudgeClass() : Class(nullptr) {}
+  operator SmudgeType() const { return Class->Type; }
   virtual ~SmudgeClass() {
     if (GameActive) SmudgeClass::Limbo();
-  };
-  virtual RTTIType What_Am_I() const { return RTTI_SMUDGE; };
+  }
+  virtual RTTIType What_Am_I() const { return RTTI_SMUDGE; }
 
   static void Init();
 
@@ -81,15 +81,15 @@ class SmudgeClass : public ObjectClass {
   */
   static void Read_INI(char*);
   static void Write_INI(char*);
-  static char const* INI_Name() { return "SMUDGE"; };
+  static char const* INI_Name() { return "SMUDGE"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
 
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual bool Mark(MarkType);
-  virtual void Draw_It(int, int, WindowNumberType) {};
+  virtual void Draw_It(int, int, WindowNumberType) {}
 
   void Disown(CELL cell);
 

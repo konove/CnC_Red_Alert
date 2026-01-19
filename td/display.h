@@ -121,7 +121,7 @@ class DisplayClass : public MapClass {
 
   //-------------------------------------------------------------------------
   DisplayClass();
-  DisplayClass(NoInitClass const& x) : MapClass(x) {};
+  DisplayClass(NoInitClass const& x) : MapClass(x) {}
 
   virtual void Read_INI(char* buffer);
   void Write_INI(char* buffer);
@@ -147,7 +147,7 @@ class DisplayClass : public MapClass {
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   virtual CELL Click_Cell_Calc(int x, int y);
   virtual void Help_Text(int, int = -1, int = -1, int = YELLOW, bool = false,
-                         int = 0) {};
+                         int = 0) {}
   virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(DirType facing, int& distance, bool really);
   virtual void Refresh_Cells(CELL cell, short const* list);
@@ -157,7 +157,7 @@ class DisplayClass : public MapClass {
   /*
   **	Pending object placement control.
   */
-  virtual void Put_Place_Back(TechnoClass*) {};  // Affects 'pending' system.
+  virtual void Put_Place_Back(TechnoClass*) {}  // Affects 'pending' system.
   void Cursor_Mark(CELL pos, bool on);
   void Set_Cursor_Shape(short const* list);
   CELL Set_Cursor_Pos(CELL pos = -1);
@@ -188,7 +188,7 @@ class DisplayClass : public MapClass {
   void Repair_Mode_Control(int control);
 
   virtual void Flag_Cell(CELL cell);
-  bool Is_Cell_Flagged(CELL cell) const { return CellRedraw[cell]; };
+  bool Is_Cell_Flagged(CELL cell) const { return CellRedraw[cell]; }
 
   /*
   ** Computes starting position based on player's units' Coords.
@@ -275,7 +275,7 @@ class DisplayClass : public MapClass {
     TacticalClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {};
+                      true) {}
 
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

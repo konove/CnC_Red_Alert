@@ -189,7 +189,7 @@ class MapEditClass : public MouseClass {
   **	mapedit.cpp
   */
   MapEditClass();
-  MapEditClass(NoInitClass const& x) : MouseClass(x) {};
+  MapEditClass(NoInitClass const& x) : MouseClass(x) {}
   bool Get_Waypoint_Name(char wayptname[]);
   void Update_Waypoint(int waypt_index);
 

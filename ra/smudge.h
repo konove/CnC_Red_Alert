@@ -69,16 +69,16 @@ class SmudgeClass : public ObjectClass {
   **	Constructors and destructors.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
               HousesType house = HOUSE_NONE);
-  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(x) {};
-  operator SmudgeType() const { return Class->Type; };
+  SmudgeClass(NoInitClass const& x) : ObjectClass(x), Class(x) {}
+  operator SmudgeType() const { return Class->Type; }
   virtual ~SmudgeClass() {
     if (GameActive) SmudgeClass::Limbo();
     Class = nullptr;
-  };
+  }
 
   static void Init();
 
@@ -87,13 +87,13 @@ class SmudgeClass : public ObjectClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "SMUDGE"; };
+  static char const* INI_Name() { return "SMUDGE"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual bool Mark(MarkType);
-  virtual void Draw_It(int, int, WindowNumberType) const {};
+  virtual void Draw_It(int, int, WindowNumberType) const {}
 
   void Disown(CELL cell);
 

@@ -68,7 +68,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass(TriggerTypeClass* trigtype = nullptr);
-  TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x) {};
+  TriggerClass(NoInitClass const& x) : Class(x), Event1(x), Event2(x) {}
   ~TriggerClass();
 
   /*
@@ -88,8 +88,8 @@ class TriggerClass {
   */
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
-  void Code_Pointers() {};
-  void Decode_Pointers() {};
+  void Code_Pointers() {}
+  void Decode_Pointers() {}
 
   /*
   **	Utility routines
@@ -104,7 +104,7 @@ class TriggerClass {
   **	Overloaded operators
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
 
   /*

@@ -134,15 +134,15 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass();
-  ObjectClass(NoInitClass const& x) : AbstractClass(x) {};
-  virtual ~ObjectClass() {};
+  ObjectClass(NoInitClass const& x) : AbstractClass(x) {}
+  virtual ~ObjectClass() {}
   virtual RTTIType What_Am_I() const;
   int operator<(ObjectClass const& object) const {
     return Sort_Y() < object.Sort_Y();
-  };
+  }
   int operator>(ObjectClass const& object) const {
     return Sort_Y() > object.Sort_Y();
-  };
+  }
 
   /*
   **	Object selection control.
@@ -181,7 +181,7 @@ class ObjectClass : public AbstractClass {
   */
   virtual bool Limbo();
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual void Detach(TARGET, bool) {};
+  virtual void Detach(TARGET, bool) {}
   virtual void Detach_All(bool all = true);
   static void Detach_This_From_All(TARGET target, bool all = true);
   virtual void Record_The_Kill(TechnoClass*);

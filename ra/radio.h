@@ -77,16 +77,16 @@ class RadioClass : public MissionClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {};
-  RadioClass(NoInitClass const& x) : MissionClass(x) {};
-  virtual ~RadioClass() { Radio = nullptr; };
+  RadioClass(RTTIType rtti, int id) : MissionClass(rtti, id), Radio(nullptr) {}
+  RadioClass(NoInitClass const& x) : MissionClass(x) {}
+  virtual ~RadioClass() { Radio = nullptr; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool In_Radio_Contact() const { return (Radio != nullptr); };
-  void Radio_Off() { Radio = nullptr; };
-  TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; };
+  bool In_Radio_Contact() const { return (Radio != nullptr); }
+  void Radio_Off() { Radio = nullptr; }
+  TechnoClass* Contact_With_Whom() const { return (TechnoClass*)Radio; }
 
   // Inherited from base class(es).
   virtual RadioMessageType Receive_Message(RadioClass* from,

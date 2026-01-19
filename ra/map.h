@@ -54,8 +54,8 @@
 
 class MapClass : public GScreenClass {
  public:
-  MapClass() {};
-  MapClass(NoInitClass const& x) : GScreenClass(x), Array(x) {};
+  MapClass() {}
+  MapClass(NoInitClass const& x) : GScreenClass(x), Array(x) {}
 
   /*
   ** Initialization
@@ -77,7 +77,7 @@ class MapClass : public GScreenClass {
   CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
                        MZoneType check = MZONE_NORMAL) const;
   ObjectClass* Close_Object(COORDINATE coord) const;
-  virtual void Detach(ObjectClass*) {};
+  virtual void Detach(ObjectClass*) {}
   int Cell_Region(CELL cell);
   int Cell_Threat(CELL cell, HousesType house);
   bool In_Radar(CELL cell) const;
@@ -132,16 +132,14 @@ class MapClass : public GScreenClass {
   */
   long TotalValue;
 
-  CellClass& operator[](COORDINATE coord) {
-    return (Array[Coord_Cell(coord)]);
-  };
-  CellClass& operator[](CELL cell) { return (Array[cell]); };
+  CellClass& operator[](COORDINATE coord) { return (Array[Coord_Cell(coord)]); }
+  CellClass& operator[](CELL cell) { return (Array[cell]); }
   CellClass const& operator[](COORDINATE coord) const {
     return (Array[Coord_Cell(coord)]);
-  };
-  CellClass const& operator[](CELL cell) const { return (Array[cell]); };
-  int ID(CellClass const* ptr) { return (Array.ID(ptr)); };
-  int ID(CellClass const& ptr) { return (Array.ID(ptr)); };
+  }
+  CellClass const& operator[](CELL cell) const { return (Array[cell]); }
+  int ID(CellClass const* ptr) { return (Array.ID(ptr)); }
+  int ID(CellClass const& ptr) { return (Array.ID(ptr)); }
 
  protected:
   /*

@@ -65,19 +65,19 @@ class AircraftClass : public FootClass, public FlyClass {
 
   //-----------------------------------------------------------------------------
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   void operator delete(void*);
-  operator AircraftType() const { return Class->Type; };
-  AircraftClass() : Class(nullptr) {};
+  operator AircraftType() const { return Class->Type; }
+  AircraftClass() : Class(nullptr) {}
   AircraftClass(NoInitClass const& x)
       : FootClass(x),
         FlyClass(x),
         Class(Class),
         SecondaryFacing(x),
-        SightTimer(x) {};
+        SightTimer(x) {}
   AircraftClass(AircraftType classid, HousesType house);
   virtual ~AircraftClass();
-  virtual RTTIType What_Am_I() const { return RTTI_AIRCRAFT; };
+  virtual RTTIType What_Am_I() const { return RTTI_AIRCRAFT; }
 
   static void Init();
   enum { FLIGHT_LEVEL = 24 };
@@ -106,7 +106,7 @@ class AircraftClass : public FootClass, public FlyClass {
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
   virtual LayerType In_Which_Layer() const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual ActionType What_Action(ObjectClass* target) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
@@ -190,7 +190,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "AIRCRAFT"; };
+  static char const* INI_Name() { return "AIRCRAFT"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();

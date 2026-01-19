@@ -99,9 +99,9 @@ class DriveClass : public FootClass {
   */
   DriveClass();
   DriveClass(UnitType classid, HousesType house);
-  DriveClass(NoInitClass const& x) : FootClass(x), Class(Class) {};
-  virtual ~DriveClass() {};
-  operator UnitType() const { return Class->Type; };
+  DriveClass(NoInitClass const& x) : FootClass(x), Class(Class) {}
+  virtual ~DriveClass() {}
+  operator UnitType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.

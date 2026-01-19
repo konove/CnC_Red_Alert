@@ -24,7 +24,7 @@
 class TextBlitClass {
  public:
   TextBlitClass();
-  ~TextBlitClass() {};
+  ~TextBlitClass() {}
 
   void Add(int x, int y, int dx, int dy, int w, int h);
   void Clear();

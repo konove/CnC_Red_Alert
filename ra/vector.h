@@ -33,18 +33,18 @@
 template <typename T>
 class VectorClass {
  public:
-  VectorClass(NoInitClass const&) {};
+  VectorClass(NoInitClass const&) {}
   VectorClass(base::ssize size = 0, const T* array = nullptr);
   VectorClass(const VectorClass&);  // Copy constructor.
   virtual ~VectorClass();
 
-  T& operator[](base::ssize index) { return Vector[index]; };
-  T const& operator[](base::ssize index) const { return Vector[index]; };
+  T& operator[](base::ssize index) { return Vector[index]; }
+  T const& operator[](base::ssize index) const { return Vector[index]; }
   virtual VectorClass& operator=(const VectorClass&);  // Assignment operator.
   virtual bool operator==(const VectorClass&) const;   // Equality operator.
   virtual bool Resize(base::ssize newsize, const T* array = nullptr);
   virtual void Clear();
-  base::ssize Length() const { return VectorMax; };
+  base::ssize Length() const { return VectorMax; }
   virtual base::ssize ID(const T* ptr);  // Pointer based identification.
   virtual base::ssize ID(const T& ptr);  // Value based identification.
 

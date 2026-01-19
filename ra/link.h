@@ -49,8 +49,8 @@
 */
 class LinkClass {
  public:
-  LinkClass(NoInitClass const&) {};
-  LinkClass() : Next(nullptr), Prev(nullptr) {};
+  LinkClass(NoInitClass const&) {}
+  LinkClass() : Next(nullptr), Prev(nullptr) {}
   virtual ~LinkClass();
 
   virtual LinkClass* Get_Next() const;

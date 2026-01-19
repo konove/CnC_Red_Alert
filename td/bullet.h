@@ -61,7 +61,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *this variable.
   */
   BulletTypeClass const* const Class;
-  operator BulletType() const { return Class->Type; };
+  operator BulletType() const { return Class->Type; }
 
   /*
   **	Records who sent this "present" so that an appropriate "thank you" can
@@ -78,7 +78,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   BulletClass();
   BulletClass(BulletType id);
@@ -87,27 +87,27 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
         Class(Class),
         FlyClass(x),
         FuseClass(x),
-        PrimaryFacing(x) {};
+        PrimaryFacing(x) {}
   virtual ~BulletClass() {
     if (GameActive) BulletClass::Limbo();
-  };
-  virtual RTTIType What_Am_I() const { return RTTI_BULLET; };
+  }
+  virtual RTTIType What_Am_I() const { return RTTI_BULLET; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
   static void Init();
 
-  virtual void Assign_Target(TARGET target) { TarCom = target; };
+  virtual void Assign_Target(TARGET target) { TarCom = target; }
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual LayerType In_Which_Layer() const { return LAYER_TOP; };
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual LayerType In_Which_Layer() const { return LAYER_TOP; }
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual void Detach(TARGET target, bool all);
   virtual void Draw_It(int x, int y, WindowNumberType window);
   virtual bool Mark(MarkType mark = MARK_CHANGE);
   virtual void AI();
   virtual short const* Occupy_List() const;
-  virtual short const* Overlap_List() const { return Occupy_List(); };
+  virtual short const* Overlap_List() const { return Occupy_List(); }
   virtual TARGET As_Target() const;
 
   /*

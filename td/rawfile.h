@@ -159,7 +159,7 @@ EZERO,                 // Non-error.
   **	perform. Larger file transfers are performed in chunks of this size or
   *less.
   */
-  long Transfer_Block_Size() { return (long)((unsigned)UINT_MAX) - 16L; };
+  long Transfer_Block_Size() { return (long)((unsigned)UINT_MAX) - 16L; }
 
  private:
 #ifdef PORTABLE

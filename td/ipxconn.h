@@ -83,7 +83,7 @@ class IPXConnClass : public NonSequencedConnClass
   .....................................................................*/
   IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
                IPXAddressClass* address, int id, char* name);
-  virtual ~IPXConnClass() {};
+  virtual ~IPXConnClass() {}
 
   /*.....................................................................
   Initialization.

@@ -72,7 +72,7 @@ class IPXConnClass : public ConnectionClass {
   .....................................................................*/
   IPXConnClass(int numsend, int numrecieve, int maxlen, unsigned short magicnum,
                IPXAddressClass* address, int id, char* name, int extralen = 0);
-  virtual ~IPXConnClass() {};
+  virtual ~IPXConnClass() {}
 
   /*.....................................................................
   Initialization.

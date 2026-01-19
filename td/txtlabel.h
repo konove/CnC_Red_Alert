@@ -61,7 +61,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Sets the displayed text of the label
   */
-  virtual void Set_Text(char* txt) { Text = txt; };
+  virtual void Set_Text(char* txt) { Text = txt; }
 
   /*
   ** General-purpose data field

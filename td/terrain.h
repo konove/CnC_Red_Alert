@@ -59,20 +59,20 @@
 class TerrainClass : public ObjectClass, public StageClass {
  public:
   TerrainTypeClass const* const Class;
-  operator TerrainType() const { return Class->Type; };
+  operator TerrainType() const { return Class->Type; }
 
   /*
   **	Constructor for terrain object class.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   TerrainClass();
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const& x)
-      : ObjectClass(x), Class(Class), StageClass(x) {};
+      : ObjectClass(x), Class(Class), StageClass(x) {}
   virtual ~TerrainClass();
-  virtual RTTIType What_Am_I() const { return RTTI_TERRAIN; };
+  virtual RTTIType What_Am_I() const { return RTTI_TERRAIN; }
 
   static void Init();
 
@@ -84,18 +84,18 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
   virtual COORDINATE Center_Coord() const;
-  virtual COORDINATE Render_Coord() const { return Coord; };
+  virtual COORDINATE Render_Coord() const { return Coord; }
   virtual COORDINATE Sort_Y() const {
     return Coord_Add(Coord, Class->CenterBase);
-  };
-  virtual COORDINATE Target_Coord() const { return Sort_Y(); };
+  }
+  virtual COORDINATE Target_Coord() const { return Sort_Y(); }
 
   /*
   **	Object entry and exit from the game system.
@@ -116,7 +116,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	User I/O.
   */
-  virtual void Clicked_As_Target(int) {};
+  virtual void Clicked_As_Target(int) {}
 
   /*
   **	Combat related.
@@ -144,7 +144,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "TERRAIN"; };
+  static char const* INI_Name() { return "TERRAIN"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();

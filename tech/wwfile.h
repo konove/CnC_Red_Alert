@@ -58,7 +58,7 @@
 
 class FileClass {
  public:
-  virtual ~FileClass() {};
+  virtual ~FileClass() {}
   virtual char const* File_Name() const = 0;
   virtual char const* Set_Name(char const* filename) = 0;
   virtual int Create() = 0;
@@ -77,7 +77,7 @@ class FileClass {
   virtual void Error(int error, int canretry = false,
                      char const* filename = nullptr) = 0;
 
-  operator char const*() { return File_Name(); };
+  operator char const*() { return File_Name(); }
 };
 
 #endif

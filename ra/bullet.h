@@ -80,15 +80,14 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   BulletClass(BulletType id, TARGET target, TechnoClass* Payback, int strength,
               WarheadType warhead, int speed);
   BulletClass(NoInitClass const& x)
-      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {
-        };
+      : ObjectClass(x), Class(x), FlyClass(x), FuseClass(x), PrimaryFacing(x) {}
   virtual ~BulletClass();
-  operator BulletType() const { return Class->Type; };
+  operator BulletType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -100,15 +99,15 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   int Shape_Number() const;
   virtual LayerType In_Which_Layer() const;
   virtual COORDINATE Sort_Y() const;
-  virtual void Assign_Target(TARGET target) { TarCom = target; };
+  virtual void Assign_Target(TARGET target) { TarCom = target; }
   virtual bool Unlimbo(COORDINATE, DirType facing = DIR_N);
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual void Detach(TARGET target, bool all);
   virtual void Draw_It(int x, int y, WindowNumberType window) const;
   virtual bool Mark(MarkType mark = MARK_CHANGE);
   virtual void AI();
   virtual short const* Occupy_List(bool = false) const;
-  virtual short const* Overlap_List() const { return Occupy_List(false); };
+  virtual short const* Overlap_List() const { return Occupy_List(false); }
   virtual COORDINATE Target_Coord() const;
 
   /*

@@ -52,7 +52,7 @@
 class MouseClass : public ScrollClass {
  public:
   MouseClass();
-  MouseClass(NoInitClass const& x) : ScrollClass(x) {};
+  MouseClass(NoInitClass const& x) : ScrollClass(x) {}
 
   /*
   ** Initialization
@@ -63,7 +63,7 @@ class MouseClass : public ScrollClass {
   virtual void AI(KeyNumType& input, int x, int y);
   virtual bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false);
   virtual void Revert_Mouse_Shape();
-  virtual MouseType Get_Mouse_Shape() const { return NormalMouseShape; };
+  virtual MouseType Get_Mouse_Shape() const { return NormalMouseShape; }
   virtual void Mouse_Small(bool wsmall);
 
   /*

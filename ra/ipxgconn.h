@@ -138,7 +138,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   //.....................................................................
   IPXGlobalConnClass(int numsend, int numrecieve, int maxlen,
                      unsigned short product_id);
-  virtual ~IPXGlobalConnClass() {};
+  virtual ~IPXGlobalConnClass() {}
 
   //.....................................................................
   // Send/Receive routines.

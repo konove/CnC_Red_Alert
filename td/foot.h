@@ -201,7 +201,7 @@ class FootClass : public TechnoClass {
   FootClass();
   virtual ~FootClass();
   FootClass(NoInitClass const& x)
-      : TechnoClass(x), PathDelay(x), BaseAttackTimer(x) {};
+      : TechnoClass(x), PathDelay(x), BaseAttackTimer(x) {}
   FootClass(HousesType house);
 
   /*---------------------------------------------------------------------
@@ -225,7 +225,7 @@ class FootClass : public TechnoClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  COORDINATE Head_To_Coord() const { return (HeadToCoord); };
+  COORDINATE Head_To_Coord() const { return (HeadToCoord); }
   virtual bool Start_Driver(COORDINATE& headto);
   virtual bool Stop_Driver();
   virtual void Assign_Destination(TARGET target);
@@ -282,7 +282,7 @@ class FootClass : public TechnoClass {
   */
   virtual void Per_Cell_Process(bool center);
   virtual void Approach_Target();
-  virtual void Fixup_Path(PathType*) {};
+  virtual void Fixup_Path(PathType*) {}
   virtual void Set_Speed(int speed);
   virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const;
   int Optimize_Moves(PathType* path, MoveType threshhold);

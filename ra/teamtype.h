@@ -121,11 +121,11 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass();
-  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x), Trigger(x) {};
-  virtual ~TeamTypeClass() {};
+  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x), Trigger(x) {}
+  virtual ~TeamTypeClass() {}
 
   static void* operator new(size_t);
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
 
   /*
@@ -140,7 +140,7 @@ class TeamTypeClass : public AbstractTypeClass {
   static void Read_INI(CCINIClass& ini);
   void Fill_In(char* name, char* entry);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "TeamTypes"; };
+  static char const* INI_Name() { return "TeamTypes"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
   void Code_Pointers();

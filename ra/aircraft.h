@@ -75,13 +75,16 @@ class AircraftClass : public FootClass, public FlyClass {
 
   //-----------------------------------------------------------------------------
   static void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void*);
-  operator AircraftType() const { return Class->Type; };
+  operator AircraftType() const { return Class->Type; }
   AircraftClass(AircraftType classid, HousesType house);
   AircraftClass(NoInitClass const& x)
-      : FootClass(x), FlyClass(x), Class(x), SecondaryFacing(x), SightTimer(x) {
-        };
+      : FootClass(x),
+        FlyClass(x),
+        Class(x),
+        SecondaryFacing(x),
+        SightTimer(x) {}
   virtual ~AircraftClass();
 
   static void Init();
@@ -111,7 +114,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Shape_Number() const;
   virtual MoveType Can_Enter_Cell(CELL cell,
                                   FacingType facing = FACING_NONE) const;
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   virtual ActionType What_Action(ObjectClass const* target) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const;
@@ -198,7 +201,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	File I/O.
   */
   static void Read_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "AIRCRAFT"; };
+  static char const* INI_Name() { return "AIRCRAFT"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

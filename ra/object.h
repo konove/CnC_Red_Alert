@@ -139,14 +139,14 @@ class ObjectClass : public AbstractClass {
   **	Constructor & destructors.
   */
   ObjectClass(RTTIType rtti, int id);
-  ObjectClass(NoInitClass const& x) : AbstractClass(x), Next(x), Trigger(x) {};
-  virtual ~ObjectClass() { Next = nullptr; };
+  ObjectClass(NoInitClass const& x) : AbstractClass(x), Next(x), Trigger(x) {}
+  virtual ~ObjectClass() { Next = nullptr; }
   int operator<(ObjectClass const& object) const {
     return Sort_Y() < object.Sort_Y();
-  };
+  }
   int operator>(ObjectClass const& object) const {
     return Sort_Y() > object.Sort_Y();
-  };
+  }
 
   /*
   **	Object selection control.
@@ -161,16 +161,16 @@ class ObjectClass : public AbstractClass {
   virtual ActionType What_Action(ObjectClass const*) const;
   virtual ActionType What_Action(CELL) const;
   virtual LayerType In_Which_Layer() const;
-  bool Is_Infantry() const { return (RTTI == RTTI_INFANTRY); };
+  bool Is_Infantry() const { return (RTTI == RTTI_INFANTRY); }
   bool Is_Foot() const {
     return (RTTI == RTTI_INFANTRY || RTTI == RTTI_UNIT || RTTI == RTTI_VESSEL ||
             RTTI == RTTI_AIRCRAFT);
-  };
+  }
   bool Is_Techno() const {
     return (RTTI == RTTI_BUILDING || RTTI == RTTI_UNIT ||
             RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
             RTTI == RTTI_AIRCRAFT);
-  };
+  }
   virtual int Get_Ownable() const;
   virtual ObjectTypeClass const& Class_Of() const = 0;
   virtual char const* Name() const;

@@ -69,7 +69,7 @@
 class InfantryClass : public FootClass {
  public:
   InfantryTypeClass const* const Class;
-  operator InfantryType() const { return Class->Type; };
+  operator InfantryType() const { return Class->Type; }
 
   /*
   **	If the infantry is undergoing some choreographed animation sequence,
@@ -126,12 +126,12 @@ class InfantryClass : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   InfantryClass();
   InfantryClass(InfantryType classid, HousesType house);
   InfantryClass(NoInitClass const& x)
-      : FootClass(x), Class(Class), Comment(x) {};
+      : FootClass(x), Class(Class), Comment(x) {}
   virtual ~InfantryClass();
   virtual RTTIType What_Am_I() const;
 
@@ -197,11 +197,11 @@ class InfantryClass : public FootClass {
   virtual int Rearm_Delay(bool second) const;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
-  };
+  }
   void Set_Occupy_Bit(CELL cell, int spot_index);
   void Clear_Occupy_Bit(COORDINATE coord) {
     Clear_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
-  };
+  }
   void Clear_Occupy_Bit(CELL cell, int spot_index);
 
   /*
@@ -230,7 +230,7 @@ class InfantryClass : public FootClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "INFANTRY"; };
+  static char const* INI_Name() { return "INFANTRY"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();

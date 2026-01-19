@@ -67,7 +67,7 @@ class ListClass : public ControlClass {
   virtual int Add_Item(int text);
   virtual int Add_Scroll_Bar();
   virtual void Bump(int up);
-  virtual int Count() const { return List.Count(); };
+  virtual int Count() const { return List.Count(); }
   virtual int Current_Index() const;
   virtual char const* Current_Item() const;
   virtual int Draw_Me(int forced);

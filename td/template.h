@@ -61,23 +61,23 @@ class TemplateClass : public ObjectClass {
   **	Constructors and destructors.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   TemplateClass();
   TemplateClass(TemplateType type, CELL pos = -1);
-  TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
+  TemplateClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
   virtual ~TemplateClass() {
     if (GameActive) TemplateClass::Limbo();
-  };
-  operator TemplateType() const { return Class->Type; };
-  virtual RTTIType What_Am_I() const { return RTTI_TEMPLATE; };
+  }
+  operator TemplateType() const { return Class->Type; }
+  virtual RTTIType What_Am_I() const { return RTTI_TEMPLATE; }
 
   static void Init();
 
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
   int Icon_Number(CELL cell);
 
   /*
@@ -88,7 +88,7 @@ class TemplateClass : public ObjectClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  virtual void Draw_It(int, int, WindowNumberType) {};
+  virtual void Draw_It(int, int, WindowNumberType) {}
   virtual bool Mark(MarkType mark);
 
   /*
@@ -105,7 +105,7 @@ class TemplateClass : public ObjectClass {
   */
   static void Read_INI(char* buffer);
   static void Write_INI(char* buffer);
-  static char const* INI_Name() { return "TEMPLATE"; };
+  static char const* INI_Name() { return "TEMPLATE"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();

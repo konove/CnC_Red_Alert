@@ -51,7 +51,7 @@
 class HelpClass : public TabClass {
  public:
   HelpClass();
-  HelpClass(NoInitClass const& x) : TabClass(x) {};
+  HelpClass(NoInitClass const& x) : TabClass(x) {}
 
   /*
   ** Initialization

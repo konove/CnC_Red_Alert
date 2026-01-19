@@ -62,7 +62,7 @@ class ScoreClass {
   int CHarvested;
   unsigned long ElapsedTime;
 
-  void Init() { memset(this, 0, sizeof(ScoreClass)); };
+  void Init() { memset(this, 0, sizeof(ScoreClass)); }
   void Presentation();
 
   /*
@@ -97,8 +97,8 @@ class ScoreAnimClass {
   int YPos;
   CountDownTimerClass Timer;
   void const* DataPtr;
-  virtual void Update() {};
-  virtual ~ScoreAnimClass() {};
+  virtual void Update() {}
+  virtual ~ScoreAnimClass() {}
 };
 
 class ScoreCredsClass : public ScoreAnimClass {
@@ -111,7 +111,7 @@ class ScoreCredsClass : public ScoreAnimClass {
 
   virtual void Update();
   ScoreCredsClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreCredsClass() {};
+  virtual ~ScoreCredsClass() {}
 };
 
 class ScoreTimeClass : public ScoreAnimClass {
@@ -121,7 +121,7 @@ class ScoreTimeClass : public ScoreAnimClass {
   int TimerReset;
   virtual void Update();
   ScoreTimeClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreTimeClass() {};
+  virtual ~ScoreTimeClass() {}
 };
 
 class ScorePrintClass : public ScoreAnimClass {
@@ -134,7 +134,7 @@ class ScorePrintClass : public ScoreAnimClass {
                   int background = TBLACK);
   ScorePrintClass(int string, int xpos, int ypos, void const* palette,
                   int background = TBLACK);
-  virtual ~ScorePrintClass() {};
+  virtual ~ScorePrintClass() {}
 };
 
 class MultiStagePrintClass : public ScoreAnimClass {
@@ -147,7 +147,7 @@ class MultiStagePrintClass : public ScoreAnimClass {
                        void const* palette, int background = TBLACK);
   MultiStagePrintClass(int string, int xpos, int ypos, void const* palette,
                        int background = TBLACK);
-  virtual ~MultiStagePrintClass() {};
+  virtual ~MultiStagePrintClass() {}
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
@@ -157,7 +157,7 @@ class ScoreScaleClass : public ScoreAnimClass {
   virtual void Update();
   ScoreScaleClass(void const* data, int xpos, int ypos,
                   unsigned char const pal[]);
-  virtual ~ScoreScaleClass() {};
+  virtual ~ScoreScaleClass() {}
 };
 
 #define MAXSCOREOBJS 8

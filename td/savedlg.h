@@ -62,7 +62,7 @@ class SaveOptionsClass {
   };
 
  public:
-  SaveOptionsClass() {};
+  SaveOptionsClass() {}
   void Process();
 };
 

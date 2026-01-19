@@ -228,14 +228,13 @@ class BuildingClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+  static void *operator new(size_t, void *ptr) throw() { return (ptr); }
   static void operator delete(void *ptr);
   BuildingClass(StructType type, HousesType house);
   BuildingClass(NoInitClass const &x)
-      : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {
-        };
+      : TechnoClass(x), Class(x), Factory(x), CountDown(x), PlacementDelay(x) {}
   virtual ~BuildingClass();
-  operator StructType() const { return Class->Type; };
+  operator StructType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -245,7 +244,7 @@ class BuildingClass : public TechnoClass {
   TARGET Target_Scan();
   BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
     return (&Class->Anims[BState]);
-  };
+  }
 
   /*
   **	Query functions.
@@ -261,7 +260,7 @@ class BuildingClass : public TechnoClass {
   virtual ActionType What_Action(ObjectClass const *target) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual bool Can_Demolish() const;
-  virtual ObjectTypeClass const &Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const &Class_Of() const { return *Class; }
   virtual DirType Fire_Direction() const;
   virtual short const *Overlap_List(bool redraw = false) const;
   int Shape_Number() const;
@@ -360,7 +359,7 @@ class BuildingClass : public TechnoClass {
   */
   static void Read_INI(CCINIClass &ini);
   static void Write_INI(CCINIClass &ini);
-  static char const *INI_Name() { return "STRUCTURES"; };
+  static char const *INI_Name() { return "STRUCTURES"; }
   bool Load(Straw &file);
   bool Save(Pipe &file) const;
 

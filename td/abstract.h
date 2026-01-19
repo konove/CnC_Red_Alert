@@ -69,20 +69,20 @@ class AbstractClass {
   /*-----------------------------------------------------------------------------------
   **	Constructor & destructors.
   */
-  AbstractClass() { Coord = 0L; };
-  AbstractClass(NoInitClass const& x) { x(); };
-  virtual ~AbstractClass() {};
+  AbstractClass() { Coord = 0L; }
+  AbstractClass(NoInitClass const& x) { x(); }
+  virtual ~AbstractClass() {}
 
   /*
   **	Query functions.
   */
-  virtual HousesType Owner() const { return HOUSE_NONE; };
+  virtual HousesType Owner() const { return HOUSE_NONE; }
 
   /*
   **	Coordinate query support functions.
   */
-  virtual COORDINATE Center_Coord() const { return Coord; };
-  virtual COORDINATE Target_Coord() const { return Coord; };
+  virtual COORDINATE Center_Coord() const { return Coord; }
+  virtual COORDINATE Target_Coord() const { return Coord; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -90,38 +90,38 @@ class AbstractClass {
   */
   DirType Direction(AbstractClass const* object) const {
     return ::Direction(Center_Coord(), object->Target_Coord());
-  };
+  }
   DirType Direction(COORDINATE coord) const {
     return ::Direction(Center_Coord(), coord);
-  };
+  }
   DirType Direction(TARGET target) const {
     return ::Direction(Center_Coord(), As_Coord(target));
-  };
+  }
   DirType Direction(CELL cell) const {
     return ::Direction(Coord_Cell(Center_Coord()), cell);
-  };
+  }
   int Distance(TARGET target) const;
   int Distance(COORDINATE coord) const {
     return ::Distance(Center_Coord(), coord);
-  };
+  }
   int Distance(CELL cell) const {
     return ::Distance(Coord_Cell(Center_Coord()), cell);
-  };
+  }
   int Distance(AbstractClass const* object) const {
     return ::Distance(Center_Coord(), object->Target_Coord());
-  };
+  }
 
   /*
   **	Object entry and exit from the game system.
   */
   virtual MoveType Can_Enter_Cell(CELL, FacingType = FACING_NONE) const {
     return MOVE_OK;
-  };
+  }
 
   /*
   **	AI.
   */
-  virtual void AI() {};
+  virtual void AI() {}
 };
 
 #endif

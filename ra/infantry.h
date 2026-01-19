@@ -124,12 +124,12 @@ class InfantryClass : public FootClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   InfantryClass(InfantryType classid, HousesType house);
-  InfantryClass(NoInitClass const& x) : FootClass(x), Class(x), Comment(x) {};
+  InfantryClass(NoInitClass const& x) : FootClass(x), Class(x), Comment(x) {}
   virtual ~InfantryClass();
-  operator InfantryType() const { return Class->Type; };
+  operator InfantryType() const { return Class->Type; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -186,11 +186,11 @@ class InfantryClass : public FootClass {
   virtual void Assign_Target(TARGET);
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
-  };
+  }
   void Set_Occupy_Bit(CELL cell, int spot_index);
   void Clear_Occupy_Bit(COORDINATE coord) {
     Clear_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
-  };
+  }
   void Clear_Occupy_Bit(CELL cell, int spot_index);
 
   /*
@@ -224,7 +224,7 @@ class InfantryClass : public FootClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "INFANTRY"; };
+  static char const* INI_Name() { return "INFANTRY"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

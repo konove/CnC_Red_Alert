@@ -132,12 +132,12 @@ class UnitClass : public DriveClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   UnitClass(UnitType classid, HousesType house);
   UnitClass(NoInitClass const& x)
-      : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {};
-  operator UnitType() const { return Class->Type; };
+      : DriveClass(x), Class(x), Reload(x), SecondaryFacing(x) {}
+  operator UnitType() const { return Class->Type; }
   virtual ~UnitClass();
 
   /*---------------------------------------------------------------------
@@ -264,7 +264,7 @@ class UnitClass : public DriveClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "UNITS"; };
+  static char const* INI_Name() { return "UNITS"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 };

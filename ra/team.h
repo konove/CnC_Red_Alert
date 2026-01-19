@@ -211,11 +211,11 @@ class TeamClass : public AbstractClass {
         SuspendTimer(x),
         Trigger(x),
         TimeOut(x),
-        Member(x) {};
+        Member(x) {}
   virtual ~TeamClass();
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void Init();
   static void Suspend_Teams(int priority, HouseClass const* house);
   void Debug_Dump(MonoClass* mono) const;
@@ -233,7 +233,7 @@ class TeamClass : public AbstractClass {
   void Force_Active() {
     IsForcedActive = true;
     IsUnderStrength = false;
-  };
+  }
   bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
   void AI();

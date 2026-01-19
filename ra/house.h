@@ -75,7 +75,7 @@ class FactoryClass;
 class HouseStaticClass {
  public:
   HouseStaticClass();
-  HouseStaticClass(NoInitClass const&) {};
+  HouseStaticClass(NoInitClass const&) {}
 
   /*
   **	This value indicates the degree of smartness to assign to this house.
@@ -627,7 +627,7 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   HouseClass(HousesType house);
   HouseClass(NoInitClass const& x)
@@ -643,7 +643,7 @@ class HouseClass {
         SpeakAttackDelay(x),
         SpeakPowerDelay(x),
         SpeakMoneyDelay(x),
-        SpeakMaxedDelay(x) {};
+        SpeakMaxedDelay(x) {}
   ~HouseClass();
   operator HousesType() const;
 
@@ -694,11 +694,11 @@ class HouseClass {
   void Make_Ally(HousesType house);
   void Make_Ally(ObjectClass* object) {
     if (object) Make_Ally(object->Owner());
-  };
+  }
   void Make_Enemy(HousesType house);
   void Make_Enemy(ObjectClass* object) {
     if (object) Make_Enemy(object->Owner());
-  };
+  }
   bool Is_Ally(HousesType house) const;
   bool Is_Ally(HouseClass const* house) const;
   bool Is_Ally(ObjectClass const* object) const;
@@ -736,7 +736,7 @@ class HouseClass {
   int Adjust_Capacity(int adjust, bool inanger = false);
   fixed Power_Fraction() const;
   fixed Tiberium_Fraction() const;
-  void Begin_Production() { IsStarted = true; };
+  void Begin_Production() { IsStarted = true; }
   TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
   void Tracking_Remove(TechnoClass const* techno);
@@ -768,7 +768,7 @@ class HouseClass {
 
   bool Can_Make_Money() const {
     return (Available_Money() > 300 || (BScan & STRUCTF_REFINERY));
-  };
+  }
 
   static void Init();
   static void One_Time();
@@ -873,16 +873,16 @@ class HouseClass {
   **	the house AI processing. Higher priority build requests take precidence.
   */
   struct BuildChoiceClass {
-    static void* operator new(size_t, void* ptr) throw() { return (ptr); };
-    UrgencyType Urgency;   // The urgency of the build request.
+    static void* operator new(size_t, void* ptr) throw() { return (ptr); }
+    UrgencyType Urgency;   // The urgency of the build request
     StructType Structure;  // The type of building to produce.
 
-    BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {};
-    BuildChoiceClass(NoInitClass const&) {};
-    int Save(Pipe&) const { return (true); };
-    int Load(Straw&) { return (true); };
-    void Code_Pointers() {};
-    void Decode_Pointers() {};
+    BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {}
+    BuildChoiceClass(NoInitClass const&) {}
+    int Save(Pipe&) const { return (true); }
+    int Load(Straw&) { return (true); }
+    void Code_Pointers() {}
+    void Decode_Pointers() {}
   };
 
   static TFixedIHeapClass<BuildChoiceClass> BuildChoice;

@@ -77,7 +77,7 @@ class TurretClass : public DriveClass {
   TurretClass(UnitType classid, HousesType house);
   TurretClass() = default;
   TurretClass(NoInitClass const& x)
-      : DriveClass(x), Reload(x), SecondaryFacing(x) {};
+      : DriveClass(x), Reload(x), SecondaryFacing(x) {}
   ~TurretClass() override = default;
 
   BulletClass* Fire_At(TARGET target, int which);

@@ -55,7 +55,7 @@ class CheckListClass : public ListClass {
   ---------------------------------------------------------------------*/
   CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                  void const* up, void const* down);
-  ~CheckListClass() {};
+  ~CheckListClass() {}
 
   /*---------------------------------------------------------------------
   Checkmark utility functions

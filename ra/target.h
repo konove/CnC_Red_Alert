@@ -137,7 +137,7 @@ class xTargetClass {
   // conversion operator to regular TARGET type
   TARGET As_TARGET() const { return (Target.Target); }
 
-  unsigned Value() const { return (Target.Sub.Mantissa); };
+  unsigned Value() const { return (Target.Sub.Mantissa); }
 
   void Invalidate() {
     Target.Sub.Exponent = RTTI_NONE;

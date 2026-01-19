@@ -37,13 +37,13 @@ class LEDClass {
  public:
   static int Scroll_Lock(ControlType control = LED_TOGGLE) {
     return Shift_Control(control, 0x01);
-  };
+  }
   static int Caps_Lock(ControlType control = LED_TOGGLE) {
     return Shift_Control(control, 0x02);
-  };
+  }
   static int Num_Lock(ControlType control = LED_TOGGLE) {
     return Shift_Control(control, 0x04);
-  };
+  }
 
  private:
   static void Send_To_Keyboard(unsigned char val);

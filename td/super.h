@@ -47,7 +47,7 @@
 
 class SuperClass {
  public:
-  SuperClass(NoInitClass const& x) : Control(x) {};
+  SuperClass(NoInitClass const& x) : Control(x) {}
   SuperClass(int recharge = 0, VoxType charging = VOX_NONE,
              VoxType ready = VOX_NONE, VoxType impatient = VOX_NONE,
              VoxType suspend = VOX_NONE);
@@ -60,9 +60,9 @@ class SuperClass {
   void Impatient_Click() const;
   int Anim_Stage() const;
   bool Discharged(bool player);
-  bool Is_Ready() const { return (IsReady); };
-  bool Is_Present() const { return (IsPresent); };
-  bool Is_One_Time() const { return (IsOneTime && IsPresent); };
+  bool Is_Ready() const { return (IsReady); }
+  bool Is_Present() const { return (IsPresent); }
+  bool Is_One_Time() const { return (IsOneTime && IsPresent); }
 
  private:
   bool Recharge(bool player = false);

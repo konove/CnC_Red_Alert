@@ -180,12 +180,12 @@ class CellClass {
 
   //----------------------------------------------------------------
   CellClass();
-  ~CellClass() {};
+  ~CellClass() {}
 
   // Resets the cell to its default initial state.
   void Reset();
 
-  int operator==(CellClass const& cell) const { return &cell == this; };
+  int operator==(CellClass const& cell) const { return &cell == this; }
 
   /*
   **	Query functions.
@@ -196,18 +196,18 @@ class CellClass {
     return (!(Flag.Composite & (1 << spot_index)));
   }
   COORDINATE Closest_Free_Spot(COORDINATE coord, bool any = false) const;
-  COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); };
+  COORDINATE Free_Spot() const { return Closest_Free_Spot(Cell_Coord()); }
   bool Is_Generally_Clear() const;
-  TARGET As_Target() const { return ::As_Target(Cell_Number()); };
+  TARGET As_Target() const { return ::As_Target(Cell_Number()); }
   BuildingClass* Cell_Building() const;
   CellClass const& Adjacent_Cell(FacingType face) const;
   CellClass& Adjacent_Cell(FacingType face) {
     return (CellClass&)((*((CellClass const*)this)).Adjacent_Cell(face));
-  };
+  }
   COORDINATE Cell_Coord() const;
   int Cell_Color(bool override = false) const;
   CELL Cell_Number() const;
-  LandType Land_Type() const { return Land; };
+  LandType Land_Type() const { return Land; }
   ObjectClass* Cell_Find_Object(RTTIType rtti) const;
   ObjectClass* Cell_Object(int x = 0, int y = 0) const;
   TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
@@ -257,12 +257,12 @@ class CellClass {
   void Incoming(COORDINATE threat = 0, bool forced = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
-  int operator!=(CellClass const&) const { return 0; };
+  int operator!=(CellClass const&) const { return 0; }
 
   int Validate() const;
 
  private:
-  CellClass(CellClass const&) {};
+  CellClass(CellClass const&) {}
 
   LandType Land;  // The land type of this cell.
 };

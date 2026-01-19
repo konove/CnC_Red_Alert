@@ -61,16 +61,16 @@ class OverlayClass : public ObjectClass {
   **	Constructors and destructors.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   OverlayClass();
   OverlayClass(OverlayType type, CELL pos = -1, HousesType = HOUSE_NONE);
-  OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {};
+  OverlayClass(NoInitClass const& x) : ObjectClass(x), Class(Class) {}
   virtual ~OverlayClass() {
     if (GameActive) OverlayClass::Limbo();
-  };
-  operator OverlayType() const { return Class->Type; };
-  virtual RTTIType What_Am_I() const { return RTTI_OVERLAY; };
+  }
+  operator OverlayType() const { return Class->Type; }
+  virtual RTTIType What_Am_I() const { return RTTI_OVERLAY; }
 
   static void Init();
 
@@ -79,7 +79,7 @@ class OverlayClass : public ObjectClass {
   */
   static void Read_INI(char*);
   static void Write_INI(char*);
-  static char const* INI_Name() { return "OVERLAY"; };
+  static char const* INI_Name() { return "OVERLAY"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   virtual void Code_Pointers();
@@ -89,8 +89,8 @@ class OverlayClass : public ObjectClass {
   **	Virtual support functionality.
   */
   virtual bool Mark(MarkType);
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
-  virtual void Draw_It(int, int, WindowNumberType) {};
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
+  virtual void Draw_It(int, int, WindowNumberType) {}
 
   /*
   **	Dee-buggin' support.

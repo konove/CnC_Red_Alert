@@ -49,7 +49,7 @@
 class TabClass : public SidebarClass {
  public:
   TabClass();
-  TabClass(NoInitClass const& x) : SidebarClass(x), Credits(x) {};
+  TabClass(NoInitClass const& x) : SidebarClass(x), Credits(x) {}
 
   virtual void AI(KeyNumType& input, int x, int y);
   virtual void Draw_It(bool complete = false);
@@ -60,14 +60,14 @@ class TabClass : public SidebarClass {
   void Redraw_Tab() {
     IsToRedraw = true;
     Flag_To_Redraw(false);
-  };
+  }
 
   /*
   **	File I/O.
   */
   virtual void Code_Pointers();
   virtual void Decode_Pointers();
-  inline int Get_Tab_Height() { return (Tab_Height); };
+  inline int Get_Tab_Height() { return (Tab_Height); }
 
   CreditClass Credits;
 

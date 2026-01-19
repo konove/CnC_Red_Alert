@@ -130,8 +130,8 @@ struct TActionClass {
   TActionClass() : Action(TACTION_NONE) {
     Data.Theme = THEME_NONE;
     Data.Value = -1;
-  };
-  TActionClass(NoInitClass const& x) : Team(x), Trigger(x) {};
+  }
+  TActionClass(NoInitClass const& x) : Team(x), Trigger(x) {}
 
   void Detach(TARGET target);
   void Code_Pointers();

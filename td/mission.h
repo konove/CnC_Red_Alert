@@ -73,8 +73,8 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass();
-  MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {};
-  virtual ~MissionClass() {};
+  MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
+  virtual ~MissionClass() {}
 
 /*---------------------------------------------------------------------
 **	Member function prototypes.

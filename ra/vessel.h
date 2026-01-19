@@ -92,11 +92,11 @@ class VesselClass : public DriveClass {
 
   VesselClass(VesselType classid, HousesType house);
   VesselClass(NoInitClass const& x)
-      : DriveClass(x), Class(x), SecondaryFacing(x) {};
+      : DriveClass(x), Class(x), SecondaryFacing(x) {}
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
-  operator VesselType() const { return Class->Type; };
+  operator VesselType() const { return Class->Type; }
 
   static void Init();
 
@@ -149,7 +149,7 @@ class VesselClass : public DriveClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "SHIPS"; };
+  static char const* INI_Name() { return "SHIPS"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

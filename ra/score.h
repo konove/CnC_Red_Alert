@@ -50,8 +50,8 @@
 
 class ScoreClass {
  public:
-  ScoreClass() {};
-  ScoreClass(NoInitClass const&) {};
+  ScoreClass() {}
+  ScoreClass(NoInitClass const&) {}
 
   int Score;
   int NKilled;
@@ -100,8 +100,8 @@ class ScoreAnimClass {
   int YPos;
   CDTimerClass<SystemTimerClass> Timer;
   void const* DataPtr;
-  virtual void Update() {};
-  virtual ~ScoreAnimClass() { DataPtr = nullptr; };
+  virtual void Update() {}
+  virtual ~ScoreAnimClass() { DataPtr = nullptr; }
 };
 
 class ScoreCredsClass : public ScoreAnimClass {
@@ -117,7 +117,7 @@ class ScoreCredsClass : public ScoreAnimClass {
   virtual ~ScoreCredsClass() {
     CashTurn = nullptr;
     Clock1 = nullptr;
-  };
+  }
 };
 
 class ScoreTimeClass : public ScoreAnimClass {
@@ -127,7 +127,7 @@ class ScoreTimeClass : public ScoreAnimClass {
   int TimerReset;
   virtual void Update();
   ScoreTimeClass(int xpos, int ypos, void const* data, int max, int timer);
-  virtual ~ScoreTimeClass() {};
+  virtual ~ScoreTimeClass() {}
 };
 
 class ScorePrintClass : public ScoreAnimClass {
@@ -140,7 +140,7 @@ class ScorePrintClass : public ScoreAnimClass {
                   int background = TBLACK);
   ScorePrintClass(int string, int xpos, int ypos, void const* palette,
                   int background = TBLACK);
-  virtual ~ScorePrintClass() { PrimaryPalette = nullptr; };
+  virtual ~ScorePrintClass() { PrimaryPalette = nullptr; }
 };
 
 class ScoreScaleClass : public ScoreAnimClass {
@@ -150,7 +150,7 @@ class ScoreScaleClass : public ScoreAnimClass {
   virtual void Update();
   ScoreScaleClass(void const* data, int xpos, int ypos,
                   unsigned char const pal[]);
-  virtual ~ScoreScaleClass() { Palette = nullptr; };
+  virtual ~ScoreScaleClass() { Palette = nullptr; }
 };
 
 #define MAXSCOREOBJS 8

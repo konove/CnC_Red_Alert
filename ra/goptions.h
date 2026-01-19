@@ -75,7 +75,7 @@ class GameOptionsClass : public OptionsClass {
   };
 
  public:
-  GameOptionsClass() : OptionsClass() {};
+  GameOptionsClass() : OptionsClass() {}
   void Adjust_Variables_For_Resolution();
   void Process();
 

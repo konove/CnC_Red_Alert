@@ -51,7 +51,7 @@
 class RadarClass : public DisplayClass {
  public:
   RadarClass();
-  RadarClass(NoInitClass const& x) : DisplayClass(x) {};
+  RadarClass(NoInitClass const& x) : DisplayClass(x) {}
 
   /*
   **	The dimensions and coordinates of the radar map.
@@ -170,7 +170,7 @@ class RadarClass : public DisplayClass {
     RTacticalClass()
         : GadgetClass(0, 0, 0, 0,
                       LEFTPRESS | LEFTRELEASE | LEFTHELD | LEFTUP | RIGHTPRESS,
-                      true) {};
+                      true) {}
 
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

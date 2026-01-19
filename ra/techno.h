@@ -265,8 +265,8 @@ class TechnoClass : public RadioClass,
         Crew(x),
         CloakDelay(x),
         PrimaryFacing(x),
-        Arm(x) {};
-  virtual ~TechnoClass() { House = nullptr; };
+        Arm(x) {}
+  virtual ~TechnoClass() { House = nullptr; }
 
   /*
   **	Query functions.
@@ -282,7 +282,7 @@ class TechnoClass : public RadioClass,
   CELL Nearby_Location(TechnoClass const* from = nullptr) const;
   TechnoTypeClass* Techno_Type_Class() const {
     return ((TechnoTypeClass*)&Class_Of());
-  };
+  }
   bool Is_Visible_On_Radar() const;
   int Anti_Air() const;
   int Anti_Armor() const;

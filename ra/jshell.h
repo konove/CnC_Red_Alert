@@ -88,17 +88,17 @@ struct KeyboardClass : public WWKeyboardClass {
   int Down(KeyNumType key) { return (Key_Down(key)); };
 #else
   KeyboardClass() : IsLibrary(true) {}
-  KeyNumType Get() { return ((KeyNumType)WWKeyboardClass::Get()); };
-  KeyNumType Check() { return ((KeyNumType)WWKeyboardClass::Check()); };
+  KeyNumType Get() { return ((KeyNumType)WWKeyboardClass::Get()); }
+  KeyNumType Check() { return ((KeyNumType)WWKeyboardClass::Check()); }
   KeyASCIIType To_ASCII(KeyNumType key) {
     return ((KeyASCIIType)WWKeyboardClass::To_ASCII(key));
-  };
-  void Clear() { WWKeyboardClass::Clear(); };
-  int Down(KeyNumType key) { return (WWKeyboardClass::Down(key)); };
+  }
+  void Clear() { WWKeyboardClass::Clear(); }
+  int Down(KeyNumType key) { return (WWKeyboardClass::Down(key)); }
 #endif
 
-  int Mouse_X() { return (Get_Mouse_X()); };
-  int Mouse_Y() { return (Get_Mouse_Y()); };
+  int Mouse_X() { return (Get_Mouse_X()); }
+  int Mouse_Y() { return (Get_Mouse_Y()); }
 };
 
 /*
@@ -351,8 +351,8 @@ extern void outport(int port, unsigned short data);
 extern std::uint64_t Frame;
 class FrameTimerClass {
  public:
-  std::uint64_t operator()() const { return (Frame); };
-  operator std::uint64_t() const { return (Frame); };
+  std::uint64_t operator()() const { return (Frame); }
+  operator std::uint64_t() const { return (Frame); }
 };
 
 #ifndef WIN32
@@ -375,11 +375,11 @@ class SystemTimerClass {
   std::uint64_t operator()() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_System_Tick_Count());
-  };
+  }
   operator std::uint64_t() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_System_Tick_Count());
-  };
+  }
 #else
   std::uint64_t operator()() const { return (Get_System_Tick_Count()); };
   operator std::uint64_t() const { return (Get_System_Tick_Count()); };
@@ -393,14 +393,14 @@ class UserTimerClass {
   std::uint64_t operator()() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_User_Tick_Count());
-  };
+  }
   operator std::uint64_t() const {
     if (!WindowsTimer) return (0);
     return (WindowsTimer->Get_User_Tick_Count());
-  };
+  }
 #else
-  std::uint64_t operator()() const { return (Get_User_Tick_Count()); };
-  operator std::uint64_t() const { return (Get_User_Tick_Count()); };
+  std::uint64_t operator()() const { return (Get_User_Tick_Count()); }
+  operator std::uint64_t() const { return (Get_User_Tick_Count()); }
 #endif
 };
 

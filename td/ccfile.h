@@ -63,7 +63,7 @@ class CCFileClass : public CDFileClass {
   virtual int Open(char const* filename, int rights = READ) {
     Set_Name(filename);
     return Open(rights);
-  };
+  }
   virtual int Open(int rights = READ);
   virtual int Is_Open() const;
   virtual int Is_Available(int forced = false);
@@ -115,7 +115,7 @@ class CCFileClass : public CDFileClass {
 
   // Force these to never be invoked.
   CCFileClass const operator=(CCFileClass const& c);
-  CCFileClass(CCFileClass const&) {};
+  CCFileClass(CCFileClass const&) {}
 };
 
 void WWDOS_Shutdown();

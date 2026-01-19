@@ -56,8 +56,8 @@ class CargoClass {
   CargoClass() {
     Quantity = 0;
     CargoHold = nullptr;
-  };
-  CargoClass(NoInitClass const&) {};
+  }
+  CargoClass(NoInitClass const&) {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -66,10 +66,10 @@ class CargoClass {
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const;
 #endif
-  void AI() {};
+  void AI() {}
 
-  int How_Many() const { return Quantity; };
-  bool Is_Something_Attached() const { return (CargoHold != nullptr); };
+  int How_Many() const { return Quantity; }
+  bool Is_Something_Attached() const { return (CargoHold != nullptr); }
   FootClass* Attached_Object() const;
   FootClass* Detach_Object();
   void Attach(FootClass* object);

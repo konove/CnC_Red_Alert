@@ -68,7 +68,7 @@ class VisualControlsClass {
   static constexpr int kButtonY = kOptionY + 102;
 
  public:
-  VisualControlsClass() {};
+  VisualControlsClass() {}
   void Process();
 };
 

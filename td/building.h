@@ -68,7 +68,7 @@
 class BuildingClass : public TechnoClass {
  public:
   BuildingTypeClass const *const Class;
-  operator StructType() const { return Class->Type; };
+  operator StructType() const { return Class->Type; }
 
   /*
   **	If this building is in the process of producing something, then this
@@ -173,14 +173,14 @@ class BuildingClass : public TechnoClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void *operator new(size_t size) throw();
-  static void *operator new(size_t, void *ptr) throw() { return (ptr); };
+  static void *operator new(size_t, void *ptr) throw() { return (ptr); }
   static void operator delete(void *ptr);
-  BuildingClass() : Class(nullptr) {};
+  BuildingClass() : Class(nullptr) {}
   BuildingClass(StructType type, HousesType house);
   BuildingClass(NoInitClass const &x)
-      : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {};
+      : TechnoClass(x), Class(Class), CountDown(x), PlacementDelay(x) {}
   virtual ~BuildingClass();
-  virtual RTTIType What_Am_I() const { return RTTI_BUILDING; };
+  virtual RTTIType What_Am_I() const { return RTTI_BUILDING; }
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -190,7 +190,7 @@ class BuildingClass : public TechnoClass {
   TARGET Target_Scan();
   BuildingTypeClass::AnimControlType const *Fetch_Anim_Control() {
     return (&Class->Anims[BState]);
-  };
+  }
 
   /*
   **	Query functions.
@@ -198,11 +198,11 @@ class BuildingClass : public TechnoClass {
   virtual CELL Find_Exit_Cell(TechnoClass const *techno) const;
   virtual InfantryType Crew_Type() const;
   virtual int Pip_Count() const;
-  virtual bool Can_Player_Move() const { return (false); };
+  virtual bool Can_Player_Move() const { return (false); }
   virtual ActionType What_Action(ObjectClass *target) const;
   virtual ActionType What_Action(CELL cell) const;
   virtual bool Can_Demolish() const;
-  virtual ObjectTypeClass const &Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const &Class_Of() const { return *Class; }
   virtual int Refund_Amount() const;
   virtual DirType Fire_Direction() const;
   int Power_Output() const;
@@ -215,7 +215,7 @@ class BuildingClass : public TechnoClass {
   virtual COORDINATE Fire_Coord(int which) const;
   virtual COORDINATE Center_Coord() const;
   virtual COORDINATE Sort_Y() const;
-  virtual COORDINATE Target_Coord() const { return Center_Coord(); };
+  virtual COORDINATE Target_Coord() const { return Center_Coord(); }
 
   /*
   **	Object entry and exit from the game system.
@@ -295,7 +295,7 @@ class BuildingClass : public TechnoClass {
   */
   static void Read_INI(char *buffer);
   static void Write_INI(char *buffer);
-  static char const *INI_Name() { return "STRUCTURES"; };
+  static char const *INI_Name() { return "STRUCTURES"; }
   bool Load(FileClass &file);
   bool Save(FileClass &file);
   virtual void Code_Pointers();

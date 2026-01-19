@@ -109,11 +109,11 @@ class TriggerTypeClass : public AbstractTypeClass {
 
   TriggerTypeClass();
   TriggerTypeClass(NoInitClass const& x)
-      : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {};
+      : AbstractTypeClass(x), Event1(x), Event2(x), Action1(x), Action2(x) {}
   ~TriggerTypeClass() override = default;
 
   static void* operator new(size_t);
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
 
   /*
@@ -129,7 +129,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   void Build_INI_Entry(std::string& buffer) const;
 
-  static char const* INI_Name() { return "Trigs"; };
+  static char const* INI_Name() { return "Trigs"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
   void Code_Pointers();

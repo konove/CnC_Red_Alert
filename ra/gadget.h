@@ -106,8 +106,8 @@ class GadgetClass : public LinkClass {
   } FlagEnum;
 
   GadgetClass(int x, int y, int w, int h, unsigned flags, int sticky = false);
-  GadgetClass(NoInitClass const& x) : LinkClass(x) {};
-  GadgetClass() {};
+  GadgetClass(NoInitClass const& x) : LinkClass(x) {}
+  GadgetClass() {}
   GadgetClass(GadgetClass const& gadget) = default;
   virtual ~GadgetClass();
 
@@ -118,7 +118,7 @@ class GadgetClass : public LinkClass {
   virtual void Draw_All(bool forced = true);
   virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
-  virtual void Flag_List_To_Redraw() { LastList = nullptr; };
+  virtual void Flag_List_To_Redraw() { LastList = nullptr; }
   virtual GadgetClass* Remove();
   virtual GadgetClass* Get_Next() const;
   virtual GadgetClass* Get_Prev() const;
@@ -128,9 +128,9 @@ class GadgetClass : public LinkClass {
   */
   virtual void Disable();
   virtual void Enable();
-  virtual unsigned Get_ID() const { return 0; };
+  virtual unsigned Get_ID() const { return 0; }
   virtual void Flag_To_Redraw();
-  virtual void Peer_To_Peer(unsigned, KeyNumType&, ControlClass&) {};
+  virtual void Peer_To_Peer(unsigned, KeyNumType&, ControlClass&) {}
   virtual void Set_Focus();
   virtual void Clear_Focus();
   virtual bool Has_Focus();

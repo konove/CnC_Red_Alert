@@ -69,14 +69,14 @@ class StageClass {
     StageTimer = 0;
     Stage = 0;
     Rate = 0;
-  };
-  StageClass(NoInitClass const& x) {};
+  }
+  StageClass(NoInitClass const& x) {}
 
-  int Fetch_Stage() const { return Stage; };
-  int Fetch_Rate() const { return Rate; };
-  void Set_Stage(int stage) { Stage = stage; };
-  void Set_Rate(unsigned char rate) { Rate = StageTimer = rate; };
-  void AI() {};
+  int Fetch_Stage() const { return Stage; }
+  int Fetch_Rate() const { return Rate; }
+  void Set_Stage(int stage) { Stage = stage; }
+  void Set_Rate(unsigned char rate) { Rate = StageTimer = rate; }
+  void AI() {}
   bool Graphic_Logic() {
     if (Rate) {
       StageTimer--;
@@ -87,12 +87,12 @@ class StageClass {
       }
     }
     return false;
-  };
+  }
 #ifdef CHEAT_KEYS
   void Debug_Dump(MonoClass* mono) const {
     mono->Set_Cursor(56, 7);
     mono->Printf("%3d[%d]", Stage, Rate);
-  };
+  }
 #endif
 
   /*

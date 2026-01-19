@@ -66,28 +66,28 @@ class PacketClass {
   //
   void Add_Field(char const* field, char data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, unsigned char data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, short data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, unsigned short data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, long data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, unsigned long data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, const char* data) {
     Add_Field(new FieldClass(field, data));
-  };
+  }
   void Add_Field(char const* field, void* data, int length) {
     Add_Field(new FieldClass(field, data, length));
-  };
+  }
 
   //
   // These functions search for a field of a given name in the list and

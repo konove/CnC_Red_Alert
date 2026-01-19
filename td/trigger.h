@@ -128,7 +128,7 @@ class TriggerClass {
   **	Constructor/Destructor
   */
   TriggerClass();
-  TriggerClass(NoInitClass const& x) {};
+  TriggerClass(NoInitClass const& x) {}
   ~TriggerClass();
 
   /*
@@ -150,7 +150,7 @@ class TriggerClass {
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
-  static char const* INI_Name() { return "Triggers"; };
+  static char const* INI_Name() { return "Triggers"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers();
@@ -195,7 +195,7 @@ class TriggerClass {
   **	Overloaded operators
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
 
   /*

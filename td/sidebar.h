@@ -376,7 +376,7 @@ class SidebarClass : public PowerClass {
    public:
     //				SBGadgetClass() : GadgetClass(SIDE_X+8,
     // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, LEFTUP) {};
-    SBGadgetClass() : GadgetClass(0, 0, 0, 0, LEFTUP) {};
+    SBGadgetClass() : GadgetClass(0, 0, 0, 0, LEFTUP) {}
 
    protected:
     virtual int Action(unsigned flags, KeyNumType& key);

@@ -52,7 +52,7 @@ class CCMessageBox {
 #ifdef JAPANESE
   CCMessageBox(int caption = TXT_NONE, bool pict = false);
 #else
-  CCMessageBox(int caption = TXT_NONE) { Caption = caption; };
+  CCMessageBox(int caption = TXT_NONE) { Caption = caption; }
 #endif
   int Process(const char* msg, const char* b1txt, const char* b2txt = nullptr,
               const char* b3txt = nullptr, bool preserve = false);

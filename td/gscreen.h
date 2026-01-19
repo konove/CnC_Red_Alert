@@ -52,7 +52,7 @@
 class GScreenClass : public VectorClass<CellClass> {
  public:
   GScreenClass();
-  GScreenClass(NoInitClass const& x) : VectorClass<CellClass>(x) {};
+  GScreenClass(NoInitClass const& x) : VectorClass<CellClass>(x) {}
 
   /*
   ** Initialization
@@ -67,7 +67,7 @@ class GScreenClass : public VectorClass<CellClass> {
   **	Player I/O is routed through here. It is called every game tick.
   */
   virtual void Input(KeyNumType& key, int& x, int& y);
-  virtual void AI(KeyNumType&, int, int) {};
+  virtual void AI(KeyNumType&, int, int) {}
   virtual void Add_A_Button(GadgetClass& gadget);
   virtual void Remove_A_Button(GadgetClass& gadget);
 
@@ -86,7 +86,7 @@ class GScreenClass : public VectorClass<CellClass> {
   **	Is called when actual drawing is required. This is the function to
   **	override in derived classes.
   */
-  virtual void Draw_It(bool = false) {};
+  virtual void Draw_It(bool = false) {}
 
   /*
   **	This moves the hidpage up to the seenpage.
@@ -110,7 +110,7 @@ class GScreenClass : public VectorClass<CellClass> {
   /*
   **	Misc routines.
   */
-  virtual void* Shadow_Address() { return (ShadowPage); };
+  virtual void* Shadow_Address() { return (ShadowPage); }
 
   /*
   **	This points to the buttons that are used for input. All of the derived

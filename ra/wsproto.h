@@ -112,13 +112,13 @@ class WinsockInterfaceClass {
   virtual void Stop_Listening();
   virtual void Clear_Socket_Error(SOCKET socket);
   virtual bool Set_Socket_Options();
-  virtual void Set_Broadcast_Address(void*) {};
+  virtual void Set_Broadcast_Address(void*) {}
 
-  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_NONE); };
+  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_NONE); }
 
-  virtual int Protocol_Event_Message() { return (0); };
+  virtual int Protocol_Event_Message() { return (0); }
 
-  virtual bool Open_Socket(SOCKET) { return (false); };
+  virtual bool Open_Socket(SOCKET) { return (false); }
 
   virtual void Event_Handler(int, SocketEvent) {}
 

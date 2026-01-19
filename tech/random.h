@@ -57,7 +57,7 @@ class RandomClass {
  public:
   RandomClass(unsigned seed = 0);
 
-  operator int() { return (operator()()); };
+  operator int() { return (operator()()); }
   int operator()();
   int operator()(int minval, int maxval);
 

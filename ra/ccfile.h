@@ -56,7 +56,7 @@ class CCFileClass : public CDFileClass {
  public:
   CCFileClass(char const* filename);
   CCFileClass();
-  virtual ~CCFileClass() { Position = 0; };
+  virtual ~CCFileClass() { Position = 0; }
 
   // Delete should be overloaded here as well. Don't allow deletes of mixfiles.
 
@@ -66,7 +66,7 @@ class CCFileClass : public CDFileClass {
   virtual int Open(char const* filename, int rights = READ) {
     Set_Name(filename);
     return Open(rights);
-  };
+  }
   virtual int Open(int rights = READ);
   virtual long Read(void* buffer, long size);
   virtual long Seek(long pos, int dir = SEEK_CUR);

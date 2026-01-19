@@ -52,8 +52,8 @@
 class FuseClass {
  public:
   FuseClass();
-  FuseClass(NoInitClass const&) {};
-  ~FuseClass() {};
+  FuseClass(NoInitClass const&) {}
+  ~FuseClass() {}
 
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);

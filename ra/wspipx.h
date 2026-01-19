@@ -68,9 +68,9 @@ class IPXInterfaceClass : public WinsockInterfaceClass {
 #endif
   virtual bool Open_Socket(SOCKET socketnum);
 
-  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_IPX); };
+  virtual ProtocolEnum Get_Protocol() { return (PROTOCOL_IPX); }
 
-  virtual int Protocol_Event_Message() { return (WM_IPXASYNCEVENT); };
+  virtual int Protocol_Event_Message() { return (WM_IPXASYNCEVENT); }
 
  private:
   /*

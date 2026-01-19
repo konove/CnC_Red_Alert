@@ -71,13 +71,13 @@ class TerrainClass : public ObjectClass, public StageClass {
   **	Constructor for terrain object class.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
   TerrainClass(TerrainType id, CELL cell);
   TerrainClass(NoInitClass const& x)
-      : ObjectClass(x), Class(x), StageClass(x) {};
+      : ObjectClass(x), Class(x), StageClass(x) {}
   virtual ~TerrainClass();
-  operator TerrainType() const { return Class->Type; };
+  operator TerrainType() const { return Class->Type; }
 
   static void Init();
 
@@ -89,17 +89,17 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	Query functions.
   */
-  virtual ObjectTypeClass const& Class_Of() const { return *Class; };
+  virtual ObjectTypeClass const& Class_Of() const { return *Class; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
   virtual COORDINATE Center_Coord() const;
-  virtual COORDINATE Render_Coord() const { return Coord; };
+  virtual COORDINATE Render_Coord() const { return Coord; }
   virtual COORDINATE Sort_Y() const {
     return Coord_Add(Coord, Class->CenterBase);
-  };
+  }
   virtual COORDINATE Target_Coord() const;
 
   /*
@@ -121,7 +121,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   /*
   **	User I/O.
   */
-  virtual void Clicked_As_Target(int) {};
+  virtual void Clicked_As_Target(int) {}
 
   /*
   **	Combat related.
@@ -148,7 +148,7 @@ class TerrainClass : public ObjectClass, public StageClass {
   */
   static void Read_INI(CCINIClass& ini);
   static void Write_INI(CCINIClass& ini);
-  static char const* INI_Name() { return "TERRAIN"; };
+  static char const* INI_Name() { return "TERRAIN"; }
   bool Load(Straw& file);
   bool Save(Pipe& file) const;
 

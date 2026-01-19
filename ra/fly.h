@@ -58,16 +58,16 @@ class FlyClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  FlyClass() : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE) {};
-  FlyClass(NoInitClass const&) {};
-  ~FlyClass() {};
+  FlyClass() : SpeedAccum(0), SpeedAdd(MPH_IMMOBILE) {}
+  FlyClass(NoInitClass const&) {}
+  ~FlyClass() {}
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
   void Fly_Speed(int speed, MPHType maximum);
   ImpactType Physics(COORDINATE& coord, DirType facing);
-  MPHType Get_Speed() const { return (SpeedAdd); };
+  MPHType Get_Speed() const { return (SpeedAdd); }
 
  private:
   /*

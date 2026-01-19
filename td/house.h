@@ -387,9 +387,9 @@ class HouseClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void operator delete(void* ptr);
-  HouseClass() : Class(nullptr) {};
+  HouseClass() : Class(nullptr) {}
   HouseClass(HousesType house);
   HouseClass(NoInitClass const& x)
       : Class(Class),
@@ -405,7 +405,7 @@ class HouseClass {
         SpeakAttackDelay(x),
         SpeakPowerDelay(x),
         SpeakMoneyDelay(x),
-        SpeakMaxedDelay(x) {};
+        SpeakMaxedDelay(x) {}
   ~HouseClass();
   operator HousesType() const;
 
@@ -431,11 +431,11 @@ class HouseClass {
   void Make_Ally(HousesType house);
   void Make_Ally(ObjectClass* object) {
     if (object) Make_Ally(object->Owner());
-  };
+  }
   void Make_Enemy(HousesType house);
   void Make_Enemy(ObjectClass* object) {
     if (object) Make_Enemy(object->Owner());
-  };
+  }
   bool Is_Ally(HousesType house) const;
   bool Is_Ally(HouseClass const* house) const;
   bool Is_Ally(ObjectClass const* object) const;
@@ -458,14 +458,14 @@ class HouseClass {
   void Spend_Money(unsigned money);
   void Refund_Money(unsigned money);
   void Attacked();
-  void Adjust_Power(int adjust) { Power += adjust; };
-  void Adjust_Drain(int adjust) { Drain += adjust; };
+  void Adjust_Power(int adjust) { Power += adjust; }
+  void Adjust_Drain(int adjust) { Drain += adjust; }
   int Adjust_Capacity(int adjust, bool inanger = false);
   int Power_Fraction() const;
   int Tiberium_Fraction() {
     return (!Tiberium) ? 0 : Cardinal_To_Fixed(Capacity, Tiberium);
-  };
-  void Begin_Production() { IsStarted = true; };
+  }
+  void Begin_Production() { IsStarted = true; }
   TeamTypeClass const* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);
 

@@ -59,11 +59,11 @@ class LinkClass {
   virtual LinkClass const& Head_Of_List() const;
   virtual LinkClass& Head_Of_List() {
     return (LinkClass&)(((LinkClass const*)this)->Head_Of_List());
-  };
+  }
   virtual LinkClass const& Tail_Of_List() const;
   virtual LinkClass& Tail_Of_List() {
     return (LinkClass&)(((LinkClass const*)this)->Tail_Of_List());
-  };
+  }
   virtual void Zap();
   virtual LinkClass* Remove();
 

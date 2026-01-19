@@ -106,14 +106,14 @@ class MonoClass {
   MonoClass();
   ~MonoClass();
 
-  static void Enable() { Enabled = 1; };
-  static void Disable() { Enabled = 0; };
-  static int Is_Enabled() { return Enabled; };
-  static MonoClass* Get_Current() { return PageUsage[0]; };
+  static void Enable() { Enabled = 1; }
+  static void Disable() { Enabled = 0; }
+  static int Is_Enabled() { return Enabled; }
+  static MonoClass* Get_Current() { return PageUsage[0]; }
 
   void Draw_Box(int x, int y, int w, int h, char attrib = DEFAULT_ATTRIBUTE,
                 BoxStyleType thick = SINGLE);
-  void Set_Default_Attribute(char attrib) { Attrib = attrib; };
+  void Set_Default_Attribute(char attrib) { Attrib = attrib; }
   void Clear();
   void Set_Cursor(int x, int y);
   void Print(char const* text);
@@ -124,8 +124,8 @@ class MonoClass {
                   char attrib = DEFAULT_ATTRIBUTE);
   void Text_Print(int text, int x, int y, char attrib = DEFAULT_ATTRIBUTE);
   void View();
-  int Get_X() const { return X; };
-  int Get_Y() const { return Y; };
+  int Get_X() const { return X; }
+  int Get_Y() const { return Y; }
 
   /*
   **	Handles deep copies for the mono class objects. This performs what is
@@ -150,11 +150,11 @@ class MonoClass {
   */
   int Offset(int x = 0, int y = 0) const {
     return (SIZE_OF_PAGE * Page) + sizeof(CellType) * (x + (y * COLUMNS));
-  };
+  }
   void Scroll(int lines);
   void Store_Cell(CellType& cell, int x, int y) {
     *(CellType*)((long)MonoSegment + Offset(x, y)) = cell;
-  };
+  }
 
   /*
   **	This is the segment/selector of the monochrome screen.

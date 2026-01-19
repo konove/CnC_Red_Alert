@@ -177,19 +177,19 @@ class TeamClass : public AbstractClass {
     IsActive = false;
     Member = nullptr;
     IsAltered = true;
-  };
+  }
   TeamClass(TeamTypeClass const* team, HouseClass* owner);
   TeamClass(NoInitClass const& x)
       : AbstractClass(x),
         Class(Class),
         House(House),
         SuspendTimer(x),
-        TimeOut(x) {};
+        TimeOut(x) {}
   virtual ~TeamClass();
-  virtual RTTIType What_Am_I() const { return RTTI_TEAM; };
+  virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   static void operator delete(void* ptr);
   static void* operator new(size_t size) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   static void Init();
   static void Suspend_Teams(int priority);
 
@@ -206,7 +206,7 @@ class TeamClass : public AbstractClass {
   void Force_Active() {
     IsForcedActive = true;
     IsUnderStrength = false;
-  };
+  }
   bool Remove(FootClass*, int typeindex = -1);
   void Detach(TARGET target, bool all);
   void AI();

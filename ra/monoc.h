@@ -71,16 +71,16 @@ class MonoClass {
   MonoClass();
   ~MonoClass();
 
-  static void Enable() { Enabled = true; };
-  static void Disable() { Enabled = false; };
-  static bool Is_Enabled() { return Enabled; };
-  static MonoClass* Get_Current() { return PageUsage[0]; };
+  static void Enable() { Enabled = true; }
+  static void Disable() { Enabled = false; }
+  static bool Is_Enabled() { return Enabled; }
+  static MonoClass* Get_Current() { return PageUsage[0]; }
 
   void Sub_Window(int x = 0, int y = 0, int w = -1, int h = -1);
   void Fill_Attrib(int x, int y, int w, int h, MonoAttribute attrib);
   void Draw_Box(int x, int y, int w, int h, MonoAttribute attrib = NORMAL,
                 BoxStyleType thick = SINGLE);
-  void Set_Default_Attribute(MonoAttribute attrib) { Attrib = attrib; };
+  void Set_Default_Attribute(MonoAttribute attrib) { Attrib = attrib; }
   void Clear();
   void Set_Cursor(int x, int y);
   void Print(char const* text);
@@ -93,10 +93,10 @@ class MonoClass {
   void View();
   void Scroll(int lines = 1);
   void Pan(int cols = 1);
-  int Get_X() const { return X; };
-  int Get_Y() const { return Y; };
-  int Get_Width() const { return (SubW); };
-  int Get_Height() const { return (SubH); };
+  int Get_X() const { return X; }
+  int Get_Y() const { return Y; }
+  int Get_Width() const { return (SubW); }
+  int Get_Height() const { return (SubH); }
 
   /*
   **	Handles deep copies for the mono class objects. This performs what is

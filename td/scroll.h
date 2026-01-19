@@ -75,7 +75,7 @@ class ScrollClass : public HelpClass {
 
  public:
   ScrollClass();
-  ScrollClass(NoInitClass const& x) : HelpClass(x) {};
+  ScrollClass(NoInitClass const& x) : HelpClass(x) {}
 
   bool Set_Autoscroll(int control);
 
@@ -83,7 +83,7 @@ class ScrollClass : public HelpClass {
   virtual void Init_IO() {
     Counter.Set(0);
     HelpClass::Init_IO();
-  };
+  }
 
   /*
   **	File I/O.

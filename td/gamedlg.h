@@ -43,7 +43,7 @@
 
 class GameControlsClass {
  public:
-  GameControlsClass() {};
+  GameControlsClass() {}
   void Process();
 };
 

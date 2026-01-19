@@ -56,9 +56,9 @@ class SHAEngine {
     Acc.Long[2] = SC;
     Acc.Long[3] = SD;
     Acc.Long[4] = SE;
-  };
+  }
 
-  void Init() { new ((void*)this) SHAEngine; };
+  void Init() { new ((void*)this) SHAEngine; }
 
   // Fetch result as if source data were to stop now.
   int Result(void* result) const;
@@ -107,34 +107,34 @@ class SHAEngine {
     if (index < 40) return K2;
     if (index < 60) return K3;
     return K4;
-  };
+  }
 
   // Used for 0..19
   uint32_t Function1(uint32_t X, uint32_t Y, uint32_t Z) const {
     return (Z ^ (X & (Y ^ Z)));
-  };
+  }
 
   // Used for 20..39
   uint32_t Function2(uint32_t X, uint32_t Y, uint32_t Z) const {
     return (X ^ Y ^ Z);
-  };
+  }
 
   // Used for 40..59
   uint32_t Function3(uint32_t X, uint32_t Y, uint32_t Z) const {
     return ((X & Y) | (Z & (X | Y)));
-  };
+  }
 
   // Used for 60..79
   uint32_t Function4(uint32_t X, uint32_t Y, uint32_t Z) const {
     return (X ^ Y ^ Z);
-  };
+  }
 
   uint32_t Do_Function(int index, uint32_t X, uint32_t Y, uint32_t Z) const {
     if (index < 20) return Function1(X, Y, Z);
     if (index < 40) return Function2(X, Y, Z);
     if (index < 60) return Function3(X, Y, Z);
     return Function4(X, Y, Z);
-  };
+  }
 
   // Process a full source data block.
   void Process_Block(void const* source, SHADigest& acc) const;

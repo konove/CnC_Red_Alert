@@ -54,8 +54,8 @@
 */
 class BaseNodeClass {
  public:
-  BaseNodeClass() {};
-  BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {};
+  BaseNodeClass() {}
+  BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {}
   int operator==(BaseNodeClass const& node);
   int operator!=(BaseNodeClass const& node);
   int operator>(BaseNodeClass const& node);

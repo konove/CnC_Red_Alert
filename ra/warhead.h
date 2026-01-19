@@ -57,7 +57,7 @@ class WarheadTypeClass {
   WarheadTypeClass(NoInitClass const&) {}
 
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   void operator delete(void* pointer);
 
   void Code_Pointers() {}

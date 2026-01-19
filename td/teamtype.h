@@ -94,8 +94,8 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Constructor/Destructor
   */
   TeamTypeClass();
-  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {};
-  virtual ~TeamTypeClass() {};
+  TeamTypeClass(NoInitClass const& x) : AbstractTypeClass(x) {}
+  virtual ~TeamTypeClass() {}
 
   /*
   **	Initialization: clears all team types in preparation for new scenario
@@ -109,7 +109,7 @@ class TeamTypeClass : public AbstractTypeClass {
   void Fill_In(char* name, char* entry);
   static void Write_INI(char* buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
-  static char const* INI_Name() { return "TeamTypes"; };
+  static char const* INI_Name() { return "TeamTypes"; }
   bool Load(FileClass& file);
   bool Save(FileClass& file);
   void Code_Pointers();
@@ -141,7 +141,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Overloaded operators
   */
   void* operator new(size_t) throw();
-  static void* operator new(size_t, void* ptr) throw() { return (ptr); };
+  static void* operator new(size_t, void* ptr) throw() { return (ptr); }
   void operator delete(void* ptr);
 
   /*
