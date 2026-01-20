@@ -56,6 +56,7 @@
 #include <format>
 #include <utility>
 
+#include "absl/log/log.h"
 #include "port/ex_string.h"
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
@@ -294,12 +295,13 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
  *=============================================================================================*/
 void TActionClass::Read_INI() {
   switch (NewINIFormat) {
-    default:
+    default: {
       Action = TActionType(atoi(strtok(nullptr, ",")));
       Team.Set_Raw(atoi(strtok(nullptr, ",")));
       Trigger.Set_Raw(atoi(strtok(nullptr, ",")));
       Data.Value = atoi(strtok(nullptr, ","));
       break;
+    }
 
     case 1:
     case 0:
@@ -319,6 +321,21 @@ void TActionClass::Read_INI() {
 
       Data.Value = atoi(strtok(nullptr, ","));
       break;
+  }
+
+  /*
+  ** Fix corrupted sound values from original game scenario files.
+  ** Some INI files contain values like -65399 (0xFFFF0089) where only
+  ** the low byte (137) is the valid VocType index.
+  */
+  if (Action == TACTION_PLAY_SOUND &&
+      (Data.Value < 0 || Data.Value >= VOC_COUNT)) {
+    int fixed = Data.Value & 0xFF;
+    if (fixed >= 0 && fixed < VOC_COUNT) {
+      DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
+                    << " -> " << fixed;
+      Data.Value = fixed;
+    }
   }
 }
 

@@ -161,6 +161,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "absl/log/log.h"
 #include "port/safe_string.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
@@ -1581,7 +1582,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
   **	If the object is in a "harmless" state, then don't bother to consider it
   **	a threat.
   */
-  if (MissionControl[object->Mission].IsNoThreat) {
+  if (object->Mission != MISSION_NONE &&
+      MissionControl[object->Mission].IsNoThreat) {
     BEnd(BENCH_EVAL_OBJECT);
     return (false);
   }
@@ -4916,7 +4918,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
         **	Never recruit sticky guard units to defend a base.
         */
         if (!unit->Is_Weapon_Equipped() ||
-            (!MissionControl[unit->Mission].IsRecruitable &&
+            (unit->Mission != MISSION_NONE &&
+             !MissionControl[unit->Mission].IsRecruitable &&
              Session.Type == GAME_NORMAL))
           continue;
 
@@ -5061,7 +5064,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, int mask, int range,
     /*
     **	If the mission precludes retaliation, then don't retaliate.
     */
-    if (!MissionControl[Mission].IsRetaliate) return (false);
+    if (Mission != MISSION_NONE && !MissionControl[Mission].IsRetaliate) {
+      return (false);
+    }
 
     /*
     **	Fixed wing aircraft are not responsive enough to retaliate to damage

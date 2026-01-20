@@ -50,6 +50,7 @@
 #include <filesystem>
 #include <string>
 
+#include "absl/log/log.h"
 #include "port/ex_string.h"
 #include "ra/abstract.h"
 #include "ra/ccfile.h"
@@ -516,6 +517,12 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
  *=============================================================================================*/
 int Sound_Effect(VocType voc, fixed volume, int variation,
                  signed short pan_value, HousesType house) {
+  if (voc != VOC_NONE && (voc < 0 || voc >= VOC_COUNT)) {
+    DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)
+                  << ", valid range is [0, " << static_cast<int>(VOC_COUNT) - 1
+                  << "]";
+    return (-1);
+  }
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
       SampleType == SAMPLE_NONE) {
     return (-1);

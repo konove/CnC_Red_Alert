@@ -944,7 +944,7 @@ typedef enum MissionType {
   MISSION_GUARD,           // Stay still.
   MISSION_STICKY,          // Stay still -- never recruit.
   MISSION_ENTER,           // Move into object cooperatively.
-  MISSION_CAPTURE,         //	Move into in order to capture.
+  MISSION_CAPTURE,         // Move into in order to capture.
   MISSION_HARVEST,         // Hunt for and collect nearby Tiberium.
   MISSION_GUARD_AREA,      // Active guard of area.
   MISSION_RETURN,          // Head back to refinery.
@@ -952,7 +952,7 @@ typedef enum MissionType {
   MISSION_AMBUSH,          // Wait until discovered.
   MISSION_HUNT,            // Active search and destroy.
   MISSION_UNLOAD,          // Search for and deliver cargo.
-  MISSION_SABOTAGE,        //	Move into in order to destroy.
+  MISSION_SABOTAGE,        // Move into in order to destroy.
   MISSION_CONSTRUCTION,    // Building buildup operation.
   MISSION_DECONSTRUCTION,  // Building builddown operation.
   MISSION_REPAIR,          // Repair process mission.
