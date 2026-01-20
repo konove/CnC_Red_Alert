@@ -2004,7 +2004,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           GraphicBufferClass temp_surface;
           temp_surface.Init((RadarWidth + 16) & 0xfffffff0,
                             (RadarHeight + 16) & 0xfffffff0, nullptr, 0,
-                            (GBC_Enum)GBC_VIDEOMEM);
+                            GBC_VIDEOMEM);
 
           /*
           ** Do the blit in 2 stages.

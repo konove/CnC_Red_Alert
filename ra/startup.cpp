@@ -80,7 +80,7 @@
 
 #include "ra/ccdde.h"
 #include "ra/ipx95.h"
-#endif  // WIN32
+#endif  // _WIN32
 
 #ifdef MCIMPEG  // Denzil 6/15/98
 #include "ra/mcimovie.h"
@@ -93,7 +93,6 @@
 bool Read_Private_Config_Struct(FileClass& file, NewConfigType* config);
 void Print_Error_Exit(char* string);
 
-#ifdef WIN32
 // WinTimerClass * WinTimer;
 extern void Create_Main_Window(HANDLE instance, int command_show, int width,
                                int height);
@@ -104,10 +103,6 @@ HINSTANCE ProgramInstance;
 void Check_Use_Compressed_Shapes();
 void Read_Setup_Options(RawFileClass* config_file);
 bool VideoBackBufferAllowed = true;
-#else
-BOOL Init_Timer_System(unsigned int freq, int partial = false);
-BOOL Remove_Timer_System();
-#endif  // WIN32
 
 const char* Game_Registry_Key();
 
@@ -141,44 +136,12 @@ const char* Game_Registry_Key();
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
 #ifdef _WIN32
-// int PASCAL WinMain(HINSTANCE, HINSTANCE, char *, int )
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
-#else   // WIN32
+#else   // _WIN32
 int main(int argc, char* argv[])
-#endif  // WIN32
-
+#endif  // _WIN32
 {
-#if defined(WIN32) && !defined(PORTABLE)
-
-#ifndef MPEGMOVIE  // Denzil 6/10/98
-  DDSCAPS surface_capabilities;
-#endif
-
-  /*
-  ** First thing to do is check if there is another instance of Red Alert
-  *already running
-  **  and if so, switch to the existing instance and terminate ourselves.
-  */
-  SpawnedFromWChat = false;
-
-  if (RA95AlreadyRunning) {  // Set in the DDEServer constructor
-    // MessageBox (NULL, "Error - attempt to restart Red Alert 95 when already
-    // running.", "Red Alert", MB_ICONEXCLAMATION|MB_OK);
-
-    HWND ccwindow;
-    ccwindow = FindWindow(WINDOW_NAME, WINDOW_NAME);
-    if (ccwindow) {
-      SetForegroundWindow(ccwindow);
-      ShowWindow(ccwindow, SW_RESTORE);
-    }
-
-    return (EXIT_SUCCESS);
-  }
-
-#endif
-  // printf("in program.\n");getch();
-  // printf("ram free = %ld\n",Ram_Free(MEM_NORMAL));getch();
   if (Ram_Free(MEM_NORMAL) < 7000000) {
     printf(TEXT_NO_RAM);
 
@@ -246,7 +209,7 @@ int main(int argc, char* argv[])
 
   } while (command_char != 0 && command_char != 13 && argc < 20);
 
-#endif  // WIN32
+#endif  // _WIN32
 
   // Change to executable's directory (if path is present)
   auto dir_path = std::filesystem::path(argv[0]).parent_path();
@@ -299,17 +262,9 @@ int main(int argc, char* argv[])
     // or AllowSoloPlayOptions arguments are specified.
     //
     if (Session.AllowSolo == 0 && Session.Type != GAME_TEN) {
-#ifdef WIN32
       MessageBox(NULL, "Red Alert for TEN\n (c) 1996 Westwood Studios",
                  "Red Alert", MB_OK);
       exit(0);
-#else
-      printf("\n");
-      printf("                         Red Alert for TEN\n");
-      printf("                     (c) 1996 Westwood Studios\n");
-      printf("\n");
-      exit(0);
-#endif  // WIN32
     }
 #endif  // TEN
 
@@ -319,246 +274,48 @@ int main(int argc, char* argv[])
     // or AllowSoloPlayOptions arguments are specified.
     //
     if (Session.AllowSolo == 0 && Session.Type != GAME_MPATH) {
-#ifdef WIN32
       MessageBox(NULL, "Red Alert for MPATH\n (c) 1996 Westwood Studios",
                  "Red Alert", MB_OK);
       exit(0);
-#else
-      printf("\n");
-      printf("                        Red Alert for MPATH\n");
-      printf("                     (c) 1996 Westwood Studios\n");
-      printf("\n");
-      exit(0);
-#endif  // WIN32
     }
 #endif  // MPATH
 
-#ifdef PORTABLE
     WindowsTimer = new WinTimerClass(60, false);
-#elif defined(WIN32)
-    WindowsTimer = new WinTimerClass(60, false);
-
-    int time_test = WindowsTimer->Get_System_Tick_Count();
-    Sleep(1000);
-    if (WindowsTimer->Get_System_Tick_Count() == time_test) {
-      MessageBox(0, TEXT_ERROR_TIMER, TEXT_SHORT_TITLE, MB_OK | MB_ICONSTOP);
-      return (EXIT_FAILURE);
-    }
-#else   // WIN32
-    Init_Timer_System(60, true);
-#endif  // WIN32
     RawFileClass cfile(CONFIG_FILE_NAME);
-
-#ifndef WIN32
-    Install_Keyboard_Interrupt(Get_RM_Keyboard_Address(),
-                               Get_RM_Keyboard_Size());
-#endif  // WIN32
-
-#ifdef NEVER
-    Keyboard->IsLibrary = true;
-    if (Debug_Flag) {
-      Keyboard_Attributes_On(DEBUGINT);
-    }
-#endif
 
     Keyboard = new KeyboardClass();
 
-#ifdef WIN32
     /*
     ** If there is loads of memory then use uncompressed shapes
     */
     Check_Use_Compressed_Shapes();
-#endif
 
     /*
     ** If there is not enough disk space free, don't allow the product to run.
     */
     if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
-#ifdef PORTABLE
       // pretty unlikely, but print something anyway
       printf(TEXT_INSUFFICIENT);
       printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
       printf("\n");
       delete WindowsTimer;
       return (EXIT_FAILURE);
-#elif defined(WIN32)
-      char disk_space_message[512];
-      sprintf(disk_space_message, TEXT_CRITICALLY_LOW,
-              (INIT_FREE_DISK_SPACE) / (1024 * 1024));
-      int reply = MessageBox(NULL, disk_space_message, TEXT_SHORT_TITLE,
-                             MB_ICONQUESTION | MB_YESNO);
-      if (reply == IDNO) {
-        if (WindowsTimer) delete WindowsTimer;
-        return (EXIT_FAILURE);
-      }
-#else
-      printf(TEXT_INSUFFICIENT);
-      printf(TEXT_MUST_HAVE, INIT_FREE_DISK_SPACE / (1024 * 1024));
-      printf("\n");
-      if (Keyboard) Keyboard->Get();
-      //			Keyboard::IsLibrary = false;
-      Remove_Keyboard_Interrupt();
-      Remove_Timer_System();
-      return (EXIT_FAILURE);
-#endif
     }
 
-#ifdef PORTABLE
     if (!cfile.Is_Available()) {
       // just create an empty config, we don't care about most of it anyway
       cfile.Create();
     }
-#endif
 
     if (cfile.Is_Available()) {
       Read_Private_Config_Struct(cfile, &NewConfig);
 
-#ifdef PORTABLE
       Read_Setup_Options(&cfile);
 
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
-#elif defined(WIN32)
 
-      /*
-      ** Set the options as requested by the ccsetup program
-      */
-      Read_Setup_Options(&cfile);
-
-      Create_Main_Window(instance, command_show, ScreenWidth, ScreenHeight);
-      SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
-#else   // WIN32
-      if (!Debug_Quiet) {
-        Audio_Init(
-            NewConfig.DigitCard, NewConfig.Port, NewConfig.IRQ, NewConfig.DMA,
-            PLAYBACK_RATE_NORMAL,
-            //						(NewConfig.Speed)
-            //? PLAYBACK_RATE_SLOW : PLAYBACK_RATE_NORMAL,
-            NewConfig.BitsPerSample,
-            //						4,
-            (Get_CPU() < 5) ? 3 : 5,
-            //						(NewConfig.Speed)
-            //? 3 : 5,
-            NewConfig.Reverse);
-        SoundOn = true;
-      } else {
-        Audio_Init(0, -1, -1, -1, PLAYBACK_RATE_NORMAL, 8, 5, false);
-      }
-#endif  // WIN32
-
-#ifdef WIN32
-#if defined(MPEGMOVIE) || defined(PORTABLE)  // Denzil 6/10/98
       if (!InitDDraw()) return (EXIT_FAILURE);
-#else
-      BOOL video_success = false;
-      /*
-      ** Set 640x400 video mode. If its not available then try for 640x480
-      */
-      if (ScreenHeight == 400) {
-        if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = true;
-        } else {
-          if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8)) {
-            video_success = true;
-            ScreenHeight = 480;
-          }
-        }
-      } else {
-        if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-          video_success = true;
-        }
-      }
-
-      if (!video_success) {
-        MessageBox(MainWindow, TEXT_VIDEO_ERROR, TEXT_SHORT_TITLE,
-                   MB_ICONEXCLAMATION | MB_OK);
-        if (WindowsTimer) delete WindowsTimer;
-        // if (Palette) delete Palette;
-        return (EXIT_FAILURE);
-      }
-
-      if (ScreenWidth == 320) {
-        VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-        ModeXBuff.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                       (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
-      } else {
-        VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                         (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
-
-        /*
-        ** Check that we really got a video memory page. Failure is fatal.
-        */
-        memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-        VisiblePage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-        if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY) {
-          /*
-          ** Aaaarrgghh!
-          */
-          WWDebugString(TEXT_DDRAW_ERROR);
-          WWDebugString("\n");
-          MessageBox(MainWindow, TEXT_DDRAW_ERROR, TEXT_SHORT_TITLE,
-                     MB_ICONEXCLAMATION | MB_OK);
-          if (WindowsTimer) delete WindowsTimer;
-          return (EXIT_FAILURE);
-        }
-
-        /*
-        ** If we have enough left then put the hidpage in video memory unless...
-        **
-        ** If there is no blitter then we will get better performance with a
-        *system
-        ** memory hidpage
-        **
-        ** Use a system memory page if the user has specified it via the ccsetup
-        *program.
-        */
-        unsigned video_memory = Get_Free_Video_Memory();
-        unsigned video_capabilities = Get_Video_Hardware_Capabilities();
-        if (video_memory < ScreenWidth * ScreenHeight ||
-            (!(video_capabilities & VIDEO_BLITTER)) ||
-            (video_capabilities & VIDEO_NO_HARDWARE_ASSIST) ||
-            !VideoBackBufferAllowed) {
-          HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-        } else {
-          // HiddenPage.Init (ScreenWidth , ScreenHeight , NULL , 0 ,
-          // (GBC_Enum)0);
-          HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                          (GBC_Enum)GBC_VIDEOMEM);
-
-          /*
-          ** Make sure we really got a video memory hid page. If we didnt then
-          *things
-          ** will run very slowly.
-          */
-          memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-          HiddenPage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-          if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY) {
-            /*
-            ** Oh dear, big trub. This must be an IBM crAptiva or something
-            *similarly cruddy.
-            ** We must redo the Hidden Page as system memory.
-            */
-            AllSurfaces.Remove_DD_Surface(
-                HiddenPage.Get_DD_Surface());  // Remove the old surface from
-                                               // the AllSurfaces list
-            HiddenPage.Get_DD_Surface()->Release();
-            HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-          } else {
-            VisiblePage.Attach_DD_Surface(&HiddenPage);
-          }
-        }
-      }
-
-      ScreenHeight = 400;
-
-      if (VisiblePage.Get_Height() == 480) {
-        SeenBuff.Attach(&VisiblePage, 0, 40, 640, 400);
-        HidPage.Attach(&HiddenPage, 0, 40, 640, 400);
-      } else {
-        SeenBuff.Attach(&VisiblePage, 0, 0, 640, 400);
-        HidPage.Attach(&HiddenPage, 0, 0, 640, 400);
-      }
-#endif  // MPEGMOVIE - Denzil 6/10/98
 
       Options.Adjust_Variables_For_Resolution();
 
@@ -576,17 +333,6 @@ int main(int argc, char* argv[])
       MouseInstalled = true;
 
       CDFileClass::Set_CD_Drive(CDList.Get_First_CD_Drive());
-
-#else   // WIN32
-
-      Options.Adjust_Variables_For_Resolution();
-      if (!Special.IsFromInstall) {
-        BlackPalette.Set();
-        //				Set_Palette(Palette);
-        Set_Video_Mode(MCGA_MODE);
-      }
-      MouseInstalled = Install_Mouse(32, 24, 320, 200);
-#endif  // WIN32
 
       /*
       ** See if we should run the intro
@@ -611,7 +357,6 @@ int main(int argc, char* argv[])
       */
       if (Special.IsFromInstall) {
         BreakoutAllowed = true;
-        //				BreakoutAllowed = false;
         ini.Put_Bool("Intro", "PlayIntro", false);
         ini.Save(cfile);
       }
@@ -631,7 +376,7 @@ int main(int argc, char* argv[])
         //	DDEServer.Disable();
         // }
       }
-#endif  // WIN32
+#endif  // _WIN32
 #endif
       /*
       **	If the intro is being run for the first time, then don't
@@ -639,7 +384,6 @@ int main(int argc, char* argv[])
       */
       if (Special.IsFromInstall) {
         BreakoutAllowed = true;
-        //				BreakoutAllowed = false;
       }
 
       Memory_Error_Exit = Print_Error_End_Exit;
@@ -654,16 +398,10 @@ int main(int argc, char* argv[])
 #endif
 #endif
 
-#ifdef WIN32
       VisiblePage.Clear();
       HiddenPage.Clear();
-#else   // WIN32
-      SeenPage.Clear();
-      Set_Video_Mode(RESET_MODE);
-#endif  // WIN32
       Memory_Error_Exit = Print_Error_Exit;
 
-#ifdef WIN32
       /*
       ** Flag that this is a clean shutdown (not killed with Ctrl-Alt-Del)
       */
@@ -672,11 +410,7 @@ int main(int argc, char* argv[])
       /*
       ** Post a message to our message handler to tell it to clean up.
       */
-#ifdef PORTABLE
       SDL_Send_Quit();
-#else
-      PostMessage(MainWindow, WM_DESTROY, 0, 0);
-#endif
 
       /*
       ** Wait until the message handler has dealt with the message
@@ -686,42 +420,24 @@ int main(int argc, char* argv[])
       } while (ReadyToQuit == 1);
 
       return (EXIT_SUCCESS);
-
-#else   // WIN32
-      Remove_Mouse();
-      Sound_End();
-#endif  // WIN32
     } else {
       puts(TEXT_SETUP_FIRST);
       Keyboard->Get();
     }
 
-#ifdef WIN32
     if (WindowsTimer) {
       delete WindowsTimer;
       WindowsTimer = nullptr;
     }
-
-#else   // WIN32
-    Remove_Keyboard_Interrupt();
-    Remove_Timer_System();
-#endif  // WIN32
   }
   /*
   **	Restore the current drive and directory.
   */
-#ifndef WIN32
-  _dos_setdrive(olddrive, &drivecount);
-  chdir(oldpath);
-#endif  // WIN32
   return (EXIT_SUCCESS);
 }
 
 /* Initialize DirectDraw and surfaces */
 bool InitDDraw() {
-#ifndef PORTABLE
-  DDSCAPS surface_capabilities;
-#endif
   bool video_success = false;
 
   /* Set 640x400 video mode. If its not available then try for 640x480 */
@@ -741,84 +457,15 @@ bool InitDDraw() {
   }
 
   if (!video_success) {
-#ifndef PORTABLE  // this can't fail in SDLLIB (because we don't do anything)
-    MessageBox(MainWindow, TEXT_VIDEO_ERROR, TEXT_SHORT_TITLE,
-               MB_ICONEXCLAMATION | MB_OK);
-#endif
     delete WindowsTimer;
 
     return false;
   }
 
-#ifndef PORTABLE
-  if (ScreenWidth == 320) {
-    VisiblePage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-    ModeXBuff.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                   (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
-  } else
-#endif
   {
     VisiblePage.Init(ScreenWidth, ScreenHeight, nullptr, 0,
-                     (GBC_Enum)(GBC_VISIBLE | GBC_VIDEOMEM));
-#ifdef PORTABLE
-    HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, (GBC_Enum)0);
-#else
-    /* Check that we really got a video memory page. Failure is fatal. */
-    memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-    VisiblePage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-
-    if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY) {
-      /* Aaaarrgghh! */
-      WWDebugString(TEXT_DDRAW_ERROR);
-      WWDebugString("\n");
-      MessageBox(MainWindow, TEXT_DDRAW_ERROR, TEXT_SHORT_TITLE,
-                 MB_ICONEXCLAMATION | MB_OK);
-
-      if (WindowsTimer) delete WindowsTimer;
-
-      return false;
-    }
-
-    /* If we have enough left then put the hidpage in video memory unless...
-     *
-     * If there is no blitter then we will get better performance with a system
-     * memory hidpage
-     *
-     * Use a system memory page if the user has specified it via the ccsetup
-     * program.
-     */
-    unsigned video_memory = Get_Free_Video_Memory();
-    unsigned video_capabilities = Get_Video_Hardware_Capabilities();
-
-    if (video_memory < ScreenWidth * ScreenHeight ||
-        (!(video_capabilities & VIDEO_BLITTER)) ||
-        (video_capabilities & VIDEO_NO_HARDWARE_ASSIST) ||
-        !VideoBackBufferAllowed) {
-      HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-    } else {
-      HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0,
-                      (GBC_Enum)GBC_VIDEOMEM);
-
-      /* Make sure we really got a video memory hid page. If we didnt then
-       * things will run very slowly.
-       */
-      memset(&surface_capabilities, 0, sizeof(surface_capabilities));
-      HiddenPage.Get_DD_Surface()->GetCaps(&surface_capabilities);
-
-      if (surface_capabilities.dwCaps & DDSCAPS_SYSTEMMEMORY) {
-        /* Oh dear, big trub. This must be an IBM crAptiva or something
-         * similarly cruddy. We must redo the Hidden Page as system memory.
-         */
-        AllSurfaces.Remove_DD_Surface(
-            HiddenPage.Get_DD_Surface());  // Remove the old surface from the
-                                           // AllSurfaces list
-        HiddenPage.Get_DD_Surface()->Release();
-        HiddenPage.Init(ScreenWidth, ScreenHeight, NULL, 0, (GBC_Enum)0);
-      } else {
-        VisiblePage.Attach_DD_Surface(&HiddenPage);
-      }
-    }
-#endif
+                     GBC_VISIBLE | GBC_VIDEOMEM);
+    HiddenPage.Init(ScreenWidth, ScreenHeight, nullptr, 0, GBC_NONE);
   }
 
   if (ScreenHeight == 480) ScreenHeight = 400;
@@ -846,7 +493,6 @@ bool InitDDraw() {
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-#ifdef WIN32
 void __cdecl Prog_End() {
   Sound_End();
   if (WWMouse) {
@@ -858,20 +504,6 @@ void __cdecl Prog_End() {
     WindowsTimer = nullptr;
   }
 }
-#else   // WIN32
-
-void Prog_End() {
-  if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-    NullModem.Change_IRQ_Priority(0);
-  }
-
-  Set_Video_Mode(RESET_MODE);
-  Remove_Keyboard_Interrupt();
-  Remove_Mouse();
-  Sound_End();
-  Remove_Timer_System();
-}
-#endif  // WIN32
 
 void Print_Error_End_Exit(char* string) {
   Prog_End();
@@ -898,8 +530,6 @@ void Print_Error_Exit(char* string) {
  * HISTORY: * 3/13/97 1:32AM ST : Created *
  *=============================================================================================*/
 void Emergency_Exit(int code) {
-#ifdef WIN32
-
   /*
   ** Clear out the video buffers so we dont glitch when we lose focus
   */
@@ -917,11 +547,7 @@ void Emergency_Exit(int code) {
   /*
   ** Post a message to our message handler to tell it to clean up.
   */
-#ifdef PORTABLE
   SDL_Send_Quit();
-#else
-  PostMessage(MainWindow, WM_DESTROY, 0, 0);
-#endif
 
   /*
   ** Wait until the message handler has dealt with the message
@@ -930,18 +556,8 @@ void Emergency_Exit(int code) {
     Keyboard->Check();
   } while (ReadyToQuit == 3);
 
-#else  // WIN32
-  /*
-  ** Do the DOS end
-  */
-  Prog_End();
-
-#endif  // WIN32
-
   exit(code);
 }
-
-#ifdef WIN32
 
 /***********************************************************************************************
  * Read_Setup_Options -- Read stuff in from the INI file that we need to know
@@ -1030,21 +646,5 @@ void Get_OS_Version() {
 #ifdef _WIN32
   WindowsNT = ((GetVersion() & 0x80000000) == 0) ? true : false;
 #endif
-
-#if (0)
-  OSVERSIONINFO osversion;
-  if (GetVersionEx(&osversion)) {
-    WindowsNT =
-        (osversion.dwPlatformId == VER_PLATFORM_WIN32_NT) ? true : false;
-    OutputDebugString("RA95 - Got OS version\n");
-  } else {
-    OutputDebugString("RA95 - Failed to get OS version\n");
-    char fuck[128];
-    sprintf(fuck, "RA95 - Error code is %d\n", GetLastError());
-    OutputDebugString(fuck);
-  }
-#endif  //(0)
 }
 #endif
-
-#endif  // WIN32

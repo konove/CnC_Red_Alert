@@ -16,101 +16,48 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Westwood 32 Bit Library
- **
- *                                                                         *
- *                    File Name : GBUFFER.H                                *
- *                                                                         *
- *                   Programmer : Phil W. Gorrow                           *
- *                                                                         *
- *                   Start Date : May 26, 1994                             *
- *                                                                         *
- *                  Last Update : July 5, 1994   [PWG]                     *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- *   BC::Get_Size -- Returns the buffer size of the BufferClass instance   *
- *   BC::Get_Buffer -- Returns pointer to buffer inherent to BufferClass *
- *   BC::BufferClass -- inline constructor for BufferClass with size only  *
- *   BC::To_Page -- Copys a buffer class to a page with definable x, y, w, h*
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <cstdint>
+
 class GraphicViewPortClass;
 
-/*=========================================================================*/
-/* BufferClass - A base class which holds buffer information including a
- */
-/*		pointer and the size of the buffer.
- */
-/*=========================================================================*/
+// BufferClass - A base class which holds buffer information including a pointer
+// and the size of the buffer.
 class BufferClass {
  public:
-  /*===================================================================*/
-  /* Define the base constructor and destructors for the class */
-  /*===================================================================*/
-  BufferClass(void* ptr, long size);
-  BufferClass(long size);
-  BufferClass();
-  ~BufferClass();
-  /*===================================================================*/
-  /* Define functions which work with the buffer class.
-   */
-  /*===================================================================*/
+  // Define the base constructor and destructors for the class
+  BufferClass() : Buffer(nullptr), Size(0), Allocated(false) {}
+  BufferClass(long size)
+      : Buffer(new uint8_t[size]), Size(size), Allocated(true) {}
+  ~BufferClass() {
+    if (Allocated) {
+      delete[] (uint8_t*)Buffer;
+    }
+  }
+
+  // Define functions which work with the buffer class.
   long To_Page(GraphicViewPortClass& view);
   long To_Page(int w, int h, GraphicViewPortClass& view);
   long To_Page(int x, int y, int w, int h, GraphicViewPortClass& view);
 
-  /*===================================================================*/
-  /* define functions to get at the protected data members
-   */
-  /*===================================================================*/
-  void* Get_Buffer();
-  long Get_Size();
-
- private:
-  /*===================================================================*/
-  /* Define the operators we do not want to happen which are the copy	*/
-  /* and equal constructors.  These are bad because the Allocated flag	*/
-  /*	could be copied and the associated buffer freed.  If this were to
-   */
-  /*	gappen it could cause weird general protection fault.
-   */
-  /*===================================================================*/
-  BufferClass(BufferClass const&) = delete;
-  BufferClass& operator=(BufferClass const&) = delete;
+  // define functions to get at the protected data members
+  void* Get_Buffer() { return Buffer; }
+  long Get_Size() { return Size; }
 
  protected:
   void* Buffer;
   long Size;
   bool Allocated;
+
+ private:
+  // Define the operators we do not want to happen which are the copy and equal
+  // constructors. These are bad because the Allocated flag could be copied and
+  // the associated buffer freed. If this were to happen it could cause weird
+  // general protection fault.
+  BufferClass(BufferClass const&) = delete;
+  BufferClass& operator=(BufferClass const&) = delete;
 };
-/***************************************************************************
- * BC::GET_SIZE -- Returns the buffer size of the BufferClass instance     *
- *                                                                         *
- * INPUT:		none *
- *                                                                         *
- * OUTPUT:     long the size of the buffer                                 *
- *                                                                         *
- * HISTORY:                                                                *
- *   06/01/1994 PWG : Created.                                             *
- *=========================================================================*/
-inline long BufferClass::Get_Size() { return (Size); }
-/***************************************************************************
- * BC::GET_BUFFER -- Returns pointer to buffer inherent to BufferClass *
- *                                                                         *
- * INPUT:			none *
- *                                                                         *
- * OUTPUT:        void * to the inherent buffer.                           *
- *                                                                         *
- * HISTORY:                                                                *
- *   06/01/1994 PWG : Created.                                             *
- *=========================================================================*/
-inline void* BufferClass::Get_Buffer() { return (Buffer); }
+
 #endif

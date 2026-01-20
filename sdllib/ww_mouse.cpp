@@ -1,3 +1,6 @@
+// SDL2-based mouse cursor management. Handles decoding game cursor shapes,
+// scaling them for high-DPI displays, and synchronizing with palette changes.
+
 #include "sdllib/include/ww_mouse.h"
 
 #include <SDL_events.h>
@@ -7,9 +10,10 @@
 #include <SDL_surface.h>
 #include <SDL_video.h>
 
-#include <cstdio>
 #include <cstring>
+#include <utility>
 
+#include "absl/log/log.h"
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/iff.h"
 #include "sdllib/include/shape.h"
@@ -18,10 +22,17 @@
 // Global flag to disable mouse grabbing (for debugging)
 bool NoMouseGrab = false;
 
+void SDLCursorDeleter::operator()(SDL_Cursor* p) const noexcept {
+  SDL_FreeCursor(p);
+}
+
+void SDLSurfaceDeleter::operator()(SDL_Surface* p) const noexcept {
+  SDL_FreeSurface(p);
+}
+
 static WWMouseClass* _Mouse = nullptr;
 
-// Scale cursor using nearest-neighbor interpolation.
-// Returns nullptr if dimensions would result in zero-size allocation.
+// Nearest-neighbor scaling preserves the crisp pixel art look of game cursors.
 [[nodiscard]] static uint8_t* Scale_Cursor_Nearest(const uint8_t* src,
                                                    int src_w, int src_h,
                                                    int scale, int* out_w,
@@ -49,9 +60,9 @@ static WWMouseClass* _Mouse = nullptr;
   return dst;
 }
 
-// Calculate scale factor based on display resolution.
-// Original game designed for ~400 pixel vertical resolution (accounting for
-// the fact that game graphics are already scaled via SDL logical rendering).
+// The original game was designed for ~400px vertical resolution. On modern
+// high-DPI displays, cursors need scaling to remain usable. SDL's logical
+// rendering handles game graphics, but hardware cursors bypass it.
 static int Get_Display_Scale() {
   int display_index = 0;
   if (MainWindow) {
@@ -72,59 +83,50 @@ static int Get_Display_Scale() {
   return scale;
 }
 
-WWMouseClass::WWMouseClass(GraphicViewPortClass* /*scr*/, int mouse_max_width,
-                           int mouse_max_height)
-    : MaxWidth(mouse_max_width), MaxHeight(mouse_max_height), State(0) {
+WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
+                           int max_width, int max_height)
+    : MouseCursor(max_width * max_height),
+      MaxWidth(max_width),
+      MaxHeight(max_height),
+      State(0) {
   Set_Cursor_Clip();
   _Mouse = this;
-
-  MouseCursor = new uint8_t[MaxWidth * MaxHeight];
 }
 
-WWMouseClass::~WWMouseClass() {
-  Clear_Cursor_Clip();
+WWMouseClass::~WWMouseClass() { Clear_Cursor_Clip(); }
 
-  if (SDLCursor) {
-    SDL_FreeCursor(static_cast<SDL_Cursor*>(SDLCursor));
-  }
-  if (SDLSurface) {
-    SDL_FreeSurface(static_cast<SDL_Surface*>(SDLSurface));
+void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
+  if (cursor == nullptr || PrevCursor == cursor) {
+    return;
   }
 
-  delete[] MouseCursor;
-  delete[] OriginalCursor;
-}
-
-void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
-  if (!cursor || PrevCursor == cursor) return cursor;
-
-  auto cursor_shape = (Shape_Type*)cursor;
+  const auto cursor_shape = static_cast<Shape_Type*>(cursor);
 
   if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
       cursor_shape->Width > MaxWidth ||
-      cursor_shape->OriginalHeight > MaxHeight)
-    return PrevCursor;
-
-  // don't handle 16-color or uncompressed
-  if (cursor_shape->ShapeType != 0) {
-    printf("Set_Cursor type %i\n", cursor_shape->ShapeType);
-    return PrevCursor;
+      cursor_shape->OriginalHeight > MaxHeight) {
+    return;
   }
 
-  // decompress it
+  // Only ShapeType 0 (LCW compressed, 256-color) is supported here.
+  if (cursor_shape->ShapeType != 0) {
+    DLOG(INFO) << "Set_Cursor type " << cursor_shape->ShapeType;
+    return;
+  }
+
+  // Shape data is LCW compressed starting at byte 10 (after the header).
   auto decompressed_data = new uint8_t[cursor_shape->DataLength];
   LCW_Uncompress((uint8_t*)cursor + 10, decompressed_data,
                  cursor_shape->DataLength);
 
-  // now we have an uncmpressed, but still encoded shape
+  // After LCW decompression, the shape is still RLE encoded.
   auto inptr = decompressed_data;
 
   int remaining = cursor_shape->Width * cursor_shape->OriginalHeight;
-  auto outptr = MouseCursor;
+  auto outptr = MouseCursor.data();
 
-  // Initialize cursor buffer to zero before RLE decoding to ensure no
-  // uninitialized memory if decoding exits early (e.g., zero-count runs).
-  memset(MouseCursor, 0, remaining);
+  // Pre-zero buffer: RLE decoding may not write every pixel explicitly.
+  memset(MouseCursor.data(), 0, remaining);
 
   do {
     uint8_t pixel = *inptr++;
@@ -132,7 +134,7 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
       *outptr++ = pixel;
       remaining--;
     } else {
-      // run of zeros
+      // RLE: zero byte followed by count of zeros to emit.
       int count = *inptr++;
       remaining -= count;
       while (count--) {
@@ -143,38 +145,36 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
 
   delete[] decompressed_data;
 
-  // Store original cursor for palette updates
+  // Keep the unscaled cursor for palette updates. When the game palette
+  // changes, we recreate the SDL cursor from this copy.
   OriginalWidth = cursor_shape->Width;
   OriginalHeight = cursor_shape->OriginalHeight;
   int original_size = OriginalWidth * OriginalHeight;
 
-  delete[] OriginalCursor;
-  OriginalCursor = new uint8_t[original_size];
-  memcpy(OriginalCursor, MouseCursor, original_size);
+  OriginalCursor.assign(MouseCursor.begin(),
+                        MouseCursor.begin() + original_size);
 
-  // Scale cursor based on display resolution
   CurrentScale = Get_Display_Scale();
   int scaled_width, scaled_height;
   uint8_t* scaled_cursor =
-      Scale_Cursor_Nearest(OriginalCursor, OriginalWidth, OriginalHeight,
+      Scale_Cursor_Nearest(OriginalCursor.data(), OriginalWidth, OriginalHeight,
                            CurrentScale, &scaled_width, &scaled_height);
   if (!scaled_cursor) {
-    return PrevCursor;
+    return;
   }
 
-  // Scale hotspot coordinates
   int scaled_hotx = xhotspot * CurrentScale;
   int scaled_hoty = yhotspot * CurrentScale;
 
-  // Create SDL surface - use SDL_CreateRGBSurface and copy data for proper
-  // memory ownership (SDL_CreateRGBSurfaceFrom doesn't copy the pixel data)
-  auto sdl_surf =
-      SDL_CreateRGBSurface(0, scaled_width, scaled_height, 8, 0, 0, 0, 0);
+  // SDL_CreateRGBSurfaceFrom doesn't copy pixel data, so we must use
+  // SDL_CreateRGBSurface and copy manually to own the memory.
+  SDLSurfacePtr sdl_surf(
+      SDL_CreateRGBSurface(0, scaled_width, scaled_height, 8, 0, 0, 0, 0));
   if (!sdl_surf) {
     delete[] scaled_cursor;
-    return PrevCursor;
+    return;
   }
-  // Copy row by row to respect SDL surface pitch (may differ from width)
+  // SDL surface pitch may include padding, so copy row by row.
   for (int y = 0; y < scaled_height; ++y) {
     memcpy(static_cast<uint8_t*>(sdl_surf->pixels) + y * sdl_surf->pitch,
            scaled_cursor + y * scaled_width, scaled_width);
@@ -182,30 +182,28 @@ void* WWMouseClass::Set_Cursor(int xhotspot, int yhotspot, void* cursor) {
   delete[] scaled_cursor;
 
   if (WindowBuffer) {
-    // copy palette from window surface, but make index 0 transparent
+    // Sync cursor palette with game palette. Index 0 is transparent.
     auto window_pal = (const SDL_Palette*)WindowBuffer->Get_Palette();
     SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
                          255);
     sdl_surf->format->palette->colors[0].a = 0;
   }
 
-  auto sdl_cursor = SDL_CreateColorCursor(sdl_surf, scaled_hotx, scaled_hoty);
+  SDLCursorPtr sdl_cursor(
+      SDL_CreateColorCursor(sdl_surf.get(), scaled_hotx, scaled_hoty));
 
-  // set it and clean up
-  auto old_cursor = PrevCursor;
-  SDL_SetCursor(sdl_cursor);
-
-  if (SDLCursor) SDL_FreeCursor((SDL_Cursor*)SDLCursor);
-
-  if (SDLSurface) SDL_FreeSurface((SDL_Surface*)SDLSurface);
+  SDL_SetCursor(sdl_cursor.get());
 
   PrevCursor = (char*)cursor;
-  SDLCursor = sdl_cursor;
-  SDLSurface = sdl_surf;
+  sdl_cursor_ = std::move(sdl_cursor);
+  sdl_surface_ = std::move(sdl_surf);
   MouseXHot = xhotspot;
   MouseYHot = yhotspot;
-  return old_cursor;
 }
+
+// Hide/Show use reference counting so nested hide/show pairs work correctly.
+// The cursor is only actually hidden/shown when the count transitions to/from
+// 0.
 
 void WWMouseClass::Hide_Mouse() {
   if (!State++) SDL_ShowCursor(SDL_DISABLE);
@@ -231,7 +229,7 @@ int WWMouseClass::Get_Mouse_X() { return LastX; }
 int WWMouseClass::Get_Mouse_Y() { return LastY; }
 
 void WWMouseClass::Draw_Mouse(GraphicViewPortClass* /*scr*/) {
-  // we're using a "hardware" cursor, so don't need to do anything
+  // No-op: SDL hardware cursor is drawn by the OS, not by us.
 }
 
 void WWMouseClass::Erase_Mouse(GraphicViewPortClass* /*scr*/, bool /*forced*/) {
@@ -247,39 +245,38 @@ void WWMouseClass::Clear_Cursor_Clip() {
   SDL_SetWindowGrab((SDL_Window*)MainWindow, SDL_FALSE);
 }
 
+// SDL bakes palette colors into the cursor at creation time, so we must
+// recreate the cursor whenever the game palette changes.
 void WWMouseClass::Update_Palette() {
-  if (!WindowBuffer || !SDLSurface) return;
+  if (!WindowBuffer || !sdl_surface_) return;
 
   if (State) {
-    // don't do anything now if cursor is hidden anyway
+    // Defer update until cursor is shown again.
     PaletteDirty = true;
     return;
   }
 
   PaletteDirty = false;
 
-  auto sdl_surf = (SDL_Surface*)SDLSurface;
-
-  // copy palette from window surface
   auto window_pal = (const SDL_Palette*)WindowBuffer->Get_Palette();
-  SDL_SetPaletteColors(sdl_surf->format->palette, window_pal->colors + 1, 1,
+  SDL_SetPaletteColors(sdl_surface_->format->palette, window_pal->colors + 1, 1,
                        255);
 
-  // recreate and set cursor with scaled hotspot
   int scaled_hotx = MouseXHot * CurrentScale;
   int scaled_hoty = MouseYHot * CurrentScale;
-  auto sdl_cursor = SDL_CreateColorCursor(sdl_surf, scaled_hotx, scaled_hoty);
-  SDL_SetCursor(sdl_cursor);
+  SDLCursorPtr sdl_cursor(
+      SDL_CreateColorCursor(sdl_surface_.get(), scaled_hotx, scaled_hoty));
+  SDL_SetCursor(sdl_cursor.get());
 
-  // clean up old cursor
-  if (SDLCursor) SDL_FreeCursor((SDL_Cursor*)SDLCursor);
-  SDLCursor = sdl_cursor;
+  sdl_cursor_ = std::move(sdl_cursor);
 }
 
 void WWMouseClass::Update_Pos(int x, int y) {
   LastX = x;
   LastY = y;
 }
+
+// C-style API for legacy game code. These delegate to the singleton.
 
 void Hide_Mouse() {
   if (_Mouse) _Mouse->Hide_Mouse();
@@ -302,9 +299,10 @@ int Get_Mouse_State() {
   return 0;
 }
 
-void* Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
-  if (_Mouse) return _Mouse->Set_Cursor(hotx, hoty, cursor);
-  return nullptr;
+void Set_Mouse_Cursor(int hotx, int hoty, void* cursor) {
+  if (_Mouse) {
+    _Mouse->Set_Cursor(hotx, hoty, cursor);
+  }
 }
 
 int Get_Mouse_X() {

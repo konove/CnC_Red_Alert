@@ -975,8 +975,12 @@ void GraphicBufferClass::Init(int w, int h, void* buffer, long size,
     Allocated = !buffer;
     Buffer = buffer;
 
-    if (!Buffer) {
-      if (!Size) Size = w * h;
+    if (buffer == nullptr) {
+      if (size == 0) {
+        Size = w * h;
+      } else {
+        Size = size;
+      }
       Buffer = new uint8_t[Size];
     }
 

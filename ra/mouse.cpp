@@ -54,7 +54,6 @@
 #include "sdllib/include/gbuffer.h"
 #include "sdllib/include/shape.h"
 #include "sdllib/include/ww_mouse.h"
-#include "tech/rawfile.h"
 
 /*
 **	This points to the loaded mouse shapes.
@@ -293,20 +292,7 @@ void MouseClass::AI(KeyNumType& input, int x, int y) {
 void MouseClass::One_Time() {
   ScrollClass::One_Time();
 
-/*
-**	Override the mouse shape file with the one in the current directory, but
-*only if there *	is an override file available.
-*/
-#ifndef NDEBUG
-  RawFileClass file("MOUSE.SHP");
-  if (file.Is_Available()) {
-    MouseShapes = Load_Alloc_Data(file);
-  } else {
-    MouseShapes = MFCD::Retrieve("MOUSE.SHP");
-  }
-#else
   MouseShapes = MFCD::Retrieve("MOUSE.SHP");
-#endif
 }
 
 /***********************************************************************************************

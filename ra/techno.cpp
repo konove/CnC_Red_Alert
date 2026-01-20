@@ -161,7 +161,6 @@
 #include <cassert>
 #include <cstring>
 
-#include "absl/log/log.h"
 #include "port/safe_string.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"

@@ -222,11 +222,7 @@ EgoClass::~EgoClass() { delete[] Text; }
  *=============================================================================================*/
 bool EgoClass::Scroll(int distance) {
   YPos -= distance;
-  if (YPos < -20) {
-    return (true);
-  } else {
-    return (false);
-  }
+  return YPos < -20;
 }
 
 /***********************************************************************************************
@@ -291,21 +287,7 @@ void EgoClass::Wipe(GraphicBufferClass* background) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:59PM ST : Created *
  *=============================================================================================*/
-void Set_Pal(char* palette) {
-  // #ifndef WIN32
-  // Vsync();
-  // unsigned char *rgbptr = (unsigned char *) palette;
-  // outportb(0x03C8, 0);
-  // //Start from color 0
-
-  // for (int index = 0; index < 256; index++) {
-  //	outrgb(rgbptr[index*3], rgbptr[index*3+1], rgbptr[index*3+2]);
-  // }
-  // #else	//WIN32
-
-  Set_Palette((void*)palette);
-  // #endif
-}
+void Set_Pal(char* palette) { Set_Palette(palette); }
 
 /***********************************************************************************************
  * Slide_Show -- Handles the blitting and fading of the background pictures. *
@@ -660,12 +642,6 @@ void Show_Who_Was_Responsible() {
   /*
   ** Load the reference palette for the font.
   */
-  // Load_Title_Page(true);
-  // #ifdef WIN32
-  //	Load_Picture("EGOPAL.CPS", SysMemPage, SysMemPage, CCPalette,
-  // BM_DEFAULT); #else	//WIN32 	Load_Picture("EGOPAL.CPS", HidPage,
-  // HidPage, CCPalette, BM_DEFAULT); #endif	//WIN32
-
   CCFileClass("EGOPAL.PAL").Read(&CCPalette, sizeof(CCPalette));
 
   /*
@@ -698,34 +674,19 @@ void Show_Who_Was_Responsible() {
   ** Loop through and load up all the slideshow pictures
   */
   for (int index = 0; index < NUM_SLIDES; index++) {
-#ifdef WIN32
     SlideBuffers[index] = new GraphicBufferClass;
     SlideBuffers[index]->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(),
-                              nullptr, 0, (GBC_Enum)0);
+                              nullptr, 0, GBC_NONE);
     Load_Title_Screen(&SlideNames[index][0], SlideBuffers[index],
                       (unsigned char*)&SlidePals[index][0]);
-#else   // WIN32
-    SlideBuffers[index] = new GraphicBufferClass(
-        SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
-    Load_Picture(&LoresSlideNames[index][0], *SlideBuffers[index],
-                 *SlideBuffers[index], (unsigned char*)&SlidePals[index][0],
-                 BM_DEFAULT);
-#endif  // WIN32
   }
 
-  /*
-  ** Create a new graphic buffer to restore the background from. Initialise it
-  *to black so
-  ** we can start scrolling before the first slideshow picture is blitted.
-  */
-#ifdef WIN32
+  // Create a new graphic buffer to restore the background from. Initialize it
+  // to black so we can start scrolling before the first slideshow picture is
+  // blitted.
   BackgroundPage = new GraphicBufferClass;
   BackgroundPage->Init(SeenBuff.Get_Width(), SeenBuff.Get_Height(), nullptr, 0,
-                       (GBC_Enum)(GBC_VIDEOMEM));
-#else   // WIN32
-  BackgroundPage = new GraphicBufferClass(
-      SeenBuff.Get_Width(), SeenBuff.Get_Height(), (void*)nullptr);
-#endif  // WIN32
+                       GBC_VIDEOMEM);
 
   SeenBuff.Blit(*BackgroundPage);
 

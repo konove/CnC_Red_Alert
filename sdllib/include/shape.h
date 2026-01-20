@@ -82,7 +82,7 @@ typedef enum {
 #pragma pack(push, 1)
 typedef struct {
   unsigned short ShapeType;      // 0 = normal, 1 = 16 colors,
-                                 //  2 = uncompressed, 4 = 	<16 colors
+                                 // 2 = uncompressed, 4 = <16 colors
   unsigned char Height;          // Height of the shape in scan lines
   unsigned short Width;          // Width of the shape in bytes
   unsigned char OriginalHeight;  // Original height of shape in scan lines

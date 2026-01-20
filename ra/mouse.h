@@ -81,7 +81,7 @@ class MouseClass : public ScrollClass {
   friend class TacticalClass;
 
   /*
-  **	This points to the loaded mouse shapes.
+  ** This points to the loaded mouse shapes.
   */
   static void const* MouseShapes;
 
