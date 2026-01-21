@@ -2550,25 +2550,21 @@ static void Init_Expansion_Files() {
   */
   FindFileState state;
   if (Find_First_File("SC*.MIX", state)) {
-    char* ptr;
     do {
       // scores shouldn't be loaded here but may be found if main has been
       // extracted
       if (stricmp(state.name, "scores.mix") == 0) continue;
-      ptr = strdup(state.name);
       // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
       // self-registering
-      new MFCD(ptr, &FastKey);
-      MFCD::Cache(ptr);
+      new MFCD(state.name, &FastKey);
+      MFCD::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
-    char* ptr;
     do {
-      ptr = strdup(state.name);
       // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
       // self-registering
-      new MFCD(ptr, &FastKey);
+      new MFCD(state.name, &FastKey);
     } while (Find_Next_File(state));
   }
 }
