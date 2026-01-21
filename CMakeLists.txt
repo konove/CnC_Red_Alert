@@ -40,7 +40,10 @@ if (ENABLE_ASAN)
 endif ()
 
 if (STRICT_CHECKS)
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+    set(CMAKE_CXX_CLANG_TIDY
+        "clang-tidy"
+        "--header-filter=${CMAKE_SOURCE_DIR}/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*"
+    )
     message(STATUS "Strict checks enabled (clang-tidy + warnings)")
 else ()
     message(STATUS "Strict checks disabled (quick build mode)")

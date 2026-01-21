@@ -290,5 +290,5 @@ Checks: '*,
          -readability-use-std-min-max,
          '
 WarningsAsErrors: '*'
-HeaderFilterRegex: '(port|sdllib|tech|jshell|winvq|ra|td)/.*'
+HeaderFilterRegex: '.*/CnC_Red_Alert/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
 FormatStyle: file
