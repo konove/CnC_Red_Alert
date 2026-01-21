@@ -75,6 +75,8 @@ extern int __cdecl Check_Key();
 extern int __cdecl Get_Key();
 }
 
+VQAHandle::~VQAHandle() = default;
+
 /****************************************************************************
  *
  * NAME

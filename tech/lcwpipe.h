@@ -95,8 +95,10 @@ class LCWPipe : public Pipe {
     unsigned short UncompCount;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
-  LCWPipe(LCWPipe& rvalue);
-  LCWPipe& operator=(LCWPipe const& pipe);
+  LCWPipe(const LCWPipe&) = delete;
+  LCWPipe& operator=(const LCWPipe&) = delete;
+  LCWPipe(LCWPipe&&) = delete;
+  LCWPipe& operator=(LCWPipe&&) = delete;
 };
 
 #endif

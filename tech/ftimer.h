@@ -80,8 +80,11 @@ class BasicTimerClass {
   // Constructor allows assignment as if class was integral 'long' type.
   BasicTimerClass(unsigned long set = 0);
   BasicTimerClass(NoInitClass const&);
-
-  ~BasicTimerClass();
+  ~BasicTimerClass() = default;
+  BasicTimerClass(const BasicTimerClass&) = default;
+  BasicTimerClass& operator=(const BasicTimerClass&) = default;
+  BasicTimerClass(BasicTimerClass&&) = default;
+  BasicTimerClass& operator=(BasicTimerClass&&) = default;
 
   // Fetch current value of timer.
   unsigned long Value() const;
@@ -123,21 +126,6 @@ template <class T>
 inline BasicTimerClass<T>::BasicTimerClass(unsigned long set)
     : Started(Timer() - set) {}
 
-/***********************************************************************************************
- * BasicTimerClass<T>::~BasicTimerClass -- Destructor for basic timer object. *
- *                                                                                             *
- *    The destructor for the basic timer object doesn't have to do anything. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/05/1996 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-inline BasicTimerClass<T>::~BasicTimerClass() {}
 
 template <class T>
 inline unsigned long BasicTimerClass<T>::Value() const {
@@ -198,8 +186,11 @@ class TTimerClass : public BasicTimerClass<T> {
   // Constructor allows assignment as if class was integral 'long' type.
   TTimerClass(unsigned long set = 0);
   TTimerClass(NoInitClass const& x);
-
-  ~TTimerClass() {}
+  ~TTimerClass() = default;
+  TTimerClass(const TTimerClass&) = default;
+  TTimerClass& operator=(const TTimerClass&) = default;
+  TTimerClass(TTimerClass&&) = default;
+  TTimerClass& operator=(TTimerClass&&) = default;
 
   // Fetches current value of timer.
   unsigned long Value() const;
@@ -399,8 +390,11 @@ class CDTimerClass : public BasicTimerClass<T> {
   // Constructor allows assignment as if class was integral 'long' type.
   CDTimerClass(unsigned long set = 0);
   CDTimerClass(NoInitClass const& x);
-
-  ~CDTimerClass();
+  ~CDTimerClass() = default;
+  CDTimerClass(const CDTimerClass&) = default;
+  CDTimerClass& operator=(const CDTimerClass&) = default;
+  CDTimerClass(CDTimerClass&&) = default;
+  CDTimerClass& operator=(CDTimerClass&&) = default;
 
   // Fetches current value of count down timer.
   unsigned long Value() const;
@@ -448,22 +442,6 @@ template <class T>
 inline CDTimerClass<T>::CDTimerClass(unsigned long set)
     : BasicTimerClass<T>(0), DelayTime(set) {}
 
-/***********************************************************************************************
- * CDTimerClass<T>::~CDTimerClass -- Destructor for the count down timer object.
- **
- *                                                                                             *
- *    The destructor for the count down timer object does nothing. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/06/1996 JLB : Created. *
- *=============================================================================================*/
-template <class T>
-inline CDTimerClass<T>::~CDTimerClass() {}
 
 /***********************************************************************************************
  * CDTimerClass<T>::Value -- Fetches the current value of the countdown timer. *

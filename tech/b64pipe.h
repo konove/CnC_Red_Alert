@@ -51,7 +51,14 @@ class Base64Pipe : public Pipe {
  public:
   typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-  Base64Pipe(CodeControl control) : Control(control), Counter(0) {}
+  Base64Pipe(CodeControl control)
+      : Control(control), Counter(0), CBuffer{}, PBuffer{} {}
+  ~Base64Pipe() override = default;
+
+  Base64Pipe(const Base64Pipe&) = delete;
+  Base64Pipe& operator=(const Base64Pipe&) = delete;
+  Base64Pipe(Base64Pipe&&) = delete;
+  Base64Pipe& operator=(Base64Pipe&&) = delete;
 
   int Flush() override;
   int Put(void const* source, int slen) override;
@@ -80,12 +87,6 @@ class Base64Pipe : public Pipe {
   *scratch buffer.
   */
   char PBuffer[3];
-
-  /*
-  **	Explicitly disable the copy constructor and the assignment operator.
-  */
-  Base64Pipe(Base64Pipe& rvalue);
-  Base64Pipe& operator=(Base64Pipe const& pipe);
 };
 
 #endif

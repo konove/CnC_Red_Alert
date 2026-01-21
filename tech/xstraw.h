@@ -50,20 +50,25 @@
 */
 class BufferStraw : public Straw {
  public:
-  BufferStraw(Buffer const& buffer) : BufferPtr(buffer), Index(0) {}
+  // Creates a non-owning view into the buffer.
+  BufferStraw(const Buffer& buffer)
+      : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
   BufferStraw(void const* buffer, int length)
       : BufferPtr((void*)buffer, length), Index(0) {}
+  ~BufferStraw() override = default;
+
+  BufferStraw(const BufferStraw&) = delete;
+  BufferStraw& operator=(const BufferStraw&) = delete;
+  BufferStraw(BufferStraw&&) = delete;
+  BufferStraw& operator=(BufferStraw&&) = delete;
+
   int Get(void* source, int slen) override;
 
  private:
   Buffer BufferPtr;
   int Index;
-  //		void const * BufferPtr;
-  //		int Length;
 
   bool Is_Valid() { return (BufferPtr.Is_Valid()); }
-  BufferStraw(BufferStraw& rvalue);
-  BufferStraw& operator=(BufferStraw const& pipe);
 };
 
 /*
@@ -75,6 +80,12 @@ class FileStraw : public Straw {
   FileStraw(FileClass* file) : File(file), HasOpened(false) {}
   FileStraw(FileClass& file) : File(&file), HasOpened(false) {}
   ~FileStraw() override;
+
+  FileStraw(const FileStraw&) = delete;
+  FileStraw& operator=(const FileStraw&) = delete;
+  FileStraw(FileStraw&&) = delete;
+  FileStraw& operator=(FileStraw&&) = delete;
+
   int Get(void* source, int slen) override;
 
  private:
@@ -82,8 +93,6 @@ class FileStraw : public Straw {
   bool HasOpened;
 
   bool Valid_File() { return (File != nullptr); }
-  FileStraw(FileStraw& rvalue);
-  FileStraw& operator=(FileStraw const& pipe);
 };
 
 #endif

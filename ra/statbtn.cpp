@@ -223,7 +223,7 @@ void StaticButtonClass::Draw_Background() {
   **	allocate and record the background image now.
   */
   if (Background.Get_Buffer() == nullptr && Width > 0 && Height > 0) {
-    new (&Background) Buffer(Width * Height);
+    Background = Buffer(Width * Height);
     if (Background.Get_Buffer() != nullptr) {
       LogicPage->To_Buffer(X, Y, Width, Height, Background,
                            Background.Get_Size());

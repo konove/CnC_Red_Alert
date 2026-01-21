@@ -52,18 +52,17 @@
 #define NO_CD_DRIVE -1
 
 class GetCDClass {
- protected:
-  int CDDrives[MAX_CD_DRIVES];  // Array containing CD drive letters
-  int CDCount;                  // Number of available CD drives
-  int CDIndex;
-
  public:
-  GetCDClass() = default;   // This is the default constructor
-  ~GetCDClass() = default;  // This is the destructor
+  GetCDClass() = default;
 
   inline int Get_First_CD_Drive();
   inline int Get_Next_CD_Drive();
-  inline int Get_Number_Of_Drives() { return (CDCount); }
+  int Get_Number_Of_Drives() { return CDCount; }
+
+ private:
+  int CDDrives[MAX_CD_DRIVES];  // Array containing CD drive letters
+  int CDCount;                  // Number of available CD drives
+  int CDIndex;
 };
 
 /***********************************************************************************************
@@ -82,11 +81,12 @@ class GetCDClass {
  *=============================================================================================*/
 inline int GetCDClass::Get_Next_CD_Drive() {
   if (CDCount) {
-    if (CDIndex == CDCount) CDIndex = 0;
-    return (CDDrives[CDIndex++]);
-  } else {
-    return (-1);
+    if (CDIndex == CDCount) {
+      CDIndex = 0;
+    }
+    return CDDrives[CDIndex++];
   }
+  return -1;
 }
 
 /***************************************************************************
@@ -106,7 +106,7 @@ inline int GetCDClass::Get_Next_CD_Drive() {
  *=========================================================================*/
 inline int GetCDClass::Get_First_CD_Drive() {
   CDIndex = 0;
-  return (Get_Next_CD_Drive());
+  return Get_Next_CD_Drive();
 }
 
 /***************************** End of Playcd.h ****************************/

@@ -57,6 +57,11 @@ class BlowfishEngine {
   BlowfishEngine() : IsKeyed(false) {}
   ~BlowfishEngine();
 
+  BlowfishEngine(const BlowfishEngine&) = delete;
+  BlowfishEngine& operator=(const BlowfishEngine&) = delete;
+  BlowfishEngine(BlowfishEngine&&) = delete;
+  BlowfishEngine& operator=(BlowfishEngine&&) = delete;
+
   void Submit_Key(void const* key, int length);
 
   int Encrypt(void const* plaintext, int length, void* cyphertext);

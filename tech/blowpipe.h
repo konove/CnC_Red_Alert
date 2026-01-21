@@ -77,8 +77,10 @@ class BlowPipe : public Pipe {
   int Counter;
   CryptControl Control;
 
-  BlowPipe(BlowPipe& rvalue);
-  BlowPipe& operator=(BlowPipe const& pipe);
+  BlowPipe(const BlowPipe&) = delete;
+  BlowPipe& operator=(const BlowPipe&) = delete;
+  BlowPipe(BlowPipe&&) = delete;
+  BlowPipe& operator=(BlowPipe&&) = delete;
 };
 
 #endif

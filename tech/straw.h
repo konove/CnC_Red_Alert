@@ -52,6 +52,11 @@ class Straw {
   Straw() : ChainTo(nullptr), ChainFrom(nullptr) {}
   virtual ~Straw();
 
+  Straw(const Straw&) = delete;
+  Straw& operator=(const Straw&) = delete;
+  Straw(Straw&&) = delete;
+  Straw& operator=(Straw&&) = delete;
+
   virtual void Get_From(Straw* pipe);
   virtual void Get_From(Straw& pipe) { Get_From(&pipe); }
   virtual int Get(void* buffer, int slen);
@@ -61,13 +66,6 @@ class Straw {
   */
   Straw* ChainTo;
   Straw* ChainFrom;
-
- private:
-  /*
-  **	Disable the copy constructor and assignment operator.
-  */
-  Straw(Straw& rvalue);
-  Straw& operator=(Straw const& pipe);
 };
 
 #endif

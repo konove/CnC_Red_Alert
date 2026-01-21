@@ -73,8 +73,8 @@ class LZWStraw : public Straw {
   /*
   **	Pointer to the working buffer that compression/decompression will use.
   */
-  char* Buffer;
-  char* Buffer2;
+  char* source_buffer_;
+  char* output_buffer_;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.
@@ -95,8 +95,10 @@ class LZWStraw : public Straw {
     unsigned short UncompCount;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
-  LZWStraw(LZWStraw& rvalue);
-  LZWStraw& operator=(LZWStraw const& pipe);
+  LZWStraw(const LZWStraw&) = delete;
+  LZWStraw& operator=(const LZWStraw&) = delete;
+  LZWStraw(LZWStraw&&) = delete;
+  LZWStraw& operator=(LZWStraw&&) = delete;
 };
 
 #endif

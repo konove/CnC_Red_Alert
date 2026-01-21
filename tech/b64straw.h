@@ -52,6 +52,13 @@ class Base64Straw : public Straw {
   typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
   Base64Straw(CodeControl control) : Control(control), Counter(0) {}
+  ~Base64Straw() override = default;
+
+  Base64Straw(const Base64Straw&) = delete;
+  Base64Straw& operator=(const Base64Straw&) = delete;
+  Base64Straw(Base64Straw&&) = delete;
+  Base64Straw& operator=(Base64Straw&&) = delete;
+
   int Get(void* source, int slen) override;
 
  private:
@@ -79,11 +86,6 @@ class Base64Straw : public Straw {
   */
   char PBuffer[3];
 
-  /*
-  **	Explicitly disable the copy constructor and the assignment operator.
-  */
-  Base64Straw(Base64Straw& rvalue);
-  Base64Straw& operator=(Base64Straw const& pipe);
 };
 
 #endif

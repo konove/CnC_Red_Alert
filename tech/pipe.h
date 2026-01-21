@@ -66,11 +66,10 @@ class Pipe {
   Pipe* ChainFrom;
 
  private:
-  /*
-  **	Disable the copy constructor and assignment operator.
-  */
-  Pipe(Pipe& rvalue);
-  Pipe& operator=(Pipe const& pipe);
+  Pipe(const Pipe&) = delete;
+  Pipe& operator=(const Pipe&) = delete;
+  Pipe(Pipe&&) = delete;
+  Pipe& operator=(Pipe&&) = delete;
 };
 
 #endif

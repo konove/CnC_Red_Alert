@@ -196,6 +196,10 @@ class GraphicViewPortClass {
                        int h);
   GraphicViewPortClass() = default;
   ~GraphicViewPortClass() = default;
+  GraphicViewPortClass(const GraphicViewPortClass&) = delete;
+  GraphicViewPortClass& operator=(const GraphicViewPortClass&) = delete;
+  GraphicViewPortClass(GraphicViewPortClass&&) = delete;
+  GraphicViewPortClass& operator=(GraphicViewPortClass&&) = delete;
 
   /*===================================================================*/
   /* define functions to get at the private data members
@@ -325,6 +329,11 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   GraphicBufferClass(int w, int h, void* buffer = nullptr);
   GraphicBufferClass();
   ~GraphicBufferClass();
+
+  GraphicBufferClass(const GraphicBufferClass&) = delete;
+  GraphicBufferClass& operator=(const GraphicBufferClass&) = delete;
+  GraphicBufferClass(GraphicBufferClass&&) = delete;
+  GraphicBufferClass& operator=(GraphicBufferClass&&) = delete;
 
   void Init(int w, int h, void* buffer, long size, GBC_Enum flags);
   void Un_Init();

@@ -69,14 +69,14 @@
 LZWStraw::LZWStraw(CompControl control, int blocksize)
     : Control(control),
       Counter(0),
-      Buffer(nullptr),
-      Buffer2(nullptr),
+      source_buffer_(nullptr),
+      output_buffer_(nullptr),
       BlockSize(blocksize) {
   SafetyMargin = BlockSize;
   //	SafetyMargin = BlockSize/128+1;
-  Buffer = new char[BlockSize + SafetyMargin];
+  source_buffer_ = new char[BlockSize + SafetyMargin];
   if (control == COMPRESS) {
-    Buffer2 = new char[BlockSize + SafetyMargin];
+    output_buffer_ = new char[BlockSize + SafetyMargin];
   }
 }
 
@@ -95,11 +95,11 @@ LZWStraw::LZWStraw(CompControl control, int blocksize)
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZWStraw::~LZWStraw() {
-  delete[] Buffer;
-  Buffer = nullptr;
+  delete[] source_buffer_;
+  source_buffer_ = nullptr;
 
-  delete[] Buffer2;
-  Buffer2 = nullptr;
+  delete[] output_buffer_;
+  output_buffer_ = nullptr;
 }
 
 /***********************************************************************************************
@@ -124,7 +124,7 @@ LZWStraw::~LZWStraw() {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LZWStraw::Get(void* destbuf, int slen) {
-  assert(Buffer != nullptr);
+  assert(source_buffer_ != nullptr);
 
   int total = 0;
 
@@ -143,12 +143,13 @@ int LZWStraw::Get(void* destbuf, int slen) {
     if (Counter) {
       int len = (slen < Counter) ? slen : Counter;
       if (Control == DECOMPRESS) {
-        memmove(destbuf, &Buffer[BlockHeader.UncompCount - Counter], len);
+        memmove(destbuf, &source_buffer_[BlockHeader.UncompCount - Counter],
+                len);
       } else {
-        memmove(
-            destbuf,
-            &Buffer2[(BlockHeader.CompCount + sizeof(BlockHeader)) - Counter],
-            len);
+        memmove(destbuf,
+                &output_buffer_[(BlockHeader.CompCount + sizeof(BlockHeader)) -
+                                Counter],
+                len);
       }
       destbuf = ((char*)destbuf) + len;
       slen -= len;
@@ -161,19 +162,24 @@ int LZWStraw::Get(void* destbuf, int slen) {
       int incount = Straw::Get(&BlockHeader, sizeof(BlockHeader));
       if (incount != sizeof(BlockHeader)) break;
 
-      void* ptr = &Buffer[(BlockSize + SafetyMargin) - BlockHeader.CompCount];
+      void* ptr =
+          &source_buffer_[(BlockSize + SafetyMargin) - BlockHeader.CompCount];
       incount = Straw::Get(ptr, BlockHeader.CompCount);
       if (incount != BlockHeader.CompCount) break;
 
-      LZW_Uncompress(ptr, Buffer);
+      LZW_Uncompress(Buffer(ptr), Buffer(source_buffer_));
       Counter = BlockHeader.UncompCount;
     } else {
-      BlockHeader.UncompCount = (unsigned short)Straw::Get(Buffer, BlockSize);
-      if (BlockHeader.UncompCount == 0) break;
+      // Compress
+      BlockHeader.UncompCount =
+          (unsigned short)Straw::Get(source_buffer_, BlockSize);
+      if (BlockHeader.UncompCount == 0) {
+        break;
+      }
       BlockHeader.CompCount = (unsigned short)LZW_Compress(
-          ::Buffer(Buffer, BlockHeader.UncompCount),
-          &Buffer2[sizeof(BlockHeader)]);
-      memmove(Buffer2, &BlockHeader, sizeof(BlockHeader));
+          Buffer(source_buffer_, BlockHeader.UncompCount),
+          Buffer(&output_buffer_[sizeof(BlockHeader)]));
+      memmove(output_buffer_, &BlockHeader, sizeof(BlockHeader));
       Counter = BlockHeader.CompCount + sizeof(BlockHeader);
     }
   }

@@ -49,7 +49,12 @@ class CDFileClass : public BufferIOFileClass {
  public:
   explicit CDFileClass(char const* filename);
   CDFileClass();
-  ~CDFileClass() override {}
+  ~CDFileClass() override = default;
+
+  CDFileClass(const CDFileClass&) = delete;
+  CDFileClass& operator=(const CDFileClass&) = delete;
+  CDFileClass(CDFileClass&&) = delete;
+  CDFileClass& operator=(CDFileClass&&) = delete;
 
   char const* Set_Name(char const* filename) override;
   int Open(char const* filename, int rights = READ) override;

@@ -56,9 +56,15 @@ class PKPipe : public Pipe {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   PKPipe(CryptControl control, RandomStraw& rnd);
+  ~PKPipe() override = default;
+
+  PKPipe(const PKPipe&) = delete;
+  PKPipe& operator=(const PKPipe&) = delete;
+  PKPipe(PKPipe&&) = delete;
+  PKPipe& operator=(PKPipe&&) = delete;
 
   void Put_To(Pipe* pipe) override;
-  virtual void Put_To(Pipe& pipe) { Put_To(&pipe); }
+  void Put_To(Pipe& pipe) { Put_To(&pipe); }
 
   // Feed data through for processing.
   int Put(void const* source, int length) override;
@@ -128,8 +134,6 @@ class PKPipe : public Pipe {
   int Encrypted_Key_Length() const;
   int Plain_Key_Length() const;
 
-  PKPipe(PKPipe& rvalue);
-  PKPipe& operator=(PKPipe const& pipe);
 };
 
 #endif

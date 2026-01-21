@@ -51,6 +51,13 @@
 class SHAPipe : public Pipe {
  public:
   SHAPipe() {}
+  ~SHAPipe() override = default;
+
+  SHAPipe(const SHAPipe&) = delete;
+  SHAPipe& operator=(const SHAPipe&) = delete;
+  SHAPipe(SHAPipe&&) = delete;
+  SHAPipe& operator=(SHAPipe&&) = delete;
+
   int Put(void const* source, int slen) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
@@ -58,10 +65,6 @@ class SHAPipe : public Pipe {
 
  protected:
   SHAEngine SHA;
-
- private:
-  SHAPipe(SHAPipe& rvalue);
-  SHAPipe& operator=(SHAPipe const& pipe);
 };
 
 #endif

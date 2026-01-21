@@ -49,6 +49,11 @@ class RAMFileClass : public FileClass {
   RAMFileClass(void* buffer, int len);
   ~RAMFileClass() override;
 
+  RAMFileClass(const RAMFileClass&) = delete;
+  RAMFileClass& operator=(const RAMFileClass&) = delete;
+  RAMFileClass(RAMFileClass&&) = delete;
+  RAMFileClass& operator=(RAMFileClass&&) = delete;
+
   char const* File_Name() const override { return ("UNKNOWN"); }
   char const* Set_Name(char const*) override { return (File_Name()); }
   int Create() override;

@@ -34,10 +34,8 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * Buffer::Buffer -- Constructor for buffer object. *
- *   Buffer::Buffer -- Copy constructor for buffer object. * Buffer::Buffer --
- *Self-allocating constructor for buffer object.                          *
- *   Buffer::Reset -- Clears the buffer object to null state. * Buffer::operator
- *= -- Assignment operator for the buffer object.                          *
+ *   Buffer::Buffer -- Self-allocating constructor for buffer object. *
+ *   Buffer::Reset -- Clears the buffer object to null state. *
  *   Buffer::~Buffer -- Destructor for buffer object. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -96,51 +94,28 @@ Buffer::Buffer(long size) : BufferPtr(nullptr), Size(size), IsAllocated(false) {
   }
 }
 
-/***********************************************************************************************
- * Buffer::Buffer -- Copy constructor for buffer object. *
- *                                                                                             *
- *    This will make a duplicate of the specified buffer object. The ownership
- *of the pointer  * remains with the original object. This prevents multiple
- *deletion of the same pointer.   *
- *                                                                                             *
- * INPUT:   buffer   -- Reference to the buffer object to be dupilcated. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/02/1996 JLB : Created. *
- *=============================================================================================*/
-Buffer::Buffer(Buffer const& buffer) : IsAllocated(false) {
-  BufferPtr = buffer.BufferPtr;
-  Size = buffer.Size;
+Buffer::Buffer(Buffer&& buffer) noexcept
+    : BufferPtr(buffer.BufferPtr),
+      Size(buffer.Size),
+      IsAllocated(buffer.IsAllocated) {
+  buffer.BufferPtr = nullptr;
+  buffer.Size = 0;
+  buffer.IsAllocated = false;
 }
 
-/***********************************************************************************************
- * Buffer::operator = -- Assignment operator for the buffer object. *
- *                                                                                             *
- *    This will make a duplicate of the buffer object specified. Any buffer
- *pointed to by the  * left hand buffer will be lost (possibley freed as a
- *result).                             *
- *                                                                                             *
- * INPUT:   buffer   -- Reference to the right hand buffer object. *
- *                                                                                             *
- * OUTPUT:  Returns with a reference to the copied buffer object. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/02/1996 JLB : Created. *
- *=============================================================================================*/
-Buffer& Buffer::operator=(Buffer const& buffer) {
-  if (buffer != this) {
+Buffer& Buffer::operator=(Buffer&& buffer) noexcept {
+  if (&buffer != this) {
     if (IsAllocated) {
       delete[] static_cast<char*>(BufferPtr);
     }
-    IsAllocated = false;
     BufferPtr = buffer.BufferPtr;
     Size = buffer.Size;
+    IsAllocated = buffer.IsAllocated;
+    buffer.BufferPtr = nullptr;
+    buffer.Size = 0;
+    buffer.IsAllocated = false;
   }
-  return (*this);
+  return *this;
 }
 
 /***********************************************************************************************

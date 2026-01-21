@@ -51,6 +51,13 @@
 class SHAStraw : public Straw {
  public:
   SHAStraw() {}
+  ~SHAStraw() override = default;
+
+  SHAStraw(const SHAStraw&) = delete;
+  SHAStraw& operator=(const SHAStraw&) = delete;
+  SHAStraw(SHAStraw&&) = delete;
+  SHAStraw& operator=(SHAStraw&&) = delete;
+
   int Get(void* source, int slen) override;
 
   // Fetch the SHA hash value (stored in result buffer -- 20 bytes long).
@@ -58,10 +65,6 @@ class SHAStraw : public Straw {
 
  protected:
   SHAEngine SHA;
-
- private:
-  SHAStraw(SHAStraw& rvalue);
-  SHAStraw& operator=(SHAStraw const& straw);
 };
 
 #endif

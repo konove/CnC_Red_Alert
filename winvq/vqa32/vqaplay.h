@@ -265,9 +265,15 @@ typedef struct _VQAStatistics {
  * VQAio - Something meaningful to the IO manager. (See DOCS)
  */
 struct VQAHandle {
-  virtual ~VQAHandle() = default;
+  VQAHandle() = default;
+  virtual ~VQAHandle();
+  VQAHandle(const VQAHandle&) = delete;
+  VQAHandle& operator=(const VQAHandle&) = delete;
+  VQAHandle(VQAHandle&&) = delete;
+  VQAHandle& operator=(VQAHandle&&) = delete;
+
   virtual void Reset() { VQAio = 0; }
-  uintptr_t VQAio;
+  uintptr_t VQAio = 0;
 };
 
 /* Possible IO command values */

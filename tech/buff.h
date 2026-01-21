@@ -48,21 +48,22 @@
 */
 class Buffer {
  public:
-  Buffer(char* ptr, long size = 0);
-  Buffer(void* ptr = nullptr, long size = 0);
-  Buffer(void const* ptr, long size = 0);
-  Buffer(long size);
-  Buffer(Buffer const& buffer);
+  explicit Buffer(char* ptr, long size = 0);
+  explicit Buffer(void* ptr = nullptr, long size = 0);
+  explicit Buffer(void const* ptr, long size = 0);
+  explicit Buffer(long size);
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+  Buffer(Buffer&& buffer) noexcept;
+  Buffer& operator=(Buffer&& buffer) noexcept;
   ~Buffer();
-
-  Buffer& operator=(Buffer const& buffer);
-  operator void*() const { return (BufferPtr); }
-  operator char*() const { return ((char*)BufferPtr); }
+  operator void*() const { return BufferPtr; }
+  operator char*() const { return static_cast<char*>(BufferPtr); }
 
   void Reset();
-  void* Get_Buffer() const { return (BufferPtr); }
-  long Get_Size() const { return (Size); }
-  bool Is_Valid() const { return (BufferPtr != nullptr); }
+  void* Get_Buffer() const { return BufferPtr; }
+  long Get_Size() const { return Size; }
+  bool Is_Valid() const { return BufferPtr != nullptr; }
 
  protected:
   /*

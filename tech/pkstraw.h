@@ -51,6 +51,12 @@ class PKStraw : public Straw {
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
   PKStraw(CryptControl control, RandomStraw& rnd);
+  ~PKStraw() override = default;
+
+  PKStraw(const PKStraw&) = delete;
+  PKStraw& operator=(const PKStraw&) = delete;
+  PKStraw(PKStraw&&) = delete;
+  PKStraw& operator=(PKStraw&&) = delete;
 
   void Get_From(Straw* straw) override;
   void Get_From(Straw& straw) override { Get_From(&straw); }
@@ -117,8 +123,6 @@ class PKStraw : public Straw {
   int Encrypted_Key_Length() const;
   int Plain_Key_Length() const;
 
-  PKStraw(PKStraw& rvalue);
-  PKStraw& operator=(PKStraw const& straw);
 };
 
 #endif

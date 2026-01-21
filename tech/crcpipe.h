@@ -50,6 +50,13 @@
 class CRCPipe : public Pipe {
  public:
   CRCPipe() {}
+  ~CRCPipe() override = default;
+
+  CRCPipe(const CRCPipe&) = delete;
+  CRCPipe& operator=(const CRCPipe&) = delete;
+  CRCPipe(CRCPipe&&) = delete;
+  CRCPipe& operator=(CRCPipe&&) = delete;
+
   int Put(void const* source, int slen) override;
 
   // Fetch the CRC value.
@@ -58,9 +65,6 @@ class CRCPipe : public Pipe {
  protected:
   CrcEngine crc_;
 
- private:
-  CRCPipe(CRCPipe& rvalue);
-  CRCPipe& operator=(CRCPipe const& pipe);
 };
 
 #endif

@@ -53,6 +53,11 @@ class RandomStraw : public Straw {
   RandomStraw();
   ~RandomStraw() override;
 
+  RandomStraw(const RandomStraw&) = delete;
+  RandomStraw& operator=(const RandomStraw&) = delete;
+  RandomStraw(RandomStraw&&) = delete;
+  RandomStraw& operator=(RandomStraw&&) = delete;
+
   int Get(void* source, int slen) override;
 
   void Reset();
@@ -84,9 +89,6 @@ class RandomStraw : public Straw {
   RandomClass Random[32];
 
   void Scramble_Seed();
-
-  RandomStraw(RandomStraw& rvalue);
-  RandomStraw& operator=(RandomStraw const& pipe);
 };
 
 #endif

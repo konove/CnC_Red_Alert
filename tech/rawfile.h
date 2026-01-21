@@ -77,8 +77,10 @@ class RawFileClass : public FileClass {
 
   RawFileClass(char const* filename);
   RawFileClass();
-  RawFileClass(RawFileClass const& f);
-  RawFileClass& operator=(RawFileClass const& f);
+  RawFileClass(const RawFileClass& f);
+  RawFileClass& operator=(const RawFileClass& f);
+  RawFileClass(RawFileClass&&) = delete;
+  RawFileClass& operator=(RawFileClass&&) = delete;
   ~RawFileClass() override;
 
   char const* File_Name() const override;

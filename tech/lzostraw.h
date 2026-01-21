@@ -95,8 +95,10 @@ class LZOStraw : public Straw {
     unsigned short UncompCount;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
-  LZOStraw(LZOStraw& rvalue);
-  LZOStraw& operator=(LZOStraw const& pipe);
+  LZOStraw(const LZOStraw&) = delete;
+  LZOStraw& operator=(const LZOStraw&) = delete;
+  LZOStraw(LZOStraw&&) = delete;
+  LZOStraw& operator=(LZOStraw&&) = delete;
 };
 
 #endif

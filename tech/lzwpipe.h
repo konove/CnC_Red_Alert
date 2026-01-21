@@ -73,8 +73,8 @@ class LZWPipe : public Pipe {
   /*
   **	Pointer to the working buffer that compression/decompression will use.
   */
-  char* Buffer;
-  char* Buffer2;
+  char* source_buffer_;
+  char* output_buffer_;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.
@@ -95,8 +95,10 @@ class LZWPipe : public Pipe {
     unsigned short UncompCount;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
-  LZWPipe(LZWPipe& rvalue);
-  LZWPipe& operator=(LZWPipe const& pipe);
+  LZWPipe(const LZWPipe&) = delete;
+  LZWPipe& operator=(const LZWPipe&) = delete;
+  LZWPipe(LZWPipe&&) = delete;
+  LZWPipe& operator=(LZWPipe&&) = delete;
 };
 
 #endif

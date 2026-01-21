@@ -95,8 +95,10 @@ class LZOPipe : public Pipe {
     unsigned short UncompCount;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
-  LZOPipe(LZOPipe& rvalue);
-  LZOPipe& operator=(LZOPipe const& pipe);
+  LZOPipe(const LZOPipe&) = delete;
+  LZOPipe& operator=(const LZOPipe&) = delete;
+  LZOPipe(LZOPipe&&) = delete;
+  LZOPipe& operator=(LZOPipe&&) = delete;
 };
 
 #endif

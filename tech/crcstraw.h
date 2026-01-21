@@ -51,6 +51,13 @@
 class CRCStraw : public Straw {
  public:
   CRCStraw() {}
+  ~CRCStraw() override = default;
+
+  CRCStraw(const CRCStraw&) = delete;
+  CRCStraw& operator=(const CRCStraw&) = delete;
+  CRCStraw(CRCStraw&&) = delete;
+  CRCStraw& operator=(CRCStraw&&) = delete;
+
   int Get(void* source, int slen) override;
 
   // Calculate and return the CRC value.
@@ -59,9 +66,6 @@ class CRCStraw : public Straw {
  protected:
   CrcEngine crc_;
 
- private:
-  CRCStraw(CRCStraw& rvalue);
-  CRCStraw& operator=(CRCStraw const& pipe);
 };
 
 #endif

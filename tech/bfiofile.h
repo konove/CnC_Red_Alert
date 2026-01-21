@@ -57,6 +57,11 @@ class BufferIOFileClass : public RawFileClass {
   BufferIOFileClass();
   ~BufferIOFileClass() override;
 
+  BufferIOFileClass(const BufferIOFileClass&) = delete;
+  BufferIOFileClass& operator=(const BufferIOFileClass&) = delete;
+  BufferIOFileClass(BufferIOFileClass&&) = delete;
+  BufferIOFileClass& operator=(BufferIOFileClass&&) = delete;
+
   bool Cache(long size = 0, void* ptr = nullptr);
   void Free();
   bool Commit();

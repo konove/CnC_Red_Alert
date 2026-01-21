@@ -52,12 +52,14 @@ class BufferClass {
   bool Allocated;
 
  private:
-  // Define the operators we do not want to happen which are the copy and equal
-  // constructors. These are bad because the Allocated flag could be copied and
-  // the associated buffer freed. If this were to happen it could cause weird
-  // general protection fault.
-  BufferClass(BufferClass const&) = delete;
-  BufferClass& operator=(BufferClass const&) = delete;
+  // Define the operators we do not want to happen which are the copy, move,
+  // and assignment operators. These are bad because the Allocated flag could
+  // be copied and the associated buffer freed. If this were to happen it could
+  // cause weird general protection faults.
+  BufferClass(const BufferClass&) = delete;
+  BufferClass& operator=(const BufferClass&) = delete;
+  BufferClass(BufferClass&&) = delete;
+  BufferClass& operator=(BufferClass&&) = delete;
 };
 
 #endif

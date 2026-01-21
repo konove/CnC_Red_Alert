@@ -60,9 +60,11 @@ class TimerClass {
   // Constructor.  Timers set before low level init has been done will not
   // be able to be 'Started' or 'on' until timer system is in place.
   TimerClass(BaseTimerEnum timer = BT_SYSTEM, bool start = false);
-
-  // No destructor.
-  ~TimerClass() {}
+  ~TimerClass() = default;
+  TimerClass(const TimerClass&) = default;
+  TimerClass& operator=(const TimerClass&) = default;
+  TimerClass(TimerClass&&) = default;
+  TimerClass& operator=(TimerClass&&) = default;
 
   //
   long Set(long value, bool start = true);  // Set initial timer value.
@@ -88,9 +90,11 @@ class CountDownTimerClass : private TimerClass {
   // be able to be 'Started' or 'on' until timer system is in place.
   CountDownTimerClass(BaseTimerEnum timer, long set, bool on = false);
   CountDownTimerClass(BaseTimerEnum timer = BT_SYSTEM, bool on = false);
-
-  // No destructor.
-  ~CountDownTimerClass() {}
+  ~CountDownTimerClass() = default;
+  CountDownTimerClass(const CountDownTimerClass&) = default;
+  CountDownTimerClass& operator=(const CountDownTimerClass&) = default;
+  CountDownTimerClass(CountDownTimerClass&&) = default;
+  CountDownTimerClass& operator=(CountDownTimerClass&&) = default;
 
   // Public functions
   long Set(long set, bool start = true);  // Set count down value.
@@ -121,6 +125,10 @@ class WinTimerClass {
  public:
   WinTimerClass(std::uint32_t freq = 60, bool partial = false);
   ~WinTimerClass();
+  WinTimerClass(const WinTimerClass&) = delete;
+  WinTimerClass& operator=(const WinTimerClass&) = delete;
+  WinTimerClass(WinTimerClass&&) = delete;
+  WinTimerClass& operator=(WinTimerClass&&) = delete;
 
   void Update_Tick_Count();
   std::uint64_t Get_System_Tick_Count();

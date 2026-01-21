@@ -52,20 +52,24 @@
 */
 class BufferPipe : public Pipe {
  public:
-  BufferPipe(Buffer const& buffer) : BufferPtr(buffer), Index(0) {}
+  // Creates a non-owning view into the buffer.
+  BufferPipe(const Buffer& buffer)
+      : BufferPtr(buffer.Get_Buffer(), buffer.Get_Size()), Index(0) {}
   BufferPipe(void* buffer, int length) : BufferPtr(buffer, length), Index(0) {}
+  ~BufferPipe() override = default;
+
+  BufferPipe(const BufferPipe&) = delete;
+  BufferPipe& operator=(const BufferPipe&) = delete;
+  BufferPipe(BufferPipe&&) = delete;
+  BufferPipe& operator=(BufferPipe&&) = delete;
+
   int Put(void const* source, int slen) override;
 
  private:
   Buffer BufferPtr;
   int Index;
 
-  //		void * Buffer;
-  //		int Length;
-
   bool Is_Valid() { return (BufferPtr.Is_Valid()); }
-  BufferPipe(BufferPipe& rvalue);
-  BufferPipe& operator=(BufferPipe const& pipe);
 };
 
 /*
@@ -79,6 +83,11 @@ class FilePipe : public Pipe {
   FilePipe(FileClass& file) : File(&file), HasOpened(false) {}
   ~FilePipe() override;
 
+  FilePipe(const FilePipe&) = delete;
+  FilePipe& operator=(const FilePipe&) = delete;
+  FilePipe(FilePipe&&) = delete;
+  FilePipe& operator=(FilePipe&&) = delete;
+
   int Put(void const* source, int slen) override;
   int End() override;
 
@@ -87,8 +96,6 @@ class FilePipe : public Pipe {
   bool HasOpened;
 
   bool Valid_File() { return (File != nullptr); }
-  FilePipe(FilePipe& rvalue);
-  FilePipe& operator=(FilePipe const& pipe);
 };
 
 #endif

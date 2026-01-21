@@ -58,7 +58,14 @@
 
 class FileClass {
  public:
-  virtual ~FileClass() {}
+  FileClass() = default;
+  virtual ~FileClass() = default;
+
+  FileClass(const FileClass&) = delete;
+  FileClass& operator=(const FileClass&) = delete;
+  FileClass(FileClass&&) = delete;
+  FileClass& operator=(FileClass&&) = delete;
+
   virtual char const* File_Name() const = 0;
   virtual char const* Set_Name(char const* filename) = 0;
   virtual int Create() = 0;

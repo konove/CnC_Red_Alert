@@ -95,8 +95,10 @@ class LCWStraw : public Straw {
     unsigned short UncompCount;  // Bytes of uncompressed data it represents.
   } BlockHeader;
 
-  LCWStraw(LCWStraw& rvalue);
-  LCWStraw& operator=(LCWStraw const& pipe);
+  LCWStraw(const LCWStraw&) = delete;
+  LCWStraw& operator=(const LCWStraw&) = delete;
+  LCWStraw(LCWStraw&&) = delete;
+  LCWStraw& operator=(LCWStraw&&) = delete;
 };
 
 #endif

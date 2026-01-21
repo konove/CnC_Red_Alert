@@ -53,6 +53,11 @@ class PacketClass {
   PacketClass(char* cur_buf);
   ~PacketClass();
 
+  PacketClass(const PacketClass&) = delete;
+  PacketClass& operator=(const PacketClass&) = delete;
+  PacketClass(PacketClass&&) = delete;
+  PacketClass& operator=(PacketClass&&) = delete;
+
   //
   // This function allows us to add a field to the start of the list.  As the
   // field is just

@@ -67,13 +67,13 @@
 LZWPipe::LZWPipe(CompControl control, int blocksize)
     : Control(control),
       Counter(0),
-      Buffer(nullptr),
-      Buffer2(nullptr),
+      source_buffer_(nullptr),
+      output_buffer_(nullptr),
       BlockSize(blocksize) {
   SafetyMargin = BlockSize;
   //	SafetyMargin = BlockSize/128+1;
-  Buffer = new char[BlockSize + SafetyMargin];
-  Buffer2 = new char[BlockSize + SafetyMargin];
+  source_buffer_ = new char[BlockSize + SafetyMargin];
+  output_buffer_ = new char[BlockSize + SafetyMargin];
   BlockHeader.CompCount = 0xFFFF;
 }
 
@@ -91,11 +91,11 @@ LZWPipe::LZWPipe(CompControl control, int blocksize)
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZWPipe::~LZWPipe() {
-  delete[] Buffer;
-  Buffer = nullptr;
+  delete[] source_buffer_;
+  source_buffer_ = nullptr;
 
-  delete[] Buffer2;
-  Buffer2 = nullptr;
+  delete[] output_buffer_;
+  output_buffer_ = nullptr;
 }
 
 /***********************************************************************************************
@@ -123,7 +123,7 @@ int LZWPipe::Put(void const* source, int slen) {
     return (Pipe::Put(source, slen));
   }
 
-  assert(Buffer != nullptr);
+  assert(source_buffer_ != nullptr);
 
   int total = 0;
 
@@ -141,7 +141,7 @@ int LZWPipe::Put(void const* source, int slen) {
         int len = (slen < (sizeof(BlockHeader) - Counter))
                       ? slen
                       : (sizeof(BlockHeader) - Counter);
-        memmove(&Buffer[Counter], source, len);
+        memmove(&source_buffer_[Counter], source, len);
         source = ((char*)source) + len;
         slen -= len;
         Counter += len;
@@ -151,7 +151,7 @@ int LZWPipe::Put(void const* source, int slen) {
         *safekeeping.
         */
         if (Counter == sizeof(BlockHeader)) {
-          memmove(&BlockHeader, Buffer, sizeof(BlockHeader));
+          memmove(&BlockHeader, source_buffer_, sizeof(BlockHeader));
           Counter = 0;
         }
       }
@@ -165,7 +165,7 @@ int LZWPipe::Put(void const* source, int slen) {
                       ? slen
                       : (BlockHeader.CompCount - Counter);
 
-        memmove(&Buffer[Counter], source, len);
+        memmove(&source_buffer_[Counter], source, len);
         slen -= len;
         source = ((char*)source) + len;
         Counter += len;
@@ -175,8 +175,8 @@ int LZWPipe::Put(void const* source, int slen) {
         *feed it *	through the pipe.
         */
         if (Counter == BlockHeader.CompCount) {
-          LZW_Uncompress(Buffer, Buffer2);
-          total += Pipe::Put(Buffer2, BlockHeader.UncompCount);
+          LZW_Uncompress(Buffer(source_buffer_), Buffer(output_buffer_));
+          total += Pipe::Put(output_buffer_, BlockHeader.UncompCount);
           Counter = 0;
           BlockHeader.CompCount = 0xFFFF;
         }
@@ -191,18 +191,19 @@ int LZWPipe::Put(void const* source, int slen) {
     if (Counter > 0) {
       int tocopy =
           (slen < (BlockSize - Counter)) ? slen : (BlockSize - Counter);
-      memmove(&Buffer[Counter], source, tocopy);
+      memmove(&source_buffer_[Counter], source, tocopy);
       source = ((char*)source) + tocopy;
       slen -= tocopy;
       Counter += tocopy;
 
       if (Counter == BlockSize) {
-        int len = LZW_Compress(::Buffer(Buffer, BlockSize), Buffer2);
+        int len = LZW_Compress(Buffer(source_buffer_, BlockSize),
+                               Buffer(output_buffer_));
 
         BlockHeader.CompCount = (unsigned short)len;
         BlockHeader.UncompCount = (unsigned short)BlockSize;
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(Buffer2, len);
+        total += Pipe::Put(output_buffer_, len);
         Counter = 0;
       }
     }
@@ -212,7 +213,8 @@ int LZWPipe::Put(void const* source, int slen) {
     *insufficient *	source data left for a whole data block.
     */
     while (slen >= BlockSize) {
-      int len = LZW_Compress(::Buffer((void*)source, BlockSize), Buffer2);
+      int len = LZW_Compress(Buffer((void*)source, BlockSize),
+                             Buffer(output_buffer_));
 
       source = ((char*)source) + BlockSize;
       slen -= BlockSize;
@@ -220,7 +222,7 @@ int LZWPipe::Put(void const* source, int slen) {
       BlockHeader.CompCount = (unsigned short)len;
       BlockHeader.UncompCount = (unsigned short)BlockSize;
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(Buffer2, len);
+      total += Pipe::Put(output_buffer_, len);
     }
 
     /*
@@ -228,7 +230,7 @@ int LZWPipe::Put(void const* source, int slen) {
     **	until a full data block has been accumulated.
     */
     if (slen > 0) {
-      memmove(Buffer, source, slen);
+      memmove(source_buffer_, source, slen);
       Counter = slen;
     }
   }
@@ -256,7 +258,7 @@ int LZWPipe::Put(void const* source, int slen) {
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 int LZWPipe::Flush() {
-  assert(Buffer != nullptr);
+  assert(source_buffer_ != nullptr);
 
   int total = 0;
 
@@ -271,7 +273,7 @@ int LZWPipe::Flush() {
       *through *	as if were already decompressed.
       */
       if (BlockHeader.CompCount == 0xFFFF) {
-        total += Pipe::Put(Buffer, Counter);
+        total += Pipe::Put(source_buffer_, Counter);
         Counter = 0;
       }
 
@@ -284,7 +286,7 @@ int LZWPipe::Flush() {
       */
       if (Counter > 0) {
         total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-        total += Pipe::Put(Buffer, Counter);
+        total += Pipe::Put(source_buffer_, Counter);
         Counter = 0;
         BlockHeader.CompCount = 0xFFFF;
       }
@@ -294,12 +296,13 @@ int LZWPipe::Flush() {
       **	A partial block in the compression process is a normal
       *occurrence. Just *	compress the partial block and output normally.
       */
-      int len = LZW_Compress(::Buffer(Buffer, Counter), Buffer2);
+      int len =
+          LZW_Compress(Buffer(source_buffer_, Counter), Buffer(output_buffer_));
 
       BlockHeader.CompCount = (unsigned short)len;
       BlockHeader.UncompCount = (unsigned short)Counter;
       total += Pipe::Put(&BlockHeader, sizeof(BlockHeader));
-      total += Pipe::Put(Buffer2, len);
+      total += Pipe::Put(output_buffer_, len);
       Counter = 0;
     }
   }
