@@ -1878,5 +1878,3 @@ void MapEditClass::Detach(ObjectClass* object) {
 }
 
 #endif
-
-#include "mapedsel.cpp"
