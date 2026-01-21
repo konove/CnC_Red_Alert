@@ -287,7 +287,6 @@ Checks: '*,
          -readability-suspicious-call-argument,
          -readability-uppercase-literal-suffix,
          -readability-use-concise-preprocessor-directives,
-         -readability-use-std-min-max,
          '
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*/CnC_Red_Alert/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
