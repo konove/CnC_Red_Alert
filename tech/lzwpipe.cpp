@@ -65,11 +65,7 @@
  * HISTORY: * 07/04/1996 JLB : Created. *
  *=============================================================================================*/
 LZWPipe::LZWPipe(CompControl control, int blocksize)
-    : Control(control),
-      Counter(0),
-      source_buffer_(nullptr),
-      output_buffer_(nullptr),
-      BlockSize(blocksize) {
+    : Control(control), BlockSize(blocksize) {
   SafetyMargin = BlockSize;
   //	SafetyMargin = BlockSize/128+1;
   source_buffer_ = new char[BlockSize + SafetyMargin];

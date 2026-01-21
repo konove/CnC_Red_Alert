@@ -51,7 +51,7 @@ class BlowPipe : public Pipe {
  public:
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
-  BlowPipe(CryptControl control) : BF(nullptr), Counter(0), Control(control) {}
+  explicit BlowPipe(CryptControl control) : Control(control) {}
   ~BlowPipe() override {
     delete BF;
     BF = nullptr;
@@ -70,11 +70,11 @@ class BlowPipe : public Pipe {
   **	key has been submitted. All data would pass through this pipe unchanged
   **	in that case.
   */
-  BlowfishEngine* BF;
+  BlowfishEngine* BF = nullptr;
 
  private:
   char Buffer[8];
-  int Counter;
+  int Counter = 0;
   CryptControl Control;
 
   BlowPipe(const BlowPipe&) = delete;

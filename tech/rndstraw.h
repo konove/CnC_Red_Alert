@@ -50,7 +50,7 @@
 */
 class RandomStraw : public Straw {
  public:
-  RandomStraw();
+  RandomStraw() = default;
   ~RandomStraw() override;
 
   RandomStraw(const RandomStraw&) = delete;
@@ -60,7 +60,6 @@ class RandomStraw : public Straw {
 
   int Get(void* source, int slen) override;
 
-  void Reset();
   void Seed_Bit(int seed);
   void Seed_Byte(char seed);
   void Seed_Short(short seed);
@@ -73,20 +72,20 @@ class RandomStraw : public Straw {
   **	Counter of the number of seed bits stored to this random number
   **	generator.
   */
-  int SeedBits;
+  int SeedBits = 0;
 
   /*
   **	The current random generator to use when fetching the next random
   **	byte of data.
   */
-  int Current;
+  int Current = 0;
 
   /*
   **	Array of generators. There must be at least 448 bits of random number
   *seed *	in order to be reasonably secure, however, using 1024 bits would
   *be best.
   */
-  RandomClass Random[32];
+  RandomClass Random[32] = {};
 
   void Scramble_Seed();
 };

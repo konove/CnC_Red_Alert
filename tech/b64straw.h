@@ -51,7 +51,7 @@ class Base64Straw : public Straw {
  public:
   typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-  Base64Straw(CodeControl control) : Control(control), Counter(0) {}
+  explicit Base64Straw(CodeControl control) : Control(control) {}
   ~Base64Straw() override = default;
 
   Base64Straw(const Base64Straw&) = delete;
@@ -70,7 +70,7 @@ class Base64Straw : public Straw {
   /*
   **	The counter of the number of accumulated bytes pending for processing.
   */
-  int Counter;
+  int Counter = 0;
 
   /*
   **	Buffer that holds the Base64 coded bytes. This will be the staging

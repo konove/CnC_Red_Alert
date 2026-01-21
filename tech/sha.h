@@ -50,7 +50,7 @@
 */
 class SHAEngine {
  public:
-  SHAEngine() : IsCached(false), Length(0), PartialCount(0) {
+  SHAEngine() {
     Acc.Long[0] = SA;
     Acc.Long[1] = SB;
     Acc.Long[2] = SC;
@@ -78,7 +78,7 @@ class SHAEngine {
   **	here to avoid the overhead of recalculating it over
   **	multiple sequential requests.
   */
-  bool IsCached;
+  bool IsCached = false;
   SHADigest FinalResult;
 
   enum {
@@ -155,14 +155,14 @@ class SHAEngine {
   **	resulting hash value as if it were appended to the end
   **	of the source data.
   */
-  long Length;
+  long Length = 0;
 
   /*
   **	This holds any partial source block. Partial source blocks are
   **	a consequence of submitting less than block sized data chunks
   **	to the SHA Engine.
   */
-  int PartialCount;
+  int PartialCount = 0;
   char Partial[SRC_BLOCK_SIZE];
 };
 

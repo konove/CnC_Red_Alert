@@ -14,8 +14,7 @@ static Uint32 TimerCallback(Uint32 interval, void* param) {
 
 // TimerClass/CountDownTimerClass are mostly used by TD
 // (RA has it's own impl)
-TimerClass::TimerClass(BaseTimerEnum timer, bool start)
-    : Accumulated(0), Started(0), TickType(timer) {
+TimerClass::TimerClass(BaseTimerEnum timer, bool start) : TickType(timer) {
   if (start && TimerSystemOn) Start();
 }
 
@@ -72,8 +71,7 @@ long CountDownTimerClass::Time() {
   return ticks;
 }
 
-WinTimerClass::WinTimerClass(std::uint32_t freq, bool /*partial*/)
-    : SysTicks(0), UserTicks(0) {
+WinTimerClass::WinTimerClass(std::uint32_t freq, bool /*partial*/) {
   SDL_Init(SDL_INIT_TIMER);
   TimerHandle = SDL_AddTimer(1000 / freq, TimerCallback, this);
 

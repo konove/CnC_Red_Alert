@@ -70,7 +70,7 @@ class PentiumTimerClass {
 */
 class Benchmark {
  public:
-  Benchmark();
+  Benchmark() = default;
 
   void Begin(bool reset = false);
   void End();
@@ -98,18 +98,18 @@ class Benchmark {
   /*
   **	The total time off all events tracked so far.
   */
-  unsigned long Average;
+  unsigned long Average = 0;
 
   /*
   **	The total number of events tracked so far.
   */
-  unsigned long Counter;
+  unsigned long Counter = 0;
 
   /*
   **	Absolute total number of events (possibly greater than the
   **	number of events tracked in the average).
   */
-  unsigned long TotalCount;
+  unsigned long TotalCount = 0;
 };
 
 #endif

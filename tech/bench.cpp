@@ -44,21 +44,6 @@
 #include "tech/bench.h"
 
 /***********************************************************************************************
- * Benchmark::Benchmark -- Constructor for the benchmark object. *
- *                                                                                             *
- *    This will construct the benchmark object. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/18/1996 JLB : Created. *
- *=============================================================================================*/
-Benchmark::Benchmark() : Average(0), Counter(0), TotalCount(0) {}
-
-/***********************************************************************************************
  * Benchmark::Reset -- Clear out the benchmark statistics. *
  *                                                                                             *
  *    Use this routine to clear out all the accumulated statistics within this

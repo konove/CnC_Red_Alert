@@ -54,23 +54,6 @@
 #include "tech/sha.h"
 
 /***********************************************************************************************
- * RandomStraw::RandomStraw -- Constructor for the random straw class. *
- *                                                                                             *
- *    This will initialize the random straw into a known state. The initial
- *state is useless   * for cryptographic purposes. It must be seeded before it
- *should be used.                  *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/10/1996 JLB : Created. *
- *=============================================================================================*/
-RandomStraw::RandomStraw() : SeedBits(0), Current(0) { Reset(); }
-
-/***********************************************************************************************
  * RandomStraw::~RandomStraw -- Destructor for random straw class. *
  *                                                                                             *
  *    This destructor will clear out the seed data so that there won't be any
@@ -84,26 +67,16 @@ RandomStraw::RandomStraw() : SeedBits(0), Current(0) { Reset(); }
  *                                                                                             *
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
-RandomStraw::~RandomStraw() { Reset(); }
-
-/***********************************************************************************************
- * RandomStraw::Reset -- Reset the data to known initial state. *
- *                                                                                             *
- *    This routine is functionally equivalent to performing an placement new on
- *the object. It * clears out all the seed data. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   You must reseed it before fetching random numbers. *
- *                                                                                             *
- * HISTORY: * 07/10/1996 JLB : Created. *
- *=============================================================================================*/
-void RandomStraw::Reset() {
-  SeedBits = 0;
-  Current = 0;
-  memset(Random, '\0', sizeof(Random));
+RandomStraw::~RandomStraw() {
+#ifdef _WIN32
+  SecureZeroMemory(&SeedBits, sizeof(SeedBits));
+  SecureZeroMemory(&Current, sizeof(Current));
+  SecureZeroMemory(Random, sizeof(Random));
+#else
+  explicit_bzero(&SeedBits, sizeof(SeedBits));
+  explicit_bzero(&Current, sizeof(Current));
+  explicit_bzero(Random, sizeof(Random));
+#endif
 }
 
 /***********************************************************************************************

@@ -17,7 +17,7 @@
 constexpr SDL_Keymod kInputModifierMask =
     static_cast<SDL_Keymod>(KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI);
 
-WWKeyboardClass::WWKeyboardClass() : MouseQX(0), MouseQY(0), Head(0), Tail(0) {
+WWKeyboardClass::WWKeyboardClass() {
   // clear buffer
   memset(Buffer, 0, 256);
 }

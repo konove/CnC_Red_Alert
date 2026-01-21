@@ -79,13 +79,7 @@
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 RAMFileClass::RAMFileClass(void* buffer, int len)
-    : Buffer((char*)buffer),
-      MaxLength(len),
-      Length(len),
-      Offset(0),
-      Access(READ),
-      IsOpen(false),
-      IsAllocated(false) {
+    : Buffer((char*)buffer), MaxLength(len), Length(len) {
   if (buffer == nullptr && len > 0) {
     Buffer = new char[len];
     IsAllocated = true;

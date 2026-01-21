@@ -71,7 +71,7 @@ enum { CTS_SET = 0x10, DSR_SET = 0x20, RI_SET = 0x40, CD_SET = 0x80 };
 
 class WinModemClass {
  public:
-  WinModemClass();
+  WinModemClass() = default;
   virtual ~WinModemClass() = default;
   WinModemClass(const WinModemClass&) = delete;
   WinModemClass& operator=(const WinModemClass&) = delete;
@@ -213,7 +213,7 @@ class WinModemClass {
   /*
   ** Windows handle to the COM port device
   */
-  HANDLE PortHandle;
+  HANDLE PortHandle = nullptr;
 
   /*
   ** Dialing method - DIAL_TOUCH_TONE or DIAL_PULSE

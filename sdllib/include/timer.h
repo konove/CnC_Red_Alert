@@ -74,8 +74,8 @@ class TimerClass {
   long Time();                              // Fetch current timer value.
 
  protected:
-  long Started;      // Time last started (0 == not paused).
-  long Accumulated;  //	Total accumulated ticks.
+  long Started = 0;      // Time last started (0 == not paused).
+  long Accumulated = 0;  //	Total accumulated ticks.
 
  private:
   BaseTimerEnum TickType;
@@ -135,9 +135,9 @@ class WinTimerClass {
   std::uint64_t Get_User_Tick_Count();
 
  private:
-  std::int32_t TimerHandle;  // Handle for windows timer event
-  std::uint64_t SysTicks;    // Tick count of timer.
-  std::uint64_t UserTicks;   // Tick count of timer.
+  std::int32_t TimerHandle;      // Handle for windows timer event
+  std::uint64_t SysTicks = 0;    // Tick count of timer.
+  std::uint64_t UserTicks = 0;   // Tick count of timer.
 };
 
 uint32_t Get_Time_Ms();

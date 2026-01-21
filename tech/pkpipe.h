@@ -82,7 +82,7 @@ class PKPipe : public Pipe {
   **	This flag indicates whether the PK (fetch blowfish key) phase is
   **	in progress or not.
   */
-  bool IsGettingKey;
+  bool IsGettingKey = true;
 
   /*
   **	This is the random straw that is needed to generate the
@@ -109,7 +109,7 @@ class PKPipe : public Pipe {
   *whichever *	process is performed, the opposite process must be performed
   *using the *	other key.
   */
-  PKey const* CipherKey;
+  PKey const* CipherKey = nullptr;
 
   /*
   **	This is the staging buffer for the block of data. This block must be as
@@ -122,14 +122,14 @@ class PKPipe : public Pipe {
   **	The working counter that holds the number of bytes in the staging
   *buffer.
   */
-  int Counter;
+  int Counter = 0;
 
   /*
   **	This records the number of bytes remaining in the current block. This
   **	will be the number of bytes left to accumulate before the block can be
   **	processed either for encryption or decryption.
   */
-  int BytesLeft;
+  int BytesLeft = 0;
 
   int Encrypted_Key_Length() const;
   int Plain_Key_Length() const;

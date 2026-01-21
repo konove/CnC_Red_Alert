@@ -10,11 +10,10 @@
 
 WinModemClass* SerialPort = nullptr;
 
-WinModemClass::WinModemClass() : PortHandle(nullptr) {}
-
-HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/, int /*baud*/,
-                                       int /*parity*/, int /*wordlen*/,
-                                       int /*stopbits*/, int /*flowcontrol*/) {
+HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/,
+                                       int /*baud*/, int /*parity*/,
+                                       int /*wordlen*/, int /*stopbits*/,
+                                       int /*flowcontrol*/) {
 #ifdef LIBSERIALPORT
   sp_port* port;
   sp_return result = sp_get_port_by_name(device_name, &port);

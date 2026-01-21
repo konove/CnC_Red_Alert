@@ -70,13 +70,9 @@
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 PKStraw::PKStraw(CryptControl control, RandomStraw& rnd)
-    : IsGettingKey(true),
-      Rand(rnd),
+    : Rand(rnd),
       BF((control == ENCRYPT) ? BlowStraw::ENCRYPT : BlowStraw::DECRYPT),
-      Control(control),
-      CipherKey(nullptr),
-      Counter(0),
-      BytesLeft(0) {
+      Control(control) {
   Straw::Get_From(BF);
 }
 

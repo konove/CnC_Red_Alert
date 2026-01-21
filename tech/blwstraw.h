@@ -54,7 +54,7 @@ class BlowStraw : public Straw {
  public:
   typedef enum CryptControl { ENCRYPT, DECRYPT } CryptControl;
 
-  BlowStraw(CryptControl control) : BF(nullptr), Counter(0), Control(control) {}
+  explicit BlowStraw(CryptControl control) : Control(control) {}
   ~BlowStraw() override {
     delete BF;
     BF = nullptr;
@@ -72,11 +72,11 @@ class BlowStraw : public Straw {
   **	key has been submitted. All data would pass through this straw unchanged
   **	in that case.
   */
-  BlowfishEngine* BF;
+  BlowfishEngine* BF = nullptr;
 
  private:
   char Buffer[8];
-  int Counter;
+  int Counter = 0;
   CryptControl Control;
 
   BlowStraw(const BlowStraw&) = delete;

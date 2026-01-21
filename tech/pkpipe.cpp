@@ -63,13 +63,9 @@
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 PKPipe::PKPipe(CryptControl control, RandomStraw& rnd)
-    : IsGettingKey(true),
-      Rand(rnd),
+    : Rand(rnd),
       BF((control == ENCRYPT) ? BlowPipe::ENCRYPT : BlowPipe::DECRYPT),
-      Control(control),
-      CipherKey(nullptr),
-      Counter(0),
-      BytesLeft(0) {}
+      Control(control) {}
 
 /***********************************************************************************************
  * PKPipe::Put_To -- Chains one pipe to another. *

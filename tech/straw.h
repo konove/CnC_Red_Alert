@@ -49,7 +49,7 @@
 */
 class Straw {
  public:
-  Straw() : ChainTo(nullptr), ChainFrom(nullptr) {}
+  Straw() = default;
   virtual ~Straw();
 
   Straw(const Straw&) = delete;
@@ -64,8 +64,8 @@ class Straw {
   /*
   **	Pointer to the next pipe segment in the chain.
   */
-  Straw* ChainTo;
-  Straw* ChainFrom;
+  Straw* ChainTo = nullptr;
+  Straw* ChainFrom = nullptr;
 };
 
 #endif

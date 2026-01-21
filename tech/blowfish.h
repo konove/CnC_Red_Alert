@@ -54,7 +54,7 @@
 */
 class BlowfishEngine {
  public:
-  BlowfishEngine() : IsKeyed(false) {}
+  BlowfishEngine() = default;
   ~BlowfishEngine();
 
   BlowfishEngine(const BlowfishEngine&) = delete;
@@ -73,7 +73,7 @@ class BlowfishEngine {
   enum { MAX_KEY_LENGTH = 56 };
 
  private:
-  bool IsKeyed;
+  bool IsKeyed = false;
 
   void Sub_Key_Encrypt(unsigned long& left, unsigned long& right);
 

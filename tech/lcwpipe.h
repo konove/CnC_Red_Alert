@@ -68,13 +68,13 @@ class LCWPipe : public Pipe {
   /*
   **	The number of bytes accumulated into the staging buffer.
   */
-  int Counter;
+  int Counter = 0;
 
   /*
   **	Pointer to the working buffer that compression/decompression will use.
   */
-  char* Buffer;
-  char* Buffer2;
+  char* Buffer = nullptr;
+  char* Buffer2 = nullptr;
 
   /*
   **	The working block size. Data will be compressed in chunks of this size.

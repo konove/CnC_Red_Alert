@@ -352,7 +352,7 @@ class Int {
   uint32_t reg[PRECISION];
 
   struct RemainderTable {
-    RemainderTable(const Int<PRECISION>& p) : HasZeroEntry(false) {
+    explicit RemainderTable(const Int<PRECISION>& p) {
       for (unsigned i = 0; i < ARRAY_SIZE(primeTable); i++) {
         table[i] = p % primeTable[i];
       }
@@ -379,7 +379,7 @@ class Int {
       }
     }
 
-    bool HasZeroEntry;
+    bool HasZeroEntry = false;
     unsigned short table[ARRAY_SIZE(primeTable)];
   };
 };

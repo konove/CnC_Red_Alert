@@ -51,8 +51,7 @@ class Base64Pipe : public Pipe {
  public:
   typedef enum CodeControl { ENCODE, DECODE } CodeControl;
 
-  Base64Pipe(CodeControl control)
-      : Control(control), Counter(0), CBuffer{}, PBuffer{} {}
+  explicit Base64Pipe(const CodeControl control) : Control(control) {}
   ~Base64Pipe() override = default;
 
   Base64Pipe(const Base64Pipe&) = delete;
@@ -72,21 +71,21 @@ class Base64Pipe : public Pipe {
   /*
   **	The counter of the number of accumulated bytes pending for processing.
   */
-  int Counter;
+  int Counter = 0;
 
   /*
   **	Buffer that holds the Base64 coded bytes. This will be the staging
   *buffer if *	this is for a decoding process. Otherwise, it will be used as a
   *scratch buffer.
   */
-  char CBuffer[4];
+  char CBuffer[4] = {};
 
   /*
   **	Buffer that holds the plain bytes. This will be the staging buffer if
   *this *	is for an encoding process. Otherwise, it will be used as a
   *scratch buffer.
   */
-  char PBuffer[3];
+  char PBuffer[3] = {};
 };
 
 #endif

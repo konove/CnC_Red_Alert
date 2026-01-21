@@ -50,8 +50,12 @@
 */
 class Pipe {
  public:
-  Pipe() : ChainTo(nullptr), ChainFrom(nullptr) {}
+  Pipe() = default;
   virtual ~Pipe();
+  Pipe(const Pipe&) = delete;
+  Pipe& operator=(const Pipe&) = delete;
+  Pipe(Pipe&&) = delete;
+  Pipe& operator=(Pipe&&) = delete;
 
   virtual int Flush();
   virtual int End() { return (Flush()); }
@@ -62,14 +66,8 @@ class Pipe {
   /*
   **	Pointer to the next pipe segment in the chain.
   */
-  Pipe* ChainTo;
-  Pipe* ChainFrom;
-
- private:
-  Pipe(const Pipe&) = delete;
-  Pipe& operator=(const Pipe&) = delete;
-  Pipe(Pipe&&) = delete;
-  Pipe& operator=(Pipe&&) = delete;
+  Pipe* ChainTo = nullptr;
+  Pipe* ChainFrom = nullptr;
 };
 
 #endif

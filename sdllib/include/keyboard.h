@@ -89,8 +89,8 @@ class WWKeyboardClass {
   /*   Keyboard Class.
    */
   /*===================================================================*/
-  int MouseQX;
-  int MouseQY;
+  int MouseQX = 0;
+  int MouseQY = 0;
 
  private:
   /*===================================================================*/
@@ -106,8 +106,8 @@ class WWKeyboardClass {
    */
   /*===================================================================*/
   unsigned short Buffer[256];  // buffer which holds actual keypresses
-  long Head;                   // the head position in keyboard buffer
-  long Tail;                   // the tail position in keyboard buffer
+  long Head = 0;               // the head position in keyboard buffer
+  long Tail = 0;               // the tail position in keyboard buffer
 };
 
 extern WWKeyboardClass* _Kbd;

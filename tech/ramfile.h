@@ -93,22 +93,22 @@ class RAMFileClass : public FileClass {
   /*
   **	The current file position offset within the buffer.
   */
-  int Offset;
+  int Offset = 0;
 
   /*
   **	The file was opened with this access mode.
   */
-  int Access;
+  int Access = 0;
 
   /*
   **	Is the file currently open?
   */
-  bool IsOpen;
+  bool IsOpen = false;
 
   /*
   **	Was the file buffer allocated during construction of this object?
   */
-  bool IsAllocated;
+  bool IsAllocated = false;
 };
 
 #endif
