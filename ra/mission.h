@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef MISSION_H
-#define MISSION_H
+#ifndef RA_MISSION_H_
+#define RA_MISSION_H_
 
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -75,7 +75,7 @@ class MissionClass : public ObjectClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   MissionClass(RTTIType rtti, int id);
-  MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
+  explicit MissionClass(NoInitClass const& x) : ObjectClass(x), Timer(x) {}
   ~MissionClass() override {}
 
 /*---------------------------------------------------------------------
@@ -102,7 +102,6 @@ class MissionClass : public ObjectClass {
   virtual int Mission_Guard_Area();
   virtual int Mission_Harvest();
   virtual int Mission_Hunt();
-  //		virtual int Mission_Timed_Hunt();
   virtual int Mission_Move();
   virtual int Mission_Retreat();
   virtual int Mission_Return();
@@ -202,4 +201,4 @@ class MissionControlClass {
   fixed AARate;
 };
 
-#endif
+#endif  // RA_MISSION_H_

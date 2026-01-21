@@ -20,7 +20,7 @@
 // format that bundles game assets (sprites, sounds, etc.) into single files.
 // Files are indexed by CRC of their filename for fast lookup.
 
-#include "mixfile.h"
+#include "ra/mixfile.h"
 
 #include <algorithm>
 #include <cerrno>
@@ -33,6 +33,7 @@
 #include <functional>
 #include <new>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -166,9 +167,9 @@ bool MixFileClass<T>::Cache() {
   file.Bias(data_start_);
 
   // Read directly into the vector buffer
-  long actual = straw->Get(data_.data(), data_size_);
 
-  if (actual != data_size_) {
+  if (const int actual = straw->Get(data_.data(), data_size_);
+      actual != data_size_) {
     data_.clear();
     file.Error(EIO);
     return false;
