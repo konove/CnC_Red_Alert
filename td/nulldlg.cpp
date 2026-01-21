@@ -6235,9 +6235,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   char phonename[21];
   char phonenum[15];
 
-  /*........................................................................
-  Clear the list
-  ........................................................................*/
+  // Clear the list
   while (list->Count()) {
     item = (char*)(list->Get_Item(0));
     list->Remove_Item(item);
@@ -6247,25 +6245,24 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit, char* buf) {
   /*
   ** Now sort the phone list by name then number
   */
-  qsort((void*)(&PhoneBook[0]), PhoneBook.Count(),
-        sizeof(class PhoneEntryClass*), Phone_Compare);
+  qsort(&PhoneBook[0], PhoneBook.Count(), sizeof(PhoneEntryClass*),
+        Phone_Compare);
 
   /*........................................................................
   Build the list
   ........................................................................*/
   for (i = 0; i < PhoneBook.Count(); i++) {
     item = new char[80];
-    if (!(strlen(PhoneBook[i]->Name))) {
+    if (strlen(PhoneBook[i]->Name) == 0) {
       port::SafeCopy(phonename, " ");
     } else {
-      strncpy(phonename, PhoneBook[i]->Name, 20);
-      phonename[21] = 0;
+      port::SafeCopy(phonename, PhoneBook[i]->Name);
     }
 
-    if (!(strlen(PhoneBook[i]->Number))) {
+    if (strlen(PhoneBook[i]->Number) == 0) {
       port::SafeCopy(phonenum, " ");
     } else {
-      if (strlen(PhoneBook[i]->Number) < 14) {
+      if (strlen(PhoneBook[i]->Number) < 15) {
         port::SafeCopy(phonenum, PhoneBook[i]->Number);
       } else {
         strncpy(phonenum, PhoneBook[i]->Number, 12);
@@ -7136,16 +7133,13 @@ void Hex_Dump_Data(char* buffer, int length) {
 } /* end of Hex_Dump_Data */
 
 void itoh(int i, char* s) {
-  int nibble, loop;
-
-  //	*s++ = '0';
-  //	*s++ = 'x';
+  int nibble;
 
   if (i == 0) {
     *s++ = '0';
     *s++ = '0';
   } else {
-    for (loop = 1; loop >= 0; loop--) {
+    for (int loop = 1; loop >= 0; loop--) {
       nibble = (i >> (loop << 2)) & 0x000F;
 
       /* decimal range */

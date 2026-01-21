@@ -45,8 +45,6 @@
 
 #include "ra/statbtn.h"
 
-#include <new>
-
 #include "port/safe_string.h"
 #include "ra/conquer.h"
 #include "ra/dialog.h"
