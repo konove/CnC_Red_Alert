@@ -1215,9 +1215,7 @@ GameType Select_Serial_Dialog() {
               settings = &(PhoneBook[CurPhoneIdx]->Settings);
             }
 
-            if (SerialPort) {
-              delete SerialPort;
-            }
+            delete SerialPort;
             SerialPort = new WinModemClass;
 
             if (Init_Null_Modem(settings)) {
@@ -1263,9 +1261,7 @@ GameType Select_Serial_Dialog() {
             */
             settings = &SerialDefaults;
 
-            if (SerialPort) {
-              delete SerialPort;
-            }
+            delete SerialPort;
             SerialPort = new WinModemClass;
 
             if (Init_Null_Modem(settings)) {
@@ -1302,9 +1298,7 @@ GameType Select_Serial_Dialog() {
             ** Otherwise, remote-connect; save values if we're recording
             */
 
-            if (SerialPort) {
-              delete SerialPort;
-            }
+            delete SerialPort;
             SerialPort = new WinNullModemClass;
 
             if (Init_Null_Modem(&SerialDefaults)) {
@@ -2145,9 +2139,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   *its just
   ** tough luck if the user has more than 10 modems attached!
   */
-  if (ModemRegistry) {
-    delete ModemRegistry;
-  }
+  delete ModemRegistry;
   int modems_found = 0;
   for (i = 0; i < 10; i++) {
     ModemRegistry = new ModemRegistryEntryClass(i);

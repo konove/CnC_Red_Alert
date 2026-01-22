@@ -3802,9 +3802,9 @@ bool Force_CD_Available(int cd) {
 
     Theme.Stop();
 
-    if (MoviesMix) delete MoviesMix;
-    if (GeneralMix) delete GeneralMix;
-    if (ScoreMix) delete ScoreMix;
+    delete MoviesMix;
+    delete GeneralMix;
+    delete ScoreMix;
 
     MoviesMix = MixFileClass::Register("MOVIES.MIX");
     GeneralMix = MixFileClass::Register("GENERAL.MIX");

@@ -399,9 +399,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
-    if (TheaterData) {
-      delete TheaterData;
-    }
+    delete TheaterData;
     TheaterData = MixFileClass::Register(fullname);
     TheaterData->Cache();
   }
@@ -413,9 +411,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
   snprintf(iconname, sizeof(iconname), "%.4sICNH.MIX", Theaters[Theater].Root);
   if (Theater != LastTheater) {
-    if (TheaterIcons) {
-      delete TheaterIcons;
-    }
+    delete TheaterIcons;
     TheaterIcons = MixFileClass::Register(iconname);
     TheaterIcons->Cache();
   }

@@ -68,9 +68,7 @@ MixFileClass::~MixFileClass() {
   if (Data) {
     delete[] static_cast<char*>(Data);
   }
-  if (Buffer) {
-    delete[] Buffer;
-  }
+  delete[] Buffer;
 
   // Unlink from the global mixfile chain.
   if (this == First) {

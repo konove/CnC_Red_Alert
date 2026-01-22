@@ -563,9 +563,7 @@ void Simple_Text_Print(char const* text, unsigned x, unsigned y, unsigned fore,
       LogicPage->Print(tempstr, x, y, fore, back);
     }
   }
-  if (tempstr) {
-    delete[] tempstr;
-  }
+  delete[] tempstr;
 }
 
 /***********************************************************************************************

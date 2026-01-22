@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
     if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
 #ifdef PORTABLE
       // pretty unlikely
-      if (WindowsTimer) delete WindowsTimer;
+      delete WindowsTimer;
       return (EXIT_FAILURE);
 #else
 #ifdef GERMAN
@@ -436,8 +436,8 @@ int main(int argc, char* argv[])
         MessageBox(MainWindow, Text_String(TXT_UNABLE_TO_SET_VIDEO_MODE),
                    "Command & Conquer", MB_ICONEXCLAMATION | MB_OK);
 #endif
-        if (WindowsTimer) delete WindowsTimer;
-        if (Palette) delete[] Palette;
+        delete WindowsTimer;
+        delete[] Palette;
         return (EXIT_FAILURE);
       }
 

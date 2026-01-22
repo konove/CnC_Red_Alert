@@ -150,7 +150,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   *delete it *	and return a failure condition.
   */
   if (source == SOURCE_NONE) {
-    if (team) delete team;
+    delete team;
     return (false);
   }
 
@@ -226,7 +226,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   **	This is probably because the object maximum was reached.
   */
   if (!object && !transport) {
-    if (team) delete team;
+    delete team;
     return (false);
   }
 
@@ -268,7 +268,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         object->Assign_Destination(::As_Target(
             XY_Cell(Map.MapCellX - 1, Cell_Y(Coord_Cell(object->Coord)))));
       } else {
-        if (team) delete team;
+        delete team;
         delete object;
         return (false);
       }
@@ -434,7 +434,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
             object->Assign_Destination(::As_Target(cell));
           }
         } else {
-          if (team) delete team;
+          delete team;
           delete object;
           return (false);
         }
